@@ -2,10 +2,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri.DCEL;
+using Fusee.Jometri.Manipulation;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
-using Fusee.Jometri.Extrusion;
 using Fusee.Jometri.Triangulation;
 using Fusee.Serialization;
 using Geometry = Fusee.Jometri.DCEL.Geometry;

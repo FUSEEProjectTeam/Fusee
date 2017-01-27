@@ -4,7 +4,7 @@ using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.Extrusion
+namespace Fusee.Jometri.Manipulation
 {
     /// <summary>
     /// Provides extrusion functionality for geometry.
@@ -85,10 +85,9 @@ namespace Fusee.Jometri.Extrusion
                     var backTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeInBack.NextHalfEdge).OriginVertex;
                     var frontTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeFront.NextHalfEdge).OriginVertex;
 
-                    var newFromBack = new HalfEdge
+                    var newFromBack = new HalfEdge(geometry.CreateHalfEdgeHandleId())
                     {
                         OriginVertex = backTargetVert,
-                        Handle = geometry.CreateHalfEdgeHandleId(),
                         NextHalfEdge = halfEdgeFront.Handle,
                         PrevHalfEdge = halfEdgeInBack.Handle
                     };
@@ -100,10 +99,9 @@ namespace Fusee.Jometri.Extrusion
 
                     newFromBack.IncidentFace = newFace.Handle;
 
-                    var newFromFront = new HalfEdge
+                    var newFromFront = new HalfEdge(geometry.CreateHalfEdgeHandleId())
                     {
                         OriginVertex = frontTargetVert,
-                        Handle = geometry.CreateHalfEdgeHandleId(),
                         NextHalfEdge = halfEdgeInBack.Handle,
                         PrevHalfEdge = halfEdgeFront.Handle,
                         IncidentFace = newFace.Handle
@@ -164,8 +162,7 @@ namespace Fusee.Jometri.Extrusion
             var vertDictHelper = new Dictionary<int, Vertex>();
             foreach (var v in second.DictVertices)
             {
-                var vert = v.Value;
-                vert.Handle = vert.Handle + highestVertHandle;
+                var vert = new Vertex(v.Value.Handle + highestVertHandle,v.Value.VertData.Pos);
                 vert.IncidentHalfEdge = vert.IncidentHalfEdge + highestHalfEdgeHandle;
                 vertDictHelper.Add(vert.Handle, vert);
             }
@@ -175,9 +172,7 @@ namespace Fusee.Jometri.Extrusion
             var faceDictHelper = new Dictionary<int, Face>();
             foreach (var f in second.DictFaces)
             {
-                var face = f.Value;
-
-                face.Handle = face.Handle + highestFaceHandle;
+                var face = new Face(f.Value.Handle + highestFaceHandle, f.Value);
 
                 if (face.OuterHalfEdge != default(int))
                 {
@@ -200,12 +195,10 @@ namespace Fusee.Jometri.Extrusion
             var heDictHelper = new Dictionary<int, HalfEdge>();
             foreach (var he in second.DictHalfEdges)
             {
-                var halfEdge = he.Value;
+                var halfEdge = new HalfEdge(he.Value.Handle+ highestHalfEdgeHandle, he.Value);
 
                 halfEdge.IncidentFace = halfEdge.IncidentFace + first.HighestFaceHandle;
                 halfEdge.OriginVertex = halfEdge.OriginVertex + first.HighestVertHandle;
-
-                halfEdge.Handle = halfEdge.Handle + highestHalfEdgeHandle;
 
                 halfEdge.NextHalfEdge = halfEdge.NextHalfEdge + highestHalfEdgeHandle;
                 halfEdge.PrevHalfEdge = halfEdge.PrevHalfEdge + highestHalfEdgeHandle;

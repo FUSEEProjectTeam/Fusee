@@ -49,7 +49,7 @@
     <Compile Include="BinarySearchTree.cs" />
     <Compile Include="DCEL\Components.cs" />
     <Compile Include="DCEL\AttributeInformation.cs" />
-    <Compile Include="Extrusion\Extrude.cs" />
+    <Compile Include="Manipulation\Extrude.cs" />
     <Compile Include="Triangulation\StatusEdge.cs" />
     <Compile Include="Triangulation\SweepLineStatus.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />

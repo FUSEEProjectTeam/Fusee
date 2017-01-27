@@ -52,12 +52,16 @@ namespace Fusee.Jometri
             var vecZ = System.Math.Round((decimal)newVert.z, 5);
 
             newVert = new float3((float)vecX, (float)vecY, (float)vecZ);
-            var backVert = changeOfBasisMat * newVert;
-
+            
             return newVert;
         }
 
 
+        /// <summary>
+        /// Sets the normal of the face in its FaceData.
+        /// </summary>
+        /// <param name="geometry">The geometry the face belongs to.</param>
+        /// <param name="face">The face in question.</param>
         public static void SetFaceNormal(this Geometry geometry, Face face)
         {
             var normal = CalculateFaceNormal(geometry, face);
@@ -73,7 +77,8 @@ namespace Fusee.Jometri
         /// <summary>
         /// Calculates a face normal from three vertices. The vertices have to be coplanar and part of the face.
         /// </summary>
-        /// <param name="geometry">The geometry to which the face belongs.</param>
+        /// <param name="geometry">The geometry the face belongs to.</param>
+        /// <param name="face">The face in question.</param>
         /// <returns></returns>
         private static float3 CalculateFaceNormal(Geometry geometry, Face face)
         {
@@ -101,6 +106,7 @@ namespace Fusee.Jometri
         /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to the xy plane!
         /// </summary>
         /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
+        /// <param name="face">The face to perform the test on.</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
         public static bool IsPointInPolygon(this Geometry geometry, Face face, Vertex v)
@@ -140,6 +146,7 @@ namespace Fusee.Jometri
         /// Vector one will be created from v1 and v2, vector two from v2 and v3.
         /// </summary>
         /// <param name="geom">The geometry the vertices belong to.</param>
+        /// <param name="face">The face the vertices belong to. Needed to correctly reduce the vertex positions to 2D.</param>
         /// <param name="v1">Vertex one</param>
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
@@ -169,6 +176,7 @@ namespace Fusee.Jometri
         /// Vector one will be created from v1 and v2, vector two from v2 and v3.
         /// </summary>
         /// <param name="geom">The geometry the vertices belong to.</param>
+        /// <param name="face">The face the vertices belong to. Needed to correctly reduce the vertex positions to 2D.</param>
         /// <param name="v1">Vertex one</param>
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
@@ -186,7 +194,7 @@ namespace Fusee.Jometri
             var dot = float3.Dot(firstVec, secondVec);
 
             var angle = (float)System.Math.Atan2(cross, dot);
-            var deg = M.RadiansToDegrees(angle);
+            
             return angle <= 0;
         }
 

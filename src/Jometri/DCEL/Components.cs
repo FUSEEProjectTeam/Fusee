@@ -13,7 +13,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// The vertex' reference.
         /// </summary>
-        public int Handle;
+        public readonly int Handle;
 
         /// <summary>
         /// The handle to the half edge with this vertex as origin.
@@ -28,10 +28,11 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new Vertex.
         /// </summary>
+        /// <param name="handle">The reference of the vertex.</param>
         /// <param name="pos">The coordinate of the vertex.</param>
-        public Vertex(float3 pos)
+        public Vertex(int handle, float3 pos)
         {
-            Handle = default(int);
+            Handle = handle;
             IncidentHalfEdge = default(int);
             VertData = new VertexData { Pos = pos };
         }
@@ -122,7 +123,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// The half edges' handle
         /// </summary>
-        public int Handle;
+        public readonly int Handle;
 
         internal int OriginVertex;
         internal int TwinHalfEdge;
@@ -147,6 +148,37 @@ namespace Fusee.Jometri.DCEL
             PrevHalfEdge = prevHalfEdge;
             IncidentFace = incidentFace;
             HalfEdgeData = new HalfEdgeData();
+        }
+
+        /// <summary>
+        /// Constructor for creating a new HalfEdge.
+        /// </summary>
+        /// <param name="handle">The reference of the half edge.</param>
+        public HalfEdge(int handle)
+        {
+            Handle = handle;
+            OriginVertex = 0;
+            TwinHalfEdge = 0;
+            NextHalfEdge = 0;
+            PrevHalfEdge = 0;
+            IncidentFace = 0;
+            HalfEdgeData = new HalfEdgeData();
+        }
+
+        /// <summary>
+        /// Constructor for creating a new HalfEdge from another one.
+        /// </summary>
+        /// <param name="handle">The reference of the half edge.</param>
+        /// <param name="halfEdge">The original HalfEdge.</param>
+        public HalfEdge(int handle, HalfEdge halfEdge)
+        {
+            Handle = handle;
+            OriginVertex = halfEdge.OriginVertex;
+            TwinHalfEdge = halfEdge.TwinHalfEdge;
+            NextHalfEdge = halfEdge.NextHalfEdge;
+            PrevHalfEdge = halfEdge.PrevHalfEdge;
+            IncidentFace = halfEdge.IncidentFace;
+            HalfEdgeData = halfEdge.HalfEdgeData;
         }
 
         #region  Overloading comparison operators
@@ -223,17 +255,26 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// Each face belonging to a 2D geometry contains:
     /// A handle to assign a abstract reference to it.
-    /// A handle to one of the half edges that belongs to the faces outer boundary.
+    /// A referance to one of the half edges that belongs to the faces outer boundary.
     /// A List that contains handles to one half edge for each hole in a face.
     /// Attribute information, e.g. the face nromal.
     /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent.
     /// </summary>
     public struct Face
     {
-        public int Handle;
+        /// <summary>
+        /// The reference of the face.
+        /// </summary>
+        public readonly int Handle;
 
+        /// <summary>
+        ///  A reference to one of the half edges that belongs to the faces outer boundary.
+        /// </summary>
         public int OuterHalfEdge;
 
+        /// <summary>
+        /// Attribute information, e.g. the face nromal.
+        /// </summary>
         public FaceData FaceData;
 
         internal List<int> InnerHalfEdges;
@@ -241,12 +282,37 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new Face.
         /// </summary>
-        public Face(int handle = 0, int outerHalfEdge = 0) : this()
+        public Face(int handle = 0, int outerHalfEdge = 0)
         {
             Handle = handle;
             OuterHalfEdge = outerHalfEdge;
             FaceData = new FaceData();
             InnerHalfEdges = new List<int>();
+        }
+
+        /// <summary>
+        /// Constructor for creating a new Face.
+        /// </summary>
+        /// <param name="handle">The reference of the face.</param>
+        public Face(int handle)
+        {
+            Handle = handle;
+            OuterHalfEdge = 0;
+            FaceData = new FaceData();
+            InnerHalfEdges = new List<int>();
+        }
+
+        /// <summary>
+        /// Constructor for creating a new Face from an other one.
+        /// </summary>
+        /// <param name="handle">The reference of the face.</param>
+        /// <param name="face">The original face.</param>
+        public Face(int handle, Face face)
+        {
+            Handle = handle;
+            OuterHalfEdge = face.OuterHalfEdge;
+            FaceData = face.FaceData;
+            InnerHalfEdges = new List<int>(face.InnerHalfEdges);
         }
 
         #region  Overloading comparison operators

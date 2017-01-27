@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
-using Fusee.Jometri.Extrusion;
 using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;

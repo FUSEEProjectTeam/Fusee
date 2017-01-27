@@ -31,32 +31,6 @@ namespace Fusee.Jometri.DCEL
         #region Members
         private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<Face, Dictionary<int, float3>>();
 
-        internal float3 Get2DVertPos(Face face, int vertHandle)
-        {
-            Dictionary<int, float3> verts;
-            float3 pos;
-            if (_vertPos2DCache.TryGetValue(face, out verts))
-            {
-                if (verts.TryGetValue(vertHandle, out pos))
-                    return pos;
-                
-                // it is not in the cache...
-                var vertex = GetVertexByHandle(vertHandle);
-                pos = vertex.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
-
-                verts[vertHandle] = pos;
-                return pos;
-            }
-
-            // it is not in the cache...
-            var vert = GetVertexByHandle(vertHandle);
-            
-            pos = vert.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
-
-            _vertPos2DCache[face] = new Dictionary<int, float3> { { vert.Handle, pos } };
-            return pos;
-        }
-
         /// <summary>
         /// Contains all vertices of the Geometry.
         /// </summary>
@@ -93,7 +67,7 @@ namespace Fusee.Jometri.DCEL
         /// Used in the initialisation process of a new Geometry.
         /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry
         /// </summary>
-        protected struct BoundaryEdge
+        internal struct BoundaryEdge
         {
             internal bool IsOriginOldVert;
             internal HalfEdge HalfEdge;
@@ -285,6 +259,7 @@ namespace Fusee.Jometri.DCEL
 
         /// <summary>
         /// This collection contains all handles to HalfEdges belonging to a closed loop.
+        /// Collection is made by following the initial half edges next half edges.
         /// </summary>
         /// <param name="heHandle">The reference to the HalfEdge with which the loop starts.</param>
         /// <returns></returns>
@@ -301,6 +276,12 @@ namespace Fusee.Jometri.DCEL
             } while (currentHandle != heHandle);
         }
 
+        /// <summary>
+        /// This collection contains all handles to HalfEdges belonging to a closed loop.
+        /// Calculation is made by following the initial half edges previous half edges.
+        /// </summary>
+        /// <param name="heHandle">The reference to the HalfEdge with which the loop starts.</param>
+        /// <returns></returns>
         public IEnumerable<HalfEdge> GetHalfEdgeLoopReverse(int heHandle)
         {
             var currentHandle = heHandle;
@@ -468,6 +449,32 @@ namespace Fusee.Jometri.DCEL
         {
             var key = face.Handle;
             DictFaces[key] = face;
+        }
+
+        internal float3 Get2DVertPos(Face face, int vertHandle)
+        {
+            Dictionary<int, float3> verts;
+            float3 pos;
+            if (_vertPos2DCache.TryGetValue(face, out verts))
+            {
+                if (verts.TryGetValue(vertHandle, out pos))
+                    return pos;
+
+                // it is not in the cache...
+                var vertex = GetVertexByHandle(vertHandle);
+                pos = vertex.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
+
+                verts[vertHandle] = pos;
+                return pos;
+            }
+
+            // it is not in the cache...
+            var vert = GetVertexByHandle(vertHandle);
+
+            pos = vert.VertData.Pos.Reduce2D(face.FaceData.FaceNormal);
+
+            _vertPos2DCache[face] = new Dictionary<int, float3> { { vert.Handle, pos } };
+            return pos;
         }
 
         #region ID creation for Vert-, Face- and HalfEdgeHandles
@@ -659,15 +666,13 @@ namespace Fusee.Jometri.DCEL
 
                 //Create Vertice and VertHandle
                 vertHandle = handle;
-                vert = new Vertex(pointCoord);
-                vert.Handle = vertHandle;
+                vert = new Vertex(vertHandle,pointCoord);
             }
             else
             {
                 //Create Vertices and VertHandle
                 vertHandle = handle;
-                vert = new Vertex(pointCoord);
-                vert.Handle = vertHandle;
+                vert = new Vertex(vertHandle, pointCoord);
             }
             isOldVertex = false;
             return vert;
@@ -931,21 +936,19 @@ namespace Fusee.Jometri.DCEL
             if (IsVertexAdjacentToVertex(p, q, pStartHe, qStartHe))
                 throw new ArgumentException("A diagonal can not be insertet beween adjacent Vertices!");
 
-            var newFromP = new HalfEdge();
-            var newFromQ = new HalfEdge();
+            var newFromP = new HalfEdge(CreateHalfEdgeHandleId());
+            var newFromQ = new HalfEdge(CreateHalfEdgeHandleId());
 
             newFromP.OriginVertex = p;
             newFromP.NextHalfEdge = qStartHe.Handle;
             newFromP.PrevHalfEdge = pStartHe.PrevHalfEdge;
             newFromP.IncidentFace = face.Handle;
-            newFromP.Handle = CreateHalfEdgeHandleId();
-
+            
             newFromQ.OriginVertex = q;
             newFromQ.NextHalfEdge = pStartHe.Handle;
             newFromQ.PrevHalfEdge = qStartHe.PrevHalfEdge;
             newFromQ.IncidentFace = face.Handle;
-            newFromQ.Handle = CreateHalfEdgeHandleId();
-
+            
             newFromP.TwinHalfEdge = newFromQ.Handle;
             newFromQ.TwinHalfEdge = newFromP.Handle;
 

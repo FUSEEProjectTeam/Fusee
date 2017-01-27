@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
-using Fusee.Math.Core;
 
 namespace Fusee.Jometri.Triangulation
 {
@@ -16,10 +15,12 @@ namespace Fusee.Jometri.Triangulation
         private static VertexType _vertType;
         private static SweepLineStatus _sweepLineStatus;
 
+        /// <summary>
+        /// After triangulation all faces of a geometry consist of three vertices and three half edges.
+        /// </summary>
+        /// <param name="geometry"></param>
         public static void Triangulate(this Geometry geometry)
         {
-            //TODO: Both, MakeMonotone and TriangulateMonotone need 2D coordinates instead of 3D. It is possibly more effective to call Reduce2D for the vertices of the whole face in those methods than in the sub methods
-
             _geometry = geometry;
 
             var originalFaces = new Dictionary<int, Face>(_geometry.DictFaces);
@@ -83,9 +84,6 @@ namespace Fusee.Jometri.Triangulation
                 {
                     var popped = vertStack.Pop();
 
-                    float3 v1;
-                    float3 v2;
-
                     Vertex next;
                     Vertex prev;
 
@@ -116,9 +114,6 @@ namespace Fusee.Jometri.Triangulation
                                 next = vertStack.Peek();
                                 prev = sortedVerts[i];
                             }
-
-                            v1 = next.VertData.Pos - popped.VertData.Pos;
-                            v2 = prev.VertData.Pos - popped.VertData.Pos;
                         }
 
                         _geometry.InsertDiagonal(current.Handle, popped.Handle);
