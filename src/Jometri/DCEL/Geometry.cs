@@ -113,7 +113,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Gets a vertex by its handle.
         /// </summary>
-        /// <param name="vHandle">The vertex' reference</param>
+        /// <param name="vHandle">The vertex's reference.</param>
         /// <returns></returns>
         public Vertex GetVertexByHandle(int vHandle)
         {
@@ -367,6 +367,22 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
+        public IEnumerable<Vertex> GetFaceOuterVertices(int fHandle)
+        {
+            //Outer boundaries
+            var fistHalfEdgeHandle = GetFaceByHandle(fHandle).OuterHalfEdge;
+            var halfEdgeOuter = GetHalfEdgeByHandle(fistHalfEdgeHandle);
+
+            do
+            {
+                var originVert = halfEdgeOuter.OriginVertex;
+                yield return GetVertexByHandle(originVert);
+                halfEdgeOuter = GetHalfEdgeByHandle(halfEdgeOuter.NextHalfEdge);
+
+            } while (halfEdgeOuter.Handle != fistHalfEdgeHandle);
+            
+        }
+
         /// <summary>
         /// This collection contains all handles to HalfEdges of a given face.
         /// </summary>
@@ -522,7 +538,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// 2D Geometry, stored in a DCEL (half edge data structure).
         /// </summary>
-        /// <param name="outlines">A collection of the geometrys' outlines, each containing the geometric information as a list of float3 in ccw order.</param>
+        /// <param name="outlines">A collection of the geometry's outlines, each containing the geometric information as a list of float3 in ccw order.</param>
         public Geometry(IEnumerable<PolyBoundary> outlines)
         {
             DictVertices = new Dictionary<int, Vertex>();
@@ -535,7 +551,7 @@ namespace Fusee.Jometri.DCEL
             foreach (var key in keys)
             {
                 if (key == 1) continue;
-                this.SetFaceNormal(DictFaces[key]);
+                this.SetFaceNormal(GetFaceOuterVertices(key).ToList() ,DictFaces[key]);
             }
         }
 

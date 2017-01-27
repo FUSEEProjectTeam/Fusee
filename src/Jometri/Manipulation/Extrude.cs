@@ -11,12 +11,12 @@ namespace Fusee.Jometri.Manipulation
     /// </summary>
     public static class Extrude
     {
-        //zOffset will be added to each vertex' z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back.
+        //zOffset will be added to each vertex's z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back.
         /// <summary>
         /// Extrudes a trinagulated 2D geometry.
         /// </summary>
         /// <param name="geometry">The geometry to be extruded.</param>
-        /// <param name="zOffset">zOffset will be added to each vertex' z coordinate in order to create the backface of the geometry.</param>
+        /// <param name="zOffset">zOffset will be added to each vertex's z coordinate in order to create the backface of the geometry.</param>
         /// <returns></returns>
         public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
         {
@@ -45,13 +45,6 @@ namespace Fusee.Jometri.Manipulation
             UpdateAllVertexZCoord(backface, zOffset);
 
             Join2DGeometries(geometry, backface);
-
-            foreach (var i in geometry.DictFaces)
-            {
-                if (i.Key == 1) continue;
-                var test = geometry.GetFaceHalfEdges(i.Key).ToList();
-                var test1 = geometry.GetFaceVertices(i.Key).ToList();
-            }
         }
 
         private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)
@@ -152,7 +145,7 @@ namespace Fusee.Jometri.Manipulation
 
                 foreach (var face in newFaces)
                 {
-                    geometry.SetFaceNormal(geometry.DictFaces[face.Handle]);
+                    geometry.SetFaceNormal(geometry.GetFaceOuterVertices(face.Handle).ToList(), geometry.DictFaces[face.Handle]);
                 }
             }
 
@@ -242,7 +235,7 @@ namespace Fusee.Jometri.Manipulation
             foreach (var face in second.DictFaces)
             {
                 first.DictFaces.Add(face.Key,face.Value);
-                first.SetFaceNormal(first.DictFaces[face.Key]);
+                first.SetFaceNormal(first.GetFaceOuterVertices(face.Key).ToList(), first.DictFaces[face.Key]);
             }
 
             first.SetHighestHandles();

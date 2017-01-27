@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
+using Fusee.Math.Core;
 
 namespace Fusee.Jometri.Triangulation
 {
@@ -27,7 +28,7 @@ namespace Fusee.Jometri.Triangulation
 
             foreach (var face in originalFaces)
             {
-                //If the face has no OuterHalfEdge it's unbounded and can be ignored.
+                //If the face has no OuterHalfEdge it is unbounded and can be ignored.
                 if (face.Value.OuterHalfEdge == default(int)) { continue; }
 
                 if (!IsMonotone(face.Value))
@@ -274,16 +275,9 @@ namespace Fusee.Jometri.Triangulation
         #region MakeMonotone
         private static void MakeMonotone(Face face)
         {
-            var vertices = new List<Vertex>();
-
-            foreach (var vert in _geometry.GetFaceVertices(face.Handle))
-            {
-                vertices.Add(vert);
-            }
-
+            var vertices = new List<Vertex>(_geometry.GetFaceVertices(face.Handle));
             var sortedVertices = GetSortedVertices(_geometry, face, vertices.ToList());
             var faceHalfEdges = _geometry.GetFaceHalfEdges(face.Handle).ToList();
-
             var newFaces = new List<Face>();
 
             _sweepLineStatus = new SweepLineStatus();
@@ -303,7 +297,7 @@ namespace Fusee.Jometri.Triangulation
                         HandleEndVertex(current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.SPLIT_VERTEX:
-                        HandleSplitVertex(face, current, newFaces);
+                        HandleSplitVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.MERGE_VERTEX:
                         HandleMergeVertex(current, faceHalfEdges, newFaces);
@@ -414,7 +408,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleSplitVertex(Face face, Vertex vert, ICollection<Face> newFaces)
+        private static void HandleSplitVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             _sweepLineStatus.UpdateNodes(vert);
             _sweepLineStatus.BalanceTree();
@@ -427,13 +421,19 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.FindNode(ej.IntersectionPointX).HelperVertexHandle = vert.Handle;
             _sweepLineStatus.FindNode(ej.IntersectionPointX).IsMergeVertex = false;
 
-            var he = _geometry.GetHalfEdgeByHandle(vert.IncidentHalfEdge);
+            var he = new HalfEdge();
+            foreach (var halfEdge in faceHalfEdges)
+            {
+                if (halfEdge.OriginVertex == vert.Handle)
+                    he = halfEdge;
+            }
+
             var origin = _geometry.GetVertexByHandle(he.OriginVertex);
             var targetH = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
             var target = _geometry.GetVertexByHandle(targetH);
 
             var ei = new StatusEdge(_geometry, face, origin, target, vert);
-            ei.HalfEdgeHandle = vert.IncidentHalfEdge;
+            ei.HalfEdgeHandle = he.Handle;
             ei.HelperVertexHandle = vert.Handle;
             ei.IsMergeVertex = false;
 
@@ -475,9 +475,9 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.FindNode(ej.IntersectionPointX).IsMergeVertex = true;
         }
 
-        private static void HandleRegularVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
+        private static void HandleRegularVertex(Face face, Vertex vert, IList<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
-            if (IsPolygonRightOfVert(vert))
+            if (IsPolygonRightOfVert(_geometry, face, faceHalfEdges,  vert))
             {
                 foreach (var heh in faceHalfEdges)
                 {
@@ -503,7 +503,7 @@ namespace Fusee.Jometri.Triangulation
                     var target = _geometry.GetVertexByHandle(targetH);
 
                     var ei = new StatusEdge(_geometry, face, origin, target, vert);
-                    ei.HalfEdgeHandle = vert.IncidentHalfEdge;
+                    ei.HalfEdgeHandle = he.Handle;
                     ei.HelperVertexHandle = vert.Handle;
                     ei.IsMergeVertex = false;
 
@@ -530,28 +530,41 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static bool IsPolygonRightOfVert(Vertex vert)
+        private static bool IsPolygonRightOfVert(Geometry geometry, Face face, IList<HalfEdge> faceHalfEdges,Vertex vert)
         {
-            var prevV = GetPrevVertex(vert);
-            var nextV = GetNextVertex(vert);
+            var prevV = GetPrevVertex(face,faceHalfEdges, vert);
+            var nextV = GetNextVertex(face,faceHalfEdges, vert);
 
-            return prevV.VertData.Pos.y > nextV.VertData.Pos.y;
+            var redPrevPos = geometry.Get2DVertPos(face, prevV.Handle);
+            var redNextPos = geometry.Get2DVertPos(face, nextV.Handle);
+
+
+            return redPrevPos.y > redNextPos.y;
         }
 
-        private static Vertex GetNextVertex(Vertex currentVert)
+        private static Vertex GetNextVertex(Face face,IEnumerable<HalfEdge> faceHalfEdges , Vertex currentVert)
         {
-            var currentHe = _geometry.GetHalfEdgeByHandle(currentVert.IncidentHalfEdge);
-            var nextHe = _geometry.GetHalfEdgeByHandle(currentHe.NextHalfEdge);
+            foreach (var he in faceHalfEdges)
+            {
+                if (he.OriginVertex != currentVert.Handle) continue;
 
-            return _geometry.GetVertexByHandle(nextHe.OriginVertex);
+                var nextHe = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge);
+                return _geometry.GetVertexByHandle(nextHe.OriginVertex);
+            }
+            throw new ArgumentException("Face " + face.Handle + " has no half edge with vertex " + currentVert.Handle + " as origin.");
         }
 
-        private static Vertex GetPrevVertex(Vertex currentVert)
+        private static Vertex GetPrevVertex(Face face, IEnumerable<HalfEdge> faceHalfEdges, Vertex currentVert)
         {
-            var currentHe = _geometry.GetHalfEdgeByHandle(currentVert.IncidentHalfEdge);
-            var prevHe = _geometry.GetHalfEdgeByHandle(currentHe.PrevHalfEdge);
+            foreach (var he in faceHalfEdges)
+            {
+                if (he.OriginVertex != currentVert.Handle) continue;
 
-            return _geometry.GetVertexByHandle(prevHe.OriginVertex);
+                var prevHe = _geometry.GetHalfEdgeByHandle(he.PrevHalfEdge);
+                return _geometry.GetVertexByHandle(prevHe.OriginVertex);
+            }
+            throw new ArgumentException("Face "+face.Handle+" has no half edge with vertex "+currentVert.Handle+" as origin.");
+
         }
 
         #endregion

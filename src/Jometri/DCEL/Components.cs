@@ -11,7 +11,7 @@ namespace Fusee.Jometri.DCEL
     public struct Vertex
     {
         /// <summary>
-        /// The vertex' reference.
+        /// The vertex's reference.
         /// </summary>
         public readonly int Handle;
 
@@ -40,7 +40,7 @@ namespace Fusee.Jometri.DCEL
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex' handle.
+        /// Overload for "smaller than" operator. Comparison based on the vertex's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -51,7 +51,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex' handle.
+        /// Overload for "smaller than" operator. Comparison based on the vertex's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -112,7 +112,7 @@ namespace Fusee.Jometri.DCEL
     /// Represents a half edge.
     /// Each half edge contains:
     /// A handle to assign a abstract reference to it.
-    /// A handle to the half edges' origin vertex.
+    /// A handle to the half edge's origin vertex.
     /// A handle to the next half edge.
     /// A handle to the previous half edge.
     /// A handle to the face it belongs to.
@@ -121,7 +121,7 @@ namespace Fusee.Jometri.DCEL
     public struct HalfEdge
     {
         /// <summary>
-        /// The half edges' handle
+        /// The half edge's handle
         /// </summary>
         public readonly int Handle;
 
@@ -184,7 +184,7 @@ namespace Fusee.Jometri.DCEL
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the HalfEdges' handle.
+        /// Overload for "smaller than" operator. Comparison based on the HalfEdge's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -195,7 +195,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the HalfEdges' handle
+        /// Overload for "smaller than" operator. Comparison based on the HalfEdge's handle
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -318,7 +318,7 @@ namespace Fusee.Jometri.DCEL
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle.
+        /// Overload for "smaller than" operator. Comparison based on the Face's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -329,7 +329,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the Faces' handle.
+        /// Overload for "smaller than" operator. Comparison based on the Face's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>

@@ -187,7 +187,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             for (var i = 0; i < textCurves.Count; i++)
             {
-                advanceComp = advanceComp + advance;
+                advanceComp = advanceComp + advance + 0.1f; // 0.1f offset to make sure letters do not have common vertices (example XY Lato).
                 kerningComp = kerningComp + kerning;
 
                 foreach (var part in textCurves[i].CurveParts)

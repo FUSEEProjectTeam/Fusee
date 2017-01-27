@@ -31,14 +31,26 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Points = new List<float3>
                 {
                     new float3(1, 0, 0),
-                    new float3(1, 1, 0),
-                    new float3(0, 1, 0),
+                    new float3(1, 1, 1),
+                    new float3(0, 1, 1),
                     new float3(0, 0, 0)
                 },
                 IsOuter = true
             };
 
-            
+            var outlineTestHole = new PolyBoundary //CW!!
+            {
+                Points = new List<float3>
+                {
+                    new float3(0.25f, 0.25f, 0.25f),
+                    new float3(0.25f, 0.75f, 0.75f),
+                    new float3(0.75f, 0.75f, 0.75f),
+                    new float3(0.75f, 0.25f, 0.25f)
+                },
+                IsOuter = false
+            };
+
+
             ////////////////////// Mesh creation ///////////////////////////////
             var outlineOne = new PolyBoundary //CCW!!
             {
@@ -62,7 +74,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                     new float3(-0.125f, 0.375f, 0)
 
                 },
-                IsOuter = false
+                IsOuter = true
             };
 
             var outlineTwo = new PolyBoundary
@@ -90,7 +102,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             };
 
             var geomOutlines = new List<PolyBoundary> { outlineOne,outlineOneHole};
-            //var geomOutlines = new List<PolyBoundary> {outlineTest };
+            //var geomOutlines = new List<PolyBoundary> {outlineTest, outlineTestHole };
             var geom = new Geometry(geomOutlines); //2D
             geom.Extrude2DPolygon(1);
             geom.Triangulate();

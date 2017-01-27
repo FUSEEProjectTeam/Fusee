@@ -25,11 +25,11 @@ namespace Fusee.Jometri
             if (normal == float3.UnitZ)
             {
                 var rotMat = float4x4.CreateRotationY(M.Pi);
-                return vertPos*rotMat;
+                return vertPos * rotMat;
             }
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
-            
+
             //float3.Cross ==  float3.Zero if the two vectors are parallel to each other - if the normal is parallel to the z  axis the z component of the vertPos must be 0 already
             if (v2 == float3.Zero)
                 return vertPos;
@@ -51,7 +51,7 @@ namespace Fusee.Jometri
             transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;
-            
+
 
             //Round to get rid of potential exponent representation
             var vecX = System.Math.Round((decimal)newVert.x, 5);
@@ -59,7 +59,7 @@ namespace Fusee.Jometri
             var vecZ = System.Math.Round((decimal)newVert.z, 5);
 
             newVert = new float3((float)vecX, (float)vecY, (float)vecZ);
-            
+
             return newVert;
         }
 
@@ -68,10 +68,11 @@ namespace Fusee.Jometri
         /// Sets the normal of the face in its FaceData.
         /// </summary>
         /// <param name="geometry">The geometry the face belongs to.</param>
+        /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
         /// <param name="face">The face in question.</param>
-        public static void SetFaceNormal(this Geometry geometry, Face face)
+        public static void SetFaceNormal(this Geometry geometry, IList<Vertex> faceOuterVertices, Face face)
         {
-            var normal = CalculateFaceNormal(geometry, face);
+            var normal = CalculateFaceNormal(faceOuterVertices);
 
             var cur = geometry.DictFaces[face.Handle];
             var faceData = face.FaceData;
@@ -81,29 +82,28 @@ namespace Fusee.Jometri
 
         }
 
+        //Newell's Method - see Graphics Gems III, p. 232.
         /// <summary>
         /// Calculates a face normal from three vertices. The vertices have to be coplanar and part of the face.
         /// </summary>
-        /// <param name="geometry">The geometry the face belongs to.</param>
-        /// <param name="face">The face in question.</param>
+        /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
         /// <returns></returns>
-        private static float3 CalculateFaceNormal(Geometry geometry, Face face)
+        private static float3 CalculateFaceNormal(IList<Vertex> faceOuterVertices)
         {
-            var outerHalfEdge = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
-            var nextHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.NextHalfEdge);
-            var prevHalfEdge = geometry.GetHalfEdgeByHandle(outerHalfEdge.PrevHalfEdge);
+            var normal = new float3();
+            for (var i = 0; i < faceOuterVertices.Count; i++)
+            {
+                var vCur = faceOuterVertices[i].VertData.Pos;
+                var vNext = faceOuterVertices[(i + 1) % faceOuterVertices.Count].VertData.Pos;
 
-            var firstP = geometry.GetVertexByHandle(prevHalfEdge.OriginVertex).VertData.Pos;
-            var secP = geometry.GetVertexByHandle(outerHalfEdge.OriginVertex).VertData.Pos;
-            var thirdP = geometry.GetVertexByHandle(nextHalfEdge.OriginVertex).VertData.Pos;
+                normal.x += (vCur.y - vNext.y) * (vCur.z + vNext.z);
+                normal.y += (vCur.z - vNext.z) * (vCur.x + vNext.x);
+                normal.z += (vCur.x - vNext.x) * (vCur.y + vNext.y);
+            }
+            normal = normal * -1;
+            normal.Normalize();
 
-            var a = secP - firstP;
-            var b = thirdP - secP;
-
-            var cross = float3.Cross(b, a);
-            cross.Normalize();
-
-            return cross;
+            return normal;
 
         }
 
@@ -158,7 +158,7 @@ namespace Fusee.Jometri
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
         /// <returns></returns>
-        public static bool IsAngleGreaterPi(this Geometry geom,Face face, Vertex v1, Vertex v2, Vertex v3)
+        public static bool IsAngleGreaterPi(this Geometry geom, Face face, Vertex v1, Vertex v2, Vertex v3)
         {
             var v1Pos = geom.Get2DVertPos(face, v1.Handle);
             var v2Pos = geom.Get2DVertPos(face, v2.Handle);
@@ -201,7 +201,7 @@ namespace Fusee.Jometri
             var dot = float3.Dot(firstVec, secondVec);
 
             var angle = (float)System.Math.Atan2(cross, dot);
-            
+
             return angle <= 0;
         }
 
@@ -215,17 +215,12 @@ namespace Fusee.Jometri
         /// <returns></returns>
         public static bool IsCounterClockwise(this IList<float3> source)
         {
-            var vecA = source[1] - source[0];
-            var vecB = source[2] - source[1];
-
-            var normal = float3.Cross(vecB, vecA);
-
             var sum = 0f;
 
             for (var i = 0; i < source.Count; i++)
             {
-                var current = source[i].Reduce2D(normal); //new float2(source[i].x, source[i].y);
-                var next = source[(i + 1) % source.Count].Reduce2D(normal); //new float2(source[(i + 1) % source.Count].x, source[(i + 1) % source.Count].y);
+                var current = source[i]; //new float2(source[i].x, source[i].y);
+                var next = source[(i + 1) % source.Count]; //new float2(source[(i + 1) % source.Count].x, source[(i + 1) % source.Count].y);
 
                 sum += (next.x - current.x) * (next.y + current.y);
             }
