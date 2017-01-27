@@ -40,11 +40,18 @@ namespace Fusee.Jometri.Manipulation
         {
             //Clone frontface
             var backface = geometry.CloneGeometry();
-
+            
             //Add z value to each vertex coord
             UpdateAllVertexZCoord(backface, zOffset);
 
             Join2DGeometries(geometry, backface);
+
+            foreach (var i in geometry.DictFaces)
+            {
+                if (i.Key == 1) continue;
+                var test = geometry.GetFaceHalfEdges(i.Key).ToList();
+                var test1 = geometry.GetFaceVertices(i.Key).ToList();
+            }
         }
 
         private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)

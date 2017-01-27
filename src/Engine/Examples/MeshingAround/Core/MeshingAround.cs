@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
+using Fusee.Jometri.Manipulation;
 using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -29,10 +30,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Points = new List<float3>
                 {
-                    new float3(-0.5f, 0, 1),
-                    new float3(0.5f, 0, 1),
-                    new float3(0.5f, 1, 0),
-                    new float3(-0.5f, 1, 0)
+                    new float3(1, 0, 0),
+                    new float3(1, 1, 0),
+                    new float3(0, 1, 0),
+                    new float3(0, 0, 0)
                 },
                 IsOuter = true
             };
@@ -45,7 +46,6 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 {
                     new float3(0, 0, 0),
                     new float3(0, 0.5f, 0),
-                    new float3(-0.25f,0.75f,0),
                     new float3(-0.5f, 0.5f, 0),
                     new float3(-0.5f, 0, 0)
                 },
@@ -89,10 +89,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var geomOutlines = new List<PolyBoundary> { outlineOne, outlineOneHole};
+            var geomOutlines = new List<PolyBoundary> { outlineOne,outlineOneHole};
             //var geomOutlines = new List<PolyBoundary> {outlineTest };
             var geom = new Geometry(geomOutlines); //2D
-            //geom.Extrude2DPolygon(1);
+            geom.Extrude2DPolygon(1);
             geom.Triangulate();
             var mesh = new JometriMesh(geom);
 
