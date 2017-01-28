@@ -280,6 +280,12 @@ namespace Fusee.Jometri.Triangulation
             var faceHalfEdges = _geometry.GetFaceHalfEdges(face.Handle).ToList();
             var newFaces = new List<Face>();
 
+            var test = new List<float3>();
+            foreach (var i in _geometry.GetFaceVertices(face.Handle))
+            {
+                test.Add(i.VertData.Pos);
+            }
+
             _sweepLineStatus = new SweepLineStatus();
 
             while (sortedVertices.Count != 0)
@@ -300,7 +306,7 @@ namespace Fusee.Jometri.Triangulation
                         HandleSplitVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.MERGE_VERTEX:
-                        HandleMergeVertex(current, faceHalfEdges, newFaces);
+                        HandleMergeVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.REGULAR_VERTEX:
                         HandleRegularVertex(face, current, faceHalfEdges, newFaces);
@@ -413,7 +419,8 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.UpdateNodes(vert);
             _sweepLineStatus.BalanceTree();
 
-            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
+            var redXPos = _geometry.Get2DVertPos(face, vert.Handle).x;
+            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(redXPos);
 
             _geometry.InsertDiagonal(vert.Handle, ej.HelperVertexHandle);
             newFaces.Add(_geometry.DictFaces[_geometry.DictFaces.Keys.Max()]);
@@ -440,7 +447,7 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.InsertNode(ei.IntersectionPointX, ei);
         }
 
-        private static void HandleMergeVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
+        private static void HandleMergeVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             var he = new HalfEdge();
             foreach (var heh in faceHalfEdges)
@@ -463,7 +470,8 @@ namespace Fusee.Jometri.Triangulation
             _sweepLineStatus.DeleteNode(eMinOne.IntersectionPointX);
             _sweepLineStatus.BalanceTree();
 
-            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
+            var redXPos = _geometry.Get2DVertPos(face, vert.Handle).x;
+            var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(redXPos);
 
             if (ej.IsMergeVertex)
             {
@@ -517,7 +525,8 @@ namespace Fusee.Jometri.Triangulation
                 _sweepLineStatus.UpdateNodes(vert);
                 _sweepLineStatus.BalanceTree();
 
-                var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(vert.VertData.Pos.x);
+                var redXPos = _geometry.Get2DVertPos(face, vert.Handle).x;
+                var ej = _sweepLineStatus.FindLargestSmallerThanInBalanced(redXPos);
 
                 if (ej.IsMergeVertex)
                 {
