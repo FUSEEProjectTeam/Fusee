@@ -928,6 +928,7 @@ namespace Fusee.Jometri.DCEL
             foreach (var heP in heStartingAtP)
             {
                 var faceHandleP = heP.IncidentFace;
+                if (GetFaceByHandle(faceHandleP).OuterHalfEdge == default(int)) continue;//If heP is unbounded we can not insert a half edge
 
                 foreach (var heQ in heStaringAtQ)
                 {
@@ -937,7 +938,7 @@ namespace Fusee.Jometri.DCEL
 
                     var commonFace = GetFaceByHandle(faceHandleP);
 
-                    if (commonFace.OuterHalfEdge == default(int)) break;
+                    if (commonFace.OuterHalfEdge == default(int)) continue; //If commonFace is unbounded we can not insert a half edge
 
                     face = GetFaceByHandle(faceHandleP);
                     pStartHe = heP;
@@ -1018,8 +1019,6 @@ namespace Fusee.Jometri.DCEL
                 faces[i] = currentFace;
                 DictFaces[faces[i].Handle] = faces[i];
             }
-
-            
         }
 
         private Dictionary<int, List<HalfEdge>> GetHoles(Face face)

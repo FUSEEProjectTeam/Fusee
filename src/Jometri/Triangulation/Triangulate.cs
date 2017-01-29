@@ -281,9 +281,11 @@ namespace Fusee.Jometri.Triangulation
             var newFaces = new List<Face>();
 
             var test = new List<float3>();
+            var testInd = new List<int>();
             foreach (var i in _geometry.GetFaceVertices(face.Handle))
             {
                 test.Add(i.VertData.Pos);
+                testInd.Add(i.Handle);
             }
 
             _sweepLineStatus = new SweepLineStatus();
@@ -300,7 +302,7 @@ namespace Fusee.Jometri.Triangulation
                         HandleStartVertex(face, current, faceHalfEdges);
                         break;
                     case VertexType.END_VERTEX:
-                        HandleEndVertex(current, faceHalfEdges, newFaces);
+                        HandleEndVertex(face, current, faceHalfEdges, newFaces);
                         break;
                     case VertexType.SPLIT_VERTEX:
                         HandleSplitVertex(face, current, faceHalfEdges, newFaces);
@@ -391,7 +393,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
-        private static void HandleEndVertex(Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
+        private static void HandleEndVertex(Face face, Vertex vert, IEnumerable<HalfEdge> faceHalfEdges, ICollection<Face> newFaces)
         {
             foreach (var heh in faceHalfEdges)
             {
@@ -431,8 +433,9 @@ namespace Fusee.Jometri.Triangulation
             var he = new HalfEdge();
             foreach (var halfEdge in faceHalfEdges)
             {
-                if (halfEdge.OriginVertex == vert.Handle)
-                    he = halfEdge;
+                if (halfEdge.OriginVertex != vert.Handle) continue;
+                he = halfEdge;
+                break;
             }
 
             var origin = _geometry.GetVertexByHandle(he.OriginVertex);
@@ -487,13 +490,15 @@ namespace Fusee.Jometri.Triangulation
         {
             if (IsPolygonRightOfVert(_geometry, face, faceHalfEdges,  vert))
             {
-                foreach (var heh in faceHalfEdges)
+                for (int i = 0; i < faceHalfEdges.Count; i++)
                 {
+                    var heh = faceHalfEdges[i];
                     var he = heh;
 
                     if (he.OriginVertex != vert.Handle) continue;
 
-                    _sweepLineStatus.UpdateNodes(vert);
+                    _sweepLineStatus.UpdateNodes(vert); //TODO: Nötig? Eig nur bei ej da die keys neu gesetzt werden
+
 
                     var eMinOne = _sweepLineStatus.FindStatusEdgeWithHandle(he.PrevHalfEdge);
 
@@ -546,8 +551,7 @@ namespace Fusee.Jometri.Triangulation
 
             var redPrevPos = geometry.Get2DVertPos(face, prevV.Handle);
             var redNextPos = geometry.Get2DVertPos(face, nextV.Handle);
-
-
+            
             return redPrevPos.y > redNextPos.y;
         }
 

@@ -21,7 +21,7 @@ namespace Fusee.Jometri.Manipulation
         public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
         {
             CreateBackface(geometry, zOffset);
-            CreateSidefaces(geometry);
+            //CreateSidefaces(geometry);
 
             var geom3D = new Geometry
             {
@@ -230,6 +230,22 @@ namespace Fusee.Jometri.Manipulation
             var secUnbounded = second.DictFaces[second.DictFaces.Keys.Min()];
             firstUnbounded.InnerHalfEdges.AddRange(secUnbounded.InnerHalfEdges);
             second.DictFaces.Remove(secUnbounded.Handle);
+
+            var secUnboundedHalfEdges = new List<HalfEdge>();
+            foreach (var he in first.GetAllHalfEdges())
+            {
+                if(he.IncidentFace == secUnbounded.Handle)
+                    secUnboundedHalfEdges.Add(he);
+            }
+
+            //Replace incident face of half edges with second unbounded face with first unbounded face
+            foreach (var he in secUnboundedHalfEdges)
+            {
+                var halfEdge = he;
+                halfEdge.IncidentFace = firstUnbounded.Handle;
+                first.DictHalfEdges.Remove(halfEdge.Handle);
+                first.DictHalfEdges.Add(halfEdge.Handle, halfEdge);
+            }
 
             //Add faces to first and recalculate face normals (because of changed winding).
             foreach (var face in second.DictFaces)
