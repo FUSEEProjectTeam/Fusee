@@ -31,15 +31,15 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "O";
-            _threeDFontHelper = new ThreeDFontHelper(_text,gnuSerif);
+            _text = "Hello World";
+            _threeDFontHelper = new ThreeDFontHelper(_text,fontLato);
 
             var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
-            var geom = new Jometri.DCEL.Geometry2D(outlines); //Geometry
-            var extrusion = geom.Extrude2DPolygon(2000); //Extrusion
-            extrusion.Triangulate();
+            var geom = new Jometri.DCEL.Geometry(outlines);
+            geom.Extrude2DPolygon(2000);
+            geom.Triangulate();
 
-            _textMesh = new JometriMesh(extrusion);
+            _textMesh = new JometriMesh(geom);
             
             var parentNode = new SceneNodeContainer
             {

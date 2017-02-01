@@ -8,7 +8,7 @@ namespace Fusee.Jometri.DCEL
      /// <summary>
      /// Abstract class for creating geometry, stored in a DCEL (doubly connected (half) edge list).
      /// </summary>
-     public abstract class Geometry
+     public class Geometry
     {
         #region Members
         private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<Face, Dictionary<int, float3>>();
@@ -44,6 +44,58 @@ namespace Fusee.Jometri.DCEL
         protected internal int HighestFaceHandle { get; set; }
 
         #endregion
+
+        #region Constructors
+        /// <summary>
+        /// Creates an empty geometry, that can be filled by the user using InsertFace, InsertHalfEdge and InsertVertex methodes
+        /// </summary>
+        internal Geometry()
+        {
+            DictVertices = new Dictionary<int, Vertex>();
+            DictHalfEdges = new Dictionary<int, HalfEdge>();
+            DictFaces = new Dictionary<int, Face>();
+        }
+
+        /// <summary>
+        /// 2D Geometry, stored in a DCEL (half edge data structure).
+        /// </summary>
+        /// <param name="outlines">A collection of the geometry's outlines, each containing the geometric information as a list of float3 in ccw order.</param>
+        public Geometry(IEnumerable<PolyBoundary> outlines)
+        {
+            DictVertices = new Dictionary<int, Vertex>();
+            DictHalfEdges = new Dictionary<int, HalfEdge>();
+            DictFaces = new Dictionary<int, Face>();
+
+            this.CreateHalfEdgesForGeometry(outlines);
+
+            var keys = new List<int>(DictFaces.Keys);
+            foreach (var key in keys)
+            {
+                if (key == 1) continue;
+                this.SetFaceNormal(GetFaceOuterVertices(key).ToList(), DictFaces[key]);
+            }
+        }
+        #endregion
+
+        internal Geometry CloneGeometry()
+        {
+            var clone = new Geometry
+            {
+                DictVertices = new Dictionary<int, Vertex>(DictVertices),
+                DictHalfEdges = new Dictionary<int, HalfEdge>(DictHalfEdges),
+                DictFaces = new Dictionary<int, Face>()
+            };
+
+            foreach (var f in DictFaces)
+            {
+                var oldFace = f.Value;
+                var face = new Face(oldFace.Handle, oldFace.OuterHalfEdge);
+                face.InnerHalfEdges.AddRange(oldFace.InnerHalfEdges);
+                clone.DictFaces.Add(face.Handle, face);
+            }
+
+            return clone;
+        }
 
         internal float3 Get2DVertPos(Face face, int vertHandle)
         {

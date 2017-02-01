@@ -26,8 +26,12 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// 2D geometry, stored in a half edge data structure (doubly connected edge list) and made from polygon boundaries.
     /// </summary>
-    public class Geometry2D : Geometry
+    public static class InitializeGeometryHelper
     {
+        private static Geometry _geometry;
+
+        #region geometry initialisation from PolyBoundary
+
         /// <summary>
         /// Used in the initialisation process of a new Geometry.
         /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry
@@ -39,78 +43,27 @@ namespace Fusee.Jometri.DCEL
             internal HalfEdge TwinHalfEdge;
         }
 
-        /// <summary>
-        /// Creates an empty geometry, that can be filled by the user using InsertFace, InsertHalfEdge and InsertVertex methodes
-        /// </summary>
-        internal Geometry2D()
+        internal static void CreateHalfEdgesForGeometry(this Geometry geometry, IEnumerable<PolyBoundary> outlines)
         {
-            DictVertices = new Dictionary<int, Vertex>();
-            DictHalfEdges = new Dictionary<int, HalfEdge>();
-            DictFaces = new Dictionary<int, Face>();
-        }
+            _geometry = geometry;
+            var unboundedFace = new Face(geometry.DictHalfEdges.Count + 1);
 
-        /// <summary>
-        /// 2D Geometry, stored in a DCEL (half edge data structure).
-        /// </summary>
-        /// <param name="outlines">A collection of the geometry's outlines, each containing the geometric information as a list of float3 in ccw order.</param>
-        public Geometry2D(IEnumerable<PolyBoundary> outlines)
-        {
-            DictVertices = new Dictionary<int, Vertex>();
-            DictHalfEdges = new Dictionary<int, HalfEdge>();
-            DictFaces = new Dictionary<int, Face>();
-
-            CreateHalfEdgesForGeometry(outlines);
-
-            var keys = new List<int>(DictFaces.Keys);
-            foreach (var key in keys)
-            {
-                if (key == 1) continue;
-                this.SetFaceNormal(GetFaceOuterVertices(key).ToList(), DictFaces[key]);
-            }
-        }
-
-        internal Geometry2D CloneGeometry()
-        {
-            var clone = new Geometry2D
-            {
-                DictVertices = new Dictionary<int, Vertex>(DictVertices),
-                DictHalfEdges = new Dictionary<int, HalfEdge>(DictHalfEdges),
-                DictFaces = new Dictionary<int, Face>()
-            };
-
-            foreach (var f in DictFaces)
-            {
-                var oldFace = f.Value;
-                var face = new Face(oldFace.Handle, oldFace.OuterHalfEdge);
-                face.InnerHalfEdges.AddRange(oldFace.InnerHalfEdges);
-                clone.DictFaces.Add(face.Handle, face);
-            }
-
-            return clone;
-        }
-
-        #region 2D geometry initialisation
-
-        private void CreateHalfEdgesForGeometry(IEnumerable<PolyBoundary> outlines)
-        {
-            var unboundedFace = new Face(DictHalfEdges.Count + 1);
-
-            DictFaces.Add(unboundedFace.Handle, unboundedFace);
+            geometry.DictFaces.Add(unboundedFace.Handle, unboundedFace);
 
             foreach (var o in outlines)
             {
                 var boundaryHalfEdges = CreateHalfEdgesForBoundary(o);
                 foreach (var be in boundaryHalfEdges)
                 {
-                    DictHalfEdges.Add(be.HalfEdge.Handle, be.HalfEdge);
-                    DictHalfEdges.Add(be.TwinHalfEdge.Handle, be.TwinHalfEdge);
+                    geometry.DictHalfEdges.Add(be.HalfEdge.Handle, be.HalfEdge);
+                    geometry.DictHalfEdges.Add(be.TwinHalfEdge.Handle, be.TwinHalfEdge);
                 }
             }
 
-            SetHighestHandles();
+            geometry.SetHighestHandles();
         }
 
-        private IEnumerable<BoundaryEdge> CreateHalfEdgesForBoundary(PolyBoundary outline)
+        private static IEnumerable<BoundaryEdge> CreateHalfEdgesForBoundary(PolyBoundary outline)
         {
             var outlineVerts = OutlineVertices(outline);
             var boundaryEdges = BoundaryEdges(outlineVerts, outline);
@@ -130,27 +83,27 @@ namespace Fusee.Jometri.DCEL
                     continue; //Check the target vert to identify the existing half edge
 
                 //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge - replace
-                var face = GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
+                var face = _geometry.GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
                 if (face.OuterHalfEdge == bEdge.HalfEdge.Handle)
                 {
                     face.OuterHalfEdge = existingHeHandle;
-                    ReplaceFace(face);
+                    _geometry.ReplaceFace(face);
                 }
 
                 //If the existing half edge is one of the unbounded faces inner half edges - replace
-                var unboundedFace = DictFaces[1];
+                var unboundedFace = _geometry.DictFaces[1];
                 for (var k = 0; k < unboundedFace.InnerHalfEdges.Count; k++)
                 {
                     var heHandle = unboundedFace.InnerHalfEdges[k];
                     if (heHandle != existingHeHandle) continue;
-                    var nextHe = GetHalfEdgeByHandle(heHandle).NextHalfEdge;
+                    var nextHe = _geometry.GetHalfEdgeByHandle(heHandle).NextHalfEdge;
 
                     unboundedFace.InnerHalfEdges[k] = nextHe;
-                    DictFaces[1] = unboundedFace;
+                    _geometry.DictFaces[1] = unboundedFace;
                     break;
                 }
 
-                var existingHe = GetHalfEdgeByHandle(existingHeHandle);
+                var existingHe = _geometry.GetHalfEdgeByHandle(existingHeHandle);
 
                 existingHe.NextHalfEdge = bEdge.HalfEdge.NextHalfEdge;
                 existingHe.PrevHalfEdge = bEdge.HalfEdge.PrevHalfEdge;
@@ -167,26 +120,26 @@ namespace Fusee.Jometri.DCEL
 
             foreach (var he in halfEdgesToUpdate)
             {
-                ReplaceHalfEdge(he);
+                _geometry.ReplaceHalfEdge(he);
             }
             return boundaryEdges;
         }
 
-        private int AddFace(int firstHalfEdge, out Face face)
+        private static int AddFace(int firstHalfEdge, out Face face)
         {
-            face = new Face(DictFaces.Count + 1, firstHalfEdge);
+            face = new Face(_geometry.DictFaces.Count + 1, firstHalfEdge);
             return face.Handle;
         }
 
-        private Vertex CreateOrFindVertex(float3 pointCoord, out bool isOldVertex, int handle)
+        private static Vertex CreateOrFindVertex(float3 pointCoord, out bool isOldVertex, int handle)
         {
             int vertHandle;
             Vertex vert;
 
             //Check if a Vertex already exists and assign it to the HalfEdge instead of createing a new
-            if (DictVertices.Count != 0)
+            if (_geometry.DictVertices.Count != 0)
             {
-                foreach (var v in GetAllVertices())
+                foreach (var v in _geometry.GetAllVertices())
                 {
                     if (!pointCoord.Equals(v.VertData.Pos)) continue;
                     isOldVertex = true;
@@ -207,13 +160,13 @@ namespace Fusee.Jometri.DCEL
             return vert;
         }
 
-        private List<KeyValuePair<Vertex, bool>> OutlineVertices(PolyBoundary polyBoundary)
+        private static List<KeyValuePair<Vertex, bool>> OutlineVertices(PolyBoundary polyBoundary)
         {
             var outlineVerts = new List<KeyValuePair<Vertex, bool>>();
 
             var handle = 0;
-            if (DictVertices.Count != 0)
-                handle = DictVertices.Count;
+            if (_geometry.DictVertices.Count != 0)
+                handle = _geometry.DictVertices.Count;
 
             foreach (var coord in polyBoundary.Points)
             {
@@ -225,15 +178,15 @@ namespace Fusee.Jometri.DCEL
             return outlineVerts;
         }
 
-        private List<BoundaryEdge> BoundaryEdges(IList<KeyValuePair<Vertex, bool>> outlineVerts,
+        private static List<BoundaryEdge> BoundaryEdges(IList<KeyValuePair<Vertex, bool>> outlineVerts,
             PolyBoundary polyBoundary)
         {
             var faceHandle = new int();
             var boundaryEdges = new List<BoundaryEdge>();
 
             var halfEdgeHandle = 0;
-            if (DictHalfEdges.Count != 0)
-                halfEdgeHandle = DictHalfEdges.Count;
+            if (_geometry.DictHalfEdges.Count != 0)
+                halfEdgeHandle = _geometry.DictHalfEdges.Count;
 
             for (var j = 0; j < outlineVerts.Count; j++)
             {
@@ -245,7 +198,7 @@ namespace Fusee.Jometri.DCEL
                     //Only necessary for new Vertices
                     var vert = currentVert.Key;
                     vert.IncidentHalfEdge = halfEdgeHandle;
-                    DictVertices.Add(vert.Handle, vert);
+                    _geometry.DictVertices.Add(vert.Handle, vert);
                 }
 
                 var halfEdge = new HalfEdge(halfEdgeHandle, currentVert.Key.Handle);
@@ -266,29 +219,29 @@ namespace Fusee.Jometri.DCEL
                     {
                         Face face;
                         faceHandle = AddFace(halfEdge.Handle, out face);
-                        DictFaces.Add(face.Handle, face);
+                        _geometry.DictFaces.Add(face.Handle, face);
                     }
                 }
                 else
                 {
                     if (j == 0)
                     {
-                        var lastFace = DictFaces[DictFaces.Keys.Max()];
+                        var lastFace = _geometry.DictFaces[_geometry.DictFaces.Keys.Max()];
                         lastFace.InnerHalfEdges.Add(halfEdge.Handle);
                     }
-                    faceHandle = DictFaces.LastItem().Value.Handle;
+                    faceHandle = _geometry.DictFaces.LastItem().Value.Handle;
                 }
 
                 halfEdge.IncidentFace = faceHandle;
 
                 if (!outlineVerts[j].Value)
                 {
-                    var unboundFace = DictFaces[1];
+                    var unboundFace = _geometry.DictFaces[1];
 
                     if (j == 0)
                     {
                         unboundFace.InnerHalfEdges.Add(twinHalfEdge.Handle);
-                        DictFaces[1] = unboundFace;
+                        _geometry.DictFaces[1] = unboundFace;
                     }
                 }
 
@@ -333,12 +286,12 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        private void SetPrevAndNextToExistingHalfEdge(BoundaryEdge bEdge, int existingHeHandle,
+        private static void SetPrevAndNextToExistingHalfEdge(BoundaryEdge bEdge, int existingHeHandle,
             IList<BoundaryEdge> boundaryEdges, ICollection<HalfEdge> halfEdgesToUpdate)
         {
-            var existingHe = GetHalfEdgeByHandle(existingHeHandle);
-            var existingHeNext = GetHalfEdgeByHandle(existingHe.NextHalfEdge);
-            var existingHePrev = GetHalfEdgeByHandle(existingHe.PrevHalfEdge);
+            var existingHe = _geometry.GetHalfEdgeByHandle(existingHeHandle);
+            var existingHeNext = _geometry.GetHalfEdgeByHandle(existingHe.NextHalfEdge);
+            var existingHePrev = _geometry.GetHalfEdgeByHandle(existingHe.PrevHalfEdge);
 
             existingHe.NextHalfEdge = bEdge.HalfEdge.NextHalfEdge;
             existingHe.PrevHalfEdge = bEdge.HalfEdge.PrevHalfEdge;
@@ -390,7 +343,7 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        private bool IsEdgeExisting(HalfEdge halfEdge, IEnumerable<BoundaryEdge> boundaryEdges, out int existingHeHandle)
+        private static bool IsEdgeExisting(HalfEdge halfEdge, IEnumerable<BoundaryEdge> boundaryEdges, out int existingHeHandle)
         {
             existingHeHandle = new int();
 
@@ -405,12 +358,12 @@ namespace Fusee.Jometri.DCEL
             if (newHeTargetVert == default(int))
                 throw new ArgumentException("target vert not found");
 
-            var heStartingAtOldV = GetVertexStartingHalfEdges(halfEdge.OriginVertex).ToList();
+            var heStartingAtOldV = _geometry.GetVertexStartingHalfEdges(halfEdge.OriginVertex).ToList();
 
             foreach (var heHandle in heStartingAtOldV)
             {
                 var he = heHandle;
-                var oldHeTargetVert = GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
+                var oldHeTargetVert = _geometry.GetHalfEdgeByHandle(he.NextHalfEdge).OriginVertex;
 
                 if (oldHeTargetVert != newHeTargetVert) continue;
                 existingHeHandle = heHandle.Handle;
@@ -422,3 +375,4 @@ namespace Fusee.Jometri.DCEL
         #endregion
     }
 }
+
