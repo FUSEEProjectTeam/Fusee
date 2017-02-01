@@ -63,8 +63,6 @@ namespace Fusee.Engine.Core
                 vertices[i] = verts[i];
                 triangles[i] = (ushort)i;
             }
-
-
         }
     }
 }

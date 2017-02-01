@@ -22,11 +22,11 @@ namespace Fusee.Jometri
             //Set of orthonormal vectors
             normal.Normalize(); //new z axis
 
-            if (normal == float3.UnitZ)
+            /*if (normal == float3.UnitZ)
             {
                 var rotMat = float4x4.CreateRotationY(M.Pi);
                 return vertPos * rotMat;
-            }
+            }*/
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
 
@@ -203,6 +203,51 @@ namespace Fusee.Jometri
             var angle = (float)System.Math.Atan2(cross, dot);
 
             return angle <= 0;
+        }
+
+        /// <summary>
+        /// Tests if a vertex is a direct neighbour of an other vertex. Use this only if you know the vertices incident half edges. 
+        /// </summary>
+        /// <param name="geometry">The geometry the vertex belongs to.</param>
+        /// <param name="p">First vertex</param>
+        /// <param name="q">Secound vertex</param>
+        /// <param name="vertPStartHe">p incident half edge </param>
+        /// <param name="vertQStartHe">q incident half edge</param>
+        /// <returns></returns>
+        public static bool IsVertexAdjacentToVertex(this Geometry geometry, int p, int q, HalfEdge vertPStartHe, HalfEdge vertQStartHe)
+        {
+            var nextHeP = geometry.GetHalfEdgeByHandle(vertPStartHe.NextHalfEdge);
+            var nextHeQ = geometry.GetHalfEdgeByHandle(vertQStartHe.NextHalfEdge);
+
+            return nextHeP.OriginVertex == q || nextHeQ.OriginVertex == p;
+        }
+
+        /// <summary>
+        /// Contains the half edges from a source collection of half edges - with opposite winding.
+        /// </summary>
+        /// <param name="geometry"></param>
+        /// <param name="originHEdges"></param>
+        /// <returns></returns>
+        public static IEnumerable<HalfEdge> GetHalfEdgesWChangedWinding(this Geometry geometry, IEnumerable<HalfEdge> originHEdges)
+        {
+            foreach (var hEdge in originHEdges)
+            {
+                var he = hEdge;
+                var next = he.PrevHalfEdge;
+                var prev = he.NextHalfEdge;
+
+                he.NextHalfEdge = next;
+                he.PrevHalfEdge = prev;
+
+                var newOrigin = geometry.GetHalfEdgeByHandle(he.PrevHalfEdge).OriginVertex;
+                he.OriginVertex = newOrigin;
+
+                yield return he;
+
+                var vertToUpdate = geometry.DictVertices[newOrigin];
+                vertToUpdate.IncidentHalfEdge = he.Handle;
+                geometry.DictVertices[newOrigin] = vertToUpdate;
+            }
         }
 
         //For an explanation of this algorythm see: http://blog.element84.com/polygon-winding.html

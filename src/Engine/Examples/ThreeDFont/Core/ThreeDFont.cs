@@ -7,7 +7,6 @@ using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Jometri.Triangulation;
 using Fusee.Serialization;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -32,16 +31,16 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "B";
-            _threeDFontHelper = new ThreeDFontHelper(_text,fontLato);
+            _text = "O";
+            _threeDFontHelper = new ThreeDFontHelper(_text,gnuSerif);
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(90);
-            var geom = new Geometry(outlines);
-            geom.Extrude2DPolygon(2000);
-            geom.Triangulate();
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
+            var geom = new Jometri.DCEL.Geometry2D(outlines); //Geometry
+            var extrusion = geom.Extrude2DPolygon(2000); //Extrusion
+            extrusion.Triangulate();
 
-            _textMesh = new JometriMesh(geom);
-
+            _textMesh = new JometriMesh(extrusion);
+            
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Jometri.DCEL;
@@ -11,6 +12,9 @@ namespace Fusee.Jometri.Manipulation
     /// </summary>
     public static class Extrude
     {
+        private static Dictionary<int, Face> _frontFaces;
+        private static Dictionary<int, Face> _backfaces;
+
         //zOffset will be added to each vertex's z coordinate, if the front face is not parallel to the x-y plane we have to rotate it there first, extrude and rotate back.
         /// <summary>
         /// Extrudes a trinagulated 2D geometry.
@@ -18,25 +22,32 @@ namespace Fusee.Jometri.Manipulation
         /// <param name="geometry">The geometry to be extruded.</param>
         /// <param name="zOffset">zOffset will be added to each vertex's z coordinate in order to create the backface of the geometry.</param>
         /// <returns></returns>
-        public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
+        [Pure] //Contract to ensure that the return value is used.
+        public static Extrusion Extrude2DPolygon(this Geometry2D geometry, int zOffset)
         {
-            CreateBackface(geometry, zOffset);
-            //CreateSidefaces(geometry);
+            _frontFaces = new Dictionary<int, Face>(geometry.DictFaces);
+            _frontFaces.Remove(1);
+            _backfaces = new Dictionary<int, Face>();
 
-            var geom3D = new Geometry
+            CreateBackface(geometry, zOffset);
+            CreateSidefaces(geometry);
+
+            var extrusion = new Extrusion()
             {
                 DictFaces = new Dictionary<int, Face>(geometry.DictFaces),
                 DictVertices = new Dictionary<int, Vertex>(geometry.DictVertices),
                 DictHalfEdges = new Dictionary<int, HalfEdge>(geometry.DictHalfEdges),
+                FrontFaces = _frontFaces,
+                Backfaces = _backfaces,
                 HighestHalfEdgeHandle = geometry.HighestHalfEdgeHandle,
                 HighestFaceHandle = geometry.HighestFaceHandle,
                 HighestVertHandle = geometry.HighestVertHandle,
             };
 
-            return geom3D;
+            return extrusion;
         }
 
-        private static void CreateBackface(Geometry geometry, int zOffset)
+        private static void CreateBackface(Geometry2D geometry, int zOffset)
         {
             //Clone frontface
             var backface = geometry.CloneGeometry();
@@ -47,7 +58,7 @@ namespace Fusee.Jometri.Manipulation
             Join2DGeometries(geometry, backface);
         }
 
-        private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)
+        private static void UpdateAllVertexZCoord(Geometry2D geometry, int zOffset)
         {
             foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
@@ -58,7 +69,7 @@ namespace Fusee.Jometri.Manipulation
             
         }
 
-        private static void CreateSidefaces(Geometry geometry)
+        private static void CreateSidefaces(Geometry2D geometry)
         {
             var unboundedFace = geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
 
@@ -153,7 +164,7 @@ namespace Fusee.Jometri.Manipulation
             geometry.DictFaces.Remove(unboundedFace.Handle);
         }
 
-        private static void Join2DGeometries(Geometry first, Geometry second)
+        private static void Join2DGeometries(Geometry2D first, Geometry2D second)
         {
             var highestVertHandle = first.HighestVertHandle;
             var highestHalfEdgeHandle = first.HighestHalfEdgeHandle;
@@ -212,7 +223,7 @@ namespace Fusee.Jometri.Manipulation
             second.DictHalfEdges = heDictHelper;
 
             //Change winding
-            var hEdgesWChangedWinding = GetHalfEdgesWChangedWinding(second.GetAllHalfEdges(), second).ToList();
+            var hEdgesWChangedWinding = second.GetHalfEdgesWChangedWinding(second.GetAllHalfEdges()).ToList();
 
             //Add data of second geometry to first one
             foreach (var vert in second.DictVertices)
@@ -250,6 +261,7 @@ namespace Fusee.Jometri.Manipulation
             //Add faces to first and recalculate face normals (because of changed winding).
             foreach (var face in second.DictFaces)
             {
+                _backfaces.Add(face.Key, face.Value);
                 first.DictFaces.Add(face.Key,face.Value);
                 first.SetFaceNormal(first.GetFaceOuterVertices(face.Key).ToList(), first.DictFaces[face.Key]);
             }
@@ -257,26 +269,6 @@ namespace Fusee.Jometri.Manipulation
             first.SetHighestHandles();
         }
 
-        private static IEnumerable<HalfEdge> GetHalfEdgesWChangedWinding(IEnumerable<HalfEdge> originHEdges, Geometry geom)
-        {
-            foreach (var hEdge in originHEdges)
-            {
-                var he = hEdge;
-                var next = he.PrevHalfEdge;
-                var prev = he.NextHalfEdge;
-
-                he.NextHalfEdge = next;
-                he.PrevHalfEdge = prev;
-
-                var newOrigin = geom.GetHalfEdgeByHandle(he.PrevHalfEdge).OriginVertex;
-                he.OriginVertex = newOrigin;
-
-                yield return he;
-
-                var vertToUpdate = geom.DictVertices[newOrigin];
-                vertToUpdate.IncidentHalfEdge = he.Handle;
-                geom.DictVertices[newOrigin] = vertToUpdate;
-            }
-        }
+       
     }
 }

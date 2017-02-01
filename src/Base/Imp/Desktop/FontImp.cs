@@ -107,7 +107,7 @@ namespace Fusee.Base.Imp.Desktop
             var curve = new Curve();
 
             _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
-
+            
             curve.CurveParts = new List<CurvePart>();
             var orgPointCoords = _face.Glyph.Outline.Points;
             var pointTags = _face.Glyph.Outline.Tags;
@@ -177,7 +177,7 @@ namespace Fusee.Base.Imp.Desktop
                 Height = bmp.Rows,
                 Width = bmp.Width,
                 Stride = bmp.Width,
-                PixelFormat = ImagePixelFormat.Intensity,
+                PixelFormat = ImagePixelFormat.Intensity
             };
 
             if (!ret.IsEmpty)
@@ -229,7 +229,7 @@ namespace Fusee.Base.Imp.Desktop
         #region Methodes
         public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
         {
-            var vert = new float3((float)orgPointCoords[j].X.Value, (float)orgPointCoords[j].Y.Value, 0);
+            var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
             partVerts.Add(vert);
         }
 
@@ -238,10 +238,9 @@ namespace Fusee.Base.Imp.Desktop
             var index = Array.IndexOf(curvePartEndPoints, (short)i);
             var cp = new CurvePart
             {
-                Closed = true,
+                IsClosed = true,
                 CurveSegments = new List<CurveSegment>()
             };
-
 
             //Marginal case - first contour ( 0 to contours[0] ) 
             if (index == 0)
@@ -254,6 +253,7 @@ namespace Fusee.Base.Imp.Desktop
                 //The start point is the first point in the outline.Points array
                 cp.StartPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
             }
+
             //contours[0]+1 to contours[1]
             else
             {

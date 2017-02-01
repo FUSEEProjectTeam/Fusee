@@ -103,7 +103,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// A CurvePart can be closed or open.
         /// </summary>
-        public bool Closed;
+        public bool IsClosed;
 
         /// <summary>
         /// This is the starting point of the CurvePart.

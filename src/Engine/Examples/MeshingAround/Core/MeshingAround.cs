@@ -8,7 +8,6 @@ using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 
 namespace Fusee.Engine.Examples.MeshingAround.Core
@@ -30,10 +29,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Points = new List<float3>
                 {
-                    new float3(1, 0, 0),
-                    new float3(1, 1, 1),
-                    new float3(0, 1, 1),
-                    new float3(0, 0, 0)
+                    new float3(0, 0, 0),
+                    new float3(0, 1, 0),
+                    new float3(-1, 1, 0),
+                    new float3(-1, 0, 0)
                 },
                 IsOuter = true
             };
@@ -42,10 +41,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Points = new List<float3>
                 {
-                    new float3(0.25f, 0.25f, 0.25f),
-                    new float3(0.25f, 0.75f, 0.75f),
-                    new float3(0.75f, 0.75f, 0.75f),
-                    new float3(0.75f, 0.25f, 0.25f)
+                    new float3(-0.25f, 0.25f, 0),
+                    new float3(-0.75f, 0.25f, 0),
+                    new float3(-0.75f, 0.75f, 0),
+                    new float3(-0.25f, 0.75f, 0)
                 },
                 IsOuter = false
             };
@@ -74,7 +73,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                     new float3(-0.125f, 0.375f, 0)
 
                 },
-                IsOuter = true
+                IsOuter = false
             };
 
             var outlineTwo = new PolyBoundary
@@ -101,12 +100,12 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var geomOutlines = new List<PolyBoundary> { outlineOne,outlineOneHole};
-            //var geomOutlines = new List<PolyBoundary> {outlineTest, outlineTestHole };
-            var geom = new Geometry(geomOutlines); //2D
-            geom.Extrude2DPolygon(1);
-            geom.Triangulate();
-            var mesh = new JometriMesh(geom);
+            var geomOutlines = new List<PolyBoundary> { outlineTest, outlineTestHole};
+            //var geomOutlines = new List<PolyBoundary> {outlineOne, outlineOneHole};
+            var geom = new Geometry2D(geomOutlines); //2D
+            var extrusion = geom.Extrude2DPolygon(1);
+            extrusion.Triangulate();
+            var mesh = new JometriMesh(extrusion);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer

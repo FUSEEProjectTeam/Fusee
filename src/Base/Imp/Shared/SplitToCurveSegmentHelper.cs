@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Math.Core;
 using Fusee.Base.Core;
+using Fusee.Math.Core;
 
 #if PLATFORM_DESKTOP
 namespace Fusee.Base.Imp.Desktop
@@ -64,18 +64,18 @@ namespace Fusee.Base.Imp.Web
                         break;
                     }
 
-                    //If count = 0 its the last segment of the curve. We need to add the first vertice in the list to the segment and leave i as it is. 
+                    //If count = 0 it is the last segment of the curve. We need to add the first vertex in the list to the segment and leave it as it is. 
                     if (!count.Equals(0)) i = count - 1;
                     else cs.Vertices.Add(partVerts[0]);
 
-                    //Create "on" points between two successive 0's
+                    //Create "on" points between two successive "off points.
                     CreateOnPointsAndAddToList(cs.Vertices);
 
                     segments.Add(cs);
                 }
                 else
                 {
-                    //Only needed for "closed" CurveParts (like letters always are)
+                    //Is needed only for "closed" CurveParts.
                     var lastSegment = new List<byte>();
                     lastSegment.AddRange(partTags.SkipItems(i).TakeItems(partTags.Count - i));
                     lastSegment.Add(partTags[0]);
@@ -113,7 +113,7 @@ namespace Fusee.Base.Imp.Web
                 }
                 else
                 {
-                    //Insert at every second index (2,4,6 ...)
+                    //Insert at every second index (2,4,6 ...).
                     vertices.Insert((j + 1) * 2, vPoint);
                 }
             }
@@ -128,21 +128,21 @@ namespace Fusee.Base.Imp.Web
             switch (Type)
             {
                 case SegmentType.LINEAR:
-                    segment = new LinearSegment()
+                    segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
                 case SegmentType.CONIC:
-                    segment = new BezierConicSegment()
+                    segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
                 case SegmentType.CUBIC:
-                    segment = new BezierCubicSegment()
+                    segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
                     };
@@ -164,21 +164,21 @@ namespace Fusee.Base.Imp.Web
             switch (Type)
             {
                 case SegmentType.LINEAR:
-                    segment = new LinearSegment()
+                    segment = new LinearSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
                 case SegmentType.CONIC:
-                    segment = new BezierConicSegment()
+                    segment = new BezierConicSegment
                     {
                         Vertices = new List<float3>()
                     };
                     segment.Vertices = segmentVerts;
                     break;
                 case SegmentType.CUBIC:
-                    segment = new BezierCubicSegment()
+                    segment = new BezierCubicSegment
                     {
                         Vertices = new List<float3>()
                     };
@@ -230,7 +230,7 @@ namespace Fusee.Base.Imp.Web
 
             if (firstPoint == (segments.LastItem().Vertices.LastItem())) return;
 
-            var lastSegmentinPart = new LinearSegment() { Vertices = new List<float3>() };
+            var lastSegmentinPart = new LinearSegment { Vertices = new List<float3>() };
             lastSegmentinPart.Vertices.Add(firstPoint);
             segments.Add(lastSegmentinPart);
 
