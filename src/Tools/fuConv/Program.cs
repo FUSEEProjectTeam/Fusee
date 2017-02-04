@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading;
 using Assimp;
 using CommandLine;
 using Fusee.Serialization;
+using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 
 namespace Fusee.Tools.fuConv
@@ -75,7 +79,7 @@ namespace Fusee.Tools.fuConv
 
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema>(args)
+            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema, WebViewer>(args)
 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -190,10 +194,11 @@ namespace Fusee.Tools.fuConv
                         Console.WriteLine(schema);
                     }
                 })
+
                 // Called with the WEB verb
                 .WithParsed<WebViewer>(opts =>
                 {
-                    List<string> textureFiles = new List<string>();
+                   List<string> textureFiles = new List<string>();
                     try
                     {
                         // Get list of paths to texturefiles
@@ -204,7 +209,6 @@ namespace Fusee.Tools.fuConv
                     }
                     catch (Exception ex)
                     {
-                        Console.Error.WriteLine(ex);
                         Console.WriteLine($"No texture filepaths set");
                     }
 
@@ -214,14 +218,18 @@ namespace Fusee.Tools.fuConv
                     string fuseePlayerDir = Path.Combine(thisPath, "Viewer");
                     Stream input = null, output = null;
                     string sceneFileDir = Path.Combine(htmlFileDir, "Assets");
+                    if (File.Exists(sceneFileDir))
+                    {
+                        File.Delete(sceneFileDir);
+                    }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
+                    if (File.Exists(origHtmlFilePath))
+                        File.Delete(origHtmlFilePath);
 
                     //Copy
                     DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
-
-                    if (File.Exists(htmlFileDir))
-                        File.Delete(htmlFileDir);
+                    
 
                     // Check and open input file
                     string inputFormat = Path.GetExtension(opts.Input).ToLower();
@@ -262,12 +270,16 @@ namespace Fusee.Tools.fuConv
                         Environment.Exit((int) ErrorCode.OutputFile);
                     }
 
-
+                    //Manifest File + Textures
                     Console.WriteLine($"Moving File from {opts.Input} to {sceneFilePath}");
                     for (int i = 0; i < textureFiles.Count; i++)
                     {
                         string textureFile = Path.GetFileName(textureFiles[i]);
-                        File.Copy(textureFiles[i], Path.Combine(sceneFileDir, textureFile));
+                        string texturePath = Path.Combine(sceneFileDir, textureFile);
+                        if (!File.Exists(texturePath))
+                        {
+                            File.Move(textureFiles[i],texturePath);
+                        }
                         textureFiles[i] = Path.Combine("Assets", textureFile);
                         Console.WriteLine($"TEXTUREFILES{textureFiles[i]}");
                     }
