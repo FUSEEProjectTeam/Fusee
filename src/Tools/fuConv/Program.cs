@@ -281,7 +281,7 @@ namespace Fusee.Tools.fuConv
                             File.Move(textureFiles[i],texturePath);
                         }
                         textureFiles[i] = Path.Combine("Assets", textureFile);
-                        Console.WriteLine($"TEXTUREFILES{textureFiles[i]}");
+                        Console.WriteLine($"TEXTUREFILES {textureFiles[i]}");
                     }
                     if (textureFiles != null)
                         AssetManifest.CreateAssetManifest(htmlFileDir, textureFiles);
