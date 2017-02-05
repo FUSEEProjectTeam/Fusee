@@ -297,7 +297,7 @@ namespace Fusee.Tools.fuConv
                     {
                         _httpServer.HtDocsRoot = htmlFileDir;
                     }
-
+                    Console.WriteLine($"Server running");
                     Process.Start("http://localhost:4655/" + origHtmlFilePath);
                 })
 
