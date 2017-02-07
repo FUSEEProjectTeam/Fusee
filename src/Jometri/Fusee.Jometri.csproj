@@ -54,11 +54,10 @@
     <Compile Include="Triangulation\StatusEdge.cs" />
     <Compile Include="Triangulation\SweepLineStatus.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />
-    <Compile Include="DCEL\Exceptions.cs" />
     <Compile Include="DCEL\Geometry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Triangulation\VertexType.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="GeometricOperations.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

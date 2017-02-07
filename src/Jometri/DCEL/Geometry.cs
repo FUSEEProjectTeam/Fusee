@@ -41,7 +41,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// The highest handle of all face handles - used to create a new handle.
         /// </summary>
-        protected internal int HighestFaceHandle { get; set; }
+        internal int HighestFaceHandle { get; set; }
 
         #endregion
 
@@ -123,21 +123,38 @@ namespace Fusee.Jometri.DCEL
             return pos;
         }
 
-        #region Get component by handle
+         /// <summary>
+         /// Sets the normal of the face in its FaceData.
+         /// </summary>
+         /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
+         /// <param name="face">The face in question.</param>
+         public void SetFaceNormal(IList<Vertex> faceOuterVertices, Face face)
+         {
+             var normal = GeometricOperations.CalculateFaceNormal(faceOuterVertices);
+
+             var cur = DictFaces[face.Handle];
+             var faceData = face.FaceData;
+             faceData.FaceNormal = normal;
+             cur.FaceData = faceData;
+             DictFaces[face.Handle] = cur;
+
+         }
+
+         #region Get component by handle
 
         /// <summary>
         /// Gets a vertex by its handle.
         /// </summary>
         /// <param name="vHandle">The vertex's reference.</param>
         /// <returns></returns>
-        public Vertex GetVertexByHandle(int vHandle)
+        internal Vertex GetVertexByHandle(int vHandle)
         {
 
             if (DictVertices.ContainsKey(vHandle))
             {
                 return DictVertices[vHandle];
             }
-            throw new HandleNotFoundException("Vertex with id " + vHandle + " not found!");
+            throw new ArgumentException("Vertex with id " + vHandle + " not found!");
         }
 
         internal HalfEdge GetHalfEdgeByHandle(int hehandle)
@@ -146,7 +163,7 @@ namespace Fusee.Jometri.DCEL
             {
                 return DictHalfEdges[hehandle];
             }
-            throw new HandleNotFoundException("HalfEdge with id " + hehandle + " not found!");
+            throw new ArgumentException("HalfEdge with id " + hehandle + " not found!");
         }
 
         internal Face GetFaceByHandle(int fHandle)
@@ -155,7 +172,7 @@ namespace Fusee.Jometri.DCEL
             {
                 return DictFaces[fHandle];
             }
-            throw new HandleNotFoundException("Face with id " + fHandle + " not found!");
+            throw new ArgumentException("Face with id " + fHandle + " not found!");
         }
 
         #endregion
@@ -508,7 +525,7 @@ namespace Fusee.Jometri.DCEL
         {
             var heStartingAtP = GetVertexStartingHalfEdges(p).ToList();
             var heStaringAtQ = GetVertexStartingHalfEdges(q).ToList();
-
+            
             var face = new Face();
             var pStartHe = new HalfEdge();
             var qStartHe = new HalfEdge();
@@ -523,6 +540,10 @@ namespace Fusee.Jometri.DCEL
                     var faceHandleQ = heQ.IncidentFace;
 
                     if (faceHandleP != faceHandleQ) continue;
+
+                    var hePNext = GetHalfEdgeByHandle(heP.NextHalfEdge);
+                    var heQNext = GetHalfEdgeByHandle(heQ.NextHalfEdge);
+                    if (heQNext.IncidentFace != faceHandleP || hePNext.IncidentFace != faceHandleP) continue;
 
                     var commonFace = GetFaceByHandle(faceHandleP);
 

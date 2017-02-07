@@ -248,7 +248,7 @@ namespace Fusee.Math.Core
 
             for (var i = 0; i < newVerts.Length; i++)
             {
-                //calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1]
+                //Calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1]
                 var point = (1 - t) * vertices[i] + t * vertices[i + 1];
                 newVerts[i] = point;
             }
@@ -259,16 +259,16 @@ namespace Fusee.Math.Core
         /// Splits a curve using De Casteljaus algorithm
         /// </summary>
         /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1]</param>
-        /// <param name="vertices">All control points thet represent the curve, incl. start and end point.</param>
+        /// <param name="vertices">All control points that represent the curve, incl. start and end point.</param>
         /// <param name="leftCurve">The left new curve</param>
         /// <param name="rightCurve">The right new curve</param>
         public void SplitCurve(float t, float3[] vertices, ref List<float3> leftCurve, ref List<float3> rightCurve)
         {
             if (vertices.Length == 1)
             {
-                leftCurve.Add(vertices[0]); //3. Stelle
-                rightCurve.Add(vertices[0]);//1. Stelle
-                rightCurve.Reverse();
+                leftCurve.Add(vertices[0]); //3. position
+                rightCurve.Add(vertices[0]);//1. position
+                rightCurve.Reverse(); //Maintain the winding of the curve.
                 return;
             }
 
@@ -285,10 +285,9 @@ namespace Fusee.Math.Core
                     rightCurve.Add(vertices[i + 1]);
                 }
                 //calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1]
-                var x = (1 - t) * vertices[i].x + t * vertices[i + 1].x;
-                var y = (1 - t) * vertices[i].y + t * vertices[i + 1].y;
-                var z = (1 - t) * vertices[i].z + t * vertices[i + 1].z;
-                newVerts[i] = new float3(x, y, z);
+                var newVert = (1 - t) * vertices[i] + t * vertices[i + 1];
+
+                newVerts[i] = newVert;
             }
             SplitCurve(t, newVerts, ref leftCurve, ref rightCurve);
         }
@@ -341,6 +340,7 @@ namespace Fusee.Math.Core
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
 
+            // Splits Vertices into single Beziér curve, by deviding the list at every "on curve" point.
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
                 var verts = new float3[degree + 1];
@@ -482,7 +482,7 @@ namespace Fusee.Math.Core
                 .Determinant;
 
             var area = 0.5 * det;
-            if (area < 1) area = area*-1;
+            if (area < 1) area = area * -1;
 
             if (area < threshold)
                 return true;

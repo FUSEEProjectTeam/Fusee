@@ -13,18 +13,18 @@ namespace Fusee.Jometri.DCEL
     public struct PolyBoundary
     {
         /// <summary>
-        /// The geometric information of the vertices which belong to a boundary
+        /// The geometric information of the vertices which belong to a boundary.
         /// </summary>
         public IList<float3> Points;
 
         /// <summary>
-        /// Determines whether a boundary is a outer bondary or a inner boundary (which forms a hole in the face).
+        /// Determines whether a boundary is a outer boundary or a inner boundary (which forms a hole in the face).
         /// </summary>
         public bool IsOuter;
     }
 
     /// <summary>
-    /// 2D geometry, stored in a half edge data structure (doubly connected edge list) and made from polygon boundaries.
+    /// Helper class for initializing Geometry objects.
     /// </summary>
     public static class InitializeGeometryHelper
     {
@@ -34,7 +34,7 @@ namespace Fusee.Jometri.DCEL
 
         /// <summary>
         /// Used in the initialisation process of a new Geometry.
-        /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry
+        /// A BoundaryEdge contains one edge of the boundary and the information whether the source vertex of the half edge (not the twin half edge) is already part of the Geometry.
         /// </summary>
         internal struct BoundaryEdge
         {
@@ -80,9 +80,9 @@ namespace Fusee.Jometri.DCEL
 
                 int existingHeHandle;
                 if (!IsEdgeExisting(bEdge.HalfEdge, boundaryEdges, out existingHeHandle))
-                    continue; //Check the target vert to identify the existing half edge
+                    continue; //Check the target vert to identify the existing half edge.
 
-                //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge - replace
+                //If the existing half edge is halfedge.IncidentFace.OuterHalfEdge, replace it.
                 var face = _geometry.GetFaceByHandle(bEdge.HalfEdge.IncidentFace);
                 if (face.OuterHalfEdge == bEdge.HalfEdge.Handle)
                 {
@@ -90,7 +90,7 @@ namespace Fusee.Jometri.DCEL
                     _geometry.ReplaceFace(face);
                 }
 
-                //If the existing half edge is one of the unbounded faces inner half edges - replace
+                //If the existing half edge is one of the unbounded faces inner half edges, replace it.
                 var unboundedFace = _geometry.DictFaces[1];
                 for (var k = 0; k < unboundedFace.InnerHalfEdges.Count; k++)
                 {
@@ -136,7 +136,7 @@ namespace Fusee.Jometri.DCEL
             int vertHandle;
             Vertex vert;
 
-            //Check if a Vertex already exists and assign it to the HalfEdge instead of createing a new
+            //Check if a Vertex already exists and assign it to the HalfEdge instead of creating a new.
             if (_geometry.DictVertices.Count != 0)
             {
                 foreach (var v in _geometry.GetAllVertices())
@@ -146,13 +146,13 @@ namespace Fusee.Jometri.DCEL
                     return v;
                 }
 
-                //Create Vertice and VertHandle
+                //Create Vertice and VertHandle.
                 vertHandle = handle;
                 vert = new Vertex(vertHandle, pointCoord);
             }
             else
             {
-                //Create Vertices and VertHandle
+                //Create Vertices and VertHandle.
                 vertHandle = handle;
                 vert = new Vertex(vertHandle, pointCoord);
             }
@@ -195,7 +195,7 @@ namespace Fusee.Jometri.DCEL
 
                 if (!currentVert.Value)
                 {
-                    //Only necessary for new Vertices
+                    //Only necessary for new Vertices.
                     var vert = currentVert.Key;
                     vert.IncidentHalfEdge = halfEdgeHandle;
                     _geometry.DictVertices.Add(vert.Handle, vert);
@@ -212,7 +212,7 @@ namespace Fusee.Jometri.DCEL
 
                 halfEdge.TwinHalfEdge = twinHalfEdge.Handle;
 
-                //Assumption: outlines are processed from outer to inner for every face, therfore faceHandle will never has its default value if "else" is hit.
+                //Assumption: outlines are processed from outer to inner for every face, therefore faceHandle will never has its default value if "else" is hit.
                 if (polyBoundary.IsOuter)
                 {
                     if (faceHandle == default(int))

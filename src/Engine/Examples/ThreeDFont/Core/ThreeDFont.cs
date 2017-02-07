@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -31,16 +33,42 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "Hello World";
+            _text = "O";
+            var stopOutlines = new Stopwatch();
+            var stopGeometry = new Stopwatch();
+            var stopTri = new Stopwatch();
+            var stopExtr = new Stopwatch();
+            var stopMesh = new Stopwatch();
+
+
+            stopOutlines.Start();
             _threeDFontHelper = new ThreeDFontHelper(_text,fontLato);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
+            stopOutlines.Stop();
 
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
+            stopGeometry.Start();
             var geom = new Jometri.DCEL.Geometry(outlines);
-            geom.Extrude2DPolygon(2000);
-            geom.Triangulate();
+            stopGeometry.Stop();
 
-            _textMesh = new JometriMesh(geom);
+            stopExtr.Start();
+            geom.Extrude2DPolygon(2000);
+            stopExtr.Stop();
+
+            stopTri.Start();
+            geom.Triangulate();
+            stopTri.Stop();
             
+            stopMesh.Start();
+            _textMesh = new JometriMesh(geom);
+            stopMesh.Stop();
+
+            TimeSpan ts1 = stopOutlines.Elapsed;
+            TimeSpan ts2 = stopGeometry.Elapsed;
+            TimeSpan ts3 = stopExtr.Elapsed;
+            TimeSpan ts4 = stopTri.Elapsed;
+            TimeSpan ts5 = stopMesh.Elapsed;
+
+
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),

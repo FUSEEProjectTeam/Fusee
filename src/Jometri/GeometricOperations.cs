@@ -9,7 +9,7 @@ namespace Fusee.Jometri
     /// <summary>
     /// Provides utility methodes used in the Jometri project.
     /// </summary>
-    public static class Utility
+    public static class GeometricOperations
     {
         /// <summary>
         /// Calculates the vertex position so that it is parallel to the x-y plane.
@@ -64,31 +64,13 @@ namespace Fusee.Jometri
         }
 
 
-        /// <summary>
-        /// Sets the normal of the face in its FaceData.
-        /// </summary>
-        /// <param name="geometry">The geometry the face belongs to.</param>
-        /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
-        /// <param name="face">The face in question.</param>
-        public static void SetFaceNormal(this Geometry geometry, IList<Vertex> faceOuterVertices, Face face)
-        {
-            var normal = CalculateFaceNormal(faceOuterVertices);
-
-            var cur = geometry.DictFaces[face.Handle];
-            var faceData = face.FaceData;
-            faceData.FaceNormal = normal;
-            cur.FaceData = faceData;
-            geometry.DictFaces[face.Handle] = cur;
-
-        }
-
         //Newell's Method - see Graphics Gems III, p. 232.
         /// <summary>
         /// Calculates a face normal from three vertices. The vertices have to be coplanar and part of the face.
         /// </summary>
         /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
         /// <returns></returns>
-        private static float3 CalculateFaceNormal(IList<Vertex> faceOuterVertices)
+        public static float3 CalculateFaceNormal(IList<Vertex> faceOuterVertices)
         {
             var normal = new float3();
             for (var i = 0; i < faceOuterVertices.Count; i++)
@@ -230,6 +212,9 @@ namespace Fusee.Jometri
         /// <returns></returns>
         public static IEnumerable<HalfEdge> GetHalfEdgesWChangedWinding(this Geometry geometry, IEnumerable<HalfEdge> originHEdges)
         {
+
+            var vertKeys = geometry.DictVertices.Keys;
+
             foreach (var hEdge in originHEdges)
             {
                 var he = hEdge;

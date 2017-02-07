@@ -32,7 +32,7 @@ namespace Fusee.Jometri
         public Node<TK, TV> RightNode;
 
         /// <summary>
-        /// Creates a new node.
+        /// Constructor, creates a new node.
         /// </summary>
         /// <param name="key">The key of the new node</param>
         /// <param name="value">Payload of the new node</param>

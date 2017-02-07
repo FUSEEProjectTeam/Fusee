@@ -18,7 +18,7 @@ namespace Fusee.Jometri.Manipulation
         /// <param name="geometry">The geometry to be extruded.</param>
         /// <param name="zOffset">zOffset will be added to each vertex's z coordinate in order to create the backface of the geometry.</param>
         /// <returns></returns>
-        public static Geometry Extrude2DPolygon(this Geometry geometry, int zOffset)
+        public static Geometry Extrude2DPolygon(this Geometry geometry, float zOffset)
         {
             CreateBackface(geometry, zOffset);
             CreateSidefaces(geometry);
@@ -36,7 +36,7 @@ namespace Fusee.Jometri.Manipulation
             return extrusion;
         }
 
-        private static void CreateBackface(Geometry geometry, int zOffset)
+        private static void CreateBackface(Geometry geometry, float zOffset)
         {
             //Clone frontface
             var backface = geometry.CloneGeometry();
@@ -47,7 +47,7 @@ namespace Fusee.Jometri.Manipulation
             Join2DGeometries(geometry, backface);
         }
 
-        private static void UpdateAllVertexZCoord(Geometry geometry, int zOffset)
+        private static void UpdateAllVertexZCoord(Geometry geometry, float zOffset)
         {
             foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
@@ -158,6 +158,7 @@ namespace Fusee.Jometri.Manipulation
             {
                 var vert = new Vertex(v.Value.Handle + highestVertHandle,v.Value.VertData.Pos);
                 vert.IncidentHalfEdge = vert.IncidentHalfEdge + highestHalfEdgeHandle;
+                
                 vertDictHelper.Add(vert.Handle, vert);
             }
             second.DictVertices.Clear();

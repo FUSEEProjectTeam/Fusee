@@ -26,87 +26,71 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         public override void Init()
         {
 
-            var outlineTest = new PolyBoundary //CCW!!
-            {
-                Points = new List<float3>
-                {
-                    new float3(0, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(-1, 1, 0),
-                    new float3(-1, 0, 0)
-                },
-                IsOuter = true
-            };
-
-            var outlineTestHole = new PolyBoundary //CW!!
-            {
-                Points = new List<float3>
-                {
-                    new float3(-0.25f, 0.25f, 0),
-                    new float3(-0.75f, 0.25f, 0),
-                    new float3(-0.75f, 0.75f, 0),
-                    new float3(-0.25f, 0.75f, 0)
-                },
-                IsOuter = false
-            };
-
-
-            ////////////////////// Mesh creation ///////////////////////////////
             var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
-                    new float3(0, 0, 0),
-                    new float3(0, 0.5f, 0),
-                    new float3(-0.5f, 0.5f, 0),
-                    new float3(-0.5f, 0, 0)
+                    new float3(1, 0, 0),
+                    new float3(1.25f, 0.5f, 0.5f),
+                    new float3(1, 1, 1),
+                    new float3(0, 1, 1),
+                    new float3(-0.25f, 0.5f, 0.5f),
+                    new float3(0, 0, 0)
                 },
                 IsOuter = true
             };
 
-            var outlineOneHole = new PolyBoundary //CW = hole!!
+            var outlineOneHole = new PolyBoundary //CW!!
             {
                 Points = new List<float3>
                 {
-                    new float3(-0.125f, 0.125f, 0),
-                    new float3(-0.375f, 0.125f, 0),
-                    new float3(-0.375f, 0.375f, 0),
-                    new float3(-0.125f, 0.375f, 0)
-
+                    new float3(0.75f, 0.25f, 0.25f),
+                    new float3(0.25f, 0.25f, 0.25f),
+                    new float3(0.25f, 0.75f, 0.75f),
+                    new float3(0.75f, 0.75f, 0.75f)
                 },
                 IsOuter = false
             };
 
-            var outlineTwo = new PolyBoundary
+            var outlineTwo = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
-                    new float3(0, 0, 0),
-                    new float3(0.5f, 0, 0),
-                    new float3(0.5f, 0.5f, 0),
-                    new float3(0, 0.5f, 0)
+                    new float3(1, 0, 0),
+                    new float3(1, 1, 0),
+                    new float3(0, 1, 0),
+                    new float3(0, 0, 0)
                 },
                 IsOuter = true
             };
 
-            var outlineThree = new PolyBoundary
+            var outlineThree = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
                     new float3(0, 0, 0),
-                    new float3(-0.5f, 0, 0),
-                    new float3(-0.5f, -0.5f, 0),
-                    new float3(0, -0.5f, 0)
+                    new float3(1, 0, 1),
+                    new float3(0, 0.5f, 0.5f)
                 },
                 IsOuter = true
             };
 
-            var geomOutlines = new List<PolyBoundary> { outlineTest, outlineTestHole};
-            //var geomOutlines = new List<PolyBoundary> {outlineOne, outlineOneHole};
-            var geom = new Geometry(geomOutlines); //2D
-            geom.Extrude2DPolygon(1);
-            geom.Triangulate();
-            var mesh = new JometriMesh(geom);
+            var geomOutlinesOne = new List<PolyBoundary> {outlineOne, outlineOneHole};
+            var geomOne = new Geometry(geomOutlinesOne);
+            geomOne.Extrude2DPolygon(0.5f);
+            geomOne.Triangulate();
+            var meshOne = new JometriMesh(geomOne);
+
+            var geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
+            var geomCube = new Geometry(geomCubeOutlines);
+            geomCube.Extrude2DPolygon(1);
+            geomCube.Triangulate();
+            var cube = new JometriMesh(geomCube);
+
+            var geomTriangleOutlines = new List<PolyBoundary> { outlineThree };
+            var geomTri = new Geometry(geomTriangleOutlines);
+            geomTri.Triangulate();
+            var triangle = new JometriMesh(geomTri);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer
@@ -124,16 +108,15 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            var sceneNodeC = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
 
-            var meshC = new MeshComponent
+            var meshCOne = new MeshComponent
             {
-                Vertices = mesh.Vertices,
-                Triangles = mesh.Triangles,
-                Normals = mesh.Normals,
+                Vertices = meshOne.Vertices,
+                Triangles = meshOne.Triangles,
+                Normals = meshOne.Normals,
             };
-
 
             var tranC = new TransformComponent
             {
@@ -142,11 +125,49 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Translation = new float3(0, 0, 0)
             };
 
-            sceneNodeC.Components.Add(tranC);
-            sceneNodeC.Components.Add(meshC);
+            sceneNodeCOne.Components.Add(tranC);
+            sceneNodeCOne.Components.Add(meshCOne);
+            ///////////////////////////////////////////////////////////
+            var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            parentNode.Children.Add(sceneNodeC);
+            var meshCCube = new MeshComponent
+            {
+                Vertices = cube.Vertices,
+                Triangles = cube.Triangles,
+                Normals = cube.Normals,
+            };
+            var tranCube = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(-2, -1, 0)
+            };
 
+            sceneNodeCCube.Components.Add(tranCube);
+            sceneNodeCCube.Components.Add(meshCCube);
+            //////////////////////////////////////////////////////////////////
+            var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+
+            var meshCTri = new MeshComponent
+            {
+                Vertices = triangle.Vertices,
+                Triangles = triangle.Triangles,
+                Normals = triangle.Normals,
+            };
+            var tranTri = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = float3.One,
+                Translation = new float3(1.5f, -1, 0)
+            };
+
+            sceneNodeCTri.Components.Add(tranTri);
+            sceneNodeCTri.Components.Add(meshCTri);
+            //////////////////////////////////////////////////////////////////
+
+            parentNode.Children.Add(sceneNodeCTri);
+            parentNode.Children.Add(sceneNodeCOne);
+            parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
             _renderer = new SceneRenderer(sc);
