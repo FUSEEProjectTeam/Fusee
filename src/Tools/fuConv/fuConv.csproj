@@ -64,8 +64,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assimp2Fusee.cs" />
+    <Compile Include="CustomManifest.cs" />
+    <Compile Include="DirCopy.cs" />
+    <Compile Include="FileTypes.cs" />
+    <Compile Include="ManifestFile.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>ManifestFile.tt</DependentUpon>
+    </Compile>
+    <Compile Include="AssetManifest.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SimpleHttpServer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
@@ -83,6 +93,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="ManifestFile.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>ManifestFile.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
