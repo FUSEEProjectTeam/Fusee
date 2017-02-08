@@ -5,10 +5,10 @@ using Fusee.Math.Core;
 
 namespace Fusee.Jometri.DCEL
 {
-     /// <summary>
-     /// Abstract class for creating geometry, stored in a DCEL (doubly connected (half) edge list).
-     /// </summary>
-     public class Geometry
+    /// <summary>
+    /// Abstract class for creating geometry, stored in a DCEL (doubly connected (half) edge list).
+    /// </summary>
+    public class Geometry
     {
         #region Members
         private readonly Dictionary<Face, Dictionary<int, float3>> _vertPos2DCache = new Dictionary<Face, Dictionary<int, float3>>();
@@ -72,7 +72,7 @@ namespace Fusee.Jometri.DCEL
             foreach (var key in keys)
             {
                 if (key == 1) continue;
-                this.SetFaceNormal(GetFaceOuterVertices(key).ToList(), DictFaces[key]);
+                SetFaceNormal(GetFaceOuterVertices(key).ToList(), DictFaces[key]);
             }
         }
         #endregion
@@ -123,24 +123,24 @@ namespace Fusee.Jometri.DCEL
             return pos;
         }
 
-         /// <summary>
-         /// Sets the normal of the face in its FaceData.
-         /// </summary>
-         /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
-         /// <param name="face">The face in question.</param>
-         public void SetFaceNormal(IList<Vertex> faceOuterVertices, Face face)
-         {
-             var normal = GeometricOperations.CalculateFaceNormal(faceOuterVertices);
+        /// <summary>
+        /// Sets the normal of the face in its FaceData.
+        /// </summary>
+        /// <param name="faceOuterVertices">All vertices of the outer boundary of the face.</param>
+        /// <param name="face">The face in question.</param>
+        public void SetFaceNormal(IList<Vertex> faceOuterVertices, Face face)
+        {
+            var normal = GeometricOperations.CalculateFaceNormal(faceOuterVertices);
 
-             var cur = DictFaces[face.Handle];
-             var faceData = face.FaceData;
-             faceData.FaceNormal = normal;
-             cur.FaceData = faceData;
-             DictFaces[face.Handle] = cur;
+            var cur = DictFaces[face.Handle];
+            var faceData = face.FaceData;
+            faceData.FaceNormal = normal;
+            cur.FaceData = faceData;
+            DictFaces[face.Handle] = cur;
 
-         }
+        }
 
-         #region Get component by handle
+        #region Get component by handle
 
         /// <summary>
         /// Gets a vertex by its handle.
@@ -523,41 +523,10 @@ namespace Fusee.Jometri.DCEL
         /// <exception cref="Exception"></exception>
         public void InsertDiagonal(int p, int q)
         {
-            var heStartingAtP = GetVertexStartingHalfEdges(p).ToList();
-            var heStaringAtQ = GetVertexStartingHalfEdges(q).ToList();
-            
-            var face = new Face();
             var pStartHe = new HalfEdge();
             var qStartHe = new HalfEdge();
 
-            foreach (var heP in heStartingAtP)
-            {
-                var faceHandleP = heP.IncidentFace;
-                if (GetFaceByHandle(faceHandleP).OuterHalfEdge == default(int)) continue;//If heP is unbounded we can not insert a half edge
-
-                foreach (var heQ in heStaringAtQ)
-                {
-                    var faceHandleQ = heQ.IncidentFace;
-
-                    if (faceHandleP != faceHandleQ) continue;
-
-                    var hePNext = GetHalfEdgeByHandle(heP.NextHalfEdge);
-                    var heQNext = GetHalfEdgeByHandle(heQ.NextHalfEdge);
-                    if (heQNext.IncidentFace != faceHandleP || hePNext.IncidentFace != faceHandleP) continue;
-
-                    var commonFace = GetFaceByHandle(faceHandleP);
-
-                    if (commonFace.OuterHalfEdge == default(int)) continue; //If commonFace is unbounded we can not insert a half edge
-
-                    face = GetFaceByHandle(faceHandleP);
-                    pStartHe = heP;
-                    qStartHe = heQ;
-
-                    break;
-                }
-            }
-            if (pStartHe.Handle == default(int))
-                throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
+            var face = GetFaceToInsertDiag(p, q, ref pStartHe, ref qStartHe);
 
             if (this.IsVertexAdjacentToVertex(p, q, pStartHe, qStartHe))
                 throw new ArgumentException("A diagonal can not be insertet beween adjacent Vertices!");
@@ -603,7 +572,7 @@ namespace Fusee.Jometri.DCEL
 
             var holes = GetHoles(face);
 
-            if (holes.Count != 0 && IsHalfEdgeToHole(holes, p, q, face)) return;
+            if (holes.Count != 0 && IsNewEdgeToHole(holes, p, q, face)) return;
 
             var newFace = new Face(CreateFaceHandleId(), newFromQ.Handle);
 
@@ -618,16 +587,10 @@ namespace Fusee.Jometri.DCEL
             AssignFaceHandle(newFace.OuterHalfEdge, newFace);
 
             //Set face.OuterHalfEdge to newFromP - old OuterHalfEdge can be part of new face now!
-            var faces = GetAllFaces().ToList();
-            for (var i = 0; i < faces.Count; i++)
-            {
-                if (faces[i].Handle != face.Handle) continue;
-
-                var currentFace = faces[i];
-                currentFace.OuterHalfEdge = newFromP.Handle;
-                faces[i] = currentFace;
-                DictFaces[faces[i].Handle] = faces[i];
-            }
+            var currentFace = face;
+            currentFace.OuterHalfEdge = newFromP.Handle;
+            face = currentFace;
+            DictFaces[face.Handle] = face;
         }
 
         private Dictionary<int, List<HalfEdge>> GetHoles(Face face)
@@ -684,7 +647,7 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
-        private static bool IsHalfEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle,
+        private static bool IsNewEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle,
             Face face)
         {
             if (holes.Count == 0) return false;
@@ -693,8 +656,7 @@ namespace Fusee.Jometri.DCEL
             {
                 foreach (var heHandle in hole.Value)
                 {
-                    var he = heHandle;
-                    if (pHandle != he.OriginVertex && qHandle != he.OriginVertex) continue;
+                    if (pHandle != heHandle.OriginVertex && qHandle != heHandle.OriginVertex) continue;
 
                     face.InnerHalfEdges.Remove(hole.Key);
                     return true;
@@ -733,6 +695,48 @@ namespace Fusee.Jometri.DCEL
             HighestVertHandle = DictVertices.Keys.Max();
             HighestHalfEdgeHandle = DictHalfEdges.Keys.Max();
             HighestFaceHandle = DictFaces.Keys.Max();
+        }
+
+        internal Face GetFaceToInsertDiag(int p, int q, ref HalfEdge pStartHe, ref HalfEdge qStartHe)
+        {
+            var vertP = GetVertexByHandle(p);
+            var vertQ = GetVertexByHandle(q);
+            var heStartingAtP = GetVertexStartingHalfEdges(p).ToList();
+            var heStartingAtQ = GetVertexStartingHalfEdges(q).ToList();
+
+            var heWithSameFaceQ = new List<HalfEdge>(heStartingAtQ.Where(x => heStartingAtP.Any(z => z.IncidentFace == x.IncidentFace)));
+            var heWithSameFaceP = new List<HalfEdge>(heStartingAtP.Where(x => heStartingAtQ.Any(z => z.IncidentFace == x.IncidentFace)));
+
+            if (heWithSameFaceP.Count == 1)
+            {
+                var face = GetFaceByHandle(heWithSameFaceP[0].IncidentFace);
+                pStartHe = heWithSameFaceP[0];
+                qStartHe = heWithSameFaceQ[0];
+                return face;
+            }
+
+            for (var i = 0; i < heWithSameFaceP.Count; i++)
+            {
+                var he = heWithSameFaceP[i];
+                var face = GetFaceByHandle(he.IncidentFace);
+                var diagMiddPoint = (1 - 0.5f) * vertP.VertData.Pos + 0.5f * vertQ.VertData.Pos;
+
+                if (!this.IsPointInPolygon(face, diagMiddPoint)) continue;
+
+                foreach (var heP in heWithSameFaceP)
+                {
+                    if (heP.IncidentFace == face.Handle)
+                        pStartHe = heP;
+                }
+
+                foreach (var heQ in heWithSameFaceQ)
+                {
+                    if (heQ.IncidentFace == face.Handle)
+                        qStartHe = heQ;
+                }
+                return face;
+            }
+            throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
         }
 
         #endregion

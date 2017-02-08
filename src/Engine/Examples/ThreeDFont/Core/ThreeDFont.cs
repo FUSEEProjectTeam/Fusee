@@ -33,7 +33,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "O";
+            _text = "Hello World!";
             var stopOutlines = new Stopwatch();
             var stopGeometry = new Stopwatch();
             var stopTri = new Stopwatch();
@@ -42,8 +42,8 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
 
             stopOutlines.Start();
-            _threeDFontHelper = new ThreeDFontHelper(_text,fontLato);
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
+            _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
             stopOutlines.Stop();
 
             stopGeometry.Start();
@@ -57,7 +57,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             stopTri.Start();
             geom.Triangulate();
             stopTri.Stop();
-            
+
             stopMesh.Start();
             _textMesh = new JometriMesh(geom);
             stopMesh.Stop();
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             RC.SetShader(shader);
 
             // Set the clear color for the backbuffer
-            RC.ClearColor = new float4(0, 1, 1, 1);
+            RC.ClearColor = new float4(1, 1, 1, 1);
         }
 
         // RenderAFrame is called once a frame

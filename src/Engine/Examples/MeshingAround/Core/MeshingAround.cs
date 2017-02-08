@@ -75,7 +75,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var geomOutlinesOne = new List<PolyBoundary> {outlineOne, outlineOneHole};
+            var geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
             var geomOne = new Geometry(geomOutlinesOne);
             geomOne.Extrude2DPolygon(0.5f);
             geomOne.Triangulate();

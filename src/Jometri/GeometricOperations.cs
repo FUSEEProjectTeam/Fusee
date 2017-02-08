@@ -92,7 +92,7 @@ namespace Fusee.Jometri
         //Vertices need to be reduced to 2D
         //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
         /// <summary>
-        /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to the xy plane!
+        /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to a plane!
         /// </summary>
         /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
         /// <param name="face">The face to perform the test on.</param>
@@ -119,6 +119,44 @@ namespace Fusee.Jometri
                 {
                     if ((e1Pos.y - vPos.y) * (v1Pos.x - e1Pos.x) >=
                         (e1Pos.x - vPos.x) * (v1Pos.y - e1Pos.y) == y1)
+                    {
+                        inside = !inside;
+                    }
+                }
+                y0 = y1;
+                v1Pos = e1Pos;
+            }
+            return inside;
+        }
+
+        //Vertices need to be reduced to 2D
+        //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
+        /// <summary>
+        /// Tests if a point/vertex lies inside or outside a face - Only use this if you know the face AND v lie in the same plane and this plane is parallel to xy or xz or yz!
+        /// </summary>
+        /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
+        /// <param name="face">The face to perform the test on. It will not be Reduced2D!</param>
+        /// <param name="v">The vertex to be tested.</param>
+        /// <returns></returns>
+        public static bool IsPointInPolygon(this Geometry geometry, Face face, float3 v)
+        {
+            var inside = false;
+            var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
+
+            var v1 = geometry.GetVertexByHandle(faceVerts.LastItem().Handle);
+            var v1Pos = geometry.Get2DVertPos(face, v1.Handle);
+
+            var y0 = v1Pos.y >= v.y;
+
+            foreach (var vert in faceVerts)
+            {
+                var e1Pos = vert.VertData.Pos;
+
+                var y1 = e1Pos.y >= v.y;
+                if (y0 != y1)
+                {
+                    if ((e1Pos.y - v.y) * (v1Pos.x - e1Pos.x) >=
+                        (e1Pos.x - v.x) * (v1Pos.y - e1Pos.y) == y1)
                     {
                         inside = !inside;
                     }
