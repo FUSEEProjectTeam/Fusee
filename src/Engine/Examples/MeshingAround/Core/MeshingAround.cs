@@ -57,8 +57,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Points = new List<float3>
                 {
                     new float3(1, 0, 0),
-                    new float3(1, 1, 0),
-                    new float3(0, 1, 0),
+                    new float3(1, 0.707f, 0.707f),
+                    new float3(0, 0.707f, 0.707f),
                     new float3(0, 0, 0)
                 },
                 IsOuter = true
@@ -77,13 +77,14 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             var geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
             var geomOne = new Geometry(geomOutlinesOne);
-            geomOne.Extrude2DPolygon(0.5f);
+            geomOne.Extrude2DPolygon(0.5f, true);
             geomOne.Triangulate();
             var meshOne = new JometriMesh(geomOne);
 
             var geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
             var geomCube = new Geometry(geomCubeOutlines);
-            geomCube.Extrude2DPolygon(1);
+            geomCube.Extrude2DPolygon(1, false);
+            //geomCube.Extrude2DPolygon(1, true);
             geomCube.Triangulate();
             var cube = new JometriMesh(geomCube);
 

@@ -408,20 +408,23 @@ namespace Fusee.Jometri.DCEL
         public IEnumerable<Vertex> GetFaceVertices(int fHandle)
         {
             //Outer boundaries
-            var fistHalfEdgeHandle = GetFaceByHandle(fHandle).OuterHalfEdge;
-            var halfEdgeOuter = GetHalfEdgeByHandle(fistHalfEdgeHandle);
-
-            do
+            var face = GetFaceByHandle(fHandle);
+            if (face.OuterHalfEdge != 0)
             {
-                var originVert = halfEdgeOuter.OriginVertex;
-                yield return GetVertexByHandle(originVert);
-                halfEdgeOuter = GetHalfEdgeByHandle(halfEdgeOuter.NextHalfEdge);
+                var fistHalfEdgeHandle = face.OuterHalfEdge;
+                var halfEdgeOuter = GetHalfEdgeByHandle(fistHalfEdgeHandle);
 
-            } while (halfEdgeOuter.Handle != fistHalfEdgeHandle);
+                do
+                {
+                    var originVert = halfEdgeOuter.OriginVertex;
+                    yield return GetVertexByHandle(originVert);
+                    halfEdgeOuter = GetHalfEdgeByHandle(halfEdgeOuter.NextHalfEdge);
+
+                } while (halfEdgeOuter.Handle != fistHalfEdgeHandle);
+            }
 
             //Inner boundaries
-            var face = GetFaceByHandle(fHandle);
-
+            
             var innerComponents = face.InnerHalfEdges;
 
             if (innerComponents.Count == 0) yield break;

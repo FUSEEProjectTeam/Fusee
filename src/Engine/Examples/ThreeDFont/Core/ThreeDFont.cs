@@ -51,7 +51,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             stopGeometry.Stop();
 
             stopExtr.Start();
-            geom.Extrude2DPolygon(2000);
+            geom.Extrude2DPolygon(2000, false);
             stopExtr.Stop();
 
             stopTri.Start();

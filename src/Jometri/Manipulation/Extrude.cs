@@ -11,16 +11,16 @@ namespace Fusee.Jometri.Manipulation
     /// </summary>
     public static class Extrude
     {
-        //zOffset will be added to each vertex's z coordinate.
         /// <summary>
-        /// Extrudes a trinagulated 2D geometry.
+        /// Extrudes a complete planar geometry.
         /// </summary>
         /// <param name="geometry">The geometry to be extruded.</param>
-        /// <param name="zOffset">zOffset will be added to each vertex's z coordinate in order to create the backface of the geometry.</param>
+        /// <param name="offset">zOffset will be used to create the new vertices.</param>
+        /// <param name="extrudeAlongNormal">Pass 'true' if you want do extrude the polygon along its normal and 'false' if you want to extrude along the worlds z axis.</param>
         /// <returns></returns>
-        public static Geometry Extrude2DPolygon(this Geometry geometry, float zOffset)
+        public static Geometry Extrude2DPolygon(this Geometry geometry, float offset, bool extrudeAlongNormal)
         {
-            CreateBackface(geometry, zOffset);
+            CreateTopSurface(geometry, offset, extrudeAlongNormal);
             CreateSidefaces(geometry);
 
             var extrusion = new Geometry()
@@ -36,24 +36,41 @@ namespace Fusee.Jometri.Manipulation
             return extrusion;
         }
 
-        private static void CreateBackface(Geometry geometry, float zOffset)
+        private static void CreateTopSurface(Geometry geometry, float zOffset, bool exturdeAlongNormal)
         {
             //Clone frontface
             var backface = geometry.CloneGeometry();
             
+            if(!exturdeAlongNormal)
             //Add z value to each vertex coord
-            UpdateAllVertexZCoord(backface, zOffset);
+                UpdateVertexZCoord(backface, zOffset);
+            else
+            {
+                var unbounded = backface.GetFaceVertices(1).ToList();
+                var normal = GeometricOperations.CalculateFaceNormal(unbounded);
+                UpdateVertexZCoord(backface, unbounded, normal, zOffset);
+            }
 
             Join2DGeometries(geometry, backface);
         }
 
-        private static void UpdateAllVertexZCoord(Geometry geometry, float zOffset)
+        private static void UpdateVertexZCoord(Geometry geometry, float zOffset)
         {
             foreach (var vertkey in geometry.DictVertices.Keys.ToList())
             {
                 var v = geometry.DictVertices[vertkey];
                 v.VertData.Pos = new float3(v.VertData.Pos.x, v.VertData.Pos.y, v.VertData.Pos.z + zOffset);
                 geometry.DictVertices[vertkey] = v;
+            }
+        }
+
+        private static void UpdateVertexZCoord(Geometry backface, IEnumerable<Vertex> verts, float3 normal, float zOffset)
+        {
+            foreach (var v in verts)
+            {
+                var newPos = v.VertData.Pos + normal*zOffset;
+                var vert = new Vertex(v, newPos);
+                backface.DictVertices[vert.Handle] = vert;
             }
         }
 
@@ -68,7 +85,7 @@ namespace Fusee.Jometri.Manipulation
             {
                 var frontEdgeLoop = geometry.GetHalfEdgeLoop(frontLoopsStartHalfEdges[i]).ToList();
                 var backEdgeLoop = geometry.GetHalfEdgeLoopReverse(backLoopsStartHalfEdges[i]).ToList();
-                
+
                 var newHalfEdges = new List<HalfEdge>();
 
                 var newFaces = new List<Face>();
@@ -93,7 +110,7 @@ namespace Fusee.Jometri.Manipulation
 
                     var newFace = new Face(geometry.CreateFaceHandleId(), newFromBack.Handle);
                     newFaces.Add(newFace);
-                    
+
                     geometry.DictFaces.Add(newFace.Handle, newFace);
 
                     newFromBack.IncidentFace = newFace.Handle;
@@ -156,9 +173,9 @@ namespace Fusee.Jometri.Manipulation
             var vertDictHelper = new Dictionary<int, Vertex>();
             foreach (var v in second.DictVertices)
             {
-                var vert = new Vertex(v.Value.Handle + highestVertHandle,v.Value.VertData.Pos);
+                var vert = new Vertex(v.Value.Handle + highestVertHandle, v.Value.VertData.Pos);
                 vert.IncidentHalfEdge = vert.IncidentHalfEdge + highestHalfEdgeHandle;
-                
+
                 vertDictHelper.Add(vert.Handle, vert);
             }
             second.DictVertices.Clear();
@@ -190,7 +207,7 @@ namespace Fusee.Jometri.Manipulation
             var heDictHelper = new Dictionary<int, HalfEdge>();
             foreach (var he in second.DictHalfEdges)
             {
-                var halfEdge = new HalfEdge(he.Value.Handle+ highestHalfEdgeHandle, he.Value);
+                var halfEdge = new HalfEdge(he.Value.Handle + highestHalfEdgeHandle, he.Value);
 
                 halfEdge.IncidentFace = halfEdge.IncidentFace + first.HighestFaceHandle;
                 halfEdge.OriginVertex = halfEdge.OriginVertex + first.HighestVertHandle;
@@ -229,7 +246,7 @@ namespace Fusee.Jometri.Manipulation
             var secUnboundedHalfEdges = new List<HalfEdge>();
             foreach (var he in first.GetAllHalfEdges())
             {
-                if(he.IncidentFace == secUnbounded.Handle)
+                if (he.IncidentFace == secUnbounded.Handle)
                     secUnboundedHalfEdges.Add(he);
             }
 
@@ -245,13 +262,11 @@ namespace Fusee.Jometri.Manipulation
             //Add faces to first and recalculate face normals (because of changed winding).
             foreach (var face in second.DictFaces)
             {
-                first.DictFaces.Add(face.Key,face.Value);
+                first.DictFaces.Add(face.Key, face.Value);
                 first.SetFaceNormal(first.GetFaceOuterVertices(face.Key).ToList(), first.DictFaces[face.Key]);
             }
 
             first.SetHighestHandles();
         }
-
-       
     }
 }

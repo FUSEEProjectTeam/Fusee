@@ -37,6 +37,20 @@ namespace Fusee.Jometri.DCEL
             VertData = new VertexData { Pos = pos };
         }
 
+        /// <summary>
+        /// Constructor for creating a new Vertex fromn an old one, changing its coordinate.
+        /// </summary>
+        /// <param name="vert">The old vertex.</param>
+        /// <param name="newPos">The new coordinate of the vertex.</param>
+        public Vertex(Vertex vert, float3 newPos)
+        {
+            Handle = vert.Handle;
+            IncidentHalfEdge = vert.IncidentHalfEdge;
+            VertData = vert.VertData;
+
+            VertData.Pos = newPos;
+        }
+
         #region  Overloading comparison operators
 
         /// <summary>
