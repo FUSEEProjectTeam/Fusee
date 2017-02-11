@@ -150,7 +150,7 @@ namespace Fusee.Jometri
 
             foreach (var vert in faceVerts)
             {
-                var e1Pos = vert.VertData.Pos;
+                var e1Pos = geometry.Get2DVertPos(face, vert.Handle);
 
                 var y1 = e1Pos.y >= v.y;
                 if (y0 != y1)

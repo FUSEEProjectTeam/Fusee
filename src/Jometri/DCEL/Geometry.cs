@@ -722,9 +722,13 @@ namespace Fusee.Jometri.DCEL
             {
                 var he = heWithSameFaceP[i];
                 var face = GetFaceByHandle(he.IncidentFace);
-                var diagMiddPoint = (1 - 0.5f) * vertP.VertData.Pos + 0.5f * vertQ.VertData.Pos;
 
-                if (!this.IsPointInPolygon(face, diagMiddPoint)) continue;
+                if(face.Handle == 1) continue;
+
+                var diagMiddPoint = (1 - 0.5f) * vertP.VertData.Pos + 0.5f * vertQ.VertData.Pos;
+                var redMidd = diagMiddPoint.Reduce2D(face.FaceData.FaceNormal);
+                 
+                if (!this.IsPointInPolygon(face, redMidd)) continue;
 
                 foreach (var heP in heWithSameFaceP)
                 {
