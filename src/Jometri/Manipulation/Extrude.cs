@@ -174,7 +174,7 @@ namespace Fusee.Jometri.Manipulation
             foreach (var v in second.DictVertices)
             {
                 var vert = new Vertex(v.Value.Handle + highestVertHandle, v.Value.VertData.Pos);
-                vert.IncidentHalfEdge = vert.IncidentHalfEdge + highestHalfEdgeHandle;
+                vert.IncidentHalfEdge = v.Value.IncidentHalfEdge + highestHalfEdgeHandle;
 
                 vertDictHelper.Add(vert.Handle, vert);
             }

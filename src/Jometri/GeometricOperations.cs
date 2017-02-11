@@ -250,9 +250,6 @@ namespace Fusee.Jometri
         /// <returns></returns>
         public static IEnumerable<HalfEdge> GetHalfEdgesWChangedWinding(this Geometry geometry, IEnumerable<HalfEdge> originHEdges)
         {
-
-            var vertKeys = geometry.DictVertices.Keys;
-
             foreach (var hEdge in originHEdges)
             {
                 var he = hEdge;
