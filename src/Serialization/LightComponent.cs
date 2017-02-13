@@ -13,7 +13,7 @@ namespace Fusee.Serialization
         /// </summary>
         Point,
         /// <summary>
-        /// Parallel light. Emits parallel rays into a specified direction.
+        /// Parallel light. Emits parallel rays into a specified direction. No attenuation.
         /// </summary>
         Parallel,
         /// <summary>
@@ -21,6 +21,10 @@ namespace Fusee.Serialization
         /// rays depending on their direction.
         /// </summary>
         Spot,
+        /// <summary>
+        /// Simple infinite Softbox at CameraPosition
+        /// </summary>
+        Legacy
     }
 
     /// <summary>

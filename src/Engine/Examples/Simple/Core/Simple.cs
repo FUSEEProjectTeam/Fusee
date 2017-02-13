@@ -88,25 +88,32 @@ namespace Fusee.Engine.Examples.Simple.Core
                     {
                         Active = true,
                         AmbientCoefficient = 0f,
-                        Attenuation = 0.5f,
+                        Attenuation = 0.9f,
                         Color = new float3(0.9f,0.9f,0.9f),
                         ConeAngle = 45f,
                         ConeDirection = new float3(0,1,1),
                         Position = new float3(0, 0, 0),
-                       Type = LightType.Parallel
+                       Type = LightType.Point
                     },
-                    new TransformComponent()
+                    new TransformComponent
                     {
                         Rotation = float3.Zero,
                         Scale = float3.One * 100f,
                         Translation = float3.Zero
                     },
-                    new MeshComponent()
+                    new MeshComponent
                     {
                         Normals = cube.Normals,
                         Triangles = cube.Triangles,
                         UVs = cube.UVs,
                         Vertices = cube.Vertices
+                    },
+                    new MaterialComponent
+                    {
+                        Diffuse = new MatChannelContainer
+                        {
+                            Color = float3.One
+                        }
                     }
                 }
 
@@ -171,14 +178,14 @@ namespace Fusee.Engine.Examples.Simple.Core
             transform.Translation = new float3(transform.Translation.x + Keyboard.ADAxis * 2.5f, transform.Translation.y + Keyboard.WSAxis * 2.5f, transform.Translation.z + Keyboard.UpDownAxis * 2.5f);
             var light = _rocketScene.Children[8].GetComponent<LightComponent>();
             light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2.5f, light.Position.y + Keyboard.WSAxis * 2.5f, light.Position.z + Keyboard.UpDownAxis * 2.5f);
-
+            
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
             var mtxScale = float4x4.CreateScale(1f);
 
-              RC.ModelView = mtxCam * mtxRot * mtxScale; 
+            RC.ModelView = mtxCam * mtxRot * mtxScale; 
 
 
             

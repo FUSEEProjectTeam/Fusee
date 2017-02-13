@@ -139,7 +139,7 @@ namespace Fusee.Engine.Core
     }
 
     /// <summary>
-    /// All supported lightning calculation methods ShaderCodeBuilder.cs supports.
+    /// All supported lightning calculation methods LegacyShaderCodeBuilder.cs supports.
     /// </summary>
     // ReSharper disable InconsistentNaming
     public enum LightningCalculationMethod
@@ -274,13 +274,13 @@ namespace Fusee.Engine.Core
                     PositionWorldSpace = float3.UnitZ,
                     Position = float3.UnitZ,
                     Active = true,
-                    AmbientCoefficient = 0.2f,
-                    Attenuation = 3000,
-                    Color = new float3(0.4f, 0.4f, 0.4f),
+                    AmbientCoefficient = 0.0f,
+                    Attenuation = 0,
+                    Color = new float3(0.9f, 0.9f, 0.9f),
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
-                    Type = LightType.Parallel
+                    Type = LightType.Legacy
                 });
             }
            
@@ -1178,23 +1178,23 @@ namespace Fusee.Engine.Core
         {
             WeightComponent wc = CurrentNode.GetWeights();
 
-            ForwardShaderCodeBuilder scb = null;
+            ShaderCodeBuilder scb = null;
 
-            // If MaterialLightCompoenent is found call the ShaderCodeBuilder with the MaterialLight
-            // The ShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
+            // If MaterialLightCompoenent is found call the LegacyShaderCodeBuilder with the MaterialLight
+            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
                 var lightMat = mc as MaterialLightComponent;
-                if (lightMat != null) scb = new ForwardShaderCodeBuilder(lightMat, null, wc);
+                if (lightMat != null) scb = new ShaderCodeBuilder(lightMat, null, wc);
             }
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 var pbrMaterial = mc as MaterialPBRComponent;
-                if (pbrMaterial != null) scb = new ForwardShaderCodeBuilder(pbrMaterial, null, wc);
+                if (pbrMaterial != null) scb = new ShaderCodeBuilder(pbrMaterial, null, wc);
             }
             else
             {
-                scb = new ForwardShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
             }
 
             var effectParameters = AssembleEffectParamers(mc, scb);
@@ -1223,7 +1223,7 @@ namespace Fusee.Engine.Core
             throw new Exception("Material could not be evaluated or be built!");
         }
     
-        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ForwardShaderCodeBuilder scb)
+        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -1316,28 +1316,7 @@ namespace Fusee.Engine.Core
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
-            // TODO: Check if this is needed at all?
-            // Any light calculation needed at all?
-           /* if (mc.HasDiffuse || mc.HasSpecular)
-            {
-                // Light calculation parameters
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightColorName,
-                    Value = new float3(1, 1, 1)
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightIntensityName,
-                    Value = (float)1
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightDirectionName,
-                    Value = new float3(0, 0, 1)
-                });
-            } */
-
+           
             SetLightEffectParameters(ref effectParameters);
 
             return effectParameters;
