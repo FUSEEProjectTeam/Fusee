@@ -77,7 +77,8 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
 
-           
+            var cube = new Cube();
+            
             _rocketScene.Children.Add(new SceneNodeContainer
             {
                 Children = new List<SceneNodeContainer>(),
@@ -85,19 +86,35 @@ namespace Fusee.Engine.Examples.Simple.Core
                 {
                     new LightComponent
                     {
-                          Active = true,
-                        AmbientCoefficient = 0.01f,
-                        Attenuation = 1000f,
-                        Color = new float3(0.2f,0.2f,0.2f),
+                        Active = true,
+                        AmbientCoefficient = 0f,
+                        Attenuation = 0.5f,
+                        Color = new float3(0.9f,0.9f,0.9f),
                         ConeAngle = 45f,
                         ConeDirection = new float3(0,1,1),
-                        Position = new float3(0,600, 5f),
+                        Position = new float3(0, 0, 0),
                        Type = LightType.Parallel
                     },
                     new TransformComponent()
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One * 100f,
+                        Translation = float3.Zero
+                    },
+                    new MeshComponent()
+                    {
+                        Normals = cube.Normals,
+                        Triangles = cube.Triangles,
+                        UVs = cube.UVs,
+                        Vertices = cube.Vertices
+                    }
                 }
 
             });
+
+       
+          
+        
 
             _rocketScene.Children[0].Children[0].Name = "cube";
 
@@ -105,7 +122,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true, false);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, false, false);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -150,14 +167,11 @@ namespace Fusee.Engine.Examples.Simple.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
+            var transform = _rocketScene.Children[8].GetComponent<TransformComponent>();
+            transform.Translation = new float3(transform.Translation.x + Keyboard.ADAxis * 2.5f, transform.Translation.y + Keyboard.WSAxis * 2.5f, transform.Translation.z + Keyboard.UpDownAxis * 2.5f);
             var light = _rocketScene.Children[8].GetComponent<LightComponent>();
-            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 0.1f, light.Position.y + Keyboard.WSAxis * 0.1f, light.Position.z + Keyboard.UpDownAxis * 0.1f);
-            var lightPos = light.Position;
-            var lightCone = light.ConeDirection;
-            lightCone.Normalize();
-            _rocketScene.Children[8].Components[0] = light;
-            var debug = _rocketScene.Children[8].Components[0] as LightComponent;
-           // Diagnostics.Log($"Pos: {debug.Position}");
+            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2.5f, light.Position.y + Keyboard.WSAxis * 2.5f, light.Position.z + Keyboard.UpDownAxis * 2.5f);
+
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);

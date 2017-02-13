@@ -649,8 +649,12 @@ namespace Fusee.Engine.Core
             var outputString = "";
 
             outputString += "vec3 N = vMVNormal;\n";
-            outputString += "vec3 L = normalize(position - surfacePos.xyz);\n";
-            outputString += "vec3 V = normalize(vViewDir - surfacePos.xyz);\n";
+            outputString += "vec3 L = normalize(position - surfacePos.xyz);\n"; // Position needed for Spot-, Parallel- and PointLight
+            // check for LegacyLight and fallback to leagacy
+            outputString += "if(lightType == 3) // PointLight\n";
+            outputString += "   L = normalize(-surfacePos.xyz);\n"; // legacy mode
+
+            outputString += "vec3 V = normalize(-surfacePos.xyz);\n"; // View is always -surfacePos due to light calculation in ModelViewSpace
             outputString += "vec2 o_texcoords = vUV;\n";
             outputString += "\n";
             outputString += "\n";
@@ -689,14 +693,14 @@ namespace Fusee.Engine.Core
         private static string ParallelLightCalculation()
         {
             var returnString = "";
-            returnString += "result = Iamb + (1.0-shadowFactor) *  (Idif + Ispe);\n";
+            returnString += "result = Iamb + diffuseColor * (1.0-shadowFactor) * (Idif + Ispe);\n";
             return returnString;
         }
 
         private static string PointLightCalculation()
         {
             var returnString = "\n";
-            returnString += "result = Iamb + diffuseColor  * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
+            returnString += "result = Iamb + diffuseColor * (1.0-shadowFactor) * (Idif + Ispe) * att;\n";
 
             return returnString;
         }
@@ -723,12 +727,22 @@ namespace Fusee.Engine.Core
             return returnString;
         }
 
+        /// <summary>
+        /// (saturate(1 − (distance/lightRadius)^4)^2) / (distance^2 + 1)
+        /// </summary>
+        /// <returns></returns>
         private static string AttenuationFunction()
         {
             var returnString = "";
-            returnString += "float distanceToLight = distance(position, surfacePos.xyz);\n";
-            returnString += "float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
-            returnString += "att *= att;\n";
+            returnString += "float distanceToLight = clamp(distance(position, surfacePos.xyz), 0.0, 1.0);\n";
+            returnString += "float distance = pow(distanceToLight/attenuation,4.0);\n";
+            returnString += "float att = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);\n";
+           // returnString += "float att = clamp(1.0 - distanceToLight*distanceToLight/(attenuation*attenuation), 0.0, 1.0);\n";
+           //returnString += "float att = 1.0 / (1.0 +  attenuation * pow(distanceToLight, 10.0));\n";
+            // returnString += "att *= att;\n";
+            //returnString += "float att = pow(clamp(1.0 - distanceToLight / attenuation, 0.0, 1.0), 2.0);\n";
+            //returnString += "float att = 1.0 / ( pow( (distanceToLight / attenuation) + 1.0, 2.0) );\n";
+
             return returnString;
         }
 

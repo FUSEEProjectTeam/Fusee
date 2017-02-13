@@ -168,8 +168,8 @@ namespace Fusee.Engine.Core
         // Multipass
         private bool _renderWithShadows;
         private bool _renderDeferred;
-        private bool _wantToRenderWithShadows;
-        private bool _wantToRenderDeferred;
+        private readonly bool _wantToRenderWithShadows;
+        private readonly bool _wantToRenderDeferred;
         public float2 ShadowMapSize { set; get; } = new float2(1024,1024);
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace Fusee.Engine.Core
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
         private Animation _animation;
-        private SceneContainer _sc;
+        private readonly SceneContainer _sc;
 
         private RenderContext _rc;
 
@@ -475,7 +475,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-
         private void RenderWithShadow(RenderContext rc)
         {
 
@@ -513,7 +512,7 @@ namespace Fusee.Engine.Core
                 StateSet = new RenderStateSet
                 {
                     //CullMode = Cull.Clockwise // This is not working due to the fact, that we cant change the RenderStateSet for the normal render pass
-                    // therefore we are using GL.Cull(Front / Back) in RenderContextImp!
+                    //therefore we are using GL.Cull(Front / Back) in RenderContextImp!
                 }
             };
             var effectParameter = new List<EffectParameterDeclaration>
@@ -1175,10 +1174,9 @@ namespace Fusee.Engine.Core
             return returnEffectParameterDeclaration;
         }
 
-        private ShaderEffect ForwardRenderPathMaterial(MaterialComponent mc)
+        private ShaderEffect MakeMaterial(MaterialComponent mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
-
 
             ForwardShaderCodeBuilder scb = null;
 
@@ -1223,11 +1221,6 @@ namespace Fusee.Engine.Core
             }
 
             throw new Exception("Material could not be evaluated or be built!");
-        }
-    
-        private ShaderEffect MakeMaterial(MaterialComponent mc)
-        {
-            return ForwardRenderPathMaterial(mc);
         }
     
         private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ForwardShaderCodeBuilder scb)

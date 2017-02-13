@@ -195,7 +195,7 @@ namespace Fusee.Engine.Core
             // LightComponent found, add Light struct
             ps.Append("\n\n " +
                       "uniform struct Light {\n" +
-                      "vec4 position;\n" +
+                      "vec3 position;\n" +
                       "vec3 intensities;\n" +
                       "vec3 coneDirection;\n" +
                       "float attenuation;\n" +
