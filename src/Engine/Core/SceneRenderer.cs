@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
@@ -465,10 +466,13 @@ namespace Fusee.Engine.Core
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
 
+                // copy depthbuffer to current buffer
+             rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);
+
                     // Set RenderTarget to Screenbuffer, but before, copy z-buffer from deferred pass to screenbuffer
                     // TODO: Evaluate if this could be written better.
-                    rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture, true);
-                    //rc.SetRenderTarget(null);
+                    // rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
+                rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
                 
@@ -543,7 +547,7 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
         }
 
-        private static void CreateGBufferDrawPassEffect(RenderContext rc)
+        private  void CreateGBufferDrawPassEffect(RenderContext rc)
         {
 
             var effectPass = new EffectPassDeclaration[1];
@@ -560,7 +564,8 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gScreenSize", Value = new float2(10, 10) }
+                new EffectParameterDeclaration { Name = "vViewPos", Value = _rc.InvModelView.Column3.xyz },
+                new EffectParameterDeclaration { Name = "lightPosition", Value = AllLightResults[0].PositionModelViewSpace }
             };
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -723,6 +728,7 @@ namespace Fusee.Engine.Core
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
                     RenderDeferredModelPass(rm, effect);
+                    // Copy framebuffer to frontbuffer
                 }
                 else
                 {
@@ -788,11 +794,11 @@ namespace Fusee.Engine.Core
             // Set Light(s)
             var lightPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("lightPosition");
                 if(lightPosition != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, AllLightResults[0].Position);
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, AllLightResults[0].PositionWorldSpace);
                     // use the ModelView from pass before
+            Debug.WriteLine(AllLightResults[0].Position);
 
-
-                DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
+            DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
 
 
              /*for (var i = 0; i < _lightComponents.Count; i++)

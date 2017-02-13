@@ -82,6 +82,7 @@ namespace Fusee.Engine.Core
                 uniform mat4 FUSEE_ITMV;
                 uniform mat4 FUSEE_MV;
                 uniform mat4 FUSEE_IMV;
+                uniform mat4 FUSEE_M;
                 
                 varying vec2 uv;
                 varying vec3 normal;
@@ -90,15 +91,16 @@ namespace Fusee.Engine.Core
 
                 void main()
                 {
-                    normal =  normalize(mat3(FUSEE_ITMV) * fuNormal);
+                    normal =  normalize(fuNormal);
 	                uv = fuUV;
 
                     vec3 viewPos = FUSEE_IMV[3].xyz;
-                    vViewDir = fuVertex;
+                   
 
 	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                    surfacePos =  (FUSEE_M * vec4(fuVertex, 1.0)).xyz;
 
-                    surfacePos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;
+                    vViewDir = normalize(viewPos - surfacePos);
 
                 }";
         }
@@ -139,17 +141,12 @@ namespace Fusee.Engine.Core
             return GlslVersion() + @"
 
                 attribute vec3 fuVertex;
-                attribute vec3 fuNormal;
                 attribute vec2 fuUV;                
                 
-                varying vec2 uv; 
-
-                uniform mat4 FUSEE_IMV;
-                varying vec3 viewPos;
+                varying vec2 uv;       
 
                 void main()
-                {
-                    viewPos = FUSEE_IMV[3].xyz;
+                {                  
 	                gl_Position = vec4(fuVertex, 1.0);
                     uv = fuUV;
                 }";
@@ -164,51 +161,40 @@ namespace Fusee.Engine.Core
                 #endif       
                 
                 varying vec2 uv;
-                varying vec3 viewPos;
                 
+                uniform mat4 FUSEE_IMV;
+
                 uniform sampler2D gPosition;
                 uniform sampler2D gNormal;
                 uniform sampler2D gAlbedoSpec;
                 uniform sampler2D gDepth;
                 uniform sampler2D gViewDir;
 
-                uniform vec3 lightPosition;
+                uniform vec3 lightPosition;   // <-- needs to be in some special view space?            
 
-
-                vec3 diffuseLighting(vec3 N, vec3 L, vec3 color) {
-                    float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0);
-                    return (color * diffuseTerm);
-                }
-                
-            vec3 specularLighting(vec3 N, vec3 L, vec3 V) {
-                float specularTerm = 0.0;
-                if(dot(N, L) > 0.0) {
-                    vec3 H = normalize(L + V);
-                    specularTerm = max(0.0, pow(dot(N, H), 2.0));
-                }
-               return (vec3(0.5,0.5,0.5));
-            }
-                
             // TODO: Custom Light and Material Params
             void main()
             { 
                 vec3 surfacePos = texture2D(gPosition, uv).xyz;
-                vec3 normal = texture2D(gNormal, uv).xyz;
+                vec3 normal = texture2D(gNormal, uv).rgb;
                 vec3 albedo = texture2D(gAlbedoSpec, uv).xyz;
                 float specularIntensity = texture2D(gPosition, uv).a;                 
                 vec3 vViewDir = texture2D(gViewDir, uv).xyz;
-                
-                vViewDir = normalize(vViewDir - viewPos);
 
-                vec3 L = normalize(lightPosition - surfacePos.xyz); 
-                vec3 N = normal;
-                vec3 V = normalize(vViewDir - surfacePos.xyz);
+                //vec3 viewPos = normalize(vViewDir - surfacePos);
 
-                vec3 result = vec3(0);
+                vec3 L = normalize(surfacePos); 
+                vec3 N = normal;          
+                vec3 V = normalize(vViewDir - surfacePos);              
 
-                result = diffuseLighting(N,L,albedo);
-                result += specularLighting(N, L, V);
-                gl_FragColor = vec4(result, 1);
+                vec3 h = normalize(L + V);
+
+                float diffFactor = dot(L, N);
+
+                vec3 result = max(diffFactor, 0.0) * albedo + pow(max(0.0, dot(h, N)), 2.0) * vec3(0.5,0.5,0.5);                
+                //result = max(diffFactor, 0.0) * albedo;            
+
+                gl_FragColor = vec4(result, 1.0);
 
             }";
         }

@@ -236,6 +236,12 @@ namespace Fusee.Engine.Common
         ITexture CreateTexture(ImageData imageData, bool repeat);
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="texture"></param>
+        void CopyDepthBufferFromDeferredBuffer(ITexture texture);
+
+        /// <summary>
         /// Creates a new writable texture and binds it to the shader.
         /// This is done by creating a framebuffer and a renderbuffer (if needed).
         /// All bufferhandles are returned with the texture.
@@ -438,7 +444,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="texture">The texture as target</param>
         /// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
-        void SetRenderTarget(ITexture texture, bool deferredNormalPass = false);
+        void SetRenderTarget(ITexture texture);
 
         /*
          * TODO: NO tangent space normal maps at this time...

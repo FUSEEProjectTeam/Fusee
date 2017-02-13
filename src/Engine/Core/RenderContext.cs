@@ -963,6 +963,11 @@ namespace Fusee.Engine.Core
             return _rci.CreateTexture(imgData, repeat);
         }
 
+        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        {
+            _rci.CopyDepthBufferFromDeferredBuffer(texture);
+        }
+
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
         /// This is done by creating a framebuffer and a renderbuffer (if needed).
@@ -1537,11 +1542,9 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        /// <param name="deferredNormalPass">If this is true, the rendertarget is set to the main screen,
-        /// but before the content of the first pass's z-Buffer is copied to main screen buffer (needed for G-Buffer).</param>
-        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        public void SetRenderTarget(ITexture texture)
         {
-            _rci.SetRenderTarget(texture, deferredNormalPass);
+            _rci.SetRenderTarget(texture);
         }
 
 
