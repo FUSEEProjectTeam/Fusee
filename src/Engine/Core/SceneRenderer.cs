@@ -564,8 +564,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "vViewPos", Value = _rc.InvModelView.Column3.xyz },
-                new EffectParameterDeclaration { Name = "lightPosition", Value = AllLightResults[0].PositionModelViewSpace }
+                new EffectParameterDeclaration { Name = "lightPosition", Value = AllLightResults[0].PositionWorldSpace }
             };
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -785,28 +784,20 @@ namespace Fusee.Engine.Core
                 if (gAlbedoSpec != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, DeferredShaderHelper.GBufferTexture, GBufferHandle.GAlbedoHandle);
 
+                var gDepth = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
+                if (gDepth != null)
+                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.GDepth);
 
-                var gViewDir = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gViewDir");
-                if (gViewDir != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gViewDir, DeferredShaderHelper.GBufferTexture, GBufferHandle.GViewDir);
-
-              
             // Set Light(s)
-            var lightPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("lightPosition");
-                if(lightPosition != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParam(lightPosition, AllLightResults[0].PositionWorldSpace);
-                    // use the ModelView from pass before
-            Debug.WriteLine(AllLightResults[0].Position);
+            DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("lightPosition", AllLightResults[0].PositionWorldSpace);
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
-
 
              /*for (var i = 0; i < _lightComponents.Count; i++)
                {
                    UpdateLightParamsInPixelShader(i, _lightComponents[i], effect);
 
                }*/
-
         }
 
         private void RenderFirstShadowPass(Mesh rm)

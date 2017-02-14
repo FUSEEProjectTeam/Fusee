@@ -19,9 +19,9 @@
         /// </summary>
         GAlbedoHandle = 2,
         /// <summary>
-        /// The vViewDir = FUSEE_IMV[3].xyz - fuVertex data handle
+        /// The Depth from z-Buffer
         /// </summary>
-        GViewDir = 3
+        GDepth = 3
     }
 
     /// <summary>

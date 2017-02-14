@@ -301,7 +301,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var gBufferPositionTextureHandle = 0;
             var gBufferNormalTextureHandle = 0;
             var gBufferAlbedoTextureHandle = 0;
-            var gBufferViewDirTextureHandle = 0;
 
             // Renderbuffer
             var gDepthRenderbufferHandle = 0;
@@ -326,38 +325,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindTexture(TextureTarget.Texture2D, gBufferNormalTextureHandle);
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gBufferNormalTextureHandle, 0);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-              (int)TextureMinFilter.Nearest);
+                (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Nearest);
 
             // Color - default 8bit texture is enough
             GL.GenTextures(1, out gBufferAlbedoTextureHandle);
             GL.BindTexture(TextureTarget.Texture2D, gBufferAlbedoTextureHandle);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.Float, IntPtr.Zero);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gBufferAlbedoTextureHandle, 0);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
                (int)TextureMinFilter.Nearest);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Nearest);
-
-            // ViewDir
-            GL.GenTextures(1, out gBufferViewDirTextureHandle);
-            GL.BindTexture(TextureTarget.Texture2D, gBufferViewDirTextureHandle);
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb32f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, gBufferViewDirTextureHandle, 0);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-               (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int)TextureMagFilter.Nearest);
-
-
+            
 
             // Tell OpenGL which color attachments we will use (of this framebuffer) for rendering:
             var attachements = new[]
             {
                 DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1,
-                DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3
+                DrawBuffersEnum.ColorAttachment2
             };
 
             GL.DrawBuffers(attachements.Length, attachements);
@@ -386,7 +375,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 gBufferAlbedoSpecTextureHandle = gBufferAlbedoTextureHandle,
                 gBufferNormalTextureHandle = gBufferNormalTextureHandle,
                 gDepthRenderbufferHandle = gDepthRenderbufferHandle,
-                gBufferViewDirTextureHandle = gBufferViewDirTextureHandle,
 
                 textureWidth = width,
                 textureHeight = height
@@ -905,6 +893,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+  
         }
 
         /// <summary>
@@ -930,8 +919,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     ((Texture)texId).handle = ((Texture)texId).gBufferAlbedoSpecTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
-                case GBufferHandle.GViewDir:
-                    ((Texture)texId).handle = ((Texture)texId).gBufferViewDirTextureHandle;
+                case GBufferHandle.GDepth:
+                    ((Texture)texId).handle = ((Texture)texId).gDepthRenderbufferHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 default:

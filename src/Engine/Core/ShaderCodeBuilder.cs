@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core
             // Add ModelViewSpace normals for lightning calculation
             returnString += "vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);\n";
 
-            // lightning calculation
+            // lighting calculation
             returnString += "surfacePos =  FUSEE_MV * vec4(fuVertex, 1.0); \n";
             returnString += "shadowLight = shadowMVP * surfacePos; \n";
 

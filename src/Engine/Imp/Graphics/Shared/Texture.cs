@@ -20,7 +20,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal int gBufferNormalTextureHandle;
         internal int gBufferAlbedoSpecTextureHandle;
         internal int gDepthRenderbufferHandle;
-        internal int gBufferViewDirTextureHandle;
 
         internal int textureWidth;
         internal int textureHeight;
