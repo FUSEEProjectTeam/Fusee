@@ -212,6 +212,10 @@ namespace Fusee.Tools.fuConv
                         Console.WriteLine($"No texture filepaths set");
                     }
 
+                    // Extract the main .fus name
+                    string fusfileNameNoExt = Path.GetFileNameWithoutExtension(opts.Input);
+
+
                     string htmlFileDir = opts.Output;
                     string thisPath = Assembly.GetExecutingAssembly().Location;
                     thisPath = thisPath.Remove(thisPath.LastIndexOf(Path.DirectorySeparatorChar));
@@ -223,13 +227,19 @@ namespace Fusee.Tools.fuConv
                         File.Delete(sceneFileDir);
                     }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
-                    if (File.Exists(origHtmlFilePath))
-                        File.Delete(origHtmlFilePath);
 
-                    //Copy
+                    // Delete any old html file.
+                    string htmlFileName = $"{fusfileNameNoExt}.html";
+                    string htmlFilePath = Path.Combine(htmlFileDir, htmlFileName);
+                    if (File.Exists(htmlFilePath))
+                        File.Delete(htmlFilePath);
+
+                    // Copy the entire web player
                     DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
-                    
+
+                    // Rename the viewer html file from its generic name to the name trunk of the exported .fus file
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
+                    File.Move(origHtmlFilePath, htmlFilePath);
 
                     // Check and open input file
                     string inputFormat = Path.GetExtension(opts.Input).ToLower();
@@ -298,7 +308,7 @@ namespace Fusee.Tools.fuConv
                         _httpServer.HtDocsRoot = htmlFileDir;
                     }
                     Console.WriteLine($"Server running");
-                    Process.Start("http://localhost:4655/" + origHtmlFilePath);
+                    Process.Start("http://localhost:4655/" + htmlFileName);
                 })
 
                 // ERROR on the command line

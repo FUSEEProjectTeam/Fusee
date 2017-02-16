@@ -13,6 +13,7 @@ mono64.lib
 *.VC.opendb
 *.so.recipe
 
+## Blender Python Scripts
 
 ##
 ## .gitignore from https://github.com/github/gitignore/blob/master/CSharp.gitignore
