@@ -22,17 +22,18 @@ namespace Fusee.Jometri
             //Set of orthonormal vectors
             normal.Normalize(); //new z axis
 
-            /*if (normal == float3.UnitZ)
+            if (normal == float3.UnitZ)
             {
-                var rotMat = float4x4.CreateRotationY(M.Pi);
-                return vertPos * rotMat;
-            }*/
+                var rot = new float3x3(-1, 0, 0,
+                                        0, 1, 0,
+                                        0, 0, 1);
+                return vertPos * rot;
+            }
+
+            if (normal == float3.UnitZ*-1)
+                return vertPos;
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
-
-            //float3.Cross ==  float3.Zero if the two vectors are parallel to each other - if the normal is parallel to the z  axis the z component of the vertPos must be 0 already
-            if (v2 == float3.Zero)
-                return vertPos;
 
             v2.Normalize();
             var v3 = float3.Cross(normal, v2); //new y axis

@@ -42,7 +42,7 @@ namespace Fusee.Jometri.Manipulation
             var backface = geometry.CloneGeometry();
             
             if(!exturdeAlongNormal)
-            //Add z value to each vertex coord
+                //Add z value to each vertex coord
                 UpdateVertexZCoord(backface, zOffset);
             else
             {
@@ -92,18 +92,15 @@ namespace Fusee.Jometri.Manipulation
 
                 for (var j = 0; j < frontEdgeLoop.Count; j++)
                 {
-                    var heHandleFront = frontEdgeLoop[j];
-                    var halfEdgeFront = heHandleFront;
+                    var halfEdgeFront = frontEdgeLoop[j];
+                    var halfEdgeInBack = backEdgeLoop[j];
 
-                    var heHandleBack = backEdgeLoop[j];
-                    var halfEdgeInBack = heHandleBack;
-
-                    var backTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeInBack.NextHalfEdge).OriginVertex;
-                    var frontTargetVert = geometry.GetHalfEdgeByHandle(halfEdgeFront.NextHalfEdge).OriginVertex;
+                    var backOriginVert = geometry.GetHalfEdgeByHandle(halfEdgeInBack.NextHalfEdge).OriginVertex;
+                    var frontOriginVert = geometry.GetHalfEdgeByHandle(halfEdgeFront.NextHalfEdge).OriginVertex;
 
                     var newFromBack = new HalfEdge(geometry.CreateHalfEdgeHandleId())
                     {
-                        OriginVertex = backTargetVert,
+                        OriginVertex = backOriginVert,
                         NextHalfEdge = halfEdgeFront.Handle,
                         PrevHalfEdge = halfEdgeInBack.Handle
                     };
@@ -117,7 +114,7 @@ namespace Fusee.Jometri.Manipulation
 
                     var newFromFront = new HalfEdge(geometry.CreateHalfEdgeHandleId())
                     {
-                        OriginVertex = frontTargetVert,
+                        OriginVertex = frontOriginVert,
                         NextHalfEdge = halfEdgeInBack.Handle,
                         PrevHalfEdge = halfEdgeFront.Handle,
                         IncidentFace = newFace.Handle

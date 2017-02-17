@@ -356,7 +356,7 @@ namespace Fusee.Jometri.DCEL
             }
 
             if (newHeTargetVert == default(int))
-                throw new ArgumentException("target vert not found");
+                throw new ArgumentException("Target vertex not found!");
 
             var heStartingAtOldV = _geometry.GetVertexStartingHalfEdges(halfEdge.OriginVertex).ToList();
 

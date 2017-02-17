@@ -43,7 +43,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             stopOutlines.Start();
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
-            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(20);
+            var outlines = _threeDFontHelper.GetTextOutlinesWAngle(10);
             stopOutlines.Stop();
 
             stopGeometry.Start();

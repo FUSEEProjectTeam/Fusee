@@ -532,7 +532,7 @@ namespace Fusee.Jometri.DCEL
             var face = GetFaceToInsertDiag(p, q, ref pStartHe, ref qStartHe);
 
             if (this.IsVertexAdjacentToVertex(p, q, pStartHe, qStartHe))
-                throw new ArgumentException("A diagonal can not be insertet beween adjacent Vertices!");
+                throw new ArgumentException("A diagonal can't be inserted between adjacent Vertices!");
 
             var newFromP = new HalfEdge(CreateHalfEdgeHandleId());
             var newFromQ = new HalfEdge(CreateHalfEdgeHandleId());
