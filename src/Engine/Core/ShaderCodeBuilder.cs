@@ -1,4 +1,4 @@
-﻿#define DEBUG
+﻿//#define DEBUG
 
 using System.Text;
 using Fusee.Base.Core;
@@ -493,7 +493,7 @@ namespace Fusee.Engine.Core
                     shadow /= 32.0;
                 */
 
-                   shadow = currentDepth - 0.0001 > pcfDepth ? 1.0 : 0.0;         
+                   shadow = currentDepth - 0.01 > pcfDepth ? 1.0 : 0.0;         
 
                  if (projCoords.z > 1.0)
                         shadow = 0.0;
@@ -509,7 +509,7 @@ namespace Fusee.Engine.Core
             returnString += "vec3 diffuseLighting(vec3 N, vec3 L, vec3 intensities)\n";
             returnString += "{\n";
             returnString += "   // calculation as for Lambertian reflection\n";
-            returnString += "   float diffuseTerm = clamp(dot(N, L) / (length(L) * length(N)), 0.0, 1.0) ;\n";
+            returnString += "   float diffuseTerm = clamp(dot(N, L), 0.0, 1.0) ;\n";
             if (_hasDiffuseTexture)
                 returnString +=
                     $"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} * diffuseTerm * intensities;\n";
@@ -621,7 +621,6 @@ namespace Fusee.Engine.Core
             returnString += "vec3 result = vec3(0.0);\n";
             returnString += "for(int i = 0; i < MAX_LIGHTS;i++)\n";
             returnString += "{\n";
-            returnString += "Light currentLight = allLights[0];\n";
             // TODO: Evaluate if this works with intel GLSL:
             returnString += @"
                 vec3 currentPosition = allLights[i].position;
@@ -651,8 +650,8 @@ namespace Fusee.Engine.Core
             outputString += "vec3 N = vMVNormal;\n";
             outputString += "vec3 L = normalize(position - surfacePos.xyz);\n"; // Position needed for Spot-, Parallel- and PointLight
             // check for LegacyLight and fallback to leagacy
-            outputString += "if(lightType == 3) // PointLight\n";
-            outputString += "   L = normalize(-surfacePos.xyz);\n"; // legacy mode
+            outputString += "if(lightType == 3) // LegacyLight\n";
+            outputString += "   L = normalize(vec3(0.0,0.0,-1.0));\n"; // legacy mode
 
             outputString += "vec3 V = normalize(-surfacePos.xyz);\n"; // View is always -surfacePos due to light calculation in ModelViewSpace
             outputString += "vec2 o_texcoords = vUV;\n";

@@ -145,7 +145,7 @@ namespace Fusee.Engine.Core
     // ReSharper disable InconsistentNaming
     public enum LightningCalculationMethod
     {
-        /// <summary>
+        /// <summary> 
         /// Simple Blinn Phong Shading without fresnel & distribution function
         /// </summary>
         SIMPLE,
@@ -209,8 +209,6 @@ namespace Fusee.Engine.Core
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
-
-
 
         #endregion
 
@@ -458,25 +456,23 @@ namespace Fusee.Engine.Core
             
             if (DeferredShaderHelper.GBufferDrawPassShaderEffect == null)
                 CreateGBufferDrawPassEffect(rc);
-            
-         {
+
+            if (DeferredShaderHelper.GBufferPassShaderEffect != null)
+                DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
+
                     // Set RenderTarget to gBuffer
                     rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
                     //rc.SetRenderTarget(null);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
 
-                // copy depthbuffer to current buffer
-             rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);
-
-                    // Set RenderTarget to Screenbuffer, but before, copy z-buffer from deferred pass to screenbuffer
-                    // TODO: Evaluate if this could be written better.
-                    // rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
-                rc.SetRenderTarget(null);
-                    Traverse(_sc.Children);
+                    // copy depthbuffer to current buffer
+                    rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);                    
+                    rc.SetRenderTarget(null);
+                    RenderDeferredLightPass();
+                    //Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
-                
-            }
+
         }
 
         private void RenderWithShadow(RenderContext rc)
@@ -537,6 +533,7 @@ namespace Fusee.Engine.Core
                 PS = DeferredShaderHelper.DeferredPassPixelShader(),
                 StateSet = new RenderStateSet()
             };
+            
             var effectParameter = new List<EffectParameterDeclaration>
                         {
                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.One },
@@ -547,8 +544,10 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
         }
 
-        private  void CreateGBufferDrawPassEffect(RenderContext rc)
+        private void CreateGBufferDrawPassEffect(RenderContext rc)
         {
+            // Set MAXLights
+            DeferredShaderHelper.Maxlights = AllLightResults.Count;
 
             var effectPass = new EffectPassDeclaration[1];
             effectPass[0] = new EffectPassDeclaration
@@ -558,14 +557,18 @@ namespace Fusee.Engine.Core
                 StateSet = new RenderStateSet()
             };
 
+            Debug.WriteLine(DeferredShaderHelper.DeferredDrawPassPixelShader());
+
             var effectParameter = new List<EffectParameterDeclaration>
             {
                 new EffectParameterDeclaration { Name = "gPosition", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
                 new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "lightPosition", Value = AllLightResults[0].PositionWorldSpace }
+                new EffectParameterDeclaration { Name = "gScreenSize", Value = new float2(_rc.ViewportWidth, _rc.ViewportHeight) }
             };
+
+            SetLightEffectParameters(ref effectParameter);
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
             DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(rc);
@@ -731,7 +734,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    RenderDeferredLightPass();
+                    //RenderDeferredLightPass();
                 }
             }
             else
@@ -756,8 +759,9 @@ namespace Fusee.Engine.Core
             var diffuse = float3.One;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
                  diffuse = (float3) effect.GetEffectParam("DiffuseColor");
-
-         /*   var specularIntensity = 1.0f;
+            //Diagnostics.Log(diffuse);
+         
+            /*   var specularIntensity = 1.0f;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
                 specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
                 */
@@ -770,9 +774,14 @@ namespace Fusee.Engine.Core
         private void RenderDeferredLightPass() {
             
             if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
-         
-                // Set textures from first GBuffer pass
-                var gPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
+
+            var programm = _rc.CreateShader(DeferredShaderHelper.DeferredDrawPassVertexShader(),
+                DeferredShaderHelper.DeferredDrawPassPixelShader());
+
+            DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShader(programm);
+
+            // Set textures from first GBuffer pass
+            var gPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
                 if (gPosition != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, DeferredShaderHelper.GBufferTexture, GBufferHandle.GPositionHandle);
 
@@ -788,16 +797,34 @@ namespace Fusee.Engine.Core
                 if (gDepth != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.GDepth);
 
+            // Set Viewport
+            DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("gScreenSize", new float2(_rc.ViewportWidth, _rc.ViewportHeight));
+
+            for (var i = 0; i < _lightComponents.Count; i++)
+            {
+                UpdateGBufferDrawPassLights(i, _lightComponents[i], DeferredShaderHelper.GBufferDrawPassShaderEffect);
+            }
+
             // Set Light(s)
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("lightPosition", AllLightResults[0].PositionWorldSpace);
+            //DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("lightPosition", AllLightResults[0].PositionWorldSpace);
+
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
 
-             /*for (var i = 0; i < _lightComponents.Count; i++)
-               {
-                   UpdateLightParamsInPixelShader(i, _lightComponents[i], effect);
+        }
 
-               }*/
+        private static void UpdateGBufferDrawPassLights(int position, LightResult light, ShaderEffect effect)
+        {
+             if (!light.Active) return;
+
+                // Set params in model space since the lightning calculation is in model space!
+                effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
+                effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
+                effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
+                effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
+                effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
+                effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirectionWorldSpace);
+                effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
         }
 
         private void RenderFirstShadowPass(Mesh rm)

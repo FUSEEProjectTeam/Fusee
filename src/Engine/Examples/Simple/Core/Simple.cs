@@ -88,11 +88,11 @@ namespace Fusee.Engine.Examples.Simple.Core
                     new LightComponent
                     {
                         Active = true,
-                        AmbientCoefficient = 0f,
+                        AmbientCoefficient = 1f,
                         Attenuation = 0.9f,
                         Color = new float3(0.9f,0.9f,0.9f),
                         ConeAngle = 45f,
-                        ConeDirection = new float3(0,1,1),
+                        ConeDirection = new float3(0,0,1),
                         Position = new float3(0, 0, 0),
                        Type = LightType.Point
                     },
@@ -120,9 +120,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             });
 
-       
-          
-        
+
 
             _rocketScene.Children[0].Children[0].Name = "cube";
 
