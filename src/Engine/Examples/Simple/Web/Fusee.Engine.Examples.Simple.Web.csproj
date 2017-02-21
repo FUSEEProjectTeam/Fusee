@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Examples.Simple.Web</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.Simple.Web</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{DB21584F-4EA6-486A-9BDB-77D372CF1D64}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <FileAlignment>512</FileAlignment>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web\</FuseeWebOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!-- Debug settings normally in .csproj.user -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
+    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web\</FuseeWebOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE;PLATFORM_WEB</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <!-- Debug settings normally in .csproj.user -->
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <StartAction>Program</StartAction>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
+    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\Styles\browser.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Styles\loading_rocket.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <!--FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+      <Link>FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
+    </FUSEE_External_JavaScript>
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js">
+      <Link>FrameworkScripts\System.Configuration, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a.js</Link>
+    </FUSEE_External_JavaScript>
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+      <Link>FrameworkScripts\System.Xml, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
+    </FUSEE_External_JavaScript>
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+      <Link>FrameworkScripts\System, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
+    </FUSEE_External_JavaScript>
+    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
+      <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
+    </FUSEE_External_JavaScript-->
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Base\Imp\Web\Fusee.Base.Imp.Web.csproj">
+      <Project>{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}</Project>
+      <Name>Fusee.Base.Imp.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>Fusee.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
+      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+      <Name>Fusee.Engine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
+      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+      <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj">
+      <Project>{82a2d997-b7ac-41d9-a166-65fcfed2114d}</Project>
+      <Name>Fusee.Engine.Imp.Graphics.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
+      <Project>{c4157bcb-d3a0-45c6-a84b-735fbd8c7aa8}</Project>
+      <Name>Fusee.Engine.Examples.Simple.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+  <!--PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup -->
+  <!--Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
+  </Target>
+  <Import Project="$(SolutionDir)Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(SolutionDir)Fusee_Unix.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " / -->
+</Project>
