@@ -505,27 +505,32 @@ namespace Fusee.Engine.Core
             SetContext(rc);
 
             if (DeferredShaderHelper.EnvMapTexture == null)
-                DeferredShaderHelper.EnvMapTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.GBuffer);
+                DeferredShaderHelper.EnvMapTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.CubeMap);
 
-            if (DeferredShaderHelper.EnvMapPassShaderEffect == null)
+            if(DeferredShaderHelper.EnvMapPassShaderEffect == null)
                 CreateEnvMapPassEffect(rc);
 
             if (DeferredShaderHelper.EnvMapPassShaderEffect != null)
-                DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
+                    DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
 
             // Set RenderTarget to EnvMap
-            rc.SetRenderTarget(DeferredShaderHelper.EnvMapTexture);
-            Traverse(_sc.Children);
+            for (var i = 0; i < 6; i++) // render all sides
+            {
+                rc.SetCubeMapRenderTarget(DeferredShaderHelper.EnvMapTexture, i);
+                DeferredShaderHelper.EnvMapTextureOrientation = i;
+                Traverse(_sc.Children);
+            }
             DeferredShaderHelper.CurrentRenderPass++;
-       
+
             rc.SetRenderTarget(null);
             Traverse(_sc.Children);
             DeferredShaderHelper.CurrentRenderPass--;
-
         }
 
         private static void CreateEnvMapPassEffect(RenderContext rc)
         {
+         
+
             var effectPass = new EffectPassDeclaration[1];
              effectPass[0] = new EffectPassDeclaration
             {
@@ -539,7 +544,8 @@ namespace Fusee.Engine.Core
                 };
                 var effectParameter = new List<EffectParameterDeclaration>
                 {
-                    new EffectParameterDeclaration {Name = "Texture", Value = float3.One }
+                    new EffectParameterDeclaration {Name = "ViewMatrix", Value = float4x4.Identity},
+                    new EffectParameterDeclaration {Name = "DiffuseColor", Value = new float3(0.5f,0.5f,0.5f)},
                 };
 
                 DeferredShaderHelper.EnvMapPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
@@ -628,7 +634,7 @@ namespace Fusee.Engine.Core
                 StateSet = new RenderStateSet()
             };
 
-            Debug.WriteLine(DeferredShaderHelper.DeferredDrawPassPixelShader());
+            //Debug.WriteLine(DeferredShaderHelper.DeferredDrawPassPixelShader());
 
             var effectParameter = new List<EffectParameterDeclaration>
             {
@@ -805,7 +811,7 @@ namespace Fusee.Engine.Core
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
-                    RenderEnvMapFirstPass(rm);
+                    RenderEnvMapFirstPass(rm, effect);
                 }
                 else
                 {
@@ -901,33 +907,59 @@ namespace Fusee.Engine.Core
                 effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
         }
 
-        private static void RenderEnvMapFirstPass(Mesh rm)
+        private void RenderEnvMapFirstPass(Mesh rm, ShaderEffect effect)
         {
+            var View = float4x4.Identity;
+
+            switch (DeferredShaderHelper.EnvMapTextureOrientation)
+            {
+                case 0:
+                    View = float4x4.LookAt(0, 0, 0, 1, 0, 0, 0, 1, 0);
+                    break; 
+                case 1:
+                    View = float4x4.LookAt(0, 0, 0, -1, 0, 0, 0, 1, 0);
+                    break;
+                case 2:
+                    View = float4x4.LookAt(0, 0, 0, 0, 10, 0, 1, 0, 0);
+                    break;
+                case 3:
+                    View = float4x4.LookAt(0, 0, 0, 0, -10, 0, 1, 0, 0);
+                    break;
+                case 4:
+                    View = float4x4.LookAt(0, 0, 0, 0, 0, 10, 0, 1, 0);
+                    break;
+                case 5:
+                    View = float4x4.LookAt(0, 0, 0, 0, 0, -10, 0, 1, 0);
+                    break;
+            }
+
+            View = _rc.Projection * View * _state.Model;
+
             if (AllLightResults.Count == 0) return;
 
-            // Set Values here
+            var diffuse = float3.One;
+            if (effect.GetEffectParam("DiffuseColor") != null)
+                diffuse = (float3)effect.GetEffectParam("DiffuseColor");
 
-            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("LightMVP", DeferredShaderHelper.ShadowMapMVP);
+            // Set Values here
+            //DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("cube_texture", DeferredShaderHelper.EnvMapTexture);
+            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("DiffuseColor", new float3(0.5f,0.2f,0.1f));
+            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("ViewMatrix", View);
             DeferredShaderHelper.EnvMapPassShaderEffect.RenderMesh(rm);
+
         }
 
         private void RenderEnvMapSecondPass(Mesh rm, ShaderEffect effect)
         {
             if (effect._rc.CurrentShader == null) return;
-
-            /*
+            
             // Set ShaderParams
-            var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
-            if (handleLight != null)
-                effect._rc.SetShaderParam(handleLight, DeferredShaderHelper.ShadowMapMVP);
-
-            var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
+            var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "envMap");
             if (handle != null)
-                effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.ShadowTexture);
-                */
+                effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.EnvMapTexture, GBufferHandle.EnvMap);
+               
             // Now we can render a normal pass
             RenderStandardPass(rm, effect);
-
         }
 
 

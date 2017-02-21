@@ -21,7 +21,8 @@
         /// <summary>
         /// The Depth from z-Buffer
         /// </summary>
-        GDepth = 3
+        GDepth = 3,
+        EnvMap = 4
     }
 
     /// <summary>
@@ -36,7 +37,7 @@
         /// <summary>
         /// 
         /// </summary>
-        DepthCubeMap,
+        CubeMap,
         /// <summary>
         /// 
         /// </summary>

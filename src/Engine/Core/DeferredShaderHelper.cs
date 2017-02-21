@@ -17,6 +17,8 @@ namespace Fusee.Engine.Core
         public static ITexture GBufferTexture = null;
         public static ITexture EnvMapTexture = null;
 
+        public static int EnvMapTextureOrientation = 0;
+
         public static Mesh Quad = new FullscreenQuad();
 
         public static int Maxlights = 1;
@@ -266,19 +268,16 @@ namespace Fusee.Engine.Core
                 uniform mat4 FUSEE_MV;
                 uniform mat4 FUSEE_IMV;
                 uniform mat4 FUSEE_M;
-                
-                varying vec2 uv;
+
                 varying vec3 normal;
-                varying vec3 surfacePos;
-                varying vec3 vViewDir;
+                
+                uniform mat4 ViewMatrix;
+
 
                 void main()
                 {
-                    normal =  normalize(mat3(FUSEE_ITMV) * fuNormal);	                
-                   
-	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                    vec3 viewpos = normalize(FUSEE_IMV[3].xyz - fuVertex);
-                    uv = viewpos;
+                    normal =  normalize(mat3(FUSEE_ITMV) * fuNormal);
+	                gl_Position = ViewMatrix * vec4(fuVertex, 1.0);
                 }";
 
 
@@ -287,11 +286,19 @@ namespace Fusee.Engine.Core
                     precision highp float
                 #endif      
                    
-                varying vec3 uv;
-                uniform samplerCube cube_texture;
+                uniform vec3 DiffuseColor;
+                varying vec3 normal;
+
+                vec3 diffuseLighting(vec3 N, vec3 L)
+                {
+                   // calculation as for Lambertian reflection
+                   float diffuseTerm = clamp(dot(N, L), 0.0, 1.0) ;
+                  return (DiffuseColor * diffuseTerm);
+                }
 
                 void main() {
-                    gl_FragColor = texture(cube_texture, uv);
+                    vec3 diff = diffuseLighting(normal, vec3(0.0,0.0,-1.0));
+                    gl_FragColor = vec4(diff, 1.0);
                 }";
 
 

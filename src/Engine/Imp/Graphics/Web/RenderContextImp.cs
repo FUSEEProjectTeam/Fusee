@@ -307,6 +307,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
             //throw new NotImplementedException();
         }
 
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            throw new NotImplementedException();
+        }
+
+      
+
         [JSExternal]
         public ImageData GetPixelColor(int x, int y, int w, int h)
         {

@@ -205,7 +205,7 @@ namespace Fusee.Engine.Core
             pixelStringBuilder.Append(PixelBody());
             // Return PS
             PS = pixelStringBuilder.ToString();
-
+          
         }
 
         private string PixelBPRShaderMethods()
@@ -220,8 +220,12 @@ namespace Fusee.Engine.Core
                 returnString += DiffuseLightMethod();
 
             // Specular Light
-            if (_hasSpecular)
+            if (_hasSpecular && _lightingCalculationMethod == LightingCalculationMethod.ADVANCED)
                 returnString += NDFLightMethod();
+            
+            // Specular Light
+            else if (_hasSpecular && _lightingCalculationMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
+                returnString += NDFEnvMapLightMethod();
 
             // Shadows
             returnString += ShadowFactorMethod();
@@ -229,6 +233,64 @@ namespace Fusee.Engine.Core
             return returnString;
         }
 
+        private string NDFEnvMapLightMethod()
+        {
+            // needed for . instead of , in european culture
+            var culture = System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
+
+            var returnString = "";
+            returnString += "// returns intensity of diffuse reflection with Cook-Torrance NDF \n";
+            returnString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, vec3 intensities) { \n";
+            returnString += $"float roughnessValue = {string.Format(culture, "{0:0.#####}", _pbrRoughness)}; // 0 : smooth, 1: rough \n";
+            returnString += $"float F0 = {string.Format(culture, "{0:0.#####}", _pbrFresnel)}; // fresnel reflectance at normal incidence \n";
+            returnString += $"float k = {string.Format(culture, "{0:0.#####}", _pbrDiffuse)}; // fraction of diffuse reflection (specular reflection = 1 - k)\n";
+            returnString += @"
+              
+                // do the lighting calculation for each fragment.
+                float NdotL = max(dot(N, L), 0.0);
+    
+                float specular = 0.0;
+                if(NdotL > 0.0)
+                {
+                    // calculate intermediary values
+                    vec3 H = normalize(L + V);
+                    float NdotH = max(dot(N, H), 0.0); 
+                    float NdotV = max(dot(N, V), 0.0); // note: this could also be NdotL, which is the same value
+                    float VdotH = max(dot(V, H), 0.0);
+                    float mSquared = roughnessValue * roughnessValue;
+        
+                    // geometric attenuation
+                    float NH2 = 2.0 * NdotH;
+                    float g1 = (NH2 * NdotV) / VdotH;
+                    float g2 = (NH2 * NdotL) / VdotH;
+                    float geoAtt = min(1.0, min(g1, g2));
+     
+                    // roughness (or: microfacet distribution function)
+                    // beckmann distribution function
+                    /* float r1 = 1.0 / ( 4.0 * mSquared * pow(NdotH, 4.0));
+                    float r2 = (NdotH * NdotH - 1.0) / (mSquared * NdotH * NdotH);
+                    float roughness = r1 * exp(r2); */
+                    
+                    // roughness (or: microfacet distribution function)
+                    // Trowbridge-Reitz or GGX, GTR2
+                    float NdotHSquared = dot(N, H) * dot(N, H);
+                    float r1 = (pow(NdotHSquared, 2.0) * (mSquared - 1.0) + 1.0);
+                    float r2 = 3.14 * pow(r1, 2.0);
+                    float roughness = mSquared / r2;
+
+                    // fresnel
+                    // Schlick approximation
+                    float fresnel = pow(1.0 - VdotH, 5.0);
+                    fresnel *= (1.0 - F0);
+                    fresnel += F0;
+        
+                    specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);                    
+                } 
+                    return intensities * (k + specular * (1.0 - k));            }
+            ";
+
+            return returnString;
+        }
 
         private string NDFLightMethod()
         {
@@ -436,6 +498,7 @@ namespace Fusee.Engine.Core
                 ? "gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);\n"
                 : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);\n";
 
+
             // End of main
             returnString += "}\n";
 
@@ -491,6 +554,10 @@ namespace Fusee.Engine.Core
 
             // Multipass
             returnString += "uniform sampler2D firstPassTex;\n";
+            returnString += "uniform samplerCube envMap;\n";
+
+            returnString += "  uniform mat4 FUSEE_IMV;\n";
+            returnString += "  uniform mat4 FUSEE_IV;\n";
 
             // Shadow
             returnString += "varying vec4 shadowLight;\n";
@@ -738,6 +805,8 @@ namespace Fusee.Engine.Core
             // ApplyLightMethod
             returnString += ApplyLightMethod();
 
+            //returnString += "uniform mat4 FUSEE_IMV;";
+
             // Begin of main()
             returnString += "void main() {";
 
@@ -758,7 +827,21 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, " +
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);\n";
             returnString += "}\n";
-            returnString += "gl_FragColor = vec4(result,1.0);\n";
+
+            returnString += @"
+
+
+                vec3 N = vMVNormal;
+                vec3 eyeRay = normalize(surfacePos.xyz-FUSEE_IMV[3].xyz);
+                vec3 reflectVec = reflect(vViewDir, N);
+                vec3 R = reflect(vViewDir, normalize(N));
+
+
+                vec3 reflection = textureCube(envMap, normalize(N)).rgb;   
+               
+"; 
+
+            returnString += "gl_FragColor = vec4(reflection, 1.0);\n";
 
 
             // End of main()
@@ -766,7 +849,7 @@ namespace Fusee.Engine.Core
 
             return returnString;
         }
-
+        
         private string ApplyLightParams()
         {
             var outputString = "";

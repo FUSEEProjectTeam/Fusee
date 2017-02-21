@@ -270,8 +270,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case WritableTextureFormat.Depth:
                         returnTexture = CreateDepthFramebuffer(width, height);
                         break;
-                        case WritableTextureFormat.DepthCubeMap:
-                        returnTexture = CreateDepthCubeMapFramebuffer(width, height);
+                        case WritableTextureFormat.CubeMap:
+                        returnTexture = CreateCubeMapFramebuffer(width, height);
                         break;
                         case WritableTextureFormat.GBuffer:
                         returnTexture = CreateGBufferFramebuffer(width, height);
@@ -444,14 +444,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return new Texture { handle = textureHandle, fboHandle = fboHandle };
         }
 
-        private static Texture CreateDepthCubeMapFramebuffer(int width ,int height)
+        private static Texture CreateCubeMapFramebuffer(int width ,int height)
         {
 
             //throw new NotImplementedException("Currently not implemented!");
 
             var cubeMapTextureHandle = 0;
-            var textureHandle = 0;
-            var depthMapFBO = 0;
+            var depthBuffer = 0;
+            var framebuffer = 0;
 
             // Create a shadow texture
             GL.GenTextures(1, out cubeMapTextureHandle);
@@ -469,27 +469,30 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                (int)TextureWrapMode.ClampToEdge);
 
             // HDR Texture
-
-            for (var i = 0; i < 6; i++)
+             for (var i = 0; i < 6; i++) 
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.R32f, width, height, 0,
                     OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
+            
+            // create the fbo
+            GL.GenFramebuffers(1, out framebuffer);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
 
-            // Create FBO
-            GL.GenFramebuffers(1, out depthMapFBO);
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, depthMapFBO);
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
-                TextureTarget.Texture2D, cubeMapTextureHandle, 0);
-
-            // Disable writes to the color buffer
-            GL.DrawBuffer(DrawBufferMode.None);
-            GL.ReadBuffer(ReadBufferMode.None);
+            // create the uniform depth buffer
+            GL.GenRenderbuffers(1, out depthBuffer);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+          
+            // Bind normal buffer again
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            //GL.BindTexture(TextureTarget.TextureCubeMap, 0);
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
-
-            return new Texture { handle = cubeMapTextureHandle, fboHandle = depthMapFBO };
+            
+            return new Texture { handle = cubeMapTextureHandle, fboHandle = framebuffer };
         }
 
         #endregion
@@ -785,6 +788,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         paramInfo.Type = typeof (ITexture);
                         break;
 
+                    case ActiveUniformType.SamplerCube:
+                        paramInfo.Type = typeof(ITexture);
+                        break;
+
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -914,7 +921,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
-  
         }
 
         /// <summary>
@@ -941,6 +947,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 case GBufferHandle.GDepth:
                     ((Texture)texId).handle = ((Texture)texId).gBufferDepthTextureHandle;
+                    SetShaderParamTexture(param, texId);
+                    break;
+                case GBufferHandle.EnvMap:
+                    ((Texture)texId).handle = ((Texture)texId).handle;
                     SetShaderParamTexture(param, texId);
                     break;
                 default:
@@ -1027,7 +1037,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int program = GL.CreateProgram();
             GL.AttachShader(program, fragmentObject);
-            GL.AttachShader(program, vertexObject);
+            GL.AttachShader(program, vertexObject); 
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
             GL.BindAttribLocation(program, Helper.VertexAttribLocation, Helper.VertexAttribName);
@@ -1885,6 +1895,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="texture"></param>
+        /// <param name="position"></param>
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            var textureImp = (Texture)texture;
+
+      
+
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            // bind correct texture
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + position, textureImp.handle, 0);
+            
+            // Enable writes to the color buffer
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
+
+        }
+        /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
@@ -1895,11 +1925,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // If texture is null bind frambuffer 0, this is the main screen
             if (textureImp == null)
             {
-               // GL.CullFace(CullFaceMode.Back);
-
+                // GL.CullFace(CullFaceMode.Back);
                 // Enable writes to the color buffer
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
-               
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
             }
             // FBO Handle is set -> ShadowMap
             else if (textureImp.fboHandle != -1)
@@ -1922,24 +1951,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
               
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
-            } /*
-            else if (deferredNormalPass && textureImp.gBufferHandle != -1) // TODO: Move to SceneRenderer
-            {
-                // Copy depth to normal buffer
-                GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gDepthRenderbufferHandle);
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
-                // copy depth
-                var width = textureImp.textureWidth;
-                var height = textureImp.textureHeight;
-                GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
-
-                // Now we bind the standard framebuffer an can render lights width depth
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-               // GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Fill);
-            } */
+            } 
         }
 
-
+        
 
 
         /// <summary>

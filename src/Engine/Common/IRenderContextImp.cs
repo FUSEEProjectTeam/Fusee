@@ -446,6 +446,13 @@ namespace Fusee.Engine.Common
         /// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
         void SetRenderTarget(ITexture texture);
 
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        /// <param name="position">The texture position within a cubemap</param>
+        void SetCubeMapRenderTarget(ITexture texture, int position);
+
         /*
          * TODO: NO tangent space normal maps at this time...
          * 

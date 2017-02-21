@@ -76,7 +76,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1,1,1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
 
             var cube = new Cube();
 
@@ -169,6 +169,16 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _rocketScene.Children[0].Children[1].Components[1] = newPbrmat3;
             }
 
+        
+
+
+            /*     _rocketScene.Children[0].AddComponent(new TransformComponent()
+                 {
+                     Vertices = cube.Vertices,
+                     Normals = cube.Normals,
+                     Triangles = cube.Triangles,
+                     UVs = cube.UVs
+                 });*/
 
             //_rocketScene.Children[0].Children[0].Name = "cube";
 
@@ -229,8 +239,8 @@ namespace Fusee.Engine.Examples.Simple.Core
     */
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            //var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
+            //var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
             var mtxScale = float4x4.CreateScale(1f);
 
             RC.ModelView = mtxCam * mtxRot * mtxScale; 
@@ -265,7 +275,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 200000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000000);
             RC.Projection = projection;
 
 #if GUI_SIMPLE
