@@ -12,8 +12,10 @@ namespace Fusee.Engine.Core
         public static ShaderEffect ShadowPassShaderEffect = null;
         public static ShaderEffect GBufferPassShaderEffect = null;
         public static ShaderEffect GBufferDrawPassShaderEffect = null;
+        public static ShaderEffect EnvMapPassShaderEffect = null;
         public static ITexture ShadowTexture = null;
         public static ITexture GBufferTexture = null;
+        public static ITexture EnvMapTexture = null;
 
         public static Mesh Quad = new FullscreenQuad();
 
@@ -110,7 +112,7 @@ namespace Fusee.Engine.Core
                 
                 varying vec2 uv;
                 varying vec3 normal;
-                varying vec4 surfacePos;
+                varying vec3 surfacePos;
                 varying vec3 vViewDir;
 
                 void main()
@@ -132,21 +134,23 @@ namespace Fusee.Engine.Core
                    
                 varying vec2 uv;
                 varying vec3 normal;
-                varying vec4 surfacePos;
+                varying vec3 surfacePos;
                 varying vec3 vViewDir;
        
                 uniform vec3 DiffuseColor;
+                uniform sampler2D tDiffuse;
                 uniform vec3 SpecularIntensity;
                 
             void main()
             { 
                 // Store the fragment position vector in the first gbuffer texture
-                gl_FragData[0] = surfacePos;
+                gl_FragData[0] = vec4(surfacePos,1.0);
                 // Also store the per-fragment normals into the gbuffer
                 gl_FragData[1] = vec4(normal,1.0);
                 // And the diffuse per-fragment color   
                 // Store specular intensity in gAlbedoSpec's alpha component                     
-                gl_FragData[2] = vec4(DiffuseColor,1.0);
+                gl_FragData[2] = vec4(DiffuseColor, 1.0);
+                gl_FragData[3] = vec4(gl_FragCoord.rrr, 1.0);
           }";
         }
 
@@ -155,7 +159,8 @@ namespace Fusee.Engine.Core
             return GlslVersion() + @"
 
                 attribute vec3 fuVertex;
-                attribute vec2 fuUV;                
+                attribute vec2 fuUV; 
+                           
                 
                 varying vec2 uv;       
 
@@ -186,30 +191,29 @@ namespace Fusee.Engine.Core
                 uniform sampler2D gDepth;
                 uniform sampler2D gViewDir;
 
-                uniform vec3 lightPosition;       
-                uniform vec3 Camera; 
-
                 uniform vec2 gScreenSize;
+
+                uniform mat4 FUSEE_MV;
 
                 vec2 CalcTexCoord()
                 {
                     return gl_FragCoord.xy / gScreenSize;
-                }                
-
+                }         
+                
             vec3 ApplyLight(vec3 position, vec3 intensities, vec3 coneDirection, float attenuation, float ambientCoefficient, float coneAngle, int lightType) {
-
 
                 vec3 surfacePos = texture2D(gPosition, CalcTexCoord()).rgb;
                 vec3 normal = texture2D(gNormal, CalcTexCoord()).rgb;
-                vec3 albedo = texture2D(gAlbedoSpec, CalcTexCoord()).rgb;
-                float specularIntensity = texture2D(gPosition, CalcTexCoord()).a;
+                vec3 albedo = texture2D(gAlbedoSpec, CalcTexCoord()).rgb;              
+                float specularIntensity = texture2D(gAlbedoSpec, uv).a;
+                float depth = texture2D(gDepth, CalcTexCoord()).r; 
 
                 vec3 CameraFromMatrix = FUSEE_IMV[3].xyz;
 
-                vec3 L = normalize(position - surfacePos);
-                //vec3 L = normalize(surfacePos);
-                vec3 N = normal;
-                vec3 V = normalize(-surfacePos);              
+                vec3 L = normalize(position - surfacePos.xyz); // This is parallel Light
+                //vec3 L = normalize(vec3(0.0,0.0,1.0)); // This is legacy light
+                vec3 N = normalize((normal * 0.5) + 0.5);
+                vec3 V = normalize(-surfacePos.xyz);              
 
                 vec3 H = normalize(L + V);
 
@@ -219,8 +223,8 @@ namespace Fusee.Engine.Core
                 if(diffFactor > 0.0)
                      specFactor = pow(max(dot(N, H), 0.0), 16.0);
 
-                return specFactor * vec3(0.9,0.9,0.9) + clamp(diffFactor, 0.0, 1.0) * albedo; 
-                   // return albedo;
+                //return specFactor * vec3(0.9,0.9,0.9)  + clamp(diffFactor, 0.0, 1.0) *  vec3(0.6,0.1,0.8) + albedo; // albedo does not work... 
+                return albedo;
             }   
 
 
@@ -251,7 +255,46 @@ namespace Fusee.Engine.Core
             }";
         }
 
-   
+
+        public static string EnvMapVertexShader = @"
+                attribute vec3 fuVertex;
+                attribute vec3 fuNormal;
+                attribute vec2 fuUV;
+
+                uniform mat4 FUSEE_MVP;
+                uniform mat4 FUSEE_ITMV;
+                uniform mat4 FUSEE_MV;
+                uniform mat4 FUSEE_IMV;
+                uniform mat4 FUSEE_M;
+                
+                varying vec2 uv;
+                varying vec3 normal;
+                varying vec3 surfacePos;
+                varying vec3 vViewDir;
+
+                void main()
+                {
+                    normal =  normalize(mat3(FUSEE_ITMV) * fuNormal);	                
+                   
+	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                    vec3 viewpos = normalize(FUSEE_IMV[3].xyz - fuVertex);
+                    uv = viewpos;
+                }";
+
+
+        public static string EnvMapPixelShader = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif      
+                   
+                varying vec3 uv;
+                uniform samplerCube cube_texture;
+
+                void main() {
+                    gl_FragColor = texture(cube_texture, uv);
+                }";
+
+
         public static Mesh DeferredFullscreenQuad()
         {
             return Quad;

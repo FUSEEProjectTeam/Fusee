@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core
         // Needed for MaterialLightComponent
         private bool _hasApplyLightString;
         private bool _hasFragmentString;
-        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+        private LightingCalculationMethod _lightingCalculationMethod = LightingCalculationMethod.SIMPLE;
 
 
         /*
@@ -751,17 +751,17 @@ namespace Fusee.Engine.Core
             if (_hasApplyLightString)
                 return;
 
-            switch (_lightningCalculationMethod)
+            switch (_lightingCalculationMethod)
             {
-                case LightningCalculationMethod.SIMPLE:
+                case LightingCalculationMethod.SIMPLE:
                     AddBlinnphongLightning(ps);
                     break;
-                case LightningCalculationMethod.ADVANCED:
+                case LightingCalculationMethod.ADVANCED:
                     // TODO: Convert material params to cook_torrance
                     AddcooktorranceLightning(ps);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Lightning calculation method: {_lightningCalculationMethod} not found!");
+                    throw new ArgumentOutOfRangeException($"Lightning calculation method: {_lightingCalculationMethod} not found!");
             }
 
             // TODO: To for loop for all lights

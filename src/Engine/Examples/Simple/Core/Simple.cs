@@ -73,62 +73,110 @@ namespace Fusee.Engine.Examples.Simple.Core
 #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
+            RC.ClearColor = new float4(1,1,1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("WuggyLand.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             var cube = new Cube();
-            
-            _rocketScene.Children.Add(new SceneNodeContainer
-            {
-                Children = new List<SceneNodeContainer>(),
-                Components = new List<SceneComponentContainer>
+
+            /*    _rocketScene.Children.Add(new SceneNodeContainer
                 {
-                    new LightComponent
+                    Children = new List<SceneNodeContainer>(),
+                    Components = new List<SceneComponentContainer>
                     {
-                        Active = true,
-                        AmbientCoefficient = 1f,
-                        Attenuation = 0.9f,
-                        Color = new float3(0.9f,0.9f,0.9f),
-                        ConeAngle = 45f,
-                        ConeDirection = new float3(0,0,1),
-                        Position = new float3(0, 0, 0),
-                       Type = LightType.Point
-                    },
-                    new TransformComponent
-                    {
-                        Rotation = float3.Zero,
-                        Scale = float3.One * 100f,
-                        Translation = float3.Zero
-                    },
-                    new MeshComponent
-                    {
-                        Normals = cube.Normals,
-                        Triangles = cube.Triangles,
-                        UVs = cube.UVs,
-                        Vertices = cube.Vertices
-                    },
-                    new MaterialComponent
-                    {
-                        Diffuse = new MatChannelContainer
+                        new LightComponent
                         {
-                            Color = float3.One
+                            Active = true,
+                            AmbientCoefficient = 0f,
+                            Attenuation = 0.9f,
+                            Color = new float3(0.9f,0.9f,0.9f),
+                            ConeAngle = 45f,
+                            ConeDirection = new float3(0,0,1),
+                            Position = new float3(0, 0, 0),
+                           Type = LightType.Legacy
+                        },
+                        new TransformComponent
+                        {
+                            Rotation = float3.Zero,
+                            Scale = float3.One * 100f,
+                            Translation = float3.Zero
+                        },
+                        new MeshComponent
+                        {
+                            Normals = cube.Normals,
+                            Triangles = cube.Triangles,
+                            UVs = cube.UVs,
+                            Vertices = cube.Vertices
+                        },
+                        new MaterialComponent
+                        {
+                            Diffuse = new MatChannelContainer
+                            {
+                                Color = float3.One
+                            }
                         }
                     }
-                }
 
-            });
-
+                }); */
 
 
-            _rocketScene.Children[0].Children[0].Name = "cube";
+            var oldMat = _rocketScene.Children[0].Components[1] as MaterialComponent;
+            if (oldMat != null)
+            {
+                var newPbrmat = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat.Diffuse,
+                    Specular = oldMat.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+          
+           
+                _rocketScene.Children[0].Components[1] = newPbrmat;
+            }
+
+            var oldMat2 = _rocketScene.Children[0].Children[0].Components[1] as MaterialComponent;
+            if (oldMat2 != null)
+            {
+                var newPbrmat2 = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat2.Diffuse,
+                    Specular = oldMat2.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+
+
+                _rocketScene.Children[0].Children[0].Components[1] = newPbrmat2;
+            }
+
+            var oldMat3 = _rocketScene.Children[0].Children[1].Components[1] as MaterialComponent;
+            if (oldMat3 != null)
+            {
+                var newPbrmat3 = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat3.Diffuse,
+                    Specular = oldMat3.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+
+
+                _rocketScene.Children[0].Children[1].Components[1] = newPbrmat3;
+            }
+
+
+            //_rocketScene.Children[0].Children[0].Name = "cube";
 
             // Wrap a SceneRenderer around the model.
             // Shadow
-            //_sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
+            //_sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightningCalculationMethod.SIMPLE, true);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.ADVANCEDwENVMAP);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
@@ -141,7 +189,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Clear the backbuffer
             // No backbuffer cleared here
-            RC.Clear(ClearFlags.Color);
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -172,16 +220,17 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-
+/*
             var transform = _rocketScene.Children[8].GetComponent<TransformComponent>();
             transform.Translation = new float3(transform.Translation.x + Keyboard.ADAxis * 2.5f, transform.Translation.y + Keyboard.WSAxis * 2.5f, transform.Translation.z + Keyboard.UpDownAxis * 2.5f);
             var light = _rocketScene.Children[8].GetComponent<LightComponent>();
             light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2.5f, light.Position.y + Keyboard.WSAxis * 2.5f, light.Position.z + Keyboard.UpDownAxis * 2.5f);
 
-
+    */
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
+            //var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
             var mtxScale = float4x4.CreateScale(1f);
 
             RC.ModelView = mtxCam * mtxRot * mtxScale; 

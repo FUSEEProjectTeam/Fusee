@@ -1,5 +1,7 @@
 ﻿//#define DEBUG
 
+using System;
+using System.Globalization;
 using System.Text;
 using Fusee.Base.Core;
 using Fusee.Serialization;
@@ -20,7 +22,8 @@ namespace Fusee.Engine.Core
         private readonly int _nBones;
         private string _applyLightString;
         private string _applyFragmentString;
-        private LightningCalculationMethod _lightningCalculationMethod;
+        private float _pbrRoughness, _pbrDiffuse, _pbrFresnel;
+        private LightingCalculationMethod _lightingCalculationMethod;
 
         // ReSharper disable once InconsistentNaming
         public string VS { get; private set; }
@@ -35,7 +38,7 @@ namespace Fusee.Engine.Core
         /// <param name="mesh">The MeshComponent</param>
         /// <param name="wc">Teh WeightComponent</param>
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
-            : this(mc, mesh, LightningCalculationMethod.SIMPLE, wc)
+            : this(mc, mesh, LightingCalculationMethod.SIMPLE, wc)
         {
            
         }
@@ -46,13 +49,13 @@ namespace Fusee.Engine.Core
         /// <param name="mc">The MaterialCpmponent</param>
         /// <param name="mesh">The MeshComponent</param>
         /// <param name="wc">The WeightComponent</param>
-        /// <param name="lightningCalculation">Method of lightning calculation; simple BLINN PHONG or advanced physically based</param>
+        /// <param name="lightingCalculation">Method of lightning calculation; simple BLINN PHONG or advanced physically based</param>
         public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh,
-            LightningCalculationMethod lightningCalculation = LightningCalculationMethod.SIMPLE,
+            LightingCalculationMethod lightingCalculation = LightingCalculationMethod.SIMPLE,
             WeightComponent wc = null)
         {
             // Set Lightnincalculation
-            _lightningCalculationMethod = lightningCalculation;
+            _lightingCalculationMethod = lightingCalculation;
 
             // first step, analyze Material
             AnalyzeMaterial(mc);
@@ -79,7 +82,13 @@ namespace Fusee.Engine.Core
             // Create VS
             CreateVertexShader();
             // Create PS
-            CreatePixelShader();
+            if (lightingCalculation == LightingCalculationMethod.ADVANCED && _isMaterialPBRComponent)
+                CreatePbrPixelShader();
+            else if (lightingCalculation == LightingCalculationMethod.ADVANCEDwENVMAP && _isMaterialPBRComponent)
+                CreatePbrEnvMapPixelShader();
+            else
+                CreatePixelShader();
+
 
 #if DEBUG
             Diagnostics.Log(VS);
@@ -109,8 +118,11 @@ namespace Fusee.Engine.Core
             if (typeof(MaterialPBRComponent).IsAssignableFrom(t))
             {
                 // TODO: Write correct physically based shaders
-                // mc = mc as MaterialPBRComponent;
+                 var mcPBR = mc as MaterialPBRComponent;
                 _isMaterialPBRComponent = true;
+                _pbrRoughness = mcPBR.RoughnessValue;
+                _pbrDiffuse = mcPBR.DiffuseFraction;
+                _pbrFresnel = mcPBR.FresnelReflectance;
             }
             if (typeof(MaterialLightComponent).IsAssignableFrom(t))
             {
@@ -163,6 +175,119 @@ namespace Fusee.Engine.Core
             pixelStringBuilder.Append(PixelBody());
             // Return PS
             PS = pixelStringBuilder.ToString();
+        }
+
+        private void CreatePbrPixelShader()
+        {
+            var pixelStringBuilder = new StringBuilder();
+            // Version
+            pixelStringBuilder.Append(Version());
+            // PixelInputs
+            pixelStringBuilder.Append(PixelInputDeclarations());
+            // PixelShaderMethods (specular, light, etc.)
+            pixelStringBuilder.Append(PixelBPRShaderMethods());
+            // PixelBody
+            pixelStringBuilder.Append(PixelBody());
+            // Return PS
+            PS = pixelStringBuilder.ToString();
+        }
+
+        private void CreatePbrEnvMapPixelShader()
+        {
+            var pixelStringBuilder = new StringBuilder();
+            // Version
+            pixelStringBuilder.Append(Version());
+            // PixelInputs
+            pixelStringBuilder.Append(PixelInputDeclarations());
+            // PixelShaderMethods (specular, light, etc.)
+            pixelStringBuilder.Append(PixelBPRShaderMethods());
+            // PixelBody
+            pixelStringBuilder.Append(PixelBody());
+            // Return PS
+            PS = pixelStringBuilder.ToString();
+
+        }
+
+        private string PixelBPRShaderMethods()
+        {
+            var returnString = "";
+
+            // Ambient Light
+            returnString += AmbientLightMethod();
+
+            // Diffuse Light
+            if (_hasDiffuse)
+                returnString += DiffuseLightMethod();
+
+            // Specular Light
+            if (_hasSpecular)
+                returnString += NDFLightMethod();
+
+            // Shadows
+            returnString += ShadowFactorMethod();
+
+            return returnString;
+        }
+
+
+        private string NDFLightMethod()
+        {
+            // needed for . instead of , in european culture
+            var culture = System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
+
+            var returnString = "";
+            returnString += "// returns intensity of diffuse reflection with Cook-Torrance NDF \n";
+            returnString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, vec3 intensities) { \n";
+            returnString += $"float roughnessValue = {string.Format(culture, "{0:0.#####}",_pbrRoughness)}; // 0 : smooth, 1: rough \n";
+            returnString += $"float F0 = {string.Format(culture, "{0:0.#####}", _pbrFresnel)}; // fresnel reflectance at normal incidence \n";
+            returnString += $"float k = {string.Format(culture, "{0:0.#####}", _pbrDiffuse)}; // fraction of diffuse reflection (specular reflection = 1 - k)\n";
+            returnString += @"
+              
+                // do the lighting calculation for each fragment.
+                float NdotL = max(dot(N, L), 0.0);
+    
+                float specular = 0.0;
+                if(NdotL > 0.0)
+                {
+                    // calculate intermediary values
+                    vec3 H = normalize(L + V);
+                    float NdotH = max(dot(N, H), 0.0); 
+                    float NdotV = max(dot(N, V), 0.0); // note: this could also be NdotL, which is the same value
+                    float VdotH = max(dot(V, H), 0.0);
+                    float mSquared = roughnessValue * roughnessValue;
+        
+                    // geometric attenuation
+                    float NH2 = 2.0 * NdotH;
+                    float g1 = (NH2 * NdotV) / VdotH;
+                    float g2 = (NH2 * NdotL) / VdotH;
+                    float geoAtt = min(1.0, min(g1, g2));
+     
+                    // roughness (or: microfacet distribution function)
+                    // beckmann distribution function
+                    /* float r1 = 1.0 / ( 4.0 * mSquared * pow(NdotH, 4.0));
+                    float r2 = (NdotH * NdotH - 1.0) / (mSquared * NdotH * NdotH);
+                    float roughness = r1 * exp(r2); */
+                    
+                    // roughness (or: microfacet distribution function)
+                    // Trowbridge-Reitz or GGX, GTR2
+                    float NdotHSquared = dot(N, H) * dot(N, H);
+                    float r1 = (pow(NdotHSquared, 2.0) * (mSquared - 1.0) + 1.0);
+                    float r2 = 3.14 * pow(r1, 2.0);
+                    float roughness = mSquared / r2;
+
+                    // fresnel
+                    // Schlick approximation
+                    float fresnel = pow(1.0 - VdotH, 5.0);
+                    fresnel *= (1.0 - F0);
+                    fresnel += F0;
+        
+                    specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);                    
+                } 
+                    return intensities * (k + specular * (1.0 - k));
+            }
+            ";
+
+            return returnString;
         }
 
         /// <summary>
@@ -576,7 +701,6 @@ namespace Fusee.Engine.Core
             // AtteunationFunction
             returnString += AttenuationFunction();
 
-            // TODO: Add legacy light back (infinite softbox @ camera)
             // LightCalculation
             returnString += "if(lightType == 0) // PointLight\n";
             returnString += "{";
@@ -830,7 +954,7 @@ namespace Fusee.Engine.Core
         private bool _hasDiffuseFraction;
         private bool _hasRoughness;
 
-        private LightningCalculationMethod _lightningCalculationMethod = LightningCalculationMethod.SIMPLE;
+        private LightingCalculationMethod _lightingCalculationMethod = LightingCalculationMethod.SIMPLE;
 
         // ReSharper disable once InconsistentNaming
         public string VS { get; }
@@ -1193,7 +1317,7 @@ namespace Fusee.Engine.Core
             {
                 vs.Append($"\n\n    {_applyLightString}     \n\n");
             }
-            else if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
+            else if (_lightingCalculationMethod == LightingCalculationMethod.SIMPLE)
             {
                 vs.Append("\n\n\n");
                 vs.Append($"           {AmbientLightningMethod()}\n");
@@ -1536,7 +1660,7 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
 /*        private void PSBody(StringBuilder vs)
         {
-            if (_lightningCalculationMethod == LightningCalculationMethod.SIMPLE)
+            if (_lightingCalculationMethod == LightingCalculationMethod.SIMPLE)
             {
 
                 vs.Append("\n\n\n");
@@ -1872,7 +1996,7 @@ namespace Fusee.Engine.Core
 
         private void GetLightningCalculationMethodFromSceneRender()
         {
-            _lightningCalculationMethod = SceneRenderer.LightningCalculationMethod;
+            _lightingCalculationMethod = SceneRenderer.LightingCalculationMethod;
         }
 
         #region NamesAndValues

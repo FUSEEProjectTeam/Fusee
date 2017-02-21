@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
     /// All supported lightning calculation methods LegacyShaderCodeBuilder.cs supports.
     /// </summary>
     // ReSharper disable InconsistentNaming
-    public enum LightningCalculationMethod
+    public enum LightingCalculationMethod
     {
         /// <summary> 
         /// Simple Blinn Phong Shading without fresnel & distribution function
@@ -153,7 +153,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Physical based shading
         /// </summary>
-        ADVANCED
+        ADVANCED,
+
+        /// <summary>
+        /// Physical based shading with environment cube map algorithm
+        /// </summary>
+        ADVANCEDwENVMAP
     }
 
     /// <summary>
@@ -163,14 +168,16 @@ namespace Fusee.Engine.Core
     public class SceneRenderer : SceneVisitor
     {
         // Choose Lightning Method
-        public static LightningCalculationMethod LightningCalculationMethod;
+        public static LightingCalculationMethod LightingCalculationMethod;
         // All lights
         public static IList<LightResult> AllLightResults = new List<LightResult>();
         // Multipass
         private bool _renderWithShadows;
         private bool _renderDeferred;
+        private bool _renderEnvMap;
         private readonly bool _wantToRenderWithShadows;
         private readonly bool _wantToRenderDeferred;
+        private readonly bool _wantToRenderEnvMap;
         public float2 ShadowMapSize { set; get; } = new float2(1024,1024);
 
         /// <summary>
@@ -189,6 +196,15 @@ namespace Fusee.Engine.Core
         {
             private set { _renderDeferred = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
             get { return _renderDeferred; }
+        }
+
+        /// <summary>
+        /// Try to render with EM. If not possible, fallback to false.
+        /// </summary>
+        public bool DoRenderEnvMap
+        {
+            private set { _renderEnvMap = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
+            get { return _renderEnvMap; }
         }
 
         #region Traversal information
@@ -246,16 +262,19 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightningCalculationMethod lCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
+        public SceneRenderer(SceneContainer sc, LightingCalculationMethod lCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
              : this(sc)
         {
-            LightningCalculationMethod = lCalcMethod;
+            LightingCalculationMethod = lCalcMethod;
             
             if (RenderShadows)
                 _wantToRenderWithShadows = true;
 
             if (RenderDeferred)
                 _wantToRenderDeferred = true;
+
+            if (lCalcMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
+                _wantToRenderEnvMap = true;
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
@@ -416,6 +435,7 @@ namespace Fusee.Engine.Core
                 // Check for hardware capabilities:
                 DoRenderDeferred = _wantToRenderDeferred;
                 DoRenderWithShadows = _wantToRenderWithShadows;
+                DoRenderEnvMap = _wantToRenderEnvMap;
             }
         }
 
@@ -435,6 +455,10 @@ namespace Fusee.Engine.Core
             else if (DoRenderDeferred)
             {
                 RenderDeferredPasses(rc);
+            }
+            else if (DoRenderEnvMap)
+            {
+                RenderEnvMapPasses(rc);
             }
             else
             {
@@ -467,12 +491,59 @@ namespace Fusee.Engine.Core
                     DeferredShaderHelper.CurrentRenderPass++;
 
                     // copy depthbuffer to current buffer
-                    rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);                    
                     rc.SetRenderTarget(null);
+                    rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);
+
                     RenderDeferredLightPass();
                     //Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
 
+        }
+
+        private void RenderEnvMapPasses(RenderContext rc)
+        {
+            SetContext(rc);
+
+            if (DeferredShaderHelper.EnvMapTexture == null)
+                DeferredShaderHelper.EnvMapTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.GBuffer);
+
+            if (DeferredShaderHelper.EnvMapPassShaderEffect == null)
+                CreateEnvMapPassEffect(rc);
+
+            if (DeferredShaderHelper.EnvMapPassShaderEffect != null)
+                DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
+
+            // Set RenderTarget to EnvMap
+            rc.SetRenderTarget(DeferredShaderHelper.EnvMapTexture);
+            Traverse(_sc.Children);
+            DeferredShaderHelper.CurrentRenderPass++;
+       
+            rc.SetRenderTarget(null);
+            Traverse(_sc.Children);
+            DeferredShaderHelper.CurrentRenderPass--;
+
+        }
+
+        private static void CreateEnvMapPassEffect(RenderContext rc)
+        {
+            var effectPass = new EffectPassDeclaration[1];
+             effectPass[0] = new EffectPassDeclaration
+            {
+                PS = DeferredShaderHelper.EnvMapPixelShader,
+                VS = DeferredShaderHelper.EnvMapVertexShader,
+                StateSet = new RenderStateSet
+                {
+                    //CullMode = Cull.Clockwise // This is not working due to the fact, that we cant change the RenderStateSet for the normal render pass
+                    //therefore we are using GL.Cull(Front / Back) in RenderContextImp!
+                }
+                };
+                var effectParameter = new List<EffectParameterDeclaration>
+                {
+                    new EffectParameterDeclaration {Name = "Texture", Value = float3.One }
+                };
+
+                DeferredShaderHelper.EnvMapPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
+                DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
         }
 
         private void RenderWithShadow(RenderContext rc)
@@ -536,7 +607,7 @@ namespace Fusee.Engine.Core
             
             var effectParameter = new List<EffectParameterDeclaration>
                         {
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.One },
+                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.Zero },
                             new EffectParameterDeclaration {Name = "SpecularIntensity", Value = float3.One }
                         };
 
@@ -728,13 +799,17 @@ namespace Fusee.Engine.Core
             else if (DoRenderDeferred)
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
-                {
                     RenderDeferredModelPass(rm, effect);
-                    // Copy framebuffer to frontbuffer
+            }
+            else if (DoRenderEnvMap)
+            {
+                if (DeferredShaderHelper.CurrentRenderPass == 0)
+                {
+                    RenderEnvMapFirstPass(rm);
                 }
                 else
                 {
-                    //RenderDeferredLightPass();
+                    RenderEnvMapSecondPass(rm, effect);
                 }
             }
             else
@@ -779,6 +854,7 @@ namespace Fusee.Engine.Core
                 DeferredShaderHelper.DeferredDrawPassPixelShader());
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShader(programm);
+            
 
             // Set textures from first GBuffer pass
             var gPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
@@ -796,21 +872,19 @@ namespace Fusee.Engine.Core
                 var gDepth = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
                 if (gDepth != null)
                     DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.GDepth);
+                
 
             // Set Viewport
             DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("gScreenSize", new float2(_rc.ViewportWidth, _rc.ViewportHeight));
+
 
             for (var i = 0; i < _lightComponents.Count; i++)
             {
                 UpdateGBufferDrawPassLights(i, _lightComponents[i], DeferredShaderHelper.GBufferDrawPassShaderEffect);
             }
 
-            // Set Light(s)
-            //DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("lightPosition", AllLightResults[0].PositionWorldSpace);
-
-
             DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
-
+            
         }
 
         private static void UpdateGBufferDrawPassLights(int position, LightResult light, ShaderEffect effect)
@@ -826,6 +900,36 @@ namespace Fusee.Engine.Core
                 effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirectionWorldSpace);
                 effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
         }
+
+        private static void RenderEnvMapFirstPass(Mesh rm)
+        {
+            if (AllLightResults.Count == 0) return;
+
+            // Set Values here
+
+            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("LightMVP", DeferredShaderHelper.ShadowMapMVP);
+            DeferredShaderHelper.EnvMapPassShaderEffect.RenderMesh(rm);
+        }
+
+        private void RenderEnvMapSecondPass(Mesh rm, ShaderEffect effect)
+        {
+            if (effect._rc.CurrentShader == null) return;
+
+            /*
+            // Set ShaderParams
+            var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
+            if (handleLight != null)
+                effect._rc.SetShaderParam(handleLight, DeferredShaderHelper.ShadowMapMVP);
+
+            var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
+            if (handle != null)
+                effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.ShadowTexture);
+                */
+            // Now we can render a normal pass
+            RenderStandardPass(rm, effect);
+
+        }
+
 
         private void RenderFirstShadowPass(Mesh rm)
         {
@@ -1214,7 +1318,7 @@ namespace Fusee.Engine.Core
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 var pbrMaterial = mc as MaterialPBRComponent;
-                if (pbrMaterial != null) scb = new ShaderCodeBuilder(pbrMaterial, null, wc);
+                if (pbrMaterial != null) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod, wc);
             }
             else
             {
