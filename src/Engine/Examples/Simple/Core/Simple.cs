@@ -1,4 +1,4 @@
-﻿#define GUI_SIMPLE
+﻿//#define GUI_SIMPLE
 
 using System;
 using System.Collections.Generic;
@@ -121,53 +121,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 }); */
 
 
-            var oldMat = _rocketScene.Children[0].Components[1] as MaterialComponent;
-            if (oldMat != null)
-            {
-                var newPbrmat = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat.Diffuse,
-                    Specular = oldMat.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-          
-           
-                _rocketScene.Children[0].Components[1] = newPbrmat;
-            }
-
-            var oldMat2 = _rocketScene.Children[0].Children[0].Components[1] as MaterialComponent;
-            if (oldMat2 != null)
-            {
-                var newPbrmat2 = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat2.Diffuse,
-                    Specular = oldMat2.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-
-
-                _rocketScene.Children[0].Children[0].Components[1] = newPbrmat2;
-            }
-
-            var oldMat3 = _rocketScene.Children[0].Children[1].Components[1] as MaterialComponent;
-            if (oldMat3 != null)
-            {
-                var newPbrmat3 = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat3.Diffuse,
-                    Specular = oldMat3.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-
-
-                _rocketScene.Children[0].Children[1].Components[1] = newPbrmat3;
-            }
+            
 
         
 
@@ -186,7 +140,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Shadow
             //_sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.SIMPLE, true);
             // Deferred
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.ADVANCEDwENVMAP);
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.SIMPLE);
         
          
             _rocketScene.Children[0].Children[0].Components[2].Name = "debug";

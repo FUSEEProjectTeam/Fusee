@@ -943,7 +943,7 @@ namespace Fusee.Engine.Core
 
             // Set Values here
             //DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("cube_texture", DeferredShaderHelper.EnvMapTexture);
-            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("DiffuseColor", new float3(0.5f,0.2f,0.1f));
+            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
             DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("ViewMatrix", View);
             DeferredShaderHelper.EnvMapPassShaderEffect.RenderMesh(rm);
 

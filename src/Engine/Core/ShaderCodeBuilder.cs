@@ -828,20 +828,21 @@ namespace Fusee.Engine.Core
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);\n";
             returnString += "}\n";
 
-            returnString += @"
+            /*
+                        returnString += @"
 
 
-                vec3 N = vMVNormal;
-                vec3 eyeRay = normalize(surfacePos.xyz-FUSEE_IMV[3].xyz);
-                vec3 reflectVec = reflect(vViewDir, N);
-                vec3 R = reflect(vViewDir, normalize(N));
+                            vec3 N = vNormal;
+                            vec3 eyeRay = normalize(surfacePos.xyz-FUSEE_IMV[3].xyz);
+                            vec3 reflectVec = reflect(vViewDir, N);
+                            vec3 R = reflect(vViewDir, normalize(N));
 
 
-                vec3 reflection = textureCube(envMap, normalize(N)).rgb;   
+                            vec3 reflection = textureCube(envMap, N).rgb;   
                
-"; 
+            "; */
 
-            returnString += "gl_FragColor = vec4(reflection, 1.0);\n";
+            returnString += "gl_FragColor = vec4(result, 1.0);\n";
 
 
             // End of main()

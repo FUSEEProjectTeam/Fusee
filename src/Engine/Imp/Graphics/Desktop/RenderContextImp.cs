@@ -470,13 +470,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // HDR Texture
              for (var i = 0; i < 6; i++) 
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.R32f, width, height, 0,
+                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgb32f, width, height, 0,
                     OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
             
             // create the fbo
             GL.GenFramebuffers(1, out framebuffer);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
-
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMap, cubeMapTextureHandle, 0);
+            
             // create the uniform depth buffer
             GL.GenRenderbuffers(1, out depthBuffer);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
@@ -920,6 +921,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
             GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
         }
 
@@ -951,7 +953,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 case GBufferHandle.EnvMap:
                     ((Texture)texId).handle = ((Texture)texId).handle;
-                    SetShaderParamTexture(param, texId);
+                    var iParam = ((ShaderParam)param).handle;
+                    int texUnit;
+                    if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+                    {
+                        texUnit = _currentTextureUnit++;
+                        _shaderParam2TexUnit[iParam] = texUnit;
+                    }
+                    GL.Uniform1(iParam, texUnit);
+                    GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
@@ -1903,15 +1914,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             var textureImp = (Texture)texture;
 
-      
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+              // Enable writes to the color buffer
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.fboHandle);
 
             // bind correct texture
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + position, textureImp.handle, 0);
             
-            // Enable writes to the color buffer
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
+          
+            //GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+
+            //Clear(ClearFlags.Depth | ClearFlags.Color);
 
         }
         /// <summary>
