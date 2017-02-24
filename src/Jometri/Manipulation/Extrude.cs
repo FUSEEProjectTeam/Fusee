@@ -38,11 +38,11 @@ namespace Fusee.Jometri.Manipulation
 
         private static void CreateTopSurface(Geometry geometry, float zOffset, bool exturdeAlongNormal)
         {
-            //Clone frontface
+            //Clone frontface.
             var backface = geometry.CloneGeometry();
             
             if(!exturdeAlongNormal)
-                //Add z value to each vertex coord
+                //Add zOffset to each vertex coord.
                 UpdateVertexZCoord(backface, zOffset);
             else
             {
@@ -220,10 +220,10 @@ namespace Fusee.Jometri.Manipulation
             second.DictHalfEdges.Clear();
             second.DictHalfEdges = heDictHelper;
 
-            //Change winding
+            //Change winding.
             var hEdgesWChangedWinding = second.GetHalfEdgesWChangedWinding(second.GetAllHalfEdges()).ToList();
 
-            //Add data of second geometry to first one
+            //Add data of second geometry to the first.
             foreach (var vert in second.DictVertices)
             {
                 first.DictVertices.Add(vert.Key, vert.Value);
@@ -247,7 +247,7 @@ namespace Fusee.Jometri.Manipulation
                     secUnboundedHalfEdges.Add(he);
             }
 
-            //Replace incident face of half edges with second unbounded face with first unbounded face
+            //Replace the incident face of the half edges.
             foreach (var he in secUnboundedHalfEdges)
             {
                 var halfEdge = he;
@@ -256,7 +256,7 @@ namespace Fusee.Jometri.Manipulation
                 first.DictHalfEdges.Add(halfEdge.Handle, halfEdge);
             }
 
-            //Add faces to first and recalculate face normals (because of changed winding).
+            //Add faces to the first geometry and recalculate the face normals.
             foreach (var face in second.DictFaces)
             {
                 first.DictFaces.Add(face.Key, face.Value);

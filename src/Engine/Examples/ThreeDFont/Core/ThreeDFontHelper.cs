@@ -18,7 +18,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             _font = font;
         }
 
-        //Reads all curves from a given text and retruns them as a List of Curves
+        //Reads all curves from a given text and retruns them as a List of Curves.
         private IList<Curve> GetTextCurves()
         {
             var curves = new List<Curve>();
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return curves;
         }
 
-        //Returns all control points of a given text
+        //Returns all control points of a given text.
         public IEnumerable<float3> GetTextControlPoints()
         {
             var advance = 0f;
@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return controlPoints;
         }
 
-        //Returns all control points of a given text calculated with a uniform value of t
+        //Returns all control points of a given text calculated with a uniform value of t.
         public IList<float3> GetTextVerticesUniformly(int seg)
         {
             var advance = 0f;
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         //Returns all control points of a given text calculated adaptively by testing the angle.
-        //"angle" determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180° 
+        //"angle" determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180°.
         public IList<float3> GetTextVerticesWAngle(int angle)
         {
             var advance = 0f;
@@ -141,7 +141,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return combinedOutline;
         }
 
-        //Returns all control points of a given text calculated adaptively by testing the area of a triangle
+        //Returns all control points of a given text by testing the acreage of a triangle.
         public IList<float3> GetTextVerticesWArcreage(float arcreage)
         {
             var advance = 0f;
@@ -174,7 +174,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             return combinedOutline;
         }
 
-        //Returns all control points of a given text, grouped in faces and calculated adaptively by testing the angle.
+        //Returns all control points of a given text by testing the angle.
         public IList<PolyBoundary> GetTextOutlinesWAngle(int angle)
         {
             var advance = 0f;
@@ -226,11 +226,6 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                     kerning = _font.GetUnscaledKerning(_text[i], _text[i + 1]);
             }
             return textOutlines;
-        }
-
-        public IList<PolyBoundary> GetTextOutlinesUniformy(int angle)
-        {
-            return null; //TODO implement ....
         }
     }
 }

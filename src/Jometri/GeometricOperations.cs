@@ -7,7 +7,7 @@ using Fusee.Math.Core;
 namespace Fusee.Jometri
 {
     /// <summary>
-    /// Provides utility methodes used in the Jometri project.
+    /// Provides methods to perform geometric operations.
     /// </summary>
     public static class GeometricOperations
     {
@@ -15,13 +15,13 @@ namespace Fusee.Jometri
         /// Calculates the vertex position so that it is parallel to the x-y plane.
         /// </summary>
         /// <param name="vertPos">Original vertex position.</param>
-        /// <param name="normal">The normal of the polygon the vertex belongs to. Used as new Z axis</param>
+        /// <param name="normal">The normal of the polygon the vertex belongs to. Used as new Z axis.</param>
         /// <returns></returns>
         internal static float3 Reduce2D(this float3 vertPos, float3 normal)
         {
-            //Set of orthonormal vectors
-            normal.Normalize(); //new z axis
+            normal.Normalize(); //New z axis
 
+            //If the normal equals the z axis of the world coodrinate system: reflect the point on the y axis.
             if (normal == float3.UnitZ)
             {
                 var rot = new float3x3(-1, 0, 0,
@@ -30,6 +30,7 @@ namespace Fusee.Jometri
                 return vertPos * rot;
             }
 
+            //If the normal equals the negative z axis of the world coodrinate system: use the original coordinates.
             if (normal == float3.UnitZ*-1)
                 return vertPos;
 
@@ -47,14 +48,14 @@ namespace Fusee.Jometri
             //vector in new basis * changeOfBasisMat = vector in old basis
             var changeOfBasisMat = new float3x3(row1, row2, row3);
 
-            //In an orthonomal matrix the inverse equals the transpose, therefor the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
+            //In an orthonomal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
             var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
             transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;
 
 
-            //Round to get rid of potential exponent representation
+            //Round, to get rid of potential exponent representation.
             var vecX = System.Math.Round((decimal)newVert.x, 5);
             var vecY = System.Math.Round((decimal)newVert.y, 5);
             var vecZ = System.Math.Round((decimal)newVert.z, 5);
@@ -95,8 +96,8 @@ namespace Fusee.Jometri
         /// <summary>
         /// Tests if a point/vertex lies inside or outside a face - only works for polygons parallel to a plane!
         /// </summary>
-        /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
-        /// <param name="face">The face to perform the test on.</param>
+        /// <param name="geometry">The geometry the polygon (here: face) belongs to.</param>
+        /// <param name="face">The faces to be tested.</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
         public static bool IsPointInPolygon(this Geometry geometry, Face face, Vertex v)
@@ -133,10 +134,10 @@ namespace Fusee.Jometri
         //Vertices need to be reduced to 2D
         //see Akenine-Möller, Tomas; Haines, Eric; Hoffman, Naty (2016): Real-Time Rendering, p. 754
         /// <summary>
-        /// Tests if a point/vertex lies inside or outside a face - Only use this if you know the face AND v lie in the same plane and this plane is parallel to xy or xz or yz!
+        /// Tests if a point/vertex lies inside or outside a face - Only use this if you know the face AND vertex lie in the same plane and this plane is parallel to xy or xz or yz!
         /// </summary>
-        /// <param name="geometry">The geometry to which the polygon (here: face) belongs.</param>
-        /// <param name="face">The face to perform the test on. It will not be Reduced2D!</param>
+        /// <param name="geometry">The geometry the polygon (here: face) belongs to.</param>
+        /// <param name="face">The faces to be tested. It will not be Reduced2D!</param>
         /// <param name="v">The vertex to be tested.</param>
         /// <returns></returns>
         public static bool IsPointInPolygon(this Geometry geometry, Face face, float3 v)
@@ -170,11 +171,11 @@ namespace Fusee.Jometri
 
         //Vertices need to be reduced to 2D.
         /// <summary>
-        /// Determines if the angle between two vectors, formed by three vertices, is greater 180°.
-        /// Vector one will be created from v1 and v2, vector two from v2 and v3.
+        /// Determines whether the angle between two vectors formed by three vertices is greater than 180 °.
+        /// The first vector will be created from v1 and v2, the second from v2 and v3.
         /// </summary>
         /// <param name="geom">The geometry the vertices belong to.</param>
-        /// <param name="face">The face the vertices belong to. Needed to correctly reduce the vertex positions to 2D.</param>
+        /// <param name="face">The face the vertices belong to.</param>
         /// <param name="v1">Vertex one</param>
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
@@ -201,10 +202,10 @@ namespace Fusee.Jometri
         //Vertices need to be reduced to 2D.
         /// <summary>
         /// Determines if the angle between two vectors, formed by three vertices, is greater or equal 180°.
-        /// Vector one will be created from v1 and v2, vector two from v2 and v3.
+        /// The first vector will be created from v1 and v2, the second from v2 and v3.
         /// </summary>
         /// <param name="geom">The geometry the vertices belong to.</param>
-        /// <param name="face">The face the vertices belong to. Needed to correctly reduce the vertex positions to 2D.</param>
+        /// <param name="face">The face the vertices belong to.</param>
         /// <param name="v1">Vertex one</param>
         /// <param name="v2">Vertex two</param>
         /// <param name="v3">Vertex three</param>
@@ -227,13 +228,13 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Tests if a vertex is a direct neighbour of an other vertex. Use this only if you know the vertices incident half edges. 
+        /// Tests if a vertex is a direct neighbour of an other vertex. Only use this method if you know the incident half edges of the vertex.
         /// </summary>
         /// <param name="geometry">The geometry the vertex belongs to.</param>
         /// <param name="p">First vertex</param>
         /// <param name="q">Secound vertex</param>
-        /// <param name="vertPStartHe">p incident half edge </param>
-        /// <param name="vertQStartHe">q incident half edge</param>
+        /// <param name="vertPStartHe">p incident half edge. </param>
+        /// <param name="vertQStartHe">q incident half edge.</param>
         /// <returns></returns>
         public static bool IsVertexAdjacentToVertex(this Geometry geometry, int p, int q, HalfEdge vertPStartHe, HalfEdge vertQStartHe)
         {
@@ -244,7 +245,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Contains the half edges from a source collection of half edges - with opposite winding.
+        /// Returns the half edges from a source collection of half edges - with opposite direction.
         /// </summary>
         /// <param name="geometry"></param>
         /// <param name="originHEdges"></param>
@@ -274,10 +275,10 @@ namespace Fusee.Jometri
         //For an explanation of this algorythm see: http://blog.element84.com/polygon-winding.html
         /// <summary>
         /// Checks whether a polygon, parallel to the xy plane, has a ccw winding.
-        /// This methode does NOT support polygons parallel to the yz or xz plane!
-        /// To guarantee a correct output make sure the polygon does not degenerate when the z coordinates are ignored.
+        /// This method does NOT support polygons parallel to the yz or xz plane!
+        /// To guarantee a correct output make sure the polygon doesn't degenerate when the z coordinates are ignored.
         /// </summary>
-        /// <param name="source">The polygon, represented as list of float3.</param>
+        /// <param name="source">The polygon, represented as list of float3s.</param>
         /// <returns></returns>
         public static bool IsCounterClockwise(this IList<float3> source)
         {
@@ -299,12 +300,12 @@ namespace Fusee.Jometri
         /// <summary>
         /// Checks if two lines intersect.
         /// </summary>
-        /// <param name="p1">First control point of the first line</param>
-        /// <param name="p2">Second control point of the first line</param>
-        /// <param name="p3">First point of the second line</param>
-        /// <param name="p4">Second point of the secornd line</param>
+        /// <param name="p1">First control point of the first line.</param>
+        /// <param name="p2">Second control point of the first line.</param>
+        /// <param name="p3">First point of the second line.</param>
+        /// <param name="p4">Second point of the secornd line.</param>
         /// <returns></returns>
-        public static bool AreLinesIntersecting(float3 p1, float3 p2, float3 p3, float3 p4)
+        public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4)
         {
             var a = p2 - p1;
             var b = p3 - p4;

@@ -20,7 +20,7 @@
     <Optimize>false</Optimize>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web</OutputPath -->
     <FuseeWebOutputPath>$(ProjectBuildRoot)\bin\$(Configuration)\Web\</FuseeWebOutputPath>
-    <OutputPath>$(ProjectBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
+    <OutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Examples.ThreeDFont.Web\bin\Debug\</OutputPath>
     <BaseIntermediateOutputPath>$(ProjectBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>

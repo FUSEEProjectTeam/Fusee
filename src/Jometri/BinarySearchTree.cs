@@ -34,8 +34,8 @@ namespace Fusee.Jometri
         /// <summary>
         /// Constructor, creates a new node.
         /// </summary>
-        /// <param name="key">The key of the new node</param>
-        /// <param name="value">Payload of the new node</param>
+        /// <param name="key">The key of the new node.</param>
+        /// <param name="value">Payload of the new node.</param>
         public Node(TK key, TV value)
         {
             Key = key;
@@ -46,8 +46,8 @@ namespace Fusee.Jometri
     /// <summary>
     /// Data structure that stores items and allows fast lookup, insertion and deletion.
     /// </summary>
-    /// <typeparam name="TK">The type of the trees key.</typeparam>
-    /// <typeparam name="TV">The type of the trees value.</typeparam>
+    /// <typeparam name="TK">The type of the tree's key.</typeparam>
+    /// <typeparam name="TV">The type of the tree's value.</typeparam>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
         private Node<TK, TV> _globalRoot;
@@ -91,7 +91,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Preorder traversal of the tree. Visites the root, then visits the left sub-tree, after that it visits the right sub-tree.
+        /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
         /// Retruns the keys.
         /// </summary>
         /// <returns></returns>
@@ -104,7 +104,7 @@ namespace Fusee.Jometri
         }
 
         /// <summary>
-        /// Preorder traversal of the tree. Visites the root, then visits the left sub-tree, after that it visits the right sub-tree.
+        /// Preorder traversal of the tree. Visits the root, then visits the left sub-tree, after that visits the right sub-tree.
         /// Retruns the values.
         /// </summary>
         /// <returns></returns>
@@ -209,7 +209,7 @@ namespace Fusee.Jometri
         /// <summary>
         /// Traverses the tree to find and return a node with a certain value.
         /// </summary>
-        /// <param name="key">The key to search for.</param>
+        /// <param name="key">The key to be searched for.</param>
         /// <returns></returns>
         public TV FindNode(TK key)
         {
@@ -280,8 +280,8 @@ namespace Fusee.Jometri
         }
 
         ///<summary>
-        /// Finds the value of a node whose key is the largest smaller than the given one.
-        /// Only works with a balanced tree. There may be the necessity to call BalanceTree before calling this method.
+        /// Finds the value of a node whose key is the largest, smaller than the given.
+        /// Only works with a balanced tree. It may be necessary to call BalanceTree before this method.
         /// </summary>
         /// <param name="key">The key that is uesed as search parameter.</param>
         /// <returns></returns>

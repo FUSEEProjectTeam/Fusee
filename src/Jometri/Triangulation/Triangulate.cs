@@ -7,7 +7,7 @@ using Fusee.Jometri.DCEL;
 namespace Fusee.Jometri.Triangulation
 {
     /// <summary>
-    /// Contains the triangulation of a geometry, stored in a half edge data structure list.
+    /// Contains the triangulation of a geometry, stored in half edge data structure.
     /// </summary>
     public static class Triangulation
     {

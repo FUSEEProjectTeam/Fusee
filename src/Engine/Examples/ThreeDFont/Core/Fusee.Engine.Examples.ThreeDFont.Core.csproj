@@ -22,7 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(ProjectBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\Debug\Examples\ThreeDFont\Core\</OutputPath>
     <BaseIntermediateOutputPath>$(ProjectBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>

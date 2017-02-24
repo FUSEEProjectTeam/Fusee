@@ -5,18 +5,18 @@ namespace Fusee.Jometri.DCEL
 {
     /// <summary>
     /// Each vertex contains:
-    /// A handle to assign a abstract reference to it.
-    /// Attribute information, e.g. the position of the vertex.
+    /// a handle to assign a abstract reference to it.
+    /// attribute information, e.g. the position of the vertex.
     /// </summary>
     public struct Vertex
     {
         /// <summary>
-        /// The vertex's reference.
+        /// The reference of the Vertex.
         /// </summary>
         public readonly int Handle;
 
         /// <summary>
-        /// The handle to the half edge with this vertex as origin.
+        /// The handle to the HalfEdge with this Vertex as origin.
         /// </summary>
         internal int IncidentHalfEdge;
 
@@ -28,8 +28,8 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new Vertex.
         /// </summary>
-        /// <param name="handle">The reference of the vertex.</param>
-        /// <param name="pos">The coordinate of the vertex.</param>
+        /// <param name="handle">The reference of the Vertex.</param>
+        /// <param name="pos">The coordinate of the Vertex.</param>
         public Vertex(int handle, float3 pos)
         {
             Handle = handle;
@@ -54,7 +54,7 @@ namespace Fusee.Jometri.DCEL
         #region  Overloading comparison operators
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex's handle.
+        /// Overload for "smaller than" operator. Comparison based on the Vertex's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -65,7 +65,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the vertex's handle.
+        /// Overload for "smaller than" operator. Comparison based on the Vertex's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -125,17 +125,17 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// Represents a half edge.
     /// Each half edge contains:
-    /// A handle to assign a abstract reference to it.
-    /// A handle to the half edge's origin vertex.
-    /// A handle to the next half edge.
-    /// A handle to the previous half edge.
-    /// A handle to the face it belongs to.
-    /// Attribute information, e.g. the normal and the texture coordinates.
+    /// a handle to assign a abstract reference to it.
+    /// a handle to the half edge's origin vertex.
+    /// a handle to the next half edge.
+    /// a handle to the previous half edge.
+    /// a handle to the face it belongs to.
+    /// attribute information, e.g. the normal and the texture coordinates.
     /// </summary>
     public struct HalfEdge
     {
         /// <summary>
-        /// The half edge's handle
+        /// The HalfEdges's handle
         /// </summary>
         public readonly int Handle;
 
@@ -167,7 +167,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new HalfEdge.
         /// </summary>
-        /// <param name="handle">The reference of the half edge.</param>
+        /// <param name="handle">The reference of the HalfEdge.</param>
         public HalfEdge(int handle)
         {
             Handle = handle;
@@ -209,7 +209,7 @@ namespace Fusee.Jometri.DCEL
         }
 
         /// <summary>
-        /// Overload for "smaller than" operator. Comparison based on the HalfEdge's handle
+        /// Overload for "smaller than" operator. Comparison based on the HalfEdge's handle.
         /// </summary>
         /// <param name="first">First comparison parameter.</param>
         /// <param name="second">Second comparison parameter.</param>
@@ -254,7 +254,6 @@ namespace Fusee.Jometri.DCEL
 
         }
 
-
         /// <summary>Overwrites GetHashCode</summary>
         /// <returns>Handle as hash code.</returns>
         public override int GetHashCode()
@@ -268,21 +267,21 @@ namespace Fusee.Jometri.DCEL
 
     /// <summary>
     /// Each face belonging to a 2D geometry contains:
-    /// A handle to assign a abstract reference to it.
-    /// A referance to one of the half edges that belongs to the faces outer boundary.
-    /// A List that contains handles to one half edge for each hole in a face.
-    /// Attribute information, e.g. the face nromal.
+    /// a handle to assign a abstract reference to it.
+    /// a referance to one of the half edges that belongs to the faces outer boundary.
+    /// a List that contains handles to one half edge for each hole in a face.
+    /// attribute information, e.g. the face nromal.
     /// Note that unbounded faces can't have a OuterHalfEdge but must have at least one InnerHalfEdge - bounded faces must have a OuterComponent.
     /// </summary>
     public struct Face
     {
         /// <summary>
-        /// The reference of the face.
+        /// The reference of the Face.
         /// </summary>
         public readonly int Handle;
 
         /// <summary>
-        ///  A reference to one of the half edges that belongs to the faces outer boundary.
+        /// A reference to one of the half edges that belongs to the Face's outer boundary.
         /// </summary>
         public int OuterHalfEdge;
 
@@ -307,7 +306,7 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new Face.
         /// </summary>
-        /// <param name="handle">The reference of the face.</param>
+        /// <param name="handle">The reference of the Face.</param>
         public Face(int handle)
         {
             Handle = handle;
@@ -319,8 +318,8 @@ namespace Fusee.Jometri.DCEL
         /// <summary>
         /// Constructor for creating a new Face from an other one.
         /// </summary>
-        /// <param name="handle">The reference of the face.</param>
-        /// <param name="face">The original face.</param>
+        /// <param name="handle">The reference of the Face.</param>
+        /// <param name="face">The original Face.</param>
         public Face(int handle, Face face)
         {
             Handle = handle;

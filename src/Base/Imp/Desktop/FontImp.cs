@@ -98,9 +98,9 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Gets the characters points, contours and tags and translates them into a curve.
+        /// Gets the character's points, contours and tags and translates them into a curve.
         /// </summary>
-        /// <param name="c">The character to retrive the curve</param>
+        /// <param name="c">The character from which the information is to be read.</param>
         /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
@@ -113,13 +113,13 @@ namespace Fusee.Base.Imp.Desktop
             var pointTags = _face.Glyph.Outline.Tags;
             if (orgPointCoords == null) return curve;
 
-            //Freetype contours are defined by their end points
+            //Freetype contours are defined by their end points.
             var curvePartEndPoints = _face.Glyph.Outline.Contours;
             
             var partTags = new List<byte>();
             var partVerts = new List<float3>();
 
-            //Write points of a freetyp contour into a CurvePart
+            //Writes points of a freetyp contour into a CurvePart,
             for (var i = 0; i <= orgPointCoords.Length; i++)
             {
                 //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
@@ -139,9 +139,9 @@ namespace Fusee.Base.Imp.Desktop
         }
 
         /// <summary>
-        /// Get the unscaled advance from a character.
+        /// Gets the unscaled advance from a character.
         /// </summary>
-        /// <param name="c">The character to retrive information</param>
+        /// <param name="c">The character from which the information is to be read.</param>
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
@@ -212,8 +212,8 @@ namespace Fusee.Base.Imp.Desktop
         /// <summary>
         /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
         /// </summary>
-        /// <param name="leftC">The left character</param>
-        /// <param name="rightC">The right character</param>
+        /// <param name="leftC">The left character.</param>
+        /// <param name="rightC">The right character.</param>
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC)
         {
@@ -242,7 +242,7 @@ namespace Fusee.Base.Imp.Desktop
                 CurveSegments = new List<CurveSegment>()
             };
 
-            //Marginal case - first contour ( 0 to contours[0] ) 
+            //Marginal case - first contour ( 0 to contours[0] ). 
             if (index == 0)
             {
                 for (var j = 0; j <= i; j++)
@@ -250,7 +250,7 @@ namespace Fusee.Base.Imp.Desktop
                     CurvePartVertice(cp, j, orgPointCoords, partVerts);
                     partTags.Add(pointTags[j]);
                 }
-                //The start point is the first point in the outline.Points array
+                //The start point is the first point in the outline.Points array.
                 cp.StartPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
             }
 
@@ -263,7 +263,7 @@ namespace Fusee.Base.Imp.Desktop
                     partTags.Add(pointTags[j]);
                 }
 
-                //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1
+                //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1.
                 cp.StartPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
             }
             return cp;

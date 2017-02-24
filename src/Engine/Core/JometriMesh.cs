@@ -20,14 +20,13 @@ namespace Fusee.Engine.Core
             Normals = normals.ToArray();
         }
 
-        //Geometry has to be trinagulated!
+        //Geometry has to be triangulated! Translates a Jometri.Geometry into a Fusee.Mesh.
         private static void ConvertToMesh(Jometri.DCEL.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
-            // Delete unbounded face - if it exists
             var faces = geometry.GetAllFaces().ToList();
-            if (faces[0].Handle == 1)
+            if(faces[0].Handle == 1)
                 faces.RemoveAt(0);
-
+            
             var triangleCount = faces.Count;
             var vertCount = triangleCount * 3;
 

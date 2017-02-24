@@ -10,11 +10,11 @@ namespace Fusee.Base.Core
         #region IEnumerable extension methods
 
         /// <summary>
-        /// Bypasses a given number of elements in a sequence and returns the remaining. Alternative to LINQs Skip().
+        /// Bypasses a given number of elements in a sequence and returns the remaining. Alternative to LINQ's Skip().
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="count"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="data">Source data</param>
+        /// <param name="count">Number of elements to bypass.</param>
+        /// <typeparam name="T">Type</typeparam>
         /// <returns></returns>
         public static IEnumerable<T> SkipItems<T>(this IEnumerable<T> data, int count)
         {
@@ -35,11 +35,11 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Returns a specified number of contiguous elements from the start of a sequence. Alternative to LINQs Take().
+        /// Returns a specified number of contiguous elements from the start of a sequence. Alternative to LINQ's Take().
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="count"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="data">Source data.</param>
+        /// <param name="count">Number of elements to take.</param>
+        /// <typeparam name="T">Tye</typeparam>
         /// <returns></returns>
         public static IEnumerable<T> TakeItems<T>(this IEnumerable<T> data, int count)
         {
@@ -59,10 +59,10 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Returns the last item of a sequence. Alternative to LINQs Last()
+        /// Returns the last item of a sequence. Alternative to LINQ's Last()
         /// </summary>
-        /// <param name="data"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="data">Source data</param>
+        /// <typeparam name="T">Type</typeparam>
         /// <returns></returns>
         public static T LastItem<T>(this IEnumerable<T> data)
         {
@@ -77,11 +77,11 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Determines whether two sequences are equal by comparing the elements. Alternative to LINQs SequenceEqual().
+        /// Determines whether two sequences are equal by comparing the elements. Alternative to LINQ's SequenceEqual().
         /// </summary>
-        /// <param name="source"></param>
-        /// <param name="compObj"></param>
-        /// <typeparam name="T"></typeparam>
+        /// <param name="source">Source data</param>
+        /// <param name="compObj">Data with which the comparison is to be carried out.</param>
+        /// <typeparam name="T">Type</typeparam>
         /// <returns></returns>
         public static bool SequEqual<T>(this IEnumerable<T> source, IEnumerable<T> compObj)
         {

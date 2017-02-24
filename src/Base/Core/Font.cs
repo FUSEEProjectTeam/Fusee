@@ -65,9 +65,9 @@ namespace Fusee.Base.Core
 
 
         /// <summary>
-        /// Gets the characters points, contours and tags and translates them into a curve.
+        /// Gets the character's points, contours and tags and translates them into a curve.
         /// </summary>
-        /// <param name="c">The character to retrive the curve</param>
+        /// <param name="c">The character from which the information is to be read.</param>
         /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
@@ -85,7 +85,7 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Get the unscaled advance from a character.
         /// </summary>
-        /// <param name="c">The character to retrive information</param>
+        /// <param name="c">The character from which the information is to be read.</param>
         /// <returns></returns>
         public float GetUnscaledAdvance(uint c)
         {
@@ -126,8 +126,8 @@ namespace Fusee.Base.Core
         /// <summary>
         /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
         /// </summary>
-        /// <param name="leftC">The left character</param>
-        /// <param name="rightC">The right character</param>
+        /// <param name="leftC">The left character.</param>
+        /// <param name="rightC">The right character.</param>
         /// <returns></returns>
         public float GetUnscaledKerning(uint leftC, uint rightC) => _fontImp.GetUnscaledKerning(leftC, rightC);
 

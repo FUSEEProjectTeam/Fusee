@@ -14,6 +14,7 @@ namespace Fusee.Jometri.Triangulation
             }
         }
 
+        //Finds StatusEdge according to its Handle using preorder traversal.
         internal StatusEdge FindStatusEdgeWithHandle(int handle)
         {
             foreach (var n in PreorderTraverseTreeValues())

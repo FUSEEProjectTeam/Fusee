@@ -4,12 +4,12 @@ namespace Fusee.Jometri.Triangulation
 {
     internal class StatusEdge 
     {
-        //A key is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex. 
+        //A key that is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex. 
         internal float IntersectionPointX;
         //HalfEdge(Handle) identifies the HalfEdge.
         internal int HalfEdgeHandle;
 
-        //The helper vertex is the vertex to which a possible new diagonal is drawn. Additionally we need to know if the helper vertex is of type merge vertex.
+        //The helper vertex is the vertex to which a possible new diagonal is drawn. In addition, we need to know whether the helper vertex is of type merge vertex.
         internal int HelperVertexHandle;
         internal bool IsMergeVertex;
 
@@ -31,7 +31,7 @@ namespace Fusee.Jometri.Triangulation
             SetKey(eventPoint);
         }
 
-        //If the half edge is parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else Key = origin.x
+        //If the half edge is parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else, Key = origin.x
         internal void SetKey(Vertex eventPoint)
         {
             var targetPos = _geometry.Get2DVertPos(_face,_target.Handle);

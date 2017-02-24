@@ -20,6 +20,7 @@ namespace Fusee.Base.Imp.Web
         }
         private static SegmentType Type { get; set; }
 
+        //Splits a CurvePart into CurveSegments by reading the byte pattern from a tag array.
         public static List<CurveSegment> SplitPartIntoSegments(CurvePart part, List<byte> partTags, List<float3> partVerts)
         {
             byte[] linearPattern = { 1, 1 };
@@ -34,25 +35,25 @@ namespace Fusee.Base.Imp.Web
                 if (partTags.SkipItems(i).TakeItems(linearPattern.Length).SequEqual(linearPattern))
                 {
                     Type = SegmentType.LINEAR;
-                    segments.Add(CreateCurveSegment(part, i, linearPattern, partVerts));
+                    segments.Add(CreateCurveSegment(i, linearPattern, partVerts));
                 }
                 else if (partTags.SkipItems(i).TakeItems(conicPattern.Length).SequEqual(conicPattern))
                 {
                     Type = SegmentType.CONIC;
-                    segments.Add(CreateCurveSegment(part, i, conicPattern, partVerts));
+                    segments.Add(CreateCurveSegment(i, conicPattern, partVerts));
                     i += 1;
                 }
                 else if (partTags.SkipItems(i).TakeItems(cubicPattern.Length).SequEqual(cubicPattern))
                 {
                     Type = SegmentType.CUBIC;
-                    segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts));
+                    segments.Add(CreateCurveSegment(i, cubicPattern, partVerts));
                     i += 2;
                 }
                 else if (partTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).SequEqual(conicVirtualPattern))
                 {
                     Type = SegmentType.CONIC;
                     var count = 0;
-                    var cs = CreateCurveSegment(part, i, conicVirtualPattern, partVerts);
+                    var cs = CreateCurveSegment(i, conicVirtualPattern, partVerts);
 
                     i += 3;
 
@@ -81,22 +82,22 @@ namespace Fusee.Base.Imp.Web
                     lastSegment.Add(partTags[0]);
                     if (lastSegment.SequEqual(conicPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, conicPattern, partVerts[0], partVerts));
+                        segments.Add(CreateCurveSegment(i, conicPattern, partVerts[0], partVerts));
                     }
                     else if (lastSegment.SequEqual(cubicPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts[0], partVerts));
+                        segments.Add(CreateCurveSegment(i, cubicPattern, partVerts[0], partVerts));
                     }
                     else if (lastSegment.SequEqual(conicVirtualPattern))
                     {
-                        segments.Add(CreateCurveSegment(part, i, cubicPattern, partVerts[0], partVerts));
+                        segments.Add(CreateCurveSegment(i, cubicPattern, partVerts[0], partVerts));
                     }
                 }
             }
             return segments;
         }
 
-        public static void CreateOnPointsAndAddToList(IList<float3> vertices)
+        private static void CreateOnPointsAndAddToList(IList<float3> vertices)
         {
             var zeroes = new List<float3>(vertices);
             zeroes.Remove(zeroes.First());
@@ -119,10 +120,10 @@ namespace Fusee.Base.Imp.Web
             }
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, List<float3> verts)
+        private static CurveSegment CreateCurveSegment(int i, ICollection<byte> pattern, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
+            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Count));
 
             CurveSegment segment;
             switch (Type)
@@ -155,10 +156,10 @@ namespace Fusee.Base.Imp.Web
             return segment;
         }
 
-        public static CurveSegment CreateCurveSegment(CurvePart cp, int i, byte[] pattern, float3 startPoint, List<float3> verts)
+        private static CurveSegment CreateCurveSegment(int i, ICollection<byte> pattern, float3 startPoint, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Length));
+            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Count));
             segmentVerts.Add(startPoint);
             CurveSegment segment;
             switch (Type)
@@ -193,13 +194,13 @@ namespace Fusee.Base.Imp.Web
 
         public static void CombineCurveSegmentsAndAddThemToCurvePart(List<CurveSegment> segments, CurvePart part)
         {
-            //Combine segments that follow each other and have the same interpolation methode.
+            //Combines segments that follow each other and have the same interpolation method.
             for (var i = 0; i < segments.Count; i++)
             {
                 //Constraint
                 if (i + 1 >= segments.Count) break;
 
-                //Check whether two successive segments have the same interpolation Methode, if so combine them.
+                //Checks whether two successive segments have the same interpolation Methode, if so combine them.
                 if (segments[i].GetType() == segments[i + 1].GetType())
                 {
                     foreach (var vertex in segments[i + 1].Vertices)
@@ -208,7 +209,7 @@ namespace Fusee.Base.Imp.Web
                         segments[i].Vertices.Add(vertex);
                     }
                     segments.RemoveAt(i + 1);
-                    //Set the for loop one step back, to check the "new" CurvePart with its follower
+                    //Sets the for loop one step back, to check the "new" CurvePart with its follower.
                     if (i >= 0)
                         i = i - 1;
                 }
@@ -218,8 +219,8 @@ namespace Fusee.Base.Imp.Web
             part.CurveSegments = segments;
         }
 
-        //Remove redundant points and set the last point of the last segment in each part to the parts starting point
-        public static void FixSegments(List<CurveSegment> segments)
+        //Remove redundant points and set the last point of the last segment in each part to the parts starting point.
+        private static void FixSegments(ICollection<CurveSegment> segments)
         {
             var firstPoint = segments.First().Vertices.First();
 

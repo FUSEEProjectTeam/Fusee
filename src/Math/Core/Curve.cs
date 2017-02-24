@@ -10,15 +10,15 @@ namespace Fusee.Math.Core
     public class Curve
     {
         /// <summary>
-        /// The parts making up the Curve.
+        /// The parts forming the curve.
         /// </summary>
         public IList<CurvePart> CurveParts;
 
         /// <summary>
         /// Combines two Curves by creating a new one.
         /// </summary>
-        /// <param name="a">The first curve to combine</param>
-        /// <param name="b">The second curve to combine</param>
+        /// <param name="a">The first curve to be combined.</param>
+        /// <param name="b">The first curve to be combined.</param>
         /// <returns></returns>
         public static Curve CombineCurves(Curve a, Curve b)
         {
@@ -30,7 +30,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Combines a list of Curves by creating a new Curve out of the list.
         /// </summary>
-        /// <param name="curves">The curves to combine</param>
+        /// <param name="curves">The curves to be combined.</param>
         /// <returns></returns>
         public static Curve CombineCurves(IEnumerable<Curve> curves)
         {
@@ -46,9 +46,9 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Calculates a polyline, representing the curve itself.
+        /// Calculates a polygonal chain, representing the curve.
         /// </summary>
-        /// <param name="subdiv">The number of subdivisions per curve segment</param>
+        /// <param name="subdiv">The number of subdivisions per curve segment.</param>
         /// <returns></returns>
         public IEnumerable<float3> CalcUniformPolyline(int subdiv)
         {
@@ -62,7 +62,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Calculates a polyline, representing the curve itself.
+        /// Calculates a polygonal chain, representing the curve.
         /// </summary>
         /// <param name="angle">Determines how far the angle may vary from 180°.</param>
         /// <returns></returns>
@@ -78,15 +78,15 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
+        /// Returns a polygonal chain, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
+        /// <param name="acreage">Determines the maximum acreage for the triangle consisting out of start point, random point and end point.</param>
         /// <returns></returns>
-        public IEnumerable<float3> CalcAdaptivePolyline(float arcreage)
+        public IEnumerable<float3> CalcAdaptivePolyline(float acreage)
         {
             foreach (var part in CurveParts)
             {
-                foreach (var vert in part.CalcAdaptivePolyline(arcreage))
+                foreach (var vert in part.CalcAdaptivePolyline(acreage))
                 {
                     yield return vert;
                 }
@@ -106,7 +106,7 @@ namespace Fusee.Math.Core
         public bool IsClosed;
 
         /// <summary>
-        /// This is the starting point of the CurvePart.
+        /// The starting point of the CurvePart.
         /// </summary>
         public float3 StartPoint;
 
@@ -116,9 +116,9 @@ namespace Fusee.Math.Core
         public IList<CurveSegment> CurveSegments;
 
         /// <summary>
-        /// Calculates a polyline, representing the curve part.
+        /// Calculates a polygonal chain, representing the CurvePart.
         /// </summary>
-        /// <param name="subdiv">The number of subdivisions per curve segment</param>
+        /// <param name="subdiv">The number of subdivisions per CurveSegment.</param>
         /// <returns></returns>
         public IEnumerable<float3> CalcUniformPolyline(int subdiv)
         {
@@ -140,7 +140,7 @@ namespace Fusee.Math.Core
                     degree = 3;
                 }
 
-                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
+                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]'s list of vertices.
                 sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
 
                 foreach (var vert in CurveSegments[i].CalcUniformPolyline(sp, subdiv, degree))
@@ -151,7 +151,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Calculates a polyline, representing the curve part.
+        /// Calculates a polygonal chain, representing the curve part.
         /// </summary>
         /// <param name="angle">Determines how far the angle may vary from 180°.</param>
         /// <returns></returns>
@@ -175,7 +175,7 @@ namespace Fusee.Math.Core
                     degree = 3;
                 }
 
-                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
+                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]'s list of vertices.
                 sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
 
                 foreach (var vert in CurveSegments[i].CalcAdaptivePolylineWAngle(sp, angle, degree))
@@ -186,11 +186,11 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
+        /// Returns a polygonal chain, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
+        /// <param name="acreage">Determines a maximal acreage for the triangle created from start point random point and end point.</param>
         /// <returns></returns>
-        public IEnumerable<float3> CalcAdaptivePolyline(float arcreage)
+        public IEnumerable<float3> CalcAdaptivePolyline(float acreage)
         {
             for (var i = 0; i < CurveSegments.Count; i++)
             {
@@ -210,10 +210,10 @@ namespace Fusee.Math.Core
                     degree = 3;
                 }
 
-                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]s' list of vertices
+                //If i == 0 sp = StartPoint, if not it's the last vert of the CurveSegment[i-1]'s list of vertices.
                 sp = i == 0 ? StartPoint : CurveSegments[i - 1].Vertices[CurveSegments[i - 1].Vertices.Count - 1];
 
-                foreach (var vert in CurveSegments[i].CalcAdaptivePolylineWArcreage(sp, arcreage, degree))
+                foreach (var vert in CurveSegments[i].CalcAdaptivePolylineWArcreage(sp, acreage, degree))
                 {
                     yield return vert;
                 }
@@ -224,17 +224,17 @@ namespace Fusee.Math.Core
     /// <summary>
     /// The base class for CurveSegments.
     /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
-    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]'s list of vertices.
     /// </summary>
     public abstract class CurveSegment
     {
         /// <summary>
-        /// The Vertices, representet as float3, of a CurveSegment.
+        ///The vertices of a CurveSegment represented by float3s.
         /// </summary>
         public IList<float3> Vertices;
 
         /// <summary>
-        /// Calculates a point on a beziér curve using De Casteljaus algorithm.
+        /// Calculates a point on a bézier curve using De Casteljaus algorithm.
         /// </summary>
         /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1]</param>
         /// <param name="vertices">All control points thet represent the curve, incl. start and end point</param>
@@ -256,18 +256,18 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Splits a curve using De Casteljaus algorithm
+        /// Splits a curve using De Casteljaus algorithm.
         /// </summary>
-        /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1]</param>
+        /// <param name="t">Beziér curves are polynominals of t. t is element of [0, 1].</param>
         /// <param name="vertices">All control points that represent the curve, incl. start and end point.</param>
-        /// <param name="leftCurve">The left new curve</param>
-        /// <param name="rightCurve">The right new curve</param>
+        /// <param name="leftCurve">The left new curve.</param>
+        /// <param name="rightCurve">The right new curve.</param>
         public void SplitCurve(float t, float3[] vertices, ref List<float3> leftCurve, ref List<float3> rightCurve)
         {
             if (vertices.Length == 1)
             {
-                leftCurve.Add(vertices[0]); //3. position
-                rightCurve.Add(vertices[0]);//1. position
+                leftCurve.Add(vertices[0]); //Third position.
+                rightCurve.Add(vertices[0]);//First position.
                 rightCurve.Reverse(); //Maintain the winding of the curve.
                 return;
             }
@@ -284,7 +284,7 @@ namespace Fusee.Math.Core
                 {
                     rightCurve.Add(vertices[i + 1]);
                 }
-                //calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1]
+                //Calculates a weighted average of vertices[i] and vertices[i + 1] for x,y,z --> point on line between vertices[i] and vertices[i + 1].
                 var newVert = (1 - t) * vertices[i] + t * vertices[i + 1];
 
                 newVerts[i] = newVert;
@@ -293,30 +293,30 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a polyline, representing the curve segment. Intermediate points are calculated with uniform values of t.
+        /// Returns a polygonal chain, representing the curve segment. Intermediate points are calculated with uniform values of t.
         /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
-        /// <param name="segmentsPerCurve">The number of segments per curve</param>
-        /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
-        public virtual IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree) //TODO: Fix order
+        /// <param name="startPoint">The segment's starting point.</param>
+        /// <param name="segmentsPerCurve">The number of segments per curve.</param>
+        /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic.</param>
+        public virtual IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree)
         {
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
 
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
-                //Returns all points that already lie on the curve (i +=degree)
+                //Returns all points that already lie on the curve (i +=degree).
                 yield return controlPoints[i];
 
                 var verts = new float3[degree + 1];
 
-                //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment)
+                //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment).
                 for (var j = 0; j < verts.Length; j++)
                 {
                     verts[j] = controlPoints[i + j];
                 }
 
-                //Calculate additional vertices for values of t
+                //Calculates additional vertices for values of t.
                 for (var j = 1; j < segmentsPerCurve; j++)
                 {
                     var t = j / (float)segmentsPerCurve;
@@ -324,15 +324,15 @@ namespace Fusee.Math.Core
                     yield return point;
                 }
             }
-            //Manually adds the last control point to maintain the order of the points
+            //Adds the last control point to maintain the order of the points.
             yield return controlPoints[controlPoints.Count - 1];
         }
 
         /// <summary>
-        /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
+        /// Returns a polygonal chain, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
-        /// <param name="angle">Determines how far the angle between the two vectors(start point random point and random point end point) may vary from 180°</param>
+        /// <param name="startPoint">The segment's starting point</param>
+        /// <param name="angle">Determines how far the angle between the two vectors(start point, random point and end point) may vary from 180°</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
         /// <returns></returns>
         public IEnumerable<float3> CalcAdaptivePolylineWAngle(float3 startPoint, int angle, int degree)
@@ -340,12 +340,12 @@ namespace Fusee.Math.Core
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
 
-            // Splits Vertices into single Beziér curve, by deviding the list at every "on curve" point.
+            //Splits a Beziér path into a single Beziér curve, by deviding the list at every "on curve" point.
             for (var i = 0; i < controlPoints.Count - degree; i += degree)
             {
                 var verts = new float3[degree + 1];
 
-                //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment)
+                //After this loop verts represent a single Beziér curve  - not a Beziér path (= CurveSegment).
                 for (var j = 0; j < verts.Length; j++)
                 {
                     verts[j] = controlPoints[i + j];
@@ -353,7 +353,7 @@ namespace Fusee.Math.Core
 
                 var vertList = new List<float3>();
 
-                //Sample verts by performig a flatness test
+                //Sample verts by performing a flatness test.
                 AdaptiveSamplingWAngle(verts, angle, ref vertList);
 
                 foreach (var vert in vertList)
@@ -364,13 +364,13 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns a polyline, representing the curve segment. Intermediate points are calculated adaptively.
+        /// Returns a polygonal chain, representing the curve segment. Intermediate points are calculated adaptively.
         /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
-        /// <param name="arcreage">Determines a maximal arcreage for the tringale created from start point random point and end point.</param>
+        /// <param name="startPoint">The segment's starting point</param>
+        /// <param name="acreage">Determines a maximal acreage for the tringale created from start point random point and end point.</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
         /// <returns></returns>
-        public IEnumerable<float3> CalcAdaptivePolylineWArcreage(float3 startPoint, float arcreage, int degree)
+        public IEnumerable<float3> CalcAdaptivePolylineWArcreage(float3 startPoint, float acreage, int degree)
         {
             var controlPoints = new List<float3> { startPoint };
             controlPoints.AddRange(Vertices);
@@ -379,7 +379,7 @@ namespace Fusee.Math.Core
             {
                 var verts = new float3[degree + 1];
 
-                //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment)
+                //After this loop verts represents a single Beziér curve  - not a Beziér path (= CurveSegment).
                 for (var j = 0; j < verts.Length; j++)
                 {
                     verts[j] = controlPoints[i + j];
@@ -387,8 +387,8 @@ namespace Fusee.Math.Core
 
                 var vertList = new List<float3>();
 
-                //Sample verts by performig a flatness test
-                AdaptiveSamplingWArcreage(verts, arcreage, ref vertList);
+                //Sample verts by performig a flatness test.
+                AdaptiveSamplingWArcreage(verts, acreage, ref vertList);
 
                 foreach (var vert in vertList)
                 {
@@ -424,7 +424,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        private void AdaptiveSamplingWArcreage(float3[] verts, float arcreage, ref List<float3> vertList)
+        private void AdaptiveSamplingWArcreage(float3[] verts, float acreage, ref List<float3> vertList)
         {
             var rnd = new Random();
             const double min = 0.45;
@@ -436,7 +436,7 @@ namespace Fusee.Math.Core
             var t = RandomT(rnd, min, max);
             var vertNearMiddle = CalcPoint((float)t, verts);
 
-            if (IsArcreageSmallEnough(a, vertNearMiddle, b, arcreage))
+            if (IsArcreageSmallEnough(a, vertNearMiddle, b, acreage))
             {
                 vertList.Add(b);
             }
@@ -446,8 +446,8 @@ namespace Fusee.Math.Core
                 var rightCurve = new List<float3>();
                 SplitCurve((float)t, verts, ref leftCurve, ref rightCurve);
 
-                AdaptiveSamplingWArcreage(leftCurve.ToArray(), arcreage, ref vertList);
-                AdaptiveSamplingWArcreage(rightCurve.ToArray(), arcreage, ref vertList);
+                AdaptiveSamplingWArcreage(leftCurve.ToArray(), acreage, ref vertList);
+                AdaptiveSamplingWArcreage(rightCurve.ToArray(), acreage, ref vertList);
             }
         }
 
@@ -491,16 +491,16 @@ namespace Fusee.Math.Core
     }
 
     /// <summary>
-    /// Represents a linear segment of a CurvePart, using a list of float3.
+    /// Represents a linear segment of a CurvePart by using a list of float3s.
     /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
-    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]'s list of vertices.
     /// </summary>
     public class LinearSegment : CurveSegment
     {
         /// <summary>
-        /// Calculates a polyline, representing the curve segment.
+        /// Calculates a polygonal chain, representing the curve segment.
         /// </summary>
-        /// <param name="startPoint">The segments starting point</param>
+        /// <param name="startPoint">The segment's starting point</param>
         /// <param name="segmentsPerCurve">The number of segments per curve</param>
         /// <param name="degree">The degree of the curve: 1 for linear, 2 for conic, 3 for cubic</param>
         public override IEnumerable<float3> CalcUniformPolyline(float3 startPoint, int segmentsPerCurve, int degree)
@@ -534,9 +534,9 @@ namespace Fusee.Math.Core
     }
 
     /// <summary>
-    /// Represents a conic beziér path of a CurvePart, using a list of float3.
+    /// Represents a conic bézier path of a CurvePart by using a list of float3s.
     /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
-    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]'s list of vertices.
     /// </summary>
     public class BezierConicSegment : CurveSegment
     {
@@ -544,9 +544,9 @@ namespace Fusee.Math.Core
     }
 
     /// <summary>
-    /// Represents a cubic beziér path of a CurvePart, using a list of float3.
+    /// Represents a cubic bézier path of a CurvePart by using a list of float3s.
     /// A CurveSgment does not know its own start point. For the first CurveSegment in a sequence the start point is saved in the CurvePart belonging to the segment.
-    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]s' list of vertices.
+    /// The start point for the CurveSegment with index i is the last vertex in the CurveSegent[i-1]'s list of vertices.
     /// </summary>
     public class BezierCubicSegment : CurveSegment
     {
