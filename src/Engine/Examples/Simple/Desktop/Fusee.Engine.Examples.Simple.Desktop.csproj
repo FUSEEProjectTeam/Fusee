@@ -1,0 +1,118 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Examples.Simple.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.Simple.Desktop</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A8C041C0-3A74-4976-9060-70E2A865D521}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <FileAlignment>512</FileAlignment>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Desktop</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Desktop</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <!--PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\bin\Debug\Examples\Simple\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup -->
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
+      <Project>{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}</Project>
+      <Name>Fusee.Base.Imp.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>Fusee.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
+      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+      <Name>Fusee.Engine.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
+      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+      <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
+      <Project>{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}</Project>
+      <Name>Fusee.Engine.Imp.Graphics.Desktop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
+      <Project>{c4157bcb-d3a0-45c6-a84b-735fbd8c7aa8}</Project>
+      <Name>Fusee.Engine.Examples.Simple.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+  <PropertyGroup>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <!--Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
+  </Target>
+  <Import Project="$(SolutionDir)Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
+  <Import Project="$(SolutionDir)Fusee_Unix.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " / -->
+</Project>

@@ -110,10 +110,12 @@ namespace Fusee.Engine.Core
                 uniform mat4 FUSEE_ITMV;
                 uniform mat4 FUSEE_MV;
                 uniform mat4 FUSEE_IMV;
+                uniform mat4 FUSEE_M;
                 
                 varying vec2 uv;
                 varying vec3 normal;
                 varying vec3 surfacePos;
+                varying vec3 vViewDir;
 
                 void main()
                 {
@@ -121,19 +123,24 @@ namespace Fusee.Engine.Core
 	                uv = fuUV;
                    
 	                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                    surfacePos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;
+                    surfacePos = FUSEE_MV * vec4(fuVertex, 1.0);
                 }";
         }
 
         public static string DeferredPassPixelShader()
         {
-            // Do not modify line length or ShaderBuilder will crash...
-            return @"
+            return GlslVersion() + @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif      
+                   
                 varying vec2 uv;
                 varying vec3 normal;
                 varying vec3 surfacePos;
+                varying vec3 vViewDir;
        
                 uniform vec3 DiffuseColor;
+                uniform sampler2D tDiffuse;
                 uniform vec3 SpecularIntensity;
                 
             void main()
@@ -169,7 +176,10 @@ namespace Fusee.Engine.Core
       
         public static string DeferredDrawPassPixelShader()
         {
-            return GlslVersion() + @"" 
+            return GlslVersion() + @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif" 
                 + MaxLights() + 
                 "\n" 
                 + LightStructDeclaration() +
@@ -239,7 +249,11 @@ namespace Fusee.Engine.Core
                  result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);
                 
                 }
+
+               // vec3 albedo = texture2D(gAlbedoSpec, uv).rgb;
+
                 gl_FragColor = vec4(result,1.0);
+
             }";
         }
 
@@ -267,7 +281,11 @@ namespace Fusee.Engine.Core
                 }";
 
 
-        public static string EnvMapPixelShader = @"             
+        public static string EnvMapPixelShader = @"
+                #ifdef GL_ES
+                    precision highp float
+                #endif      
+                   
                 uniform vec3 DiffuseColor;
                 varying vec3 normal;
 
