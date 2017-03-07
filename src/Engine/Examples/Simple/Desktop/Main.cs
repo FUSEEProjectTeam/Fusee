@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
@@ -13,6 +14,23 @@ namespace Fusee.Engine.Examples.Simple.Desktop
     {
         public static void Main()
         {
+            /*
+            SimpleType st = new SimpleType {Header = new SceneHeaderTest
+            {
+                Version = 1,
+                Generator = "Test",
+                CreatedBy = "Patrick",
+                CreationDate = "13-12-2016",
+            } };
+            var seri = new Serializer();
+            // var schem = ProtoBuf.Serializer.GetProto<SimpleType>();
+
+            using (FileStream str = new FileStream("FuseeSimpleType.st", System.IO.FileMode.Create))
+            {
+                seri.Serialize(str, st);
+            }
+            */
+
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 

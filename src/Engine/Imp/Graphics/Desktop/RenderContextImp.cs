@@ -786,6 +786,54 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Clear((ClearBufferMask) flags);
         }
 
+        /// <summary>
+        /// Create one single multi-purpose attribute buffer
+        /// </summary>
+        /// <param name="attributes"></param>
+        /// <param name="attributeName"></param>
+        /// <returns></returns>
+        public IAttribImp CreateAttributeBuffer(float3[] attributes, string attributeName)
+        {
+            if (attributes == null || attributes.Length == 0)
+            {
+                throw new ArgumentException("Vertices must not be null or empty");
+            }
+
+            int handle;
+            int vboBytes;
+            int vertsBytes = attributes.Length * 3 * sizeof(float);
+            GL.GenBuffers(1, out handle);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes, attributeName));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
+            return new AttributeImp {AttributeBufferObject = handle };
+        }
+
+        /// <summary>
+        /// Remove an attribute buffer previously created with <see cref="CreateAttributeBuffer"/> and release all associated resources
+        /// allocated on the GPU.
+        /// </summary>
+        /// <param name="attribHandle">The han</param>
+        public void DeleteAttributeBuffer(IAttribImp attribHandle)
+        {
+            if (attribHandle != null)
+            {
+                int handle = ((AttributeImp) attribHandle).AttributeBufferObject;
+                if (handle != 0)
+                {
+                    GL.DeleteBuffer(handle);
+                    ((AttributeImp) attribHandle).AttributeBufferObject = 0;
+                }
+            }
+        }
+
 
         /// <summary>
         /// Binds the vertices onto the GL Rendercontext and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
@@ -1395,6 +1443,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     else
                         GL.Enable(EnableCap.DepthTest);
                     break;
+                case RenderState.ZWriteEnable:
+                    GL.DepthMask(value != 0);
+                    break;
                 case RenderState.AlphaBlendEnable:
                     if (value == 0)
                         GL.Disable(EnableCap.Blend);
@@ -1571,6 +1622,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         int depTest;
                         GL.GetInteger(GetPName.DepthTest, out depTest);
                         return (uint)(depTest);
+                    }
+                case RenderState.ZWriteEnable:
+                    {
+                        int depWriteMask;
+                        GL.GetInteger(GetPName.DepthWritemask, out depWriteMask);
+                        return (uint)(depWriteMask);
                     }
                 case RenderState.AlphaBlendEnable:
                     {
