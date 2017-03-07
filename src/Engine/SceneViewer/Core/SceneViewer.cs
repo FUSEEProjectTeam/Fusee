@@ -15,6 +15,8 @@ namespace Fusee.Engine.SceneViewer.Core
     [FuseeApplication(Name = "FUSEE SceneViewer", Description = "Watch any FUSEE scene.")]
     public class SceneViewer : RenderCanvas
     {
+        public string ModelFile = "Model.fus";
+
         // angle variables
         private static float _angleHorz = M.PiOver6*2.0f, _angleVert = -M.PiOver6*0.5f,
                              _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
@@ -81,7 +83,7 @@ namespace Fusee.Engine.SceneViewer.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = AssetStorage.Get<SceneContainer>("Model.fus");
+            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
@@ -89,7 +91,7 @@ namespace Fusee.Engine.SceneViewer.Core
                 // If the model origin is more than one third away from its bounding box, 
                 // recenter it to the bounding box. Do this check individually per dimension.
                 // This way, small deviations will keep the model's original center, while big deviations 
-                // will make the model rotating around its geometric center.
+                // will make the model rotate around its geometric center.
                 float3 bbCenter = bbox.Value.Center;
                 float3 bbSize = bbox.Value.Size;
                 float3 center = float3.Zero;

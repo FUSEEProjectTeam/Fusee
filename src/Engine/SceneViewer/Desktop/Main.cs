@@ -11,7 +11,7 @@ namespace Fusee.Engine.SceneViewer.Desktop
 {
     public class Simple
     {
-        public static void Main()
+        public static void Main(string[] args)
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
@@ -44,6 +44,13 @@ namespace Fusee.Engine.SceneViewer.Desktop
             AssetStorage.RegisterProvider(fap);
 
             var app = new Core.SceneViewer();
+            if (args.Length >= 1)
+            {
+                if (Path.GetExtension(args[0]).ToLower().Contains("fus") && File.Exists(args[0]))
+                    app.ModelFile = args[0];
+                else
+                    Diagnostics.Log($"Cannot open {args[0]} as a Fusee model file.");
+            }
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
