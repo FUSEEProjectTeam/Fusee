@@ -96,8 +96,16 @@ namespace Fusee.Base.Imp.Desktop
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            string path = Path.Combine(_baseDir, id);
+            // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
+            if (Path.IsPathRooted(id))
+                return new FileStream(id, FileMode.Open);
+            
+            // Path seems relative. First see if the file exists at the current working directory
+            if (File.Exists(id))
+                return new FileStream(id, FileMode.Open);
 
+            // At last, look at the specified asst path
+            string path = Path.Combine(_baseDir, id);
             return new FileStream(path, FileMode.Open);
         }
 
@@ -111,14 +119,18 @@ namespace Fusee.Base.Imp.Desktop
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override bool CheckExists(string id)
         {
-           if (id == null) throw new ArgumentNullException(nameof(id));
+            if (id == null) throw new ArgumentNullException(nameof(id));
+            
+            // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
+            if (Path.IsPathRooted(id))
+                return File.Exists(id);
+
+            // Path seems relative. First see if the file exists at the current working directory
+            if (File.Exists(id))
+                return true;
 
             string path = Path.Combine(_baseDir, id);
-            if (File.Exists(path))
-            {
-                return true;
-            }
-            return false;
+            return File.Exists(path);
         }
 
         /// <summary>

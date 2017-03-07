@@ -91,6 +91,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.SceneViewer.Core", "Core\Fusee.Engine.SceneViewer.Core.csproj", "{AFD8CB7D-9DC4-4853-B3D4-30B984A3F83A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuConv", "..\..\Tools\fuConv\fuConv.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
+	ProjectSection(ProjectDependencies) = postProject
+		{18787DE6-624A-4E96-AC0C-9FF7704342FC} = {18787DE6-624A-4E96-AC0C-9FF7704342FC}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BlenderScripts", "BlenderScripts", "{1DBB9A64-9458-45DD-87FE-BEC19E29EC7C}"
 EndProject

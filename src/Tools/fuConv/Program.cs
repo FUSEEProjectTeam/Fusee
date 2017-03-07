@@ -99,7 +99,8 @@ namespace Fusee.Tools.fuConv
                         if (inputFormat[0] != '.')
                             inputFormat = inputFormat.Insert(0, ".");
                     }
-                    if (!Assimp.IsImportFormatSupported(inputFormat))
+
+                    if (!Assimp.IsImportFormatSupported(inputFormat) && inputFormat != ".fus")
                     {
                         Console.Error.WriteLine($"ERROR: Unsupported input format {inputFormat}.");
                         Environment.Exit((int) ErrorCode.InputFormat);
@@ -140,11 +141,21 @@ namespace Fusee.Tools.fuConv
                     }
 
                     Console.WriteLine($"Converting from {opts.Input} to {Path.GetFileName(opts.Output)}");
-                    var assimpScene = Assimp.ImportFileFromStream(input,
-                        PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals |
-                        PostProcessSteps.JoinIdenticalVertices, inputFormat);
+                    SceneContainer fuseeScene;
+                    if (inputFormat == ".fus")
+                    {
+                        // .fus -> .fus conversion (might help when orignal fus was written using python code)
+                        fuseeScene = new Serializer().Deserialize(input, null, typeof(SceneContainer)) as SceneContainer;
+                    }
+                    else
+                    {
+                        // use assimp converter
+                        var assimpScene = Assimp.ImportFileFromStream(input,
+                            PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals |
+                            PostProcessSteps.JoinIdenticalVertices, inputFormat);
+                        fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
+                    }
 
-                    SceneContainer fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
 
                     var ser = new Serializer();
                     ser.Serialize(output, fuseeScene);
@@ -156,7 +167,8 @@ namespace Fusee.Tools.fuConv
                 .WithParsed<InputSceneFormats>(opts =>
                 {
                     Console.WriteLine("Supported input formats for scene files:");
-                    foreach (var inFormat in Assimp.GetSupportedImportFormats())
+                    var inFormats = Assimp.GetSupportedImportFormats().Concat(new string [ ] {".fus"}).OrderBy(s => s);
+                    foreach (var inFormat in inFormats)
                     {
                         Console.Write(inFormat + "; ");
                     }

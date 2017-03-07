@@ -11,19 +11,21 @@ _by Jonas Conrad and Patrick Foerster_
 	* Download the newest Python 3 installer
 	* Start the installation
 	* Be sure to check the box that sais "Add Python 3.x to PATH"
-	* open the CMD-Window
-	* type `python` to verify all PATH variables have been set correctly
-	* if there are no errors everything is in order otherwise, go to Step 4
+	* Open the CMD-Window
+	* Type `python` to verify all PATH variables have been set correctly
+	* If there are no errors everything is in order otherwise, go to Step 4
 	* type `quit()`
 
 2. Protobuf
-	* reopen the CMD-Window if necessary 
-	* type `pip3 install protobuf`
-	* if there are no errors close the CMD-Window
+	* Reopen the CMD-Window if necessary 
+	* Type `pip3 install protobuf`
+	* If there are no errors close the CMD-Window
 	
-3. Blender
-	* go to FILE->User Preferences->Add-ons
-	* click __Install from File__ and choose the .zip folder of the Add-on and finish the installation
+3. Blender 
+Manual installation on production machines. For setting up a development machine allowing to edit the .py file contained in the 
+project and directly use them out of Blender to enable debugging see "Development Environment for Blender Scripts" below.
+	* Go to FILE->User Preferences->Add-ons
+	* Click __Install from File__ and choose the .zip folder of the Add-on and finish the installation
 	* click __Testing_ and activate the Addon _Import-Export: .fus format__
 	* you may click __Save User Settings__ if you want to have the Add-on activated by default
 		* the Add-on will be installed in the specified "Target Path" (Default: C:\Users\xx\AppData\Roaming\Blender Foundation\Blender\2.xx\scripts\addons"). 
@@ -75,32 +77,45 @@ how to attach to Blender in Visual Studio's Attach Debugger dialog.
 * In case of an error related to python packages or imports, you may want to check, that all environment variables are set correctly (have a look at the StepByStep-Installation, Step 4)  
 
 
-
-
 ## Current Version (1.0.0)
 ### Steps Taken by the Exporter
-1. saves the file (if desired by the user) 
-2. iterates through all objects and their respective children(using a recursive function)
-  1. triangulates the mesh
-  2. applies all transformations to the object
-  3. separates all faces (makes to job easier for the script)
-  4. reads the mesh data (triangles, vertices, normals)
-  5. reads the material data (diffuse, specular, emissive) but takes only the first node he finds
-  6. serializes all data in a structured manner as defined by the .proto files
-3. writes the serialized data into the .fus file
+1. Saves the file (if desired by the user) 
+2. Iterates through all objects and their respective children (using a recursive function)
+  1. Triangulates the mesh
+  2. Applies all transformations to the object
+  3. Separates all faces (makes to job easier for the script)
+  4. Reads the mesh data (triangles, vertices, normals)
+  5. Reads the material data (diffuse, specular, emissive) but takes only the first node he finds
+  6. Serializes all data in a structured manner as defined by the .proto files
+3. Writes the serialized data into the .fus file
 
 ### Web Viewer
-* web viewer
-* diffuse materials 
-* emissive materials
+* Web viewer
+* Diffuse materials 
+* Emissive materials
 * UVs + textures
 
 ### .fus Exporter
 * .fus exporter
-* diffuse materials 
-* specular materials
-* emissive materials
+* Diffuse materials 
+* Specular materials
+* Emissive materials
 * UVs + textures
 
 ### Others
-* lamps (not supported by Fusee yet, therefore the option is currently disabled)
+* Lamps (not supported by Fusee yet, therefore the option is currently disabled)
+
+
+# Backlog
+
+* Apply modifiers to objects such as Subdivision Surface
+* Check Hierarchies and transformations
+* Export smoothed normals
+* Include Protobbuf-Python compiler into build to automatically generate 'Scene_pb2.py'
+* Update to Python 3.6 64 bit (for Fusion) and latest Blender 64 bit (2.78b)
+* Check Textures with different Settings
+* Allow for higher shiniess values. Probably requires to better understand Cycles' BRDF nodes first
+* Include bump map information
+* Include Key frame information
+* Include skeleton and weight information
+* Include Lights

@@ -24,7 +24,7 @@ def SerializeData(objects,isWeb, isOnlySelected,smoothing,lamps,smoothingDist,sm
     #write sceneHeader
     sceneHeader = sceneContainer.Header;
     sceneHeader.Version = 0
-    sceneHeader.Generator = 'BlenderAddOn'
+    sceneHeader.Generator = 'Blender FUSEE Exporter AddOn'
     sceneHeader.CreatedBy = getpass.getuser()
     lt = time.localtime()
     sceneHeader.CreationDate = str(lt.tm_year) + '-' + str(lt.tm_mon) + '-' + str(lt.tm_wday)
@@ -121,13 +121,13 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
         rootComponent3 = root.Components.add()
         print('--' + root.Name)
         
-        
         #init
         rootTransformComponent = Scene.SceneComponentContainer()
         rootMeshComponent = Scene.SceneComponentContainer()
 
         #set current object as the active one
         bpy.context.scene.objects.active = obj
+        '''
         #set to edit mode, in order to make all needed modifications
         bpy.ops.object.mode_set(mode='EDIT')
         #select mesh
@@ -137,61 +137,49 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
         #set back to Object mode
         bpy.ops.object.mode_set(mode="OBJECT")
         #Apply Transforms
-        bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        #bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+        '''
 
         #TRANSFORM COMPONENT
+        #Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scenegraph
+        if obj.parent is None:
+            obj_mtx_clean = obj.matrix_world.copy()
+        else:
+            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+
+        location, rotation, scale = obj_mtx_clean.decompose()
+
         #location
-        #the coordinate system of Blender is different to that one used by Fusee,
-        #therefore the axis need to be changed:
-        #fusee x= blender x
-        #fusee y= blender z
-        #fusee z= blender y
-        location = list(obj.location)
         transformComponent = rootTransformComponent.TransformComponent
-        transformComponent.Translation.x = location[0]
-        transformComponent.Translation.y = location[2]
-        transformComponent.Translation.z = location[1]
+        transformComponent.Translation.x = location.x
+        transformComponent.Translation.y = location.z
+        transformComponent.Translation.z = location.y
 
         #rotation
-        #the coordinate system of Blender is different to that one used by Fusee,
-        #therefore the axis need to be changed:
-        rot = obj.rotation_euler
-        transformComponent.Rotation.x = rot.x
-        transformComponent.Rotation.y = rot.z
-        transformComponent.Rotation.z = rot.y
+        rot_eul = rotation.to_euler()
+        transformComponent.Rotation.x = rot_eul.x
+        transformComponent.Rotation.y = rot_eul.z
+        transformComponent.Rotation.z = rot_eul.y
 
-        #scale
-        #the coordinate system of Blender is different to that one used by Fusee,
-        #therefore the axis need to be changed:
-        scale = list(obj.scale)
-        transformComponent.Scale.x = scale[0]
-        transformComponent.Scale.y = scale[2]
-        transformComponent.Scale.z = scale[1]
+        #scale 
+        #TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
+        transformComponent.Scale.x = scale.x
+        transformComponent.Scale.y = scale.z
+        transformComponent.Scale.z = scale.y
 
         '''
-        #Convert the mesh to bmesh-class, for extended and easier data access
-        bm = bmesh.new()
-        bm.from_mesh(data)
-        #read normals before splitting the edges, for smooth normals
-        if smoothing:
-            vertSCoList =[]
-            vertSNormList = []
-            for face in bm.faces:
-                for vert in face.verts:
-                    vertSCoList.append(vert.co)
-                    vertSNormList.append(vert.normal)'''
-
-
         #set current object as the active one
         bpy.ops.object.mode_set(mode='EDIT')
         bpy.ops.mesh.select_all(action='SELECT')
         #edgesplit (needed to generate one normal per vertex per triangle, easier)
         bpy.ops.mesh.edge_split()
         bpy.ops.object.mode_set(mode="OBJECT")
+        '''
 
         #convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
-        bm.from_mesh(bpy.context.scene.objects.active.data)
+        # bm.from_mesh(bpy.context.scene.objects.active.data)
+        bm.from_mesh(prepare_mesh(bpy.context.scene.objects.active))
 
         #count faces
         faces = []
@@ -338,7 +326,8 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
                                 textures.append(fullpath)
 
                     #find glossy node        
-                    elif node.type =='BSDF_GLOSSY' and isWeb == False and isSpecular==False:
+                    # elif node.type =='BSDF_GLOSSY' and isWeb == False and isSpecular==False:
+                    elif node.type =='BSDF_GLOSSY' and isSpecular==False:
                         print('----found glossy node')
                         isSpecular = True
                         specular = rootMaterialComponent.MaterialComponent.Specular
@@ -424,7 +413,8 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
             for children in obj.children:
                 child = GetNode(objects=children, isWeb=isWeb,
                                 isOnlySelected=False, smoothing=smoothing,
-                                lamps=lamps,smoothingDist=smoothingDist)
+                                lamps=lamps,smoothingDist=smoothingDist,
+                                smoothingAngle=smoothingAngle)
                 rootChildren = root.Children.add()
                 rootChildren.payload = child.obj.SerializePartialToString()
                 textures = textures + child.tex
@@ -443,16 +433,16 @@ def SetDefaultMaterial(isWeb):
     diffuse.Color.y = 0.6
     diffuse.Color.z = 0.6
 
-    #webviewer has problems with specular channel, therefore it's deactivated, when exporting to web
-    if isWeb == False:
-        specular = rootMaterialComponent.MaterialComponent.Specular
-        specular.Mix = 1
-        specular.Color.x = 0.6
-        specular.Color.y = 0.6
-        specular.Color.z = 0.6
+    #Webviewer had problems with specular channel, therefore it was deactivated when exporting to web
+    #if isWeb == False: (indent folloing if uncommenting this)
+    specular = rootMaterialComponent.MaterialComponent.Specular
+    specular.Mix = 1
+    specular.Color.x = 0.6
+    specular.Color.y = 0.6
+    specular.Color.z = 0.6
 
-        specular.SpecularChannelContainer.Intensity = 0.2
-        specular.SpecularChannelContainer.Shininess = 0.2
+    specular.SpecularChannelContainer.Intensity = 0.2
+    specular.SpecularChannelContainer.Shininess = 0.2
     return rootMaterialComponent
 
 def GetPaths(filepath):
@@ -469,3 +459,20 @@ def GetParents(obj):
         return obj
     elif obj.parent != None:
         GetParents(obj.parent)
+
+def prepare_mesh(obj):
+    # This applies all the modifiers (without altering the scene)
+    mesh = obj.to_mesh(bpy.context.scene, apply_modifiers=True, settings='RENDER', calc_tessface = True, calc_undeformed = False)
+
+    # Triangulate for web export
+    bm = bmesh.new()
+    bm.from_mesh(mesh)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    bm.to_mesh(mesh)
+    bm.free()
+    del bm
+
+    mesh.calc_normals()
+    mesh.calc_tessface()
+
+    return mesh

@@ -40,6 +40,8 @@ namespace Fusee.Engine.Examples.Simple.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
+
+        private string _text;
         #endif
 
         // Init is called on startup. 
@@ -62,11 +64,15 @@ namespace Fusee.Engine.Examples.Simple.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
-            _guiSubText = new GUIText("Simple FUSEE Example", _guiLatoBlack, 100, 100);
+
+            _text = "Simple FUSEE Example";
+
+            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+
             #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).

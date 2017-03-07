@@ -70,12 +70,14 @@
     <Compile Include="HingeConstraint.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="InputDevice.cs" />
+    <Compile Include="JometriMesh.cs" />
     <Compile Include="KeyboardDevice.cs" />
     <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
     <Compile Include="MouseDevice.cs" />
     <Compile Include="MultiSphereShape.cs" />
     <Compile Include="Point2PointConstraint.cs" />
+    <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="RigidBody.cs" />
     <Compile Include="ScenePicker.cs" />
     <Compile Include="SceneRenderer.cs" />
@@ -121,6 +123,10 @@
       <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
       <Name>Fusee.Base.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Jometri\Fusee.Jometri.csproj">
+      <Project>{8ee002c1-e15c-4297-8013-5005d65e33d9}</Project>
+      <Name>Fusee.Jometri</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
       <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>

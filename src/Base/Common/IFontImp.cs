@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
     /// <summary>
-    ///     A struct for saving character information needed for proccesing a font.
+    /// A struct for saving character information needed for proccesing a font.
     /// </summary>
     public struct GlyphInfo
     {
@@ -99,6 +96,20 @@ namespace Fusee.Base.Common
         GlyphInfo GetGlyphInfo(uint c);
 
         /// <summary>
+        /// Translates the character's control points into a curve.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        Curve GetGlyphCurve(uint c);
+
+        /// <summary>
+        /// Get the unscaled advance from a character.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        float GetUnscaledAdvance(uint c);
+
+        /// <summary>
         ///     Renders the given glyph.
         /// </summary>
         /// <param name="c">The character code (Unicode) of the character to render.</param>
@@ -122,6 +133,14 @@ namespace Fusee.Base.Common
         /// <param name="rightC">The right character.</param>
         /// <returns>An offset to add to the normal advance. Typically negative since kerning rather compacts text lines.</returns>
         float GetKerning(uint leftC, uint rightC);
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character.</param>
+        /// <param name="rightC">The right character.</param>
+        /// <returns></returns>
+        float GetUnscaledKerning(uint leftC, uint rightC);
     }
 
 

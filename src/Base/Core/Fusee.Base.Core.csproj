@@ -42,6 +42,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AssetStorage.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Diagnostics.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="IO.cs" />
@@ -59,6 +60,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Common\Fusee.Base.Common.csproj">
       <Project>{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}</Project>
       <Name>Fusee.Base.Common</Name>
