@@ -75,7 +75,7 @@
       <Abi>x86</Abi>
       <Link>x86\libfreetype262d.so</Link>
     </EmbeddedNativeLibrary>
-  </ItemGroup>  
+  </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
@@ -83,6 +83,10 @@
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+      <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\Fusee.Base.Common.csproj">
       <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
       <Name>Fusee.Base.Common</Name>
