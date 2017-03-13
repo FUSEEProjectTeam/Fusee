@@ -2,11 +2,21 @@
 namespace Fusee.Engine.Common
 {
     /// <summary>
+    /// Interface for implementing handles on attribute arrays stored on GPU memory such as vertices, normals, uvs etc.
+    /// This interface does not require any particular public impmlementation. It is meant as a markup-Interace to identify
+    /// types.
+    /// </summary>
+    public interface IAttribImp
+    {
+        
+    }
+
+    /// <summary>
     /// Interface for Mesh implementations. The implementation should handle typical mesh informations like: vertices, triangles, normals, colors, UV's.
     /// It is also required to implement a connection to the current Rendercontext in order to apply the Mesh for rendering.
     /// The Mesh should preferable use handles for its informations in order to communicate with a rendercontext. The handles are refering to so called BufferObjects.
     /// </summary>
-    
+
     [ProtoContract]
     public interface IMeshImp
     {

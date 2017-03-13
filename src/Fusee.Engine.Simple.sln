@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{BF6B8C64-C111-450A-A8CA-297B75CDFEF8}"
 EndProject
@@ -88,16 +88,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Web", "Base\Imp\Web\Fusee.Base.Imp.Web.csproj", "{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Jometri", "Jometri\Fusee.Jometri.csproj", "{8EE002C1-E15C-4297-8013-5005D65E33D9}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuConv", "Tools\fuConv\fuConv.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
 		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{3564577b-6ba7-41dc-9b19-fd6fbd690cb0}*SharedItemsImports = 13
-		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}*SharedItemsImports = 4
-		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}*SharedItemsImports = 4
 		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 4
+		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
+		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}*SharedItemsImports = 4
 		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 4
+		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -568,6 +570,26 @@ Global
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}.Release|x64.Build.0 = Release|Any CPU
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}.Release|x86.ActiveCfg = Release|Any CPU
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}.Release|x86.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x64.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Debug|x86.Build.0 = Debug|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|ARM64.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x64.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x64.Build.0 = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x86.ActiveCfg = Release|Any CPU
+		{8EE002C1-E15C-4297-8013-5005D65E33D9}.Release|x86.Build.0 = Release|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Debug|ARM.ActiveCfg = Debug|Any CPU

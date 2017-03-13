@@ -9,6 +9,7 @@
     <Import_RootNamespace>Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)SplitToCurveSegmentHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)IOImp.cs" />
   </ItemGroup>
 </Project>

@@ -1,4 +1,6 @@
 var $fuseeBaseCommon = JSIL.GetAssembly("Fusee.Base.Common");
+var $fuseeMathCore = JSIL.GetAssembly("Fusee.Math.Core");
+var $fuseeBaseImp = JSIL.GetAssembly("Fusee.Base.Imp.Web");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Base");
@@ -92,38 +94,114 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
 });
 
 
+JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
+    function($) {
 
+        var _face;
 
-JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
+        //public FontImp(object storage)
+        $.Method({ Static: false, Public: true },
+            ".ctor",
+            new JSIL.MethodSignature(null, [$.Object]),
+            function _ctor(storage) {
+                this._face = opentype.parse(storage.buffer);
+            }
+        );
 
-    var _face;
+        //public GlyphInfo GetGlyphInfo(uint c)
+        $.Method({ Static: false, Public: true },
+            "GetGlyphInfo",
+            new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphInfo"), [$.UInt32]),
+            function GetGlyphInfo(c) {
+                var glyph = this._face.charToGlyph(String.fromCharCode(c));
+                var fontSize = this.PixelHeight;
+                var fontScale = 1 / this._face.unitsPerEm * fontSize;
 
-    //public FontImp(object storage)
-    $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, [$.Object]),
-        function _ctor(storage) {
-            this._face = opentype.parse(storage.buffer);
-        }
-    );
+                var glyphInfo = new $fuseeBaseCommon.Fusee.Base.Common.GlyphInfo();
+                // TODO: maybe normalize values with 1 / this._face.unitsPerEm
+                glyphInfo.CharCode = c;
+                glyphInfo.AdvanceX = glyph.advanceWidth * fontScale;
+                glyphInfo.AdvanceY = 0;
+                glyphInfo.Width = (glyph.xMax - glyph.xMin) * fontScale;
+                glyphInfo.Height = (glyph.yMax - glyph.yMin) * fontScale;
+                return glyphInfo;
+            }
+        );
 
-    //public GlyphInfo GetGlyphInfo(uint c)
-    $.Method({ Static: false, Public: true }, "GetGlyphInfo",
-      new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.GlyphInfo"), [$.UInt32]),
-        function GetGlyphInfo(c) {
-            var glyph = this._face.charToGlyph(String.fromCharCode(c));
-            var fontSize = this.PixelHeight;
-            var fontScale = 1 / this._face.unitsPerEm * fontSize;
+        //public Curve GetGlyphCurve(uint c)
+        $.Method({ Static: false, Public: true },
+            "GetGlyphCurve",
+            new JSIL.MethodSignature($fuseeMathCore.TypeRef("Fusee.Math.Core.Curve"), [$.UInt32]),
+            function GetGlyphCurve(c) {
 
-            var glyphInfo = new $fuseeBaseCommon.Fusee.Base.Common.GlyphInfo();
-            // TODO: maybe normalize values with 1 / this._face.unitsPerEm
-            glyphInfo.CharCode = c;
-            glyphInfo.AdvanceX = glyph.advanceWidth * fontScale;
-            glyphInfo.AdvanceY = 0;
-            glyphInfo.Width = (glyph.xMax - glyph.xMin) * fontScale;
-            glyphInfo.Height = (glyph.yMax - glyph.yMin) * fontScale;
-            return glyphInfo;
-        }
-     );
+                var glyph = this._face.charToGlyph(String.fromCharCode(c));
+                var curve = new $fuseeMathCore.Fusee.Math.Core.Curve();
+
+                curve.CurveParts = new ($jsilcore.System.Collections.Generic.List$b1
+                    .Of($fuseeMathCore.Fusee.Math.Core.CurvePart))();
+
+                var contour = [];
+
+                if (glyph.points != null) {
+                    for (var i = 0; i < glyph.points.length; i++) {
+                        if (!glyph.points[i].lastPointOfContour) {
+                            contour.push(glyph.points[i]);
+                        } else {
+                            contour.push(glyph.points[i]);
+
+                            var cp = new $fuseeMathCore.Fusee.Math.Core.CurvePart();
+
+                            cp.Closed = true;
+
+                            cp.StartPoint = new $fuseeMathCore.Fusee.Math.Core.float3();
+                            cp.StartPoint.x = contour[0].x;
+                            cp.StartPoint.y = contour[0].y;
+                            cp.StartPoint.z = 0;
+
+                            cp.CurveSegments = new ($jsilcore.System.Collections.Generic.List$b1
+                                .Of($fuseeMathCore.Fusee.Math.Core.CurveSegment))();
+
+                            var partVertices = new ($jsilcore.System.Collections.Generic.List$b1
+                                .Of($fuseeMathCore.Fusee.Math.Core.float3))();
+                            var partTags = new ($jsilcore.System.Collections.Generic.List$b1
+                                .Of($jsilcore.System.Byte))();
+
+                            for (var j = 0; j < contour.length; j++) {
+                                var x = contour[j].x;
+                                var y = contour[j].y;
+                                var z = 0;
+                                partVertices.Add(new $fuseeMathCore.Fusee.Math.Core.float3(x, y, z));
+
+                                var tag = contour[j].onCurve ? 1 : 0;
+                                partTags.Add(tag);
+                            }
+
+                            contour = [];
+                            curve.CurveParts.Add(cp);
+
+                            var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
+                            var segments = helper.SplitPartIntoSegments(cp, partTags, partVertices);
+                            helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, cp);
+
+                            partVertices.Clear();
+                            partTags.Clear();
+                        }
+                    }
+                }
+                return curve;
+            }
+        );
+
+        //public float GetUnscaledAdvance(uint c)
+        $.Method({ Static: false, Public: true }, "GetUnscaledAdvance",
+            new JSIL.MethodSignature($.Single, [$.UInt32]),
+            function GetUnscaledAdvance(c) {
+
+                var glyph = this._face.charToGlyph(String.fromCharCode(c));
+                var advanceWidth = glyph.advanceWidth;
+                return advanceWidth;
+            }
+        );
 
 
     //public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
@@ -131,7 +209,7 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
       new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [
               $.UInt32, $jsilcore.TypeRef("JSIL.Reference", [$.Int32]),
               $jsilcore.TypeRef("JSIL.Reference", [$.Int32])
-          ]),
+      ]),
           function RenderGlyph(c, /* ref */ bitmapLeft, /* ref */ bitmapTop) {
               var glyph = this._face.charToGlyph(String.fromCharCode(c));
 
@@ -148,8 +226,7 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
               var retImage = new $fuseeBaseCommon.Fusee.Base.Common.ImageData();
               var bmpLeft = +0;
               var bmpTop = +0;
-              if (bmpWidth > 0 && bmpRows > 0) 
-              {
+              if (bmpWidth > 0 && bmpRows > 0) {
                   var canvas = document.createElement("canvas");
                   canvas.width = bmpWidth;
                   canvas.height = bmpRows;
@@ -161,23 +238,22 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
                   var alpha = new Uint8Array(canvas.width * canvas.height);
 
                   var alphaChan = 0;
-                  for (var pix = 3; pix < canvas.width * canvas.height * 4; pix += 4)
-                  {
+                  for (var pix = 3; pix < canvas.width * canvas.height * 4; pix += 4) {
                       alpha[alphaChan++] = bitmap.data[pix];
                   }
                   retImage.Width = bmpWidth;
-                  retImage.Height = bmpRows;    
+                  retImage.Height = bmpRows;
                   retImage.PixelFormat = $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat.Intensity;
                   retImage.Stride = bmpWidth;
                   retImage.PixelData = alpha;
 
                   bmpLeft = glyph.xMin * fontScale;
                   bmpTop = glyph.yMax * fontScale;
-              }            
+              }
               bitmapLeft.set(bmpLeft);
               bitmapTop.set(bmpTop);
               return retImage;
-         }
+          }
     );
 
 
@@ -194,6 +270,19 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp", function ($) {
 
             var ret = this._face.getKerningValue(leftGlyph, rightGlyph) * fontScale;
             return ret;
+        }
+    );
+
+    //public float GetUnscaledKerning(uint leftC, uint rightC)
+    $.Method({ Static: false, Public: true }, "GetUnscaledKerning",
+        new JSIL.MethodSignature($.Single, [$.UInt32, $.UInt32]),
+        function GetUnscaledKerning(leftC, rightC) {
+            
+            var leftGlyph = this._face.charToGlyph(String.fromCharCode(leftC));
+            var rightGlyph = this._face.charToGlyph(String.fromCharCode(rightC));
+
+            var kerning = this._face.getKerningValue(leftGlyph, rightGlyph);
+            return kerning;
         }
     );
 

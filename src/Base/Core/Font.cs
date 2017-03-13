@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
+using Fusee.Math.Core;
 
 namespace Fusee.Base.Core
 {
@@ -18,6 +16,11 @@ namespace Fusee.Base.Core
         public IFontImp _fontImp;
 
         private readonly Dictionary<uint, GlyphInfo> _glyphInfoCache = new Dictionary<uint, GlyphInfo>();
+
+        private readonly Dictionary<uint, Curve> _glyphCurveChache = new Dictionary<uint, Curve>();
+
+        private readonly Dictionary<uint, float> _glyphAdvanceCache = new Dictionary<uint, float>();
+
 
         /// <summary>
         ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
@@ -60,6 +63,41 @@ namespace Fusee.Base.Core
             return ret;
         }
 
+
+        /// <summary>
+        /// Gets the character's points, contours and tags and translates them into a curve.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        public Curve GetGlyphCurve(uint c)
+        {
+            Curve curve;
+            if (_glyphCurveChache.TryGetValue(c, out curve))
+                return curve;
+
+            // its not in the cache...
+            curve = _fontImp.GetGlyphCurve(c);
+            _glyphCurveChache[c] = curve;
+            return curve;
+        }
+
+
+        /// <summary>
+        /// Get the unscaled advance from a character.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        public float GetUnscaledAdvance(uint c)
+        {
+            float ret;
+            if (_glyphAdvanceCache.TryGetValue(c, out ret))
+                return ret;
+
+            ret = _fontImp.GetUnscaledAdvance(c);
+            _glyphAdvanceCache[c] = ret;
+            return ret;
+        }
+
         /// <summary>
         ///     Renders the given glyph.
         /// </summary>
@@ -84,6 +122,14 @@ namespace Fusee.Base.Core
         /// <param name="rightC">The right character.</param>
         /// <returns>An offset to add to the normal advance. Typically negative since kerning rather compacts text lines.</returns>
         public float GetKerning(uint leftC, uint rightC) => _fontImp.GetKerning(leftC, rightC);
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character.</param>
+        /// <param name="rightC">The right character.</param>
+        /// <returns></returns>
+        public float GetUnscaledKerning(uint leftC, uint rightC) => _fontImp.GetUnscaledKerning(leftC, rightC);
 
     }
 }
