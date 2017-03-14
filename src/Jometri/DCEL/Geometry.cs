@@ -749,6 +749,3 @@ namespace Fusee.Jometri.DCEL
         #endregion
     }
 }
-
-
-

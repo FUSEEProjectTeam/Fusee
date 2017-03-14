@@ -51,6 +51,7 @@
     <Compile Include="DCEL\AttributeInformation.cs" />
     <Compile Include="DCEL\InitializeGeometryHelper.cs" />
     <Compile Include="Manipulation\Extrude.cs" />
+    <Compile Include="Manipulation\SubDivisionSurface.cs" />
     <Compile Include="Triangulation\StatusEdge.cs" />
     <Compile Include="Triangulation\SweepLineStatus.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />

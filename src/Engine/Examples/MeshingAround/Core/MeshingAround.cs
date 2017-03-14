@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Xml;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
@@ -6,6 +7,7 @@ using Fusee.Jometri.Manipulation;
 using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
@@ -68,13 +70,39 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Points = new List<float3>
                 {
                     new float3(0, 0, 0),
-                    new float3(1, 0, 1),
-                    new float3(0, 0.5f, 0.5f)
+                    new float3(1, 0, 0),
+                    new float3(0, 1, 0)
+                },
+                IsOuter = true
+            };
+
+            var outlineCustomStar = new PolyBoundary()
+            {
+                Points = new List<float3>
+                {
+                    new float3(0, 2, 0),
+                    new float3(-1, 1, 0),
+                    new float3(-2, 1, 0),
+                    new float3(-3, 1, 0),
+                    new float3(-2, 0, 0),
+                    new float3(-3, -1, 0),
+                    new float3(-1, -1, 0),
+                    new float3(0, -2, 0),
+                    new float3(1, -1, 0),
+                    new float3(3, -1, 0),
+                    new float3(2, 0, 0),
+                    new float3(3, 1, 0),
+                    new float3(1, 1, 0),
                 },
                 IsOuter = true
             };
             ////////////////////////////////////////////////
-            
+
+            var outlineCCube = new List<PolyBoundary> { outlineCustomStar };
+            var geomCCube = new Geometry(outlineCCube);
+            geomCCube.Extrude2DPolygon(1, true);
+            geomCCube.Triangulate();
+            var customCube = new JometriMesh(geomCCube);
 
             var outlinesOcta = new List<PolyBoundary> { outlineOctagon, outlineOctaHole };
             var geomOcta = new Geometry(outlinesOcta);
@@ -93,6 +121,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var geomTri = new Geometry(outlinesTriangle);
             geomTri.Triangulate();
             var triangle = new JometriMesh(geomTri);
+            var triangleSD = SubDivisionSurface.loopSubDivision(geomTri);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer
@@ -109,6 +138,25 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             };
 
             parentNode.Components.Add(parentTrans);
+
+            //Custom
+            var sceneNodeCustomStar = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var meshCustomStar = new MeshComponent
+            {
+                Vertices = customCube.Vertices,
+                Triangles = customCube.Triangles,
+                Normals = customCube.Normals,
+            };
+
+            var transCustomStar = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = new float3(0.5f,0.5f,0.5f),
+                Translation = new float3(0, 0, 0),
+            };
+
+            sceneNodeCustomStar.AddComponent(transCustomStar);
+            sceneNodeCustomStar.AddComponent(meshCustomStar);
 
             //Octagon
             var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
@@ -166,13 +214,15 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             sceneNodeCTri.Components.Add(tranTri);
             sceneNodeCTri.Components.Add(meshCTri);
-            
+
             parentNode.Children.Add(sceneNodeCTri);
-            parentNode.Children.Add(sceneNodeCOne);
-            parentNode.Children.Add(sceneNodeCCube);
+            //parentNode.Children.Add(sceneNodeCOne);
+            //parentNode.Children.Add(sceneNodeCCube);
+            parentNode.Children.Add(sceneNodeCustomStar);
+
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
             ///////////////////////////////////////////////////////////////////////////
-            
+
             _renderer = new SceneRenderer(sc);
 
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
