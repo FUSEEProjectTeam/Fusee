@@ -57,10 +57,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Points = new List<float3>
                 {
-                    new float3(1, 0, 0),
-                    new float3(1, 0.707f, 0.707f),
-                    new float3(0, 0.707f, 0.707f),
-                    new float3(0, 0, 0)
+                    new float3(-1, 1, 0),
+                    new float3(-1, -1, 0),
+                    new float3(1, -1, 0),
+                    new float3(1, 1, 0)
                 },
                 IsOuter = true
             };
@@ -81,18 +81,11 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 Points = new List<float3>
                 {
                     new float3(0, 2, 0),
-                    new float3(-1, 1, 0),
                     new float3(-2, 1, 0),
-                    new float3(-3, 1, 0),
-                    new float3(-2, 0, 0),
-                    new float3(-3, -1, 0),
-                    new float3(-1, -1, 0),
+                    new float3(-2, -1, 0),
                     new float3(0, -2, 0),
-                    new float3(1, -1, 0),
-                    new float3(3, -1, 0),
-                    new float3(2, 0, 0),
-                    new float3(3, 1, 0),
-                    new float3(1, 1, 0),
+                    new float3(2, -1, 0),
+                    new float3(2, 1, 0),
                 },
                 IsOuter = true
             };
@@ -100,20 +93,33 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             var outlineCCube = new List<PolyBoundary> { outlineCustomStar };
             var geomCCube = new Geometry(outlineCCube);
-            geomCCube.Extrude2DPolygon(1, true);
+            geomCCube.Extrude2DPolygon(2, true);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.ReifSubDivision(geomCCube);
             geomCCube.Triangulate();
             var customCube = new JometriMesh(geomCCube);
 
             var outlinesOcta = new List<PolyBoundary> { outlineOctagon, outlineOctaHole };
             var geomOcta = new Geometry(outlinesOcta);
             geomOcta.Extrude2DPolygon(0.5f, true);
+            //geomOcta = SubDivisionSurface.ReifSubDivision(geomOcta);
             geomOcta.Triangulate();
             var octagon = new JometriMesh(geomOcta);
 
             var outlinesCube = new List<PolyBoundary> { outlineRectangle };
             var geomCube = new Geometry(outlinesCube);
-            geomCube.Extrude2DPolygon(1, false);
             //geomCube.Extrude2DPolygon(1, true);
+            geomCube.Extrude2DPolygon(2, false);
+            geomCube.ExtrudeFace(2,1);
+            //geomCube = SubDivisionSurface.ReifSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.ReifSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.ReifSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.ReifSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.ReifSubDivision(geomCube);
             geomCube.Triangulate();
             var cube = new JometriMesh(geomCube);
 
@@ -121,7 +127,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var geomTri = new Geometry(outlinesTriangle);
             geomTri.Triangulate();
             var triangle = new JometriMesh(geomTri);
-            var triangleSD = SubDivisionSurface.loopSubDivision(geomTri);
+            //var triangleSD = SubDivisionSurface.ReifSubDivision(geomTri);
 
             ////////////////// Fill SceneNodeContainer ////////////////////////////////
             var parentNode = new SceneNodeContainer
@@ -190,7 +196,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             {
                 Rotation = float3.Zero,
                 Scale = float3.One,
-                Translation = new float3(-2, -1, 0)
+                Translation = new float3(0, 0, 0)
             };
 
             sceneNodeCCube.Components.Add(tranCube);
@@ -215,10 +221,10 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             sceneNodeCTri.Components.Add(tranTri);
             sceneNodeCTri.Components.Add(meshCTri);
 
-            parentNode.Children.Add(sceneNodeCTri);
+            //parentNode.Children.Add(sceneNodeCTri);
             //parentNode.Children.Add(sceneNodeCOne);
-            //parentNode.Children.Add(sceneNodeCCube);
-            parentNode.Children.Add(sceneNodeCustomStar);
+            parentNode.Children.Add(sceneNodeCCube);
+            //parentNode.Children.Add(sceneNodeCustomStar);
 
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
             ///////////////////////////////////////////////////////////////////////////
