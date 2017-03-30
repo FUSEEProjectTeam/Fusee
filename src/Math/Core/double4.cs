@@ -934,31 +934,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double4 BaryCentric(double4 a, double4 b, double4 c, double u, double v)
         {
-            return a + u * (b - a) + v * (c - a);
-        }
-
-        /// <summary>
-        /// Interpolate 3 Vectors using Barycentric coordinates
-        /// </summary>
-        /// <param name="a">First input Vector.</param>
-        /// <param name="b">Second input Vector.</param>
-        /// <param name="c">Third input Vector.</param>
-        /// <param name="u">First Barycentric Coordinate.</param>
-        /// <param name="v">Second Barycentric Coordinate.</param>
-        /// <param name="result">Output Vector. a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</param>
-        public static void BaryCentric(ref double4 a, ref double4 b, ref double4 c, double u, double v, out double4 result)
-        {
-            result = a; // copy
-
-            double4 temp = b; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, u, out temp);
-            Add(ref result, ref temp, out result);
-
-            temp = c; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, v, out temp);
-            Add(ref result, ref temp, out result);
+            return u*a + v*b + (1.0-u-v)*c;
         }
 
         #endregion
