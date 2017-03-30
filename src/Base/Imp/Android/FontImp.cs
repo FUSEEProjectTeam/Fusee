@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Fusee.Base.Common;
+using Fusee.Math.Core;
 using SharpFont;
 
 namespace Fusee.Base.Imp.Android
@@ -95,7 +96,30 @@ namespace Fusee.Base.Imp.Android
         }
 
         /// <summary>
-        ///     Renders the given glyph.
+        /// Gets the character's points, contours and tags and translates them into a curve.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        public Curve GetGlyphCurve(uint c)
+        {
+            //TODO: implement missing functionality
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the unscaled advance from a character.
+        /// </summary>
+        /// <param name="c">The character from which the information is to be read.</param>
+        /// <returns></returns>
+        public float GetUnscaledAdvance(uint c)
+        {
+            _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
+            var advance = _face.Glyph.Metrics.HorizontalAdvance.Value;
+            return advance;
+        }
+
+        /// <summary>
+        /// Renders the given glyph.
         /// </summary>
         /// <param name="c">The character code (Unicode) of the character to render.</param>
         /// <param name="bitmapLeft">
@@ -151,6 +175,20 @@ namespace Fusee.Base.Imp.Android
             var rightInx = _face.GetCharIndex(rightC);
 
             return (float) _face.GetKerning(leftInx, rightInx, KerningMode.Default).X;
+        }
+
+        /// <summary>
+        /// Gets the unscaled kerning offset between a pair of two consecutive characters in a text string.
+        /// </summary>
+        /// <param name="leftC">The left character.</param>
+        /// <param name="rightC">The right character.</param>
+        /// <returns></returns>
+        public float GetUnscaledKerning(uint leftC, uint rightC)
+        {
+            var leftInx = _face.GetCharIndex(leftC);
+            var rightInx = _face.GetCharIndex(rightC);
+
+            return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
     }
 }
