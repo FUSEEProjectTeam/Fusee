@@ -925,6 +925,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Determines whether the specified triangle is in clockwise winding order.
+<<<<<<< HEAD
         /// </summary>
         /// <param name="a">The first point of the triangle.</param>
         /// <param name="b">The second point of the triangle.</param>
@@ -972,6 +973,35 @@ namespace Fusee.Math.Core
         {
             GetBarycentric(a, b, c, point, out u, out v);
             return u >= 0 && v >= 0 && u + v < 1;
+=======
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name= "c">The third point of the triangle.</param>
+        /// <returns>true if the triangle is clockwise, otherwise false.</returns>
+        public static bool IsTriangleCW(float2 a, float2 b, float2 c)
+        {
+            float2 cb = b - c;
+            float2 ca = a - c;
+            // Calculate z component of cross product
+            float z = ca.x * cb.y - ca.y * cb.x;
+            return z < 0;
+        }
+
+        /// <summary>
+        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting u coordinate.</param>
+        /// <param name="v">The resulting v coordinate.</param>
+        public static void GetBarycentric(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
+        {
+            u = ((b.y - c.y) * (point.x - c.x) + (c.x - b.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+            v = ((c.y - a.y) * (point.x - c.x) + (a.x - c.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+>>>>>>> df2ee3474700a949c9de5f881efdb78dc0899d4b
         }
 
 

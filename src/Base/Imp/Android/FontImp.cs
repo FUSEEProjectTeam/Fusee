@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using SharpFont;
@@ -102,8 +104,38 @@ namespace Fusee.Base.Imp.Android
         /// <returns></returns>
         public Curve GetGlyphCurve(uint c)
         {
-            //TODO: implement missing functionality
-            return null;
+            var curve = new Curve();
+
+            _face.LoadChar(c, LoadFlags.NoScale, LoadTarget.Normal);
+
+            curve.CurveParts = new List<CurvePart>();
+            var orgPointCoords = _face.Glyph.Outline.Points;
+            var pointTags = _face.Glyph.Outline.Tags;
+            if (orgPointCoords == null) return curve;
+
+            //Freetype contours are defined by their end points.
+            var curvePartEndPoints = _face.Glyph.Outline.Contours;
+
+            var partTags = new List<byte>();
+            var partVerts = new List<float3>();
+
+            //Writes points of a freetyp contour into a CurvePart,
+            for (var i = 0; i <= orgPointCoords.Length; i++)
+            {
+                //If a certain index of outline points is in array of contour end points - create new CurvePart and add it to Curve.CurveParts
+                if (!curvePartEndPoints.Contains((short)i)) continue;
+
+                partVerts.Clear();
+                partTags.Clear();
+
+                var part = SplitToCurvePartHelper.CreateCurvePart(orgPointCoords, pointTags, curvePartEndPoints, i,
+                    partVerts, partTags);
+                curve.CurveParts.Add(part);
+
+                var segments = SplitToCurveSegmentHelper.SplitPartIntoSegments(part, partTags, partVerts);
+                SplitToCurveSegmentHelper.CombineCurveSegmentsAndAddThemToCurvePart(segments, part);
+            }
+            return curve;
         }
 
         /// <summary>
@@ -190,5 +222,52 @@ namespace Fusee.Base.Imp.Android
 
             return _face.GetKerning(leftInx, rightInx, KerningMode.Unscaled).X.Value;
         }
+    }
+
+    internal class SplitToCurvePartHelper
+    {
+        #region Methodes
+        public static void CurvePartVertice(CurvePart cp, int j, FTVector[] orgPointCoords, List<float3> partVerts)
+        {
+            var vert = new float3(orgPointCoords[j].X.Value, orgPointCoords[j].Y.Value, 0);
+            partVerts.Add(vert);
+        }
+
+        public static CurvePart CreateCurvePart(FTVector[] orgPointCoords, byte[] pointTags, short[] curvePartEndPoints, int i, List<float3> partVerts, List<byte> partTags)
+        {
+            var index = Array.IndexOf(curvePartEndPoints, (short)i);
+            var cp = new CurvePart
+            {
+                IsClosed = true,
+                CurveSegments = new List<CurveSegment>()
+            };
+
+            //Marginal case - first contour ( 0 to contours[0] ). 
+            if (index == 0)
+            {
+                for (var j = 0; j <= i; j++)
+                {
+                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    partTags.Add(pointTags[j]);
+                }
+                //The start point is the first point in the outline.Points array.
+                cp.StartPoint = new float3(orgPointCoords[0].X.Value, orgPointCoords[0].Y.Value, 0);
+            }
+
+            //contours[0]+1 to contours[1]
+            else
+            {
+                for (var j = curvePartEndPoints[index - 1] + 1; j <= curvePartEndPoints[index]; j++)
+                {
+                    CurvePartVertice(cp, j, orgPointCoords, partVerts);
+                    partTags.Add(pointTags[j]);
+                }
+
+                //The index in outline.Points which describes the start point is given by the index of the foregone outline.contours index +1.
+                cp.StartPoint = new float3(orgPointCoords[curvePartEndPoints[index - 1] + 1].X.Value, orgPointCoords[curvePartEndPoints[index - 1] + 1].Y.Value, 0);
+            }
+            return cp;
+        }
+        #endregion
     }
 }

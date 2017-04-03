@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
+
 using Fusee.Math.Core;
 
-#if PLATFORM_DESKTOP
-namespace Fusee.Base.Imp.Desktop
-#elif PLATFORM_WEB
-namespace Fusee.Base.Imp.Web
-#endif
+namespace Fusee.Base.Common
 {
-    static class SplitToCurveSegmentHelper
+    /// <summary>
+    /// Contains methods to spit a CurvePart into CurveSegments.
+    /// </summary>
+    public static class SplitToCurveSegmentHelper
     {
         internal enum SegmentType
         {
@@ -20,7 +19,13 @@ namespace Fusee.Base.Imp.Web
         }
         private static SegmentType Type { get; set; }
 
-        //Splits a CurvePart into CurveSegments by reading the byte pattern from a tag array.
+        /// <summary>
+        /// Splits a CurvePart into CurveSegments by reading the byte pattern from a tag array.
+        /// </summary>
+        /// <param name="part">The CurvePart to be split into CurveSegments.</param>
+        /// <param name="partTags">Tags of the CurvePart (on curve point, off curve point).</param>
+        /// <param name="partVerts">Vertices of the CurvePart</param>
+        /// <returns></returns>
         public static List<CurveSegment> SplitPartIntoSegments(CurvePart part, List<byte> partTags, List<float3> partVerts)
         {
             byte[] linearPattern = { 1, 1 };
@@ -192,6 +197,11 @@ namespace Fusee.Base.Imp.Web
             return segment;
         }
 
+        /// <summary>
+        /// Combines CurveSegments with the same type and adds them to a CurvePart.
+        /// </summary>
+        /// <param name="segments">List of CurveSegments - segments of the same type are combined.</param>
+        /// <param name="part">Curve part to which the combined segments belong.</param>
         public static void CombineCurveSegmentsAndAddThemToCurvePart(List<CurveSegment> segments, CurvePart part)
         {
             //Combines segments that follow each other and have the same interpolation method.

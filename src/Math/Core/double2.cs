@@ -914,6 +914,7 @@ namespace Fusee.Math.Core
         public static double2 Barycentric(double2 a, double2 b, double2 c, double u, double v)
         {
             return u*a + v*b + (1.0-u-v)*c;
+<<<<<<< HEAD
         }
 
         /// <summary>
@@ -930,6 +931,8 @@ namespace Fusee.Math.Core
             // Calculate z component of cross product
             double z = ca.x * cb.y - ca.y * cb.x;
             return z < 0;
+=======
+>>>>>>> df2ee3474700a949c9de5f881efdb78dc0899d4b
         }
 
         /// <summary>

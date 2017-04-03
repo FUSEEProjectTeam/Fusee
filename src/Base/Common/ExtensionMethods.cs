@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Fusee.Base.Core
+namespace Fusee.Base.Common
 {
     /// <summary>
     /// A set of extension methods
