@@ -952,7 +952,6 @@ namespace Fusee.Math.Core
         public static double3 Barycentric(double3 a, double3 b, double3 c, double u, double v)
         {
             return u*a + v*b + (1.0-u-v)*c;
-<<<<<<< HEAD
         }
 
         /// <summary>
@@ -977,8 +976,6 @@ namespace Fusee.Math.Core
             double denom = d00 * d11 - d01 * d01;
             u = (d00 * d21 - d01 * d20) / denom;
             v = (d11 * d20 - d01 * d21) / denom;
-=======
->>>>>>> df2ee3474700a949c9de5f881efdb78dc0899d4b
         }
 
 

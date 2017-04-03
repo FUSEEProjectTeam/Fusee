@@ -1004,7 +1004,6 @@ namespace Fusee.Math.Core
         public static float3 Barycentric(float3 a, float3 b, float3 c, float u, float v)
         {
             return u*a + v*b + (1.0f-u-v)*c;
-<<<<<<< HEAD
         }
 
         /// <summary>
@@ -1029,8 +1028,6 @@ namespace Fusee.Math.Core
             float denom = d00 * d11 - d01 * d01;
             u = (d00 * d21 - d01 * d20) / denom;
             v = (d11 * d20 - d01 * d21) / denom;
-=======
->>>>>>> df2ee3474700a949c9de5f881efdb78dc0899d4b
         }
         #endregion
 
