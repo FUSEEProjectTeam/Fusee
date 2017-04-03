@@ -949,10 +949,35 @@ namespace Fusee.Math.Core
         /// <returns>
         /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
         /// </returns>
-        public static double3 BaryCentric(double3 a, double3 b, double3 c, double u, double v)
+        public static double3 Barycentric(double3 a, double3 b, double3 c, double u, double v)
         {
             return u*a + v*b + (1.0-u-v)*c;
         }
+
+        /// <summary>
+        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting u coordinate.</param>
+        /// <param name="v">The resulting v coordinate.</param>
+        public static void GetBarycentric(double3 a, double3 b, double3 c, double3 point, out double u, out double v)
+        {
+            // Original taken from http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+            // which is a transcript from http://realtimecollisiondetection.net/. Re-arranged to directly calculate u and v (and have w be 1-u-v)
+            double3 v0 = b - c, v1 = a - c, v2 = point - c;
+            double d00 = Dot(v0, v0);
+            double d01 = Dot(v0, v1);
+            double d11 = Dot(v1, v1);
+            double d20 = Dot(v2, v0);
+            double d21 = Dot(v2, v1);
+            double denom = d00 * d11 - d01 * d01;
+            u = (d00 * d21 - d01 * d20) / denom;
+            v = (d11 * d20 - d01 * d21) / denom;
+        }
+
 
         #endregion
 

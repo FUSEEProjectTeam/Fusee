@@ -1001,11 +1001,34 @@ namespace Fusee.Math.Core
         /// <returns>
         /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
         /// </returns>
-        public static float3 BaryCentric(float3 a, float3 b, float3 c, float u, float v)
+        public static float3 Barycentric(float3 a, float3 b, float3 c, float u, float v)
         {
             return u*a + v*b + (1.0f-u-v)*c;
         }
 
+        /// <summary>
+        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting u coordinate.</param>
+        /// <param name="v">The resulting v coordinate.</param>
+        public static void GetBarycentric(float3 a, float3 b, float3 c, float3 point, out float u, out float v)
+        {
+            // Original taken from http://gamedev.stackexchange.com/questions/23743/whats-the-most-efficient-way-to-find-barycentric-coordinates
+            // which is a transcript from http://realtimecollisiondetection.net/. Re-arranged to directly calculate u and v (and have w be 1-u-v)
+            float3 v0 = b - c, v1 = a - c, v2 = point - c;
+            float d00 = Dot(v0, v0);
+            float d01 = Dot(v0, v1);
+            float d11 = Dot(v1, v1);
+            float d20 = Dot(v2, v0);
+            float d21 = Dot(v2, v1);
+            float denom = d00 * d11 - d01 * d01;
+            u = (d00 * d21 - d01 * d20) / denom;
+            v = (d11 * d20 - d01 * d21) / denom;
+        }
         #endregion
 
         #region Transform
@@ -1181,22 +1204,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Transform(float3 vec, float4x4 mat)
         {
-            float3 result;
-            Transform(ref vec, ref mat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transform a Vector by the given Matrix
-        /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
-        public static void Transform(ref float3 vec, ref float4x4 mat, out float3 result)
-        {
             var v4 = new float4(vec.x, vec.y, vec.z, 1.0f);
-            float4.Transform(ref v4, ref mat, out v4);
-            result = v4.xyz;
+            v4 = mat * v4;
+            return v4.xyz;
         }
 
         /// <summary>
@@ -1234,30 +1244,17 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transform a float3 by the given Matrix, and project the resulting float4 back to a float3
+        /// Transform this instance by the given Matrix, and project the resulting float4 back to a float3
         /// </summary>
-        /// <param name="vec">The vector to transform</param>
         /// <param name="mat">The desired transformation</param>
         /// <returns>
         /// The transformed vector
         /// </returns>
-        public static float3 TransformPerspective(float3 vec, float4x4 mat)
+        public float3 TransformPerspective(float4x4 mat)
         {
+            var v = new float4(this, 1.0f);
+            v = mat * v;
             float3 result;
-            TransformPerspective(ref vec, ref mat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transform a float3 by the given Matrix, and project the resulting float4 back to a float3
-        /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
-        public static void TransformPerspective(ref float3 vec, ref float4x4 mat, out float3 result)
-        {
-            var v = new float4(vec);
-            float4.Transform(ref v, ref mat, out v);
 
             if (v.w > M.EpsilonFloat)
             {
@@ -1267,6 +1264,7 @@ namespace Fusee.Math.Core
             }
             else
                 result = Zero;
+            return result;
         }
 
         #endregion

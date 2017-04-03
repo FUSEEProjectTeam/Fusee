@@ -917,7 +917,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
         /// </returns>
-        public static float2 BaryCentric(float2 a, float2 b, float2 c, float u, float v)
+        public static float2 Barycentric(float2 a, float2 b, float2 c, float u, float v)
         {
             return u*a + v*b + (1.0f-u-v)*c;
         }
@@ -946,13 +946,35 @@ namespace Fusee.Math.Core
         /// <param name="b">The second point of the triangle.</param>
         /// <param name="c">The third point of the triangle.</param>
         /// <param name="point">The point to calculate the barycentric coordinates for.</param>
-        /// <param name="u">The resulting u coordinate.</param>
-        /// <param name="v">The resulting v coordinate.</param>
+        /// <param name="u">The resulting barycentric u coordinate (weight for vertex a).</param>
+        /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
         public static void GetBarycentric(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
         {
-            u = ((b.y - c.y) * (point.x - c.x) + (c.x - b.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
-            v = ((c.y - a.y) * (point.x - c.x) + (a.x - c.x) * (point.y - c.y)) / ((b.y - c.y) * (a.x - c.x) + (c.x - b.x) * (a.y - c.y));
+            float2 cb = b-c;
+            float2 cp = point - c;
+            float2 ca = a-c;
+            float denom = (cb.y * ca.x - cb.x * ca.y);
+            u = (cb.y * cp.x - cb.x * cp.y) / denom;
+            v = (ca.x * cp.y - ca.y * cp.x) / denom;
         }
+
+        /// <summary>
+        /// Checks if the give point is inside the given triangle (a, b, c). Returns the barycentric coordinates using <see cref="GetBarycentric"/>.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting barycentric u coordinate (weight for vertex a).</param>
+        /// <param name="v">The resulting barycentric v coordinate (weight for vertex b).</param>
+        /// <returns>true, if the point is inside the triangle a, b, c. Otherwise false.</returns>
+        public static bool PointInTriangle(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
+        {
+            GetBarycentric(a, b, c, point, out u, out v);
+            return u >= 0 && v >= 0 && u + v < 1;
+        }
+
+
 
         #endregion
 
