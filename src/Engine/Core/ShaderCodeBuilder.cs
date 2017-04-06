@@ -3,7 +3,7 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-    class ShaderCodeBuilder
+    public class ShaderCodeBuilder
     {
         private bool _hasVertices, _hasNormals, _hasUVs, _hasColors;
         private bool _hasDiffuse, _hasSpecular, _hasEmissive, _hasBump;
@@ -490,22 +490,22 @@ namespace Fusee.Engine.Core
             get { return _ps; }
         }
 
-        public string DiffuseColorName { get { return (_hasDiffuse) ? "DiffuseColor" : null; } }
-        public string SpecularColorName { get { return (_hasSpecular) ? "SpecularColor" : null; } }
-        public string EmissiveColorName { get { return (_hasEmissive) ? "EmissiveColor" : null; } }
+        public static string DiffuseColorName { get { return "DiffuseColor"; } }
+        public static string SpecularColorName { get { return "SpecularColor"; } }
+        public static string EmissiveColorName { get { return "EmissiveColor"; } }
 
-        public string DiffuseTextureName { get { return (_hasDiffuseTexture) ? "DiffuseTexture" : null; } }
-        public string SpecularTextureName { get { return (_hasSpecularTexture) ? "SpecularTexture" : null; } }
-        public string EmissiveTextureName { get { return (_hasEmissiveTexture) ? "EmissiveTexture" : null; } }
-        public string BumpTextureName { get { return (_hasBump) ? "BumpTexture" : null; } }
+        public static string DiffuseTextureName { get { return "DiffuseTexture"; } }
+        public static string SpecularTextureName { get { return "SpecularTexture"; } }
+        public static string EmissiveTextureName { get { return "EmissiveTexture"; } }
+        public static string BumpTextureName { get { return "BumpTexture"; } }
 
-        public string DiffuseMixName { get { return (_hasDiffuse) ? "DiffuseMix" : null; } }
-        public string SpecularMixName { get { return (_hasSpecular) ? "SpecularMix" : null; } }
-        public string EmissiveMixName { get { return (_hasEmissive) ? "EmissiveMix" : null; } }
+        public static string DiffuseMixName { get { return  "DiffuseMix"; } }
+        public static string SpecularMixName { get { return "SpecularMix"; } }
+        public static string EmissiveMixName { get { return  "EmissiveMix"; } }
 
-        public string SpecularShininessName { get { return (_hasSpecular) ? "SpecularShininess" : null; } }
-        public string SpecularIntensityName { get { return (_hasSpecular) ? "SpecularIntensity" : null; } }
-        public string BumpIntensityName { get { return (_hasBump) ? "BumpIntensity" : null; } }
+        public static string SpecularShininessName { get { return  "SpecularShininess"; } }
+        public static string SpecularIntensityName { get { return "SpecularIntensity"; } }
+        public static string BumpIntensityName { get { return "BumpIntensity"; } }
 
         public static string LightDirectionName { get { return "LightDirection"; } }
         public static string LightColorName { get { return "LightColor"; } }

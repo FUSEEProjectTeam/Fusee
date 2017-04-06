@@ -232,9 +232,9 @@ namespace Fusee.Xene
 
         /// <summary>
         /// Enumerator Building Block to be called in derived Visitors acting as enumerators. Use this to 
-        /// initialize the traversing enumeration on a list of nodes (in
+        /// initialize the traversing enumeration on a list of (root) nodes.
         /// </summary>
-        /// <param name="nodes">The nodes.</param>
+        /// <param name="nodes">The list of nodes.</param>
         protected void EnumInit(IEnumerator<SceneNodeContainer> nodes)
         {
             if (nodes == null)
@@ -250,6 +250,7 @@ namespace Fusee.Xene
             _nodeEnumeratorStack.Clear();
 
             InitState();
+            nodes.Reset();
             _curNodeEnumerator = nodes;
         }
 

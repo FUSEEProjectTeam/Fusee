@@ -375,6 +375,7 @@ namespace Fusee.Engine.Core
         public void RenderMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
+            UpdateEffectParameters(matComp, effect);
             _state.Effect = effect;
         }
 
@@ -656,7 +657,7 @@ namespace Fusee.Engine.Core
 
             WeightComponent wc = CurrentNode.GetWeights();
             ShaderCodeBuilder scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
-            var effectParameters = AssembleEffectParamers(mc, scb);
+            var effectParameters = AssembleEffectParameters(mc);
 
             ShaderEffect ret = new ShaderEffect(new []
                 {
@@ -677,7 +678,7 @@ namespace Fusee.Engine.Core
             return ret;
         }
 
-        private List<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
+        private List<EffectParameterDeclaration> AssembleEffectParameters(MaterialComponent mc)
         {
             List<EffectParameterDeclaration> effectParameters = new List<EffectParameterDeclaration>();
 
@@ -685,19 +686,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.DiffuseColorName,
+                    Name = ShaderCodeBuilder.DiffuseColorName,
                     Value = (object) mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.DiffuseMixName,
+                        Name = ShaderCodeBuilder.DiffuseMixName,
                         Value = mc.Diffuse.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.DiffuseTextureName,
+                        Name = ShaderCodeBuilder.DiffuseTextureName,
                         Value = LoadTexture(mc.Diffuse.Texture)
                     });
                 }
@@ -707,29 +708,29 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.SpecularColorName,
+                    Name = ShaderCodeBuilder.SpecularColorName,
                     Value = (object) mc.Specular.Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.SpecularShininessName,
+                    Name = ShaderCodeBuilder.SpecularShininessName,
                     Value = (object) mc.Specular.Shininess
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.SpecularIntensityName,
+                    Name = ShaderCodeBuilder.SpecularIntensityName,
                     Value = (object) mc.Specular.Intensity
                 });
                 if (mc.Specular.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.SpecularMixName,
+                        Name = ShaderCodeBuilder.SpecularMixName,
                         Value = mc.Specular.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.SpecularTextureName,
+                        Name = ShaderCodeBuilder.SpecularTextureName,
                         Value = LoadTexture(mc.Specular.Texture)
                     });
                 }
@@ -739,19 +740,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.EmissiveColorName,
+                    Name = ShaderCodeBuilder.EmissiveColorName,
                     Value = (object) mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.EmissiveMixName,
+                        Name = ShaderCodeBuilder.EmissiveMixName,
                         Value = mc.Emissive.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = scb.EmissiveTextureName,
+                        Name = ShaderCodeBuilder.EmissiveTextureName,
                         Value = LoadTexture(mc.Emissive.Texture)
                     });
                 }
@@ -761,12 +762,12 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.BumpIntensityName,
+                    Name = ShaderCodeBuilder.BumpIntensityName,
                     Value = mc.Bump.Intensity
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = scb.BumpTextureName,
+                    Name = ShaderCodeBuilder.BumpTextureName,
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
@@ -794,7 +795,72 @@ namespace Fusee.Engine.Core
 
             return effectParameters;
         }
+
+        private void UpdateEffectParameters(MaterialComponent mc, ShaderEffect fx)
+        {
+            if (mc.HasDiffuse)
+            {
+                fx.SetEffectParam(ShaderCodeBuilder.DiffuseColorName, mc.Diffuse.Color);
+                if (mc.Diffuse.Texture != null)
+                {
+                    fx.SetEffectParam(ShaderCodeBuilder.DiffuseMixName, mc.Diffuse.Mix);
+                    // TODO: fx.SetEffectParam(scb.DiffuseTextureName, LookupTexture(mc.Diffuse.Texture));
+                }
+            }
+
+            if (mc.HasSpecular)
+            {
+                fx.SetEffectParam(ShaderCodeBuilder.SpecularColorName, mc.Specular.Color);
+                fx.SetEffectParam(ShaderCodeBuilder.SpecularShininessName, mc.Specular.Shininess);
+                fx.SetEffectParam(ShaderCodeBuilder.SpecularIntensityName, mc.Specular.Intensity);
+                if (mc.Specular.Texture != null)
+                {
+                    fx.SetEffectParam(ShaderCodeBuilder.SpecularMixName, mc.Specular.Mix);
+                    // TODO: fx.SetEffectParam(scb.SpecularTextureName, LookupTexture(mc.Specular.Texture));
+                }
+            }
+
+            if (mc.HasEmissive)
+            {
+                fx.SetEffectParam(ShaderCodeBuilder.EmissiveColorName, mc.Emissive.Color);
+                if (mc.Emissive.Texture != null)
+                {
+                    fx.SetEffectParam(ShaderCodeBuilder.EmissiveMixName, mc.Emissive.Mix);
+                    // TODO: fx.SetEffectParam(scb.EmissiveTextureName, LookupTexture(mc.Emissive.Texture));
+                }
+            }
+
+            if (mc.HasBump)
+            {
+                fx.SetEffectParam(ShaderCodeBuilder.BumpIntensityName, mc.Bump.Intensity);
+                // TODO: fx.SetEffectParam(scb.BumpTextureName, LookupTexture(mc.Bump.Texture));
+            }
+
+            /*
+            // Any light calculation needed at all?
+            if (mc.HasDiffuse || mc.HasSpecular)
+            {
+                // Light calculation parameters
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightColorName,
+                    Value = new float3(1, 1, 1)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightIntensityName,
+                    Value = (float)1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.LightDirectionName,
+                    Value = new float3(0, 0, 1)
+                });
+            }
+            */
+
+        }
         #endregion
- 
+
     }
 }

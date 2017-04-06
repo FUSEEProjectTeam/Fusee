@@ -157,7 +157,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }
+            }             
 
             if (Mouse.LeftButton)
             {
