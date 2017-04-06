@@ -43,7 +43,7 @@ namespace Fusee.Jometri.Manipulation
         {
             //Clone frontface.
             var backface = geometry.CloneGeometry();
-            
+
             if(!exturdeAlongNormal)
                 //Add zOffset to each vertex coord.
                 UpdateVertexZCoord(backface, zOffset);
@@ -306,6 +306,8 @@ namespace Fusee.Jometri.Manipulation
                         geometry.ReplaceHalfEdge(edge);
                     }
                 }
+
+                nextOriginV.IncidentHalfEdge = next.Handle;
 
                 h4.OriginVertex = nextOriginV.Handle;
                 h2n.OriginVertex = newVertex.Handle;

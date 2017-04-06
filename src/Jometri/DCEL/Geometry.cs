@@ -207,6 +207,10 @@ namespace Fusee.Jometri.DCEL
             }
         }
 
+        /// <summary>
+        /// Returns all HalfEdges wihtout their twins
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<HalfEdge> GetAllEdges()
         {
             List <HalfEdge> edges =  new List<HalfEdge>();
