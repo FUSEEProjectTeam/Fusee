@@ -94,6 +94,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //var outlineCCube = new List<PolyBoundary> { outlineCustomStar };
             //var geomCCube = new Geometry(outlineCCube);
             //geomCCube.Extrude2DPolygon(2, true);
+            //geomCCube = SubDivisionSurface.CatmullClarkSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.CatmullClarkSubDivision(geomCCube);
+            //geomCCube = SubDivisionSurface.CatmullClarkSubDivision(geomCCube);
             //geomCCube.Triangulate();
             //var customCube = new JometriMesh(geomCCube);
 
@@ -106,14 +109,20 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var outlinesCube = new List<PolyBoundary> { outlineRectangle };
             var geomCube = new Geometry(outlinesCube);
             geomCube.Extrude2DPolygon(2, false);
-            //geomCube.ExtrudeFace(2,1);
-            //geomCube.ExtrudeFace(4,1);
-            //geomCube.ExtrudeFace(5,1);
-            //geomCube.ExtrudeFace(6,1);
-            //geomCube.ExtrudeFace(7,1);
-            //geomCube.ExtrudeFace(8,1);
-          
+            geomCube.ExtrudeFace(2, 1);
+            geomCube.ExtrudeFace(4, 1);
+            geomCube.ExtrudeFace(5, 1);
+            geomCube.ExtrudeFace(6, 1);
+            geomCube.ExtrudeFace(7, 1);
+            geomCube.ExtrudeFace(8, 1);
+
             geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+
+
+
             geomCube.Triangulate();
             var cube = new JometriMesh(geomCube);
 
@@ -151,7 +160,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //var transCustomStar = new TransformComponent
             //{
             //    Rotation = float3.Zero,
-            //    Scale = new float3(0.5f,0.5f,0.5f),
+            //    Scale = new float3(0.5f, 0.5f, 0.5f),
             //    Translation = new float3(0, 0, 0),
             //};
 

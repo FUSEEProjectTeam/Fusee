@@ -798,7 +798,7 @@ namespace Fusee.Jometri.DCEL
             Vertex vertexQ = GetVertexByHandle(q);
 
             //Find Half Edge between p and q
-            var incomingEdges = GetVertexIncidentHalfEdges(vertexP.Handle);
+            var incomingEdges = GetVertexStartingHalfEdges(vertexP.Handle);
 
             HalfEdge he1 = new HalfEdge();
             HalfEdge he2 = new HalfEdge();
@@ -806,7 +806,7 @@ namespace Fusee.Jometri.DCEL
             foreach (HalfEdge halfEdge in incomingEdges)
             {
                 var twinEdge = GetHalfEdgeByHandle(halfEdge.TwinHalfEdge);
-                if (halfEdge.OriginVertex == vertexP.Handle && twinEdge.OriginVertex == vertexQ.Handle)
+                if (twinEdge.OriginVertex == vertexQ.Handle)
                 {
                     he1 = halfEdge;
                     he2 = twinEdge;
