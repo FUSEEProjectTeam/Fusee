@@ -53,6 +53,10 @@ namespace Fusee.Jometri.Manipulation
                 HalfEdge startEdge = _geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
                 HalfEdge nextEdge = startEdge;
 
+                //stores Halfedges without Twin
+                Dictionary<int, HalfEdge> HalfEdges2 = new Dictionary<int, HalfEdge>();
+                Dictionary<int, HalfEdge> HalfEdges1 = new Dictionary<int, HalfEdge>();
+
                 _newGeometry.DictVertices.Add(faceVertex.Handle, faceVertex);
                 int i = 0;
                 do
@@ -122,35 +126,35 @@ namespace Fusee.Jometri.Manipulation
 
                     _newGeometry.SetFaceNormal(faceVertices, newFace);
 
+                    HalfEdges2.Add(i,h2);
+                    HalfEdges1.Add(i,h1);
+
+                    //for the second Edge per Face connect the twin
+                    if (i > 0)
+                    {
+                        HalfEdge h1N = HalfEdges1[i - 1];
+                        h1N.TwinHalfEdge= HalfEdges2[i].Handle;
+
+                        HalfEdge h2N = HalfEdges2[i];
+                        h2N.TwinHalfEdge = h1N.Handle;
+
+                        _newGeometry.ReplaceHalfEdge(h1N);
+                        _newGeometry.ReplaceHalfEdge(h2N);
+                    }   
+                    
                     i++;
                     nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
                 } while (startEdge != nextEdge);
 
-                //set TwinEdges
+                //set Twin of firts and last new Face
+                HalfEdge h2firts = HalfEdges2[0];            
+                HalfEdge h1last = HalfEdges1[i-1];
 
-                nextEdge = startEdge;
-                do
-                {
-                    HalfEdge h4 = _newGeometry.GetHalfEdgeByHandle(nextEdge.Handle);
-                    HalfEdge h1 = _newGeometry.GetHalfEdgeByHandle(h4.NextHalfEdge);
+                h2firts.TwinHalfEdge = h1last.Handle;
+                h1last.TwinHalfEdge = h2firts.Handle;
 
-                    nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
-                    nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
-
-                    HalfEdge h4n = _newGeometry.GetHalfEdgeByHandle(nextEdge.Handle);
-                    HalfEdge h2n = _newGeometry.GetHalfEdgeByHandle(h4n.NextHalfEdge);
-                    h2n = _newGeometry.GetHalfEdgeByHandle(h2n.NextHalfEdge);
-
-                    h1.TwinHalfEdge = h2n.Handle;
-                    h2n.TwinHalfEdge = h1.Handle;
-
-                    _newGeometry.ReplaceHalfEdge(h1);
-                    _newGeometry.ReplaceHalfEdge(h2n);
-
-
-
-                } while (startEdge != nextEdge);
-
+                _newGeometry.ReplaceHalfEdge(h2firts);
+                _newGeometry.ReplaceHalfEdge(h1last);
             }
         }
 

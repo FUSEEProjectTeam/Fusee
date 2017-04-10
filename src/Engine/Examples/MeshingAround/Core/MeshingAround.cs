@@ -122,7 +122,6 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
 
 
-
             geomCube.Triangulate();
             var cube = new JometriMesh(geomCube);
 
