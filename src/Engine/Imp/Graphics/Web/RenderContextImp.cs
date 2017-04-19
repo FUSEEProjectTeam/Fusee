@@ -311,6 +311,41 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void RemoveVertices(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveNormals(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveColors(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveUVs(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveTriangles(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBoneWeights(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBoneIndices(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
         [JSExternal]
         public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
         {

@@ -994,6 +994,76 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveVertices(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).VertexBufferObject);
+            ((MeshImp)mr).InvalidateVertices();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveNormals(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).NormalBufferObject);
+            ((MeshImp)mr).InvalidateNormals();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveColors(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).ColorBufferObject);
+            ((MeshImp)mr).InvalidateColors();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveUVs(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).UVBufferObject);
+            ((MeshImp)mr).InvalidateUVs();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveTriangles(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).ElementBufferObject);
+            ((MeshImp)mr).InvalidateTriangles();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveBoneWeights(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneWeightBufferObject);
+            ((MeshImp)mr).InvalidateBoneWeights();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveBoneIndices(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneIndexBufferObject);
+            ((MeshImp)mr).InvalidateBoneIndices();
+        }
+
+        /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>

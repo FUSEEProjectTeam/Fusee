@@ -1557,6 +1557,27 @@ namespace Fusee.Engine.Core
 
         #region Other Members
         /// <summary>
+        /// Call this function in order to deallocate the memory on the gpu managed by buffers.
+        /// Adds the meshes to a list which is then later taken on by <see cref="Render(Mesh)"/> in order 
+        /// to delete the memory managed by their buffers. This is due to multithreading, that memory can not deleted
+        /// at any time.
+        /// </summary>
+        /// <param name="m">The mesh of which buffers should be deallocated from the memory.</param>
+        public void Remove(Mesh m)
+        {
+            if (m._meshImp == null)
+                return;
+
+            _rci.RemoveVertices(m._meshImp);
+            _rci.RemoveNormals(m._meshImp);
+            _rci.RemoveColors(m._meshImp);
+            _rci.RemoveUVs(m._meshImp);
+            _rci.RemoveTriangles(m._meshImp);
+            _rci.RemoveBoneWeights(m._meshImp);
+            _rci.RemoveBoneIndices(m._meshImp);
+        }
+
+        /// <summary>
         /// This method returns the color of one or more pixels from the backbuffer.
         /// </summary>
         /// <param name="x">X-Coordinate</param>
