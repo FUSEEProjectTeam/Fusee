@@ -447,7 +447,7 @@ namespace Fusee.Engine.Core
             // Set Context here, so that even the first pass is rendered defered or with shadows
             // otherwise DeferredShaderHelper.GBufferPassShaderEffect is not initialized and null leading to an exception
             SetContext(rc);
-
+            
             if (DoRenderWithShadows)
             {
                 RenderWithShadow(rc);
