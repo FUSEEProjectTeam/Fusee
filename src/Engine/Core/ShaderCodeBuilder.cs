@@ -91,8 +91,8 @@ namespace Fusee.Engine.Core
 
 
 #if DEBUG
-            Diagnostics.Log(VS);
-            Diagnostics.Log(PS);
+            //Diagnostics.Log(VS);
+            //Diagnostics.Log(PS);
 #endif
         }
 
@@ -978,6 +978,28 @@ namespace Fusee.Engine.Core
         public string ApplyLightFunction => (_hasApplyLightString) ? _applyLightString : null;
 
         public string ApplyFragmentFunction => (_hasFragmentString) ? _applyFragmentString : null;
+
+
+        public static string StaticDiffuseColorName { get { return "DiffuseColor"; } }
+        public static string StaticSpecularColorName { get { return "SpecularColor"; } }
+        public static string StaticEmissiveColorName { get { return "EmissiveColor"; } }
+
+        public static string StaticDiffuseTextureName { get { return "DiffuseTexture"; } }
+        public static string StaticSpecularTextureName { get { return "SpecularTexture"; } }
+        public static string StaticEmissiveTextureName { get { return "EmissiveTexture"; } }
+        public static string StaticBumpTextureName { get { return "BumpTexture"; } }
+
+        public static string StaticDiffuseMixName { get { return "DiffuseMix"; } }
+        public static string StaticSpecularMixName { get { return "SpecularMix"; } }
+        public static string StaticEmissiveMixName { get { return "EmissiveMix"; } }
+
+        public static string StaticSpecularShininessName { get { return "SpecularShininess"; } }
+        public static string StaticSpecularIntensityName { get { return "SpecularIntensity"; } }
+        public static string StaticBumpIntensityName { get { return "BumpIntensity"; } }
+
+        public static string LightDirectionName { get { return "LightDirection"; } }
+        public static string LightColorName { get { return "LightColor"; } }
+        public static string LightIntensityName { get { return "LightIntensity"; } }
     }
 }
 

@@ -1,4 +1,4 @@
-﻿//#define GUI_SIMPLE
+﻿#define GUI_SIMPLE
 
 using System;
 using System.IO;
@@ -8,7 +8,6 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
@@ -18,11 +17,11 @@ using Fusee.Engine.Core.GUI;
 namespace Fusee.Engine.Examples.Simple.Core
 {
 
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.", Width = 1920, Height = 1080)]
+    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -41,74 +40,11 @@ namespace Fusee.Engine.Examples.Simple.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
-
-        private string _text;
-        #endif
+#endif
 
         // Init is called on startup. 
         public override void Init()
         {
-            float3 scale = new float3(1, 1, 1);
-            float3 offset = new float3(0, 0, 0);
-            float3 a = new float3( 1f, -1f, 0) * scale + offset;
-            float3 b = new float3( 0f,  1f, 0) * scale + offset;
-            float3 c = new float3(-1f, -1f, 0) * scale + offset;
-
-            bool isCW1 = float2.IsTriangleCW(a.xy, c.xy, b.xy);
-            bool isCW2 = float2.IsTriangleCW(c.xy, b.xy, a.xy);
-            bool isCW3 = float2.IsTriangleCW(b.xy, a.xy, c.xy);
-            bool isCCW1 = !float2.IsTriangleCW(a.xy, b.xy, c.xy);
-            bool isCCW2 = !float2.IsTriangleCW(c.xy, a.xy, b.xy);
-            bool isCCW3 = !float2.IsTriangleCW(b.xy, c.xy, a.xy);
-
-            float3[] pointLst =
-            {
-                new float3(0, 0, 0) * scale + offset,
-                new float3(0.99f, -0.99f, 0)   * scale + offset,
-                new float3(0f, 0.99f, 0)       * scale + offset,
-                new float3(-0.99f, -00.99f, 0) * scale + offset,
-                new float3(1.1f, 0, 0) * scale + offset,
-            };
-
-            foreach (var point in pointLst)
-            {
-                float u, v;
-                float3.GetBarycentric(a, c, b, point, out u, out v);
-                float3 testPoint = float3.Barycentric(a, c, b, u, v);
-                bool test = testPoint == point;
-            }
-
-            //float2 scale = new float2(-0.2f, 0.1f);
-            //float2 offset = new float2(-500, 1000);
-            //float2 a = new float2(1f, -1f) * scale + offset;
-            //float2 b = new float2(0f, 1f) * scale + offset;
-            //float2 c = new float2(-1f, -1f) * scale + offset;
-
-            //bool isCW1 = float2.IsTriangleCW(a, c, b);
-            //bool isCW2 = float2.IsTriangleCW(c, b, a);
-            //bool isCW3 = float2.IsTriangleCW(b, a, c);
-            //bool isCCW1 = !float2.IsTriangleCW(a, b, c);
-            //bool isCCW2 = !float2.IsTriangleCW(c, a, b);
-            //bool isCCW3 = !float2.IsTriangleCW(b, c, a);
-
-            //float2[] pointLst =
-            //{
-            //    new float2(0, 0) * scale + offset,
-            //    new float2(0.99f, -0.99f)   * scale + offset,
-            //    new float2(0f, 0.99f)       * scale + offset,
-            //    new float2(-0.99f, -00.99f) * scale + offset,
-            //};
-
-            //foreach (var point in pointLst)
-            //{
-            //    float u, v;
-            //    float2.GetBarycentric(a, c, b, point, out u, out v);
-            //    float2 testPoint = float2.Barycentric(a, c, b, u, v);
-            //    bool test = testPoint == point;
-            //}
-
-
-
 #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
@@ -126,127 +62,21 @@ namespace Fusee.Engine.Examples.Simple.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
-
-            _text = "Simple FUSEE Example";
-
-            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
+            _guiSubText = new GUIText("Simple FUSEE Example", _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-
-            #endif
+#endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1,1,1, 1);
+            RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
-            var cube = new Cube();
-
-            for(var i = 0; i < 10; i++)
-            {
-                _rocketScene.Children.Add(new SceneNodeContainer
-                {
-                    Children = new List<SceneNodeContainer>(),
-                    Components = new List<SceneComponentContainer>
-                    {
-                        new LightComponent
-                        {
-                            Active = true,
-                            AmbientCoefficient = 0f,
-                            Attenuation = 0.9f,
-                            Color = new float3(0.9f,0.9f,0.9f),
-                            ConeAngle = 45f,
-                            ConeDirection = new float3(0,0,1),
-                            Position = new float3(0, 0, 0),
-                           Type = LightType.Point
-                        },
-                        new TransformComponent
-                        {
-                            Rotation = float3.Zero,
-                            Scale = float3.One * 100f,
-                            Translation = float3.Zero
-                        }
-                    }
-                });
-            }
-
-
-
-
-            var oldMat = _rocketScene.Children[0].Components[1] as MaterialComponent;
-            if (oldMat != null)
-            {
-                var newPbrmat = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat.Diffuse,
-                    Specular = oldMat.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-
-
-                _rocketScene.Children[0].Components[1] = newPbrmat;
-            }
-
-            var oldMat2 = _rocketScene.Children[0].Children[0].Components[1] as MaterialComponent;
-            if (oldMat2 != null)
-            {
-                var newPbrmat2 = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat2.Diffuse,
-                    Specular = oldMat2.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-
-
-                _rocketScene.Children[0].Children[0].Components[1] = newPbrmat2;
-            }
-
-            var oldMat3 = _rocketScene.Children[0].Children[1].Components[1] as MaterialComponent;
-            if (oldMat3 != null)
-            {
-                var newPbrmat3 = new MaterialPBRComponent
-                {
-                    Diffuse = oldMat3.Diffuse,
-                    Specular = oldMat3.Specular,
-                    DiffuseFraction = 0.1f,
-                    FresnelReflectance = 0.1f,
-                    RoughnessValue = 0.1f
-                };
-
-
-                _rocketScene.Children[0].Children[1].Components[1] = newPbrmat3;
-            }
-
-
-            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.ADVANCED);
-
-
-
-            /*     _rocketScene.Children[0].AddComponent(new TransformComponent()
-                 {
-                     Vertices = cube.Vertices,
-                     Normals = cube.Normals,
-                     Triangles = cube.Triangles,
-                     UVs = cube.UVs
-                 });*/
-
-            //_rocketScene.Children[0].Children[0].Name = "cube";
-
             // Wrap a SceneRenderer around the model.
-            // Shadow
-            //_sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.SIMPLE, true);
-            // Deferred
-
-
-            _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
-
+            _sceneRenderer = new SceneRenderer(_rocketScene);
         }
 
         // RenderAFrame is called once a frame
@@ -254,14 +84,13 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
 
             // Clear the backbuffer
-            // No backbuffer cleared here
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }             
+            }
 
             if (Mouse.LeftButton)
             {
@@ -278,31 +107,28 @@ namespace Fusee.Engine.Examples.Simple.Core
             }
             else
             {
+                if (_keys)
+                {
+                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                }
+                else
+                {
                     var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
+                }
             }
 
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-/*
-            var transform = _rocketScene.Children[8].GetComponent<TransformComponent>();
-            transform.Translation = new float3(transform.Translation.x + Keyboard.ADAxis * 2.5f, transform.Translation.y + Keyboard.WSAxis * 2.5f, transform.Translation.z + Keyboard.UpDownAxis * 2.5f);
-            var light = _rocketScene.Children[8].GetComponent<LightComponent>();
-            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2.5f, light.Position.y + Keyboard.WSAxis * 2.5f, light.Position.z + Keyboard.UpDownAxis * 2.5f);
 
-    */
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
-            //var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
-            var mtxScale = float4x4.CreateScale(1f);
+            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            RC.ModelView = mtxCam * mtxRot;
 
-            RC.ModelView = mtxCam * mtxRot * mtxScale; 
-
-
-            
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
@@ -331,7 +157,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
 #if GUI_SIMPLE

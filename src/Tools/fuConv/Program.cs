@@ -34,19 +34,19 @@ namespace Fusee.Tools.fuConv
         public class SceneOptions
         {
             [Value(0,
-                 HelpText =
-                     "Input scene file in a recognized format. Use the 'inputsceneformats' command to retrieve a list of supported formats.",
-                 MetaName = "Input", Required = true)]
+                HelpText =
+                    "Input scene file in a recognized format. Use the 'inputsceneformats' command to retrieve a list of supported formats.",
+                MetaName = "Input", Required = true)]
             public string Input { get; set; }
 
             [Option('o', "output",
-                 HelpText = "Path of .fus file to be written. \".fus\" extension will be added if not present.")]
+                HelpText = "Path of .fus file to be written. \".fus\" extension will be added if not present.")]
             public string Output { get; set; }
 
             [Option('f', "format",
-                 HelpText =
-                     "Input file format overriding the file extension (if any). For example 'obj' for a Wavefront .obj file."
-             )]
+                HelpText =
+                    "Input file format overriding the file extension (if any). For example 'obj' for a Wavefront .obj file."
+            )]
             public string Format { get; set; }
         }
 
@@ -59,7 +59,7 @@ namespace Fusee.Tools.fuConv
         public class ProtoSchema
         {
             [Option('o', "output",
-                 HelpText = "Path of .proto file to be written. \".proto\" extension will be added if not present.")]
+                HelpText = "Path of .proto file to be written. \".proto\" extension will be added if not present.")]
             public string Output { get; set; }
         }
 
@@ -99,8 +99,7 @@ namespace Fusee.Tools.fuConv
                         if (inputFormat[0] != '.')
                             inputFormat = inputFormat.Insert(0, ".");
                     }
-
-                    if (!Assimp.IsImportFormatSupported(inputFormat) && inputFormat != ".fus")
+                    if (!Assimp.IsImportFormatSupported(inputFormat))
                     {
                         Console.Error.WriteLine($"ERROR: Unsupported input format {inputFormat}.");
                         Environment.Exit((int) ErrorCode.InputFormat);
@@ -141,21 +140,11 @@ namespace Fusee.Tools.fuConv
                     }
 
                     Console.WriteLine($"Converting from {opts.Input} to {Path.GetFileName(opts.Output)}");
-                    SceneContainer fuseeScene;
-                    if (inputFormat == ".fus")
-                    {
-                        // .fus -> .fus conversion (might help when orignal fus was written using python code)
-                        fuseeScene = new Serializer().Deserialize(input, null, typeof(SceneContainer)) as SceneContainer;
-                    }
-                    else
-                    {
-                        // use assimp converter
-                        var assimpScene = Assimp.ImportFileFromStream(input,
-                            PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals |
-                            PostProcessSteps.JoinIdenticalVertices, inputFormat);
-                        fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
-                    }
+                    var assimpScene = Assimp.ImportFileFromStream(input,
+                        PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals |
+                        PostProcessSteps.JoinIdenticalVertices, inputFormat);
 
+                    SceneContainer fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
 
                     var ser = new Serializer();
                     ser.Serialize(output, fuseeScene);
@@ -167,8 +156,7 @@ namespace Fusee.Tools.fuConv
                 .WithParsed<InputSceneFormats>(opts =>
                 {
                     Console.WriteLine("Supported input formats for scene files:");
-                    var inFormats = Assimp.GetSupportedImportFormats().Concat(new string [ ] {".fus"}).OrderBy(s => s);
-                    foreach (var inFormat in inFormats)
+                    foreach (var inFormat in Assimp.GetSupportedImportFormats())
                     {
                         Console.Write(inFormat + "; ");
                     }
@@ -210,7 +198,7 @@ namespace Fusee.Tools.fuConv
                 // Called with the WEB verb
                 .WithParsed<WebViewer>(opts =>
                 {
-                   List<string> textureFiles = new List<string>();
+                    List<string> textureFiles = new List<string>();
                     try
                     {
                         // Get list of paths to texturefiles
@@ -224,10 +212,6 @@ namespace Fusee.Tools.fuConv
                         Console.WriteLine($"No texture filepaths set");
                     }
 
-                    // Extract the main .fus name
-                    string fusfileNameNoExt = Path.GetFileNameWithoutExtension(opts.Input);
-
-
                     string htmlFileDir = opts.Output;
                     string thisPath = Assembly.GetExecutingAssembly().Location;
                     thisPath = thisPath.Remove(thisPath.LastIndexOf(Path.DirectorySeparatorChar));
@@ -239,19 +223,13 @@ namespace Fusee.Tools.fuConv
                         File.Delete(sceneFileDir);
                     }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
+                    if (File.Exists(origHtmlFilePath))
+                        File.Delete(origHtmlFilePath);
 
-                    // Delete any old html file.
-                    string htmlFileName = $"{fusfileNameNoExt}.html";
-                    string htmlFilePath = Path.Combine(htmlFileDir, htmlFileName);
-                    if (File.Exists(htmlFilePath))
-                        File.Delete(htmlFilePath);
-
-                    // Copy the entire web player
+                    //Copy
                     DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
 
-                    // Rename the viewer html file from its generic name to the name trunk of the exported .fus file
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
-                    File.Move(origHtmlFilePath, htmlFilePath);
 
                     // Check and open input file
                     string inputFormat = Path.GetExtension(opts.Input).ToLower();
@@ -300,7 +278,7 @@ namespace Fusee.Tools.fuConv
                         string texturePath = Path.Combine(sceneFileDir, textureFile);
                         if (!File.Exists(texturePath))
                         {
-                            File.Move(textureFiles[i],texturePath);
+                            File.Move(textureFiles[i], texturePath);
                         }
                         textureFiles[i] = Path.Combine("Assets", textureFile);
                         Console.WriteLine($"TEXTUREFILES {textureFiles[i]}");
@@ -320,7 +298,7 @@ namespace Fusee.Tools.fuConv
                         _httpServer.HtDocsRoot = htmlFileDir;
                     }
                     Console.WriteLine($"Server running");
-                    Process.Start("http://localhost:4655/" + htmlFileName);
+                    Process.Start("http://localhost:4655/" + origHtmlFilePath);
                 })
 
                 // ERROR on the command line
@@ -334,6 +312,8 @@ namespace Fusee.Tools.fuConv
                     Environment.Exit((int) ErrorCode.CommandLineSyntax);
                 });
         }
+    }
+}
 
 
 /*
@@ -342,93 +322,91 @@ namespace Fusee.Tools.fuConv
                                  var scene = assimpImporter.ImportFile(fileName,
                                                  PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals | PostProcessSteps.FlipUVs |
                                                  PostProcessSteps.JoinIdenticalVertices);
-                        
+
                                  InitMaterials(scene);
-                        
+
                                  // for every mesh
                                  var allMeshesInScene = scene.Meshes;
                                  foreach (var mesh in allMeshesInScene)
                                  {
                                      // init and add to vertices
                                      InitMesh(mesh);
-                        
+
                                  }
                                  */
 
 
-/*
-                        private void InitMaterials(Scene scene)
-                        {
-                            for (var i = 0; i < scene.MaterialCount; i++)
-                            {
-                                var material = scene.Materials[i];
-                
-                                if (material.GetMaterialTextureCount(TextureType.Diffuse) > 0)
+        /*
+                                private void InitMaterials(Scene scene)
                                 {
-                                    TextureSlot foundTexture;
-                                    if (material.GetMaterialTexture(TextureType.Diffuse, 0, out foundTexture))
+                                    for (var i = 0; i < scene.MaterialCount; i++)
                                     {
-                                        _textures.Add(new Texture(TextureTarget.Texture2D, foundTexture.FilePath));
-                                        if (!_textures[i].Load())
+                                        var material = scene.Materials[i];
+
+                                        if (material.GetMaterialTextureCount(TextureType.Diffuse) > 0)
                                         {
-                                            Console.WriteLine("Error Loading texture!");
+                                            TextureSlot foundTexture;
+                                            if (material.GetMaterialTexture(TextureType.Diffuse, 0, out foundTexture))
+                                            {
+                                                _textures.Add(new Texture(TextureTarget.Texture2D, foundTexture.FilePath));
+                                                if (!_textures[i].Load())
+                                                {
+                                                    Console.WriteLine("Error Loading texture!");
+                                                }
+                                            }
+                                        }
+                                        else
+                                        {
+                                            _textures.Add(new Texture(TextureTarget.Texture2D, "white.png"));
+                                            _textures[i].Load();
                                         }
                                     }
                                 }
-                                else
+
+                                private void InitMesh(Assimp.Mesh mesh)
                                 {
-                                    _textures.Add(new Texture(TextureTarget.Texture2D, "white.png"));
-                                    _textures[i].Load();
+                                    _materialTextureIndex.Add(mesh.MaterialIndex);
+
+                                    var vertices = new Vertex[mesh.Vertices.Count];
+                                    var indices = new int[mesh.FaceCount * 3];
+
+                                    var meshVertices = mesh.Vertices;
+                                    var normals = mesh.Normals;
+                                    var texCords = mesh.TextureCoordinateChannels;
+                                    var faces = mesh.Faces;
+
+                                    for (var i = 0; i < meshVertices.Count; i++)
+                                    {
+                                        var vertex = new Vector3(meshVertices[i].X, meshVertices[i].Y, meshVertices[i].Z);
+                                        var normal = new Vector3(normals[i].X, normals[i].Y, normals[i].Z);
+                                        var texCord = new Vector2(texCords[0][i].X, texCords[0][i].Y);
+
+                                        var compiledVertex = new Vertex
+                                        {
+                                            Vertices = vertex,
+                                            Normal = normal,
+                                            Uv = texCord
+                                        };
+
+                                        // Add vertex to list
+                                        vertices[i] = compiledVertex;
+                                    }
+
+                                    var count = 0;
+
+                                    foreach (var face in faces)
+                                    {
+                                        indices[count] = face.Indices[0];
+                                        indices[++count] = face.Indices[1];
+                                        indices[++count] = face.Indices[2];
+                                        ++count;
+                                    }
+
+
+                                    // add all to tuple:
+                                    _completeScene.Add(new Tuple<Vertex[], int[]>(vertices, indices));
+
+                                    // init buffer
+                                    InitGlBuffer(vertices, indices);
                                 }
-                            }
-                        }
-                
-                        private void InitMesh(Assimp.Mesh mesh)
-                        {
-                            _materialTextureIndex.Add(mesh.MaterialIndex);
-                
-                            var vertices = new Vertex[mesh.Vertices.Count];
-                            var indices = new int[mesh.FaceCount * 3];
-                
-                            var meshVertices = mesh.Vertices;
-                            var normals = mesh.Normals;
-                            var texCords = mesh.TextureCoordinateChannels;
-                            var faces = mesh.Faces;
-                
-                            for (var i = 0; i < meshVertices.Count; i++)
-                            {
-                                var vertex = new Vector3(meshVertices[i].X, meshVertices[i].Y, meshVertices[i].Z);
-                                var normal = new Vector3(normals[i].X, normals[i].Y, normals[i].Z);
-                                var texCord = new Vector2(texCords[0][i].X, texCords[0][i].Y);
-                
-                                var compiledVertex = new Vertex
-                                {
-                                    Vertices = vertex,
-                                    Normal = normal,
-                                    Uv = texCord
-                                };
-                
-                                // Add vertex to list
-                                vertices[i] = compiledVertex;
-                            }
-                
-                            var count = 0;
-                
-                            foreach (var face in faces)
-                            {
-                                indices[count] = face.Indices[0];
-                                indices[++count] = face.Indices[1];
-                                indices[++count] = face.Indices[2];
-                                ++count;
-                            }
-                
-                
-                            // add all to tuple:
-                            _completeScene.Add(new Tuple<Vertex[], int[]>(vertices, indices));
-                
-                            // init buffer
-                            InitGlBuffer(vertices, indices);
-                        }
-                        */
-    }
-}
+                                */

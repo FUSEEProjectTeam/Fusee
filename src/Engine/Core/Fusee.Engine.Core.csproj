@@ -84,7 +84,6 @@
     <Compile Include="ScenePicker.cs" />
     <Compile Include="SceneRenderer.cs" />
     <Compile Include="ScreenS3D.cs" />
-    <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="LegacyShaderCodeBuilder.cs" />
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />

@@ -52,6 +52,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Image data related Members
 
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Updates a texture with images obtained from a Video.
         /// </summary>
@@ -208,6 +213,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ITexture texID = new Texture {handle = id};
 
             return texID;
+        }
+
+        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        {
+            throw new NotImplementedException();
         }
 
         public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
@@ -1641,6 +1656,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             throw new NotImplementedException();
         }
 
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
         /// The Viewport is the portion of the final image window.
@@ -1676,9 +1696,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (capability)
             {
-                case HardwareCapability.DEFFERED_POSSIBLE:
+                case HardwareCapability.DefferedPossible:
                     return !GL.GetString(All.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-                case HardwareCapability.BUFFERSIZE:
+                case HardwareCapability.Buffersize:
                     float outVar;
                     GL.GetFloat(All.BufferSize, out outVar);
                     return BitConverter.ToUInt32(BitConverter.GetBytes(outVar), 0);
