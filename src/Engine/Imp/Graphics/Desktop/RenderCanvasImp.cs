@@ -214,8 +214,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _deltaFrameTime = newTick - _lastTimeTick;
             _lastTimeTick = newTick;
 
+         
             // _context.MakeCurrent(_wi);
             _context.SwapBuffers();
+       
         }
 
         /// <summary>

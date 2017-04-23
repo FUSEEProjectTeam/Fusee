@@ -386,6 +386,21 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     // are NOT to be prefixed with the interface name.
     // $.Property({ Static: false, Public: true }, "ModelView");
 
+
+    $.Method({ Static: false, Public: true }, "GetHardwareCapabilities",
+       new JSIL.MethodSignature($.UInt32, [$fuseeCommon.TypeRef("Fusee.Engine.Common.HardwareCapability")]),
+       function GetHardwareCapabilities(capability) {
+           switch(capability) {
+               case 0: // <- this is DEFFERED_POSSIBLE
+                   return 0; // not yet WebGL beta!
+               default:
+                   Error("Hardware capability not found!");
+           }
+       }
+    );
+
+
+
     $.Method({ Static: false, Public: true }, "get_ModelView",
         new JSIL.MethodSignature($fuseeMath.TypeRef("Fusee.Math.Core.float4x4"), []),
         function get_ModelView() {
@@ -448,6 +463,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.clearDepth(value);
         }
     );
+    
+
+
+
     // </IRenderContextImp Properties implementation>
 
     $.Method({ Static: false, Public: true }, "UpdateTextureFromVideoStream",

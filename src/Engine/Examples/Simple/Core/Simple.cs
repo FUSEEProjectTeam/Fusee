@@ -1,4 +1,4 @@
-﻿#define GUI_SIMPLE
+﻿//#define GUI_SIMPLE
 
 using System;
 using System.IO;
@@ -8,6 +8,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
@@ -17,7 +18,7 @@ using Fusee.Engine.Core.GUI;
 namespace Fusee.Engine.Examples.Simple.Core
 {
 
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.", Width = 1920, Height = 1080)]
     public class Simple : RenderCanvas
     {
         // angle variables
@@ -31,7 +32,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private GUIHandler _guiHandler;
 
         private GUIButton _guiFuseeLink;
@@ -137,13 +138,115 @@ namespace Fusee.Engine.Examples.Simple.Core
             #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(1,1,1, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
+            var cube = new Cube();
+
+            for(var i = 0; i < 10; i++)
+            {
+                _rocketScene.Children.Add(new SceneNodeContainer
+                {
+                    Children = new List<SceneNodeContainer>(),
+                    Components = new List<SceneComponentContainer>
+                    {
+                        new LightComponent
+                        {
+                            Active = true,
+                            AmbientCoefficient = 0f,
+                            Attenuation = 0.9f,
+                            Color = new float3(0.9f,0.9f,0.9f),
+                            ConeAngle = 45f,
+                            ConeDirection = new float3(0,0,1),
+                            Position = new float3(0, 0, 0),
+                           Type = LightType.Point
+                        },
+                        new TransformComponent
+                        {
+                            Rotation = float3.Zero,
+                            Scale = float3.One * 100f,
+                            Translation = float3.Zero
+                        }
+                    }
+                });
+            }
+
+
+
+
+            var oldMat = _rocketScene.Children[0].Components[1] as MaterialComponent;
+            if (oldMat != null)
+            {
+                var newPbrmat = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat.Diffuse,
+                    Specular = oldMat.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+
+
+                _rocketScene.Children[0].Components[1] = newPbrmat;
+            }
+
+            var oldMat2 = _rocketScene.Children[0].Children[0].Components[1] as MaterialComponent;
+            if (oldMat2 != null)
+            {
+                var newPbrmat2 = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat2.Diffuse,
+                    Specular = oldMat2.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+
+
+                _rocketScene.Children[0].Children[0].Components[1] = newPbrmat2;
+            }
+
+            var oldMat3 = _rocketScene.Children[0].Children[1].Components[1] as MaterialComponent;
+            if (oldMat3 != null)
+            {
+                var newPbrmat3 = new MaterialPBRComponent
+                {
+                    Diffuse = oldMat3.Diffuse,
+                    Specular = oldMat3.Specular,
+                    DiffuseFraction = 0.1f,
+                    FresnelReflectance = 0.1f,
+                    RoughnessValue = 0.1f
+                };
+
+
+                _rocketScene.Children[0].Children[1].Components[1] = newPbrmat3;
+            }
+
+
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.ADVANCED);
+
+
+
+            /*     _rocketScene.Children[0].AddComponent(new TransformComponent()
+                 {
+                     Vertices = cube.Vertices,
+                     Normals = cube.Normals,
+                     Triangles = cube.Triangles,
+                     UVs = cube.UVs
+                 });*/
+
+            //_rocketScene.Children[0].Children[0].Name = "cube";
+
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            // Shadow
+            //_sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.SIMPLE, true);
+            // Deferred
+
+
+            _rocketScene.Children[0].Children[0].Components[2].Name = "debug";
+
         }
 
         // RenderAFrame is called once a frame
@@ -151,6 +254,7 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
 
             // Clear the backbuffer
+            // No backbuffer cleared here
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
@@ -174,34 +278,37 @@ namespace Fusee.Engine.Examples.Simple.Core
             }
             else
             {
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
                     var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
-                }
             }
 
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
+/*
+            var transform = _rocketScene.Children[8].GetComponent<TransformComponent>();
+            transform.Translation = new float3(transform.Translation.x + Keyboard.ADAxis * 2.5f, transform.Translation.y + Keyboard.WSAxis * 2.5f, transform.Translation.z + Keyboard.UpDownAxis * 2.5f);
+            var light = _rocketScene.Children[8].GetComponent<LightComponent>();
+            light.Position = new float3(light.Position.x + Keyboard.ADAxis * 2.5f, light.Position.y + Keyboard.WSAxis * 2.5f, light.Position.z + Keyboard.UpDownAxis * 2.5f);
 
+    */
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            var mtxCam = float4x4.LookAt(0, 20, -3000, 0, -100, 0, 0, 1, 0);
+            //var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            var mtxScale = float4x4.CreateScale(1f);
 
+            RC.ModelView = mtxCam * mtxRot * mtxScale; 
+
+
+            
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler.RenderGUI();
-            #endif
+#endif
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -219,24 +326,24 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000000);
             RC.Projection = projection;
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
 
             _guiHandler.Refresh();
-            #endif
+#endif
 
         }
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
@@ -255,6 +362,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-        #endif
+#endif
     }
 }
