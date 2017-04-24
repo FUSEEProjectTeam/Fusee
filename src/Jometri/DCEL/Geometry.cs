@@ -213,7 +213,7 @@ namespace Fusee.Jometri.DCEL
         /// <returns></returns>
         public IEnumerable<HalfEdge> GetAllEdges()
         {
-            List <HalfEdge> edges =  new List<HalfEdge>();
+            List<HalfEdge> edges = new List<HalfEdge>();
 
             foreach (var he in DictHalfEdges)
             {
@@ -447,7 +447,7 @@ namespace Fusee.Jometri.DCEL
             }
 
             //Inner boundaries
-            
+
             var innerComponents = face.InnerHalfEdges;
 
             if (innerComponents.Count == 0) yield break;
@@ -746,11 +746,11 @@ namespace Fusee.Jometri.DCEL
                 var he = heWithSameFaceP[i];
                 var face = GetFaceByHandle(he.IncidentFace);
 
-                if(face.Handle == 1) continue;
+                if (face.Handle == 1) continue;
 
                 var diagMiddPoint = (1 - 0.5f) * vertP.VertData.Pos + 0.5f * vertQ.VertData.Pos;
                 var redMidd = diagMiddPoint.Reduce2D(face.FaceData.FaceNormal);
-                 
+
                 if (!this.IsPointInPolygon(face, redMidd)) continue;
 
                 foreach (var heP in heWithSameFaceP)
@@ -843,7 +843,7 @@ namespace Fusee.Jometri.DCEL
             ReplaceHalfEdge(next2);
 
             //add to dict
-            DictVertices.Add(newVertex.Handle,newVertex);
+            DictVertices.Add(newVertex.Handle, newVertex);
             DictHalfEdges.Add(newHalfEdge1.Handle, newHalfEdge1);
             DictHalfEdges.Add(newHalfEdge2.Handle, newHalfEdge2);
         }

@@ -17,7 +17,11 @@ namespace Fusee.Jometri.Manipulation
         private static Dictionary<int, Vertex> _allEdgeVertices;
         private static Dictionary<int, Vertex> _allFaceVertices;
 
-
+        /// <summary>
+        /// Performs a Catmull-Clark Subdivision-Surface with a given geometry which is stored as DCEL.
+        /// </summary>
+        /// <param name="geometry">The goemetry to perform the SD on, as DCEL.</param>
+        /// <returns></returns>
         public static Geometry CatmullClarkSubDivision(Geometry geometry)
         {
             //initialising
@@ -33,12 +37,9 @@ namespace Fusee.Jometri.Manipulation
             ComputeNewVertexPosition();
 
             AddEdgeVertices();
-
             _geometry = _newGeometry.CloneGeometry();
 
             AddFaceVerticesAndNewFaces();
-
-            var allFaces = _newGeometry.GetAllFaces();
 
             return _newGeometry;
         }
@@ -54,8 +55,8 @@ namespace Fusee.Jometri.Manipulation
                 HalfEdge nextEdge = startEdge;
 
                 //stores Halfedges without Twin
-                Dictionary<int, HalfEdge> HalfEdges2 = new Dictionary<int, HalfEdge>();
-                Dictionary<int, HalfEdge> HalfEdges1 = new Dictionary<int, HalfEdge>();
+                Dictionary<int, HalfEdge> halfEdges2 = new Dictionary<int, HalfEdge>();
+                Dictionary<int, HalfEdge> halfEdges1 = new Dictionary<int, HalfEdge>();
 
                 _newGeometry.DictVertices.Add(faceVertex.Handle, faceVertex);
                 int i = 0;
@@ -118,24 +119,26 @@ namespace Fusee.Jometri.Manipulation
                     }
 
                     //face normal
-                    List<Vertex> faceVertices = new List<Vertex>();
-                    faceVertices.Add(_newGeometry.GetVertexByHandle(h1.OriginVertex));
-                    faceVertices.Add(_newGeometry.GetVertexByHandle(h2.OriginVertex));
-                    faceVertices.Add(_newGeometry.GetVertexByHandle(h3.OriginVertex));
-                    faceVertices.Add(_newGeometry.GetVertexByHandle(h4.OriginVertex));
+                    List<Vertex> faceVertices = new List<Vertex>
+                    {
+                        _newGeometry.GetVertexByHandle(h1.OriginVertex),
+                        _newGeometry.GetVertexByHandle(h2.OriginVertex),
+                        _newGeometry.GetVertexByHandle(h3.OriginVertex),
+                        _newGeometry.GetVertexByHandle(h4.OriginVertex)
+                    };
 
                     _newGeometry.SetFaceNormal(faceVertices, newFace);
 
-                    HalfEdges2.Add(i,h2);
-                    HalfEdges1.Add(i,h1);
+                    halfEdges2.Add(i,h2);
+                    halfEdges1.Add(i,h1);
 
                     //for the second Edge per Face connect the twin
                     if (i > 0)
                     {
-                        HalfEdge h1N = HalfEdges1[i - 1];
-                        h1N.TwinHalfEdge= HalfEdges2[i].Handle;
+                        HalfEdge h1N = halfEdges1[i - 1];
+                        h1N.TwinHalfEdge= halfEdges2[i].Handle;
 
-                        HalfEdge h2N = HalfEdges2[i];
+                        HalfEdge h2N = halfEdges2[i];
                         h2N.TwinHalfEdge = h1N.Handle;
 
                         _newGeometry.ReplaceHalfEdge(h1N);
@@ -146,15 +149,15 @@ namespace Fusee.Jometri.Manipulation
                     nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
                 } while (startEdge != nextEdge);
 
-                //set Twin of firts and last new Face
-                HalfEdge h2firts = HalfEdges2[0];            
-                HalfEdge h1last = HalfEdges1[i-1];
+                //set Twin of firts and lasts of each new Face
+                HalfEdge h2Firts = halfEdges2[0];            
+                HalfEdge h1Last = halfEdges1[i-1];
 
-                h2firts.TwinHalfEdge = h1last.Handle;
-                h1last.TwinHalfEdge = h2firts.Handle;
+                h2Firts.TwinHalfEdge = h1Last.Handle;
+                h1Last.TwinHalfEdge = h2Firts.Handle;
 
-                _newGeometry.ReplaceHalfEdge(h2firts);
-                _newGeometry.ReplaceHalfEdge(h1last);
+                _newGeometry.ReplaceHalfEdge(h2Firts);
+                _newGeometry.ReplaceHalfEdge(h1Last);
             }
         }
 
@@ -222,14 +225,13 @@ namespace Fusee.Jometri.Manipulation
                     }
                 }
 
-                float3 meanEdgeVertexPos = GetVerticesMeanPos(edgeVertices);
-                float3 meanFaceVertexPos = GetVerticesMeanPos(faceVertices);
+                float3 meanEdgeVertexPos = GeometricOperations.GetVerticesMeanPos(edgeVertices);
+                float3 meanFaceVertexPos = GeometricOperations.GetVerticesMeanPos(faceVertices);
 
                 float edgeCount = outgoingEdges.Count;
 
                 float3 newVertexPos = (meanFaceVertexPos + 2 * meanEdgeVertexPos + (edgeCount - 3) * vertex.VertData.Pos) / edgeCount;
-                Vertex newVertex = new Vertex(vertex.Handle, newVertexPos);
-                newVertex.IncidentHalfEdge = vertex.IncidentHalfEdge;
+                Vertex newVertex = new Vertex(vertex.Handle, newVertexPos) {IncidentHalfEdge = vertex.IncidentHalfEdge};
 
                 _newGeometry.ReplaceVertex(newVertex);
 
@@ -252,16 +254,11 @@ namespace Fusee.Jometri.Manipulation
                 Vertex cVertex1 = _allFaceVertices[face1];
                 Vertex cVertex2 = _allFaceVertices[face2];
 
-                List<Vertex> temp = new List<Vertex>();
-                temp.Add(vertex1);
-                temp.Add(vertex2);
-                temp.Add(cVertex1);
-                temp.Add(cVertex2);
+                List<Vertex> temp = new List<Vertex> {vertex1, vertex2, cVertex1, cVertex2};
 
-                Vertex temp2 = new Vertex(edge.Handle, GetVerticesMeanPos(temp));
-                temp2.IncidentHalfEdge = edge.Handle;
+                Vertex finalVertex = new Vertex(edge.Handle, GeometricOperations.GetVerticesMeanPos(temp)) {IncidentHalfEdge = edge.Handle};
 
-                _allEdgeVertices.Add(edge.Handle, temp2);
+                _allEdgeVertices.Add(edge.Handle, finalVertex);
             }
         }
 
@@ -272,21 +269,9 @@ namespace Fusee.Jometri.Manipulation
             foreach (Face face in allFaces)
             {
                 var faceVertices = _geometry.GetFaceVertices(face.Handle).ToList();
-                Vertex tempVertex = new Vertex(face.Handle, GetVerticesMeanPos(faceVertices));
+                Vertex tempVertex = new Vertex(face.Handle, GeometricOperations.GetVerticesMeanPos(faceVertices));
                 _allFaceVertices.Add(face.Handle, tempVertex);
             }
-        }
-
-        private static float3 GetVerticesMeanPos(List<Vertex> vertices)
-        {
-            float3 centroid = new float3();
-
-            foreach (Vertex vertex in vertices)
-            {
-                centroid += vertex.VertData.Pos;
-            }
-            centroid = centroid / vertices.Count();
-            return centroid;
         }
     }
 }

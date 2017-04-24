@@ -106,10 +106,25 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //geomOcta.Triangulate();
             //var octagon = new JometriMesh(geomOcta);
 
-            var outlinesCube = new List<PolyBoundary> { outlineRectangle };
-            var geomCube = new Geometry(outlinesCube);
-            geomCube.Extrude2DPolygon(2, false);
+            //var outlinesCube = new List<PolyBoundary> { outlineRectangle };
+            //var geomCube = new Geometry(outlinesCube);
+            //geomCube.Extrude2DPolygon(2, false);
+
+            Geometry geomCube = CreateGeometry.CreateCuboidGeometry(2,2,2);
+
+            geomCube.InsetFace(2, .5f);
             geomCube.ExtrudeFace(2, 1);
+            geomCube.InsetFace(2, .5f);
+            geomCube.ExtrudeFace(2, 1);
+            geomCube.InsetFace(2, .5f);
+            geomCube.ExtrudeFace(2, 1);
+            geomCube.InsetFace(4, .5f);
+            geomCube.InsetFace(5, .5f);
+            geomCube.InsetFace(6, .5f);
+            geomCube.InsetFace(7, .5f);
+            geomCube.InsetFace(8, .5f);
+
+
             geomCube.ExtrudeFace(4, 1);
             geomCube.ExtrudeFace(5, 1);
             geomCube.ExtrudeFace(6, 1);
@@ -119,6 +134,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
 
 
