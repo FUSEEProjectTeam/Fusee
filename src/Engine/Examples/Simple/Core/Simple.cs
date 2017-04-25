@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -31,7 +31,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
-#if GUI_SIMPLE
+        #if GUI_SIMPLE
         private GUIHandler _guiHandler;
 
         private GUIButton _guiFuseeLink;
@@ -40,11 +40,74 @@ namespace Fusee.Engine.Examples.Simple.Core
         private GUIText _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
-#endif
+
+        private string _text;
+        #endif
 
         // Init is called on startup. 
         public override void Init()
         {
+            float3 scale = new float3(1, 1, 1);
+            float3 offset = new float3(0, 0, 0);
+            float3 a = new float3( 1f, -1f, 0) * scale + offset;
+            float3 b = new float3( 0f,  1f, 0) * scale + offset;
+            float3 c = new float3(-1f, -1f, 0) * scale + offset;
+
+            bool isCW1 = float2.IsTriangleCW(a.xy, c.xy, b.xy);
+            bool isCW2 = float2.IsTriangleCW(c.xy, b.xy, a.xy);
+            bool isCW3 = float2.IsTriangleCW(b.xy, a.xy, c.xy);
+            bool isCCW1 = !float2.IsTriangleCW(a.xy, b.xy, c.xy);
+            bool isCCW2 = !float2.IsTriangleCW(c.xy, a.xy, b.xy);
+            bool isCCW3 = !float2.IsTriangleCW(b.xy, c.xy, a.xy);
+
+            float3[] pointLst =
+            {
+                new float3(0, 0, 0) * scale + offset,
+                new float3(0.99f, -0.99f, 0)   * scale + offset,
+                new float3(0f, 0.99f, 0)       * scale + offset,
+                new float3(-0.99f, -00.99f, 0) * scale + offset,
+                new float3(1.1f, 0, 0) * scale + offset,
+            };
+
+            foreach (var point in pointLst)
+            {
+                float u, v;
+                float3.GetBarycentric(a, c, b, point, out u, out v);
+                float3 testPoint = float3.Barycentric(a, c, b, u, v);
+                bool test = testPoint == point;
+            }
+
+            //float2 scale = new float2(-0.2f, 0.1f);
+            //float2 offset = new float2(-500, 1000);
+            //float2 a = new float2(1f, -1f) * scale + offset;
+            //float2 b = new float2(0f, 1f) * scale + offset;
+            //float2 c = new float2(-1f, -1f) * scale + offset;
+
+            //bool isCW1 = float2.IsTriangleCW(a, c, b);
+            //bool isCW2 = float2.IsTriangleCW(c, b, a);
+            //bool isCW3 = float2.IsTriangleCW(b, a, c);
+            //bool isCCW1 = !float2.IsTriangleCW(a, b, c);
+            //bool isCCW2 = !float2.IsTriangleCW(c, a, b);
+            //bool isCCW3 = !float2.IsTriangleCW(b, c, a);
+
+            //float2[] pointLst =
+            //{
+            //    new float2(0, 0) * scale + offset,
+            //    new float2(0.99f, -0.99f)   * scale + offset,
+            //    new float2(0f, 0.99f)       * scale + offset,
+            //    new float2(-0.99f, -00.99f) * scale + offset,
+            //};
+
+            //foreach (var point in pointLst)
+            //{
+            //    float u, v;
+            //    float2.GetBarycentric(a, c, b, point, out u, out v);
+            //    float2 testPoint = float2.Barycentric(a, c, b, u, v);
+            //    bool test = testPoint == point;
+            //}
+
+
+
 #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
@@ -62,12 +125,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
-            _guiSubText = new GUIText("Simple FUSEE Example", _guiLatoBlack, 100, 100);
+
+            _text = "Simple FUSEE Example";
+
+            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-#endif
+
+            #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -90,7 +157,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }
+            }             
 
             if (Mouse.LeftButton)
             {
@@ -132,9 +199,9 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiHandler.RenderGUI();
-#endif
+            #endif
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -152,7 +219,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width/(float) Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
@@ -160,16 +227,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
 
             _guiHandler.Refresh();
-#endif
+            #endif
 
         }
 
-#if GUI_SIMPLE
+        #if GUI_SIMPLE
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
@@ -188,6 +255,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-#endif
+        #endif
     }
 }
