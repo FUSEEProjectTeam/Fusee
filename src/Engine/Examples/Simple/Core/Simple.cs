@@ -47,67 +47,6 @@ namespace Fusee.Engine.Examples.Simple.Core
         // Init is called on startup. 
         public override void Init()
         {
-            float3 scale = new float3(1, 1, 1);
-            float3 offset = new float3(0, 0, 0);
-            float3 a = new float3( 1f, -1f, 0) * scale + offset;
-            float3 b = new float3( 0f,  1f, 0) * scale + offset;
-            float3 c = new float3(-1f, -1f, 0) * scale + offset;
-
-            bool isCW1 = float2.IsTriangleCW(a.xy, c.xy, b.xy);
-            bool isCW2 = float2.IsTriangleCW(c.xy, b.xy, a.xy);
-            bool isCW3 = float2.IsTriangleCW(b.xy, a.xy, c.xy);
-            bool isCCW1 = !float2.IsTriangleCW(a.xy, b.xy, c.xy);
-            bool isCCW2 = !float2.IsTriangleCW(c.xy, a.xy, b.xy);
-            bool isCCW3 = !float2.IsTriangleCW(b.xy, c.xy, a.xy);
-
-            float3[] pointLst =
-            {
-                new float3(0, 0, 0) * scale + offset,
-                new float3(0.99f, -0.99f, 0)   * scale + offset,
-                new float3(0f, 0.99f, 0)       * scale + offset,
-                new float3(-0.99f, -00.99f, 0) * scale + offset,
-                new float3(1.1f, 0, 0) * scale + offset,
-            };
-
-            foreach (var point in pointLst)
-            {
-                float u, v;
-                float3.GetBarycentric(a, c, b, point, out u, out v);
-                float3 testPoint = float3.Barycentric(a, c, b, u, v);
-                bool test = testPoint == point;
-            }
-
-            //float2 scale = new float2(-0.2f, 0.1f);
-            //float2 offset = new float2(-500, 1000);
-            //float2 a = new float2(1f, -1f) * scale + offset;
-            //float2 b = new float2(0f, 1f) * scale + offset;
-            //float2 c = new float2(-1f, -1f) * scale + offset;
-
-            //bool isCW1 = float2.IsTriangleCW(a, c, b);
-            //bool isCW2 = float2.IsTriangleCW(c, b, a);
-            //bool isCW3 = float2.IsTriangleCW(b, a, c);
-            //bool isCCW1 = !float2.IsTriangleCW(a, b, c);
-            //bool isCCW2 = !float2.IsTriangleCW(c, a, b);
-            //bool isCCW3 = !float2.IsTriangleCW(b, c, a);
-
-            //float2[] pointLst =
-            //{
-            //    new float2(0, 0) * scale + offset,
-            //    new float2(0.99f, -0.99f)   * scale + offset,
-            //    new float2(0f, 0.99f)       * scale + offset,
-            //    new float2(-0.99f, -00.99f) * scale + offset,
-            //};
-
-            //foreach (var point in pointLst)
-            //{
-            //    float u, v;
-            //    float2.GetBarycentric(a, c, b, point, out u, out v);
-            //    float2 testPoint = float2.Barycentric(a, c, b, u, v);
-            //    bool test = testPoint == point;
-            //}
-
-
-
 #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
