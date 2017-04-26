@@ -52,6 +52,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Image data related Members
 
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Updates a texture with images obtained from a Video.
         /// </summary>
@@ -208,6 +213,26 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ITexture texID = new Texture {handle = id};
 
             return texID;
+        }
+
+        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture()
+        {
+            throw new NotImplementedException();
         }
 
         #endregion
@@ -426,6 +451,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int nParams;
             GL.GetProgram(sProg.Program, All.ActiveUniforms, out nParams);
+         
 
             for (var i = 0; i < nParams; i++)
             {
@@ -997,6 +1023,84 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        public void RenderDeferred(IMeshImp mr)
+        {
+            if (((MeshImp)mr).VertexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
+                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).ColorBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.ColorAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
+                GL.VertexAttribPointer(Helper.ColorAttribLocation, 4, All.UnsignedByte, true, 0,
+                    IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.UvAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
+                GL.VertexAttribPointer(Helper.UvAttribLocation, 2, All.Float, false, 0, IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).NormalBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
+                GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneIndexBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
+                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BoneWeightBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
+                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+            if (((MeshImp)mr).ElementBufferObject != 0)
+            {
+                GL.BindBuffer(All.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
+                GL.DrawElements(All.Triangles, ((MeshImp)mr).NElements, All.UnsignedShort,
+                    IntPtr.Zero);
+                //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
+            }
+            if (((MeshImp)mr).VertexBufferObject != 0)
+            {
+                GL.BindBuffer(All.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.VertexAttribLocation);
+            }
+            if (((MeshImp)mr).ColorBufferObject != 0)
+            {
+                GL.BindBuffer(All.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.ColorAttribLocation);
+            }
+            if (((MeshImp)mr).NormalBufferObject != 0)
+            {
+                GL.BindBuffer(All.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
+            }
+            if (((MeshImp)mr).UVBufferObject != 0)
+            {
+                GL.BindBuffer(All.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.UvAttribLocation);
+            }
+        }
+
+        /// <summary>
+        /// Renders the specified <see cref="IMeshImp" />.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
             if (((MeshImp) mr).VertexBufferObject != 0)
@@ -1547,6 +1651,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        public void SetRenderTarget(ITexture texture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
         /// The Viewport is the portion of the final image window.
@@ -1571,6 +1685,32 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void ColorMask(bool red, bool green, bool blue, bool alpha)
         {
             GL.ColorMask(red, green, blue, alpha);
+        }
+
+        /// <summary>
+        /// Returns the capabilities of the underlying graphics hardware
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns>uint</returns>
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            switch (capability)
+            {
+                case HardwareCapability.DefferedPossible:
+                    return !GL.GetString(All.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
+                case HardwareCapability.Buffersize:
+                    float outVar;
+                    GL.GetFloat(All.BufferSize, out outVar);
+                    return BitConverter.ToUInt32(BitConverter.GetBytes(outVar), 0);
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
+            }
+        }
+
+
+        public bool CreateFBO()
+        {
+            return true;
         }
 
         #endregion

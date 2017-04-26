@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using JSIL.Meta;
 using Fusee.Math.Core;
@@ -32,6 +33,7 @@ namespace Fusee.Engine.Core
         private readonly LightParamNames[] _lightShaderParams;
         */
 
+
         private bool _updatedShaderParams;
 
         private readonly ShaderProgram _debugShader;
@@ -49,10 +51,7 @@ namespace Fusee.Engine.Core
 
         public float4x4[] Bones
         {
-            get
-            {
-                return _bones;
-            }
+            get { return _bones; }
             set
             {
                 _bones = value;
@@ -100,7 +99,7 @@ namespace Fusee.Engine.Core
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
-        
+
         #endregion
 
         #region Internal Fields
@@ -148,8 +147,10 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+
         #region Matrix Fields
-        /// <summary>
+
+        /*/// <summary>
         /// The View matrix used by the rendering pipeline.
         /// </summary>
         /// <value>
@@ -188,7 +189,8 @@ namespace Fusee.Engine.Core
                 UpdateCurrentShader();
             }
         }
-
+        */
+        /*
         /// <summary>
         /// The Model matrix used by the rendering pipeline.
         /// </summary>
@@ -222,7 +224,7 @@ namespace Fusee.Engine.Core
 
                 UpdateCurrentShader();
             } //TODO: Flags
-        }
+        } */
 
         /// <summary>
         /// The ModelView matrix used by the rendering pipeline.
@@ -238,10 +240,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 ModelView
         {
-            get
-            {
-                return _modelView;
-            }
+            get { return _modelView; }
             set
             {
                 // Update matrix
@@ -287,10 +286,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Projection
         {
-            get
-            {
-                return _projection;
-            }
+            get { return _projection; }
             set
             {
                 // Update matrix
@@ -327,7 +323,7 @@ namespace Fusee.Engine.Core
                 {
                     // Row order notation
                     // _modelViewProjection = float4x4.Mult(ModelView, Projection);
- 
+
                     // Column order notation
                     _modelViewProjection = float4x4.Mult(Projection, ModelView);
                     _modelViewProjectionOk = true;
@@ -336,6 +332,7 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /*
         /// <summary>
         /// Gets the inverted View matrix.
         /// </summary>
@@ -385,7 +382,7 @@ namespace Fusee.Engine.Core
                 return _invModel;
             }
         }
-
+        */
 
         /// <summary>
         /// The inverse of the ModelView matrix.
@@ -464,6 +461,7 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /*
         /// <summary>
         /// The transpose of the View matrix.
         /// </summary>
@@ -513,7 +511,7 @@ namespace Fusee.Engine.Core
                 return _transModel;
             }
         }
-
+        */
 
         /// <summary>
         /// The transpose of the ModelView matrix.
@@ -592,6 +590,7 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /*
         /// <summary>
         /// The inverse transpose of the View matrix.
         /// </summary>
@@ -617,7 +616,7 @@ namespace Fusee.Engine.Core
                 return _invTransView;
             }
         }
-
+        
         /// <summary>
         /// The inverse transpose of the Model matrix.
         /// </summary>
@@ -643,7 +642,7 @@ namespace Fusee.Engine.Core
                 return _invTransModel;
             }
         }
-
+        */
 
         /// <summary>
         /// The inverse transpose of the ModelView matrix.
@@ -726,7 +725,7 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-
+        
         #endregion
 
         #region Constructors
@@ -738,7 +737,7 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
-            View = float4x4.Identity;
+            // View = float4x4.Identity;
             ModelView = float4x4.Identity;
             Projection = float4x4.Identity;
 
@@ -772,11 +771,11 @@ namespace Fusee.Engine.Core
                 UpdateShaderParams();
 
             // Normal versions of MV and P
-            if (_currentShaderParams.FUSEE_M != null)
-                SetShaderParam(_currentShaderParams.FUSEE_M, Model);
+            //  if (_currentShaderParams.FUSEE_M != null)
+            //     SetShaderParam(_currentShaderParams.FUSEE_M, Model);
 
-            if (_currentShaderParams.FUSEE_V != null)
-                SetShaderParam(_currentShaderParams.FUSEE_V, View);
+            //  if (_currentShaderParams.FUSEE_V != null)
+            //     SetShaderParam(_currentShaderParams.FUSEE_V, View);
 
             if (_currentShaderParams.FUSEE_MV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_MV, ModelView);
@@ -821,7 +820,7 @@ namespace Fusee.Engine.Core
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
                 SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
 
-            
+
             /* Removed light support
             // Todo: Remove multiple Lights per shader !!!
             for (var i = 0; i < 8; i++)
@@ -880,7 +879,7 @@ namespace Fusee.Engine.Core
             _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
             _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
             _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
-            
+
             // Bones
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
 
@@ -914,7 +913,7 @@ namespace Fusee.Engine.Core
 
         public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
         {
-            _rci.UpdateTextureRegion(tex,img, startX,startY, width, height);
+            _rci.UpdateTextureRegion(tex, img, startX, startY, width, height);
         }
 
         /*
@@ -964,6 +963,27 @@ namespace Fusee.Engine.Core
             return _rci.CreateTexture(imgData, repeat);
         }
 
+        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        {
+            _rci.CopyDepthBufferFromDeferredBuffer(texture);
+        }
+
+        /// <summary>
+        /// Creates a new writable texture and binds it to the shader.
+        /// This is done by creating a framebuffer and a renderbuffer (if needed).
+        /// All bufferhandles are returned with the texture.
+        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
+        /// </returns>
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        {
+            return _rci.CreateWritableTexture(width, height, textureFormat);
+        }
+  
+
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
@@ -974,9 +994,22 @@ namespace Fusee.Engine.Core
             _rci.SetShaderParamTexture(param, texId);
         }
 
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateWritableTexture() method.</param>
+        /// <param name="gHandle">The desired gBuffer texture</param>
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            _rci.SetShaderParamTexture(param, texId, gHandle);
+        }
+
+
         #endregion
 
         #region Text related Members
+
         /*
         /// <summary>
         /// Loads a font file (*.ttf) and processes it with the given font size.
@@ -1003,6 +1036,7 @@ namespace Fusee.Engine.Core
             return _rci.FixTextKerning(font, vertices, text, scaleX);
         }
         */
+
         #endregion
 
         #region Light related Members
@@ -1047,7 +1081,8 @@ namespace Fusee.Engine.Core
         /// <param name="specular">The specular light color.</param>
         /// <param name="type">The light type.</param>
         /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular, int type, int id)
+        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular,
+            int type, int id)
         {
             SetLightActive(id, type);
             SetLightAmbient(id, ambient);
@@ -1282,13 +1317,13 @@ namespace Fusee.Engine.Core
         public void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
-                
+
             if (_currentShader != program)
             {
                 _currentShader = program;
                 _rci.SetShader(program._spi);
             }
-            UpdateShaderParams();         
+            UpdateShaderParams();
         }
 
         /// <summary>
@@ -1502,6 +1537,28 @@ namespace Fusee.Engine.Core
             return _rci.GetRenderState(renderState);
         }
 
+
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        public void SetRenderTarget(ITexture texture)
+        {
+            _rci.SetRenderTarget(texture);
+        }
+
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        /// <param name="position">The texture position within a cubemap</param>
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            _rci.SetCubeMapRenderTarget(texture, position);
+        }
+
+
+
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1551,6 +1608,11 @@ namespace Fusee.Engine.Core
                 _rci.SetTriangles(m._meshImp, m.Triangles);
 
             _rci.Render(m._meshImp);
+        }
+      
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            return _rci.GetHardwareCapabilities(capability);
         }
 
         #endregion
@@ -1661,6 +1723,7 @@ namespace Fusee.Engine.Core
 
             _rci.Viewport(x, y, width, height);
         }
+    
 
         /// <summary>
         /// Enable or disable Color channels to be written to the frame buffer (final image).

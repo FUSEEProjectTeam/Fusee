@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using JSIL.Meta;
@@ -198,6 +196,14 @@ namespace Fusee.Engine.Common
         void SetShaderParamTexture(IShaderParam param, ITexture texId);
 
         /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
+        /// <param name="gHandle">The GBufferHandle</param>
+        void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle);
+
+        /// <summary>
         /// Updates the texture from video the given video stream.
         /// </summary>
         /// <param name="stream">The video stream to retrieve an individual image.</param>
@@ -228,6 +234,24 @@ namespace Fusee.Engine.Common
         /// An ITexture that can be used for texturing in the shader.
         /// </returns>
         ITexture CreateTexture(ImageData imageData, bool repeat);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="texture"></param>
+        void CopyDepthBufferFromDeferredBuffer(ITexture texture);
+
+        /// <summary>
+        /// Creates a new writable texture and binds it to the shader.
+        /// This is done by creating a framebuffer and a renderbuffer (if needed).
+        /// All bufferhandles are returned with the texture.
+        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
+        /// </summary>
+        /// <returns>
+        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
+        /// </returns>
+        ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
 
         /*
         /// <summary>
@@ -409,11 +433,25 @@ namespace Fusee.Engine.Common
         void SetRenderState(RenderState renderState, uint value);
 
         /// <summary>
-        /// Retrieves the value of the giben render state.
+        /// Retrieves the value of the given render state.
         /// </summary>
         /// <param name="renderState">The render state to retrieve.</param>
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
+
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        /// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
+        void SetRenderTarget(ITexture texture);
+
+        /// <summary>
+        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// </summary>
+        /// <param name="texture">The texture as target</param>
+        /// <param name="position">The texture position within a cubemap</param>
+        void SetCubeMapRenderTarget(ITexture texture, int position);
 
         /*
          * TODO: NO tangent space normal maps at this time...
@@ -449,5 +487,28 @@ namespace Fusee.Engine.Common
         /// <param name="y">The y value.</param>
         /// <returns>The Z value at (x, y).</returns>
         float GetPixelDepth(int x, int y);
+
+        /// <summary> 
+        /// Returns the capabilities of the underlying graphics hardware 
+        /// </summary> 
+        /// <param name="capability">The capability to check against</param> 
+        /// <returns>uint</returns> 
+        uint GetHardwareCapabilities(HardwareCapability capability);
+    }
+
+    /// <summary>
+    /// Checks if the hardware is capable of the following entries.
+    /// If a numeric value is expected, this will be returned as a uint from the <see cref="IRenderContextImp.GetHardwareCapabilities"/>GetHardwareCapabilites
+    /// </summary>
+    public enum HardwareCapability
+    {
+        /// <summary>
+        /// Checks if deferred rendering with EXT_FRAMEBUFFER is possible
+        /// </summary>
+        DefferedPossible,
+        /// <summary>
+        /// Returns the buffersize of the hardware
+        /// </summary>
+        Buffersize
     }
 }

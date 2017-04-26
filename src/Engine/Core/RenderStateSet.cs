@@ -13,6 +13,14 @@ namespace Fusee.Engine.Core
     {
         private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
 
+        public void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
+        {
+            foreach (var renderState in renderStateContainer)
+            {
+                _states[(RenderState)renderState.Key] = renderState.Value;
+            }
+        }
+
         #region Butter and bread states
         /////// =======================
 

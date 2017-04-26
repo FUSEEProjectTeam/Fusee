@@ -13,7 +13,7 @@ namespace Fusee.Serialization
         /// </summary>
         Point,
         /// <summary>
-        /// Parallel light. Emits parallel rays into a specified direction.
+        /// Parallel light. Emits parallel rays into a specified direction. No attenuation.
         /// </summary>
         Parallel,
         /// <summary>
@@ -21,6 +21,10 @@ namespace Fusee.Serialization
         /// rays depending on their direction.
         /// </summary>
         Spot,
+        /// <summary>
+        /// Simple infinite Softbox at CameraPosition
+        /// </summary>
+        Legacy
     }
 
     /// <summary>
@@ -30,21 +34,49 @@ namespace Fusee.Serialization
     public class LightComponent : SceneComponentContainer
     {
         /// <summary>
-        /// The type of the light source.
+        /// Represents the light status.
         /// </summary>
-        [ProtoMember(1)] 
-        public LightType Type;
-
+        [ProtoMember(1)]
+        public bool Active;
         /// <summary>
-        /// The color emitted by the light source.
+        /// Represents the color.
         /// </summary>
         [ProtoMember(2)]
         public float3 Color;
-
         /// <summary>
-        /// The light's intensity.
+        /// Represents the position of the light.
         /// </summary>
         [ProtoMember(3)]
-        public float3 Intensity;
+        public float3 Position;
+        /// <summary>
+        /// Represents the attenuation of the light.
+        /// </summary>
+        [ProtoMember(4)]
+        public float Attenuation;
+        /// <summary>
+        /// Represents the ambient coefficient of the light.
+        /// </summary>
+        [ProtoMember(5)]
+        public float AmbientCoefficient;
+        /// <summary>
+        /// Represents the type of the light.
+        /// </summary>
+        [ProtoMember(6)]
+        public LightType Type;
+        /// <summary>
+        /// Represents the spot angle of the light.
+        /// </summary>
+        [ProtoMember(7)]
+        public float ConeAngle;
+        /// <summary>
+        /// Represents the cone direction of the light.
+        /// </summary>
+        [ProtoMember(8)]
+        public float3 ConeDirection;
+        /// <summary>
+        /// Represents the position in world coordinates.
+        /// </summary>
+        [ProtoMember(9)]
+        public float3 PositionWorldSpace;
     }
 }
