@@ -274,6 +274,11 @@ namespace Fusee.Xene
                     {
                         _curCompEnumerator = null;
                         CurrentComponent = null;
+
+                        // At the end of a Component List: If this node hasn't any children, PopState right now. 
+                        // Otherwise PopState will be called after traversing the children list (see below).
+                        if (CurrentNode.Children == null)
+                            PopState();
                     }
                     else
                     {
@@ -307,11 +312,11 @@ namespace Fusee.Xene
                         }
                     }
                     CurrentNode = _curNodeEnumerator.Current;
+                    PushState();
 
                     // Prepare to traverse children
                     if (CurrentNode.Children != null)
                     {
-                        PushState();
                         var childEnumerator = CurrentNode.Children.GetEnumerator();
                         _nodeEnumeratorStack.Push(_curNodeEnumerator);
                         _curNodeEnumerator = childEnumerator;
@@ -325,6 +330,7 @@ namespace Fusee.Xene
 
                     // Traverse nodes
                     DoVisitNode(CurrentNode);
+
                     if (YieldOnCurrentNode)
                         return true;
                 }
@@ -366,11 +372,11 @@ namespace Fusee.Xene
                     }
                 }
                 CurrentNode = _curNodeEnumerator.Current;
+                PushState();
 
                 // Prepare to traverse children
                 if (CurrentNode.Children != null)
                 {
-                    PushState();
                     var childEnumerator = CurrentNode.Children.GetEnumerator();
                     _nodeEnumeratorStack.Push(_curNodeEnumerator);
                     _curNodeEnumerator = childEnumerator;
@@ -378,6 +384,12 @@ namespace Fusee.Xene
 
                 // Traverse nodes
                 DoVisitNode(CurrentNode);
+
+                // If this node hasn't any children, PopState right now. 
+                // Otherwise PopState will be called after traversing the children list (see while statement above).
+                if (CurrentNode.Children == null)
+                    PopState();
+
                 if (YieldOnCurrentNode)
                     return true;
             }

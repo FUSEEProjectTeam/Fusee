@@ -223,6 +223,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         [DllImport("user32.dll")]
         private static extern IntPtr EnableMouseInPointer(bool fEnable);
 
+        [StructLayout(LayoutKind.Sequential)]
+        public struct POINT
+        {
+            public int X;
+            public int Y;
+
+            public POINT(int x, int y)
+            {
+                this.X = x;
+                this.Y = y;
+            }
+
+            public POINT(System.Drawing.Point pt) : this(pt.X, pt.Y) { }
+
+            public static implicit operator System.Drawing.Point(POINT p)
+            {
+                return new System.Drawing.Point(p.X, p.Y);
+            }
+
+            public static implicit operator POINT(System.Drawing.Point p)
+            {
+                return new POINT(p.X, p.Y);
+            }
+        }
+
+        [DllImport("user32.dll")]
+        static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
 
         private delegate IntPtr WinProc(IntPtr hWnd, int Msg, int wParam, int lParam);
 
@@ -244,22 +271,31 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             unchecked
             {
+                POINT winPoint;
                 switch (Msg)
                 {
                     case (int)WinMessage.WM_CLOSE: // Seems defunkt.
                         DisconnectWindowsEvents();
                         break;
                     case (int) WinMessage.WM_POINTERUPDATE:
-                        OnWindowsTouchMove(GET_POINTERID_WPARAM((uint)wParam), GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        ScreenToClient(hWnd, ref winPoint);
+                        OnWindowsTouchMove(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
                     case (int) WinMessage.WM_POINTERUP:
-                        OnWindowsTouchEnd(GET_POINTERID_WPARAM((uint)wParam), GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        ScreenToClient(hWnd, ref winPoint);
+                        OnWindowsTouchEnd(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
                     case (int) WinMessage.WM_POINTERDOWN:
-                        OnWindowsTouchStart(GET_POINTERID_WPARAM((uint)wParam), GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        ScreenToClient(hWnd, ref winPoint);
+                        OnWindowsTouchStart(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
                     case (int) WinMessage.WM_NCPOINTERUP:
-                        OnWindowsTouchCancel(GET_POINTERID_WPARAM((uint)wParam), GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
+                        ScreenToClient(hWnd, ref winPoint);
+                        OnWindowsTouchCancel(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
                 }
             }

@@ -47,11 +47,10 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private string _text;
         private PickResult _currentPick;
-        private TransformComponent _markerXF;
         private float3 _oldColor;
         private bool _pick;
         private float2 _pickPos;
-#endif
+        #endif
 
         // Init is called on startup. 
         public override void Init()
@@ -87,7 +86,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             }
 
 
-#if GUI_SIMPLE
+            #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -112,15 +111,14 @@ namespace Fusee.Engine.Examples.Picking.Core
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-
             #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
-            _scene = CreateScene(); //.Get<SceneContainer>("RocketModel.fus");
-            _markerXF = _scene.Children.FindNodes(n => n.Name == "Marker").FirstOrDefault()?.GetTransform();
+            // Create the robot model
+            _scene = CreateScene();
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -182,6 +180,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Check 
             if (_pick)
             {
+                Diagnostics.Log(_pickPos);
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
@@ -198,10 +197,6 @@ namespace Fusee.Engine.Examples.Picking.Core
                         var mat = newPick.Node.GetMaterial();
                         _oldColor = mat.Diffuse.Color;
                         mat.Diffuse.Color = ColorUint.LawnGreen.Tofloat3();
-                    }
-                    else
-                    {
-                        _markerXF.Translation = float3.Zero;
                     }
                     _currentPick = newPick;
                 }
@@ -369,20 +364,6 @@ namespace Fusee.Engine.Examples.Picking.Core
                                     }
                                 }
                             },
-                        }
-                    },
-                    new SceneNodeContainer
-                    {
-                        Name = "Marker",
-                        Components = new List<SceneComponentContainer>
-                        {
-                            new TransformComponent { Scale = float3.One },
-                            new MaterialComponent
-                            {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Orange.Tofloat3() },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
-                            },
-                            CreateCuboid(new float3(10, 10, 10))
                         }
                     },
                 }
