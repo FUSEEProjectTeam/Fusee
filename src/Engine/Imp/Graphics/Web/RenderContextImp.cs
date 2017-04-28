@@ -293,7 +293,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
         {
-            return; // do nothing, we have only one rendertarget
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -303,8 +303,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         [JSExternal]
         public void SetRenderTarget(ITexture texture)
         {
-            return;
-            //throw new NotImplementedException();
+            throw new NotImplementedException();
         }
 
         public void SetCubeMapRenderTarget(ITexture texture, int position)
