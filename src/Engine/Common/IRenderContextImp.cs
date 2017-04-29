@@ -374,6 +374,48 @@ namespace Fusee.Engine.Common
         void SetShader(IShaderProgramImp shaderProgramImp);
 
         /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveVertices(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveNormals(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveColors(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveUVs(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveTriangles(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveBoneWeights(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveBoneIndices(IMeshImp mesh);
+
+        /// <summary>
         /// Sets the rectangular output region within the output buffer(s).
         /// </summary>
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
