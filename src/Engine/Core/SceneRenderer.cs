@@ -1065,12 +1065,11 @@ namespace Fusee.Engine.Core
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
             ShaderEffect shaderEffect;
-            if (!_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect))
-            {
-                shaderEffect = MakeShader(shaderComponent);
-                shaderEffect.AttachToContext(_rc);
-                _shaderEffectMap.Add(shaderComponent, shaderEffect);
-            }
+            if (_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect)) return shaderEffect;
+
+            shaderEffect = MakeShader(shaderComponent);
+            shaderEffect.AttachToContext(_rc);
+            _shaderEffectMap.Add(shaderComponent, shaderEffect);
             return shaderEffect;
         }
 
@@ -1267,7 +1266,17 @@ namespace Fusee.Engine.Core
 
             if (shaderComponent.EffectParameter != null)
             {
-                effectParametersFromShaderComponent.AddRange(shaderComponent.EffectParameter.Select(CreateEffectParameterDeclaration));
+                // BUG: JSIL crashes with:
+                // BUG: effectParametersFromShaderComponent.AddRange(shaderComponent.EffectParameter.Select(CreateEffectParameterDeclaration));
+
+                var allEffectParameterDeclaration = new List<EffectParameterDeclaration>();
+
+                foreach (var effectParam in shaderComponent.EffectParameter) // DO NOT CONVERT TO LINQ!
+                {
+                    allEffectParameterDeclaration.Add(CreateEffectParameterDeclaration(effectParam));
+                }
+                effectParametersFromShaderComponent.AddRange(allEffectParameterDeclaration);
+
             }
 
             // no Effectpasses

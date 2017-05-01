@@ -1,5 +1,6 @@
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
+attribute vec2 fuUV;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_ITMV;
