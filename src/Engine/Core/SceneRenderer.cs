@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
         private RenderContext _rc;
 
 
-        private List<LightResult> _lightComponents; 
+        private Dictionary<LightComponent, LightResult> _lightComponents; 
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
@@ -280,7 +280,7 @@ namespace Fusee.Engine.Core
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
             // accumulate all lights and...
-            _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            _lightComponents = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(x => x.Key, x => x.Value);
             // ...set them
             AllLightResults = _lightComponents;
 
@@ -297,7 +297,7 @@ namespace Fusee.Engine.Core
                     Color = new float3(0.9f, 0.9f, 0.9f),
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
-                    ModelMatrix = float4x4.Identity,
+                    //ModelMatrix = float4x4.Identity,
                     Type = LightType.Legacy
                 });
             }
@@ -743,12 +743,12 @@ namespace Fusee.Engine.Core
 
        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
-        {
-            
+       {
+           var test = _lightComponents;
             // accumulate all lights and...
-            _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            //_lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
             // ...set them
-            AllLightResults = _lightComponents;
+            //AllLightResults = _lightComponents;
             // and multiply them with current modelview matrix
             // normalize etc.
             LightsToModelViewSpace();
@@ -1364,7 +1364,7 @@ namespace Fusee.Engine.Core
 
             ShaderCodeBuilder scb = null;
 
-            // If MaterialLightCompoenent is found call the LegacyShaderCodeBuilder with the MaterialLight
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
             // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
@@ -1681,6 +1681,8 @@ namespace Fusee.Engine.Core
         public float3 ConeDirectionModelViewSpace;
     }
 
+   
+
     public class LightSetupState : VisitorState
     {
         private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
@@ -1706,8 +1708,10 @@ namespace Fusee.Engine.Core
         }
     }
 
-    public class LightSetup : Viserator<LightResult, LightSetupState>
+    public class LightSetup : Viserator<KeyValuePair<LightComponent, LightResult>, LightSetupState>
     {
+        public Dictionary<LightComponent, LightResult> FoundLightResults = new Dictionary<LightComponent, LightResult>();
+
         protected override void InitState()
         {
             base.InitState();
@@ -1738,7 +1742,7 @@ namespace Fusee.Engine.Core
                 Active = lightComponent.Active,
                 Attenuation = lightComponent.Attenuation
             };
-            YieldItem(lightResult);
+            YieldItem(new KeyValuePair<LightComponent, LightResult>(lightComponent, lightResult));
         }
     }
 #endregion
