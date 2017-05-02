@@ -1070,11 +1070,11 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
         {
             ShaderEffect mat;
-            //if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
+            if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
             mat.AttachToContext(_rc);
-            //_pbrComponent.Add(mc, mat);
+            _pbrComponent.Add(mc, mat);
             return mat;
         }
 
