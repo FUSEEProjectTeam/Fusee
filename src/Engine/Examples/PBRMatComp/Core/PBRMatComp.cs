@@ -76,7 +76,7 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
@@ -91,12 +91,14 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
                 Diffuse = new MatChannelContainer
                 {
                     // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-                    Color = ColorUint.ForestGreen.Tofloat3()
+                    Color = new float3(0.5f,0.3f,0.1f)
                 },
                 Specular = new SpecularChannelContainer
                 {
                     // ReSharper disable once ImpureMethodCallOnReadonlyValueField
-                    Color = ColorUint.White.Tofloat3()
+                    // broken in JSIL?
+                    //Color = ColorUint.White.Tofloat3()
+                    Color = new float3(1,1,1)
                 },
                 DiffuseFraction = _diffFraction,
                 FresnelReflectance = _fresnel,
