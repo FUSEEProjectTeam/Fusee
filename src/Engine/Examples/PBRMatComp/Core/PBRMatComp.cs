@@ -83,8 +83,9 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
 
             // Create MaterialPBRComponent
             // PBRMatComp inherits from MaterialComponent
-            // and a list of EffectParameter (uniform variables).
-            // Due to protobuf's inheritance pattern we need to work with a generic TypeContainer class
+            // Roughness: This factor defines the fraction of microfacets that are oriented in the same way as the halfway vector v
+            // FresnelReflectance: The fresnel factor defines what fraction of the incoming light is reflected and what fraction is transmitted.
+            // DiffuseFraction: Fraction of diffuse reflection (specular reflection = 1 - k)
             var pbrComponent = new MaterialPBRComponent
             {
                 Diffuse = new MatChannelContainer
