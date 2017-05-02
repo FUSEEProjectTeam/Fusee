@@ -139,6 +139,10 @@
       <Project>{82a2d997-b7ac-41d9-a166-65fcfed2114d}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Web</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.ShaderComp.Core.csproj">
+      <Project>{0d5def56-a0e0-4977-ab26-119c37943662}</Project>
+      <Name>Fusee.Engine.Examples.ShaderComp.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">

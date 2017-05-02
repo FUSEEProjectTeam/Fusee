@@ -4,6 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -70,7 +71,6 @@ namespace Fusee.Engine.Examples.ShaderComp.Core
             // ShaderComponent needs to be in the same order as any MaterialComponent:
             // TransformComponent, Material and/or ShaderComponent, MeshComponent, ....
             _rocketScene.Children[0].Children[1].Components[1] = shaderComponent;
-
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
