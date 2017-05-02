@@ -1,17 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
 
+// For this demo the MaterialPBRComponent Cache needs to be disabled in order to see live changes with the material properties.
+// To do so comment line 1073 and line 1077 in SceneRenderer.cs
+// line 1073: if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
+// line 1077: _pbrComponent.Add(mc, mat);
+// 
+// today is 02.05.2017
+
 namespace Fusee.Engine.Examples.PBRMatComp.Core
 {
+    internal enum CurrentManipulatedItem
+    {
+        Roughness,
+        DiffFraction,
+        Fresnel
+    }
 
     [FuseeApplication(Name = "PBRMaterialComponent Example", Description = "A simple PBRMaterial example.")]
+    // ReSharper disable once InconsistentNaming
     public class PBRMatComp : RenderCanvas
     {
         // angle variables
@@ -24,55 +40,77 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
         private SceneRenderer _sceneRenderer;
 
         private bool _keys;
-    
+
+        private GUIHandler _guiHandler;
+        private FontMap _guiLatoBlack;
+        private GUIText _guiSubText;
+        private float _subtextHeight;
+        private float _subtextWidth;
+
+        private string _text;
+
+        private float _roughness = 0.5f;
+        private float _diffFraction = 0.5f;
+        private float _fresnel = 0.5f;
+
+        private CurrentManipulatedItem _currentItem;
+        
 
         // Init is called on startup. 
         public override void Init()
         {
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
+
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            fontLato.UseKerning = true;
+            _guiLatoBlack = new FontMap(fontLato, 18);
+
+            _text = $"(F1) Roughness: {System.Math.Round(_roughness, 3)}  " +
+                    $"(F3) Diffuse Fraction: {System.Math.Round(_diffFraction, 3)}  " +
+                    $"(F2) Fresnel Reflectance: {System.Math.Round(_fresnel, 3)}  Current Item Manipulated: {_currentItem}";
+
+            _guiSubText = new GUIText(_text, _guiLatoBlack, 0, 0) {TextColor = new float4(0, 0, 0, 1.0f)};
+            _guiHandler.Add(_guiSubText);
+            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(0.5f, 0.5f, 0.5f, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
-            // Create ShaderComponent
-            // Consists of EffectPasses created with the help of one or more RenderPass(es)
+            // Create MaterialPBRComponent
+            // PBRMatComp inherits from MaterialComponent
             // and a list of EffectParameter (uniform variables).
             // Due to protobuf's inheritance pattern we need to work with a generic TypeContainer class
-            var shaderComponent = new ShaderComponent
+            var pbrComponent = new MaterialPBRComponent
             {
-                EffectPasses = new List<RenderPass>
+                Diffuse = new MatChannelContainer
                 {
-                    new RenderPass
-                    {
-                        PS = AssetStorage.Get<string>("FragmentShader.frag"),
-                        VS = AssetStorage.Get<string>("VertexShader.vert"),
-                        RenderStateContainer = new Dictionary<uint, uint>
-                        {
-                            { (uint) RenderState.ZEnable, 1U } // define RenderStates for this pass
-                                                               // e.g. ZEnable, CullMode, ...
-                        }
-                    }
+                    // ReSharper disable once ImpureMethodCallOnReadonlyValueField
+                    Color = ColorUint.ForestGreen.Tofloat3()
                 },
-                EffectParameter = new List<TypeContainer>
+                Specular = new SpecularChannelContainer
                 {
-                        new TypeContainerFloat3
-                        {
-                            Name = "uColor", // uniform variable
-                            Value = new float3(0.7f, 0.6f, 0.3f), 
-                            KeyType = typeof(float3) // reflection needed!
-                        }
-                }
+                    // ReSharper disable once ImpureMethodCallOnReadonlyValueField
+                    Color = ColorUint.White.Tofloat3()
+                },
+                DiffuseFraction = _diffFraction,
+                FresnelReflectance = _fresnel,
+                RoughnessValue = _roughness
             };
 
             // Insert into SceneGraph
-            // Replace MaterialComponent with ShaderComponent
-            // ShaderComponent needs to be in the same order as any MaterialComponent:
-            // TransformComponent, Material and/or ShaderComponent, MeshComponent, ....
-            _rocketScene.Children[0].Children[1].Components[1] = shaderComponent;
+            // Replace MaterialComponent with MaterialPBRComponent
+            // MaterialPBRComponent needs to be in the same order as any MaterialComponent:
+            // TransformComponent, Material, MeshComponent, ....
+            _rocketScene.Children[0].Components[1] = pbrComponent;
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            // Set LightingCalculationMethod to Advanced, Cook-Torrance.
+            _sceneRenderer = new SceneRenderer(_rocketScene, LightingCalculationMethod.ADVANCED);
         }
 
         // RenderAFrame is called once a frame
@@ -105,8 +143,23 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                   // _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                   // _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    switch (_currentItem)
+                    {
+                        case CurrentManipulatedItem.Roughness:
+                            _roughness += Keyboard.UpDownAxis * 0.001f ;
+                            break;
+                        case CurrentManipulatedItem.DiffFraction:
+                            _diffFraction += Keyboard.UpDownAxis * 0.001f;
+                            break;
+                        case CurrentManipulatedItem.Fresnel:
+                            _fresnel += Keyboard.UpDownAxis * 0.001f;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                  
                 }
                 else
                 {
@@ -115,6 +168,14 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
                     _angleVelVert *= curDamp;
                 }
             }
+
+            if (Keyboard.GetKey(KeyCodes.F1))
+                _currentItem = CurrentManipulatedItem.Roughness;
+            if (Keyboard.GetKey(KeyCodes.F2))
+                _currentItem = CurrentManipulatedItem.Fresnel;
+            if (Keyboard.GetKey(KeyCodes.F3))
+                _currentItem = CurrentManipulatedItem.DiffFraction;
+
 
 
             _angleHorz += _angleVelHorz;
@@ -125,9 +186,24 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
             var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
+            // update Text
+            _guiSubText.Text = $"(F1) Roughness: {System.Math.Round(_roughness, 3)}  " +
+                               $"(F2) Fresnel Reflectance: {System.Math.Round(_fresnel, 3)}  " +
+                               $"(F3) Diffuse Fraction: {System.Math.Round(_diffFraction, 3)}  Current Item Manipulated: {_currentItem}";
+
+            // update Vars
+            MaterialPBRComponent pbrMat = _rocketScene.Children[0].Components[1] as MaterialPBRComponent;
+            if (pbrMat != null)
+            {
+                pbrMat.DiffuseFraction = _diffFraction;
+                pbrMat.FresnelReflectance = _fresnel;
+                pbrMat.RoughnessValue = _roughness;
+            }
+            _rocketScene.Children[0].Components[1] = pbrMat;
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-
+            _guiHandler.RenderGUI();
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
@@ -146,6 +222,11 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
+
+            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
+            _guiSubText.PosY = (int)(_subtextHeight + 20);
+
+            _guiHandler.Refresh();
         }
     }
 }
