@@ -170,7 +170,7 @@ namespace Fusee.Engine.Core
         // Choose Lightning Method
         public static LightingCalculationMethod LightingCalculationMethod;
         // All lights
-        public static IList<LightResult> AllLightResults = new List<LightResult>();
+        public static Dictionary<LightComponent,LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
         // Multipass
         private bool _renderWithShadows;
         private bool _renderDeferred;
@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
         private RenderContext _rc;
 
 
-        private List<LightResult> _lightComponents; 
+        private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>(); 
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
@@ -262,10 +262,10 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightingCalculationMethod lCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
+        public SceneRenderer(SceneContainer sc, LightingCalculationMethod lightCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
              : this(sc)
         {
-            LightingCalculationMethod = lCalcMethod;
+            LightingCalculationMethod = lightCalcMethod;
             
             if (RenderShadows)
                 _wantToRenderWithShadows = true;
@@ -273,21 +273,28 @@ namespace Fusee.Engine.Core
             if (RenderDeferred)
                 _wantToRenderDeferred = true;
 
-            if (lCalcMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
+            if (lightCalcMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
                 _wantToRenderEnvMap = true;
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
         {
             // accumulate all lights and...
-            _lightComponents = sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            // NEEDED FOR JSIL; do not use .toDictonary(x => x.Values, x => x.Keys)
+            var results = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
+            LightResult result;
+            foreach (var keyValuePair in results)
+            {
+                if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
+                _lightComponents.Add(keyValuePair.Key, keyValuePair.Value);
+            }
             // ...set them
             AllLightResults = _lightComponents;
 
             if (AllLightResults.Count == 0)
             {
                 // if there is no light in scene then add one (legacyMode)
-                AllLightResults.Add(new LightResult
+                AllLightResults.Add(new LightComponent(), new LightResult
                 {
                     PositionWorldSpace = float3.UnitZ,
                     Position = float3.UnitZ,
@@ -743,10 +750,21 @@ namespace Fusee.Engine.Core
 
        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
-        {
-            
+       {
+           LightResult result;
+           if (AllLightResults.TryGetValue(lightComponent, out result)) return;
+
+            // chache miss
             // accumulate all lights and...
-            _lightComponents = _sc.Children.Viserate<LightSetup, LightResult>().ToList();
+            // NEEDED FOR JSIL; do not use .toDictonary(x => x.Values, x => x.Keys)
+            var results = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
+           
+           foreach (var keyValuePair in results)
+           {
+               if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
+                _lightComponents.Add(keyValuePair.Key, keyValuePair.Value);
+           }
+           // _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(result => result.Key, result => result.Value);
             // ...set them
             AllLightResults = _lightComponents;
             // and multiply them with current modelview matrix
@@ -757,9 +775,9 @@ namespace Fusee.Engine.Core
         private void LightsToModelViewSpace()
         {
             // Add ModelView Matrix to all lights
-            for (var i = 0; i < AllLightResults.Count; i++)
+            foreach (var key in AllLightResults.Keys.ToList())
             {
-                var light = AllLightResults[i];
+                var light = AllLightResults[key];
                 
                 // Multiply LightPosition with modelview
                 light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
@@ -770,11 +788,10 @@ namespace Fusee.Engine.Core
                 lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
                 lightConeDirectionFloat4.Normalize();
                 light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);   
-                
 
                 // convert spotlight angle from degrees to radians
-                light.ConeAngle = M.DegreesToRadians(light.ConeAngle);                                   
-                AllLightResults[i] = light;
+                light.ConeAngle = M.DegreesToRadians(light.ConeAngle);
+                AllLightResults[key] = light;
             }
         }
 
@@ -842,9 +859,9 @@ namespace Fusee.Engine.Core
 
         private void RenderStandardPass(Mesh rm, ShaderEffect effect)
         {
-            for (var i = 0; i < _lightComponents.Count; i++)
+            for (var i = 0; i < _lightComponents.Keys.Count; i++)
             {
-                UpdateLightParamsInPixelShader(i, _lightComponents[i], effect);
+                UpdateLightParamsInPixelShader(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], effect);
                 effect.RenderMesh(rm);
             }
         }
@@ -899,9 +916,9 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("gScreenSize", new float2(_rc.ViewportWidth, _rc.ViewportHeight));
 
 
-            for (var i = 0; i < _lightComponents.Count; i++)
+            for (var i = 0; i < _lightComponents.Keys.Count; i++)
             {
-                UpdateGBufferDrawPassLights(i, _lightComponents[i], DeferredShaderHelper.GBufferDrawPassShaderEffect);
+                UpdateGBufferDrawPassLights(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], DeferredShaderHelper.GBufferDrawPassShaderEffect);
             }
 
             DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
@@ -986,7 +1003,7 @@ namespace Fusee.Engine.Core
             // Set viewport to ShadowMapSize
             _rc.Viewport(0, 0, (int) ShadowMapSize.x, (int) ShadowMapSize.y);
 
-            DeferredShaderHelper.SetShadowMapMVP(AllLightResults[0].Position, AllLightResults[0].ConeDirection, 1.0f, _view);
+            DeferredShaderHelper.SetShadowMapMVP(AllLightResults[AllLightResults.Keys.ElementAt(0)].Position, AllLightResults[AllLightResults.Keys.ElementAt(0)].ConeDirection, 1.0f, _view);
             DeferredShaderHelper.ShadowPassShaderEffect.SetEffectParam("LightMVP", DeferredShaderHelper.ShadowMapMVP);
             DeferredShaderHelper.ShadowPassShaderEffect.RenderMesh(rm);
         }
@@ -1065,12 +1082,11 @@ namespace Fusee.Engine.Core
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
             ShaderEffect shaderEffect;
-            if (!_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect))
-            {
-                shaderEffect = MakeShader(shaderComponent);
-                shaderEffect.AttachToContext(_rc);
-                _shaderEffectMap.Add(shaderComponent, shaderEffect);
-            }
+            if (_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect)) return shaderEffect;
+
+            shaderEffect = MakeShader(shaderComponent);
+            shaderEffect.AttachToContext(_rc);
+            _shaderEffectMap.Add(shaderComponent, shaderEffect);
             return shaderEffect;
         }
 
@@ -1267,7 +1283,17 @@ namespace Fusee.Engine.Core
 
             if (shaderComponent.EffectParameter != null)
             {
-                effectParametersFromShaderComponent.AddRange(shaderComponent.EffectParameter.Select(CreateEffectParameterDeclaration));
+                // BUG: JSIL crashes with:
+                // BUG: effectParametersFromShaderComponent.AddRange(shaderComponent.EffectParameter.Select(CreateEffectParameterDeclaration));
+
+                var allEffectParameterDeclaration = new List<EffectParameterDeclaration>();
+
+                foreach (var effectParam in shaderComponent.EffectParameter) // DO NOT CONVERT TO LINQ!
+                {
+                    allEffectParameterDeclaration.Add(CreateEffectParameterDeclaration(effectParam));
+                }
+                effectParametersFromShaderComponent.AddRange(allEffectParameterDeclaration);
+
             }
 
             // no Effectpasses
@@ -1355,7 +1381,7 @@ namespace Fusee.Engine.Core
 
             ShaderCodeBuilder scb = null;
 
-            // If MaterialLightCompoenent is found call the LegacyShaderCodeBuilder with the MaterialLight
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
             // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
@@ -1499,45 +1525,45 @@ namespace Fusee.Engine.Core
 
         private static void SetLightEffectParameters(ref List<EffectParameterDeclaration> effectParameters)
         {
-            for (var i = 0; i < AllLightResults.Count; i++)
+            for (var i = 0; i < AllLightResults.Keys.Count; i++)
             {
-                if (!AllLightResults[i].Active)
+                if (!AllLightResults[AllLightResults.Keys.ElementAt(i)].Active)
                     continue;
 
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].position",
-                    Value = AllLightResults[i].PositionWorldSpace
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].PositionWorldSpace
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].intensities",
-                    Value = AllLightResults[i].Color
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].attenuation",
-                    Value = AllLightResults[i].Attenuation
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].Attenuation
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].ambientCoefficient",
-                    Value = AllLightResults[i].AmbientCoefficient
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].AmbientCoefficient
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].coneAngle",
-                    Value = AllLightResults[i].ConeAngle
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].ConeAngle
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].coneDirection",
-                    Value = AllLightResults[i].ConeDirection
+                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].ConeDirection
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].lightType",
-                    Value = (int)AllLightResults[i].Type
+                    Value = (int)AllLightResults[AllLightResults.Keys.ElementAt(i)].Type
                 });
             }
         }
@@ -1672,6 +1698,8 @@ namespace Fusee.Engine.Core
         public float3 ConeDirectionModelViewSpace;
     }
 
+   
+
     public class LightSetupState : VisitorState
     {
         private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
@@ -1697,8 +1725,10 @@ namespace Fusee.Engine.Core
         }
     }
 
-    public class LightSetup : Viserator<LightResult, LightSetupState>
+    public class LightSetup : Viserator<KeyValuePair<LightComponent, LightResult>, LightSetupState>
     {
+        public Dictionary<LightComponent, LightResult> FoundLightResults = new Dictionary<LightComponent, LightResult>();
+
         protected override void InitState()
         {
             base.InitState();
@@ -1729,7 +1759,7 @@ namespace Fusee.Engine.Core
                 Active = lightComponent.Active,
                 Attenuation = lightComponent.Attenuation
             };
-            YieldItem(lightResult);
+            YieldItem(new KeyValuePair<LightComponent, LightResult>(lightComponent, lightResult));
         }
     }
 #endregion

@@ -1,9 +1,7 @@
 ﻿//#define DEBUG
 
-using System;
 using System.Globalization;
 using System.Text;
-using Fusee.Base.Core;
 using Fusee.Serialization;
 
 
@@ -23,7 +21,7 @@ namespace Fusee.Engine.Core
         private string _applyLightString;
         private string _applyFragmentString;
         private float _pbrRoughness, _pbrDiffuse, _pbrFresnel;
-        private LightingCalculationMethod _lightingCalculationMethod;
+        private readonly LightingCalculationMethod _lightingCalculationMethod;
 
         // ReSharper disable once InconsistentNaming
         public string VS { get; private set; }
@@ -124,19 +122,16 @@ namespace Fusee.Engine.Core
                 _pbrDiffuse = mcPBR.DiffuseFraction;
                 _pbrFresnel = mcPBR.FresnelReflectance;
             }
-            if (typeof(MaterialLightComponent).IsAssignableFrom(t))
-            {
-                var mlc = mc as MaterialLightComponent;
-                _isMaterialLightComponent = true;
+            if (!typeof(MaterialLightComponent).IsAssignableFrom(t)) return;
 
-                // check for ApplyLightString
-                if (!string.IsNullOrEmpty(mlc?.ApplyLightString))
-                {
-                    _hasApplyLightString = true;
-                    _applyLightString = mlc.ApplyLightString;
-                }
+            var mlc = mc as MaterialLightComponent;
+            _isMaterialLightComponent = true;
 
-            }
+            // check for ApplyLightString
+            if (string.IsNullOrEmpty(mlc?.ApplyLightString)) return;
+
+            _hasApplyLightString = true;
+            _applyLightString = mlc.ApplyLightString;
         }
 
         private void AnalyzeMesh(MeshComponent mesh)
@@ -221,7 +216,7 @@ namespace Fusee.Engine.Core
 
             // Specular Light
             if (_hasSpecular && _lightingCalculationMethod == LightingCalculationMethod.ADVANCED)
-                returnString += NDFLightMethod();
+                returnString += NdfLightMethod();
             
             // Specular Light
             else if (_hasSpecular && _lightingCalculationMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
@@ -292,17 +287,17 @@ namespace Fusee.Engine.Core
             return returnString;
         }
 
-        private string NDFLightMethod()
+        private string NdfLightMethod()
         {
-            // needed for . instead of , in european culture
-            var culture = System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
-
             var returnString = "";
+
+            // needed for . instead of , in european culture
+            var nfi = new NumberFormatInfo {NumberDecimalSeparator = "."};
             returnString += "// returns intensity of diffuse reflection with Cook-Torrance NDF \n";
             returnString += "vec3 specularLighting(vec3 N, vec3 L, vec3 V, vec3 intensities) { \n";
-            returnString += $"float roughnessValue = {string.Format(culture, "{0:0.#####}",_pbrRoughness)}; // 0 : smooth, 1: rough \n";
-            returnString += $"float F0 = {string.Format(culture, "{0:0.#####}", _pbrFresnel)}; // fresnel reflectance at normal incidence \n";
-            returnString += $"float k = {string.Format(culture, "{0:0.#####}", _pbrDiffuse)}; // fraction of diffuse reflection (specular reflection = 1 - k)\n";
+            returnString += $"float roughnessValue = {_pbrRoughness.ToString(nfi)}; // 0 : smooth, 1: rough \n";
+            returnString += $"float F0 = {_pbrFresnel.ToString(nfi)}; // fresnel reflectance at normal incidence \n";
+            returnString += $"float k = {_pbrDiffuse.ToString(nfi)}; // fraction of diffuse reflection (specular reflection = 1 - k)\n";
             returnString += @"
               
                 // do the lighting calculation for each fragment.
