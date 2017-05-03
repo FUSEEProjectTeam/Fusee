@@ -150,7 +150,7 @@ namespace Fusee.Engine.Core
 
         #region Matrix Fields
 
-        /*/// <summary>
+        /// <summary>
         /// The View matrix used by the rendering pipeline.
         /// </summary>
         /// <value>
@@ -189,8 +189,7 @@ namespace Fusee.Engine.Core
                 UpdateCurrentShader();
             }
         }
-        */
-        /*
+
         /// <summary>
         /// The Model matrix used by the rendering pipeline.
         /// </summary>
@@ -224,7 +223,7 @@ namespace Fusee.Engine.Core
 
                 UpdateCurrentShader();
             } //TODO: Flags
-        } */
+        }
 
         /// <summary>
         /// The ModelView matrix used by the rendering pipeline.
@@ -332,7 +331,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        /*
         /// <summary>
         /// Gets the inverted View matrix.
         /// </summary>
@@ -382,7 +380,6 @@ namespace Fusee.Engine.Core
                 return _invModel;
             }
         }
-        */
 
         /// <summary>
         /// The inverse of the ModelView matrix.
@@ -461,7 +458,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        /*
         /// <summary>
         /// The transpose of the View matrix.
         /// </summary>
@@ -511,7 +507,6 @@ namespace Fusee.Engine.Core
                 return _transModel;
             }
         }
-        */
 
         /// <summary>
         /// The transpose of the ModelView matrix.
@@ -590,7 +585,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        /*
         /// <summary>
         /// The inverse transpose of the View matrix.
         /// </summary>
@@ -642,7 +636,6 @@ namespace Fusee.Engine.Core
                 return _invTransModel;
             }
         }
-        */
 
         /// <summary>
         /// The inverse transpose of the ModelView matrix.
@@ -771,11 +764,11 @@ namespace Fusee.Engine.Core
                 UpdateShaderParams();
 
             // Normal versions of MV and P
-            //  if (_currentShaderParams.FUSEE_M != null)
-            //     SetShaderParam(_currentShaderParams.FUSEE_M, Model);
+            if (_currentShaderParams.FUSEE_M != null)
+               SetShaderParam(_currentShaderParams.FUSEE_M, Model);
 
-            //  if (_currentShaderParams.FUSEE_V != null)
-            //     SetShaderParam(_currentShaderParams.FUSEE_V, View);
+            if (_currentShaderParams.FUSEE_V != null)
+               SetShaderParam(_currentShaderParams.FUSEE_V, View);
 
             if (_currentShaderParams.FUSEE_MV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_MV, ModelView);
@@ -787,6 +780,7 @@ namespace Fusee.Engine.Core
                 SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
 
             // Inverted versions
+            // Todo: Add inverted versions for M and V
             if (_currentShaderParams.FUSEE_IMV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_IMV, InvModelView);
 
@@ -797,6 +791,7 @@ namespace Fusee.Engine.Core
                 SetShaderParam(_currentShaderParams.FUSEE_IMVP, InvModelViewProjection);
 
             // Transposed versions
+            // Todo: Add transposed versions for M and V
             if (_currentShaderParams.FUSEE_TMV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_TMV, TransModelView);
 
@@ -807,6 +802,7 @@ namespace Fusee.Engine.Core
                 SetShaderParam(_currentShaderParams.FUSEE_TMVP, TransModelViewProjection);
 
             // Inverted and transposed versions
+            // Todo: Add inverted & transposed versions for M and V
             if (_currentShaderParams.FUSEE_ITMV != null)
                 SetShaderParam(_currentShaderParams.FUSEE_ITMV, InvTransModelView);
 

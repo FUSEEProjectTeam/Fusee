@@ -702,7 +702,9 @@ namespace Fusee.Engine.Core
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();
-            _rc.ModelView = _view * _state.Model; // Changed from Model to ModelView
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+            // CM 3.5.17 _rc.ModelView = _view * _state.Model; // Changed from Model to ModelView
         }
 
         [VisitMethod]
@@ -816,7 +818,9 @@ namespace Fusee.Engine.Core
         protected override void PopState()
         {
             _state.Pop();
-            _rc.ModelView = _view * _state.Model;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+            //CM 3.5.17 _rc.ModelView = _view * _state.Model;
         }
 
         #endregion
