@@ -55,37 +55,6 @@ namespace Fusee.Engine.Examples.Picking.Core
         // Init is called on startup. 
         public override void Init()
         {
-            float3 scale = new float3(1, 1, 1);
-            float3 offset = new float3(0, 0, 0);
-            float3 a = new float3( 1f, -1f, 0) * scale + offset;
-            float3 b = new float3( 0f,  1f, 0) * scale + offset;
-            float3 c = new float3(-1f, -1f, 0) * scale + offset;
-
-            bool isCW1 = float2.IsTriangleCW(a.xy, c.xy, b.xy);
-            bool isCW2 = float2.IsTriangleCW(c.xy, b.xy, a.xy);
-            bool isCW3 = float2.IsTriangleCW(b.xy, a.xy, c.xy);
-            bool isCCW1 = !float2.IsTriangleCW(a.xy, b.xy, c.xy);
-            bool isCCW2 = !float2.IsTriangleCW(c.xy, a.xy, b.xy);
-            bool isCCW3 = !float2.IsTriangleCW(b.xy, c.xy, a.xy);
-
-            float3[] pointLst =
-            {
-                new float3(0, 0, 0) * scale + offset,
-                new float3(0.99f, -0.99f, 0)   * scale + offset,
-                new float3(0f, 0.99f, 0)       * scale + offset,
-                new float3(-0.99f, -00.99f, 0) * scale + offset,
-                new float3(1.1f, 0, 0) * scale + offset,
-            };
-
-            foreach (var point in pointLst)
-            {
-                float u, v;
-                float3.GetBarycentric(a, c, b, point, out u, out v);
-                float3 testPoint = float3.Barycentric(a, c, b, u, v);
-                bool test = testPoint == point;
-            }
-
-
             #if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
