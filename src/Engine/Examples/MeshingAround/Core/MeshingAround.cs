@@ -110,30 +110,22 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //var geomCube = new Geometry(outlinesCube);
             //geomCube.Extrude2DPolygon(2, false);
 
-            Geometry geomCube = CreateGeometry.CreateCuboidGeometry(2,2,2);
+            Geometry geomCube = CreateGeometry.CreateConeGeometry(2,2,25);
 
-            geomCube.InsetFace(2, .5f);
-            geomCube.ExtrudeFace(2, 1);
-            geomCube.InsetFace(2, .5f);
-            geomCube.ExtrudeFace(2, 1);
-            geomCube.InsetFace(2, .5f);
-            geomCube.ExtrudeFace(2, 1);
-            geomCube.InsetFace(4, .5f);
-            geomCube.InsetFace(5, .5f);
-            geomCube.InsetFace(6, .5f);
-            geomCube.InsetFace(7, .5f);
-            geomCube.InsetFace(8, .5f);
+            //geomCube.ExtrudeFace(29, 1);
+            //geomCube.ExtrudeFace(2, 1);
 
+            //geomCube.InsetFace(2, .5f);
+            //geomCube.ExtrudeFace(2, 2,new float3(0,0,-1));
 
-            geomCube.ExtrudeFace(4, 1);
-            geomCube.ExtrudeFace(5, 1);
-            geomCube.ExtrudeFace(6, 1);
-            geomCube.ExtrudeFace(7, 1);
-            geomCube.ExtrudeFace(8, 1);
+            //geomCube.InsetFace(2,.8f);
 
-            geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
-            geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
-            geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube.ExtrudeFace(2, 2,new float3(0,0,1));
+            //geomCube.ExtrudeFace(15, 1);
+
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
+            //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);
             //geomCube = SubDivisionSurface.CatmullClarkSubDivision(geomCube);

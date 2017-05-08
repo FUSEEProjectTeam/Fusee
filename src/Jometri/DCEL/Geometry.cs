@@ -711,6 +711,7 @@ namespace Fusee.Jometri.DCEL
 
         internal int CreateFaceHandleId()
         {
+            if (HighestFaceHandle == 0) HighestFaceHandle = 1; //Face 1 is always the unbounded face
             var newId = HighestFaceHandle + 1;
             HighestFaceHandle = newId;
             return newId;

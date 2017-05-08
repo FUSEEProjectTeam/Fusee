@@ -14,7 +14,7 @@ namespace Fusee.Jometri.Manipulation
     {
 
         /// <summary>
-        /// Extrudes a given Face by a given offset along ists normal vector.
+        /// Extrudes a given Face by a given offset along its normal vector.
         /// </summary>
         /// <param name="geometry">The geometry.</param>
         /// <param name="faceHandle">The handle of the face to extrude.</param>
@@ -22,125 +22,21 @@ namespace Fusee.Jometri.Manipulation
         /// <returns></returns>
         public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset)
         {
-
-            Geometry oldGeometry = geometry.CloneGeometry();
             Face face = geometry.GetFaceByHandle(faceHandle);
+            return ExtrudeFaceByHandle(geometry, faceHandle, offset, face.FaceData.FaceNormal);
+        }
 
-            //get HE of Face
-            HalfEdge start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
-            HalfEdge next = start;
-
-            List<HalfEdge> allH2NEdges = new List<HalfEdge>();
-
-            do
-            {
-                Vertex nextOriginV = geometry.GetVertexByHandle(next.OriginVertex);
-                Vertex newVertex = new Vertex(geometry.CreateVertHandleId(), nextOriginV.VertData.Pos);
-
-                HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
-                HalfEdge prevEdge = geometry.GetHalfEdgeByHandle(next.PrevHalfEdge);
-                HalfEdge prevTwinEdge = geometry.GetHalfEdgeByHandle(prevEdge.TwinHalfEdge);
-
-                nextOriginV.VertData.Pos = nextOriginV.VertData.Pos + face.FaceData.FaceNormal * offset;
-
-                HalfEdge h4 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
-                HalfEdge h2n = new HalfEdge(geometry.CreateHalfEdgeHandleId());
-
-                HalfEdge h1 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
-
-                var allIncomingHe = oldGeometry.GetVertexStartingHalfEdges(nextOriginV.Handle);
-                foreach (HalfEdge halfEdge in allIncomingHe)
-                {
-                    if (halfEdge != next)
-                    {
-                        var edge = UpdateHalfEdgeOrigin(halfEdge, newVertex.Handle);
-                        geometry.ReplaceHalfEdge(edge);
-                    }
-                }
-
-                nextOriginV.IncidentHalfEdge = next.Handle;
-
-                h4.OriginVertex = nextOriginV.Handle;
-                h2n.OriginVertex = newVertex.Handle;
-                h1.OriginVertex = newVertex.Handle;
-
-                h4.TwinHalfEdge = h2n.Handle;
-                h2n.TwinHalfEdge = h4.Handle;
-
-                h4.NextHalfEdge = h1.Handle;
-                h1.PrevHalfEdge = h4.Handle;
-
-                h1.TwinHalfEdge = next.TwinHalfEdge;
-                twinEdge.TwinHalfEdge = h1.Handle;
-
-                prevTwinEdge.OriginVertex = newVertex.Handle;
-
-                newVertex.IncidentHalfEdge = h2n.Handle;
-
-                geometry.ReplaceHalfEdge(twinEdge);
-                geometry.ReplaceHalfEdge(prevTwinEdge);
-                geometry.ReplaceVertex(nextOriginV);
-                geometry.DictVertices.Add(newVertex.Handle, newVertex);
-                geometry.DictHalfEdges.Add(h4.Handle, h4);
-                geometry.DictHalfEdges.Add(h1.Handle, h1);
-                geometry.DictHalfEdges.Add(h2n.Handle, h2n);
-
-                allH2NEdges.Add(h2n);
-
-                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
-            } while (start != next);
-
-            start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
-            next = start;
-            do
-            {
-                Face newFace = new Face(geometry.CreateFaceHandleId());
-
-                HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
-
-                HalfEdge h1 = geometry.GetHalfEdgeByHandle(twinEdge.TwinHalfEdge);
-                HalfEdge h2 = allH2NEdges.First(n => n.OriginVertex == twinEdge.OriginVertex);
-                HalfEdge h3 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
-                HalfEdge h4 = geometry.GetHalfEdgeByHandle(h1.PrevHalfEdge);
-
-                //set Face
-                h1.IncidentFace = newFace.Handle;
-                h2.IncidentFace = newFace.Handle;
-                h3.IncidentFace = newFace.Handle;
-                h4.IncidentFace = newFace.Handle;
-
-                h1.NextHalfEdge = h2.Handle;
-                h2.NextHalfEdge = h3.Handle;
-                h3.NextHalfEdge = h4.Handle;
-                h4.NextHalfEdge = h1.Handle;
-
-                h1.PrevHalfEdge = h4.Handle;
-                h2.PrevHalfEdge = h1.Handle;
-                h3.PrevHalfEdge = h2.Handle;
-                h4.PrevHalfEdge = h3.Handle;
-
-                h3.TwinHalfEdge = next.Handle;
-                h3.OriginVertex = geometry.GetHalfEdgeByHandle(next.NextHalfEdge).OriginVertex;
-                next.TwinHalfEdge = h3.Handle;
-                newFace.OuterHalfEdge = h1.Handle;
-
-                //write all changes
-                geometry.ReplaceHalfEdge(h1);
-                geometry.ReplaceHalfEdge(h2);
-                geometry.ReplaceHalfEdge(h4);
-                geometry.ReplaceHalfEdge(next);
-
-                geometry.DictHalfEdges.Add(h3.Handle, h3);
-                geometry.DictFaces.Add(newFace.Handle, newFace);
-
-                newFace.FaceData.FaceNormal = GeometricOperations.CalculateFaceNormal(geometry.GetFaceVertices(newFace.Handle).ToList());
-
-                geometry.ReplaceFace(newFace);
-
-                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
-            } while (start != next);
-
-            return geometry;
+        /// <summary>
+        /// Extrudes a given Face along a specified Vector.
+        /// </summary>
+        /// <param name="geometry"></param>
+        /// <param name="faceHandle"></param>
+        /// <param name="offset"></param>
+        /// <param name="extrusionVector"></param>
+        /// <returns></returns>
+        public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
+        {
+            return ExtrudeFaceByHandle(geometry, faceHandle, offset, extrusionVector);
         }
 
         /// <summary>
@@ -264,6 +160,128 @@ namespace Fusee.Jometri.Manipulation
                 //set face normal
                 geometry.SetFaceNormal(geometry.GetFaceVertices(edge2.IncidentFace).ToList(),geometry.GetFaceByHandle(edge2.IncidentFace));
             }
+
+            return geometry;
+        }
+
+        private static Geometry ExtrudeFaceByHandle(Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
+        {
+            Geometry oldGeometry = geometry.CloneGeometry();
+            Face face = geometry.GetFaceByHandle(faceHandle);
+
+            //get HE of Face
+            HalfEdge start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
+            HalfEdge next = start;
+
+            List<HalfEdge> allH2NEdges = new List<HalfEdge>();
+
+            do
+            {
+                Vertex nextOriginV = geometry.GetVertexByHandle(next.OriginVertex);
+                Vertex newVertex = new Vertex(geometry.CreateVertHandleId(), nextOriginV.VertData.Pos);
+
+                HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
+                HalfEdge prevEdge = geometry.GetHalfEdgeByHandle(next.PrevHalfEdge);
+                HalfEdge prevTwinEdge = geometry.GetHalfEdgeByHandle(prevEdge.TwinHalfEdge);
+
+                nextOriginV.VertData.Pos = nextOriginV.VertData.Pos + extrusionVector * offset;
+
+                HalfEdge h4 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+                HalfEdge h2n = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+
+                HalfEdge h1 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+
+                var allIncomingHe = oldGeometry.GetVertexStartingHalfEdges(nextOriginV.Handle);
+                foreach (HalfEdge halfEdge in allIncomingHe)
+                {
+                    if (halfEdge != next)
+                    {
+                        var edge = UpdateHalfEdgeOrigin(halfEdge, newVertex.Handle);
+                        geometry.ReplaceHalfEdge(edge);
+                    }
+                }
+
+                nextOriginV.IncidentHalfEdge = next.Handle;
+
+                h4.OriginVertex = nextOriginV.Handle;
+                h2n.OriginVertex = newVertex.Handle;
+                h1.OriginVertex = newVertex.Handle;
+
+                h4.TwinHalfEdge = h2n.Handle;
+                h2n.TwinHalfEdge = h4.Handle;
+
+                h4.NextHalfEdge = h1.Handle;
+                h1.PrevHalfEdge = h4.Handle;
+
+                h1.TwinHalfEdge = next.TwinHalfEdge;
+                twinEdge.TwinHalfEdge = h1.Handle;
+
+                prevTwinEdge.OriginVertex = newVertex.Handle;
+
+                newVertex.IncidentHalfEdge = h2n.Handle;
+
+                geometry.ReplaceHalfEdge(twinEdge);
+                geometry.ReplaceHalfEdge(prevTwinEdge);
+                geometry.ReplaceVertex(nextOriginV);
+                geometry.DictVertices.Add(newVertex.Handle, newVertex);
+                geometry.DictHalfEdges.Add(h4.Handle, h4);
+                geometry.DictHalfEdges.Add(h1.Handle, h1);
+                geometry.DictHalfEdges.Add(h2n.Handle, h2n);
+
+                allH2NEdges.Add(h2n);
+
+                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
+            } while (start != next);
+
+            start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
+            next = start;
+            do
+            {
+                Face newFace = new Face(geometry.CreateFaceHandleId());
+
+                HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
+
+                HalfEdge h1 = geometry.GetHalfEdgeByHandle(twinEdge.TwinHalfEdge);
+                HalfEdge h2 = allH2NEdges.First(n => n.OriginVertex == twinEdge.OriginVertex);
+                HalfEdge h3 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+                HalfEdge h4 = geometry.GetHalfEdgeByHandle(h1.PrevHalfEdge);
+
+                //set Face
+                h1.IncidentFace = newFace.Handle;
+                h2.IncidentFace = newFace.Handle;
+                h3.IncidentFace = newFace.Handle;
+                h4.IncidentFace = newFace.Handle;
+
+                h1.NextHalfEdge = h2.Handle;
+                h2.NextHalfEdge = h3.Handle;
+                h3.NextHalfEdge = h4.Handle;
+                h4.NextHalfEdge = h1.Handle;
+
+                h1.PrevHalfEdge = h4.Handle;
+                h2.PrevHalfEdge = h1.Handle;
+                h3.PrevHalfEdge = h2.Handle;
+                h4.PrevHalfEdge = h3.Handle;
+
+                h3.TwinHalfEdge = next.Handle;
+                h3.OriginVertex = geometry.GetHalfEdgeByHandle(next.NextHalfEdge).OriginVertex;
+                next.TwinHalfEdge = h3.Handle;
+                newFace.OuterHalfEdge = h1.Handle;
+
+                //write all changes
+                geometry.ReplaceHalfEdge(h1);
+                geometry.ReplaceHalfEdge(h2);
+                geometry.ReplaceHalfEdge(h4);
+                geometry.ReplaceHalfEdge(next);
+
+                geometry.DictHalfEdges.Add(h3.Handle, h3);
+                geometry.DictFaces.Add(newFace.Handle, newFace);
+
+                newFace.FaceData.FaceNormal = GeometricOperations.CalculateFaceNormal(geometry.GetFaceVertices(newFace.Handle).ToList());
+
+                geometry.ReplaceFace(newFace);
+
+                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
+            } while (start != next);
 
             return geometry;
         }
