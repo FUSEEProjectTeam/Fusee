@@ -56,6 +56,7 @@ from bpy_extras.io_utils import (
 #Attach to PTSV Python Remote debugge using "tcp://localhost:5678" (NO Secret because secret=None!)
 import ptvsd
 ptvsd.enable_attach(secret=None)
+print('PTSV Debugging enabled')
 
 class ExportFUS(bpy.types.Operator, ExportHelper):
     #class attributes
