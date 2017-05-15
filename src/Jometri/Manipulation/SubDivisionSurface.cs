@@ -69,14 +69,7 @@ namespace Fusee.Jometri.Manipulation
                     HalfEdge h4 = _newGeometry.GetHalfEdgeByHandle(nextEdge.Handle);
 
                     Face newFace;
-                    if (i == 0)
-                    {
-                        newFace = face;
-                    }
-                    else
-                    {
-                        newFace = new Face(_newGeometry.CreateFaceHandleId());
-                    }
+                    newFace = i == 0 ? face : new Face(_newGeometry.CreateFaceHandleId());
                     nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
 
                     h1.NextHalfEdge = h2.Handle;

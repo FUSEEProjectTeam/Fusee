@@ -110,7 +110,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //var geomCube = new Geometry(outlinesCube);
             //geomCube.Extrude2DPolygon(2, false);
 
-            Geometry geomCube = CreateGeometry.CreateConeGeometry(2,2,25);
+            Geometry geomCube = CreateGeometry.CreateSpehreGeometry(2,22,22);
 
             //geomCube.ExtrudeFace(29, 1);
             //geomCube.ExtrudeFace(2, 1);
