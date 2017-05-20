@@ -8,6 +8,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Jometri.Manipulation
 {
+    /// <summary>
+    ///  Provides functions to perform a Sub Division Surface on a DCEL geometry.
+    /// </summary>
     public static class SubDivisionSurface
     {
 
@@ -62,7 +65,6 @@ namespace Fusee.Jometri.Manipulation
                 int i = 0;
                 do
                 {
-
                     HalfEdge h1 = new HalfEdge(_newGeometry.CreateHalfEdgeHandleId());
                     HalfEdge h2 = new HalfEdge(_newGeometry.CreateHalfEdgeHandleId());
                     HalfEdge h3 = _newGeometry.GetHalfEdgeByHandle(nextEdge.PrevHalfEdge);

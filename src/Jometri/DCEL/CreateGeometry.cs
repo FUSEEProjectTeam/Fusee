@@ -52,13 +52,13 @@ namespace Fusee.Jometri.DCEL
         /// Creates and returns a UV-Sphere as a DCEL with the specified dimensions centered in the worlds coordinate system.
         /// </summary>
         /// <param name="radius">Radius of the sphere.</param>
-        /// <param name="horizontalResolution">Lines of latitude per hemisphere.</param> todo: anpassen
-        /// <param name="verticalResolution">Lines of longitude per hemisphere, smallest value is 1, has to be an odd number, will always be rounded to the nearest odd number downwards.</param>
-        /// <returns></returns>
+        /// <param name="horizontalResolution">Lines of latitude, smallest value is 3.</param> 
+        /// <param name="verticalResolution">Lines of longitude, smallest value is 3.</param>
+        /// <returns>A UV-Sphere centered in the world coordinate system as a DCEL.</returns>
         public static Geometry CreateSpehreGeometry(float radius, int horizontalResolution, int verticalResolution)
         {
             if (radius <= 0) throw new ArgumentException("Radius can not be <= 0");
-            if (horizontalResolution <= 4) horizontalResolution = 4;
+            if (horizontalResolution <= 3) horizontalResolution = 3;
             if (verticalResolution <= 3) verticalResolution = 3;
 
             Geometry sphere = new Geometry();
@@ -261,7 +261,7 @@ namespace Fusee.Jometri.DCEL
                     {
                         HalfEdge h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
                         Vertex lastVertex = sphere.GetVertexByHandle(lastLaitudeVerticesHandles[j]);
-                        HalfEdge topH1 = sphere.GetHalfEdgeByHandle(lastVertex.IncidentHalfEdge); // todo bottom triangles h1 twins are not correctly connected with top quad.
+                        HalfEdge topH1 = sphere.GetHalfEdgeByHandle(lastVertex.IncidentHalfEdge); 
                         while (true)
                         {
                             if (topH1.TwinHalfEdge == 0) break;
@@ -370,15 +370,15 @@ namespace Fusee.Jometri.DCEL
                 HalfEdge h5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
                 HalfEdge h6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
 
-                h6.OriginVertex = tempVertex.Handle;
                 h5.OriginVertex = lastVertex.Handle;
+                h6.OriginVertex = tempVertex.Handle;
                 h5.TwinHalfEdge = h6.Handle;
                 h6.TwinHalfEdge = h5.Handle;
 
                 //create to triangles south-temp-last, north-last-temp
                 Face triangle1 = new Face(cone.CreateFaceHandleId());
-                triangle1.OuterHalfEdge = h5.Handle;
                 h5.NextHalfEdge = h4.Handle;
+                triangle1.OuterHalfEdge = h5.Handle;
                 h4.NextHalfEdge = lastH3.Handle;
                 lastH3.NextHalfEdge = h5.Handle;
                 h5.IncidentFace = triangle1.Handle;
@@ -389,8 +389,8 @@ namespace Fusee.Jometri.DCEL
                 h4.PrevHalfEdge = h5.Handle;
 
                 Face triangle2 = new Face(cone.CreateFaceHandleId());
-                triangle2.OuterHalfEdge = h6.Handle;
                 h6.NextHalfEdge = lastH2.Handle;
+                triangle2.OuterHalfEdge = h6.Handle;
                 lastH2.NextHalfEdge = h1.Handle;
                 h1.NextHalfEdge = h6.Handle;
                 h6.IncidentFace = triangle2.Handle;
@@ -430,8 +430,8 @@ namespace Fusee.Jometri.DCEL
             HalfEdge lastH5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
             HalfEdge lastH6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
 
-            lastH6.OriginVertex = firstVertex.Handle;
             lastH5.OriginVertex = lastVertex.Handle;
+            lastH6.OriginVertex = firstVertex.Handle;            
             lastH5.TwinHalfEdge = lastH6.Handle;
             lastH6.TwinHalfEdge = lastH5.Handle;
 

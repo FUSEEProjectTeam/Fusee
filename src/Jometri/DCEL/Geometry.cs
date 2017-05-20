@@ -773,15 +773,20 @@ namespace Fusee.Jometri.DCEL
 
         #region Insert new vertex
         /// <summary>
-        /// Adds a new Vertex between two exsisting Vertices and connects all HalfEdges correctly.
+        /// Inserts a new Vertex between two given exsisting Vertices.
         /// </summary>
-        /// <param name="p">Handle of exsisting Vertex p</param>
-        /// <param name="q">Handle of exsisting Vertex q</param>
+        /// <param name="p">Handle of Vertex one.</param>
+        /// <param name="q">Handle of Vertex two.</param>
         /// <param name="pos">Position of the new Vertex</param>
-        public void InsertVertex(int p, int q, float3 pos)
+        /// <returns>New Vertex Handle.</returns>
+        public int InsertVertex(int p, int q, float3 pos)
         {
-
-            //todo check if p and q are adjacent
+            var adjacentVertices = GetVertexAdjacentVertices(p).ToList();
+            for (int i = 0; i < adjacentVertices.Count; i++)
+            {
+                if (adjacentVertices[i].Handle == q) break;
+                if (i == adjacentVertices.Count - 1) throw new ArgumentException("Vertices with Handle q=" + q + " and p=" + p + " are not adjacent!");
+            }
 
             Vertex newVertex = new Vertex(CreateVertHandleId(), pos);
 
@@ -847,6 +852,8 @@ namespace Fusee.Jometri.DCEL
             DictVertices.Add(newVertex.Handle, newVertex);
             DictHalfEdges.Add(newHalfEdge1.Handle, newHalfEdge1);
             DictHalfEdges.Add(newHalfEdge2.Handle, newHalfEdge2);
+
+            return newVertex.Handle;
         }
         #endregion
     }
