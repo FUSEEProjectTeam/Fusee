@@ -9,39 +9,42 @@ using Fusee.Math.Core;
 namespace Fusee.Jometri.Manipulation
 {
     /// <summary>
-    ///  Provides functions to perform a Sub Division Surface on a DCEL geometry.
+    ///  Provides functions to perform a Subdivision Surface on a DCEL geometry.
     /// </summary>
-    public static class SubDivisionSurface
+    public static class SubdivisionSurface
     {
 
-        private static Geometry _geometry;
-        private static Geometry _newGeometry;
+        private static Geometry _geometry; //saves the old geometry without the SD
+        private static Geometry _newGeometry; //saves the new geometry with SD
 
-        private static Dictionary<int, Vertex> _allEdgeVertices;
-        private static Dictionary<int, Vertex> _allFaceVertices;
+        private static Dictionary<int, Vertex> _allEdgeVertices; //stores the computed Edge Vertices
+        private static Dictionary<int, Vertex> _allFaceVertices; //sotres the computed Face Vertices
 
         /// <summary>
-        /// Performs a Catmull-Clark Subdivision-Surface with a given geometry which is stored as DCEL.
+        /// Performs a Catmull-Clark Subdivision-Surface on a given geometry which is stored as DCEL.
         /// </summary>
         /// <param name="geometry">The goemetry to perform the SD on, as DCEL.</param>
-        /// <returns></returns>
-        public static Geometry CatmullClarkSubDivision(Geometry geometry)
+        /// <returns>A smoother geoemtry with </returns>
+        public static Geometry CatmullClarkSubdivision(Geometry geometry)
         {
             //initialising
+            _geometry = geometry;
             _newGeometry = geometry.CloneGeometry();
-
             _allEdgeVertices = new Dictionary<int, Vertex>();
             _allFaceVertices = new Dictionary<int, Vertex>();
-            _geometry = geometry;
-
+            
+            //computes all Face Vertices and all Edge Vertices
             GetFaceVertices();
             GetEdgeVertices();
 
+            //Calculates the new position of existing Vertices
             ComputeNewVertexPosition();
 
+            //adds newly calculated Edge Vertices
             AddEdgeVertices();
             _geometry = _newGeometry.CloneGeometry();
 
+            //creates the new quad faces and connects everything
             AddFaceVerticesAndNewFaces();
 
             return _newGeometry;
@@ -70,6 +73,7 @@ namespace Fusee.Jometri.Manipulation
                     HalfEdge h3 = _newGeometry.GetHalfEdgeByHandle(nextEdge.PrevHalfEdge);
                     HalfEdge h4 = _newGeometry.GetHalfEdgeByHandle(nextEdge.Handle);
 
+                    //create new quad face
                     Face newFace;
                     newFace = i == 0 ? face : new Face(_newGeometry.CreateFaceHandleId());
                     nextEdge = _geometry.GetHalfEdgeByHandle(nextEdge.NextHalfEdge);
@@ -104,16 +108,16 @@ namespace Fusee.Jometri.Manipulation
 
                     _newGeometry.ReplaceVertex(faceVertex);
 
-                    if (i == 0)
+                    if (i == 0) // the old face becomes the first quad, so no new face to create
                     {
                         _newGeometry.ReplaceFace(newFace);
                     }
-                    else
+                    else //create new face 
                     {
                         _newGeometry.DictFaces.Add(newFace.Handle, newFace);
                     }
 
-                    //face normal
+                    //sotres Vertices to get the face normal
                     List<Vertex> faceVertices = new List<Vertex>
                     {
                         _newGeometry.GetVertexByHandle(h1.OriginVertex),
