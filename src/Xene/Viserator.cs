@@ -71,7 +71,7 @@ namespace Fusee.Xene
         }
 
         // Step2: initialize the instance
-        internal virtual void Init(IEnumerator<SceneNodeContainer> rootList)
+        protected internal virtual void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             _rootList = rootList;
             EnumInit(_rootList);
@@ -82,7 +82,7 @@ namespace Fusee.Xene
         /// </summary>
         public void Dispose()
         {
-            _rootList = null;
+            // _rootList = null;
         }
 
         /// <summary>
@@ -129,6 +129,26 @@ namespace Fusee.Xene
             YieldOnCurrentComponent = true;
             _itemQueue.Enqueue(item);
         }
+
+
+        /***/
+        public class ViseratorInstanceEnumerable : IEnumerable<TItem>
+        {
+            internal ViseratorBase<TItem> _this;
+
+            public IEnumerator<TItem> GetEnumerator()
+            {
+                _this.Init(_this._rootList);
+                return _this;
+            }
+            IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
+        }
+
+        public IEnumerable<TItem> Viserate() 
+        {
+            return new ViseratorInstanceEnumerable { _this = this };
+        }
+        /***/
     }
 
     /// <summary>
@@ -169,7 +189,7 @@ namespace Fusee.Xene
         {
         }
 
-        internal override void Init(IEnumerator<SceneNodeContainer> rootList)
+        protected internal override void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             State = new TState();
             base.Init(rootList);

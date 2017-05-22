@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
@@ -193,6 +194,7 @@ namespace Fusee.Engine.Core
             _rc = null;
         }
 
+ 
         /// <summary>
         /// Renders geometry on the attached RenderContext using this shader effect. All rendering passes are applied 
         /// to the geometry in the order of appearance within the <see cref="EffectPassDeclaration"/> array provided

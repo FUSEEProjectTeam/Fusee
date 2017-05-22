@@ -53,6 +53,7 @@
     <Compile Include="float4.cs" />
     <Compile Include="float4x4.cs" />
     <Compile Include="M.cs" />
+    <Compile Include="MinMaxRect.cs" />
     <Compile Include="QuaternionD.cs" />
     <Compile Include="Quaternion.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

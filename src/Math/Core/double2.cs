@@ -911,35 +911,45 @@ namespace Fusee.Math.Core
         /// <returns>
         /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
         /// </returns>
-        public static double2 BaryCentric(double2 a, double2 b, double2 c, double u, double v)
+        public static double2 Barycentric(double2 a, double2 b, double2 c, double u, double v)
         {
-            return a + u * (b - a) + v * (c - a);
+            return u*a + v*b + (1.0-u-v)*c;
         }
 
         /// <summary>
-        /// Interpolate 3 Vectors using Barycentric coordinates
+        /// Determines whether the specified triangle is in clockwise winding order.
         /// </summary>
-        /// <param name="a">First input Vector.</param>
-        /// <param name="b">Second input Vector.</param>
-        /// <param name="c">Third input Vector.</param>
-        /// <param name="u">First Barycentric Coordinate.</param>
-        /// <param name="v">Second Barycentric Coordinate.</param>
-        /// <param name="result">Output Vector. a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</param>
-        public static void BaryCentric(ref double2 a, ref double2 b, ref double2 c, double u, double v, out double2 result)
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name= "c">The third point of the triangle.</param>
+        /// <returns>true if the triangle is clockwise, otherwise false.</returns>
+        public static bool IsTriangleCW(double2 a, double2 b, double2 c)
         {
-            result = a; // copy
-
-            double2 temp = b; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, u, out temp);
-            Add(ref result, ref temp, out result);
-
-            temp = c; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, v, out temp);
-            Add(ref result, ref temp, out result);
+            double2 cb = b - c;
+            double2 ca = a - c;
+            // Calculate z component of cross product
+            double z = ca.x * cb.y - ca.y * cb.x;
+            return z < 0;
         }
 
+        /// <summary>
+        /// Calculates the barycentric coordinates for the given point in the given triangle, such that u*a + v*b + (1-u-v)*c = point.
+        /// </summary>
+        /// <param name="a">The first point of the triangle.</param>
+        /// <param name="b">The second point of the triangle.</param>
+        /// <param name="c">The third point of the triangle.</param>
+        /// <param name="point">The point to calculate the barycentric coordinates for.</param>
+        /// <param name="u">The resulting u coordinate.</param>
+        /// <param name="v">The resulting v coordinate.</param>
+        public static void GetBarycentric(double2 a, double2 b, double2 c, double2 point, out double u, out double v)
+        {
+            double2 cb = b - c;
+            double2 cp = point - c;
+            double2 ca = a - c;
+            double denom = (cb.y * ca.x - cb.x * ca.y);
+            u = (cb.y * cp.x - cb.x * cp.y) / denom;
+            v = (ca.x * cp.y - ca.y * cp.x) / denom;
+        }
         #endregion
 
         #region Transform

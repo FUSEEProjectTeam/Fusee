@@ -68,6 +68,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        {
+            throw new NotImplementedException();
+        }
+
         [JSExternal]
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
         {
@@ -84,6 +89,22 @@ namespace Fusee.Engine.Imp.Graphics.Web
         public ITexture CreateTexture(ImageData imageData, bool repeat)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        {
+            throw new NotImplementedException("CreateWritableTexture not implmented!");
+        }
+
+        // This should not be extern for the moment
+        public ITexture CreateWritableTexture()
+        {
+            throw new NotImplementedException("CreateWritableTexture not implmented!");
         }
 
 
@@ -239,6 +260,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        // This is not yet possible.
+        // FBO in WebGL is in beta stadium - late 2016
+        public void RenderDeferred(IMeshImp mr)
+        {
+            throw new System.NotImplementedException();
+        }
+
         [JSExternal]
         public void GetBufferContent(Rectangle quad, ITexture texId)
         {
@@ -263,6 +291,28 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Not needed for Web because EXT_FRAMEBUFFER is not possible with WebGL (2016)
+        /// </summary>
+        /// <param name="texture"></param>
+        [JSExternal]
+        public void SetRenderTarget(ITexture texture)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        {
+            throw new NotImplementedException();
+        }
+
+      
+
         [JSExternal]
         public ImageData GetPixelColor(int x, int y, int w, int h)
         {
@@ -273,6 +323,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         public float GetPixelDepth(int x, int y)
         {
             throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            throw new NotImplementedException();
         }
 
         [JSExternal]
@@ -309,6 +365,41 @@ namespace Fusee.Engine.Imp.Graphics.Web
         public void SetVertices(IMeshImp mesh, float3[] vertices)
         {
             throw new System.NotImplementedException();
+        }
+
+        public void RemoveVertices(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveNormals(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveColors(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveUVs(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveTriangles(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBoneWeights(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBoneIndices(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
         }
 
         [JSExternal]
@@ -358,5 +449,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
+
+        [JSExternal]
+        public bool CreateFBO()
+        {
+            throw new System.NotImplementedException();
+        }
+
     }
 }

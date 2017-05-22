@@ -64,6 +64,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Attributes.cs" />
+    <Compile Include="GBufferHelper.cs" />
     <Compile Include="IAudioStreamImp.cs" />
     <Compile Include="IInputDeviceImp.cs" />
     <Compile Include="IInputDriverImp.cs" />
@@ -132,6 +133,10 @@
     <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>Fusee.Serialization</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

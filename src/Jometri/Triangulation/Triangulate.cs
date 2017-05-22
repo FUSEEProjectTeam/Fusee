@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
+using Fusee.Base.Common;
 using Fusee.Jometri.DCEL;
 
 namespace Fusee.Jometri.Triangulation
