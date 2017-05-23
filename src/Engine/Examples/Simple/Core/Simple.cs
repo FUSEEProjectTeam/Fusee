@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = MathHelper.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Examples.Simple.Core
         // Init is called on startup. 
         public override void Init()
         {
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -96,7 +96,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }
+            }             
 
             if (Mouse.LeftButton)
             {

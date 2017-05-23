@@ -946,57 +946,20 @@ namespace Fusee.Math.Core
         /// <returns>a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</returns>
         public static float4 BaryCentric(float4 a, float4 b, float4 c, float u, float v)
         {
-            return a + u * (b - a) + v * (c - a);
-        }
-
-        /// <summary>Interpolate 3 Vectors using Barycentric coordinates</summary>
-        /// <param name="a">First input Vector.</param>
-        /// <param name="b">Second input Vector.</param>
-        /// <param name="c">Third input Vector.</param>
-        /// <param name="u">First Barycentric Coordinate.</param>
-        /// <param name="v">Second Barycentric Coordinate.</param>
-        /// <param name="result">Output Vector. a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</param>
-        public static void BaryCentric(ref float4 a, ref float4 b, ref float4 c, float u, float v, out float4 result)
-        {
-            result = a; // copy
-
-            float4 temp = b; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, u, out temp);
-            Add(ref result, ref temp, out result);
-
-            temp = c; // copy
-            Subtract(ref temp, ref a, out temp);
-            Multiply(ref temp, v, out temp);
-            Add(ref result, ref temp, out result);
+            return u*a + v*b + (1.0f-u-v)*c;
         }
 
         #endregion
 
         #region Transform
 
-        /// <summary>Transform a Vector by the given Matrix</summary>
-        /// <param name="vec">The vector to transform</param>
+        /// <summary>Transform this Vector by the given Matrix and apply a perspective division.</summary>
         /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed vector</returns>
-        public static float4 Transform(float4 vec, float4x4 mat)
+        /// <returns>The transformed vector.</returns>
+        public float4 TransformPerspective(float4x4 mat)
         {
-            float4 result;
-            Transform(ref vec, ref mat, out result);
-            return result;
-        }
-
-        /// <summary>Transform a Vector by the given Matrix</summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
-        public static void Transform(ref float4 vec, ref float4x4 mat, out float4 result)
-        {
-            result = new float4(
-                vec.x * mat.Row0.x + vec.y * mat.Row1.x + vec.z * mat.Row2.x + vec.w * mat.Row3.x,
-                vec.x * mat.Row0.y + vec.y * mat.Row1.y + vec.z * mat.Row2.y + vec.w * mat.Row3.y,
-                vec.x * mat.Row0.z + vec.y * mat.Row1.z + vec.z * mat.Row2.z + vec.w * mat.Row3.z,
-                vec.x * mat.Row0.w + vec.y * mat.Row1.w + vec.z * mat.Row2.w + vec.w * mat.Row3.w);
+            float4 tmp = mat * this;
+            return tmp /= tmp.w;
         }
 
         /// <summary>
@@ -1007,27 +970,13 @@ namespace Fusee.Math.Core
         /// <returns>The result of the operation.</returns>
         public static float4 Transform(float4 vec, Quaternion quat)
         {
-            float4 result;
-            Transform(ref vec, ref quat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transforms a vector by a quaternion rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Transform(ref float4 vec, ref Quaternion quat, out float4 result)
-        {
             Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
             Quaternion.Invert(ref quat, out i);
             Quaternion.Multiply(ref quat, ref v, out t);
             Quaternion.Multiply(ref t, ref i, out v);
 
-            result = new float4(v.x, v.y, v.z, v.w);
+            return new float4(v.x, v.y, v.z, v.w);
         }
-
         #endregion
 
         #region Round

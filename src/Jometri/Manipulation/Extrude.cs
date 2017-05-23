@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Linq;
-using Fusee.Base.Core;
+using Fusee.Base.Common;
 using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 

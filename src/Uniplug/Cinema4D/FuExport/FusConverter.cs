@@ -392,6 +392,7 @@ namespace FuExport
             {
                 using (BaseContainer lightData = ob.GetData())
                 // Just for debugging purposes
+                // TODO: Add LightData to Scene
                 for (int i = 0, id = 0; -1 != (id = lightData.GetIndexId(i)); i++)
                 {
                     if (lightData.GetTypeC4D(id) == C4dApi.DA_LONG)
