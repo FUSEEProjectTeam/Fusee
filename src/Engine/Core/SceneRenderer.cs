@@ -233,11 +233,18 @@ namespace Fusee.Engine.Core
         public class RendererState : VisitorState
         {
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
 
             public float4x4 Model
             {
-                set { _model.Tos = value; }
-                get { return _model.Tos; }
+               get { return _model.Tos; }
+                 set { _model.Tos = value; }
+            }
+
+            public MinMaxRect UiRect
+            {
+               get { return _uiRect.Tos; }
+               set { _uiRect.Tos = value; }
             }
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
@@ -252,6 +259,7 @@ namespace Fusee.Engine.Core
             {
                 RegisterState(_model);
                 RegisterState(_effect);
+                RegisterState(_uiRect);
             }
         };
 
@@ -697,6 +705,22 @@ namespace Fusee.Engine.Core
             _rc.Bones = boneArray;
         }
 
+        [VisitMethod]
+        public void RenderRectTransform(RectTransformComponent rtc)
+        {
+            // The Heart of the UiRect calculation: Set anchor points relative to parent
+            // rectangle and add absolute offsets
+            MinMaxRect newRect = new MinMaxRect();
+            newRect.Min = _state.UiRect.Min * rtc.Anchors.Min + rtc.Offsets.Min;
+            newRect.Max = _state.UiRect.Max * rtc.Anchors.Max + rtc.Offsets.Max;
+
+
+            _state.UiRect = newRect;
+
+            _state.Model *= float4x4.Identity;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+        }
 
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
@@ -805,9 +829,10 @@ namespace Fusee.Engine.Core
         {
             _state.Clear();
             _state.Model = float4x4.Identity;
-            _view = _rc.ModelView;
-
+            _state.UiRect = new MinMaxRect {Min = -float2.One, Max = float2.One};
             _state.Effect = _defaultEffect;
+
+            _view = _rc.ModelView;
         }
 
         protected override void PushState()

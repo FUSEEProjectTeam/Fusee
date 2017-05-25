@@ -723,6 +723,8 @@ namespace Fusee.Engine.Core
 
         #region Constructors
 
+        protected float3 _col;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
         /// </summary>
@@ -730,9 +732,12 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
-            // View = float4x4.Identity;
-            ModelView = float4x4.Identity;
+            View = float4x4.Identity;
+            Model = float4x4.Identity;
             Projection = float4x4.Identity;
+
+            // Make JSIL run through this one time. 
+            _col = ColorUint.White.Tofloat3();
 
             /* Removed Light support
             // Todo: Remove multiple Lights per shader !!!
