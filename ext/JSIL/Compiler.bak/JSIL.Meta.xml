@@ -1,0 +1,496 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>JSIL.Meta</name>
+    </assembly>
+    <members>
+        <member name="T:JSIL.Meta.JSIgnore">
+            <summary>
+            Specifies that a class, method, property or field should be ignored when translating code to JavaScript.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSStubOnly">
+            <summary>
+            Specifies that this type is implemented externally and only stub should  be generated when translating code to JavaScript
+             (but does not prevent use of the type like <see cref="T:JSIL.Meta.JSIgnore"/> and <see cref="T:JSIL.Meta.JSExternal"/> does.)
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSPolicy">
+            <summary>
+            Specifies a policy to apply to reads, writes, or invocations of a member when translating code to JavaScript.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSReplacement">
+            <summary>
+            Specifies that references to this identifier should be replaced with a specified javascript expression when translating code to JavaScript.
+            To refer to a parameter within the replacement expression, prefix the parameter name with a dollar sign - the this-reference becomes $this, for example.
+            To insert a dollar sign into the replacement expression, write '$$'.
+            When replacing a constructor, '$this' can be used to refer to the this-reference if the constructor is being called in-place on a struct instance.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSChangeName">
+            <summary>
+            Specifies that the name of this member or type should be changed when translating code to javascript.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSChangeToStaticMethod">
+            <summary>
+            Specifies that uses of this constructor should be replaced with invocations of a static method.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSRuntimeDispatch">
+            <summary>
+            Specifies that, if overloaded, the correct overload of this method to invoke should be decided at runtime instead of compile time.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSExternal">
+            <summary>
+            Specifies that this member or type is implemented externally and should not be generated when translating code to JavaScript
+             (but does not prevent use of the member/type like <see cref="T:JSIL.Meta.JSIgnore"/> does.)
+            Note that while external methods will generate a clear warning at runtime if used without being defined, the same is not true
+             for fields or classes - fields will simply be undefined, and classes may produce a JavaScript TypeError or ReferenceError.
+            The behavior of external properties depends on where you apply the attribute: Marking the property itself as external means
+             that the property definition will be omitted and the getter and setter will not be translated.
+            Marking a property's getter or setter as external behaves the same as marking a method as external - the property definition
+             will still be translated, so once the externals are implemented the property will work as expected.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSExtraStaticConstructor">
+            <summary>
+            Specifies that this method should be renamed to .cctor2 so that it runs as a second static constructor for the containing
+             type in JS. If the method is part of a proxy, it will run as the second static constructor for the proxied type(s).
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSAlwaysAccessAsProperty">
+            <summary>
+            Specifies that it is invalid to access this property by invoking its getter/setter
+             methods directly in JavaScript.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSPackedArray">
+            <summary>
+            Specifies that the target should be represented as a packed struct array in JavaScript
+             instead of as a normal JavaScript array containing object instances.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSPackedArrayArgumentsAttribute">
+            <summary>
+            Specifies that JSIL should represent the named argument(s) as packed arrays.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSPackedArrayReturnValueAttribute">
+            <summary>
+            Specifies that JSIL should represent the function's return value as a packed array.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSAllowPackedArrayArgumentsAttribute">
+            <summary>
+            Specifies that the function can accept arguments that are packed arrays but does not require them.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSImmutable">
+            <summary>
+            If applied to a field, specifies that you wish for JSIL to treat the specified field as if it is immutable.
+            Struct copies will not be generated for the annotated field or any of its members.
+            If applied to a class/struct, the class/struct and all its fields are treated as if they are immutable.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSIsPure">
+            <summary>
+            Specifies that this method should be treated as if it is pure when optimizing javascript.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSResultIsNew">
+            <summary>
+            Specifies that this method's return value does not need to be copied if it is a struct.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSMutatedArguments">
+            <summary>
+            Provides a list of the names of the arguments mutated by this method for the purposes of javascript optimization.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSEscapingArguments">
+            <summary>
+            Provides a list of the names of the arguments that escape from this method for the purposes of javascript optimization.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSPureDispose">
+            <summary>
+            Tells the static analyzer to treat calls to the Dispose method on this type as pure and subject to optimization.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSIsArrayEnumerator">
+            <summary>
+            Tells the static analyzer that this class represents an array enumerator, and provides the names of the array,
+             index and length members so that uses of the enumerator can be replaced with a for-loop or while-loop.
+            </summary>
+        </member>
+        <member name="T:JSIL.Meta.JSUnderlyingArray">
+            <summary>
+            Tells the static analyzer that the enumerator returned by this method represents an underlying array
+             of elements stored in class pointed to by the method's this-reference.
+            This enables the static analyzer to entirely remove the call to this method and replace it with
+             direct access to the array.
+            </summary>
+        </member>
+        <member name="P:JSIL.JSGlobal.Item(System.String)">
+            <summary>
+            Retrieves a name from the global namespace (note that this is the global namespace at the time that the JSIL runtime was loaded).
+            </summary>
+            <param name="name">The name to retrieve. This may be a literal, or a string-producing expression.</param>
+        </member>
+        <member name="P:JSIL.JSLocal.Item(System.String)">
+            <summary>
+            Retrieves a name from the local namespace.
+            </summary>
+            <param name="name">The name to retrieve. This must be a string literal!</param>
+        </member>
+        <member name="M:JSIL.Builtins.Eval(System.String)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, this method call is replaced with an invocation of the builtin javascript eval function.
+            </summary>
+            <param name="expression">The expression to evaluate.</param>
+        </member>
+        <member name="M:JSIL.Builtins.CreateNamedFunction``1(System.String,System.String[],System.String,System.Object)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, this method call is replaced with an invocation of the builtin JSIL CreateNamedFunction utility.
+            </summary>
+        </member>
+        <member name="P:JSIL.Builtins.This">
+            <summary>
+            When running as javascript, this property evaluates to the current scope's this-reference.
+            </summary>
+        </member>
+        <member name="P:JSIL.Builtins.IsJavascript">
+            <summary>
+            When running as javascript, this property evaluates to true.
+            </summary>
+        </member>
+        <member name="M:JSIL.Services.Get(System.String,System.Boolean)">
+            <summary>
+            When running as C#, this method throws (or returns null if throwIfMissing==false).
+            When running as JavaScript this method returns a reference to the named runtime service.
+            </summary>
+            <param name="serviceName">The name of the runtime service.</param>
+        </member>
+        <member name="T:JSIL.Runtime.IPackedArray`1">
+            <summary>
+            A packed array that is allocated in the managed heap.
+            Packed arrays always have a dense in-memory representation, even in JS. 
+            This allows passing them to APIs like WebGL along with pinning and fast marshalling/unmarshalling.
+            </summary>
+        </member>
+        <member name="M:JSIL.Runtime.IPackedArray`1.GetReference(System.Int32)">
+            <summary>
+            Returns a reference to an element of the packed array.
+            </summary>
+        </member>
+        <member name="M:JSIL.Runtime.IPackedArray`1.GetItemProxy(System.Int32)">
+            <summary>
+            Returns a proxy for the particular element of the packed array. You can use the proxy's members to manipulate the packed element directly.
+            </summary>
+        </member>
+        <member name="M:JSIL.Runtime.IPackedArray`1.GetItemInto(System.Int32,`0@)">
+            <summary>
+            Reads an element out of the packed array, into result.
+            </summary>
+        </member>
+        <member name="T:JSIL.Runtime.NativePackedArray`1">
+            <summary>
+            A packed array that is allocated in the native (emscripten in JS) heap.
+            Because this array is allocated in the native heap, you must explicitly free it.
+            </summary>
+        </member>
+        <member name="M:JSIL.Runtime.NativePackedArray`1.#ctor(System.String,System.Int32)">
+            <summary>
+            If you load multiple emscripten modules, it's necessary to specify which one's heap you wish to allocate into.
+            </summary>
+            <param name="dllName">The name of the module (the name you pass to DllImport)</param>
+        </member>
+        <member name="M:JSIL.Runtime.TypedArrayExtensionMethods.GetArrayBuffer``1(``0[])">
+            <summary>
+            If the specified array is backed by a typed array, returns its backing array buffer.
+            </summary>
+        </member>
+        <member name="M:JSIL.Runtime.PackedArrayExtensionMethods.GetBackingTypedArray``1(``0[])">
+            <summary>
+            If the specified array is a packed array, returns its backing typed array.
+            </summary>
+        </member>
+        <member name="T:JSIL.Proxy.JSProxy">
+            <summary>
+            Specifies that a type should be treated as a proxy for another type, replacing the target type's members and/or attributes.
+            </summary>
+        </member>
+        <member name="M:JSIL.Proxy.JSProxy.#ctor(System.Type,JSIL.Proxy.JSProxyMemberPolicy,JSIL.Proxy.JSProxyAttributePolicy,JSIL.Proxy.JSProxyInterfacePolicy,System.Boolean)">
+            <param name="type">The type to proxy.</param>
+            <param name="memberPolicy">Determines how members defined in the proxied type should be replaced with members defined by the proxy type.</param>
+            <param name="attributePolicy">Determines how how attributes defined in the proxied type should be replaced with attributes attached to the proxy type.</param>
+            <param name="interfacePolicy">Determines how how interfaces defined in the proxied type should be replaced with interfaces attached to the proxy type.</param>
+        </member>
+        <member name="M:JSIL.Proxy.JSProxy.#ctor(System.Type[],JSIL.Proxy.JSProxyMemberPolicy,JSIL.Proxy.JSProxyAttributePolicy,JSIL.Proxy.JSProxyInterfacePolicy,System.Boolean)">
+            <param name="types">The types to proxy.</param>
+            <param name="memberPolicy">Determines how members defined in the proxied type should be replaced with members defined by the proxy type.</param>
+            <param name="attributePolicy">Determines how how attributes defined in the proxied type should be replaced with attributes attached to the proxy type.</param>
+            <param name="interfacePolicy">Determines how how interfaces defined in the proxied type should be replaced with interfaces attached to the proxy type.</param>
+        </member>
+        <member name="M:JSIL.Proxy.JSProxy.#ctor(System.String,JSIL.Proxy.JSProxyMemberPolicy,JSIL.Proxy.JSProxyAttributePolicy,JSIL.Proxy.JSProxyInterfacePolicy,System.Boolean)">
+            <param name="typeName">The type to proxy.</param>
+            <param name="memberPolicy">Determines how members defined in the proxied type should be replaced with members defined by the proxy type.</param>
+            <param name="attributePolicy">Determines how how attributes defined in the proxied type should be replaced with attributes attached to the proxy type.</param>
+            <param name="interfacePolicy">Determines how how interfaces defined in the proxied type should be replaced with interfaces attached to the proxy type.</param>
+        </member>
+        <member name="M:JSIL.Proxy.JSProxy.#ctor(System.String[],JSIL.Proxy.JSProxyMemberPolicy,JSIL.Proxy.JSProxyAttributePolicy,JSIL.Proxy.JSProxyInterfacePolicy,System.Boolean)">
+            <param name="typeNames">The types to proxy.</param>
+            <param name="memberPolicy">Determines how members defined in the proxied type should be replaced with members defined by the proxy type.</param>
+            <param name="attributePolicy">Determines how how attributes defined in the proxied type should be replaced with attributes attached to the proxy type.</param>
+            <param name="interfacePolicy">Determines how how interfaces defined in the proxied type should be replaced with interfaces attached to the proxy type.</param>
+        </member>
+        <member name="T:JSIL.Proxy.JSReplaceConstructor">
+            <summary>
+            Specifies that you wish to replace an existing constructor with one from your proxy. This is necessary because
+             the compiler automatically generates hidden constructors for your proxy classes.
+            </summary>
+        </member>
+        <member name="T:JSIL.Proxy.AnyType">
+            <summary>
+            Use this as a stand-in type when defining a proxy to specify that any type is valid for the given parameter/return type.
+            </summary>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression(System.String)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            </summary>
+            <param name="javascript">The script expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression(System.String,System.Object[])">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="variables">The variables to insert into the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``1(System.String,``0)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``2(System.String,``0,``1)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``3(System.String,``0,``1,``2)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``4(System.String,``0,``1,``2,``3)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``5(System.String,``0,``1,``2,``3,``4)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``6(System.String,``0,``1,``2,``3,``4,``5)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``7(System.String,``0,``1,``2,``3,``4,``5,``6)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+            <param name="arg6">The variables to insert into '$6' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``8(System.String,``0,``1,``2,``3,``4,``5,``6,``7)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+            <param name="arg6">The variables to insert into '$6' placeholder in the expression.</param>
+            <param name="arg7">The variables to insert into '$7' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``1(System.String)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            </summary>
+            <param name="javascript">The script expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``1(System.String,System.Object[])">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="variables">The variables to insert into the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``2(System.String,``0)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``3(System.String,``0,``1)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``4(System.String,``0,``1,``2)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``5(System.String,``0,``1,``2,``3)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``6(System.String,``0,``1,``2,``3,``4)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``7(System.String,``0,``1,``2,``3,``4,``5)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``8(System.String,``0,``1,``2,``3,``4,``5,``6)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+            <param name="arg6">The variables to insert into '$6' placeholder in the expression.</param>
+        </member>
+        <member name="M:JSIL.Verbatim.Expression``9(System.String,``0,``1,``2,``3,``4,``5,``6,``7)">
+            <summary>
+            When running as C#, this method does nothing and returns null.
+            When running as JavaScript, the passed-in script code replaces this method call.
+            Variables can be referenced by index. '$0' is the first variable.
+            </summary>
+            <param name="javascript">The script expression.</param>
+            <param name="arg0">The variables to insert into '$0' placeholder in the expression.</param>
+            <param name="arg1">The variables to insert into '$1' placeholder in the expression.</param>
+            <param name="arg2">The variables to insert into '$2' placeholder in the expression.</param>
+            <param name="arg3">The variables to insert into '$3' placeholder in the expression.</param>
+            <param name="arg4">The variables to insert into '$4' placeholder in the expression.</param>
+            <param name="arg5">The variables to insert into '$5' placeholder in the expression.</param>
+            <param name="arg6">The variables to insert into '$6' placeholder in the expression.</param>
+            <param name="arg7">The variables to insert into '$7' placeholder in the expression.</param>
+        </member>
+    </members>
+</doc>

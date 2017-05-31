@@ -35,12 +35,6 @@
  If you intend to use CodeDom with ASP.NET you should use &lt;c&gt;FSharpAspNetCodeProvider&lt;/c&gt; instead.
 </summary>
 </member>
-<member name="">
-
-</member>
-<member name="T:FSharp.Compiler.CodeDom.AssemblyVersionInformation">
-
-</member>
 <member name="T:FSharp.Compiler.CodeDom.Internal.AssemblyAttributes">
 
 </member>
@@ -448,7 +442,7 @@
 </member>
 <member name="M:FSharp.Compiler.CodeDom.Internal.CleanGenerator.op_MinusBang(Microsoft.FSharp.Core.FSharpFunc{FSharp.Compiler.CodeDom.Internal.CleanGenerator.Context,FSharp.Compiler.CodeDom.Internal.CleanGenerator.Context},System.String,FSharp.Compiler.CodeDom.Internal.CleanGenerator.Context)">
 <summary>
- Output string as a valid F# identifier
+ Output string as an escaped F# identifier
 </summary>
 </member>
 <member name="">
@@ -1019,7 +1013,7 @@
 </member>
 <member name="M:FSharp.Compiler.CodeDom.Internal.Generator.op_MinusBang(Microsoft.FSharp.Core.FSharpFunc{FSharp.Compiler.CodeDom.Internal.Generator.Context,FSharp.Compiler.CodeDom.Internal.Generator.Context},System.String,FSharp.Compiler.CodeDom.Internal.Generator.Context)">
 <summary>
- Output string as a valid F# identifier
+ Output string as an escaped F# identifier
 </summary>
 </member>
 <member name="">
@@ -1245,6 +1239,12 @@
 
 </member>
 <member name="T:Internal.Utilities.FSharpEnvironment">
+
+</member>
+<member name="">
+
+</member>
+<member name="T:System.AssemblyVersionInformation">
 
 </member>
 </members>

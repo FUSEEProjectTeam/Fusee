@@ -18,9 +18,8 @@
       "System\\.Runtime\\.Serialization\\.Formatters\\.Soap,",
       "System\\.Runtime\\.DurableInstancing,",
       "System\\.Data\\.SqlXml,",
-      "JSIL\\.Meta,",
- 	  "^mscorlib, Version=2"
-   ]
+      "JSIL\\.Meta,"
+    ]
   },
   "ProfileSettings": {
     "OverwriteExistingContent": true,
