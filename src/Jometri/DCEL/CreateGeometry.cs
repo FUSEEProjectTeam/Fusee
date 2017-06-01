@@ -587,5 +587,15 @@ namespace Fusee.Jometri.DCEL
             return pyramid;
         }
         #endregion
+
+        /// <summary>
+        /// Creates a exact copy of the Geometry
+        /// </summary>
+        /// <param name="geometry">The geometry to copy.</param>
+        /// <returns></returns>
+        public static Geometry CopyGeometry(Geometry geometry)
+        {
+            return geometry.CloneGeometry();
+        }
     }
 }

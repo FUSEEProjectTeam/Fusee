@@ -11,15 +11,8 @@ namespace Fusee.Jometri.Manipulation
     /// <summary>
     ///  Provides functions to perform a Subdivision Surface on a DCEL geometry.
     /// </summary>
-    public static class SubdivisionSurface
+    public class SubdivisionSurface
     {
-
-        private static Geometry _geometry; //saves the old geometry without the SD
-        private static Geometry _newGeometry; //saves the new geometry with SD
-
-        private static Dictionary<int, Vertex> _allEdgeVertices; //stores the computed Edge Vertices
-        private static Dictionary<int, Vertex> _allFaceVertices; //sotres the computed Face Vertices
-
         /// <summary>
         /// Performs a Catmull-Clark Subdivision-Surface on a given geometry which is stored as DCEL.
         /// </summary>
@@ -28,35 +21,96 @@ namespace Fusee.Jometri.Manipulation
         public static Geometry CatmullClarkSubdivision(Geometry geometry)
         {
             //initialising
-            _geometry = geometry;
-            _newGeometry = geometry.CloneGeometry();
-            _allEdgeVertices = new Dictionary<int, Vertex>();
-            _allFaceVertices = new Dictionary<int, Vertex>();
-            
-            //computes all Face Vertices and all Edge Vertices
-            GetFaceVertices();
-            GetEdgeVertices();
+            Geometry newGeometry = geometry.CloneGeometry();
+
+            //computes all Face Vertices and all Edge Vertices       
+            Dictionary<int, Vertex> allFaceVertices = GetFaceVertices(geometry);
+            Dictionary<int, Vertex> allEdgeVertices = GetEdgeVertices(geometry, allFaceVertices);
 
             //Calculates the new position of existing Vertices
-            ComputeNewVertexPosition();
+            var allVertices = newGeometry.GetAllVertices().ToList();
+            foreach (Vertex vertex in allVertices)
+            {
+                var outgoingEdges = newGeometry.GetVertexStartingHalfEdges(vertex.Handle).ToList();
+
+                //Get average of all face Points and average of all edge Points
+                List<Vertex> faceVertices = new List<Vertex>();
+                List<Vertex> edgeVertices = new List<Vertex>();
+                foreach (HalfEdge edge in outgoingEdges)
+                {
+                    HalfEdge twin = geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
+
+                    if (allFaceVertices.ContainsKey(edge.IncidentFace))
+                    {
+                        faceVertices.Add(allFaceVertices[edge.IncidentFace]);
+                    }
+                    else
+                    {
+                        faceVertices.Add(allFaceVertices[twin.IncidentFace]);
+                    }
+
+                    if (allEdgeVertices.ContainsKey(edge.Handle))
+                    {
+                        edgeVertices.Add(allEdgeVertices[edge.Handle]);
+                    }
+                    else
+                    {
+                        edgeVertices.Add(allEdgeVertices[twin.Handle]);
+                    }
+                }
+
+                float3 meanEdgeVertexPos = GeometricOperations.GetVerticesMeanPos(edgeVertices);
+                float3 meanFaceVertexPos = GeometricOperations.GetVerticesMeanPos(faceVertices);
+
+                float edgeCount = outgoingEdges.Count;
+
+                float3 newVertexPos = (meanFaceVertexPos + 2 * meanEdgeVertexPos + (edgeCount - 3) * vertex.VertData.Pos) / edgeCount;
+                Vertex newVertex = new Vertex(vertex.Handle, newVertexPos) {IncidentHalfEdge = vertex.IncidentHalfEdge};
+
+                newGeometry.ReplaceVertex(newVertex);
+            }
 
             //adds newly calculated Edge Vertices
-            AddEdgeVertices();
-            _geometry = _newGeometry.CloneGeometry();
+            var allEdges = geometry.GetAllEdges();
+
+            foreach (HalfEdge edge in allEdges)
+            {
+                int vertexOld1 = edge.OriginVertex;
+
+                HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
+
+                int vertexOld2 = twinEdge.OriginVertex;
+
+                //find correct Edge Vertex
+                Vertex edgeVertex;
+                if (allEdgeVertices.ContainsKey(edge.Handle))
+                {
+                    edgeVertex = allEdgeVertices[edge.Handle];
+                }
+                else
+                {
+                    edgeVertex = allEdgeVertices[twinEdge.Handle];
+                }
+
+                newGeometry.InsertVertex(vertexOld1, vertexOld2, edgeVertex.VertData.Pos);
+            }
+
+            newGeometry.SetHighestHandles();
+            geometry = newGeometry.CloneGeometry();
 
             //creates the new quad faces and connects everything
-            AddFaceVerticesAndNewFaces();
+            AddFaceVerticesAndNewFaces(geometry, newGeometry, allFaceVertices);
 
-            return _newGeometry;
+            return newGeometry;
         }
 
-        private static void AddFaceVerticesAndNewFaces()
+        private static void AddFaceVerticesAndNewFaces(Geometry _geometry, Geometry _newGeometry, Dictionary<int, Vertex> allFaceVertices)
         {
             var allFaces = _geometry.GetAllFaces();
 
             foreach (Face face in allFaces)
             {
-                Vertex faceVertex = new Vertex(_newGeometry.CreateVertHandleId(), _allFaceVertices[face.Handle].VertData.Pos);
+                Vertex faceVertex = new Vertex(_newGeometry.CreateVertHandleId(), allFaceVertices[face.Handle].VertData.Pos);
                 HalfEdge startEdge = _geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
                 HalfEdge nextEdge = startEdge;
 
@@ -160,117 +214,44 @@ namespace Fusee.Jometri.Manipulation
             }
         }
 
-        private static void AddEdgeVertices()
+        private static Dictionary<int,Vertex> GetEdgeVertices(Geometry geometry, Dictionary<int, Vertex> faceVertices)
         {
-            var allEdges = _geometry.GetAllEdges();
-
-            foreach (HalfEdge edge in allEdges)
-            {
-                int vertexOld1 = edge.OriginVertex;
-
-                HalfEdge twinEdge = _geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
-
-                int vertexOld2 = twinEdge.OriginVertex;
-
-                //find correct Edge Vertex
-                Vertex edgeVertex;
-                if (_allEdgeVertices.ContainsKey(edge.Handle))
-                {
-                    edgeVertex = _allEdgeVertices[edge.Handle];
-                }
-                else
-                {
-                    edgeVertex = _allEdgeVertices[twinEdge.Handle];
-                }
-
-                _newGeometry.InsertVertex(vertexOld1, vertexOld2, edgeVertex.VertData.Pos);
-            }
-
-            _newGeometry.SetHighestHandles();
-        }
-
-
-        private static void ComputeNewVertexPosition()
-        {
-            var allVertices = _newGeometry.GetAllVertices().ToList();
-
-            foreach (Vertex vertex in allVertices)
-            {
-                var outgoingEdges = _newGeometry.GetVertexStartingHalfEdges(vertex.Handle).ToList();
-
-                //Get average of all face Points and average of all edge Points
-                List<Vertex> faceVertices = new List<Vertex>();
-                List<Vertex> edgeVertices = new List<Vertex>();
-                foreach (HalfEdge edge in outgoingEdges)
-                {
-                    HalfEdge twin = _geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
-
-                    if (_allFaceVertices.ContainsKey(edge.IncidentFace))
-                    {
-                        faceVertices.Add(_allFaceVertices[edge.IncidentFace]);
-                    }
-                    else
-                    {
-                        faceVertices.Add(_allFaceVertices[twin.IncidentFace]);
-                    }
-
-                    if (_allEdgeVertices.ContainsKey(edge.Handle))
-                    {
-                        edgeVertices.Add(_allEdgeVertices[edge.Handle]);
-                    }
-                    else
-                    {
-                        edgeVertices.Add(_allEdgeVertices[twin.Handle]);
-                    }
-                }
-
-                float3 meanEdgeVertexPos = GeometricOperations.GetVerticesMeanPos(edgeVertices);
-                float3 meanFaceVertexPos = GeometricOperations.GetVerticesMeanPos(faceVertices);
-
-                float edgeCount = outgoingEdges.Count;
-
-                float3 newVertexPos = (meanFaceVertexPos + 2 * meanEdgeVertexPos + (edgeCount - 3) * vertex.VertData.Pos) / edgeCount;
-                Vertex newVertex = new Vertex(vertex.Handle, newVertexPos) {IncidentHalfEdge = vertex.IncidentHalfEdge};
-
-                _newGeometry.ReplaceVertex(newVertex);
-
-            }
-        }
-
-        private static void GetEdgeVertices()
-        {
-            var allEdges = _geometry.GetAllEdges();
+            var allEdges = geometry.GetAllEdges();
+            Dictionary<int, Vertex> allEdgeVertices = new Dictionary<int, Vertex>();
 
             foreach (HalfEdge edge in allEdges)
             {
                 int face1 = edge.IncidentFace;
-                HalfEdge twin = _geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
+                HalfEdge twin = geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
                 int face2 = twin.IncidentFace;
 
-                Vertex vertex1 = _geometry.GetVertexByHandle(edge.OriginVertex);
-                Vertex vertex2 = _geometry.GetVertexByHandle(twin.OriginVertex);
+                Vertex vertex1 = geometry.GetVertexByHandle(edge.OriginVertex);
+                Vertex vertex2 = geometry.GetVertexByHandle(twin.OriginVertex);
 
-                Vertex cVertex1 = _allFaceVertices[face1];
-                Vertex cVertex2 = _allFaceVertices[face2];
+                Vertex cVertex1 = faceVertices[face1];
+                Vertex cVertex2 = faceVertices[face2];
 
                 List<Vertex> temp = new List<Vertex> {vertex1, vertex2, cVertex1, cVertex2};
 
                 Vertex finalVertex = new Vertex(edge.Handle, GeometricOperations.GetVerticesMeanPos(temp)) {IncidentHalfEdge = edge.Handle};
 
-                _allEdgeVertices.Add(edge.Handle, finalVertex);
+                allEdgeVertices.Add(edge.Handle, finalVertex);
             }
+            return allEdgeVertices;
         }
 
-        private static void GetFaceVertices()
+        private static Dictionary<int, Vertex> GetFaceVertices(Geometry _geometry)
         {
             var allFaces = _geometry.GetAllFaces();
+            Dictionary<int, Vertex> allFaceVertices = new Dictionary<int, Vertex>();
 
             foreach (Face face in allFaces)
             {
                 var faceVertices = _geometry.GetFaceVertices(face.Handle).ToList();
                 Vertex tempVertex = new Vertex(face.Handle, GeometricOperations.GetVerticesMeanPos(faceVertices));
-                _allFaceVertices.Add(face.Handle, tempVertex);
+                allFaceVertices.Add(face.Handle, tempVertex);
             }
+            return allFaceVertices;
         }
     }
 }
