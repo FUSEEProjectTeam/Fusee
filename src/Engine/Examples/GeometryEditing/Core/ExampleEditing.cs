@@ -154,17 +154,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             }
             if (_isTranslating)
             {   
-                float2 mousePos = Mouse.Position;
-                float2 screenPos = mousePos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-                float4 worldPos = new float4(screenPos.x, screenPos.y, -1,1);
-                var invView = RC.Projection * RC.View;
-                invView = float4x4.Invert(invView);
-                worldPos = worldPos*invView;
-                worldPos.w = 1.0f / worldPos.w;
-                worldPos.x *= worldPos.w; //TODO: adjust 
-                worldPos.y *= worldPos.w;
-                worldPos.z *= worldPos.w;               
-                _selectedNode.GetTransform().Translation = worldPos.xyz;
+                 float3 worldPos = new float3(Mouse.Velocity.x * .0001f, Mouse.Velocity.y * -.0001f, Mouse.WheelVel*.001f);
+                _selectedNode.GetTransform().Translation += worldPos.xyz;
 
                 if (Mouse.LeftButton)
                 {
@@ -241,7 +232,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 _angleRoll = Touch.TwoPointAngle - _angleRollInit;
                 _offset = Touch.TwoPointMidPoint - _offsetInit;
             }
-            else
+            else if(!_isTranslating)
             {
                 _twoTouchRepeated = false;
                 _zoomVel = Mouse.WheelVel * -0.005f;
@@ -290,15 +281,9 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-                    if (_currentPick != null)
-                    {
-                        //_currentPick.Node.GetMaterial().Diffuse.Color = _defaultColor;
-                    }
                     if (newPick != null)
                     {
                         SelectGeometry(newPick.Node);
-                        //var mat = newPick.Node.GetMaterial();
-                        //mat.Diffuse.Color = _selectedColor;
                     }
                     _currentPick = newPick;
                 }
