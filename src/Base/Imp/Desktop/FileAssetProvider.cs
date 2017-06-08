@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.InteropServices;
 using Fusee.Base.Common;
@@ -16,23 +17,27 @@ namespace Fusee.Base.Imp.Desktop
     /// </summary>
     public class FileAssetProvider : StreamAssetProvider
     {
-        private readonly string _baseDir;
+        private readonly List<string> _baseDirs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileAssetProvider"/> class.
         /// </summary>
         /// <param name="baseDir">The base directory where assets should be looked for.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
-        public FileAssetProvider(string baseDir = null) : base()
+        public FileAssetProvider(IEnumerable<string> baseDirs = null) : base()
         {
-            if (string.IsNullOrEmpty(baseDir))
-                baseDir = AppDomain.CurrentDomain.BaseDirectory;
-
-            if (!Directory.Exists(baseDir))
-                throw new ArgumentException($"Asset base directory \"{baseDir}\"does not exist.", nameof(baseDir));
-
-            _baseDir = baseDir;
-
+            _baseDirs = new List<string>();
+            if (baseDirs == null)
+                _baseDirs.Add(AppDomain.CurrentDomain.BaseDirectory);
+            else
+            {
+                foreach (var baseDir in baseDirs)
+                {
+                    if (!Directory.Exists(baseDir))
+                        throw new ArgumentException($"Asset base directory \"{baseDir}\"does not exist.", nameof(baseDir));
+                    _baseDirs.Add(baseDir);
+                }
+            }
             // Image handler
             RegisterTypeHandler(new AssetHandler
             {
@@ -104,9 +109,14 @@ namespace Fusee.Base.Imp.Desktop
             if (File.Exists(id))
                 return new FileStream(id, FileMode.Open);
 
-            // At last, look at the specified asst path
-            string path = Path.Combine(_baseDir, id);
-            return new FileStream(path, FileMode.Open);
+            // At last, look at the specifie base directories
+            foreach (var baseDir in _baseDirs)
+            {
+                string path = Path.Combine(baseDir, id);
+                if (File.Exists(path))
+                    return new FileStream(path, FileMode.Open);
+            }
+            return null;
         }
 
         /// <summary>
@@ -129,8 +139,13 @@ namespace Fusee.Base.Imp.Desktop
             if (File.Exists(id))
                 return true;
 
-            string path = Path.Combine(_baseDir, id);
-            return File.Exists(path);
+            foreach (var baseDir in _baseDirs)
+            {
+                string path = Path.Combine(baseDir, id);
+                if (File.Exists(path))
+                    return true;
+            }
+            return false;
         }
 
         /// <summary>
