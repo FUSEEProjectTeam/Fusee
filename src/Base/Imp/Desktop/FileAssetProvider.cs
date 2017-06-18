@@ -17,14 +17,29 @@ namespace Fusee.Base.Imp.Desktop
     /// </summary>
     public class FileAssetProvider : StreamAssetProvider
     {
-        private readonly List<string> _baseDirs;
+        private List<string> _baseDirs;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileAssetProvider"/> class.
         /// </summary>
         /// <param name="baseDir">The base directory where assets should be looked for.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
+        public FileAssetProvider(string baseDir = null) : base()
+        {
+            Init(baseDir == null ? null : new []{baseDir} );
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="FileAssetProvider"/> class.
+        /// </summary>
+        /// <param name="baseDirs">A list of base directories where assets should be looked for.</param>
+        /// <exception cref="System.ArgumentNullException"></exception>
         public FileAssetProvider(IEnumerable<string> baseDirs = null) : base()
+        {
+            Init(baseDirs);
+        }
+
+        private void Init(IEnumerable<string> baseDirs)
         {
             _baseDirs = new List<string>();
             if (baseDirs == null)
@@ -40,51 +55,52 @@ namespace Fusee.Base.Imp.Desktop
             }
             // Image handler
             RegisterTypeHandler(new AssetHandler
-            {
-                ReturnedType = typeof(ImageData),
-                Decoder = delegate (string id, object storage)
                 {
-                    string ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                    ReturnedType = typeof(ImageData),
+                    Decoder = delegate(string id, object storage)
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return LoadImage((Stream)storage);
-                    }
-                    return null;
-                },
-                Checker = delegate (string id) {
-                    string ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
+                        string ext = Path.GetExtension(id).ToLower();
+                        switch (ext)
+                        {
+                            case ".jpg":
+                            case ".jpeg":
+                            case ".png":
+                            case ".bmp":
+                                return LoadImage((Stream) storage);
+                        }
+                        return null;
+                    },
+                    Checker = delegate(string id)
                     {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return true;
+                        string ext = Path.GetExtension(id).ToLower();
+                        switch (ext)
+                        {
+                            case ".jpg":
+                            case ".jpeg":
+                            case ".png":
+                            case ".bmp":
+                                return true;
+                        }
+                        return false;
                     }
-                    return false;
                 }
-            }
             );
 
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
-            {
-                ReturnedType = typeof(string),
-                Decoder = delegate (string id, object storage)
                 {
-                    string ret;
-                    using (var sr = new StreamReader((Stream) storage, System.Text.Encoding.Default, true))
+                    ReturnedType = typeof(string),
+                    Decoder = delegate(string id, object storage)
                     {
-                        ret = sr.ReadToEnd();
-                    }
-                    return ret;
-                },
-                Checker = id => true // If it's there, we can handle it...
-            }
+                        string ret;
+                        using (var sr = new StreamReader((Stream) storage, System.Text.Encoding.Default, true))
+                        {
+                            ret = sr.ReadToEnd();
+                        }
+                        return ret;
+                    },
+                    Checker = id => true // If it's there, we can handle it...
+                }
             );
         }
 

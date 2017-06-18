@@ -223,13 +223,19 @@ namespace Fusee.Tools.fuConv
                         File.Delete(sceneFileDir);
                     }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "SceneViewer.html");
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
                     if (File.Exists(origHtmlFilePath))
                         File.Delete(origHtmlFilePath);
+                    string targetHtmlFilePath =
+                        Path.Combine(htmlFileDir, Path.GetFileNameWithoutExtension(opts.Input) + ".html");
+                    if (File.Exists(targetHtmlFilePath))
+                        File.Delete(targetHtmlFilePath);
 
                     //Copy
                     DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
+                    File.Move(origHtmlFilePath, targetHtmlFilePath);
 
+                    // Rename 
 
                     // Check and open input file
                     string inputFormat = Path.GetExtension(opts.Input).ToLower();
@@ -298,7 +304,7 @@ namespace Fusee.Tools.fuConv
                         _httpServer.HtDocsRoot = htmlFileDir;
                     }
                     Console.WriteLine($"Server running");
-                    Process.Start("http://localhost:4655/" + origHtmlFilePath);
+                    Process.Start("http://localhost:4655/" + Path.GetFileName(targetHtmlFilePath));
                 })
 
                 // ERROR on the command line
