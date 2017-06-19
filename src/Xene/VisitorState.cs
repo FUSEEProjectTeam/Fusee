@@ -160,7 +160,7 @@ namespace Fusee.Xene
                 throw new InvalidOperationException("CollapsingState Stack depth is already 0. Cannot Pop stack.");
 
             Depth--;
-            if (_countStack.Tos > 1)
+            if (_countStack.Tos >= 1)
             {
                 _countStack.Tos--;
             }

@@ -16,7 +16,20 @@ namespace Fusee.Engine.SceneViewer.Desktop
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            string modelFile = null;
+            string[] assetDirs = {"Assets"};
+            if (args.Length >= 1)
+            {
+                if (Path.GetExtension(args[0]).ToLower().Contains("fus") && File.Exists(args[0]))
+                {
+                    modelFile = Path.GetFileName(args[0]);
+                    assetDirs = new string[] { "Assets", Path.GetDirectoryName(args[0]) };
+                } 
+                else
+                    Diagnostics.Log($"Cannot open {args[0]} as a Fusee model file.");
+            }
+
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -44,16 +57,11 @@ namespace Fusee.Engine.SceneViewer.Desktop
             AssetStorage.RegisterProvider(fap);
 
             var app = new Core.SceneViewer();
-            if (args.Length >= 1)
-            {
-                if (Path.GetExtension(args[0]).ToLower().Contains("fus") && File.Exists(args[0]))
-                    app.ModelFile = args[0];
-                else
-                    Diagnostics.Log($"Cannot open {args[0]} as a Fusee model file.");
-            }
+            if (!string.IsNullOrEmpty(modelFile))
+                    app.ModelFile = modelFile;
 
-            // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
+                // Inject Fusee.Engine InjectMe dependencies (hard coded)
+                app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));

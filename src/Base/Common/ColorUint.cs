@@ -616,9 +616,22 @@ namespace Fusee.Base.Common
         /// <returns>
         /// A three component vector containing the red, green, and blue components of the color.
         /// </returns>
+        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat3(ColorUint col)' instead!")]
         public float3 Tofloat3()
         {
             return new float3((float) this.R / (float) byte.MaxValue, (float) this.G / (float) byte.MaxValue, (float) this.B / (float) byte.MaxValue);
+        }
+
+        /// <summary>
+        /// Converts the Uint color into a three component vector.
+        /// </summary>
+        /// <param name="col">The color to convert.</param>
+        /// <returns>
+        /// A three component vector containing the red, green, and blue components of the color.
+        /// </returns>
+        public static float3 Tofloat3(ColorUint col)
+        {
+            return new float3((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue);
         }
 
         /// <summary>
@@ -627,9 +640,22 @@ namespace Fusee.Base.Common
         /// <returns>
         /// A four component vector containing all four color components.
         /// </returns>
+        [Obsolete("Deprecated due to 'Impure Method Call Warning' and problems with JSIL. Use 'static float3 Tofloat4(ColorUint col)' instead!")]
         public float4 Tofloat4()
         {
             return new float4((float) this.R / (float) byte.MaxValue, (float) this.G / (float) byte.MaxValue, (float) this.B / (float) byte.MaxValue, (float) this.A / (float) byte.MaxValue);
+        }
+
+        /// <summary>
+        /// Converts the Uint color into a four component vector.
+        /// </summary>
+        /// <param name="col">The color to convert.</param>
+        /// <returns>
+        /// A four component vector containing all four color components.
+        /// </returns>
+        public static float4 Tofloat4(ColorUint col)
+        {
+            return new float4((float)col.R / (float)byte.MaxValue, (float)col.G / (float)byte.MaxValue, (float)col.B / (float)byte.MaxValue, (float)col.A / (float)byte.MaxValue);
         }
 
         /// <summary>

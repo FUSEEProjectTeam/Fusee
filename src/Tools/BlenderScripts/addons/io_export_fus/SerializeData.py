@@ -65,6 +65,29 @@ def SerializeData(objects,isWeb, isOnlySelected,smoothing,lamps,smoothingDist,sm
     return serializedData
 
 #recursivly get each node and its components and serialize them
+def add_vertex(vi, face, i, meshComponent, uv_layer):
+    vert = meshComponent.Vertices.add()
+    vert.x = face.loops[vi].vert.co.x
+    vert.y = face.loops[vi].vert.co.z
+    vert.z = face.loops[vi].vert.co.y
+    norm = meshComponent.Normals.add()
+    # Doesn't work, see (https://developer.blender.org/T45151) meshNorm = face.loops[vi].calc_normal()
+    if face.smooth:
+        meshNorm = face.loops[vi].vert.normal
+    else:
+        meshNorm = face.normal
+    norm.x = meshNorm.x
+    norm.y = meshNorm.z
+    norm.z = meshNorm.y
+    uv = meshComponent.UVs.add()
+    if uv_layer is not None:
+        uv.x = face.loops[vi][uv_layer].uv.x
+        uv.y = face.loops[vi][uv_layer].uv.y
+    else:
+        uv.x = 0
+        uv.y = 0
+    tri = meshComponent.Triangles.append(i)
+
 def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothingAngle):
     obj = objects
     if obj.type == 'LAMP' and lamps:
@@ -179,8 +202,42 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
         #convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
-        bm.from_mesh(prepare_mesh(bpy.context.scene.objects.active))
+        damesh = prepare_mesh(bpy.context.scene.objects.active)
+        bm.from_mesh(damesh)
 
+        # <CM's Checks>
+        uvActive = data.uv_layers.active
+        uv_layer = None
+        if uvActive is not None:
+            uv_layer = bm.loops.layers.uv.active
+
+        meshComponent = rootMeshComponent.MeshComponent
+        i = 0
+        for face in bm.faces:
+            '''
+            print('--Face:' + str(face.index))
+            if uvActive is not None:
+                print('  --V0: co:' + str(face.loops[0].vert.co) + ' normal:' +  str(face.loops[0].calc_normal()) + ' uv:' + str(face.loops[0][uv_layer].uv))
+                print('  --V1: co:' + str(face.loops[1].vert.co) + ' normal:' +  str(face.loops[1].calc_normal()) + ' uv:' + str(face.loops[1][uv_layer].uv))
+                print('  --V2: co:' + str(face.loops[2].vert.co) + ' normal:' +  str(face.loops[2].calc_normal()) + ' uv:' + str(face.loops[2][uv_layer].uv))
+            else:
+                print('  --V0: co:' + str(face.loops[0].vert.co) + ' normal:' +  str(face.loops[0].calc_normal()))
+                print('  --V1: co:' + str(face.loops[1].vert.co) + ' normal:' +  str(face.loops[1].calc_normal()))
+                print('  --V2: co:' + str(face.loops[2].vert.co) + ' normal:' +  str(face.loops[2].calc_normal()))
+            '''
+            #TODO: assert that len(face.loops) == 3!
+            add_vertex(0, face, i, meshComponent, uv_layer)
+            i += 1
+            add_vertex(1, face, i, meshComponent, uv_layer)
+            i += 1
+            add_vertex(2, face, i, meshComponent, uv_layer)
+            i += 1
+
+        # </CM's Checks
+
+
+
+        '''
         #count faces
         faces = []
         for face in bm.faces:
@@ -204,32 +261,7 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
         
         #copy normals, to have a list with the same structure as the original one
         vertNormList = copy.copy(vertFNormList)
-        '''
-        if smoothing:
-            #Compare all "flat-vertex" coordinates with all "smooth-vertex" coordinates
-            #If two coordinates match, replace the normal vector of the "flat-vertex"
-            #with the normal vector of the "smooth-vertex"
-            for fIndex in range(0,len(vertIndexList)):
-                flatVertCo = vertFCoList[fIndex]
-                for sIndex in range(0,len(vertSCoList)):
-                    smoothVertCo = vertSCoList[sIndex]
-                    if flatVertCo.angle(smoothVertCo)<0.01:
-                        vertNormList[fIndex]=vertSNormList[sIndex]
-        if smoothing:
-            for fIndex in range(0,len(vertIndexList)):
-                newNormal = vertFNormList[fIndex]
-                flatVertCo = vertFCoList[fIndex]
-                for other in range(fIndex,len(vertIndexList)):
-                    otherVertCo = vertFCoList[other]
-                    dist = flatVertCo-otherVertCo
-                    angle = flatVertCo.angle(otherVertCo)
-                    if dist.length<smoothingDist and angle<smoothingAngle:
-                        newNormal += vertFNormList[other]
-
-                newNormal.normalize()
-                vertNormList[fIndex]=newNormal'''
-                    
-
+ 
         #write data to protobuf structure              
         meshComponent = rootMeshComponent.MeshComponent
         for vert in range(0,len(vertIndexList)):
@@ -267,7 +299,7 @@ def GetNode(objects, isWeb, isOnlySelected,smoothing,lamps,smoothingDist,smoothi
                 uv = meshComponent.UVs.add()
                 uv.x = uvs.x
                 uv.y = uvs.y    
-
+        '''
 
         #BoundingBox
         bbox = obj.bound_box
@@ -476,3 +508,4 @@ def prepare_mesh(obj):
     mesh.calc_tessface()
 
     return mesh
+
