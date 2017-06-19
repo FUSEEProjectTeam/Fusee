@@ -59,7 +59,7 @@ namespace Fusee.Jometri.DCEL
         {
             if (radius <= 0) throw new ArgumentException("Radius can not be <= 0");
             if (horizontalResolution <= 3) horizontalResolution = 3;
-            if (verticalResolution <= 3) verticalResolution = 3;
+            if (verticalResolution <= 2) verticalResolution = 2;
 
             Geometry sphere = new Geometry();
             Vertex northPole = new Vertex(sphere.CreateVertHandleId(), new float3(0, radius, 0));
@@ -375,7 +375,7 @@ namespace Fusee.Jometri.DCEL
                 h5.TwinHalfEdge = h6.Handle;
                 h6.TwinHalfEdge = h5.Handle;
 
-                //create to triangles south-temp-last, north-last-temp
+                //create top triangles south-temp-last, north-last-temp
                 Face triangle1 = new Face(cone.CreateFaceHandleId());
                 h5.NextHalfEdge = h4.Handle;
                 triangle1.OuterHalfEdge = h5.Handle;
@@ -589,7 +589,7 @@ namespace Fusee.Jometri.DCEL
         #endregion
 
         /// <summary>
-        /// Creates a exact copy of the Geometry
+        /// Creates a exact copy of the Geometry.
         /// </summary>
         /// <param name="geometry">The geometry to copy.</param>
         /// <returns></returns>

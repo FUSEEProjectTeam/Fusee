@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using Fusee.Base.Common;
@@ -42,6 +43,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         private SceneRenderer _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
+
+        Random rng = new Random();
 
         //picking
         private float2 _pickPos;
@@ -177,10 +180,75 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 }
             }
 
+            //DeleteGeom
+            if (Keyboard.GetKey(KeyCodes.Delete) && _keyTimeout <0)
+            {
+                _keyTimeout = 1;
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                _activeGeometrys.Remove(currentGeometryIndex);                
+                _parentNode.Children.RemoveAt(currentGeometryIndex);
+                _selectedNode = null;
+                if (_activeGeometrys.Count == 0)
+                {
+                    _activeGeometrys.Clear();
+                    _parentNode.Children.Clear();
+                    _currentPick = null;
+                }
+                GC.Collect();
+            }
+
+            //Inset
+            if (Keyboard.GetKey(KeyCodes.I) && _keyTimeout < 0)
+            {
+                _keyTimeout = .25f;
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                SceneNodeContainer currentSelection = _parentNode.Children[currentGeometryIndex];
+                Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
+
+                currentSelectedGeometry.InsetFace(rng.Next(4, currentSelectedGeometry.GetAllFaces().Count()),.5f);
+                Geometry copy = CreateGeometry.CopyGeometry(currentSelectedGeometry);
+                _activeGeometrys[currentGeometryIndex] = copy;
+                currentSelectedGeometry.Triangulate();
+
+                var geometryMesh = new JometriMesh(currentSelectedGeometry);
+                var meshComponent = new MeshComponent
+                {
+                    Vertices = geometryMesh.Vertices,
+                    Triangles = geometryMesh.Triangles,
+                    Normals = geometryMesh.Normals,
+                };
+                currentSelection.Components[2] = meshComponent;
+
+            }
+
+            //Extrude
+            if (Keyboard.GetKey(KeyCodes.E) && _keyTimeout < 0)
+            {
+                _keyTimeout = .25f;
+                int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
+                SceneNodeContainer currentSelection = _parentNode.Children[currentGeometryIndex];
+                Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];
+
+                currentSelectedGeometry.ExtrudeFace(rng.Next(4,currentSelectedGeometry.GetAllFaces().Count()), 1);
+                Geometry copy = CreateGeometry.CopyGeometry(currentSelectedGeometry);
+                _activeGeometrys[currentGeometryIndex] = copy;
+                currentSelectedGeometry.Triangulate();
+
+                var geometryMesh = new JometriMesh(currentSelectedGeometry);
+                var meshComponent = new MeshComponent
+                {
+                    Vertices = geometryMesh.Vertices,
+                    Triangles = geometryMesh.Triangles,
+                    Normals = geometryMesh.Normals,
+                };
+                currentSelection.Components[2] = meshComponent;
+
+            }
+
             //Add Catmull-Clark
             if (Keyboard.GetKey(KeyCodes.C) && _keyTimeout < 0)
             {
-                _keyTimeout = 1;
+                _keyTimeout = .25f;
                 int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
                 SceneNodeContainer currentSelection = _parentNode.Children[currentGeometryIndex];
                 Geometry currentSelectedGeometry = _activeGeometrys[currentGeometryIndex];

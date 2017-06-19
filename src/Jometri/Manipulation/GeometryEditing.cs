@@ -36,6 +36,7 @@ namespace Fusee.Jometri.Manipulation
         /// <returns></returns>
         public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
         {
+            extrusionVector.Normalize();
             return ExtrudeFaceByHandle(geometry, faceHandle, offset, extrusionVector);
         }
 

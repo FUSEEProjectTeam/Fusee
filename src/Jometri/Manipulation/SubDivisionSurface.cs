@@ -71,10 +71,11 @@ namespace Fusee.Jometri.Manipulation
             }
 
             //adds newly calculated Edge Vertices
-            var allEdges = geometry.GetAllEdges();
-
+            var allEdges = geometry.GetAllHalfEdges();
+            int[] doneHe = new int[allEdges.Count()+1];
             foreach (HalfEdge edge in allEdges)
             {
+                if(doneHe[edge.Handle] == edge.TwinHalfEdge) continue;
                 int vertexOld1 = edge.OriginVertex;
 
                 HalfEdge twinEdge = geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
@@ -93,6 +94,7 @@ namespace Fusee.Jometri.Manipulation
                 }
 
                 newGeometry.InsertVertex(vertexOld1, vertexOld2, edgeVertex.VertData.Pos);
+                doneHe[edge.TwinHalfEdge] = edge.Handle;
             }
 
             newGeometry.SetHighestHandles();
@@ -216,11 +218,15 @@ namespace Fusee.Jometri.Manipulation
 
         private static Dictionary<int,Vertex> GetEdgeVertices(Geometry geometry, Dictionary<int, Vertex> faceVertices)
         {
-            var allEdges = geometry.GetAllEdges();
+            var allEdges = geometry.GetAllHalfEdges();
+
+            int[] doneHE = new int[allEdges.Count()+1];
+
             Dictionary<int, Vertex> allEdgeVertices = new Dictionary<int, Vertex>();
 
             foreach (HalfEdge edge in allEdges)
             {
+                if(doneHE[edge.Handle] == edge.TwinHalfEdge) continue;
                 int face1 = edge.IncidentFace;
                 HalfEdge twin = geometry.GetHalfEdgeByHandle(edge.TwinHalfEdge);
                 int face2 = twin.IncidentFace;
@@ -236,6 +242,7 @@ namespace Fusee.Jometri.Manipulation
                 Vertex finalVertex = new Vertex(edge.Handle, GeometricOperations.GetVerticesMeanPos(temp)) {IncidentHalfEdge = edge.Handle};
 
                 allEdgeVertices.Add(edge.Handle, finalVertex);
+                doneHE[edge.TwinHalfEdge] = edge.Handle;
             }
             return allEdgeVertices;
         }
