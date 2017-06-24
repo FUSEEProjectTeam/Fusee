@@ -16,8 +16,11 @@ namespace Fusee.Engine.Core.GUI
         /// <param name="fontMap">The font map.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
-        public GUIText(string text, FontMap fontMap, int x, int y)
-            : base(text, fontMap, x, y, 0, 0, 0)
+        /// <param name="zRot">The rotation about Z axis as radian.</param>
+        /// <param name="xPivot">The x-coordinate of the pivot point</param>
+        /// <param name="yPivot">The y-coordinate of the pivot point</param>
+        public GUIText(string text, FontMap fontMap, int x, int y, float zRot = 0, int xPivot = 0, int yPivot = 0)
+            : base(text, fontMap, x, y, 0, 0, 0, zRot, xPivot, yPivot)
         {
             TextColor = new float4(0, 0, 0, 1);
         }
@@ -30,12 +33,15 @@ namespace Fusee.Engine.Core.GUI
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="z">The z-index.</param>
+        /// <param name="zRot">The rotation about Z axis as radian.</param>
+        /// <param name="xPivot">The x-coordinate of the pivot point</param>
+        /// <param name="yPivot">The y-coordinate of the pivot point</param>
         /// <remarks>
         /// The z-index: lower values means further away. If two elements have the same z-index
         /// then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIText(string text, FontMap fontMap, int x, int y, int z)
-            : base(text, fontMap, x, y, z, 0, 0)
+        public GUIText(string text, FontMap fontMap, int x, int y, int z, float zRot = 0, int xPivot = 0, int yPivot = 0)
+            : base(text, fontMap, x, y, z, 0, 0, zRot, xPivot, yPivot)
         {
             TextColor = new float4(0, 0, 0, 1);
         }
@@ -48,13 +54,16 @@ namespace Fusee.Engine.Core.GUI
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="z">The z-index.</param>
-        /// <param name="color">The color.</param>
+        /// <param name="color">The color.</param>    
+        /// <param name="zRot">The rotation about Z axis as radian.</param>
+        /// <param name="xPivot">The x-coordinate of the pivot point</param>
+        /// <param name="yPivot">The y-coordinate of the pivot point</param>
         /// <remarks>
         /// The z-index: lower values means further away. If two elements have the same z-index
         /// then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIText(string text, FontMap fontMap, int x, int y, int z, float4 color)
-            : base(text, fontMap, x, y, z, 0, 0)
+        public GUIText(string text, FontMap fontMap, int x, int y, int z, float4 color, float zRot = 0, int xPivot = 0, int yPivot = 0)
+            : base(text, fontMap, x, y, z, 0, 0, zRot, xPivot, yPivot)
         {
             TextColor = color;
         }

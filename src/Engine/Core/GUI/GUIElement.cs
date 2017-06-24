@@ -37,6 +37,7 @@ namespace Fusee.Engine.Core.GUI
         protected IShaderParam ColorParam;
 
         protected readonly string GUIVS = @"
+            uniform mat4 guiXForm;
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
@@ -49,7 +50,7 @@ namespace Fusee.Engine.Core.GUI
                 vUV = fuUV;
                 vColor = fuColor;
 
-                gl_Position = vec4(fuVertex, 1);
+                gl_Position = guiXForm * vec4(fuVertex, 1);
             }";
 
         protected readonly string GUIPS = @"
@@ -85,6 +86,7 @@ namespace Fusee.Engine.Core.GUI
 
         private int _posX;
         private int _posY;
+        private float4x4 _rotation;
 
         private int _offsetX;
         private int _offsetY;
@@ -209,6 +211,30 @@ namespace Fusee.Engine.Core.GUI
         }
 
         /// <summary>
+        ///     Gets or sets this element's rotation about the z-axis.
+        /// </summary>
+        /// <value>
+        ///     The z-rotation.
+        /// </value>
+        public float ZRot { set; get; }
+
+        /// <summary>
+        ///     Gets or sets this element's pivot's point x-coordinate.
+        /// </summary>
+        /// <value>
+        ///     The x-coordinate of the pivot point.
+        /// </value>
+        public int XPivot { set; get; }
+
+        /// <summary>
+        ///     Gets or sets this element's pivot's point y-coordinate.
+        /// </summary>
+        /// <value>
+        ///     The y-coordinate of the pivot point.
+        /// </value>
+        public int YPivot { set; get; }
+
+        /// <summary>
         ///     Gets or sets the tag.
         /// </summary>
         /// <value>
@@ -242,7 +268,7 @@ namespace Fusee.Engine.Core.GUI
 
         protected abstract void CreateMesh();
 
-        protected GUIElement(string text, FontMap fontMap, int x, int y, int z, int width, int height)
+        protected GUIElement(string text, FontMap fontMap, int x, int y, int z, int width, int height, float zRot = 0, int xPivot = 0, int yPivot = 0)
         {
             Dirty = false;
 
@@ -262,6 +288,9 @@ namespace Fusee.Engine.Core.GUI
             Text = text;
             FontMap = fontMap;
 
+            ZRot = zRot;
+            XPivot = xPivot;
+            YPivot = yPivot;
             // shader
             // if (FontMap != null) CreateTextShader();
         }
@@ -283,7 +312,11 @@ namespace Fusee.Engine.Core.GUI
                     }
                 }
             },
-                null);
+            new[]
+            {
+                new EffectParameterDeclaration { Name = "guiXForm", Value = float4x4.Identity },
+            }
+            );
         }
 
         protected void CreateTextShader(ITexture textAtlas)
@@ -306,7 +339,8 @@ namespace Fusee.Engine.Core.GUI
                 new[]
                 {
                     new EffectParameterDeclaration {Name = "tex", Value = textAtlas},
-                    new EffectParameterDeclaration {Name = "uColor", Value = _textColor}
+                    new EffectParameterDeclaration {Name = "uColor", Value = _textColor},
+                    new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
                 });
         }
 
@@ -533,8 +567,10 @@ namespace Fusee.Engine.Core.GUI
             }
         }
 
+
         protected virtual void PreRender(RenderContext rc)
         {
+
             if (RContext != rc)
                 AttachToContext(rc);
             if (Dirty)
@@ -548,6 +584,22 @@ namespace Fusee.Engine.Core.GUI
         public void Render(RenderContext rc)
         {
             PreRender(rc);
+
+
+            float3 clipPivot = new float3(
+                                 XPivot * 2.0f / RContext.ViewportWidth - 1.0f, 1.0f - YPivot * 2.0f / RContext.ViewportHeight, 0);
+
+            float4x4 guiXForm = float4x4.CreateTranslation(clipPivot)
+                                    * float4x4.CreateScale(1.0f, (float)RContext.ViewportWidth / (float)RContext.ViewportHeight, 1) *
+                                         float4x4.CreateRotationZ(ZRot)
+                                    * float4x4.CreateScale(1.0f, (float)RContext.ViewportHeight / (float)RContext.ViewportWidth, 1) *
+                                float4x4.CreateTranslation(-clipPivot);
+
+            if (FontMap != null)
+                TextShader.SetEffectParam("guiXForm", guiXForm);
+            else
+                GUIShader.SetEffectParam("guiXForm", guiXForm);
+
 
             if (GUIShader != null && GUIMesh != null)
                 GUIShader.RenderMesh(GUIMesh);
