@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Jometri.DCEL;

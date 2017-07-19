@@ -761,7 +761,7 @@ namespace Fusee.Jometri.DCEL
         /// <param name="q">Handle of Vertex two.</param>
         /// <param name="pos">Position of the new Vertex</param>
         /// <returns>New Vertex Handle.</returns>
-        public int InsertVertex(int p, int q, float3 pos)
+        internal int InsertVertex(int p, int q, float3 pos)
         {
             var adjacentVertices = GetVertexAdjacentVertices(p).ToList();
             for (int i = 0; i < adjacentVertices.Count; i++)

@@ -109,6 +109,7 @@ namespace Fusee.Jometri.Manipulation
                 edge3.IncidentFace = newFace.Handle;
                 next.IncidentFace = newFace.Handle;
                 edge2Twin.IncidentFace = face.Handle;
+                newFace.FaceData.FaceNormal = face.FaceData.FaceNormal;
 
                 //write changes 
                 geometry.DictVertices.Add(newVertex.Handle, newVertex);
@@ -157,9 +158,6 @@ namespace Fusee.Jometri.Manipulation
                 geometry.ReplaceHalfEdge(edge2);
                 geometry.ReplaceHalfEdge(edge3Twin);
                 geometry.ReplaceHalfEdge(edge3);
-
-                //set face normal
-                geometry.SetFaceNormal(geometry.GetFaceVertices(edge2.IncidentFace).ToList(),geometry.GetFaceByHandle(edge2.IncidentFace));
             }
 
             return geometry;
@@ -167,13 +165,18 @@ namespace Fusee.Jometri.Manipulation
 
         private static Geometry ExtrudeFaceByHandle(Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
         {
-            Geometry oldGeometry = geometry.CloneGeometry();
             Face face = geometry.GetFaceByHandle(faceHandle);
 
             //get HE of Face
             HalfEdge start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
             HalfEdge next = start;
 
+            Dictionary<int, List<HalfEdge>> vertexIncHe = new Dictionary<int, List<HalfEdge>>();
+            var allFaceVertices = geometry.GetFaceVertices(faceHandle);
+            foreach (Vertex vertex in allFaceVertices)
+            {
+                vertexIncHe.Add(vertex.Handle,geometry.GetVertexStartingHalfEdges(vertex.Handle).ToList());
+            }
             List<HalfEdge> allH2NEdges = new List<HalfEdge>();
 
             do
@@ -192,8 +195,8 @@ namespace Fusee.Jometri.Manipulation
 
                 HalfEdge h1 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
 
-                var allIncomingHe = oldGeometry.GetVertexStartingHalfEdges(nextOriginV.Handle);
-                foreach (HalfEdge halfEdge in allIncomingHe)
+                var currentList = vertexIncHe[nextOriginV.Handle];
+                foreach (HalfEdge halfEdge in currentList)
                 {
                     if (halfEdge != next)
                     {

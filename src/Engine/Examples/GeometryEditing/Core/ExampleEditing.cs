@@ -100,7 +100,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             HandleCameraAndPicking();
             InteractionHandler();
-            _renderer.Render(RC);            
+            _renderer.Render(RC);
+            RC.ClearColor = new float4(.7f, .7f, .7f, 1);
 
             Present();
         }

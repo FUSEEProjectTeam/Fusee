@@ -2,8 +2,8 @@
 <Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Examples.MeshingAround.Core</RootNamespace>
-    <AssemblyName>Fusee.Engine.Examples.MeshingAround.Core</AssemblyName>
+    <RootNamespace>Fusee.Engine.Examples.GeometryEditing.Core</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.GeometryEditing.Core</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -21,7 +21,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Core\</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\Debug\Examples\GeometryEditing\Core\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>

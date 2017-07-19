@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -9,6 +10,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
+using Face = Fusee.Jometri.DCEL.Face;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
 
 
@@ -91,14 +93,22 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             };
             ////////////////////////////////////////////////
 
-            //var outlineCCube = new List<PolyBoundary> { outlineCustomStar };
-            //var geomCCube = new Geometry(outlineCCube);
-            //geomCCube.Extrude2DPolygon(2, true);
-            //geomCCube = SubDivisionSurface.CatmullClarkSubdivision(geomCCube);
-            //geomCCube = SubDivisionSurface.CatmullClarkSubdivision(geomCCube);
-            //geomCCube = SubDivisionSurface.CatmullClarkSubdivision(geomCCube);
-            //geomCCube.Triangulate();
-            //var customCube = new JometriMesh(geomCCube);
+            var outlineCCube = new List<PolyBoundary> { outlineCustomStar };
+            var geomCCube = new Geometry(outlineCCube);
+            geomCCube.Extrude2DPolygon(2, true);
+            var allFaces = geomCCube.GetAllFaces().ToList();
+            foreach (Face face in allFaces)
+            {
+                if (face.Handle == 3) continue;
+                geomCCube.InsetFace(face.Handle, .5f);
+                geomCCube.ExtrudeFace(face.Handle, 1);
+            }
+
+            //geomCCube = SubdivisionSurface.CatmullClarkSubdivision(geomCCube);
+            //geomCCube = SubdivisionSurface.CatmullClarkSubdivision(geomCCube);
+            //geomCCube = SubdivisionSurface.CatmullClarkSubdivision(geomCCube);
+            geomCCube.Triangulate();
+            var customCube = new JometriMesh(geomCCube);
 
             //var outlinesOcta = new List<PolyBoundary> { outlineOctagon, outlineOctaHole };
             //var geomOcta = new Geometry(outlinesOcta);
@@ -110,10 +120,40 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //var geomCube = new Geometry(outlinesCube);
             //geomCube.Extrude2DPolygon(2, false);
 
-            Geometry geomCube = CreateGeometry.CreateSpehreGeometry(2, 1, 1);
+            Geometry geomCube = CreateGeometry.CreateCuboidGeometry(1, 1, 1);
+            //geomCube.InsetFace(2, .5f);
+            //geomCube.ExtrudeFace(2, .5f);
+            //geomCube.ExtrudeFace(6, 1.5f);
+            //geomCube.ExtrudeFace(5, 1.5f);
+            //geomCube.ExtrudeFace(7, 1.5f);
+            //geomCube.ExtrudeFace(8, 1.5f);
+            //geomCube.ExtrudeFace(7, .5f);
+            //geomCube.ExtrudeFace(8, .5f);
+            geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
+            geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
+            geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
+            geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
+            geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
+            ////geomCube.ExtrudeFace(2, 1);
 
-            //geomCube.ExtrudeFace(29, 1);
+            //geomCube.Triangulate();
+            //int x = 0;
+            //for (int i = 70000; i < 100000; i++)
+            //{
+            //    geomCube.InsetFace(i, .5f);
+            //    //geomCube.ExtrudeFace(i, 1);
+            //}
+
+
             //geomCube.ExtrudeFace(2, 1);
+            //geomCube.ExtrudeFace(4, 1);
+            //geomCube.ExtrudeFace(5, 1);
+            //geomCube.ExtrudeFace(6, 2);
+
+            //geomCube.InsetFace(2, .5f);
+            //geomCube.ExtrudeFace(2, 1);
+            //geomCube.ExtrudeFace(2, 1, new float3(1,0,-1));
+            //geomCube.ExtrudeFace(2, 1, new float3(0,1,-1));
 
             //geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
             //geomCube = SubdivisionSurface.CatmullClarkSubdivision(geomCube);
@@ -148,24 +188,24 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            ////Custom
-            //var sceneNodeCustomStar = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
-            //var meshCustomStar = new MeshComponent
-            //{
-            //    Vertices = customCube.Vertices,
-            //    Triangles = customCube.Triangles,
-            //    Normals = customCube.Normals,
-            //};
+            //Custom
+            var sceneNodeCustomStar = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+            var meshCustomStar = new MeshComponent
+            {
+                Vertices = customCube.Vertices,
+                Triangles = customCube.Triangles,
+                Normals = customCube.Normals,
+            };
 
-            //var transCustomStar = new TransformComponent
-            //{
-            //    Rotation = float3.Zero,
-            //    Scale = new float3(0.5f, 0.5f, 0.5f),
-            //    Translation = new float3(0, 0, 0),
-            //};
+            var transCustomStar = new TransformComponent
+            {
+                Rotation = float3.Zero,
+                Scale = new float3(0.5f, 0.5f, 0.5f),
+                Translation = new float3(0, 0, 0),
+            };
 
-            //sceneNodeCustomStar.AddComponent(transCustomStar);
-            //sceneNodeCustomStar.AddComponent(meshCustomStar);
+            sceneNodeCustomStar.AddComponent(transCustomStar);
+            sceneNodeCustomStar.AddComponent(meshCustomStar);
 
             ////Octagon
             //var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };

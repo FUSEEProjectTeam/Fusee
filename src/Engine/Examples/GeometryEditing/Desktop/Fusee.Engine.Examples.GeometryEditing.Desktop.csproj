@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Examples.MeshingAround.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Examples.MeshingAround.Desktop</AssemblyName>
+    <RootNamespace>Fusee.Engine.Examples.GeometryEditing.Desktop</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.GeometryEditing.Desktop</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -18,7 +18,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Desktop</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\Debug\Examples\GeometryEditing\Desktop\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>

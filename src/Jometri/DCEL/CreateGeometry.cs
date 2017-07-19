@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Fusee.Jometri.Manipulation;
 using Fusee.Math.Core;
 
@@ -23,6 +22,7 @@ namespace Fusee.Jometri.DCEL
         /// <returns></returns>
         public static Geometry CreateCuboidGeometry(float dimensionX, float dimensionY, float dimensionZ)
         {
+            //check input
             if (dimensionX <= 0 || dimensionY <= 0 || dimensionZ <= 0) throw new ArgumentException("The dimension values can not be <= 0");
 
             float xPos = dimensionX / 2.0f;
@@ -57,6 +57,7 @@ namespace Fusee.Jometri.DCEL
         /// <returns>A UV-Sphere centered in the world coordinate system as a DCEL.</returns>
         public static Geometry CreateSpehreGeometry(float radius, int horizontalResolution, int verticalResolution)
         {
+            //check input
             if (radius <= 0) throw new ArgumentException("Radius can not be <= 0");
             if (horizontalResolution <= 3) horizontalResolution = 3;
             if (verticalResolution <= 2) verticalResolution = 2;
@@ -93,7 +94,7 @@ namespace Fusee.Jometri.DCEL
                 int[] topHeHandles = new int[horizontalResolution];
                 for (int j = 0; j < horizontalResolution; j++)
                 {
-                    // bottom triangles
+                    // bottom triangles of sphere
                     if (i == verticalResolution)
                     {
                         Face bottomTriangle = new Face(sphere.CreateFaceHandleId());
@@ -126,7 +127,7 @@ namespace Fusee.Jometri.DCEL
                         sphere.DictFaces.Add(bottomTriangle.Handle, bottomTriangle);
                     }
 
-                    // top triangles
+                    // top triangles of sphere
                     else if (i == 1)
                     {
                         Face topTriangle = new Face(sphere.CreateFaceHandleId());
@@ -161,7 +162,7 @@ namespace Fusee.Jometri.DCEL
                         sphere.DictFaces.Add(topTriangle.Handle, topTriangle);
                         sphere.ReplaceVertex(currentVertex);
                     }
-                    // middle quads 
+                    // middle quads of sphere
                     else
                     {
                         Face quad = new Face(sphere.CreateFaceHandleId());
@@ -208,7 +209,7 @@ namespace Fusee.Jometri.DCEL
                 //set twins 
                 for (int j = 0; j < horizontalResolution; j++)
                 {
-                    //set twins of adjacent triangles top or bottom
+                    //set twins of adjacent triangles bottom
                     if (i == 1)
                     {
                         int nextH1Index;
@@ -280,6 +281,7 @@ namespace Fusee.Jometri.DCEL
             sphere.DictVertices.Add(northPole.Handle, northPole);
             sphere.DictVertices.Add(southPole.Handle, southPole);
 
+            //calculate normals
             var allFaces = sphere.GetAllFaces().ToList();
             foreach (var face in allFaces)
             {
@@ -306,6 +308,10 @@ namespace Fusee.Jometri.DCEL
         /// <returns></returns>
         public static Geometry CreateConeGeometry(float baseRadius, float dimensionY, int sliceCount)
         {
+            //check input
+            if (sliceCount < 3) sliceCount = 3;
+            if (baseRadius <= 0 || dimensionY <= 0) throw new ArgumentException("You can not input paramaters <= 0");
+
             Geometry cone = new Geometry();
             Vertex northPole = new Vertex(cone.CreateVertHandleId(), new float3(0, dimensionY / 2, 0));
             Vertex southPole = new Vertex(cone.CreateVertHandleId(), new float3(0, -dimensionY / 2, 0));
@@ -318,10 +324,6 @@ namespace Fusee.Jometri.DCEL
             HalfEdge lastH3 = new HalfEdge();
             HalfEdge lastH2 = new HalfEdge();
             Vertex lastVertex = southPole;
-
-            //input checken
-            if (sliceCount < 3) sliceCount = 3;
-            if (baseRadius <= 0 || dimensionY <= 0) throw new ArgumentException("You can not input paramaters <= 0");
 
             for (int i = 1; i < sliceCount + 1; i++)
             {
@@ -375,7 +377,7 @@ namespace Fusee.Jometri.DCEL
                 h5.TwinHalfEdge = h6.Handle;
                 h6.TwinHalfEdge = h5.Handle;
 
-                //create top triangles south-temp-last, north-last-temp
+                //create top triangles south-temp-last
                 Face triangle1 = new Face(cone.CreateFaceHandleId());
                 h5.NextHalfEdge = h4.Handle;
                 triangle1.OuterHalfEdge = h5.Handle;
@@ -388,6 +390,7 @@ namespace Fusee.Jometri.DCEL
                 lastH3.PrevHalfEdge = h4.Handle;
                 h4.PrevHalfEdge = h5.Handle;
 
+                //north-last-temp
                 Face triangle2 = new Face(cone.CreateFaceHandleId());
                 h6.NextHalfEdge = lastH2.Handle;
                 triangle2.OuterHalfEdge = h6.Handle;
@@ -487,6 +490,7 @@ namespace Fusee.Jometri.DCEL
         /// <returns></returns>
         public static Geometry CreatePyramidGeometry(float dimensionX, float dimensionY, float dimensionZ)
         {
+            //check input
             if (dimensionX <= 0 || dimensionY <= 0 || dimensionZ <= 0) throw new ArgumentException("The dimension values can not be <= 0");
 
             float xPos = dimensionX / 2.0f;
