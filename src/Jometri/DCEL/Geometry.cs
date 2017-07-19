@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Fusee.Math.Core;
 
@@ -91,8 +92,11 @@ namespace Fusee.Jometri.DCEL
                 var oldFace = f.Value;
                 var face = new Face(oldFace.Handle, oldFace.OuterHalfEdge);
                 face.InnerHalfEdges.AddRange(oldFace.InnerHalfEdges);
+                face.FaceData.FaceNormal = oldFace.FaceData.FaceNormal;
                 clone.DictFaces.Add(face.Handle, face);
             }
+
+            clone.SetHighestHandles();
 
             return clone;
         }
@@ -273,6 +277,7 @@ namespace Fusee.Jometri.DCEL
             var startEdge = e;
 
             yield return GetHalfEdgeByHandle(startEdge.Handle);
+            yield return GetHalfEdgeByHandle(startEdge.TwinHalfEdge);
 
             while (TwinNext(e).Handle != startEdge.Handle)
             {
@@ -424,7 +429,7 @@ namespace Fusee.Jometri.DCEL
             }
 
             //Inner boundaries
-            
+
             var innerComponents = face.InnerHalfEdges;
 
             if (innerComponents.Count == 0) yield break;
@@ -688,6 +693,7 @@ namespace Fusee.Jometri.DCEL
 
         internal int CreateFaceHandleId()
         {
+            if (HighestFaceHandle == 0) HighestFaceHandle = 1; //Face 1 is always the unbounded face
             var newId = HighestFaceHandle + 1;
             HighestFaceHandle = newId;
             return newId;
@@ -723,11 +729,11 @@ namespace Fusee.Jometri.DCEL
                 var he = heWithSameFaceP[i];
                 var face = GetFaceByHandle(he.IncidentFace);
 
-                if(face.Handle == 1) continue;
+                if (face.Handle == 1) continue;
 
                 var diagMiddPoint = (1 - 0.5f) * vertP.VertData.Pos + 0.5f * vertQ.VertData.Pos;
                 var redMidd = diagMiddPoint.Reduce2D(face.FaceData.FaceNormal);
-                 
+
                 if (!this.IsPointInPolygon(face, redMidd)) continue;
 
                 foreach (var heP in heWithSameFaceP)
@@ -745,10 +751,92 @@ namespace Fusee.Jometri.DCEL
             }
             throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
         }
+        #endregion
 
+        #region Insert new vertex
+        /// <summary>
+        /// Inserts a new Vertex between two given exsisting Vertices.
+        /// </summary>
+        /// <param name="p">Handle of Vertex one.</param>
+        /// <param name="q">Handle of Vertex two.</param>
+        /// <param name="pos">Position of the new Vertex</param>
+        /// <returns>New Vertex Handle.</returns>
+        internal int InsertVertex(int p, int q, float3 pos)
+        {
+            var adjacentVertices = GetVertexAdjacentVertices(p).ToList();
+            for (int i = 0; i < adjacentVertices.Count; i++)
+            {
+                if (adjacentVertices[i].Handle == q) break;
+                if (i == adjacentVertices.Count - 1) throw new ArgumentException("Vertices with Handle q=" + q + " and p=" + p + " are not adjacent!");
+            }
+
+            Vertex newVertex = new Vertex(CreateVertHandleId(), pos);
+
+            //add two new Half Edges
+            HalfEdge newHalfEdge1 = new HalfEdge(CreateHalfEdgeHandleId());
+            HalfEdge newHalfEdge2 = new HalfEdge(CreateHalfEdgeHandleId());
+
+            //set origin to new Vertex
+            newHalfEdge1.OriginVertex = newVertex.Handle;
+            newHalfEdge2.OriginVertex = newVertex.Handle;
+
+            newVertex.IncidentHalfEdge = newHalfEdge2.Handle;
+
+            Vertex vertexP = GetVertexByHandle(p);
+            Vertex vertexQ = GetVertexByHandle(q);
+
+            //Find Half Edge between p and q
+            var incomingEdges = GetVertexStartingHalfEdges(vertexP.Handle);
+
+            HalfEdge he1 = new HalfEdge();
+            HalfEdge he2 = new HalfEdge();
+
+            foreach (HalfEdge halfEdge in incomingEdges)
+            {
+                var twinEdge = GetHalfEdgeByHandle(halfEdge.TwinHalfEdge);
+                if (twinEdge.OriginVertex == vertexQ.Handle)
+                {
+                    he1 = halfEdge;
+                    he2 = twinEdge;
+                }
+            }
+
+            HalfEdge next1 = GetHalfEdgeByHandle(he2.NextHalfEdge);
+            HalfEdge next2 = GetHalfEdgeByHandle(he1.NextHalfEdge);
+
+            //change Handels
+            he1.TwinHalfEdge = newHalfEdge1.Handle;
+            newHalfEdge1.TwinHalfEdge = he1.Handle;
+            newHalfEdge1.NextHalfEdge = he2.NextHalfEdge;
+            he2.NextHalfEdge = newHalfEdge1.Handle;
+            newHalfEdge1.PrevHalfEdge = he2.Handle;
+            next1.PrevHalfEdge = newHalfEdge1.Handle;
+
+            he2.TwinHalfEdge = newHalfEdge2.Handle;
+            newHalfEdge2.TwinHalfEdge = he2.Handle;
+            newHalfEdge2.NextHalfEdge = he1.NextHalfEdge;
+            he1.NextHalfEdge = newHalfEdge2.Handle;
+            newHalfEdge2.PrevHalfEdge = he1.Handle;
+            next2.PrevHalfEdge = newHalfEdge2.Handle;
+
+            //reconnect faces
+            newHalfEdge1.IncidentFace = he2.IncidentFace;
+            newHalfEdge2.IncidentFace = he1.IncidentFace;
+
+            //replace exsisnting Edges
+            ReplaceHalfEdge(he1);
+            ReplaceHalfEdge(he2);
+
+            ReplaceHalfEdge(next1);
+            ReplaceHalfEdge(next2);
+
+            //add to dict
+            DictVertices.Add(newVertex.Handle, newVertex);
+            DictHalfEdges.Add(newHalfEdge1.Handle, newHalfEdge1);
+            DictHalfEdges.Add(newHalfEdge2.Handle, newHalfEdge2);
+
+            return newVertex.Handle;
+        }
         #endregion
     }
 }
-
-
-

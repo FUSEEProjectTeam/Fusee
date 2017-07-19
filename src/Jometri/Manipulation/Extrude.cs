@@ -40,7 +40,7 @@ namespace Fusee.Jometri.Manipulation
         {
             //Clone frontface.
             var backface = geometry.CloneGeometry();
-            
+
             if(!exturdeAlongNormal)
                 //Add zOffset to each vertex coord.
                 UpdateVertexZCoord(backface, zOffset);

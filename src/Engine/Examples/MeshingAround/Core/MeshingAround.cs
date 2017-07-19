@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
@@ -24,8 +25,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         // Init is called on startup. 
         public override void Init()
         {
-            ///////////// Create PolyBoundaries ////////////////////////
-            var outlineOctagon = new PolyBoundary //CCW
+
+            var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -39,7 +40,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineOctaHole = new PolyBoundary //CW
+            var outlineOneHole = new PolyBoundary //CW!!
             {
                 Points = new List<float3>
                 {
@@ -51,7 +52,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = false
             };
 
-            var outlineRectangle = new PolyBoundary //CCW
+            var outlineTwo = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -63,7 +64,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 IsOuter = true
             };
 
-            var outlineTriangle = new PolyBoundary //CCW
+            var outlineThree = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
                 {
@@ -73,24 +74,22 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
                 },
                 IsOuter = true
             };
-            ////////////////////////////////////////////////
-            
 
-            var outlinesOcta = new List<PolyBoundary> { outlineOctagon, outlineOctaHole };
-            var geomOcta = new Geometry(outlinesOcta);
-            geomOcta.Extrude2DPolygon(0.5f, true);
-            geomOcta.Triangulate();
-            var octagon = new JometriMesh(geomOcta);
+            var geomOutlinesOne = new List<PolyBoundary> { outlineOne, outlineOneHole };
+            var geomOne = new Geometry(geomOutlinesOne);
+            geomOne.Extrude2DPolygon(0.5f, true);
+            geomOne.Triangulate();
+            var meshOne = new JometriMesh(geomOne);
 
-            var outlinesCube = new List<PolyBoundary> { outlineRectangle };
-            var geomCube = new Geometry(outlinesCube);
+            var geomCubeOutlines = new List<PolyBoundary> { outlineTwo };
+            var geomCube = new Geometry(geomCubeOutlines);
             geomCube.Extrude2DPolygon(1, false);
             //geomCube.Extrude2DPolygon(1, true);
             geomCube.Triangulate();
             var cube = new JometriMesh(geomCube);
 
-            var outlinesTriangle = new List<PolyBoundary> { outlineTriangle };
-            var geomTri = new Geometry(outlinesTriangle);
+            var geomTriangleOutlines = new List<PolyBoundary> { outlineThree };
+            var geomTri = new Geometry(geomTriangleOutlines);
             geomTri.Triangulate();
             var triangle = new JometriMesh(geomTri);
 
@@ -110,13 +109,14 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             parentNode.Components.Add(parentTrans);
 
-            //Octagon
             var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
+
+
             var meshCOne = new MeshComponent
             {
-                Vertices = octagon.Vertices,
-                Triangles = octagon.Triangles,
-                Normals = octagon.Normals,
+                Vertices = meshOne.Vertices,
+                Triangles = meshOne.Triangles,
+                Normals = meshOne.Normals,
             };
 
             var tranC = new TransformComponent
@@ -128,8 +128,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             sceneNodeCOne.Components.Add(tranC);
             sceneNodeCOne.Components.Add(meshCOne);
-
-            //Cube
+            ///////////////////////////////////////////////////////////
             var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
             var meshCCube = new MeshComponent
@@ -147,8 +146,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             sceneNodeCCube.Components.Add(tranCube);
             sceneNodeCCube.Components.Add(meshCCube);
-
-            //Triangle
+            //////////////////////////////////////////////////////////////////
             var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
             var meshCTri = new MeshComponent
@@ -166,16 +164,17 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             sceneNodeCTri.Components.Add(tranTri);
             sceneNodeCTri.Components.Add(meshCTri);
-            
+            //////////////////////////////////////////////////////////////////
+
             parentNode.Children.Add(sceneNodeCTri);
             parentNode.Children.Add(sceneNodeCOne);
             parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
-            ///////////////////////////////////////////////////////////////////////////
-            
+
             _renderer = new SceneRenderer(sc);
 
-            RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
+            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            RC.ClearColor = new float4(0, 1, 1, 1);
 
         }
 
@@ -200,7 +199,13 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
 
             _renderer.Render(RC);
 
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
+        }
+
+        private InputDevice Creator(IInputDeviceImp device)
+        {
+            throw new NotImplementedException();
         }
 
         // Is called when the window was resized

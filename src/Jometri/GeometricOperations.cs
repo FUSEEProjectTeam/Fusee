@@ -340,5 +340,22 @@ namespace Fusee.Jometri
 
             return true;
         }
+
+        /// <summary>
+        /// Calculates the mean Vertex position of given Vertices.
+        /// </summary>
+        /// <param name="vertices">List of all Vertices which are part of the new mean poisiton.</param>
+        /// <returns>Returns the position of the mean of all Vertices as a float3.</returns>
+        public static float3 GetVerticesMeanPos(List<Vertex> vertices)
+        {
+            float3 centroid = new float3();
+
+            foreach (Vertex vertex in vertices)
+            {
+                centroid += vertex.VertData.Pos;
+            }
+            centroid = centroid / vertices.Count;
+            return centroid;
+        }
     }
 }

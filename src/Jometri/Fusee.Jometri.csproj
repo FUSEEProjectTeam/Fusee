@@ -49,8 +49,11 @@
     <Compile Include="BinarySearchTree.cs" />
     <Compile Include="DCEL\Components.cs" />
     <Compile Include="DCEL\AttributeInformation.cs" />
+    <Compile Include="DCEL\CreateGeometry.cs" />
     <Compile Include="DCEL\InitializeGeometryHelper.cs" />
     <Compile Include="Manipulation\Extrude.cs" />
+    <Compile Include="Manipulation\GeometryEditing.cs" />
+    <Compile Include="Manipulation\SubdivisionSurface.cs" />
     <Compile Include="Triangulation\StatusEdge.cs" />
     <Compile Include="Triangulation\SweepLineStatus.cs" />
     <Compile Include="Triangulation\Triangulate.cs" />
