@@ -1,0 +1,1 @@
+Open %FUSEEROOT%src/Fusee.Engine.sln

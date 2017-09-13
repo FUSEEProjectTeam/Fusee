@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.26403.7
+VisualStudioVersion = 15.0.26730.12
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{BF6B8C64-C111-450A-A8CA-297B75CDFEF8}"
 EndProject
@@ -13,86 +13,84 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imp", "Imp", "{A134FDBF-E06
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Imp", "Imp", "{8242184B-D6AF-4129-8225-77D53F81BFDD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Common", "Base\Common\Fusee.Base.Common.csproj", "{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Common", "..\..\..\Base\Common\Fusee.Base.Common.csproj", "{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Common", "Engine\Common\Fusee.Engine.Common.csproj", "{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Common", "..\..\Common\Fusee.Engine.Common.csproj", "{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Core", "Engine\Core\Fusee.Engine.Core.csproj", "{1228EB3F-8BCC-453F-8A2E-D9246495A118}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Core", "..\..\Core\Fusee.Engine.Core.csproj", "{1228EB3F-8BCC-453F-8A2E-D9246495A118}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Math.Core", "Math\Core\Fusee.Math.Core.csproj", "{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Math.Core", "..\..\..\Math\Core\Fusee.Math.Core.csproj", "{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graphics", "Graphics", "{6295AB06-EBE4-4887-A811-20737F6F8645}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Xirkit", "Xirkit\Fusee.Xirkit.csproj", "{F091790C-ED62-44D2-8622-966030A98E0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Xirkit", "..\..\..\Xirkit\Fusee.Xirkit.csproj", "{F091790C-ED62-44D2-8622-966030A98E0B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Web", "Engine\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj", "{82A2D997-B7AC-41D9-A166-65FCFED2114D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Web", "..\..\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj", "{82A2D997-B7AC-41D9-A166-65FCFED2114D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Serialization", "Serialization\Fusee.Serialization.csproj", "{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Serialization", "..\..\..\Serialization\Fusee.Serialization.csproj", "{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sound", "Sound", "{DEF4479A-380F-46D8-83A9-7D0AC1FB0154}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Sound.Desktop", "Engine\Imp\Sound\Desktop\Fusee.Engine.Imp.Sound.Desktop.csproj", "{0A06B3EA-5934-4373-854A-B4D6E7E1FE16}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Sound.Desktop", "..\..\Imp\Sound\Desktop\Fusee.Engine.Imp.Sound.Desktop.csproj", "{0A06B3EA-5934-4373-854A-B4D6E7E1FE16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Sound.Web", "Engine\Imp\Sound\Web\Fusee.Engine.Imp.Sound.Web.csproj", "{5142DBD9-C256-4CC6-A457-CDD263CA0AD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Sound.Web", "..\..\Imp\Sound\Web\Fusee.Engine.Imp.Sound.Web.csproj", "{5142DBD9-C256-4CC6-A457-CDD263CA0AD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Network", "Network", "{2E71E14D-7BB8-4112-A223-E7038B4E50E7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Network.Web", "Engine\Imp\Network\Web\Fusee.Engine.Imp.Network.Web.csproj", "{166CA771-E82F-4D70-BE1E-C78E705FC95C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Network.Web", "..\..\Imp\Network\Web\Fusee.Engine.Imp.Network.Web.csproj", "{166CA771-E82F-4D70-BE1E-C78E705FC95C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Network.Desktop", "Engine\Imp\Network\Desktop\Fusee.Engine.Imp.Network.Desktop.csproj", "{8CE7CE74-06B0-46B8-A48A-21F821287449}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Network.Desktop", "..\..\Imp\Network\Desktop\Fusee.Engine.Imp.Network.Desktop.csproj", "{8CE7CE74-06B0-46B8-A48A-21F821287449}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Physics", "Physics", "{9E5B469F-4E1A-429A-9BD1-2101ADFC519F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Physics.Desktop", "Engine\Imp\Physics\Desktop\Fusee.Engine.Imp.Physics.Desktop.csproj", "{A44DA267-B8B9-4724-9218-2DDBF995FC2A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Physics.Desktop", "..\..\Imp\Physics\Desktop\Fusee.Engine.Imp.Physics.Desktop.csproj", "{A44DA267-B8B9-4724-9218-2DDBF995FC2A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Xene", "Xene\Fusee.Xene.csproj", "{10DA02FC-109F-4D71-864A-9F5B1E9A0D70}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Xene", "..\..\..\Xene\Fusee.Xene.csproj", "{10DA02FC-109F-4D71-864A-9F5B1E9A0D70}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Core", "Base\Core\Fusee.Base.Core.csproj", "{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Core", "..\..\..\Base\Core\Fusee.Base.Core.csproj", "{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Examples", "Examples", "{86C1CD6F-F5D8-4183-9032-3E323C33672C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tools", "Tools", "{0C344D5F-BE70-4828-B95A-1D313B894BC3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuGen", "Tools\fuGen\fuGen.csproj", "{97C823BE-0447-46CC-80E7-CB88B19FBCAA}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuGen", "..\..\..\Tools\fuGen\fuGen.csproj", "{97C823BE-0447-46CC-80E7-CB88B19FBCAA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuHttp", "Tools\fuHttp\fuHttp.csproj", "{19558F0D-C910-43E3-9E09-59452F6EC528}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuHttp", "..\..\..\Tools\fuHttp\fuHttp.csproj", "{19558F0D-C910-43E3-9E09-59452F6EC528}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.Shared", "Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.shproj", "{253263C9-9C67-44A5-94D3-51C586BBDAEC}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Engine.Imp.Graphics.Shared", "..\..\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.shproj", "{253263C9-9C67-44A5-94D3-51C586BBDAEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Desktop", "Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj", "{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Desktop", "..\..\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj", "{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Android", "Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj", "{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Android", "..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj", "{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Android", "Base\Imp\Android\Fusee.Base.Imp.Android.csproj", "{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Android", "..\..\..\Base\Imp\Android\Fusee.Base.Imp.Android.csproj", "{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}"
 EndProject
-Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Base.Imp.Shared", "Base\Imp\Shared\Fusee.Base.Imp.Shared.shproj", "{3564577B-6BA7-41DC-9B19-FD6FBD690CB0}"
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "Fusee.Base.Imp.Shared", "..\..\..\Base\Imp\Shared\Fusee.Base.Imp.Shared.shproj", "{3564577B-6BA7-41DC-9B19-FD6FBD690CB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj", "{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Desktop", "..\..\..\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj", "{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Web", "Base\Imp\Web\Fusee.Base.Imp.Web.csproj", "{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Base.Imp.Web", "..\..\..\Base\Imp\Web\Fusee.Base.Imp.Web.csproj", "{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Jometri", "Jometri\Fusee.Jometri.csproj", "{8EE002C1-E15C-4297-8013-5005D65E33D9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Jometri", "..\..\..\Jometri\Fusee.Jometri.csproj", "{8EE002C1-E15C-4297-8013-5005D65E33D9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuConv", "Tools\fuConv\fuConv.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuConv", "..\..\..\Tools\fuConv\fuConv.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ShaderComp", "ShaderComp", "{7FABF7E3-5197-4F63-95E1-8571FA72A55B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GeometryEditing", "GeometryEditing", "{F5245EBC-4DEA-4317-A5CE-A0BE4E220DB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ShaderComp.Android", "Engine\Examples\ShaderComp\Android\Fusee.Engine.Examples.ShaderComp.Android.csproj", "{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.GeometryEditing.Core", "Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj", "{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ShaderComp.Core", "Engine\Examples\ShaderComp\Core\Fusee.Engine.Examples.ShaderComp.Core.csproj", "{0D5DEF56-A0E0-4977-AB26-119C37943662}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.GeometryEditing.Desktop", "Desktop\Fusee.Engine.Examples.GeometryEditing.Desktop.csproj", "{8C6DA13A-48C1-44D9-851D-A10B5251A50B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ShaderComp.Desktop", "Engine\Examples\ShaderComp\Desktop\Fusee.Engine.Examples.ShaderComp.Desktop.csproj", "{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.ShaderComp.Web", "Engine\Examples\ShaderComp\Web\Fusee.Engine.Examples.ShaderComp.Web.csproj", "{AD2D624B-8C56-4625-AE7A-28D0264166D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.GeometryEditing.Web", "Web\Fusee.Engine.Examples.GeometryEditing.Web.csproj", "{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
-		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{3564577b-6ba7-41dc-9b19-fd6fbd690cb0}*SharedItemsImports = 13
-		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}*SharedItemsImports = 4
-		Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}*SharedItemsImports = 4
-		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 4
-		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 4
+		..\..\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
+		..\..\..\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{3564577b-6ba7-41dc-9b19-fd6fbd690cb0}*SharedItemsImports = 13
+		..\..\..\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{4b5ec54f-e0fb-4aa8-85e7-eb84843d5c7c}*SharedItemsImports = 4
+		..\..\..\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems*{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}*SharedItemsImports = 4
+		..\..\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}*SharedItemsImports = 4
+		..\..\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -529,80 +527,50 @@ Global
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release|x64.Build.0 = Release|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release|x86.ActiveCfg = Release|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release|x86.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM.Build.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM.Deploy.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|ARM64.Deploy.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x64.Build.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x86.Build.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Debug|x86.Deploy.0 = Debug|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|Any CPU.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM.ActiveCfg = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM.Deploy.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM64.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|ARM64.Deploy.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x64.ActiveCfg = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x64.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x64.Deploy.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x86.ActiveCfg = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x86.Build.0 = Release|Any CPU
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8}.Release|x86.Deploy.0 = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|ARM.ActiveCfg = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|ARM.Build.0 = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|ARM64.ActiveCfg = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|ARM64.Build.0 = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|x64.Build.0 = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Debug|x86.Build.0 = Debug|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|Any CPU.Build.0 = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|ARM.ActiveCfg = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|ARM.Build.0 = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|ARM64.ActiveCfg = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|ARM64.Build.0 = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|x64.ActiveCfg = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|x64.Build.0 = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|x86.ActiveCfg = Release|Any CPU
-		{0D5DEF56-A0E0-4977-AB26-119C37943662}.Release|x86.Build.0 = Release|Any CPU
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|ARM.ActiveCfg = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|ARM64.ActiveCfg = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|x64.ActiveCfg = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|x86.ActiveCfg = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Debug|x86.Build.0 = Debug|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|Any CPU.ActiveCfg = Release|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|ARM.ActiveCfg = Release|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|ARM64.ActiveCfg = Release|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|x64.ActiveCfg = Release|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|x86.ActiveCfg = Release|x86
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7}.Release|x86.Build.0 = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|ARM.ActiveCfg = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|ARM64.ActiveCfg = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|x64.ActiveCfg = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|x86.ActiveCfg = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Debug|x86.Build.0 = Debug|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|Any CPU.ActiveCfg = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|ARM.ActiveCfg = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|ARM64.ActiveCfg = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|x64.ActiveCfg = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|x86.ActiveCfg = Release|x86
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4}.Release|x86.Build.0 = Release|x86
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|ARM.ActiveCfg = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|ARM.Build.0 = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|ARM64.ActiveCfg = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|ARM64.Build.0 = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|x64.Build.0 = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Debug|x86.Build.0 = Debug|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|ARM.ActiveCfg = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|ARM.Build.0 = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|ARM64.ActiveCfg = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|ARM64.Build.0 = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|x64.ActiveCfg = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|x64.Build.0 = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|x86.ActiveCfg = Release|Any CPU
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F}.Release|x86.Build.0 = Release|Any CPU
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|ARM.ActiveCfg = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|ARM64.ActiveCfg = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|x64.ActiveCfg = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|x86.ActiveCfg = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Debug|x86.Build.0 = Debug|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|Any CPU.ActiveCfg = Release|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|ARM.ActiveCfg = Release|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|ARM64.ActiveCfg = Release|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|x64.ActiveCfg = Release|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|x86.ActiveCfg = Release|x86
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B}.Release|x86.Build.0 = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|Any CPU.ActiveCfg = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|ARM.ActiveCfg = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|ARM64.ActiveCfg = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|x64.ActiveCfg = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|x86.ActiveCfg = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Debug|x86.Build.0 = Debug|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|Any CPU.ActiveCfg = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|ARM.ActiveCfg = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|ARM64.ActiveCfg = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|x64.ActiveCfg = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|x86.ActiveCfg = Release|x86
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -636,10 +604,12 @@ Global
 		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855} = {A134FDBF-E063-415F-94F3-BF51C36AAB57}
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
-		{7FABF7E3-5197-4F63-95E1-8571FA72A55B} = {86C1CD6F-F5D8-4183-9032-3E323C33672C}
-		{A599DDFB-BD12-4A9E-ACE4-F93D9073D7A8} = {7FABF7E3-5197-4F63-95E1-8571FA72A55B}
-		{0D5DEF56-A0E0-4977-AB26-119C37943662} = {7FABF7E3-5197-4F63-95E1-8571FA72A55B}
-		{BAD2B4A3-E996-4F42-83B9-15E57D69A7F7} = {7FABF7E3-5197-4F63-95E1-8571FA72A55B}
-		{AD2D624B-8C56-4625-AE7A-28D0264166D4} = {7FABF7E3-5197-4F63-95E1-8571FA72A55B}
+		{F5245EBC-4DEA-4317-A5CE-A0BE4E220DB8} = {86C1CD6F-F5D8-4183-9032-3E323C33672C}
+		{8D61F2EA-565F-427D-B285-A8CEBB3BC08F} = {F5245EBC-4DEA-4317-A5CE-A0BE4E220DB8}
+		{8C6DA13A-48C1-44D9-851D-A10B5251A50B} = {F5245EBC-4DEA-4317-A5CE-A0BE4E220DB8}
+		{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8} = {F5245EBC-4DEA-4317-A5CE-A0BE4E220DB8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AE5D496C-D7B5-43A0-8D87-21933A2B6EA4}
 	EndGlobalSection
 EndGlobal
