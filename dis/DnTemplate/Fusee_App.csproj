@@ -1,0 +1,33 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Base.Common.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Base.Core.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Math.Core.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Serialization.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Xene.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Engine.Common.dll">
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Engine.Core.dll">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+</Project>

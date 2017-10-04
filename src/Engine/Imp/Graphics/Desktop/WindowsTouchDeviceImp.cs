@@ -215,10 +215,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
         [DllImport("user32.dll")]
-        private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, int wParam, int lParam);
+        private static extern IntPtr DefWindowProc(IntPtr hWnd, int uMsg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
-        private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, int lParam);
+        // private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
+        static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         [DllImport("user32.dll")]
         private static extern IntPtr EnableMouseInPointer(bool fEnable);
@@ -251,7 +252,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         [DllImport("user32.dll")]
         static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
 
-        private delegate IntPtr WinProc(IntPtr hWnd, int Msg, int wParam, int lParam);
+        private delegate IntPtr WinProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         private WinProc _newWinProc;
 
@@ -267,7 +268,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
 
-        private IntPtr TouchWindowProc(IntPtr hWnd, int Msg, int wParam, int lParam)
+        private IntPtr TouchWindowProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
         {
             unchecked
             {

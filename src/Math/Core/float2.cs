@@ -975,6 +975,8 @@ namespace Fusee.Math.Core
             return u >= 0 && v >= 0 && u + v < 1;
         }
 
+        /// <summary>
+        /// Checks if the three given 2D points form a clockwise (CW) triangle
         /// </summary>
         /// <param name="a">The first point of the triangle.</param>
         /// <param name="b">The second point of the triangle.</param>

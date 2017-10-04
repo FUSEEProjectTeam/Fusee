@@ -129,7 +129,11 @@ namespace Fusee.Engine.Core.GUI
                     }
                 }
             },
-                new[] {new EffectParameterDeclaration {Name = "tex", Value = GUITexture}});
+            new[]
+            {
+                new EffectParameterDeclaration {Name = "tex", Value = GUITexture},
+                new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
+            });
         }
 
         protected internal override void AttachToContext(RenderContext rc)

@@ -75,7 +75,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             #endif
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
@@ -142,7 +142,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiHandler.RenderGUI();
             #endif
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

@@ -25,6 +25,7 @@ namespace Fusee.Serialization
         public float Time;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing double values.
     /// </summary>
@@ -38,6 +39,7 @@ namespace Fusee.Serialization
         public double Value;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing integer values.
     /// </summary>
@@ -51,6 +53,7 @@ namespace Fusee.Serialization
         public int Value;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing float values.
     /// </summary>
@@ -64,6 +67,7 @@ namespace Fusee.Serialization
         public float Value;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing float2 values.
     /// </summary>
@@ -77,6 +81,7 @@ namespace Fusee.Serialization
         public float2 Value;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing float3 values.
     /// </summary>
@@ -90,6 +95,7 @@ namespace Fusee.Serialization
         public float3 Value;
     }
 
+    /// <inheritdoc />
     /// <summary>
     /// Animation key storing float4 values.
     /// </summary>
@@ -119,22 +125,24 @@ namespace Fusee.Serialization
     }
 
     /// <summary> 
-    /// Symbolic value describing the data type of the key values stored in an animation track. 
+    /// Symbolic value describing the data type of stored values. 
     /// </summary>
-    public enum KeyType
+    public enum TypeId
     {
-        /// <summary> Key contains double values. </summary>
+        /// <summary>Contains double values. </summary>
         Double,
-        /// <summary> Key contains int values. </summary>
+        /// <summary>Contains int values. </summary>
         Int,
-        /// <summary> Key contains float values. </summary>
+        /// <summary>Contains float values. </summary>
         Float,
-        /// <summary> Key contains float2 values. </summary>
+        /// <summary>Contains float2 values. </summary>
         Float2,
-        /// <summary> Key contains float3 values. </summary>
+        /// <summary>Contains float3 values. </summary>
         Float3,
-        /// <summary> Key contains float4 values. </summary>
-        Float4,      
+        /// <summary>Contains float4 values. </summary>
+        Float4,
+        /// <summary>Contains boolean values. </summary>
+        Bool,
     }
 
     /// <summary>
@@ -159,7 +167,7 @@ namespace Fusee.Serialization
         /// The type of the key-values stored in this animation track.
         /// </summary>
         [ProtoMember(3, AsReference = true)] 
-        public KeyType KeyType;
+        public TypeId TypeId;
 
         /// <summary>
         /// The lerp type to use for interpolation. 

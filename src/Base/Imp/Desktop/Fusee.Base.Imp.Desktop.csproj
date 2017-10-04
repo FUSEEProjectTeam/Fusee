@@ -51,7 +51,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
-    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\Win32\freetype262d.dll">
+    <FUSEE_Native_Library Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll">
       <Link>Natives\freetype262d.dll</Link>
     </FUSEE_Native_Library>
   </ItemGroup>

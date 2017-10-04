@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <!-- Project Sdk="Microsoft.NET.Sdk" -->
+  <PropertyGroup>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Core\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+  </PropertyGroup>
+  <!-- as suggested at https://github.com/dotnet/sdk/issues/1518 by dasMulli -->
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\FuseeLogo150.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Lato-Black.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Model.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="..\..\..\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="..\..\..\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj" />
+  </ItemGroup>
+
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />  
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+</Project>

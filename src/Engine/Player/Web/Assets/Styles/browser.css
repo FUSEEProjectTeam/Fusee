@@ -1,0 +1,80 @@
+*, html, body {
+	margin: 0px;
+	padding: 0px;
+}
+
+body {
+	height: 500px;
+	overflow: hidden;
+}
+
+/* CANVAS */
+#canvas {
+	background-color: black;
+	border: 0px;
+	left: 0px;
+	top: 0px;
+
+	image-rendering: optimizeSpeed; 
+	image-rendering: -moz-crisp-edges; 
+	image-rendering: -o-crisp-edges; 
+	image-rendering: -webkit-optimize-contrast; 
+	-ms-interpolation-mode: nearest-neighbor;
+
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+
+	-webkit-user-drag: none; 
+	-moz-user-drag: none; 
+    /* ReSharper disable once CssNotResolved */
+	user-drag: none;
+}
+
+/* PROGRESS BAR */
+#loadingProgress {
+	position: absolute;	
+	width: 600px;
+	height: 53px;
+	left: 50%;
+	top: 50%;
+	margin-left: -300px;
+	margin-top: -26px;
+	border: 3px solid white;
+	border-radius: 6px;
+	z-index: 99;
+	overflow: hidden;
+	background: black;
+}
+
+#progressBar {
+	height: 53px;
+	border: 1px solid white;
+	border-right: none;
+	border-left: none;
+    margin: -1px;
+	padding: 0px;
+	background: #009C78 url('loading_rocket.png') no-repeat right center;
+}
+
+#progressText {
+	position: absolute;
+	text-align: center;
+	text-shadow: #000000 1px 1px 0px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	background-color: rgba(0, 0, 0, 0.66);
+	border-radius: 8px;
+	color: white;
+	font-family: Consolas, Courier New, Courier;
+	font-size: 9pt;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	padding-left: 6px;
+	padding-right: 6px;
+	max-width: 90%;
+	max-height: 1.1em;
+}

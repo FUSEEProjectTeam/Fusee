@@ -36,23 +36,61 @@ DONE:	Implement Assets System capable of abstracting File-System access (Desktop
 			asset loading approach (e.g. img.OnLoad) wrapped by JSIL.Browser asset loaders.
 DONE:	Remove Font implementation from RenderContext (probably even from Imp.Graphics)
 
-
 DONE:	Check if Kerning works.
 
-		Clean-up Fusee.Engine.Simple build
-		Test creating an external project (not below FUSEE)
+DONE:	Clean-up Fusee.Engine.Simple build
+DONE:	Test creating an external project (not below FUSEE)
 		Create a project template for external projects
-		Document first steps (creating a new project)
-		Create new Develop branch and make it the main branch
+DONE:	Document first steps (creating a new project)
+DONE:	Create new Develop branch and make it the main branch
+DONE:	Find a solution how to include Assets in Android-builds from the application's 
+			platform-agnostic Core-Project	
+DONE: 	Publish self-built freetype & Sharpfont on GitHub
+DONE:	Transform Examples to portable DLLs
+
+	########### fusee binary distro ##############
+
+DONE:	Create "dotnet new fusee" template.
+			See https://github.com/dotnet/templating/wiki
+			and https://blogs.msdn.microsoft.com/dotnet/2017/04/02/how-to-create-your-own-templates-for-dotnet-new/
 		
+		Create "fusee" command mimicking other package commands ("git", "dotnet", "nuget", ...)
+		Main purpose is to enable a binary FUSEE distribution to be used platform independently
+		and to provide tooling needed during build of such packages
+			Implement these verbs:
+				- publish: with options "Desktop, Web and Android" (Desktop first: Simply pack the player, .Core DLL and assets into one directory)
+				- server:  start a local webserver to host web builds (incorporate fuHttp)
+			Secondary goal ist to include all other stuff below the Tools directory. WARNING: Be aware 
+				of cyclic dependencies during the build of "fuseeCmdLine"
+		
+		Make fuseeCmdLine a .Net Core 2.0 executable
+			Make it run on Mac!
+		
+		Evaluate possibility to make the "fusee" command line part of "dotnet fusee"
+			See https://docs.microsoft.com/en-us/dotnet/core/tools/extensibility
+			
+		Create "Installer" for a "Fusee binary distribution"
+			Evaluate different approaches including
+				Unzip, set "FuseeRoot", set Path to fusee.exe, install dotnet new template, maybe install dotnet fusee command
+				NuGet to do the above (Question: is the FUSEE runtime too much weight on a per-project basis (instead of a per-dev-machine basis)?)
+				
+	############ blender integration ##############	
+	
+		Allow new type of FUSEE .Core Dlls implementing "behavior" classes to be attached
+		to individual scene graph nodes instead of one overall RenderCanvas derivative.
+		
+		Extend Blender AddIn 
+			Allow useres to add FUSEE based extra information on blender objects e.g. Property Names, possible events, etc.
+			Export .fus-file with accompanying set of partial behavior class .cs files defining the properties and enough information
+			to wire scenegraph object instances to behaviour instances at startup.
+		
+	############ long term goals ####################	
+	
 		Convert Sound to Assets
 		Implement Android sound handling
 		
-
 		Remove FontMap.FixKerning. Instead of fixing existing geometry provide methods to create kerned geometry in the first place.
 		Document AssetStorage and under-the-hood mechanism.
-		Find a solution how to include Assets in Android-builds from the application's 
-			platform-agnostic Core-Project	
 
 		Rewrite asset system NOT using JSIL's XNA-mimicking asset system. Instead directly use XHTMLRequest (or some JSIL in-between lighter than XNA-assets)
 				in conjunction with soundjs/opentype handling (NOT NECESSARY ANY MORE)
@@ -60,13 +98,11 @@ DONE:	Check if Kerning works.
 		Restructure input (move keyboard/mouse out of Graphics)
 		Clean-up gamepad input (implement new interfaces, ...)
 		Clean up Imp.Graphics (Desktop/Windows...)
-		Publish self-built freetype & Sharpfont on GitHub
 		Clean up GitHub projects (fuTools, external binaries, ...)
 		Report JSIL issues:
 			1. Eliminating XNA causes trouble with audio and image loading (see ext/JSIL/README.md)
 			2. Using IEnumerable Extensions and LINQ in portable libraries causes JSIL crashes in JSIL.Internal.FunctionTransformFailureException: Function transform pipeline stage
 			3. issue regarding Dead Code Removal and how to avoid self-written mscorlib, System (everything under ext/JSIL/FrameworkScripts
-		Transform Examples to portable DLLs
 		Remove all warnings
 		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
 		Fix Light position when applying bone animation (without normal map).

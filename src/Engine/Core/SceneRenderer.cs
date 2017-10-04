@@ -333,11 +333,11 @@ namespace Fusee.Engine.Core
                 {
                     foreach (AnimationTrackContainer animTrackContainer in ac.AnimationTracks)
                     {
-                        // Type t = animTrackContainer.KeyType;
-                        switch (animTrackContainer.KeyType)
+                        // Type t = animTrackContainer.TypeId;
+                        switch (animTrackContainer.TypeId)
                         {
                             // if (typeof(int).IsAssignableFrom(t))
-                            case KeyType.Int:
+                            case TypeId.Int:
                             {
                                 Channel<int> channel = new Channel<int>(Lerp.IntLerp);
                                 foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
@@ -349,7 +349,7 @@ namespace Fusee.Engine.Core
                             }
                                 break;
                             //else if (typeof(float).IsAssignableFrom(t))
-                            case KeyType.Float:
+                            case TypeId.Float:
                             {
                                 Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
                                 foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
@@ -362,7 +362,7 @@ namespace Fusee.Engine.Core
                                 break;
 
                             // else if (typeof(float2).IsAssignableFrom(t))
-                            case KeyType.Float2:
+                            case TypeId.Float2:
                             {
                                 Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
                                 foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
@@ -374,7 +374,7 @@ namespace Fusee.Engine.Core
                             }
                                 break;
                             // else if (typeof(float3).IsAssignableFrom(t))
-                            case KeyType.Float3:
+                            case TypeId.Float3:
                             {
                                 Channel<float3>.LerpFunc lerpFunc;
                                 switch (animTrackContainer.LerpType)
@@ -402,7 +402,7 @@ namespace Fusee.Engine.Core
                             }
                                 break;
                             // else if (typeof(float4).IsAssignableFrom(t))
-                            case KeyType.Float4:
+                            case TypeId.Float4:
                             {
                                 Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
                                 foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
@@ -1360,46 +1360,46 @@ namespace Fusee.Engine.Core
 
             var returnEffectParameterDeclaration = new EffectParameterDeclaration { Name = effectParameter.Name };
 
-            var t = effectParameter.KeyType;
+            var t = effectParameter.TypeId;
 
-            if (typeof(int).IsAssignableFrom(t))
+            switch (t)
             {
-                var effectParameterType = effectParameter as TypeContainerInt;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
+                case TypeId.Int:
+                    if (effectParameter is TypeContainerInt effectParameterInt)
+                        returnEffectParameterDeclaration.Value = effectParameterInt.Value;
+                    break;
+                case TypeId.Double:
+                    if (effectParameter is TypeContainerDouble effectParameterDouble)
+                        returnEffectParameterDeclaration.Value = effectParameterDouble.Value;
+                    break;
+                case TypeId.Float:
+                    if (effectParameter is TypeContainerFloat effectParameterFloat)
+                        returnEffectParameterDeclaration.Value = effectParameterFloat.Value;
+                    break;
+                case TypeId.Float2:
+                    if (effectParameter is TypeContainerFloat2 effectParameterFloat2)
+                        returnEffectParameterDeclaration.Value = effectParameterFloat2.Value;
+                    break;
+                case TypeId.Float3:
+                    if (effectParameter is TypeContainerFloat3 effectParameterFloat3)
+                        returnEffectParameterDeclaration.Value = effectParameterFloat3.Value;
+                    break;
+                case TypeId.Float4:
+                    if (effectParameter is TypeContainerFloat4 effectParameterFloat4)
+                        returnEffectParameterDeclaration.Value = effectParameterFloat4.Value;
+                    break;
+                case TypeId.Bool:
+                    if (effectParameter is TypeContainerBool effectParameterBool)
+                        returnEffectParameterDeclaration.Value = effectParameterBool.Value;
+                    break;
+                default:
+                    throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name} is of unhandled type {t.ToString()}!");
+                    break;
             }
-            else if (typeof(double).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerDouble;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(float).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(float2).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat2;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(float3).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat3;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(float4).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerFloat4;
-                if (effectParameterType != null) returnEffectParameterDeclaration.Value = effectParameterType.Value;
-            }
-            else if (typeof(bool).IsAssignableFrom(t))
-            {
-                var effectParameterType = effectParameter as TypeContainerBoolean;
-                returnEffectParameterDeclaration.Value = effectParameterType != null && effectParameterType.Value;
-            }
+
 
             if (returnEffectParameterDeclaration.Value == null)
-                throw new InvalidDataException("EffectParameterDeclaration:" + effectParameter.Name + ", value is empty or of unknown type!");
+                throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name}, value is null");
 
             return returnEffectParameterDeclaration;
         }

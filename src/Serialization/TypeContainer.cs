@@ -14,7 +14,7 @@ namespace Fusee.Serialization
     [ProtoInclude(103, typeof(TypeContainerFloat2))]
     [ProtoInclude(104, typeof(TypeContainerFloat3))]
     [ProtoInclude(105, typeof(TypeContainerFloat4))]
-    [ProtoInclude(106, typeof(TypeContainerBoolean))]
+    [ProtoInclude(106, typeof(TypeContainerBool))]
     public class TypeContainer
     {
         /// <summary>
@@ -26,8 +26,8 @@ namespace Fusee.Serialization
         /// <summary>
         /// The type of the key-values stored in this ShaderComponent.
         /// </summary>
-        [ProtoMember(2, AsReference = true)]
-        public Type KeyType;
+        [ProtoMember(2)]
+        public TypeId TypeId;
     }
 
     /// <summary>
@@ -112,7 +112,7 @@ namespace Fusee.Serialization
     /// TypeContainer storing a bool value.
     /// </summary>
     [ProtoContract]
-    public class TypeContainerBoolean : TypeContainer
+    public class TypeContainerBool : TypeContainer
     {
         /// <summary>
         /// The key value combined with a <see cref="TypeContainer.Name"/>.
