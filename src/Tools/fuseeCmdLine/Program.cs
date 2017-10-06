@@ -37,6 +37,7 @@ namespace Fusee.Tools.fuseeCmdLine
         static AssimpContext Assimp => _assimpCtx ?? (_assimpCtx = new AssimpContext());
         private static AssimpContext _assimpCtx;
         private static FuseeHttpServer _httpServer;
+        private static Thread _httpThread;
 
         [Verb("scene", HelpText = "Convert 3D scene input into .fus.")]
         public class SceneOptions
@@ -96,6 +97,21 @@ namespace Fusee.Tools.fuseeCmdLine
             public Platform Platform { get; set; }
         }
 
+        [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser")]
+        public class Server
+        {
+            [Value(0, HelpText = "Directory or File path. to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
+            public string Root { get; set; }
+
+            [Option('p', "port", Default = 4655, // HEX FU,
+                HelpText = "Port the server should start running on")]
+            public int Port { get; set; }
+
+            [Option('s', "serveronly", Default = false, HelpText ="Launches the server but does not start the default browser.")]
+            public bool Serveronly { get; set; }
+        }
+
+
         [Verb("web", HelpText = "Use an existing .fus-file to start a webserver.")]
         public class WebViewer
         {
@@ -112,7 +128,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema, WebViewer, Publish>(args)
+            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema, WebViewer, Publish, Server>(args)
 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -517,12 +533,15 @@ namespace Fusee.Tools.fuseeCmdLine
                             // add app's assets to the listing in player's contentproj.manifest
                             AssetManifest.AdjustAssetManifest(dllDirPath, outPath, Path.Combine(scriptsDstDir, "Fusee.Engine.Player.Web.contentproj.manifest.js"));
 
+                            // Rename main HTML file to <app>.html
+                            File.Move(Path.Combine(outPath, "Fusee.Engine.Player.Web.html"), Path.Combine(outPath, $"{appName}.html"));
+
                             // Remove tmp
                             Directory.Delete(temp, true);
                         }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine("ERROR: internal error while publishing FUSEE Web App: " + ex);
+                            Console.Error.WriteLine("ERROR: internal error while publishing FUSEE Web App:\n" + ex);
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
                         Console.Error.WriteLine($"SUCCESS: FUSEE Web App {appName}.html generated at {outPath}.");
@@ -531,6 +550,76 @@ namespace Fusee.Tools.fuseeCmdLine
                         // END Publish Web
 
                     }
+                })
+
+                // Called with the SERVER verb
+                .WithParsed<Server>(opts =>
+                {
+                    string wwwRoot = null;
+                    string htmlFile = null;
+
+                    // If no root is given assume the current working directory
+                    if (string.IsNullOrEmpty(opts.Root))
+                    {
+                        opts.Root = Directory.GetCurrentDirectory();
+                    }
+
+                    // See if a file or a directory is specified
+                    if (File.Exists(opts.Root))
+                    {
+                        htmlFile = Path.GetFileName(opts.Root);
+                        wwwRoot = Path.Combine(Path.GetPathRoot(opts.Root), Path.GetDirectoryName(opts.Root));
+                    }
+                    else
+                    {
+                        wwwRoot = opts.Root;
+                    }
+
+                    if (!Directory.Exists(wwwRoot))
+                    {
+                        Console.Error.WriteLine($"ERROR: Root directory {wwwRoot} not present or not accessible.");
+                        Environment.Exit((int)ErrorCode.InputFile);
+                    }
+
+                    // If no file is specified, try to find index.htm[l], default.htm[l] or any other html
+                    if (string.IsNullOrEmpty(htmlFile))
+                    {
+                        string[] htmlFiles = Directory.GetFiles(wwwRoot, "*.htm?", SearchOption.TopDirectoryOnly);
+                        htmlFile = htmlFiles.FirstOrDefault(s => s.ToLower().Contains("index")) ?? htmlFiles.FirstOrDefault(s => s.ToLower().Contains("default")) ?? htmlFiles.FirstOrDefault();
+                        if (string.IsNullOrEmpty(htmlFile))
+                        {
+                            opts.Serveronly = true;
+                        }
+                        else
+                        {
+                            htmlFile = Path.GetFileName(htmlFile);
+                        }
+                    }
+
+                    // Fire up the http server
+                    try
+                    {
+                        if (_httpThread != null)
+                        {
+                            _httpThread.Abort();
+                            _httpServer = null;
+                        }
+
+                        _httpServer = new FuseeHttpServer(wwwRoot, opts.Port);
+                        _httpThread = new Thread(_httpServer.listen);
+                        _httpThread.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"ERROR: starting local HTTP server at {wwwRoot} on port {opts.Port}.\n{ex}");
+                        Environment.Exit((int)ErrorCode.InternalError);
+                    }
+                    Console.Error.WriteLine($"SUCCESS: Local HTTP server running at {wwwRoot} on port {opts.Port}.");
+
+                    if (!opts.Serveronly)
+                        Process.Start($"http://localhost:{opts.Port}/" + Path.GetFileName(htmlFile));
+                    
+                    // Environment.Exit(0);
                 })
 
                 // Called with the WEB verb

@@ -12,6 +12,28 @@
                 "reveal": "silent"
             },
             "problemMatcher": "$msCompile"
-        }
+        },
+        {
+            "dependsOn": ["build"],
+            "taskName": "Publish FUSEE Desktop app",
+            "command": "fusee publish --platform Desktop",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "dependsOn": ["build"],
+            "taskName": "Publish FUSEE Web app",
+            "command": "fusee publish --platform Web",
+            "type": "shell",
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        }        
     ]
 }
