@@ -54,16 +54,16 @@ namespace Fusee.Tools.fuseeCmdLine
             List<string> destRelativePaths = new List<string>();
 
             string buildOutputAssetDir = Path.Combine(buildOutputDir, "Assets");
-            string buildOutputAssetDirT = PathAddTrailingSeperator(buildOutputAssetDir);
+            string buildOutputAssetDirT = FileTools.PathAddTrailingSeperator(buildOutputAssetDir);
             string publicationOutputAssetDir = Path.Combine(publicationOutputDir, "Assets");
             foreach (string filePath in GetFiles(buildOutputAssetDir))
             {
                 filePaths.Add(filePath);
 
                 var srcAssetDirPath = Path.GetDirectoryName(filePath);
-                srcAssetDirPath = PathAddTrailingSeperator(srcAssetDirPath);
+                srcAssetDirPath = FileTools.PathAddTrailingSeperator(srcAssetDirPath);
 
-                destRelativePaths.Add(MakeRelativePath(buildOutputAssetDirT, srcAssetDirPath));
+                destRelativePaths.Add(FileTools.MakeRelativePath(buildOutputAssetDirT, srcAssetDirPath));
             }
 
             var fileNamesList = new List<string>();
@@ -143,9 +143,9 @@ namespace Fusee.Tools.fuseeCmdLine
             GenerateAssetManifestEntryItems(filePaths, destRelativePaths, fileCount, fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
             var manifest = new ManifestFile(projName, fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
 
-            string manifestContent = manifest.TransformText();
-            File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", projName + ".contentproj.manifest.js"),
-                manifestContent);
+            // string manifestContent = manifest.TransformText();
+            // File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", projName + ".contentproj.manifest.js"),
+            //     manifestContent);
         }
 
         public static List<string> MakeAssetRelativePaths(IEnumerable<string> filePaths, string targWeb)
@@ -153,57 +153,20 @@ namespace Fusee.Tools.fuseeCmdLine
             List<string> destRelativePaths = new List<string>();
 
             var srcAssetFolder = Path.Combine(targWeb, "Assets");
-            srcAssetFolder = PathAddTrailingSeperator(srcAssetFolder);
+            srcAssetFolder = FileTools.PathAddTrailingSeperator(srcAssetFolder);
 
             foreach (var filePath in filePaths)
             {
                 var srcAssetDirPath = Path.GetDirectoryName(filePath);
-                srcAssetDirPath = PathAddTrailingSeperator(srcAssetDirPath);
+                srcAssetDirPath = FileTools.PathAddTrailingSeperator(srcAssetDirPath);
                 
-                var srcRelativeToAssetsDir = MakeRelativePath(srcAssetFolder, srcAssetDirPath);
+                var srcRelativeToAssetsDir = FileTools.MakeRelativePath(srcAssetFolder, srcAssetDirPath);
                 destRelativePaths.Add(srcRelativeToAssetsDir);
             }
             return destRelativePaths;
         }
 
-        public static String MakeRelativePath(String fromPath, String toPath)
-        {
-            if (String.IsNullOrEmpty(fromPath)) throw new ArgumentNullException("fromPath");
-            if (String.IsNullOrEmpty(toPath)) throw new ArgumentNullException("toPath");
-
-            Uri fromUri = new Uri(fromPath);
-            Uri toUri = new Uri(toPath);
-
-            if (fromUri.Scheme != toUri.Scheme)
-            {
-                return toPath;
-            } // path can't be made relative.
-
-            Uri relativeUri = fromUri.MakeRelativeUri(toUri);
-            String relativePath = Uri.UnescapeDataString(relativeUri.ToString());
-
-            if (toUri.Scheme.ToUpperInvariant() == "FILE")
-            {
-                relativePath = relativePath.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
-            }
-
-            return relativePath;
-        }
-
-        static string PathAddTrailingSeperator(string path)
-        {
-            string separator1 = Path.DirectorySeparatorChar.ToString();
-            string separator2 = Path.AltDirectorySeparatorChar.ToString();
-
-            path = path.TrimEnd();
-            if (path.EndsWith(separator1) || path.EndsWith(separator2))
-                return path;
-            if (path.Contains(separator2))
-                return path + separator2;
-            return path + separator1;
-        }
-
-        private static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
+         private static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
         {
             for (var ct = 0; ct <= filePaths.Count - 1; ct++)
             {

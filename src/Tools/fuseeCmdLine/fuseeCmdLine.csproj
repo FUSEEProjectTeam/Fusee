@@ -65,7 +65,7 @@
     <Compile Include="AssetManifest.cs" />
     <Compile Include="Assimp2Fusee.cs" />
     <Compile Include="CustomManifest.cs" />
-    <Compile Include="DirCopy.cs" />
+    <Compile Include="FileTools.cs" />
     <Compile Include="FileTypes.cs" />
     <Compile Include="ManifestFile.cs">
       <AutoGen>True</AutoGen>
@@ -166,10 +166,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="app.config" />
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->

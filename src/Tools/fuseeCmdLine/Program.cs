@@ -93,22 +93,39 @@ namespace Fusee.Tools.fuseeCmdLine
             public string Input { get; set; }
 
             [Option('p', "platform", Default = Platform.Desktop,
-                HelpText = "Platform the deployment packages is meant to run on. Possible values are: Desktop, Web or Android")]
+                HelpText = "Platform the deployment packages is meant to run on. Possible values are: Desktop, Web or Android.")]
             public Platform Platform { get; set; }
         }
 
-        [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser")]
+        [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser.")]
         public class Server
         {
             [Value(0, HelpText = "Directory or File path. to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
             public string Root { get; set; }
 
             [Option('p', "port", Default = 4655, // HEX FU,
-                HelpText = "Port the server should start running on")]
+                HelpText = "Port the server should start running on.")]
             public int Port { get; set; }
 
             [Option('s', "serveronly", Default = false, HelpText ="Launches the server but does not start the default browser.")]
             public bool Serveronly { get; set; }
+        }
+
+        public enum InstallationType
+        {
+            User,
+            Machine,
+        }
+
+        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation. This will set the \"FuseeRoot\" environment variable and register the 'dotnet new fusee' template.")]
+        public class Install
+        {
+            [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation.")]
+            public InstallationType InstType { get; set; }
+
+            [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will NOT delete the contents of the installation folder.")]
+            public bool Uninstall { get; set; }
+
         }
 
 
@@ -128,7 +145,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<SceneOptions, InputSceneFormats, ProtoSchema, WebViewer, Publish, Server>(args)
+            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer>(args)
 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -360,9 +377,11 @@ namespace Fusee.Tools.fuseeCmdLine
                 // Check if player is present
                 string fuseeCmdLineRoot = null;
                 string fuseeRoot = null;
+                string fuseeBuildRoot = null;
                 try
                 {
                     fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                    fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
                     fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
                 }
                 catch (Exception ex)
@@ -372,7 +391,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
 
                 string playerFile = null;
-                string desktopPlayerDir = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "Player", "Desktop")); // need this in web build as well.
+                string desktopPlayerDir = Path.GetFullPath(Path.Combine(fuseeBuildRoot, "Player", "Desktop")); // need this in web build as well.
                 switch (opts.Platform)
                 {
                     case Platform.Desktop:
@@ -380,7 +399,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         break;
                     case Platform.Web:
                         playerFile = Path.GetFullPath(Path.Combine(
-                            fuseeCmdLineRoot, "Player", "Web", "Fusee.Engine.Player.Web.html"));
+                            fuseeBuildRoot, "Player", "Web", "Fusee.Engine.Player.Web.html"));
                         break;
                     default:
                         Console.Error.WriteLine($"ERROR: Platform {opts.Platform.ToString()} is currently not handled by fusee.");
@@ -395,7 +414,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 string playerDir = Path.Combine(Path.GetPathRoot(playerFile), Path.GetDirectoryName(playerFile));
 
                 // Copy the player
-                DirCopy.DirectoryCopy(playerDir, outPath, true, true);
+                FileTools.DirectoryCopy(playerDir, outPath, true, true);
 
                 // Do platform dependent stuff to integrate the FUSEE app DLL into the player
                 switch (opts.Platform)
@@ -404,7 +423,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         try
                         {
                             // Copy the FUSEE App on top of the player.
-                            DirCopy.DirectoryCopy(dllDirPath, outPath, true, true);
+                            FileTools.DirectoryCopy(dllDirPath, outPath, true, true);
 
                             // Rename Player.exe to App Name
                             File.Move(Path.Combine(outPath, "Fusee.Engine.Player.Desktop.exe"), Path.Combine(outPath, appName + ".exe"));
@@ -432,18 +451,44 @@ namespace Fusee.Tools.fuseeCmdLine
                     case Platform.Web:
                         try
                         {
+                            // Steps taken for Web publishing
+                            // 1.Copy Original Compiled Web Player to Pub/Web
+                            // 2.cd %FuseeRoot%bin/Debug/Player/Desktop   // to have reference assemblies at hand in JSILc
+                            // 3. > PathToExt\JSILc.exe --nd
+                            //        "CoreLibraryRoot>\bin\Debug\netstandard2.0\MyFuseeApp.dll"
+                            //        - o "<Assembled>Assets/Scripts"
+                            //
+                            //     ->Will generate "MyFuseeAppBlaBla.js" and MyFuseeApp.dll.manifest.js
+                            //
+                            //4.Match $asmNN variables in MyFuseeApp.manifest.js and Fusee.Engine.Player.Web.exe.manifest.js. If 
+                            //  $asmNN from MyFuseApp are not referenced in WebPlayer, assign new $asmMMs to them. This will automatically
+                            //  handle the next point
+                            //5.In Fusee.Engine.Player.Web.exe.manifest: 
+                            //	Add MyFuseeAppBlabla as last entry of $asmNN
+                            //    Add["Script", "MyFuseeApp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": xxx }]
+                            //6.In the newly generated MyFuseeAppBlaBla.js, replace all asmNN with NNs in MyFuseeApp.dll.manifest.js
+                            //  with their respective MMs from Fusee.Engine.Player.Web.exe.manifest.
+                            //  then replace tututu to asm.
+                            //7.In Fusee.Engine.Player.Web...js, change 
+                            //    $T0A = JSIL.Memoize($asm06.Fusee.Engine.Player.Core.Player)   to
+                            //	$T0A = JSIL.Memoize($asm45.FuseeApp.MyFuseeApp)
+                            //8.Copy MyFuseeApp's assets to the Pub/Web and insert entries for each of them into.contentproj file (similar to fuConv...)
+                            //9.Rename the Player's main .html file to MyFuseeApp.html
+
                             // Call JSILc on the App DLL with cwd set to %FuseeRoot%bin/Debug/Player/Desktop to have reference assemblies at hand in JS
                             string jsilc = Path.GetFullPath(Path.Combine(fuseeRoot, "ext", "JSIL", "Compiler", "JSILc.exe"));
                             string temp = Path.Combine(outPath, "tmp");
                             Directory.CreateDirectory(temp);
-                            string jsilargs = $"--nodeps {dllFilePath} -o {temp}";
-                            ProcessStartInfo cmdsi = new ProcessStartInfo(jsilc, jsilargs)
+                            using (Process cmd = Process.Start(new ProcessStartInfo
                             {
+                                FileName = jsilc,
+                                Arguments = $"--nodeps {dllFilePath} -o {temp}",
                                 UseShellExecute = false,
                                 WorkingDirectory = desktopPlayerDir,
-                            };
-                            Process cmd = Process.Start(cmdsi);
-                            cmd.WaitForExit();
+                            }))
+                            {
+                                cmd.WaitForExit();
+                            }
 
                             // Open Fusee.Engine.Player.Web.exe.manifest.js and the manifest.js of the just compiled output (in tmp)
                             string playerManifest = Path.Combine(outPath, "Assets", "Scripts", "Fusee.Engine.Player.Web.exe.manifest.js");
@@ -462,7 +507,7 @@ namespace Fusee.Tools.fuseeCmdLine
                             int appRefNumber = -1;
                             foreach (var refApp in appDict)
                             {
-                                // See if the app's reference is already present in the original players reference
+                                // See if the app's reference is already present in the original player's reference
                                 if (playerDict.TryGetValue(refApp.Key, out int asmRef))
                                 {
                                     // Yes, the orignal player's references already contains the current app's reference
@@ -523,12 +568,12 @@ namespace Fusee.Tools.fuseeCmdLine
                             File.WriteAllText(mainExeJsFile, mainExeJsContents);
 
                             // Copy app.js from tmp to outdir
-                            DirCopy.DirectoryCopy(temp, scriptsDstDir, true, true);
+                            FileTools.DirectoryCopy(temp, scriptsDstDir, true, true);
 
                             // Copy the app's assets
                             string assetSrcDir = Path.Combine(dllDirPath, "Assets");
                             if (Directory.Exists(assetSrcDir))
-                                DirCopy.DirectoryCopy(assetSrcDir, assetDstDir, true, true);
+                                FileTools.DirectoryCopy(assetSrcDir, assetDstDir, true, true);
 
                             // add app's assets to the listing in player's contentproj.manifest
                             AssetManifest.AdjustAssetManifest(dllDirPath, outPath, Path.Combine(scriptsDstDir, "Fusee.Engine.Player.Web.contentproj.manifest.js"));
@@ -622,6 +667,98 @@ namespace Fusee.Tools.fuseeCmdLine
                     // Environment.Exit(0);
                 })
 
+
+                // Called with the INSTALL verb
+                .WithParsed<Install>(opts =>
+                {
+                    // Find FuseeRoot from this assembly
+                    string fuseeCmdLineRoot = null;
+                    string fuseeRoot = null;
+                    try
+                    {
+                        fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                        fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
+                        fuseeRoot = FileTools.PathAddTrailingSeperator(fuseeRoot);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
+                        Environment.Exit((int)ErrorCode.InternalError);
+                    }
+                    string templateDir = Path.Combine(fuseeRoot, "dis", "DnTemplate"); ;
+
+                    // Install or uninstall ? 
+                    if (!opts.Uninstall)
+                    {
+                        // INSTALL
+                        // Set the FuseeRoot Environment variable
+                        try
+                        {
+                            Environment.SetEnvironmentVariable("FuseeRoot", fuseeRoot, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to set the environment variable \"FuseeRoot\".\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+
+                        // Install the dotnet new fusee template
+                        try
+                        {
+                            using (Process cmd = Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "dotnet",
+                                Arguments = $"new --install {templateDir}",
+                                UseShellExecute = false,
+                                WorkingDirectory = Directory.GetCurrentDirectory(),
+                            }))
+                            {
+                                cmd.WaitForExit();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+                    }
+                    else
+                    {
+                        // UNINSTALL
+                        // Uninstall the dotnet new fusee template
+                        try
+                        {
+                            using (Process cmd = Process.Start(new ProcessStartInfo
+                            {
+                                FileName = "dotnet",
+                                Arguments = $"new --uninstall {templateDir}",
+                                UseShellExecute = false,
+                                WorkingDirectory = Directory.GetCurrentDirectory(),
+                            }))
+                            {
+                                cmd.WaitForExit();
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to uninstall the dotnet new fusee template at {templateDir}.\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+
+                        // Remove the FuseeRoot variable
+                        try
+                        {
+                            Environment.SetEnvironmentVariable("FuseeRoot", null, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to delete the environment variable \"FuseeRoot\".\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+
+                    }
+                })
+
                 // Called with the WEB verb
                 .WithParsed<WebViewer>(opts =>
                 {
@@ -659,7 +796,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         File.Delete(targetHtmlFilePath);
 
                     //Copy
-                    DirCopy.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
+                    FileTools.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
                     File.Move(origHtmlFilePath, targetHtmlFilePath);
 
                     // Rename 

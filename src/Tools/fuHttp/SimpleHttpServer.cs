@@ -73,9 +73,9 @@ namespace Fusee.Tools.fuHttp
                     handlePOSTRequest();
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.Error.WriteLine("Exception: " + e.ToString());
+                Console.Error.WriteLine("Exception: " + ex.ToString());
                 writeFailure();
             }
             outputStream.Flush();

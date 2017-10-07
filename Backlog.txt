@@ -58,12 +58,14 @@ DONE:	Create "dotnet new fusee" template.
 		Main purpose is to enable a binary FUSEE distribution to be used platform independently
 		and to provide tooling needed during build of such packages
 			Implement these verbs:
-				- publish: with options "Desktop, Web and Android" (Desktop first: Simply pack the player, .Core DLL and assets into one directory)
-				- server:  start a local webserver to host web builds (incorporate fuHttp)
-			Secondary goal ist to include all other stuff below the Tools directory. WARNING: Be aware 
-				of cyclic dependencies during the build of "fuseeCmdLine"
+DONE:			- publish: with options "Desktop, Web " (Desktop first: Simply pack the player, .Core DLL and assets into one directory)
+					- and Android
+DONE:			- server:  start a local webserver to host web builds (incorporate fuHttp)
+			Secondary goal ist to include all other stuff below the Tools directory. 
+				- WARNING: Be aware of cyclic dependencies during the build of "fuseeCmdLine" (Just don't copy Player from bin. Directly reference bin instead)
+				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
 		
-		Make fuseeCmdLine a .Net Core 2.0 executable
+		Make fuseeCmdLine Mono Compatible [.Net Core 2.0 executable - no good idea, results in a dll rather than an .exe]
 			Make it run on Mac!
 		
 		Evaluate possibility to make the "fusee" command line part of "dotnet fusee"
@@ -107,7 +109,7 @@ DONE:	Create "dotnet new fusee" template.
 		Use JSIL to translate a csproj at a time (with each .csproj triggering its own x-compilation as a post build event)
 		Fix Light position when applying bone animation (without normal map).
 		Fix RC Model/View/ModelView behaviour (1. View-only: awkward, 2. Model!=Id & View!=Id: Hierarchy broken.
-		Jometri integration (portable)
+DONE:	Jometri integration (portable)
 		Try JSIL's PackedArray (= js typed array or arraybuffer) implementation on Mesh (and probably also MeshContainer/Component)
 		Use arraybuffer loading on XHTMLRequests loading mesh data (if possible - problem is that only parts of .fus should be read as arraybuffers, other parts rather not)
 		Minimize mscorlib with current JSIL-on-board functionality (instead of providing our own JSIL)
