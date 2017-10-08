@@ -6,12 +6,10 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.Picking.Web
 {
-    public class Simple
+    public class Picking
     {
         public static void Main()
         {
-
-           
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Web.IOImp();
 

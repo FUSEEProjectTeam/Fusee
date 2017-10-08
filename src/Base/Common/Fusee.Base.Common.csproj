@@ -51,7 +51,6 @@
     <Compile Include="Attributes.cs" />
     <Compile Include="ColorUint.cs" />
     <Compile Include="Enums.cs" />
-    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="IFontImp.cs" />
     <Compile Include="SplitToCurveSegmentHelper.cs" />
     <Compile Include="StreamAssetProvider.cs" />

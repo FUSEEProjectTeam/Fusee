@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
@@ -35,7 +36,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private bool _keys;
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private GUIHandler _guiHandler;
 
         private GUIButton _guiFuseeLink;
@@ -50,12 +51,12 @@ namespace Fusee.Engine.Examples.Picking.Core
         private float3 _oldColor;
         private bool _pick;
         private float2 _pickPos;
-        #endif
+#endif
 
         // Init is called on startup. 
         public override void Init()
         {
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
@@ -80,7 +81,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-            #endif
+#endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -104,7 +105,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }             
+            }
 
             if (Mouse.LeftButton)
             {
@@ -153,7 +154,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
-                PickResult newPick = _scenePicker.Pick(pickPosClip).OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                
+                PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -175,9 +177,9 @@ namespace Fusee.Engine.Examples.Picking.Core
             RC.ModelView = mtxCam * mtxRot;
             _sceneRenderer.Render(RC);
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiHandler.RenderGUI();
-            #endif
+#endif
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -195,7 +197,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
@@ -204,16 +206,16 @@ namespace Fusee.Engine.Examples.Picking.Core
             RC.Projection = projection;
             _scenePicker.Projection = projection;
 
-            #if GUI_SIMPLE
+#if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
             _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
 
             _guiHandler.Refresh();
-            #endif
+#endif
 
         }
 
-        #if GUI_SIMPLE
+#if GUI_SIMPLE
         private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
@@ -232,7 +234,7 @@ namespace Fusee.Engine.Examples.Picking.Core
         {
             OpenLink("http://fusee3d.org");
         }
-        #endif
+#endif
 
 
         private SceneContainer CreateScene()

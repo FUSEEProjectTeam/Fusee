@@ -78,7 +78,7 @@ namespace Fusee.Jometri.Manipulation
         {
             var unboundedFace = geometry.GetFaceByHandle(1); //The unbounded face is always added first - therefore it will always have 1 as handle.
 
-            var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.TakeItems(unboundedFace.InnerHalfEdges.Count / 2).ToList();
+            var frontLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.Take(unboundedFace.InnerHalfEdges.Count / 2).ToList();
             var backLoopsStartHalfEdges = unboundedFace.InnerHalfEdges.Skip(unboundedFace.InnerHalfEdges.Count / 2).ToList();
 
             for (var i = 0; i < frontLoopsStartHalfEdges.Count; i++)
