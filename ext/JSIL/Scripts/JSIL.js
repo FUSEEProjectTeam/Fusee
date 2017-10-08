@@ -252,8 +252,6 @@ var $jsilloaderstate = {
   environment.loadScript(libraryRoot + "Polyfills.js");
   environment.loadScript(libraryRoot + "mersenne.js");
 
-  // environment.loadScript(libraryRoot + "opentype.js");  
-
   if (config.typedObjects || false) {
     environment.loadScript(libraryRoot + "typedobjects.js");
     environment.loadScript(libraryRoot + "JSIL.TypedObjects.js");
@@ -291,6 +289,7 @@ var $jsilloaderstate = {
     environment.loadScript(libraryRoot + "JSIL.Bootstrap.Linq.js");
   }
   environment.loadScript(libraryRoot + "JSIL.Bootstrap.Async.js");
+  environment.loadScript(libraryRoot + "JSIL.Bootstrap.Dynamic.js");
 
   if (config.xml || environment.getUserSetting("xml"))
     environment.loadScript(libraryRoot + "JSIL.XML.js");

@@ -578,6 +578,13 @@ JSIL.ImplementExternals(
       }
     );
 
+    $.Method({ Static: true, Public: true }, "Insert",
+	  new JSIL.MethodSignature($.String, [$.String, $.Int32, $.String], [], $jsilcore),
+	  function (srcStr, index, str) {
+	  	return srcStr.substring(0, index) + str + srcStr.substring(index, srcStr.length);
+	  }
+	);
+
     $.Method({ Static: true, Public: true }, "IsNullOrEmpty",
       new JSIL.MethodSignature($jsilcore.TypeRef("System.Boolean"), [$jsilcore.TypeRef("System.String")], []),
       function (str) {
@@ -625,6 +632,27 @@ JSIL.ImplementExternals(
       }
     );
 
+    $.Method({ Static: true, Public: true }, "Normalize",
+      new JSIL.MethodSignature("System.String", [
+          "System.String",
+          "System.Text.NormalizationForm"
+      ], [], $jsilcore),
+      function (str, form) {
+        if (!str.normalize)
+            return str;
+        switch (form.name) {
+            case "FormC":
+                return str.normalize("NFC");
+            case "FormD":
+                return str.normalize("NFD");
+            case "FormKC":
+                return str.Normalize("NFKC");
+            case "FormKD":
+                return str.Normalize("NFKD");
+        }
+      }
+    );
+
     $.Method({ Static: true, Public: true }, "Remove",
       new JSIL.MethodSignature($.String, [$.String, $.Int32, $.Int32], [], $jsilcore),
       function (str, start, count) {
@@ -643,6 +671,23 @@ JSIL.ImplementExternals(
       new JSIL.MethodSignature("System.Boolean", ["System.String", "System.String"], [], $jsilcore),
       function (str, text) {
         return str.indexOf(text) === 0;
+      }
+    );
+
+    $.Method({ Static: true, Public: true }, "StartsWith",
+      new JSIL.MethodSignature("System.Boolean", ["System.String", "System.String", "System.StringComparison"], [], $jsilcore),
+      function (str, text, comp) {
+        // localeCompare is better for some of these, but inconsistent
+        // enough that it needs to be tested for corners at least first.
+        switch (comp) {
+          case System.StringComparison.CurrentCultureIgnoreCase:
+            return str.toLocaleLowerCase().indexOf(text.toLocaleLowerCase()) == 0;
+          case System.StringComparison.InvariantCultureIgnoreCase:
+          case System.StringComparison.OrdinalIgnoreCase:
+            return str.toLowerCase().indexOf(text.toLowerCase()) == 0;
+          default:
+            return str.indexOf(text) === 0;
+        }
       }
     );
 
@@ -728,6 +773,7 @@ JSIL.MakeClass("System.Object", "System.String", true, [], function ($) {
      $jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", [$.Char])
   );
 });
+
 JSIL.MakeEnum(
   "System.StringComparison", true, {
     CurrentCulture: 0,
@@ -742,9 +788,11 @@ JSIL.MakeEnum(
 JSIL.EscapeJSRegex = function (regexText) {
   return regexText.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
-JSIL.SplitString = function (str, separators, options) {
+JSIL.SplitString = function (str, separators, count, options) {
   if (options && options.value)
     JSIL.RuntimeError("StringSplitOptions other than None are not implemented");
+  if (count > 0 && separators.length > 1)
+    JSIL.RuntimeError("Split with count and multiple separators is not implemented");
 
   if (!separators) {
     // Whitespace characters from Unicode 6.0
@@ -757,7 +805,16 @@ JSIL.SplitString = function (str, separators, options) {
   }
 
   if (separators.length === 1) {
-    return str.split(separators[0]);
+    if (count > 0) {
+      var splits = str.split(separators[0]);
+      if (splits.length <= count)
+        return splits;
+      splits.splice(count - 1, splits.length,
+          splits.slice(count - 1).join(separators[0]));
+      return splits;
+    } else {
+      return str.split(separators[0]);
+    }
   } else {
     var regexText = "";
     for (var i = 0; i < separators.length; i++) {
@@ -2236,6 +2293,14 @@ JSIL.ImplementExternals("System.Char", function ($) {
     }
   );
 
+  $.Method({ Static: true, Public: true }, "IsHighSurrogate",
+    new JSIL.MethodSignature($.Boolean, [$.Char], []),
+    function IsSurrogate(c) {
+      var charCode = c.charCodeAt(0);
+      return (charCode >= 0xD800) && (charCode <= 0xDBFF);
+    }
+  );
+
   $.Method({ Static: true, Public: true }, "IsWhiteSpace",
     new JSIL.MethodSignature($.Boolean, [$.Char], []),
     function IsWhiteSpace(c) {
@@ -2260,6 +2325,20 @@ JSIL.ImplementExternals("System.Char", function ($) {
     new JSIL.MethodSignature($.Char, [$.Char], []),
     function ToLowerInvariant(c) {
       return c.toUpperCase();
+    }
+  );
+
+  $.Method({ Static: true, Public: true }, "ConvertToUtf32",
+    new JSIL.MethodSignature($.Int32, [$.String, $.Int32], []),
+    function ConvertToUtf32(s, i) {
+      return $jsilcore.charCodeAt(s, i);
+    }
+  );
+
+  $.Method({ Static: true, Public: true }, "ConvertFromUtf32",
+    new JSIL.MethodSignature($.String, [$.Int32], []),
+    function ConvertFromUtf32(i) {
+        return $jsilcore.fromCharCode(i);
     }
   );
 
