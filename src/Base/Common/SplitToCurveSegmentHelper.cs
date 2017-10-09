@@ -37,24 +37,24 @@ namespace Fusee.Base.Common
 
             for (var i = 0; i < partTags.Count; i++)
             {
-                if (partTags.SkipItems(i).TakeItems(linearPattern.Length).SequEqual(linearPattern))
+                if (partTags.Skip(i).Take(linearPattern.Length).SequenceEqual(linearPattern))
                 {
                     Type = SegmentType.LINEAR;
                     segments.Add(CreateCurveSegment(i, linearPattern, partVerts));
                 }
-                else if (partTags.SkipItems(i).TakeItems(conicPattern.Length).SequEqual(conicPattern))
+                else if (partTags.Skip(i).Take(conicPattern.Length).SequenceEqual(conicPattern))
                 {
                     Type = SegmentType.CONIC;
                     segments.Add(CreateCurveSegment(i, conicPattern, partVerts));
                     i += 1;
                 }
-                else if (partTags.SkipItems(i).TakeItems(cubicPattern.Length).SequEqual(cubicPattern))
+                else if (partTags.Skip(i).Take(cubicPattern.Length).SequenceEqual(cubicPattern))
                 {
                     Type = SegmentType.CUBIC;
                     segments.Add(CreateCurveSegment(i, cubicPattern, partVerts));
                     i += 2;
                 }
-                else if (partTags.SkipItems(i).TakeItems(conicVirtualPattern.Length).SequEqual(conicVirtualPattern))
+                else if (partTags.Skip(i).Take(conicVirtualPattern.Length).SequenceEqual(conicVirtualPattern))
                 {
                     Type = SegmentType.CONIC;
                     var count = 0;
@@ -83,17 +83,17 @@ namespace Fusee.Base.Common
                 {
                     //Is needed only for "closed" CurveParts.
                     var lastSegment = new List<byte>();
-                    lastSegment.AddRange(partTags.SkipItems(i).TakeItems(partTags.Count - i));
+                    lastSegment.AddRange(partTags.Skip(i).Take(partTags.Count - i));
                     lastSegment.Add(partTags[0]);
-                    if (lastSegment.SequEqual(conicPattern))
+                    if (lastSegment.SequenceEqual(conicPattern))
                     {
                         segments.Add(CreateCurveSegment(i, conicPattern, partVerts[0], partVerts));
                     }
-                    else if (lastSegment.SequEqual(cubicPattern))
+                    else if (lastSegment.SequenceEqual(cubicPattern))
                     {
                         segments.Add(CreateCurveSegment(i, cubicPattern, partVerts[0], partVerts));
                     }
-                    else if (lastSegment.SequEqual(conicVirtualPattern))
+                    else if (lastSegment.SequenceEqual(conicVirtualPattern))
                     {
                         segments.Add(CreateCurveSegment(i, cubicPattern, partVerts[0], partVerts));
                     }
@@ -106,7 +106,7 @@ namespace Fusee.Base.Common
         {
             var zeroes = new List<float3>(vertices);
             zeroes.Remove(zeroes.First());
-            zeroes.Remove(zeroes.LastItem());
+            zeroes.Remove(zeroes.Last());
             for (var j = 0; j < zeroes.Count; j++)
             {
                 if (j + 1 >= zeroes.Count) break;
@@ -128,7 +128,7 @@ namespace Fusee.Base.Common
         private static CurveSegment CreateCurveSegment(int i, ICollection<byte> pattern, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Count));
+            segmentVerts.AddRange(verts.Skip(i).Take(pattern.Count));
 
             CurveSegment segment;
             switch (Type)
@@ -164,7 +164,7 @@ namespace Fusee.Base.Common
         private static CurveSegment CreateCurveSegment(int i, ICollection<byte> pattern, float3 startPoint, List<float3> verts)
         {
             var segmentVerts = new List<float3>();
-            segmentVerts.AddRange(verts.SkipItems(i).TakeItems(pattern.Count));
+            segmentVerts.AddRange(verts.Skip(i).Take(pattern.Count));
             segmentVerts.Add(startPoint);
             CurveSegment segment;
             switch (Type)
@@ -239,7 +239,7 @@ namespace Fusee.Base.Common
                 seg.Vertices.Remove(seg.Vertices.First());
             }
 
-            if (firstPoint == (segments.LastItem().Vertices.LastItem())) return;
+            if (firstPoint == segments.Last().Vertices.Last()) return;
 
             var lastSegmentinPart = new LinearSegment { Vertices = new List<float3>() };
             lastSegmentinPart.Vertices.Add(firstPoint);

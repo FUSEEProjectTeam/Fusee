@@ -363,13 +363,17 @@ JSIL.Audio.NullInstance = function (audioInfo, loop) {
 };
 JSIL.Audio.NullInstance.prototype = JSIL.CreatePrototypeObject(JSIL.Audio.InstancePrototype);
 
-
 function finishLoadingSound (filename, createInstance) {
+    $jsilbrowserstate.allAssetNames.push(filename);
+    allAssets[getAssetName(filename)] = createInstance(false);
+    //var asset = new CallbackSoundAsset(getAssetName(filename, true), createInstance);
+    //allAssets[getAssetName(filename)] = asset;
+  };
+/*function finishLoadingSound (filename, createInstance) {
   $jsilbrowserstate.allAssetNames.push(filename);
-  allAssets[getAssetName(filename)] = createInstance(false);
-  //var asset = new CallbackSoundAsset(getAssetName(filename, true), createInstance);
-  //allAssets[getAssetName(filename)] = asset;
-};
+  var asset = new CallbackSoundAsset(getAssetName(filename, true), createInstance);
+  allAssets[getAssetName(filename)] = asset;
+};*/
 
 function loadNullSound (audioInfo, filename, data, onError, onDoneLoading) {
   var finisher = finishLoadingSound.bind(

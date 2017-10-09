@@ -107,7 +107,7 @@ namespace Fusee.Jometri
 
             var vPos = geometry.Get2DVertPos(face, v.Handle);
 
-            var v1 = geometry.GetVertexByHandle(faceVerts.LastItem().Handle);
+            var v1 = geometry.GetVertexByHandle(faceVerts.Last().Handle);
             var v1Pos = geometry.Get2DVertPos(face, v1.Handle);
 
             var y0 = v1Pos.y >= vPos.y;
@@ -145,7 +145,7 @@ namespace Fusee.Jometri
             var inside = false;
             var faceVerts = geometry.GetFaceVertices(face.Handle).ToList();
 
-            var v1 = geometry.GetVertexByHandle(faceVerts.LastItem().Handle);
+            var v1 = geometry.GetVertexByHandle(faceVerts.Last().Handle);
             var v1Pos = geometry.Get2DVertPos(face, v1.Handle);
 
             var y0 = v1Pos.y >= v.y;

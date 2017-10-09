@@ -105,6 +105,14 @@ JSIL.MakeType({
   );
 });
 JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder", function ($) {
+  var $TaskCompletionSourceOfObject = function () {
+    return ($TaskCompletionSourceOfObject = JSIL.Memoize($jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of($jsilcore.System.Object)))();
+  };
+
+  var $TrySetExceptionSignature = function () {
+    return ($TrySetExceptionSignature = JSIL.Memoize(new JSIL.MethodSignature($jsilcore.TypeRef("System.Boolean"), [$jsilcore.TypeRef("System.Exception")])))();
+  };
+
   $.Method({ Static: false, Public: false }, ".ctor",
     (new JSIL.MethodSignature(null, [], [])),
     function _ctor() {
@@ -148,9 +156,7 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder"
   $.Method({ Static: false, Public: true }, "SetResult",
     new JSIL.MethodSignature(null, [], []),
     function SetResult() {
-      // TODO: Use JSIL.Memoize for closed generic resolution
-      var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of($jsilcore.System.Object);
-      return taskCompletionSource.prototype.TrySetResult.call(this.get_TaskSource(), null);
+      return $TaskCompletionSourceOfObject().prototype.TrySetResult.call(this.get_TaskSource(), null);
     }
   );
 
@@ -158,26 +164,21 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder"
     new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Exception")], []),
     function SetException(exception) {
       JSIL.Host.warning(exception);
-      // TODO: Use JSIL.Memoize for closed generic resolution
-      var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of($jsilcore.System.Object);
-      return taskCompletionSource.prototype.TrySetException.call(this.get_TaskSource(), exception);
+      $TrySetExceptionSignature().Call($TaskCompletionSourceOfObject().prototype, "TrySetException", null, this.get_TaskSource(), exception);
     }
   );
 
   $.Method({ Static: false, Public: true }, "get_Task",
     new JSIL.MethodSignature($jsilcore.TypeRef("System.Threading.Tasks.Task"), [], []),
     function get_Task() {
-      // TODO: Use JSIL.Memoize for closed generic resolution
-      var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of($jsilcore.System.Object);
-      return taskCompletionSource.prototype.get_Task.call(this.get_TaskSource());
+      return $TaskCompletionSourceOfObject().prototype.get_Task.call(this.get_TaskSource());
     }
   );
 
   $.RawMethod(false, "get_TaskSource",
     function get_TaskSource() {
       if (!this._taskSource) {
-        // TODO: Use JSIL.Memoize for closed generic resolution
-        this._taskSource = new ($jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of($jsilcore.System.Object))();
+        this._taskSource = new ($TaskCompletionSourceOfObject())();
       }
       return this._taskSource;
     }
@@ -185,6 +186,10 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder"
 });
 
 JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1", function ($) {
+  var $TrySetExceptionSignature = function () {
+    return ($TrySetExceptionSignature = JSIL.Memoize(new JSIL.MethodSignature($jsilcore.TypeRef("System.Boolean"), [$jsilcore.TypeRef("System.Exception")])))();
+  };
+
   $.Method({ Static: false, Public: false }, ".ctor",
     (new JSIL.MethodSignature(null, [], [])),
     function _ctor() {
@@ -194,7 +199,6 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder`
   $.Method({ Static: true, Public: true }, "Create",
     (new JSIL.MethodSignature($.Type, [], [])),
     function Create() {
-      // TODO: Use JSIL.Memoize for closed generic resolution
       return new ($jsilcore.System.Runtime.CompilerServices.AsyncTaskMethodBuilder$b1.Of(this.TResult))();
     }
   );
@@ -229,7 +233,6 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder`
   $.Method({ Static: false, Public: true }, "SetResult",
     new JSIL.MethodSignature(null, [new JSIL.GenericParameter("TResult", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1")], []),
     function SetResult(result) {
-      // TODO: Use JSIL.Memoize for closed generic resolution
       var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of(this.TResult);
       return taskCompletionSource.prototype.TrySetResult.call(this.get_TaskSource(), result);
     }
@@ -239,16 +242,14 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder`
     new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Exception")], []),
     function SetException(exception) {
       JSIL.Host.warning(exception);
-      // TODO: Use JSIL.Memoize for closed generic resolution
       var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of(this.TResult);
-      return taskCompletionSource.prototype.TrySetException.call(this.get_TaskSource(), exception);
+      $TrySetExceptionSignature().Call(taskCompletionSource.prototype, "TrySetException", null, this.get_TaskSource(), exception);
     }
   );
 
   $.Method({ Static: false, Public: true }, "get_Task",
     new JSIL.MethodSignature($jsilcore.TypeRef("System.Threading.Tasks.Task`1", [new JSIL.GenericParameter("TResult", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1")]), [], []),
     function get_Task() {
-      // TODO: Use JSIL.Memoize for closed generic resolution
       var taskCompletionSource = $jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of(this.TResult);
       return taskCompletionSource.prototype.get_Task.call(this.get_TaskSource());
     }
@@ -257,7 +258,6 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.AsyncTaskMethodBuilder`
   $.RawMethod(false, "get_TaskSource",
     function get_TaskSource() {
       if (!this._taskSource) {
-        // TODO: Use JSIL.Memoize for closed generic resolution
         this._taskSource = new ($jsilcore.System.Threading.Tasks.TaskCompletionSource$b1.Of(this.TResult))();
       }
       return this._taskSource;
@@ -358,6 +358,10 @@ JSIL.MakeType({
   $.Property({ Static: false, Public: true }, "Task", $jsilcore.TypeRef("System.Threading.Tasks.Task`1", [new JSIL.GenericParameter("TResult", "System.Runtime.CompilerServices.AsyncTaskMethodBuilder`1")]));
 });
 JSIL.ImplementExternals("System.Threading.Tasks.Task", function ($) {
+  var $AggregateExceptionConstructorSignature = function () {
+    return ($AggregateExceptionConstructorSignature = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("System.AggregateException"), [$jsilcore.TypeRef("System.String"), $jsilcore.TypeRef("System.Exception")])))();
+  };
+
   // TODO: Find solution to remove closure
   var createTaskCommon = function (self) {
     self.status = System.Threading.Tasks.TaskStatus.Created;
@@ -385,7 +389,7 @@ JSIL.ImplementExternals("System.Threading.Tasks.Task", function ($) {
 
     self.SetException = function (exception) {
       this.status = System.Threading.Tasks.TaskStatus.Faulted;
-      this.exception = new $jsilcore.System.AggregateException("One or more errors occured.", exception);
+      this.exception = $AggregateExceptionConstructorSignature().Construct("One or more errors occured.", exception);
       this.ContinueExecution();
     }
 
@@ -439,6 +443,20 @@ JSIL.ImplementExternals("System.Threading.Tasks.Task", function ($) {
     }
   );
 
+  $.Method({ Static: false, Public: true }, "get_IsCanceled",
+      (new JSIL.MethodSignature($.Boolean, [], [])),
+      function get_IsCanceled() {
+          return (this.status == System.Threading.Tasks.TaskStatus.Canceled);
+      }
+  );
+
+  $.Method({ Static: false, Public: true }, "get_IsFaulted",
+      (new JSIL.MethodSignature($.Boolean, [], [])),
+      function get_IsFaulted() {
+          return (this.status == System.Threading.Tasks.TaskStatus.Faulted);
+      }
+  );
+
   $.Method({ Static: false, Public: true }, "ContinueWith",
     (new JSIL.MethodSignature($jsilcore.TypeRef("System.Threading.Tasks.Task"), [$jsilcore.TypeRef("System.Action`1", [$jsilcore.TypeRef("System.Threading.Tasks.Task")])], [])),
     function ContinueWith(continuationAction) {
@@ -478,9 +496,26 @@ JSIL.ImplementExternals("System.Threading.Tasks.Task", function ($) {
       return tcs.Task;
     }
   );
+
+  $.Method({ Static: true, Public: true }, "FromResult",
+      new JSIL.MethodSignature($jsilcore.TypeRef("System.Threading.Tasks.Task`1", ["!!0"]), ["!!0"], ["TResult"]),
+      function(TResult, result) {
+          var task = new ($jsilcore.System.Threading.Tasks.Task$b1.Of(TResult));
+          task.result = result;
+          task.SetComplete();
+          return task;
+      }
+  );
 });
 
 JSIL.ImplementExternals("System.Threading.Tasks.Task`1", function ($) {
+  var $AggregateExceptionConstructorSignature = function () {
+    return ($AggregateExceptionConstructorSignature = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("System.AggregateException"), [$jsilcore.TypeRef("System.String"), $jsilcore.TypeRef("System.Exception")])))();
+  };
+  var $TaskCanceledExceptionExceptionConstructorSignature = function () {
+    return ($TaskCanceledExceptionExceptionConstructorSignature = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("System.Threading.Tasks.TaskCanceledException"), [])))();
+  };
+
   var createTaskCommon = function (self) {
     self.$function = null;
     self.RunTask = function () {
@@ -529,6 +564,9 @@ JSIL.ImplementExternals("System.Threading.Tasks.Task`1", function ($) {
       var taskException = this.get_Exception();
       if (taskException !== null) {
         throw taskException;
+      }
+      if (this.get_IsCanceled()) {
+          throw $AggregateExceptionConstructorSignature().Construct("One or more errors occured.", $TaskCanceledExceptionExceptionConstructorSignature().Construct());
       }
       return this.result;
     }
@@ -594,9 +632,15 @@ JSIL.MakeType({
     new JSIL.MethodSignature($jsilcore.TypeRef("System.Runtime.CompilerServices.TaskAwaiter"), [], [])
   );
 
+  $.ExternalMethod({ Static: true, Public: true }, "FromResult",
+      new JSIL.MethodSignature($jsilcore.TypeRef("System.Threading.Tasks.Task`1", ["!!0"]), ["!!0"], ["TResult"])
+  );
+
   $.Property({ Static: false, Public: true }, "Exception", $jsilcore.TypeRef("System.AggregateException"));
 
   $.Property({ Static: false, Public: true, Virtual: true }, "IsCompleted", $.Boolean);
+  $.Property({ Static: false, Public: true, Virtual: true }, "IsFaulted", $.Boolean);
+  $.Property({ Static: false, Public: true, Virtual: true }, "IsCanceled", $.Boolean);
 
   $.Property({ Static: true, Public: true }, "Factory", $jsilcore.TypeRef("System.Threading.Tasks.TaskFactory"));
 
@@ -793,6 +837,10 @@ JSIL.MakeType({
   );
 });
 JSIL.ImplementExternals("System.Runtime.CompilerServices.TaskAwaiter", function ($) {
+  var $TaskCanceledExceptionExceptionConstructorSignature = function () {
+    return ($TaskCanceledExceptionExceptionConstructorSignature = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("System.Threading.Tasks.TaskCanceledException"), [])))();
+  };
+
   $.Method({ Static: false, Public: true }, ".ctor",
     new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Threading.Tasks.Task")], []),
       function TaskAwaiter__ctor(task) {
@@ -814,6 +862,9 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.TaskAwaiter", function 
       if (!this._task.get_IsCompleted()) {
         throw new JSIL.ConstructorSignature($jsilcore.TypeRef("System.Exception"), [$jsilcore.TypeRef("System.String")]).Construct("TaskNotCompleted");
       }
+      if (this._task.get_IsCanceled()) {
+        throw $TaskCanceledExceptionExceptionConstructorSignature().Construct();
+      }
       var taskException = this._task.get_Exception();
       if (taskException !== null) {
         throw taskException.get_InnerException();
@@ -831,6 +882,10 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.TaskAwaiter", function 
 });
 
 JSIL.ImplementExternals("System.Runtime.CompilerServices.TaskAwaiter`1", function ($) {
+  var $TaskCanceledExceptionExceptionConstructorSignature = function () {
+    return ($TaskCanceledExceptionExceptionConstructorSignature = JSIL.Memoize(new JSIL.ConstructorSignature($jsilcore.TypeRef("System.Threading.Tasks.TaskCanceledException"), [])))();
+  };
+
   $.Method({ Static: false, Public: true }, ".ctor",
     new JSIL.MethodSignature(null, [$jsilcore.TypeRef("System.Threading.Tasks.Task`1", [new JSIL.GenericParameter("TResult", "System.Runtime.CompilerServices.TaskAwaiter`1")])], []),
       function TaskAwaiter__ctor(task) {
@@ -850,6 +905,9 @@ JSIL.ImplementExternals("System.Runtime.CompilerServices.TaskAwaiter`1", functio
     function GetResult() {
       if (!this._task.get_IsCompleted()) {
         throw new JSIL.ConstructorSignature($jsilcore.TypeRef("System.Exception"), [$jsilcore.TypeRef("System.String")]).Construct("TaskNotCompleted");
+      }
+      if (this._task.get_IsCanceled()) {
+          throw $TaskCanceledExceptionExceptionConstructorSignature().Construct();
       }
       var taskException = this._task.get_Exception();
       if (taskException !== null) {
@@ -964,6 +1022,32 @@ JSIL.MakeType({
 
   $.ExternalMethod({ Static: false, Public: true }, ".ctor",
     new JSIL.MethodSignature(null, [$.String, $jsilcore.TypeRef("System.Exception")], [])
+  );
+});
+JSIL.MakeType({
+    BaseType: $jsilcore.TypeRef("System.OperationCanceledException"),
+    Name: "System.Threading.Tasks.TaskCanceledException",
+    IsPublic: true,
+    IsReferenceType: true,
+    MaximumConstructorArguments: 2,
+}, function ($interfaceBuilder) {
+    var $ = $interfaceBuilder;
+
+    $.ExternalMethod({ Static: false, Public: true }, ".ctor",
+      new JSIL.MethodSignature(null, [], [])
+    );
+});
+JSIL.MakeType({
+  BaseType: $jsilcore.TypeRef("System.SystemException"),
+  Name: "System.OperationCanceledException",
+  IsPublic: true,
+  IsReferenceType: true,
+  MaximumConstructorArguments: 2,
+}, function ($interfaceBuilder) {
+  var $ = $interfaceBuilder;
+
+  $.ExternalMethod({ Static: false, Public: true }, ".ctor",
+    new JSIL.MethodSignature(null, [], [])
   );
 });
 JSIL.ImplementExternals("System.Threading.ManualResetEventSlim", function ($interfaceBuilder) {
