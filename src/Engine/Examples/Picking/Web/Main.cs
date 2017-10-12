@@ -6,13 +6,10 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.Picking.Web
 {
-    public class Simple
+    public class Picking
     {
         public static void Main()
         {
-
-#error  JSIL WILL CRASH DURING BUILD DUE TO LINQ EXTENSION METHODS OrderBy and FirstOrDefault used in Picking.Core: Picking.cs
-            
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Web.IOImp();
 

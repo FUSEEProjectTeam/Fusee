@@ -73,7 +73,7 @@ In addition the following changes to individual files need to be done:
   };
 ```
 
-###JSIL.Core (5095)
+###JSIL.Core (5133)
 ```JavaScript
   castFunction = function Cast(expression) {
     if (isFunction(expression) || JSIL.IsTypedArray(expression))

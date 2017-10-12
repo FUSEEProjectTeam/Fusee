@@ -132,14 +132,14 @@ namespace Fusee.Jometri.Triangulation
 
                 if (j == 0) continue;
                 if (j != count - 1)
-                    _geometry.InsertDiagonal(sortedVerts.LastItem().Handle, popped.Handle);
+                    _geometry.InsertDiagonal(sortedVerts.Last().Handle, popped.Handle);
             }
         }
 
         private static IEnumerable<Vertex> GetLeftChain(IList<Vertex> sortedVerts, Face face)
         {
             var heHandle = new int();
-            var endOfChain = sortedVerts.LastItem();
+            var endOfChain = sortedVerts.Last();
 
             var startingAtFirstV = _geometry.GetVertexStartingHalfEdges(sortedVerts[0].Handle).ToList();
             if (startingAtFirstV.Count > 1)

@@ -229,7 +229,7 @@ namespace Fusee.Jometri.DCEL
                         var lastFace = _geometry.DictFaces[_geometry.DictFaces.Keys.Max()];
                         lastFace.InnerHalfEdges.Add(halfEdge.Handle);
                     }
-                    faceHandle = _geometry.DictFaces.LastItem().Value.Handle;
+                    faceHandle = _geometry.DictFaces.Last().Value.Handle;
                 }
 
                 halfEdge.IncidentFace = faceHandle;
@@ -270,8 +270,8 @@ namespace Fusee.Jometri.DCEL
 
                 if (i - 1 < 0)
                 {
-                    halfEdge.PrevHalfEdge = boundaryEdges.LastItem().HalfEdge.Handle;
-                    twinHalfEdge.NextHalfEdge = boundaryEdges.LastItem().TwinHalfEdge.Handle;
+                    halfEdge.PrevHalfEdge = boundaryEdges.Last().HalfEdge.Handle;
+                    twinHalfEdge.NextHalfEdge = boundaryEdges.Last().TwinHalfEdge.Handle;
                 }
                 else
                 {

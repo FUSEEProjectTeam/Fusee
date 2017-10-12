@@ -7,13 +7,13 @@ if (typeof (JSIL) === "undefined")
 if (!$jsilcore)
   throw new Error("JSIL.Core is required");
 
-JSIL.ReflectionGetTypeInternal = function (thisAssembly, name, throwOnFail, ignoreCase) {
+JSIL.ReflectionGetTypeInternal = function (thisAssembly, name, throwOnFail, ignoreCase, onlySpecificAssembly) {
   var parsed = JSIL.ParseTypeName(name);
 
   var result = JSIL.GetTypeInternal(parsed, thisAssembly, false);
 
   // HACK: Emulate fallback to global namespace search.
-  if (!result) {
+  if (!result && !onlySpecificAssembly) {
     result = JSIL.GetTypeInternal(parsed, JSIL.GlobalNamespace, false);
   }
 
@@ -247,6 +247,16 @@ JSIL.ImplementExternals(
           return this._IsAssignableFrom.call(this, type);
         else
           return false;
+      }
+    );
+
+    $.Method({ Public: true, Static: false }, "IsInstanceOfType",
+      new JSIL.MethodSignature($.Boolean, [$.Object]),
+      function (obj) {
+        if (obj === null)
+          return false;
+
+        return this.IsAssignableFrom(JSIL.GetType(obj));
       }
     );
 
@@ -1620,14 +1630,14 @@ JSIL.MakeClass("System.Object", "System.Reflection.Assembly", true, [], function
   $.Method({ Static: false, Public: true }, "GetType",
     (new JSIL.MethodSignature($jsilcore.TypeRef("System.Type"), [$.String], [])),
     function GetType(name) {
-      return JSIL.GetTypeFromAssembly(this, name, null, false);
+      return JSIL.ReflectionGetTypeInternal(this, name, false, false, true);
     }
   );
 
   $.Method({ Static: false, Public: true }, "GetType",
     (new JSIL.MethodSignature($jsilcore.TypeRef("System.Type"), [$.String, $.Boolean], [])),
     function GetType(name, throwOnError) {
-      return JSIL.GetTypeFromAssembly(this, name, null, throwOnError);
+      return JSIL.ReflectionGetTypeInternal(this, name, throwOnError, false, true);
     }
   );
 
@@ -1647,7 +1657,7 @@ JSIL.MakeClass("System.Object", "System.Reflection.Assembly", true, [], function
       if (ignoreCase)
         throw new Error("ignoreCase not implemented");
 
-      return JSIL.GetTypeFromAssembly(this, name, null, throwOnError);
+      return JSIL.ReflectionGetTypeInternal(this, name, throwOnError, ignoreCase, true);
     }
   );
 

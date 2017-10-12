@@ -76,13 +76,13 @@
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
-      <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
+      <Project>{1228eb3f-8bcc-453f-8a2e-d9246495a118}</Project>
+      <Name>Fusee.Engine.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\..\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
       <Project>{f7ad2bb5-d2b0-4697-bddb-4cc26152a6b6}</Project>
