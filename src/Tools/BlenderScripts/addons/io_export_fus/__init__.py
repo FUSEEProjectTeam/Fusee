@@ -14,9 +14,9 @@ In order to make this Add-On work, you have to do the following:
 #Register as Add-on
 bl_info = {
     "name": ".fus format",
-    "author": "Jonas Conrad, Patrick Foerster",
+    "author": "Christoph Mueller, Jonas Conrad, Patrick Foerster",
     "version": (1, 0, 0),
-    "blender": (2, 78, 0),
+    "blender": (2, 79, 0),
     "location": "File > Import-Export",
     "description": "Export to Fusees .fus formatand/or start the Fusee Web-Application",
     "warning":"",
@@ -53,7 +53,8 @@ from bpy_extras.io_utils import (
         )
 
 #Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
-#Attach to PTSV Python Remote debugge using "tcp://localhost:5678" (NO Secret because secret=None!)
+#Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote
+#Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret because secret=None!)
 import ptvsd
 ptvsd.enable_attach(secret=None)
 print('PTSV Debugging enabled')
@@ -74,7 +75,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
             )
     isWeb = BoolProperty(
         name="Run with Fusees Web-Application",
-        description="Create HTML-Files and stuff and run in Browser after Export",
+        description="Export HTML-Viewer around the scene run in Web Browser after export",
         default=False,
     )
     isSaveFile = BoolProperty(
@@ -84,7 +85,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     )
     isExportTex = BoolProperty(
         name="Export Textures",
-        description="Export the textures used in this scene, also",
+        description="Export the textures used in this scene as well",
         default=True,
     )
     isLamps = BoolProperty(
@@ -119,9 +120,9 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 
     #get FuseeRoot environment variable
     fusee_Root = os.environ['FuseeRoot']
-    tool_Path = 'bin\\Debug\\Tools\\fuConv.exe'
+    tool_Path = 'bin\\Debug\\Tools\\fusee.exe'
     isRoot = None
-    # path of fuConv.exe
+    # path of fusee.exe
     convtool_path = os.path.join(fusee_Root, tool_Path)
 
     def draw(self, context):
@@ -195,7 +196,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
                 #WEB Viewer
                 if self.isWeb:
                     #kill Server if it's already running, to prevent problems when exporting more than once per session
-                    process = subprocess.run(['taskkill', '/im', 'fuConv.exe', '/f'])
+                    process = subprocess.run(['taskkill', '/im', 'fusee.exe', '/f'])
                     print('Server Killed: ' + str(process.returncode))
                     try:
                         serializedData = SerializeData(objects=obj, isWeb=True,
@@ -206,7 +207,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
                         print('writing to file: ' + self.filepath + '----')
                         with open(self.filepath,'wb') as file:
                             file.write(serializedData.obj)
-                        #format the texturepaths to be used by fuConv.exe
+                        #format the texturepaths to be used by fusee.exe
                         dirpath = os.path.dirname(self.filepath)
                         if self.isExportTex:
                             textures = serializedData.tex
@@ -219,13 +220,13 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
                                     copyfile(src,dst)
                                     texturePaths = texturePaths+'"'+dst+'",'
                                 print(self.filepath)
-                                runFuConv = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '" -l ' + texturePaths)
+                                runFuseeExe = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '" -l ' + texturePaths)
                             else:
-                                runFuConv = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '"')
+                                runFuseeExe = (self.convtool_path + ' web "' + self.filepath + '" -o "' + dirpath + '"')
                         
-                        print(runFuConv)
+                        print(runFuseeExe)
                         #send the command to the commandline and run it
-                        p=subprocess.Popen(runFuConv)
+                        p=subprocess.Popen(runFuseeExe)
                     except Exception as inst:
                         print('---- ERROR1: ' + str(inst))
 

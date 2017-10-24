@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Player.Android</RootNamespace>
-    <AssemblyName>Fusee.Engine.Player.Android</AssemblyName>
+    <RootNamespace>Fusee.Engine.SceneViewer.Android</RootNamespace>
+    <AssemblyName>Fusee.Engine.SceneViewer.Android</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -16,14 +16,14 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\SceneViewer\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -47,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\SceneViewer\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -126,6 +126,10 @@
     <ProjectReference Include="..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.SceneViewer.Core.csproj">
+      <Project>{afd8cb7d-9dc4-4853-b3d4-30b984a3f83a}</Project>
+      <Name>Fusee.Engine.SceneViewer.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

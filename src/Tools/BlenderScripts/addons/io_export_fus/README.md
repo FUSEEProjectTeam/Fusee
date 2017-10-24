@@ -63,8 +63,8 @@ You can find more information here: https://developers.google.com/protocol-buffe
 ### Development Environment for Blender Scripts
 Typically a Blender Addon or Script is installed using the "Install From File" button in Blender's preferences. This will copy the contents of the specified file to the Appdata
 directory mentioned above. When developing a Blender Script you would like to edit the file and then have Blender directly use the file in-situ because otherwise the Python 
-Debugger would not recognized a copied file and could not hit breakpoints and inspect code. So for a development environment make sure to specify the BlenderScripts direcotory below
-<FuseeRoot>/Tools in the User Preferences' File dialog box under "Scripts". This way all python code appearing under BlenderScripts/Addons is directly accessed by Blender 
+Debugger would not recognize a copied file and could not hit breakpoints and inspect code. So for a development environment make sure to specify the BlenderScripts directory below
+<FuseeRoot>/Tools in the User Preferences' File dialog box under "Scripts". This way all python code appearing under BlenderScripts/addons is directly accessed by Blender 
 and thus recognized by an attached Debugger as "active" code.
 
 ### Debugging

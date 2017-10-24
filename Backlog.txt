@@ -61,10 +61,27 @@ DONE:	Create "dotnet new fusee" template.
 DONE:			- publish: with options "Desktop, Web " (Desktop first: Simply pack the player, .Core DLL and assets into one directory)
 					- and Android
 DONE:			- server:  start a local webserver to host web builds (incorporate fuHttp)
-			Secondary goal ist to include all other stuff below the Tools directory. 
-				- WARNING: Be aware of cyclic dependencies during the build of "fuseeCmdLine" (Just don't copy Player from bin. Directly reference bin instead)
+			
+		Include all other stuff below the Tools directory into fusee.exe. 
+DONE:			- WARNING: Be aware of cyclic dependencies during the build of "fuseeCmdLine" (Just don't copy Player from bin. Directly reference bin instead)
+DONE:			- Copy "fuConv web" functionality and replace "fuconv web" calls in Blender Export AddOn
+1				- Copy "fuGen" functionality (create "generate" verb) and replace fuGen call in fuseeTargets.xml
+2				- Mark "web" and "generate" verbs as deprecated
+				- unify "web", "publish -p Web" and "generate" commands 
 				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
+
+3		Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
+4		Make all application "Desktop" projects 64bit
+5		Remove x32 Solution configuration from all Solutions (Fusee.sln (=Player), Simple.sln, Viewer.sln)
+6		Fix project dependencies in all above solutions
+7		Remove Viewer from sources
 		
+8		Make all application "Desktop" projects 64bit in FuseeTutorial (Game Engineering tuts)
+9		Make all application "Desktop" projects 64bit in ComputergrafikMIB tuts 	
+		
+		Integrate Protobuf python code generation (yielding Scene_pb2.py) into Fusee build process
+		
+				
 		Make fuseeCmdLine Mono Compatible [.Net Core 2.0 executable - no good idea, results in a dll rather than an .exe]
 			Make it run on Mac!
 		
@@ -75,6 +92,8 @@ DONE:			- server:  start a local webserver to host web builds (incorporate fuHtt
 			Evaluate different approaches including
 				Unzip, set "FuseeRoot", set Path to fusee.exe, install dotnet new template, maybe install dotnet fusee command
 				NuGet to do the above (Question: is the FUSEE runtime too much weight on a per-project basis (instead of a per-dev-machine basis)?)
+
+		
 				
 	############ blender integration ##############	
 	

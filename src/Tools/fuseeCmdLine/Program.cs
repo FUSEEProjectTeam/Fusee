@@ -142,6 +142,27 @@ namespace Fusee.Tools.fuseeCmdLine
             public string List { get; set; }
         }
 
+        // "Globals"
+        static string fuseeCmdLineRoot = null;
+        static string fuseeRoot = null;
+        static string fuseeBuildRoot = null;
+
+        static void InitFuseeDirectories()
+        {
+            // Check if player is present
+            try
+            {
+                fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
+                fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
+                Environment.Exit((int)ErrorCode.InternalError);
+            }
+
+        }
 
         static void Main(string[] args)
         {
@@ -374,21 +395,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
 
 
-                // Check if player is present
-                string fuseeCmdLineRoot = null;
-                string fuseeRoot = null;
-                string fuseeBuildRoot = null;
-                try
-                {
-                    fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                    fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
-                    fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
-                    Environment.Exit((int)ErrorCode.InternalError);
-                }
+                InitFuseeDirectories();
 
                 string playerFile = null;
                 string desktopPlayerDir = Path.GetFullPath(Path.Combine(fuseeBuildRoot, "Player", "Desktop")); // need this in web build as well.
@@ -777,9 +784,10 @@ namespace Fusee.Tools.fuseeCmdLine
                     }
 
                     string htmlFileDir = opts.Output;
-                    string thisPath = Assembly.GetExecutingAssembly().Location;
-                    thisPath = thisPath.Remove(thisPath.LastIndexOf(Path.DirectorySeparatorChar));
-                    string fuseePlayerDir = Path.Combine(thisPath, "Viewer");
+
+                    InitFuseeDirectories();
+                    string fuseePlayerDir = Path.Combine(fuseeBuildRoot, "Player", "Web");
+
                     Stream input = null, output = null;
                     string sceneFileDir = Path.Combine(htmlFileDir, "Assets");
                     if (File.Exists(sceneFileDir))
@@ -787,7 +795,8 @@ namespace Fusee.Tools.fuseeCmdLine
                         File.Delete(sceneFileDir);
                     }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
+                    // string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.Player.Web.html");
                     if (File.Exists(origHtmlFilePath))
                         File.Delete(origHtmlFilePath);
                     string targetHtmlFilePath =
