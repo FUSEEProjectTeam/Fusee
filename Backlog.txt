@@ -65,8 +65,8 @@ DONE:			- server:  start a local webserver to host web builds (incorporate fuHtt
 		Include all other stuff below the Tools directory into fusee.exe. 
 DONE:			- WARNING: Be aware of cyclic dependencies during the build of "fuseeCmdLine" (Just don't copy Player from bin. Directly reference bin instead)
 DONE:			- Copy "fuConv web" functionality and replace "fuconv web" calls in Blender Export AddOn
-1				- Copy "fuGen" functionality (create "generate" verb) and replace fuGen call in fuseeTargets.xml
-2				- Mark "web" and "generate" verbs as deprecated
+DONE:1			- Copy "fuGen" functionality (create "generate" verb) and replace fuGen call in fuseeTargets.xml
+DONE:2			- Mark "web" and "generate" verbs as deprecated
 				- unify "web", "publish -p Web" and "generate" commands 
 				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
 

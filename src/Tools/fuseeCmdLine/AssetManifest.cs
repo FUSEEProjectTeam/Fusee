@@ -166,7 +166,7 @@ namespace Fusee.Tools.fuseeCmdLine
             return destRelativePaths;
         }
 
-         private static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
+         public static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
         {
             for (var ct = 0; ct <= filePaths.Count - 1; ct++)
             {

@@ -129,7 +129,7 @@ namespace Fusee.Tools.fuseeCmdLine
         }
 
 
-        [Verb("web", HelpText = "Use an existing .fus-file to start a webserver.")]
+        [Verb("web", HelpText = "Use an existing .fus-file to start a webserver. Deprectated. Currently used in the FUSEE Blender Export AddIn. To be replaced by the publish verb.")]
         public class WebViewer
         {
             [Value(0, HelpText = "Input .fus-file.", MetaName = "Input", Required = true)]
@@ -140,6 +140,22 @@ namespace Fusee.Tools.fuseeCmdLine
 
             [Option('l', "list", HelpText = "List of paths to texture files")]
             public string List { get; set; }
+        }
+
+        [Verb("generate", HelpText = "Generate necessary web export files (Config file, Manifest file, HTML page). Deprecated. Currently used in the FUSEE build process (FuseeBuildActions.target.xml). To be replaced by the publish verb.")]
+        public class Generate
+        {
+            [Value(0, HelpText = "Target Directory", MetaName = "TargetDir", Required = true)]
+            public string TargDir { get; set; }
+
+            [Value(1, HelpText = "Target Web", MetaName = "TargetWeb", Required = true)]
+            public string TargWeb { get; set; }
+
+            [Value(2, HelpText = "Target Application Path", MetaName = "TargetApp", Required = true)]
+            public string TargAppPath { get; set; }
+
+            [Value(3, HelpText = "External (Script) Files", MetaName = "ExternalFiles", Required = true)]
+            public string ExternalFiles { get; set; }
         }
 
         // "Globals"
@@ -166,7 +182,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer>(args)
+            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer, Generate>(args)
 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -766,7 +782,179 @@ namespace Fusee.Tools.fuseeCmdLine
                     }
                 })
 
-                // Called with the WEB verb
+                // Called with the GENERATE verb (fuGen legacy code)
+                .WithParsed<Generate>(opts =>
+                {
+                    var targDir = opts.TargDir;
+                    var targWeb = opts.TargWeb;
+                    var targApp = opts.TargAppPath;
+                    var externalFiles = opts.ExternalFiles.Split(';');
+
+                    string fileName = Path.GetFileNameWithoutExtension(targApp);
+
+                    // Create directories
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Scripts")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Scripts"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Styles")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Styles"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Config")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Config"));
+                    
+                    // Does HTML already exists?
+                    var newHTML = !File.Exists(targWeb + fileName + ".html");
+
+                    Console.Error.WriteLine(newHTML
+                        ? "No HTML file found - generating a simple HTML file"
+                        : "HTML file already exists - delete it to create a new one");
+
+                    // Collecting all files
+                    var customManifest = Directory.Exists(Path.Combine(targDir, "Assets"));
+                    var customCSS = "";
+
+                    Console.Error.WriteLine(customManifest
+                        ? "Found an Assets folder - collecting all and write manifest"
+                        : "No Assets folder - no additional files will be added");
+
+                    List<string> filePaths;
+
+                    if (customManifest)
+                    {
+                        filePaths = Directory.GetFiles(Path.Combine(targDir, "Assets"), "*.*", SearchOption.AllDirectories).ToList();
+                        filePaths.Sort(string.Compare);
+                    }
+                    else
+                        filePaths = new List<string>();
+
+                    // Load custom implementations first
+                    var fileCount = 0;
+
+                    /*
+                    var externalFiles = new[]
+                    {
+                        "Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
+                        "Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
+                    };
+                    */
+
+                    foreach (var extFile in externalFiles)
+                    {
+                        var exists = File.Exists(Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
+
+                        if (exists)
+                        {
+                            filePaths.Insert(fileCount, Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
+                            fileCount++;
+                        }
+                        else
+                        {
+                            Console.Error.WriteLine("ERROR Couldn't find " + extFile + ".js");
+                            Environment.Exit((int)ErrorCode.InputFile);
+                        }
+                    }
+
+                    List<string> destRelativePaths = new List<string>(filePaths.Count);
+                    for (int inx = 0; inx < filePaths.Count; inx++)
+                        destRelativePaths.Add("");
+
+                    if (customManifest)
+                    {
+                        // Copy to output folder
+                        for (var ct = filePaths.Count - 1; ct > fileCount - 1; ct--)
+                        {
+                            bool remove = false;
+                            string pathExt = "";
+                            string filePath = filePaths.ElementAt(ct);
+
+                            // style or config
+                            if (Path.GetExtension(filePath) == ".css")
+                            {
+                                customCSS = Path.GetFileName(filePath);
+                                pathExt = "Styles";
+                                remove = true;
+                            }
+
+                            if (Path.GetFileName(filePath) == "fusee_config.xml")
+                            {
+                                pathExt = "Config";
+                                remove = true;
+                            }
+
+                            var srcAssetFolder = FileTools.PathAddTrailingSeperator(Path.Combine(targDir, "Assets"));
+                            var srcAssetDirPath = FileTools.PathAddTrailingSeperator(Path.GetDirectoryName(filePath));
+
+                            var srcRelativeToAssetsDir = FileTools.MakeRelativePath(srcAssetFolder, srcAssetDirPath);
+                            pathExt = srcRelativeToAssetsDir;
+                            // DebugMode("MakeRelativePath(" + srcAssetFolder + ", " + srcAssetDirPath + "); yields: " + srcRelativeToAssetsDir);
+
+                            // Copy files to output if they don't exist yet
+                            var tmpFileName = Path.GetFileName(filePath);
+                            var dstFilePath = Path.Combine(targWeb, "Assets", pathExt, tmpFileName);
+
+                            if (tmpFileName != null && !File.Exists(dstFilePath))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
+                                File.Copy(filePath, dstFilePath);
+                            }
+
+                            destRelativePaths[ct] = pathExt;
+
+                            if (remove)
+                            {
+                                filePaths.RemoveAt(ct);
+                                destRelativePaths.RemoveAt(ct);
+                            }
+                        }
+                    }
+
+                    // Create manifest
+                    var fileNamesList = new List<string>();
+                    var fileSizeList = new List<long>();
+                    var fileTypesList = new List<string>();
+                    var fileFormatsList = new List<string>();
+
+                    AssetManifest.GenerateAssetManifestEntryItems(filePaths, destRelativePaths, fileCount, fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
+                    var manifest = new ManifestFile("Fusee.Engine.Player.Web", fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
+                    string manifestContent = manifest.TransformText();
+
+                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", fileName + ".contentproj.manifest.js"),
+                        manifestContent);
+
+                    // Create HTML file
+                    if (newHTML)
+                    {
+                        Console.WriteLine(customCSS == ""
+                            ? "No additional .css file found in Assets folder - using only default one"
+                            : "Found an additional .css file in Assets folder - adding to HTML file");
+
+                        var page = new WebPage(targApp, customCSS);
+                        string pageContent = page.TransformText();
+
+                        File.WriteAllText(Path.Combine(targWeb, fileName + ".html"), pageContent);
+                    }
+
+                    // Create config file
+                    var customConf = File.Exists(Path.Combine(targDir, "Assets", "fusee_config.xml"));
+
+                    Console.WriteLine(!customConf
+                        ? "No custom config file ('fusee_config.xml') found in Assets folder - using default settings"
+                        : "Found an custom config file in Assets folder - applying settings to webbuild");
+
+                    var conf = new JsilConfig(targApp, targDir, customConf);
+                    string confContent = conf.TransformText();
+
+                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Config", "jsil_config.js"), confContent);
+
+                    // Done
+                    Console.Error.WriteLine($"SUCCESS: Generated Web Build at {targWeb}.");
+                    Environment.Exit(0);
+                })
+
+                // Called with the WEB verb (fuConv legacy code)
                 .WithParsed<WebViewer>(opts =>
                 {
                     List<string> textureFiles = new List<string>();

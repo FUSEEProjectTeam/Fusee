@@ -64,9 +64,17 @@
   <ItemGroup>
     <Compile Include="AssetManifest.cs" />
     <Compile Include="Assimp2Fusee.cs" />
+    <Compile Include="ConfXMLReader.cs" />
+    <Compile Include="CustomConfig.cs" />
     <Compile Include="CustomManifest.cs" />
+    <Compile Include="CustomPage.cs" />
     <Compile Include="FileTools.cs" />
     <Compile Include="FileTypes.cs" />
+    <Compile Include="JsilConfig.cs">
+      <DependentUpon>JsilConfig.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="ManifestFile.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -136,6 +144,11 @@
     <Compile Include="CommandLine\ValueAttribute.cs" />
     <Compile Include="CommandLine\VerbAttribute.cs" />
     <Compile Include="CSharpx\**\*.cs" />
+    <Compile Include="WebPage.cs">
+      <DependentUpon>WebPage.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj">
@@ -160,10 +173,18 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="JsilConfig.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>JsilConfig.cs</LastGenOutput>
+    </None>
     <Content Include="ManifestFile.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ManifestFile.cs</LastGenOutput>
     </Content>
+    <None Include="WebPage.tt">
+      <Generator>TextTemplatingFilePreprocessor</Generator>
+      <LastGenOutput>WebPage.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
