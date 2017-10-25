@@ -18,9 +18,9 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web\</FuseeWebOutputPath>
-    <OutputPath>..\..\..\..\..\bin\Debug\Examples\GeometryEditing\Web\</OutputPath>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web\</FuseeWebOutputPath>
+    <OutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Examples.GeometryEditing.Web\bin\Debug\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
@@ -38,8 +38,8 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web\</FuseeWebOutputPath>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web\</FuseeWebOutputPath>
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
@@ -121,7 +121,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj">
       <Project>{8d61f2ea-565f-427d-b285-a8cebb3bc08f}</Project>
-      <Name>Fusee.Engine.Examples.MeshingAround.Core</Name>
+      <Name>Fusee.Engine.Examples.GeometryEditing.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -261,8 +261,8 @@ namespace Fusee.Jometri
         /// <returns></returns>
         public void BalanceTree()
         {
-            var inorder = InOrderTraverseTree(_globalRoot).ToArray();
-            _globalRoot = BalanceTree(inorder, 0, inorder.Length - 1);
+            var inorder = InOrderTraverseTree(_globalRoot).ToList();
+            _globalRoot = BalanceTree(inorder, 0, inorder.Count - 1);
         }
 
         private static Node<TK, TV> BalanceTree(IList<Node<TK, TV>> inorder, int startIndex, int endIndex)

@@ -56,9 +56,9 @@ namespace Fusee.Jometri
 
 
             //Round, to get rid of potential exponent representation.
-            var vecX = System.Math.Round((decimal)newVert.x, 5);
-            var vecY = System.Math.Round((decimal)newVert.y, 5);
-            var vecZ = System.Math.Round((decimal)newVert.z, 5);
+            var vecX = System.Math.Round(newVert.x, 5);
+            var vecY = System.Math.Round(newVert.y, 5);
+            var vecZ = System.Math.Round(newVert.z, 5);
 
             newVert = new float3((float)vecX, (float)vecY, (float)vecZ);
 
