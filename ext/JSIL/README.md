@@ -259,5 +259,60 @@ $.Method({ Static: true, Public: true }, "SequenceEqual",
 			}
       return res;
     }
-	);
+  );
+  
+  $.Method({Static: true, Public: true}, "Max", //Enumerable.Max-Method has 12 overloads, this one only works for Max(IEnumerable<Int32>)
+        new JSIL.MethodSignature(
+            $.Int32,
+            [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", [$.Int32])],
+            []
+        ),
+        function Max_Int32(source){
+            var enumerator = JSIL.GetEnumerator(source, $jsilcore.System.Int32);
+            var moveNext = $jsilcore.System.Collections.IEnumerator.MoveNext;
+            var getCurrent = $jsilcore.System.Collections.IEnumerator.get_Current;
+            var res = getCurrent.Call(enumerator);
+
+            while(moveNext.Call(enumerator)){
+
+                var cur = getCurrent.Call(enumerator);
+                if(cur > res){
+                    res = cur;
+                }                
+            }
+            
+            JSIL.Dispose(source);
+            return res;
+
+        }
+    );
+
+    $.Method({Static: true, Public: true}, "Min", 
+    new JSIL.MethodSignature(
+        $.Int32,
+        [$jsilcore.TypeRef("System.Collections.Generic.IEnumerable`1", [$.Int32])],
+        []
+    ),
+    function Min_Int32(source){
+        var enumerator = JSIL.GetEnumerator(source, $jsilcore.System.Int32);
+        var moveNext = $jsilcore.System.Collections.IEnumerator.MoveNext;
+        var getCurrent = $jsilcore.System.Collections.IEnumerator.get_Current;
+        var res = getCurrent.Call(enumerator);
+        
+        //get first item
+        moveNext.Call(enumerator);
+        res = getCurrent.Call(enumerator);
+
+        while(moveNext.Call(enumerator)){
+
+            var cur = getCurrent.Call(enumerator);
+            if(cur < res){
+                res = cur;
+            }            
+        }
+        JSIL.Dispose(source);
+        return res;
+
+    }
+    );
 ``` 
