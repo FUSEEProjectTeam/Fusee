@@ -32,8 +32,8 @@
   <!-- Debug settings normally in .csproj.user -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <StartAction>Program</StartAction>
-    <StartProgram>$([System.IO.Path]::GetFullPath('$(FuseeRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
-    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(FuseeRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
+    <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>pdbonly</DebugType>
@@ -51,8 +51,8 @@
   <!-- Debug settings normally in .csproj.user -->
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <StartAction>Program</StartAction>
-    <StartProgram>$([System.IO.Path]::GetFullPath('$(FuseeRoot)'))\bin\$(Configuration)\Tools\fuHttp.exe</StartProgram>
-    <StartArguments>"$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <StartProgram>$([System.IO.Path]::GetFullPath('$(FuseeRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
+    <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>

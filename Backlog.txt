@@ -70,10 +70,11 @@ DONE:2			- Mark "web" and "generate" verbs as deprecated
 				- unify "web", "publish -p Web" and "generate" commands 
 				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
 
-3		Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
-4		Make all application "Desktop" projects 64bit
-5		Remove x32 Solution configuration from all Solutions (Fusee.sln (=Player), Simple.sln, Viewer.sln)
-6		Fix project dependencies in all above solutions
+4a		Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
+4b		Start fusee server instead of fuHttp in all *.web.csproj
+5		Make all application "Desktop" projects 64bit
+6		Remove x32 Solution configuration from all Solutions (Fusee.sln (=Player), Simple.sln, Viewer.sln)
+3		Fix project dependencies in all above solutions
 7		Remove Viewer from sources
 		
 8		Make all application "Desktop" projects 64bit in FuseeTutorial (Game Engineering tuts)
