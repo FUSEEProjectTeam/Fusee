@@ -71,10 +71,10 @@ DONE:2			- Mark "web" and "generate" verbs as deprecated
 				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
 
 4a		Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
-4b		Start fusee server instead of fuHttp in all *.web.csproj
+DONE:4b	Start fusee server instead of fuHttp in all *.web.csproj
 5		Make all application "Desktop" projects 64bit
 6		Remove x32 Solution configuration from all Solutions (Fusee.sln (=Player), Simple.sln, Viewer.sln)
-3		Fix project dependencies in all above solutions
+3a		Fix project dependencies in all above solutions
 7		Remove Viewer from sources
 		
 8		Make all application "Desktop" projects 64bit in FuseeTutorial (Game Engineering tuts)
@@ -82,7 +82,11 @@ DONE:2			- Mark "web" and "generate" verbs as deprecated
 		
 		Integrate Protobuf python code generation (yielding Scene_pb2.py) into Fusee build process
 		
-				
+		Fix Android Build
+		
+		Change Imp.Network.Desktop and Imp.Sound.Desktop to x64 configurations
+
+	
 		Make fuseeCmdLine Mono Compatible [.Net Core 2.0 executable - no good idea, results in a dll rather than an .exe]
 			Make it run on Mac!
 		

@@ -127,6 +127,10 @@
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+      <Project>{fe8c3118-a8f4-45cc-bf31-e2f38771bf4c}</Project>
+      <Name>Fusee.Engine.Player.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\AboutAssets.txt">
