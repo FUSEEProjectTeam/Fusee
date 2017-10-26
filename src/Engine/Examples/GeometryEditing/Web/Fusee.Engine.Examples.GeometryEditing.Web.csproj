@@ -1,11 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Examples.GeometryEditing.Web</RootNamespace>
     <AssemblyName>Fusee.Engine.Examples.GeometryEditing.Web</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}</ProjectGuid>
@@ -13,46 +13,50 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web\</FuseeWebOutputPath>
-    <OutputPath>..\..\..\..\..\bin\Debug\Examples\GeometryEditing\Web\</OutputPath>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web\</FuseeWebOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <!-- Debug settings normally in .csproj.user -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
     <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\MeshingAround\Web\</FuseeWebOutputPath>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web</OutputPath -->
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\GeometryEditing\Web\</FuseeWebOutputPath>
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_WEB</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <!-- Debug settings normally in .csproj.user -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
     <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -85,6 +89,7 @@
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript-->
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
@@ -121,7 +126,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj">
       <Project>{8d61f2ea-565f-427d-b285-a8cebb3bc08f}</Project>
-      <Name>Fusee.Engine.Examples.MeshingAround.Core</Name>
+      <Name>Fusee.Engine.Examples.GeometryEditing.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

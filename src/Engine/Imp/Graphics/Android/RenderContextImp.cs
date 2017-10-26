@@ -1723,7 +1723,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         public void SetRenderTarget(ITexture texture)
         {
-            throw new NotImplementedException();
+            if (texture != null)
+                throw new NotImplementedException();
         }
 
         public void SetCubeMapRenderTarget(ITexture texture, int position)

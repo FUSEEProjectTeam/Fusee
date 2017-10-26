@@ -6,7 +6,7 @@ using Fusee.Engine.Core;
 using Fusee.Serialization;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Engine.Examples.MeshingAround.Desktop
+namespace Fusee.Engine.Examples.GeometryEditing.Desktop
 {
     public class MeshingAround
     {
@@ -42,7 +42,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.ExampleEditing();
+            var app = new Core.GeometryEditing();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();

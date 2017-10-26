@@ -56,12 +56,11 @@ namespace Fusee.Engine.Examples.ShaderComp.Core
                 },
                 EffectParameter = new List<TypeContainer>
                 {
-                        new TypeContainerFloat3
-                        {
-                            Name = "uColor", // uniform variable
-                            Value = new float3(0.7f, 0.6f, 0.3f), 
-                            KeyType = typeof(float3) // reflection needed!
-                        }
+                    new TypeContainerFloat3
+                    {
+                        Name = "uColor", // uniform variable
+                        Value = new float3(0.7f, 0.6f, 0.3f), 
+                    }
                 }
             };
 

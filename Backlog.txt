@@ -70,19 +70,29 @@ DONE:2			- Mark "web" and "generate" verbs as deprecated
 				- unify "web", "publish -p Web" and "generate" commands 
 				- Replace .tt (T4) Text-Templating. Seems somehow deprecated.
 
-4a		Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
-DONE:4b	Start fusee server instead of fuHttp in all *.web.csproj
-5		Make all application "Desktop" projects 64bit
-6		Remove x32 Solution configuration from all Solutions (Fusee.sln (=Player), Simple.sln, Viewer.sln)
-3a		Fix project dependencies in all above solutions
-7		Remove Viewer from sources
-		
-8		Make all application "Desktop" projects 64bit in FuseeTutorial (Game Engineering tuts)
-9		Make all application "Desktop" projects 64bit in ComputergrafikMIB tuts 	
+DONE:	Move Viewer to __Legacy
+
+DONE:	Make root Fusee.sln build fusee.exe and Player (remove Simple and/or Viewer)
+DONE:	Start fusee server instead of fuHttp in all *.web.csproj
+
+5		For all Projects below Engine/Examples
+			Remove FUSEE projects (leave only example's Core, Desktop, Web and Android projects in solution)
+			Make all application "Web" and "Desktop" projects 64bit
+			Target .NET Framework 6.4.2 for all "Web" and "Desktop" projects
+			Remove x32 and AnyCPU Solution configuration from all Solutions (keep "AnyCPU" project platform for Android and Core in x64 solution configuration)
+			-> DONE For: Simple, Picking, MeshingAround, ThreeDFont, ShaderComp, PBTMatComp
+
+		Implement 'System.Int32 Max(System.Collections.Generic.IEnumerable`1[System.Int32])' (Missing in MeshingAround, GeometryEditing & ThreeDFont Examples )		
+
+		Fix ShaderComp: Instead of calling BuildMaterialFromShaderComponent once per frame and shader, Add a shader cache to the SceneRenderer class.	
+			
+l 
+8		Apply changed project/solution settings to all Game Engineering tuts
+9		Apply changed project/solution settings to all Game Engineering ComputergrafikMIB tuts 	
 		
 		Integrate Protobuf python code generation (yielding Scene_pb2.py) into Fusee build process
 		
-		Fix Android Build
+		Fix Android Build (currently rendering black)
 		
 		Change Imp.Network.Desktop and Imp.Sound.Desktop to x64 configurations
 

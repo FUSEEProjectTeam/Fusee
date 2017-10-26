@@ -1,0 +1,6 @@
+The Player project is part of the Fusee.Engine build as it is 
+used in some fusee.exe command verbs and also needed in
+DotNet Core / VS Code projects 
+
+Open %FUSEEROOT%src/Fusee.Engine.sln
+

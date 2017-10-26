@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;

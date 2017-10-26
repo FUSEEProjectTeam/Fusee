@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<project>
+  <SOLibPaths>C:\Users\mch\Documents\_DEV\FuseeFreetype\FreetypeFusee\FreetypeFusee.Android\..\..\bin\freetype\Android\x64\libfreetype262d.so;C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r13b\prebuilt\android-x86_64\gdbserver\gdbserver;C:\ProgramData\Microsoft\AndroidNDK64\android-ndk-r13b\sources\cxx-stl\gnu-libstdc++\4.9\libs\x86_64\libgnustl_static.a</SOLibPaths>
+  <AndroidLibPaths />
+  <OObjPaths>C:\Users\mch\Documents\_DEV\FuseeFreetype\tmp\freetype\Android\x64\Debug</OObjPaths>
+  <Configuration>Debug</Configuration>
+  <Platform>x64</Platform>
+  <AndroidArchitecture>x86_64</AndroidArchitecture>
+  <!--links to other recipe files-->
+  <RecipeFiles />
+</project>
