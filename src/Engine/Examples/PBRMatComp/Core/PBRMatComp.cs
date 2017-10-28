@@ -76,7 +76,7 @@ namespace Fusee.Engine.Examples.PBRMatComp.Core
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
+            RC.ClearColor = new float4(0.3f, 0.3f, 0.31f, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");

@@ -3,7 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Engine.Examples.MeshingAround.Web
+namespace Fusee.Engine.Examples.GeometryEditing.Web
 {
     public class Simple
     {
@@ -51,7 +51,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Web
                 });
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.ExampleEditing();
+            var app = new Core.GeometryEditing();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();

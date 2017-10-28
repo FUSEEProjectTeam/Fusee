@@ -177,7 +177,7 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
 
                             contour = [];
                             curve.CurveParts.Add(cp);
-
+                          
                             var helper = $fuseeBaseCommon.Fusee.Base.Common.SplitToCurveSegmentHelper;
                             var segments = helper.SplitPartIntoSegments(cp, partTags, partVertices);
                             helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, cp);

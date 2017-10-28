@@ -1,0 +1,6 @@
+
+THIS PROJECT IS DEPRECATED
+
+Use Fusee.Engine.Player instead
+
+Source directory will soon be removed from repository

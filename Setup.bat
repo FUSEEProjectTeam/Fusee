@@ -1,1 +1,1 @@
-"bin/Debug/Tools/fusee.exe" install
+"./bin/Debug/Tools/fusee.exe" install

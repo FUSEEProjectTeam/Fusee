@@ -41,6 +41,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public double Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerDouble() { TypeId = TypeId.Double; }
     }
 
     /// <summary>
@@ -54,6 +59,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public int Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerInt() { TypeId = TypeId.Int; }
     }
 
     /// <summary>
@@ -67,6 +77,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public float Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerFloat() { TypeId = TypeId.Float; }
     }
 
     /// <summary>
@@ -80,6 +95,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public float2 Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerFloat2() { TypeId = TypeId.Float2; }
     }
 
     /// <summary>
@@ -93,6 +113,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public float3 Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerFloat3() { TypeId = TypeId.Float3; }
     }
 
     /// <summary>
@@ -106,6 +131,11 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public float4 Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerFloat4() { TypeId = TypeId.Float4; }
     }
 
     /// <summary>
@@ -119,5 +149,10 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(1)]
         public bool Value;
+
+        /// <summary>
+        /// Standard constructor. Initializes the TypeId fiels appropriately.
+        /// </summary>
+        public TypeContainerBool() { TypeId = TypeId.Bool; }
     }
 }
