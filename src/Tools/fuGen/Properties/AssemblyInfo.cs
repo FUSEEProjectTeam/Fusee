@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("fuHTMLGen")]
-[assembly: AssemblyCopyright("Copyright ©  2013")]
+[assembly: AssemblyCopyright("Copyright © 2013-2018 The FUSEE Project Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

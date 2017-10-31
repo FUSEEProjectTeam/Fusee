@@ -9,8 +9,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyDescription("Core implementation of the Fusee Render Engine")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Furtwangen University")]
-[assembly: AssemblyProduct("Fusee Engine")]
-[assembly: AssemblyCopyright("Copyright © 2013 The Fusee Project")]
+[assembly: AssemblyProduct("FUSEE")]
+[assembly: AssemblyCopyright("Copyright © 2013-2018 The FUSEE Project Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 // Sie können alle Werte angeben oder die standardmäßigen Build- und Revisionsnummern 
 // übernehmen, indem Sie "*" eingeben:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("0.5.0.0")]
-[assembly: AssemblyFileVersion("0.5.0.0")]
+[assembly: AssemblyVersion("0.6.0.0")]
+[assembly: AssemblyFileVersion("0.6.0.0")]
 
 [assembly: CLSCompliant(false)]

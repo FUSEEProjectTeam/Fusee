@@ -82,6 +82,15 @@ DONE:	For all Projects below Engine/Examples
 			Remove x32 and AnyCPU Solution configuration from all Solutions (keep "AnyCPU" project platform for Android and Core in x64 solution configuration)
 			-> DONE For: Simple, Picking, MeshingAround, ThreeDFont, ShaderComp, PBTMatComp, GeometryEditing
 
+DONE:	Make "fusee install" add the path to fusee.exe to the system / user PATH (according to --type setting). Remove when uninstalling
+DONE:	Complete the list of options for "fusee install --type xyz"
+DONE:	Become more specific if "fusee install --type Machine" fails. Advise user to start fusee.exe/cmd as admin.
+			
+		Unify current FUSEE version numbers (of DLLs). Make fuse.exe`s version number "official".
+			
+		Add "fusee install --check"	option: see if FuseeRoot and AssemblyDirecory are equal. Check if fusee.exe is part of the FUSEE distribution directory structure. 
+		See if some checksum based approach is easily implementable checking the sanity of the directory structure. 
+			
 		Implement 'System.Int32 Max(System.Collections.Generic.IEnumerable`1[System.Int32])' (Missing in MeshingAround, GeometryEditing & ThreeDFont Examples )		
 		Fix ShaderComp: Instead of calling BuildMaterialFromShaderComponent once per frame and shader, Add a shader cache to the SceneRenderer class.	
 		Fix Android Build (currently rendering black)
@@ -96,12 +105,8 @@ DONE:	For all Projects below Engine/Examples
 		Make fuseeCmdLine Mono Compatible [.Net Core 2.0 executable - no good idea, results in a dll rather than an .exe]
 			Make it run on Mac!
 		
-		Make "fusee install" add the path to fusee.exe to the system / user PATH (according to --type setting). Remove when uninstalling
-		Complete the list of options for "fusee install --type xyz"
-		Become more specific if "fusee install --type Machine" fails. Advise user to start fusee.exe/cmd as admin.
-		
-		Create "Installer" for a "Fusee binary distribution"
-			Evaluate different approaches including
+WIP:	Create "Installer" for a "Fusee binary distribution"
+DONE:		Evaluate different approaches including
 				Unzip, set "FuseeRoot", set Path to fusee.exe, install dotnet new template, maybe install dotnet fusee command
 				NuGet to do the above (Question: is the FUSEE runtime too much weight on a per-project basis (instead of a per-dev-machine basis)?)
 
@@ -110,6 +115,8 @@ DONE:	For all Projects below Engine/Examples
 
 				
 	############ blender integration ##############	
+
+		Append FUSEE export AddIn installation ot "fusee install".
 	
 		Allow new type of FUSEE .Core Dlls implementing "behavior" classes to be attached
 		to individual scene graph nodes instead of one overall RenderCanvas derivative.
