@@ -41,12 +41,6 @@ body {
 	height: 100%;
 	left: 0%;
 	top: 0%;
-	/* margin-left: -300px; 
-	margin-top: -26px; 
-	border: 3px solid white;
-	border-radius: 6px;
-	z-index: 99;
-	overflow: hidden; */
 	background: white;
 	opacity: 1;
 	transition: opacity 1s
@@ -60,7 +54,7 @@ body {
 	border-right: none;
 	border-left: none;
 	padding: 0px;
-	background: #88B04B; /* url('loading_rocket.png') no-repeat right center;*/
+	background: #88B04B;
 	transition: width 0.5s 
 }
 

@@ -18,6 +18,7 @@ using Fusee.Engine.Core;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
+using System.Security;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -28,6 +29,7 @@ namespace Fusee.Tools.fuseeCmdLine
         InputFormat = -3,
         OutputFile = -4,
         PlatformNotHandled = -5,
+        InsufficentPrivileges = -6,
 
         InternalError = -42,
     }
@@ -100,7 +102,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser.")]
         public class Server
         {
-            [Value(0, HelpText = "Directory or File path. to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
+            [Value(0, HelpText = "Directory or File path to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
             public string Root { get; set; }
 
             [Option('p', "port", Default = 4655, // HEX FU,
@@ -117,13 +119,13 @@ namespace Fusee.Tools.fuseeCmdLine
             Machine,
         }
 
-        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation. This will set the \"FuseeRoot\" environment variable and register the 'dotnet new fusee' template.")]
+        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation - this invokes three steps: (1) Set the \"FuseeRoot\" environment variable. (2) Add the fusee.exe directory to the \"PATH\" environment variable. (3) Register the 'dotnet new fusee' template.")]
         public class Install
         {
-            [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation.")]
+            [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation. '-t User' will set \"FuseeRoot\" and \"PATH\" for the current user only. '-t Machine' will set \"FuseeRoot\" and \"PATH\" for all users. Start shell (cmd or powershell) as Administrator for machine-wide installation")]
             public InstallationType InstType { get; set; }
 
-            [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will NOT delete the contents of the installation folder.")]
+            [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will only de-register this FUSEE instance (deregister the 'dotnet new fusee' template, remove fusee.exe from the \"PATH\" and remove the \"FuseeRoot\" environment varable). This will NOT delete the contents of the installation folder.")]
             public bool Uninstall { get; set; }
 
         }
@@ -704,6 +706,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
                         fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
+                        fuseeCmdLineRoot = FileTools.PathAddTrailingSeperator(fuseeCmdLineRoot);
                         fuseeRoot = FileTools.PathAddTrailingSeperator(fuseeRoot);
                     }
                     catch (Exception ex)
@@ -722,9 +725,65 @@ namespace Fusee.Tools.fuseeCmdLine
                         {
                             Environment.SetEnvironmentVariable("FuseeRoot", fuseeRoot, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
                         }
+                        catch (SecurityException ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Insufficient privileges to set the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                            Environment.Exit((int)ErrorCode.InsufficentPrivileges);
+                        }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine($"ERROR: Unable to set the environment variable \"FuseeRoot\".\n{ex}");
+                            Console.Error.WriteLine($"ERROR: Unable to set the \"FuseeRoot\" environment variable.\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+
+                        // Add us to the PATH so fusee.exe can be called from anywhere. Be careful with the PATH. Check if fusee is already registered there.
+                        try
+                        {
+                            var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
+                            string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
+
+                            int alreadyRegistered = 0;
+                            var pathContents = pathVariable.Split(new char[] { ';' });
+                            List<string> fuseePaths = new List<string>();
+                            foreach (var path in pathContents)
+                            {
+                                var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                if (pathProcessed == fuseeCmdLineRoot)
+                                    alreadyRegistered++;
+                                else if (pathProcessed.ToLower().Contains("fusee"))
+                                    fuseePaths.Add(pathProcessed);
+                            }
+
+                            if (fuseePaths.Count > 0)
+                            {
+                                Console.Error.WriteLine($"WARNING: the \"PATH\" Variable already references the following FUSEE instances:");
+                                foreach (var fuseePath in fuseePaths)
+                                {
+                                    Console.Error.WriteLine($"\t{fuseePath}");
+                                }
+                                Console.Error.WriteLine("\tfusee.exe will NOT alter the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instance(s) first.");
+                            }
+                            else if (alreadyRegistered >= 1)
+                            {
+                                if (alreadyRegistered == 1)
+                                    Console.Error.WriteLine($"The \"PATH\" Variable already contains this FUSEE instance. \"PATH\" will not be altered\n");
+                                else
+                                    Console.Error.WriteLine($"WARNING: The \"PATH\" Variable already contains this FUSEE instance MULTIPLE TIMES. Please check the contents of your \"PATH\" manually. \"PATH\" will not be altered\n");
+                            }
+                            else
+                            {
+                                pathVariable += $";{fuseeCmdLineRoot}";
+                                Environment.SetEnvironmentVariable("PATH", pathVariable, target);
+                            }
+                        }
+                        catch (SecurityException ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                            Environment.Exit((int)ErrorCode.InsufficentPrivileges);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to set the \"PATH\" environment variable.\n{ex}");
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
 
@@ -771,14 +830,83 @@ namespace Fusee.Tools.fuseeCmdLine
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
 
+                        // Remove us from the PATH so fusee.exe can be called from anywhere. Be careful with the PATH. 
+                        try
+                        {
+                            var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
+                            string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
+
+                            int alreadyRegistered = 0;
+                            var pathContents = pathVariable.Split(new char[] { ';' });
+                            List<string> remainingPaths = new List<string>();
+                            List<string> fuseePaths = new List<string>();
+                            foreach (var path in pathContents)
+                            {
+                                var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                if (pathProcessed == fuseeCmdLineRoot)
+                                    alreadyRegistered++;
+                                else
+                                {
+                                    if (pathProcessed.ToLower().Contains("fusee"))
+                                        fuseePaths.Add(pathProcessed);
+
+                                    remainingPaths.Add(path);
+                                }
+                            }
+
+                            if (fuseePaths.Count > 0)
+                            {
+                                Console.Error.WriteLine($"WARNING: the \"PATH\" Variable references the following FUSEE instances:");
+                                foreach (var fuseePath in fuseePaths)
+                                {
+                                    Console.Error.WriteLine($"\t{fuseePath}");
+                                }
+                                Console.Error.WriteLine("\tfusee.exe will NOT remove these additional FUSEE references from the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instances.");
+                            }
+
+                            if (alreadyRegistered == 0)
+                            {
+                                Console.Error.WriteLine($"WARNING: The \"PATH\" Variable does not contain this FUSEE instance. \"PATH\" will not be altered\n");
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine($"Removing this FUSEE instance from the \"PATH\" variable");
+                                var newPathVariable = "";
+                                for (int i = 0; ; i++)
+                                {
+                                    newPathVariable += remainingPaths[i];
+                                    if (i == remainingPaths.Count - 1)
+                                        break;
+                                    newPathVariable += ";";
+                                }
+                                Environment.SetEnvironmentVariable("PATH", newPathVariable, target);
+                            }
+                        }
+                        catch (SecurityException ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                            Environment.Exit((int)ErrorCode.InsufficentPrivileges);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Unable to alter the \"PATH\" environment variable.\n{ex}");
+                            Environment.Exit((int)ErrorCode.InternalError);
+                        }
+
+
                         // Remove the FuseeRoot variable
                         try
                         {
                             Environment.SetEnvironmentVariable("FuseeRoot", null, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
                         }
+                        catch (SecurityException ex)
+                        {
+                            Console.Error.WriteLine($"ERROR: Insufficient privileges to delete the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                            Environment.Exit((int)ErrorCode.InsufficentPrivileges);
+                        }
                         catch (Exception ex)
                         {
-                            Console.Error.WriteLine($"ERROR: Unable to delete the environment variable \"FuseeRoot\".\n{ex}");
+                            Console.Error.WriteLine($"ERROR: Unable to delete the \"FuseeRoot\" environment variable.\n{ex}");
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
 
