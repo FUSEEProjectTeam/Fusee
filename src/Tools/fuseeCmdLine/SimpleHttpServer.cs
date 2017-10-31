@@ -265,6 +265,7 @@ namespace Fusee.Tools.fuseeCmdLine
             _mimeMap.Add(".jpeg", "image/gif");
             _mimeMap.Add(".jpg", "image/jpeg");
             _mimeMap.Add(".png", "image/png");
+            _mimeMap.Add(".gif", "image/gif");
             _mimeMap.Add(".css", "text/css");
             _mimeMap.Add(".csv", "text/csv");
             _mimeMap.Add(".html", "text/html");

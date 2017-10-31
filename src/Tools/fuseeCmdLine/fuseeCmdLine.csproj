@@ -196,9 +196,8 @@
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
   <Import Project="$(FuseeRoot)ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
   <PropertyGroup>
-    <PostBuildEvent>echo Copy Fusee Player (needed for the Web verb)
-xcopy /i /s /y $(OutDir)..\Player\* $(OutDir)Player\
-</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->

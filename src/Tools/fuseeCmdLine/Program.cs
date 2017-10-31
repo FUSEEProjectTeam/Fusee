@@ -281,9 +281,12 @@ namespace Fusee.Tools.fuseeCmdLine
                         try
                         {
                             using (var output = new StreamWriter(File.Open(opts.Output, FileMode.Create)))
+                            {
+                                output.WriteLine("syntax = \"proto2\";");
                                 output.Write(schema);
+                            }
                             Console.Error.WriteLine(
-                                $"Protobuf schema for .fus files successfully written to '{opts.Output}'");
+                                $"SUCCESS: Protobuf schema for .fus files written to '{opts.Output}'");
                         }
                         catch (Exception ex)
                         {

@@ -93,7 +93,9 @@ namespace Fusee.Tools.fuseeCmdLine
 
             // filePaths = textureList.ToList(); // Directory.GetFiles(Path.Combine(targDir, "Assets")).ToList();
             filePaths.Add(Path.Combine(targWeb, "Assets", "Model.fus"));
-            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeLogo150.png"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeAnim.gif"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeSpinning.gif"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeText.png"));
             filePaths.Add(Path.Combine(targWeb, "Assets", "Lato-Black.ttf"));
             filePaths.Sort(String.Compare);
 

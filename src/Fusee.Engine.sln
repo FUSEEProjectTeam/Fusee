@@ -81,6 +81,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "addons", "addons", "{F613A45C-7F81-4A40-8BD3-355C7D1564D1}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "io_export_fus", "Tools\BlenderScripts\addons\io_export_fus\io_export_fus.pyproj", "{C1B8044F-FD9A-4041-83A4-8838C1765789}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6} = {BEE87E0D-4592-47C9-BDB3-C52755ED75B6}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Jometri", "Jometri\Fusee.Jometri.csproj", "{8EE002C1-E15C-4297-8013-5005D65E33D9}"
 EndProject
