@@ -1,6 +1,5 @@
 var $fuseeBaseCommon = JSIL.GetAssembly("Fusee.Base.Common");
 var $fuseeMathCore = JSIL.GetAssembly("Fusee.Math.Core");
-var $fuseeBaseImp = JSIL.GetAssembly("Fusee.Base.Imp.Web");
 
 JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Base");
@@ -178,9 +177,8 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
 
                             contour = [];
                             curve.CurveParts.Add(cp);
-
-                            // var helper = $fuseeBaseImp.Fusee.Base.Imp.Web.SplitToCurveSegmentHelper;
-                            var helper = $fuseeBaseCommon.Fusee.Base.Common.SplitToCurveSegmentHelper
+                          
+                            var helper = $fuseeBaseCommon.Fusee.Base.Common.SplitToCurveSegmentHelper;
                             var segments = helper.SplitPartIntoSegments(cp, partTags, partVertices);
                             helper.CombineCurveSegmentsAndAddThemToCurvePart(segments, cp);
 
