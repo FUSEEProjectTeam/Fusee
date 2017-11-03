@@ -806,6 +806,12 @@ namespace Fusee.Tools.fuseeCmdLine
                             Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.\n{ex}");
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
+
+                        // Install the Blender AddOn
+                        try
+                        {
+                            string blenderAddOnDir = GetBlenderAddOnDir(opts.InstType);
+                        }
                     }
                     else
                     {
@@ -830,7 +836,7 @@ namespace Fusee.Tools.fuseeCmdLine
                             Environment.Exit((int)ErrorCode.InternalError);
                         }
 
-                        // Remove us from the PATH so fusee.exe can be called from anywhere. Be careful with the PATH. 
+                        // Remove us from the PATH. Be careful with the PATH. 
                         try
                         {
                             var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
@@ -1209,6 +1215,22 @@ namespace Fusee.Tools.fuseeCmdLine
                     */
                     Environment.Exit((int)ErrorCode.CommandLineSyntax);
                 });
+        }
+
+        private static string GetBlenderAddOnDir(InstallationType instType)
+        {
+            switch (instType)
+            {
+                case InstallationType.Machine:
+
+                    break;
+
+                case InstallationType.User:
+                    break;
+
+                default:
+                    throw new ArgumentException("Unknown installation type.");
+            }
         }
 
         private static Dictionary<string, int> ReadAssemblySizes(string fileContents)

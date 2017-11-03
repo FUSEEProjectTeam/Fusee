@@ -86,7 +86,7 @@ DONE:	Make "fusee install" add the path to fusee.exe to the system / user PATH (
 DONE:	Complete the list of options for "fusee install --type xyz"
 DONE:	Become more specific if "fusee install --type Machine" fails. Advise user to start fusee.exe/cmd as admin.
 			
-		Unify current FUSEE version numbers (of DLLs). Make fuse.exe`s version number "official".
+DONE:	Unify current FUSEE version numbers (of DLLs). Make fuse.exe`s version number "official".
 			
 		Add "fusee install --check"	option: see if FuseeRoot and AssemblyDirecory are equal. Check if fusee.exe is part of the FUSEE distribution directory structure. 
 		See if some checksum based approach is easily implementable checking the sanity of the directory structure. 
@@ -116,7 +116,7 @@ DONE:		Evaluate different approaches including
 				
 	############ blender integration ##############	
 
-		Append FUSEE export AddIn installation ot "fusee install".
+		Append FUSEE export AddIn installation to "fusee install".
 	
 		Allow new type of FUSEE .Core Dlls implementing "behavior" classes to be attached
 		to individual scene graph nodes instead of one overall RenderCanvas derivative.

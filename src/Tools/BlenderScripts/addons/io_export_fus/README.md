@@ -2,6 +2,8 @@
 _by Jonas Conrad and Patrick Foerster_
 ## Installation Guide
 ### Prerequisites
+* The io_export_fus.pyproj file uses the ZIP task which is part of the MSBuild Communiy Tasks project
+  * Download and install the latest version from https://github.com/loresoft/msbuildtasks
 * Blender
 * Fusee (with the set FuseeRoot environment variable)
 * fusee.exe (if not already done, simply build the Fusee.Engine.sln)
