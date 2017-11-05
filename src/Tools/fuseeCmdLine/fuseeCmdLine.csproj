@@ -207,26 +207,27 @@
 	<BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
 
-  <!-- Input files to put into the zip -->
-  <ItemGroup>
-    <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\*.py" />
-    <BlenderAddonPythonProtoFiles Include="$(BlenderAddonSourcePath)\proto\*.py" />
-  </ItemGroup>
  
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
-    <!-- Create the protoschema -->
-	<Message Importance="High" Text="[FUSEE BlenderAddon] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
+	<!-- Input files part of the Addon -->
+	<ItemGroup>
+	 <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\**\*.py" />
+	 <BlenderAddonPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
+    </ItemGroup>
+
+	  <!-- Create the protoschema -->
+	<Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
    
 	<!-- call the protobuf code generator to build the python code -->
-	<Message Importance="High" Text="[FUSEE BlenderAddon] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
+	<Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
 
 	<!-- Copy the python files to the bin output folder -->
-	<Message Importance="High" Text="[FUSEE BlenderAddon] Copying %(BlenderAddonPythonFiles.Filename) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)" />
-	<Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)" />
-	<Message Importance="High" Text="[FUSEE BlenderAddon] Copying %(BlenderAddonPythonProtoFiles.Filename) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
-	<Copy SourceFiles="@(BlenderAddonPythonProtoFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />	
+	<Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+	<Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+
+	
 	
 	<!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
 	<!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
