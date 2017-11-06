@@ -212,7 +212,7 @@
 	<!-- Input files part of the Addon -->
 	<ItemGroup>
 	 <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\**\*.py" />
-	 <BlenderAddonPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
+	 <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
 
 	  <!-- Create the protoschema -->
@@ -224,8 +224,10 @@
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
 
 	<!-- Copy the python files to the bin output folder -->
-	<Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+	<Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
 	<Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+	<Message Importance="High" Text="[FUSEE Blender Add-on Protobuf] Copying %(BlenderAddonProtobufPythonFiles.Filename)%(BlenderAddonProtobufPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+	<Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
 
 	
 	
