@@ -770,15 +770,18 @@ namespace Fusee.Tools.fuseeCmdLine
                                 string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
 
                                 int alreadyRegistered = 0;
-                                var pathContents = pathVariable.Split(new char[] { ';' });
                                 List<string> fuseePaths = new List<string>();
-                                foreach (var path in pathContents)
+                                if (!string.IsNullOrEmpty(pathVariable))
                                 {
-                                    var pathProcessed = FileTools.PathAddTrailingSeperator(path);
-                                    if (pathProcessed == fuseeCmdLineRoot)
-                                        alreadyRegistered++;
-                                    else if (pathProcessed.ToLower().Contains("fusee"))
-                                        fuseePaths.Add(pathProcessed);
+                                    var pathContents = pathVariable.Split(new char[] { ';' });
+                                    foreach (var path in pathContents)
+                                    {
+                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                        if (pathProcessed == fuseeCmdLineRoot)
+                                            alreadyRegistered++;
+                                        else if (pathProcessed.ToLower().Contains("fusee"))
+                                            fuseePaths.Add(pathProcessed);
+                                    }
                                 }
 
                                 if (fuseePaths.Count > 0)
@@ -801,12 +804,12 @@ namespace Fusee.Tools.fuseeCmdLine
                                 {
                                     pathVariable += $";{fuseeCmdLineRoot}";
                                     Environment.SetEnvironmentVariable("PATH", pathVariable, target);
-                                    Console.Error.WriteLine($"SUCCESS: \"PATH\" environment variable now contains {fuseeCmdLineRoot}.\n");
+                                    Console.Error.WriteLine($"SUCCESS: \"PATH\" environment variable now contains {fuseeCmdLineRoot}");
                                 }
                             }
                             catch (SecurityException ex)
                             {
-                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe.");
                                 exitCode = ErrorCode.InsufficentPrivileges;
                             }
                             catch (Exception ex)
@@ -1029,20 +1032,23 @@ namespace Fusee.Tools.fuseeCmdLine
                                 string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
 
                                 int alreadyRegistered = 0;
-                                var pathContents = pathVariable.Split(new char[] { ';' });
                                 List<string> remainingPaths = new List<string>();
                                 List<string> fuseePaths = new List<string>();
-                                foreach (var path in pathContents)
+                                if (!string.IsNullOrEmpty(pathVariable))
                                 {
-                                    var pathProcessed = FileTools.PathAddTrailingSeperator(path);
-                                    if (pathProcessed == fuseeCmdLineRoot)
-                                        alreadyRegistered++;
-                                    else
+                                    var pathContents = pathVariable.Split(new char[] { ';' });
+                                    foreach (var path in pathContents)
                                     {
-                                        if (pathProcessed.ToLower().Contains("fusee"))
-                                            fuseePaths.Add(pathProcessed);
+                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                        if (pathProcessed == fuseeCmdLineRoot)
+                                            alreadyRegistered++;
+                                        else
+                                        {
+                                            if (pathProcessed.ToLower().Contains("fusee"))
+                                                fuseePaths.Add(pathProcessed);
 
-                                        remainingPaths.Add(path);
+                                            remainingPaths.Add(path);
+                                        }
                                     }
                                 }
 
