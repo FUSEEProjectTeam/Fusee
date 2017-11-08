@@ -42,10 +42,7 @@
 		  
           "Fusee\\.Engine\\.Imp\\.Graphics\\.Web",
 		  
-          "Fusee\\.Engine\\.Core\\.GUI\\.GUIElement",
-		  "Fusee\\.Engine\\.Core\\.LightSetupState",
-		  "Fusee\\.Engine\\.Core\\.LightSetup",
-		  "Fusee\\.Engine\\.Core\\.SceneRenderer",
+          "Fusee\\.Engine\\.Core",
 		  
 		  "Fusee\\.Xene\\.SceneFinderBase",
 		  
