@@ -24,5 +24,33 @@
   "ProfileSettings": {
     "OverwriteExistingContent": true,
     "ContentOutputDirectory": "%outputdirectory%/Content"
-  }
+  },
+  "AnalyzerSettings": {
+		  "DeadCodeAnalyzer": {
+			"DeadCodeElimination": true,
+			"NonAggressiveVirtualMethodElimination": true,
+        "WhiteList": [
+		  "System\\.IO\\.Compression\\.ZLibNative",
+		  "System\\.IO\\.Compression\\.DeflateStream",
+          
+		  "Fusee\\.Engine\\.Common\\.Helper",
+		  "Fusee\\.Engine\\.Common\\.CharInfoStruct",
+		  "Fusee\\.Base\\.Common\\.ImagePixelFormat",
+		  "Fusee\\.Base\\.Common\\.ImageData",
+		  "Fusee\\.Base\\.Common\\.GlyphInfo",
+		  "Fusee\\.Base\\.Core\\.Font",
+		  
+          "Fusee\\.Engine\\.Imp\\.Graphics\\.Web",
+		  
+          "Fusee\\.Engine\\.Core",
+		  
+		  "Fusee\\.Xene\\.SceneFinderBase",
+		  
+          "Fusee\\.Math\\.Core\\.float2",
+		  "Fusee\\.Math\\.Core\\.float3",
+		  "Fusee\\.Math\\.Core\\.float4",
+		  "Fusee\\.Math\\.Core\\.float4x4"
+        ]
+		  }
+	  }
 }
