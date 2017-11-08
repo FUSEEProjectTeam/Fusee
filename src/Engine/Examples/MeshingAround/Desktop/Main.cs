@@ -5,6 +5,7 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 using Path = Fusee.Base.Common.Path;
+using System.Reflection;
 
 namespace Fusee.Engine.Examples.MeshingAround.Desktop
 {
@@ -45,7 +46,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Desktop
             var app = new Core.MeshingAround();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
-            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
+            System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+			app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));

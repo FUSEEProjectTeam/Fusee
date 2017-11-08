@@ -1,8 +1,0 @@
-﻿{
-  "OutputDirectory": "Output\\",
-  "Assemblies": {
-	"Proxies": [
-		   "%jsildirectory%\\JSIL.Proxies.Bcl.dll"
-    ] 
-  }
-}
