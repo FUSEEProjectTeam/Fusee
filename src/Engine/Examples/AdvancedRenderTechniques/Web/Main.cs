@@ -3,9 +3,9 @@ using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Engine.Examples.Simple.Web
+namespace Fusee.Engine.Examples.Art.Web
 {
-    public class Simple
+    public class Art
     {
         public static void Main()
         {
