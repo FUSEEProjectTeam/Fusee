@@ -93,7 +93,9 @@ namespace Fusee.Tools.fuseeCmdLine
 
             // filePaths = textureList.ToList(); // Directory.GetFiles(Path.Combine(targDir, "Assets")).ToList();
             filePaths.Add(Path.Combine(targWeb, "Assets", "Model.fus"));
-            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeLogo150.png"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeAnim.gif"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeSpinning.gif"));
+            filePaths.Add(Path.Combine(targWeb, "Assets", "FuseeText.png"));
             filePaths.Add(Path.Combine(targWeb, "Assets", "Lato-Black.ttf"));
             filePaths.Sort(String.Compare);
 
@@ -166,7 +168,7 @@ namespace Fusee.Tools.fuseeCmdLine
             return destRelativePaths;
         }
 
-         private static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
+         public static void GenerateAssetManifestEntryItems(List<string> filePaths, List<string> dstRelPaths, int specFiles, List<string> fileNamesList, List<long> fileSizeList, List<string> fileTypesList, List<string> fileFormatsList)
         {
             for (var ct = 0; ct <= filePaths.Count - 1; ct++)
             {

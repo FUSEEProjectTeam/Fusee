@@ -348,11 +348,16 @@
 		<!-- FuseeScriptListToAdd>@(FuseeScriptAddToManifest->'%(filename)')</FuseeScriptListToAdd-->
 			<FuseeScriptListToAdd>@(FuseeScriptAddToManifestNameFiltered)</FuseeScriptListToAdd>
 		</PropertyGroup>
+		<!--Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
+		<Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe&quot; &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" /-->
+
 		<Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
-		<Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe&quot; &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
+		<Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; generate &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
+		
 		<!-- Message Importance="High" Text="     External Scripts to add: @(FuseeScriptAddToManifest->'%(filename)%(extension)')" /-->
 		<!-- Message Importance="High" Text="     External Scripts to add: %(FuseeScriptAddToManifest.directory)%(FuseeScriptAddToManifest.filename)%(FuseeScriptAddToManifest.extension)" /-->
-		<Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe" "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
+		<!--Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)bin\$(Configuration)\Tools\fuGen.exe" "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' /-->
+		<Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe" generate "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
 	</Target>
 
 	<!-- ================================================================================================================

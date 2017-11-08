@@ -16,7 +16,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -126,6 +126,10 @@
     <ProjectReference Include="..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+      <Project>{fe8c3118-a8f4-45cc-bf31-e2f38771bf4c}</Project>
+      <Name>Fusee.Engine.Player.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

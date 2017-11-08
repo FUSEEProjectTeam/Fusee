@@ -4,12 +4,11 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Examples.ThreeDFont.Core</RootNamespace>
     <AssemblyName>Fusee.Engine.Examples.ThreeDFont.Core</AssemblyName>
-    <!-- FuseeRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..\..</FuseeRoot -->
-    <ProjectBuildRoot Condition=" '$(ProjectBuildRoot)' == '' ">..</ProjectBuildRoot>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{4E534FDD-A963-448D-B2A6-F3E8B9F0BF69}</ProjectGuid>
+    <ProjectGuid>{C4157BCB-D3A0-45C6-A84B-735FBD8C7AA8}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -22,8 +21,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Debug\Examples\ThreeDFont\Core\</OutputPath>
-    <BaseIntermediateOutputPath>$(ProjectBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\ThreeDFont\Core\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -32,49 +31,39 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(ProjectBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(ProjectBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\ThreeDFont\Core\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputRoot>$(ProjectBuildRoot)\bin\$(Configuration)\</OutputRoot>
-  </PropertyGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThreeDFontHelper.cs" />
     <Compile Include="ThreeDFont.cs" />
+    <Compile Include="ThreeDFontHelper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Fusee.Base.Common">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
+      <Name>Fusee.Base.Common</Name>
     </Reference>
-    <Reference Include="Fusee.Base.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+      <Name>Fusee.Base.Core</Name>
     </Reference>
-    <Reference Include="Fusee.Math.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
+      <Name>Fusee.Math.Core</Name>
     </Reference>
-    <Reference Include="Fusee.Serialization">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
+      <Name>Fusee.Serialization</Name>
     </Reference>
-    <Reference Include="Fusee.Xene">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
     </Reference>
-    <Reference Include="Fusee.Engine.Common">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
+      <Name>Fusee.Engine.Common</Name>
     </Reference>
-    <Reference Include="Fusee.Engine.Core">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
+      <Name>Fusee.Engine.Core</Name>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -83,7 +72,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\FragShader.frag">
+    <Reference Include="Fusee.Jometri">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Jometri.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Assets\GNU-FreeSerif.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -93,31 +87,23 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\VertShader.vert">
+    <Content Include="Assets\FragShader.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Jometri\Fusee.Jometri.csproj">
-      <Project>{8ee002c1-e15c-4297-8013-5005d65e33d9}</Project>
-      <Name>Fusee.Jometri</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\GNU-FreeSerif.ttf">
+    <Content Include="Assets\VertShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeRoot)src\FuseeBuildActions.target.xml" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -481,7 +481,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImp()
+        public RenderCanvasImp() : this(null)
+        {
+        }
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
+        /// </summary>
+        /// <param name="appIcon">The icon for the render window.</param>
+        public RenderCanvasImp(Icon appIcon)
         {
             const int width = 1280;
             var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
@@ -494,7 +503,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
+            if (appIcon != null)
+                _gameWindow.Icon = appIcon;
+
+            _gameWindow.X = (Screen.PrimaryScreen.Bounds.Width - width) / 2;
+            _gameWindow.Y = (Screen.PrimaryScreen.Bounds.Height - height) / 2;
         }
+
 
         /// <summary>
         /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.

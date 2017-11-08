@@ -3,31 +3,28 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Net;
-using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Threading;
 using Assimp;
 using CommandLine;
 using Fusee.Serialization;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-using CommandLine.Infrastructure;
-using CommandLine.Text;
 using Fusee.Engine.Core;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
+using System.Security;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
     enum ErrorCode : int
     {
+        Success,
         CommandLineSyntax = -1,
         InputFile = -2,
         InputFormat = -3,
         OutputFile = -4,
         PlatformNotHandled = -5,
+        InsufficentPrivileges = -6,
 
         InternalError = -42,
     }
@@ -100,7 +97,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [Verb("server", HelpText = "Launch a minimalistic local webserver and start the default browser.")]
         public class Server
         {
-            [Value(0, HelpText = "Directory or File path. to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
+            [Value(0, HelpText = "Directory or File path to be used as WWWRoot. If a file name is given, it will be started in the browser. If not, a default start file will be looked for.", MetaName = "Root")]
             public string Root { get; set; }
 
             [Option('p', "port", Default = 4655, // HEX FU,
@@ -117,19 +114,34 @@ namespace Fusee.Tools.fuseeCmdLine
             Machine,
         }
 
-        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation. This will set the \"FuseeRoot\" environment variable and register the 'dotnet new fusee' template.")]
+        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation - by default this invokes for steps: (1. -f) Set the \"FuseeRoot\" environment variable. (2 -p) Add the fusee.exe directory to the \"PATH\" environment variable. (3 -d) Register the 'dotnet new fusee' template. (4 -b) Install the blender add-on. The -u option undoes the respechtive step.")]
         public class Install
         {
-            [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation.")]
+            [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation. '-t User' will set \"FuseeRoot\" and \"PATH\" for the current user only and will install the Blender AddOn below <user>/Appdata/Roaming/Blender Foundation. '-t Machine' will set \"FuseeRoot\" and \"PATH\" for all users and install the Blender AddOn below 'Program Files/Blender Foundation'. Start shell (cmd or powershell) as Administrator for machine-wide installation")]
             public InstallationType InstType { get; set; }
 
-            [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will NOT delete the contents of the installation folder.")]
+            [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will only de-register this FUSEE instance (deregister the 'dotnet new fusee' template, remove fusee.exe from the \"PATH\" and remove the \"FuseeRoot\" environment varable). This will NOT delete the contents of the installation folder.")]
             public bool Uninstall { get; set; }
+
+            [Option('f', "fuseeroot", Default = false, HelpText = "Only set/delete the FuseeRoot environment variable.")]
+            public bool FuseeRoot { get; set; }
+
+            [Option('p', "path", Default = false, HelpText = "Only add/remove this FUSEE instance to the PATH environment variable.")]
+            public bool PathEnv { get; set; }
+
+            [Option('d', "dotnet", Default = false, HelpText = "Only install/uninstall the dotnet core FUSEE template.")]
+            public bool Dotnet { get; set; }
+
+            [Option('b', "blender", Default = false, HelpText = "Only install/uninstall the blender FUSEE addon.")]
+            public bool Blender { get; set; }
+
+            [Option('i', "blenderdir", HelpText = "Manually set the directory where to (un/)install the FUSEE addon to/from. If not set, fusee.exe tries to find an appropriate addon directory based on the installation type (option '--type' per-user or machine-wide).")]
+            public string BlenderDir { get; set; }
 
         }
 
 
-        [Verb("web", HelpText = "Use an existing .fus-file to start a webserver.")]
+        [Verb("web", HelpText = "Use an existing .fus-file to start a webserver. Deprectated. Currently used in the FUSEE Blender Export AddIn. To be replaced by the publish verb.")]
         public class WebViewer
         {
             [Value(0, HelpText = "Input .fus-file.", MetaName = "Input", Required = true)]
@@ -142,10 +154,59 @@ namespace Fusee.Tools.fuseeCmdLine
             public string List { get; set; }
         }
 
+        [Verb("generate", HelpText = "Generate necessary web export files (Config file, Manifest file, HTML page). Deprecated. Currently used in the FUSEE build process (FuseeBuildActions.target.xml). To be replaced by the publish verb.")]
+        public class Generate
+        {
+            [Value(0, HelpText = "Target Directory", MetaName = "TargetDir", Required = true)]
+            public string TargDir { get; set; }
+
+            [Value(1, HelpText = "Target Web", MetaName = "TargetWeb", Required = true)]
+            public string TargWeb { get; set; }
+
+            [Value(2, HelpText = "Target Application Path", MetaName = "TargetApp", Required = true)]
+            public string TargAppPath { get; set; }
+
+            [Value(3, HelpText = "External (Script) Files", MetaName = "ExternalFiles", Required = true)]
+            public string ExternalFiles { get; set; }
+        }
+
+        // "Globals"
+        static string fuseeCmdLineRoot = null;
+        static string fuseeRoot = null;
+        static string fuseeBuildRoot = null;
+        static string fuseeConfiguration = null;
+
+        static void InitFuseeDirectories()
+        {
+            // Check if player is present
+            try
+            {
+                fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+                fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
+                fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
+                fuseeCmdLineRoot = FileTools.PathAddTrailingSeperator(fuseeCmdLineRoot);
+                fuseeRoot = FileTools.PathAddTrailingSeperator(fuseeRoot);
+                fuseeBuildRoot = FileTools.PathAddTrailingSeperator(fuseeBuildRoot);
+                if (fuseeCmdLineRoot.Contains("Debug"))
+                {
+                    fuseeConfiguration = "Debug";
+                }
+                else
+                {
+                    fuseeConfiguration = fuseeCmdLineRoot.Contains("Release") ? "Release" : "Unknown";
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
+                Environment.Exit((int)ErrorCode.InternalError);
+            }
+
+        }
 
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer>(args)
+            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer, Generate>(args)
 
                 // Called with the SCENE verb
                 .WithParsed<SceneOptions>(opts =>
@@ -244,9 +305,12 @@ namespace Fusee.Tools.fuseeCmdLine
                         try
                         {
                             using (var output = new StreamWriter(File.Open(opts.Output, FileMode.Create)))
+                            {
+                                output.WriteLine("syntax = \"proto2\";");
                                 output.Write(schema);
+                            }
                             Console.Error.WriteLine(
-                                $"Protobuf schema for .fus files successfully written to '{opts.Output}'");
+                                $"SUCCESS: Protobuf schema for .fus files written to '{opts.Output}'");
                         }
                         catch (Exception ex)
                         {
@@ -374,21 +438,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
 
 
-                // Check if player is present
-                string fuseeCmdLineRoot = null;
-                string fuseeRoot = null;
-                string fuseeBuildRoot = null;
-                try
-                {
-                    fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                    fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
-                    fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
-                    Environment.Exit((int)ErrorCode.InternalError);
-                }
+                InitFuseeDirectories();
 
                 string playerFile = null;
                 string desktopPlayerDir = Path.GetFullPath(Path.Combine(fuseeBuildRoot, "Player", "Desktop")); // need this in web build as well.
@@ -672,94 +722,578 @@ namespace Fusee.Tools.fuseeCmdLine
                 .WithParsed<Install>(opts =>
                 {
                     // Find FuseeRoot from this assembly
-                    string fuseeCmdLineRoot = null;
-                    string fuseeRoot = null;
-                    try
+                    InitFuseeDirectories();
+                    string templateDir = Path.Combine(fuseeRoot, "dis", "DnTemplate"); 
+
+                    // Set the individual installation steps (currently four). If NONE of them is set, select ALL OF THEM.
+                    bool instFuseeRoot = opts.FuseeRoot;
+                    bool instPathEnv = opts.PathEnv;
+                    bool instDotnet = opts.Dotnet;
+                    bool instBlender = opts.Blender;
+                    if (!(instFuseeRoot || instPathEnv || instDotnet || instBlender))
                     {
-                        fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                        fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
-                        fuseeRoot = FileTools.PathAddTrailingSeperator(fuseeRoot);
+                        instFuseeRoot = instPathEnv = instDotnet = instBlender = true;
                     }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"ERROR: this instance of fusee.exe at {fuseeCmdLineRoot} doesn't seem to be part of a FUSEE installation.\n{ex}");
-                        Environment.Exit((int)ErrorCode.InternalError);
-                    }
-                    string templateDir = Path.Combine(fuseeRoot, "dis", "DnTemplate"); ;
+
+                    ErrorCode exitCode = ErrorCode.Success;
 
                     // Install or uninstall ? 
                     if (!opts.Uninstall)
                     {
                         // INSTALL
                         // Set the FuseeRoot Environment variable
-                        try
+                        if (instFuseeRoot)
                         {
-                            Environment.SetEnvironmentVariable("FuseeRoot", fuseeRoot, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                            try
+                            {
+                                Environment.SetEnvironmentVariable("FuseeRoot", fuseeRoot, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                                Console.Error.WriteLine($"SUCCESS: \"FuseeRoot\" environment variable set to {fuseeRoot}.");
+                            }
+                            catch (SecurityException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Insufficient privileges to set the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
+                                exitCode = ErrorCode.InsufficentPrivileges;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to set the \"FuseeRoot\" environment variable.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
                         }
-                        catch (Exception ex)
+
+                        // Add us to the PATH so fusee.exe can be called from anywhere. Be careful with the PATH. Check if fusee is already registered there.
+                        if (instPathEnv)
                         {
-                            Console.Error.WriteLine($"ERROR: Unable to set the environment variable \"FuseeRoot\".\n{ex}");
-                            Environment.Exit((int)ErrorCode.InternalError);
+                            try
+                            {
+                                var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
+                                string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
+
+                                int alreadyRegistered = 0;
+                                List<string> fuseePaths = new List<string>();
+                                if (!string.IsNullOrEmpty(pathVariable))
+                                {
+                                    var pathContents = pathVariable.Split(new char[] { ';' });
+                                    foreach (var path in pathContents)
+                                    {
+                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                        if (pathProcessed == fuseeCmdLineRoot)
+                                            alreadyRegistered++;
+                                        else if (pathProcessed.ToLower().Contains("fusee"))
+                                            fuseePaths.Add(pathProcessed);
+                                    }
+                                }
+
+                                if (fuseePaths.Count > 0)
+                                {
+                                    Console.Error.WriteLine($"WARNING: the \"PATH\" Variable already references the following FUSEE instances:");
+                                    foreach (var fuseePath in fuseePaths)
+                                    {
+                                        Console.Error.WriteLine($"\t{fuseePath}");
+                                    }
+                                    Console.Error.WriteLine("\tfusee.exe will NOT alter the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instance(s) first.");
+                                }
+                                else if (alreadyRegistered >= 1)
+                                {
+                                    if (alreadyRegistered == 1)
+                                        Console.Error.WriteLine($"The \"PATH\" Variable already contains this FUSEE instance. \"PATH\" will not be altered\n");
+                                    else
+                                        Console.Error.WriteLine($"WARNING: The \"PATH\" Variable already contains this FUSEE instance MULTIPLE TIMES. Please check the contents of your \"PATH\" manually. \"PATH\" will not be altered\n");
+                                }
+                                else
+                                {
+                                    pathVariable += $";{fuseeCmdLineRoot}";
+                                    Environment.SetEnvironmentVariable("PATH", pathVariable, target);
+                                    Console.Error.WriteLine($"SUCCESS: \"PATH\" environment variable now contains {fuseeCmdLineRoot}");
+                                }
+                            }
+                            catch (SecurityException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe.");
+                                exitCode = ErrorCode.InsufficentPrivileges;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to set the \"PATH\" environment variable.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
                         }
 
                         // Install the dotnet new fusee template
-                        try
+                        if (instDotnet)
                         {
-                            using (Process cmd = Process.Start(new ProcessStartInfo
+                            try
                             {
-                                FileName = "dotnet",
-                                Arguments = $"new --install {templateDir}",
-                                UseShellExecute = false,
-                                WorkingDirectory = Directory.GetCurrentDirectory(),
-                            }))
+                                using (Process cmd = Process.Start(new ProcessStartInfo
+                                {
+                                    FileName = "dotnet",
+                                    Arguments = $"new --install {templateDir}",
+                                    UseShellExecute = false,
+                                    WorkingDirectory = Directory.GetCurrentDirectory(),
+                                    RedirectStandardOutput = true,
+                                }))
+                                {
+                                    string output = cmd.StandardOutput.ReadToEnd();
+                                    cmd.WaitForExit();
+                                    if (output.ToLower().Contains("fusee"))
+                                    {
+                                        Console.Error.WriteLine("SUCCESS: Installed the \"dotnet new fusee\" template to DotNet. Call \"dotnet new --list\" to see the list of installed templates");
+                                    }
+                                    else
+                                    {
+                                        Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.");
+                                        exitCode = ErrorCode.InternalError;
+                                    }
+                                }
+                            }
+                            catch (FileNotFoundException ex)
                             {
-                                cmd.WaitForExit();
+                                Console.Error.WriteLine($"ERROR: {ex.FileName} not found. Make sure .NET Core 2.0 or higher is installed.");
+                            }
+                           catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
                             }
                         }
-                        catch (Exception ex)
+
+                        // Install the Blender AddOn
+                        if (instBlender)
                         {
-                            Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.\n{ex}");
-                            Environment.Exit((int)ErrorCode.InternalError);
+                            string blenderAddOnDstDir = "";
+                            string blenderAddOnSrcDir = "";
+
+                            try
+                            {
+                                IEnumerable<string> possibleDirs;
+                                if (!string.IsNullOrEmpty(opts.BlenderDir))
+                                {
+                                    if (!Directory.Exists(opts.BlenderDir))
+                                    {
+                                        throw new ArgumentException($"ERROR: The specified path doesn't exist {opts.BlenderDir}.");
+                                    }
+                                    string allLower = opts.BlenderDir.ToLower();
+                                    if (!allLower.Contains("addon") && !allLower.Contains("blender"))
+                                    {
+                                        Console.Error.WriteLine($"WARNING: The specified path doesn't look like a typical Blender Add-on folder.");
+                                    }
+                                    blenderAddOnDstDir = opts.BlenderDir;
+                                }
+                                else
+                                {
+                                    possibleDirs = GetBlenderAddOnDir(opts);
+                                    blenderAddOnDstDir = possibleDirs.FirstOrDefault();
+                                    if (!Directory.Exists(blenderAddOnDstDir))
+                                        Directory.CreateDirectory(blenderAddOnDstDir);
+                                }
+                                
+                                if (!string.IsNullOrEmpty(blenderAddOnDstDir))
+                                {
+                                    blenderAddOnSrcDir = Path.Combine(fuseeCmdLineRoot, "BlenderScripts", "addons");
+                                    foreach (var addOnSrcDir in Directory.EnumerateDirectories(blenderAddOnSrcDir, "*", SearchOption.TopDirectoryOnly))
+                                    {
+                                        string addOnName = new DirectoryInfo(addOnSrcDir).Name;
+                                        string addOnDstDir = Path.Combine(blenderAddOnDstDir, addOnName);
+                                        FileTools.DirectoryCopy(addOnSrcDir, addOnDstDir, true, true);
+                                        Console.Error.WriteLine($"SUCCESS: Installed the {addOnName} Blender Add-on to {blenderAddOnDstDir}.");
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Error.WriteLine($"ERROR: Could not find a suitable Blender installation to install the Add-on to. Consider using the '-i' option to specifiy the Blender Add-on installation directory.");
+                                    exitCode = ErrorCode.OutputFile;
+                                }
+                            }
+                            catch (UnauthorizedAccessException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Could not install FUSEE Blender Add-on to {blenderAddOnDstDir} due to access restrictions. Try running the shell as Administrator before calling fusee.exe.");
+                                exitCode = ErrorCode.OutputFile;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to install the FUSEE Blender Add-on.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
                         }
                     }
                     else
                     {
                         // UNINSTALL
-                        // Uninstall the dotnet new fusee template
-                        try
+
+                        // Uninstall the Blender AddOn
+                        if (instBlender)
                         {
-                            using (Process cmd = Process.Start(new ProcessStartInfo
+                            string blenderAddOnDstDir = "";
+                            string blenderAddOnSrcDir = "";
+
+                            try
                             {
-                                FileName = "dotnet",
-                                Arguments = $"new --uninstall {templateDir}",
-                                UseShellExecute = false,
-                                WorkingDirectory = Directory.GetCurrentDirectory(),
-                            }))
+                                IEnumerable<string> possibleDirs;
+                                if (!string.IsNullOrEmpty(opts.BlenderDir))
+                                {
+                                    if (!Directory.Exists(opts.BlenderDir))
+                                    {
+                                        throw new ArgumentException($"ERROR: The specified path doesn't exist {opts.BlenderDir}.");
+                                    }
+                                    string allLower = opts.BlenderDir.ToLower();
+                                    if (!allLower.Contains("addon") && !allLower.Contains("blender"))
+                                    {
+                                        Console.Error.WriteLine($"WARNING: The specified path doesn't look like a typical Blender Add-on folder.");
+                                    }
+                                    blenderAddOnDstDir = opts.BlenderDir;
+                                }
+                                else
+                                {
+                                    possibleDirs = GetBlenderAddOnDir(opts);
+                                    blenderAddOnDstDir = possibleDirs.First();
+                                }
+
+                                if (!string.IsNullOrEmpty(blenderAddOnDstDir))
+                                {
+                                    blenderAddOnSrcDir = Path.Combine(fuseeCmdLineRoot, "BlenderScripts", "addons");
+                                    foreach (var addOnSrcDir in Directory.EnumerateDirectories(blenderAddOnSrcDir, "*", SearchOption.TopDirectoryOnly))
+                                    {
+                                        string addOnName = new DirectoryInfo(addOnSrcDir).Name;
+                                        string addOnDstDir = Path.Combine(blenderAddOnDstDir, addOnName);
+                                        if (Directory.Exists(addOnDstDir))
+                                        {
+                                            Directory.Delete(addOnDstDir, true);
+                                            Console.Error.WriteLine($"SUCCESS: Removed the the {addOnName} Blender Add-on from {blenderAddOnDstDir}.");
+                                        }
+                                        else
+                                        {
+                                            Console.Error.WriteLine($"WARNING: Could not remove the {addOnName} Blender Add-on from {blenderAddOnDstDir}. Either the Add-on was already removed, or this FUSEE instance installed the Add-on to a previous Blender version, or a different installation type (Machine/User) was specified at installation time.");
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Console.Error.WriteLine($"ERROR: Could not find a suitable Blender installation where to remove the FUSEE Add-on from. Consider using the `-i` option to specifiy the Blender Add-on installation directory.");
+                                    exitCode = ErrorCode.OutputFile;
+                                }
+                            }
+                            catch (UnauthorizedAccessException ex)
                             {
-                                cmd.WaitForExit();
+                                Console.Error.WriteLine($"ERROR: Could not uninstall FUSEE Blender Add-on from {blenderAddOnDstDir} due to access restrictions. Try running the shell as Administrator before calling fusee.exe.");
+                                exitCode = ErrorCode.OutputFile;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to uninstall the FUSEE Blender Add-on.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
                             }
                         }
-                        catch (Exception ex)
+
+
+                        // Uninstall the dotnet new fusee template
+                        if (instDotnet)
                         {
-                            Console.Error.WriteLine($"ERROR: Unable to uninstall the dotnet new fusee template at {templateDir}.\n{ex}");
-                            Environment.Exit((int)ErrorCode.InternalError);
+                            try
+                            {
+                                using (Process cmd = Process.Start(new ProcessStartInfo
+                                {
+                                    FileName = "dotnet",
+                                    Arguments = $"new --uninstall {templateDir}",
+                                    UseShellExecute = false,
+                                    WorkingDirectory = Directory.GetCurrentDirectory(),
+                                    RedirectStandardOutput = true,
+                                }))
+                                {
+                                    string output = cmd.StandardOutput.ReadToEnd();
+                                    cmd.WaitForExit();
+                                    if (output.ToLower().Contains("fusee"))
+                                    {
+                                        Console.Error.WriteLine($"ERROR: Unable to remove the \"dotnet new fusee\" template from {templateDir}.");
+                                        exitCode = ErrorCode.InternalError;
+                                    }
+                                    else
+                                    {
+                                        Console.Error.WriteLine($"SUCCESS: Removed the \"dotnet new fusee\" template from {templateDir}.");
+                                    }
+                                }
+                            }
+                            catch (FileNotFoundException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: {ex.FileName} not found. Make sure .NET Core 2.0 or higher is installed.");
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to uninstall the \"dotnet new fusee\" template at {templateDir}.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
+                        }
+
+                        // Remove us from the PATH. Be careful with the PATH. 
+                        if (instPathEnv)
+                        {
+                            try
+                            {
+                                var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
+                                string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
+
+                                int alreadyRegistered = 0;
+                                List<string> remainingPaths = new List<string>();
+                                List<string> fuseePaths = new List<string>();
+                                if (!string.IsNullOrEmpty(pathVariable))
+                                {
+                                    var pathContents = pathVariable.Split(new char[] { ';' });
+                                    foreach (var path in pathContents)
+                                    {
+                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
+                                        if (pathProcessed == fuseeCmdLineRoot)
+                                            alreadyRegistered++;
+                                        else
+                                        {
+                                            if (pathProcessed.ToLower().Contains("fusee"))
+                                                fuseePaths.Add(pathProcessed);
+
+                                            remainingPaths.Add(path);
+                                        }
+                                    }
+                                }
+
+                                if (fuseePaths.Count > 1)
+                                {
+                                    Console.Error.WriteLine($"WARNING: The \"PATH\" Variable references these additional FUSEE instances:");
+                                    foreach (var fuseePath in fuseePaths)
+                                    {
+                                        Console.Error.WriteLine($"\t{fuseePath}");
+                                    }
+                                    Console.Error.WriteLine("\tfusee.exe will NOT remove these additional FUSEE references from the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instances.");
+                                }
+
+                                if (alreadyRegistered == 0)
+                                {
+                                    Console.Error.WriteLine($"WARNING: The \"PATH\" Variable does not contain this FUSEE instance. \"PATH\" will not be altered\n");
+                                }
+                                else
+                                {
+                                    var newPathVariable = "";
+                                    for (int i = 0; ; i++)
+                                    {
+                                        newPathVariable += remainingPaths[i];
+                                        if (i == remainingPaths.Count - 1)
+                                            break;
+                                        newPathVariable += ";";
+                                    }
+                                    Environment.SetEnvironmentVariable("PATH", newPathVariable, target);
+                                    Console.Error.WriteLine($"SUCCESS: Removed this FUSEE instance from the \"PATH\" variable");
+                                }
+                            }
+                            catch (SecurityException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe.");
+                                exitCode = ErrorCode.InsufficentPrivileges;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to alter the \"PATH\" environment variable.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
                         }
 
                         // Remove the FuseeRoot variable
-                        try
+                        if (instFuseeRoot)
                         {
-                            Environment.SetEnvironmentVariable("FuseeRoot", null, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                            try
+                            {
+                                Environment.SetEnvironmentVariable("FuseeRoot", null, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
+                                Console.Error.WriteLine($"SUCCESS: Removed the \"FuseeRoot\" environment variable");
+                            }
+                            catch (SecurityException ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Insufficient privileges to delete the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe.");
+                                exitCode = ErrorCode.InsufficentPrivileges;
+                            }
+                            catch (Exception ex)
+                            {
+                                Console.Error.WriteLine($"ERROR: Unable to delete the \"FuseeRoot\" environment variable.\n{ex}");
+                                exitCode = ErrorCode.InternalError;
+                            }
                         }
-                        catch (Exception ex)
-                        {
-                            Console.Error.WriteLine($"ERROR: Unable to delete the environment variable \"FuseeRoot\".\n{ex}");
-                            Environment.Exit((int)ErrorCode.InternalError);
-                        }
-
                     }
+
+                    if (exitCode == ErrorCode.Success)
+                        Console.Error.WriteLine($"SUCCESS: All required FUSEE installation tasks succeeded.");
+                    else
+                        Console.Error.WriteLine($"WARNING: One or more required FUSEE installation tasks failed. See error messages above.");
+
+                    Environment.Exit((int) exitCode);
                 })
 
-                // Called with the WEB verb
+                // Called with the GENERATE verb (fuGen legacy code)
+                .WithParsed<Generate>(opts =>
+                {
+                    var targDir = opts.TargDir;
+                    var targWeb = opts.TargWeb;
+                    var targApp = opts.TargAppPath;
+                    var externalFiles = opts.ExternalFiles.Split(';');
+
+                    string fileName = Path.GetFileNameWithoutExtension(targApp);
+
+                    // Create directories
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Scripts")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Scripts"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Styles")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Styles"));
+
+                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Config")))
+                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Config"));
+                    
+                    // Does HTML already exists?
+                    var newHTML = !File.Exists(targWeb + fileName + ".html");
+
+                    Console.Error.WriteLine(newHTML
+                        ? "No HTML file found - generating a simple HTML file"
+                        : "HTML file already exists - delete it to create a new one");
+
+                    // Collecting all files
+                    var customManifest = Directory.Exists(Path.Combine(targDir, "Assets"));
+                    var customCSS = "";
+
+                    Console.Error.WriteLine(customManifest
+                        ? "Found an Assets folder - collecting all and write manifest"
+                        : "No Assets folder - no additional files will be added");
+
+                    List<string> filePaths;
+
+                    if (customManifest)
+                    {
+                        filePaths = Directory.GetFiles(Path.Combine(targDir, "Assets"), "*.*", SearchOption.AllDirectories).ToList();
+                        filePaths.Sort(string.Compare);
+                    }
+                    else
+                        filePaths = new List<string>();
+
+                    // Load custom implementations first
+                    var fileCount = 0;
+
+                    /*
+                    var externalFiles = new[]
+                    {
+                        "Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
+                        "Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
+                    };
+                    */
+
+                    foreach (var extFile in externalFiles)
+                    {
+                        var exists = File.Exists(Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
+
+                        if (exists)
+                        {
+                            filePaths.Insert(fileCount, Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
+                            fileCount++;
+                        }
+                        else
+                        {
+                            Console.Error.WriteLine("ERROR Couldn't find " + extFile + ".js");
+                            Environment.Exit((int)ErrorCode.InputFile);
+                        }
+                    }
+
+                    List<string> destRelativePaths = new List<string>(filePaths.Count);
+                    for (int inx = 0; inx < filePaths.Count; inx++)
+                        destRelativePaths.Add("");
+
+                    if (customManifest)
+                    {
+                        // Copy to output folder
+                        for (var ct = filePaths.Count - 1; ct > fileCount - 1; ct--)
+                        {
+                            bool remove = false;
+                            string pathExt = "";
+                            string filePath = filePaths.ElementAt(ct);
+
+                            // style or config
+                            if (Path.GetExtension(filePath) == ".css")
+                            {
+                                customCSS = Path.GetFileName(filePath);
+                                pathExt = "Styles";
+                                remove = true;
+                            }
+
+                            if (Path.GetFileName(filePath) == "fusee_config.xml")
+                            {
+                                pathExt = "Config";
+                                remove = true;
+                            }
+
+                            var srcAssetFolder = FileTools.PathAddTrailingSeperator(Path.Combine(targDir, "Assets"));
+                            var srcAssetDirPath = FileTools.PathAddTrailingSeperator(Path.GetDirectoryName(filePath));
+
+                            var srcRelativeToAssetsDir = FileTools.MakeRelativePath(srcAssetFolder, srcAssetDirPath);
+                            pathExt = srcRelativeToAssetsDir;
+                            // DebugMode("MakeRelativePath(" + srcAssetFolder + ", " + srcAssetDirPath + "); yields: " + srcRelativeToAssetsDir);
+
+                            // Copy files to output if they don't exist yet
+                            var tmpFileName = Path.GetFileName(filePath);
+                            var dstFilePath = Path.Combine(targWeb, "Assets", pathExt, tmpFileName);
+
+                            if (tmpFileName != null && !File.Exists(dstFilePath))
+                            {
+                                Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
+                                File.Copy(filePath, dstFilePath);
+                            }
+
+                            destRelativePaths[ct] = pathExt;
+
+                            if (remove)
+                            {
+                                filePaths.RemoveAt(ct);
+                                destRelativePaths.RemoveAt(ct);
+                            }
+                        }
+                    }
+
+                    // Create manifest
+                    var fileNamesList = new List<string>();
+                    var fileSizeList = new List<long>();
+                    var fileTypesList = new List<string>();
+                    var fileFormatsList = new List<string>();
+
+                    AssetManifest.GenerateAssetManifestEntryItems(filePaths, destRelativePaths, fileCount, fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
+                    var manifest = new ManifestFile("Fusee.Engine.Player.Web", fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
+                    string manifestContent = manifest.TransformText();
+
+                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", fileName + ".contentproj.manifest.js"),
+                        manifestContent);
+
+                    // Create HTML file
+                    if (newHTML)
+                    {
+                        Console.WriteLine(customCSS == ""
+                            ? "No additional .css file found in Assets folder - using only default one"
+                            : "Found an additional .css file in Assets folder - adding to HTML file");
+
+                        var page = new WebPage(targApp, customCSS);
+                        string pageContent = page.TransformText();
+
+                        File.WriteAllText(Path.Combine(targWeb, fileName + ".html"), pageContent);
+                    }
+
+                    // Create config file
+                    var customConf = File.Exists(Path.Combine(targDir, "Assets", "fusee_config.xml"));
+
+                    Console.WriteLine(!customConf
+                        ? "No custom config file ('fusee_config.xml') found in Assets folder - using default settings"
+                        : "Found an custom config file in Assets folder - applying settings to webbuild");
+
+                    var conf = new JsilConfig(targApp, targDir, customConf);
+                    string confContent = conf.TransformText();
+
+                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Config", "jsil_config.js"), confContent);
+
+                    // Done
+                    Console.Error.WriteLine($"SUCCESS: Generated Web Build at {targWeb}.");
+                    Environment.Exit(0);
+                })
+
+                // Called with the WEB verb (fuConv legacy code called from the Blender Add-on)
                 .WithParsed<WebViewer>(opts =>
                 {
                     List<string> textureFiles = new List<string>();
@@ -777,9 +1311,10 @@ namespace Fusee.Tools.fuseeCmdLine
                     }
 
                     string htmlFileDir = opts.Output;
-                    string thisPath = Assembly.GetExecutingAssembly().Location;
-                    thisPath = thisPath.Remove(thisPath.LastIndexOf(Path.DirectorySeparatorChar));
-                    string fuseePlayerDir = Path.Combine(thisPath, "Viewer");
+
+                    InitFuseeDirectories();
+                    string fuseePlayerDir = Path.Combine(fuseeBuildRoot, "Player", "Web");
+
                     Stream input = null, output = null;
                     string sceneFileDir = Path.Combine(htmlFileDir, "Assets");
                     if (File.Exists(sceneFileDir))
@@ -787,7 +1322,8 @@ namespace Fusee.Tools.fuseeCmdLine
                         File.Delete(sceneFileDir);
                     }
                     string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
+                    // string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
+                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.Player.Web.html");
                     if (File.Exists(origHtmlFilePath))
                         File.Delete(origHtmlFilePath);
                     string targetHtmlFilePath =
@@ -881,6 +1417,98 @@ namespace Fusee.Tools.fuseeCmdLine
                     */
                     Environment.Exit((int)ErrorCode.CommandLineSyntax);
                 });
+        }
+
+        private static IEnumerable<string> GetBlenderAddOnDir(Install opts)
+        {
+             // Start with some possible start directories (e.g. "C:\Program Files\" and C:\Program Files (x86)\"
+            List<string> baseDirs = new List<string>();
+            baseDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles));
+            baseDirs.Add(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86));
+
+            // Find [B|b]lender sub-subdirectories
+            List<string> blenderDirs = new List<string>();
+            foreach(var baseDir in baseDirs)
+            {
+                try
+                {
+                    blenderDirs.AddRange(Directory.EnumerateDirectories(baseDir, "?lender*", SearchOption.TopDirectoryOnly));
+                }
+                catch (UnauthorizedAccessException ex)
+                {
+                    // Do nothing - simply ignore paths we cannot access.
+                }
+            }
+
+            // Find addon sub-subdirectories
+            List<string> addonDirs = new List<string>();
+            foreach (var blenderDir in blenderDirs)
+            {
+                addonDirs.AddRange(Directory.EnumerateDirectories(blenderDir, "addon?", SearchOption.AllDirectories));
+            }
+
+            // 
+            List<string> realAddonDirs;
+            if (opts.InstType == InstallationType.User)
+            {
+                // PER-USER Installation. Assume the respective Add-on-Directory below AppData\Roaming
+                realAddonDirs = new List<string>();
+                var appDataRoamingDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData); // This is "<user>\AppData\Roaming"
+                foreach (var addonDir in addonDirs)
+                {
+                    string blVer = GetBlenderVersionFromPath(addonDir);
+                    if (!string.IsNullOrEmpty(blVer))
+                    {
+                        realAddonDirs.Add(Path.Combine(appDataRoamingDir, "Blender Foundation", "Blender", blVer, "scripts", "addons"));
+                    }
+                }
+            }
+            else
+            {
+                // PER-MACHINE installation. We already have the addonDirs at hand
+                realAddonDirs = addonDirs;
+            }
+
+            // Reverse-Sort directories according to some sub-dir name containting the blender version (e.g. 2.79 in ...\blender\2.79\addons\) 
+            // (Highest version number first)
+            return realAddonDirs.OrderByDescending(dir =>
+            {
+                int sortNumber = 0;
+                foreach (var dirName in dir.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }).Reverse())
+                {
+                    // Build a sortable number from the (maximum) first four version digits. Typically Blender versions contain only two digits.
+                    // Assume that digits are not bigger than 999 (e.g. Blender 2.999.111) 
+                    var digits = dirName.Split('.');
+                    var digitCount = digits.Length > 4 ? 4 : digits.Length;
+                    for (int iDigit = 0; iDigit < digitCount; iDigit++)
+                    {
+                        if (int.TryParse(digits[iDigit], out int digit))
+                            sortNumber += digit * (int) System.Math.Pow(1000, (3 - iDigit));
+                    }
+                    if (sortNumber > 0)
+                        break;
+                }
+                return sortNumber;
+            });
+        }
+
+        public static string GetBlenderVersionFromPath(string path)
+        {
+            foreach (var dirName in path.Split(new[] { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar }).Reverse())
+            {
+                bool isVersion = true;
+                var digits = dirName.Split('.');
+                foreach (var digit in digits)
+                {
+                    if (!int.TryParse(digit, out int digiNum))
+                    {
+                        isVersion = false;
+                    }
+                }
+                if (isVersion)
+                    return dirName;
+            }
+            return "";
         }
 
         private static Dictionary<string, int> ReadAssemblySizes(string fileContents)
