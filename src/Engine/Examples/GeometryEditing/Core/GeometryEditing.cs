@@ -346,7 +346,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
                 _scenePicker.View = viewMatrix;
                 _scenePicker.Projection = _projection;
-                PickResult newPick = _scenePicker.Pick(pickPosClip).OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
