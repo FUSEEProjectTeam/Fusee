@@ -32,12 +32,14 @@
         "WhiteList": [
 		  "System\\.IO\\.Compression\\.ZLibNative",
 		  "System\\.IO\\.Compression\\.DeflateStream",
-          
+          "System\\.Collections\\.Generic\\.IDictionary",
+		  
 		  "Fusee\\.Engine\\.Common\\.Helper",
 		  "Fusee\\.Engine\\.Common\\.CharInfoStruct",
 		  "Fusee\\.Base\\.Common\\.ImagePixelFormat",
 		  "Fusee\\.Base\\.Common\\.ImageData",
 		  "Fusee\\.Base\\.Common\\.GlyphInfo",
+		  "Fusee\\.Base\\.Common\\.SplitToCurveSegmentHelper",
 		  "Fusee\\.Base\\.Core\\.Font",
 		  
           "Fusee\\.Engine\\.Imp",
