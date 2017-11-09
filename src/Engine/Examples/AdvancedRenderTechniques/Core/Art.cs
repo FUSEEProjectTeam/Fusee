@@ -14,10 +14,10 @@ using static Fusee.Engine.Core.Time;
 using Fusee.Engine.Core.GUI;
 #endif
 
-namespace Fusee.Engine.Examples.Simple.Core
+namespace Fusee.Engine.Examples.Art.Core
 {
 
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "Advanced Rendering Techniques Example", Description = "A very simple example.")]
     public class Art : RenderCanvas
     {
         // angle variables
@@ -49,21 +49,21 @@ namespace Fusee.Engine.Examples.Simple.Core
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
-            _guiFuseeLink = new GUIButton(6, 6, 157, 87);
+            _guiFuseeLink = new GUIButton(6, 6, 182, 58);
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
-            _guiFuseeLink.BorderColor = new float4(0, 0.6f, 0.2f, 1);
+            _guiFuseeLink.BorderColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiFuseeLink.BorderWidth = 0;
             _guiFuseeLink.OnGUIButtonDown += _guiFuseeLink_OnGUIButtonDown;
             _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
             _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
             _guiHandler.Add(_guiFuseeLink);
-            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeLogo150.png"), 10, 10, -5, 150, 80);
+            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
             _guiHandler.Add(_guiFuseeLogo);
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
             _guiSubText = new GUIText("Simple FUSEE Example", _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = new float4(0.05f, 0.25f, 0.15f, 0.8f);
+            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
@@ -179,7 +179,7 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
         {
-            _guiFuseeLink.ButtonColor = new float4(0, 0.6f, 0.2f, 0.4f);
+            _guiFuseeLink.ButtonColor = new float4(0.533f, 0.69f, 0.3f, 0.4f);
             _guiFuseeLink.BorderWidth = 1;
             SetCursor(CursorType.Hand);
         }
