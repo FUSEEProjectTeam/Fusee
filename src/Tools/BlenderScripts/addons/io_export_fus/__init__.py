@@ -15,10 +15,10 @@ In order to make this Add-On work, you have to do the following:
 bl_info = {
     "name": ".fus format",
     "author": "Christoph Mueller, Jonas Conrad, Patrick Foerster",
-    "version": (1, 0, 0),
+    "version": (0, 6, 0),
     "blender": (2, 79, 0),
     "location": "File > Import-Export",
-    "description": "Export to Fusees .fus formatand/or start the Fusee Web-Application",
+    "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
     "warning":"",
     "wiki_url":"",
     "support":'TESTING',
@@ -55,9 +55,12 @@ from bpy_extras.io_utils import (
 #Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
 #Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote
 #Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret because secret=None!)
-import ptvsd
-ptvsd.enable_attach(secret=None)
-print('PTSV Debugging enabled')
+try:
+    import ptvsd
+    ptvsd.enable_attach(secret=None)
+    print('PTSV Debugging enabled')
+except Exception:
+    print('PTSV Debugging disabled')
 
 class ExportFUS(bpy.types.Operator, ExportHelper):
     #class attributes

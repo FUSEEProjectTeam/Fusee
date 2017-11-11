@@ -27,7 +27,7 @@ def SerializeData(objects,isWeb, isOnlySelected,smoothing,lamps,smoothingDist,sm
     sceneHeader.Generator = 'Blender FUSEE Exporter AddOn'
     sceneHeader.CreatedBy = getpass.getuser()
     lt = time.localtime()
-    sceneHeader.CreationDate = str(lt.tm_year) + '-' + str(lt.tm_mon) + '-' + str(lt.tm_wday)
+    sceneHeader.CreationDate =  str(lt.tm_mday) + '-' + str(lt.tm_mon) + '-' +  str(lt.tm_year)
 
     print('SERIALIZING--------')
 

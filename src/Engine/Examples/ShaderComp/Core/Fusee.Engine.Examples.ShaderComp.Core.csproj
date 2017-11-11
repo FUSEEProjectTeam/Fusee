@@ -43,34 +43,34 @@
     <Compile Include="ShaderComp.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
+      
       <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+      
       <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
+      
       <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Serialization\Fusee.Serialization.csproj">
-      <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
+      
       <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Xene\Fusee.Xene.csproj">
-      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll">
+      
       <Name>Fusee.Xene</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
-      <Project>{dfd770f6-4222-4255-aae0-dcacdc7b21eb}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
+      
       <Name>Fusee.Engine.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228eb3f-8bcc-453f-8a2e-d9246495a118}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
+      
       <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\FuseeLogo150.png">
@@ -93,10 +93,10 @@
   </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup -->
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

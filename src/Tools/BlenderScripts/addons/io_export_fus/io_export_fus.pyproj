@@ -3,22 +3,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{c1b8044f-fd9a-4041-83a4-8838c1765789}</ProjectGuid>
-    <ProjectHome>.\</ProjectHome>
-    <StartupFile>
-    </StartupFile>
+    <ProjectGuid>{548ba459-616b-4d04-b0a1-2e19388c4b55}</ProjectGuid>
+    <PythonProjectName>io_export_fus</PythonProjectName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
+    <ProjectHome />
+    <StartupFile>__init__.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
-    <OutputPath>.</OutputPath>
-    <ProjectTypeGuids>{1b580a1a-fdb3-4b32-83e1-6407eb2722e6};{349c5851-65df-11da-9384-00065b846f21};{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools\BlenderScripts\addons</OutputPath>
+    <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
-    <InterpreterId>Global|PythonCore|3.6</InterpreterId>
-    <InterpreterVersion />
+    <InterpreterId>Global|PythonCore|3.5-32</InterpreterId>
     <UseIISExpress>true</UseIISExpress>
-    <PublishUrl>
-    </PublishUrl>
-    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
-    <IsWindowsApplication>False</IsWindowsApplication>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
   <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
@@ -35,49 +31,25 @@
     <Folder Include="proto" />
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="README.md" />
+    <InterpreterReference Include="Global|PythonCore|3.5-32" />
   </ItemGroup>
-  <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.6" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 
+		SEE: https://stackoverflow.com/questions/47061831/how-to-setup-custom-build-steps-in-visual-studio-pyproj-projects
+       THE FOLLOWING CODE IS NOW TRIGGERED FROM THE BUILD of fuseeCmdLine.csproj
+	   Replace +- with double-minus!
+  <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <Target Name="FuseePreBuildStep" BeforeTargets="Build">
+    <Message Importance="High" Text="[FUSEE Python Project] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o proto/Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o proto/Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Python Project] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=proto -+python_out=proto proto/Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -+I=proto -python_out=proto proto/Scene.proto&quot;" />
+  </Target>
+  <Target Name="FuseePostBuildStep" AfterTargets="Build" Inputs="@(Compile)" Outputs="$(OutputPath)\$(PythonProjectName).zip">
+    <Message Importance="High" Text="[FUSEE Python Project] Zipping %(Compile.Filename) into $(PythonProjectName).zip" />
+    <Zip ZipFileName="$(OutputPath)\$(PythonProjectName).zip" WorkingDirectory="$(MSBuildProjectDirectory)\..\" Files="@(Compile)" />
+  </Target>  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  -->
   <ProjectExtensions>
-    <VisualStudio>
-      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
-        <WebProjectProperties>
-          <UseIIS>True</UseIIS>
-          <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
-          <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:13795/</IISUrl>
-          <NTLMAuthentication>False</NTLMAuthentication>
-          <UseCustomServer>False</UseCustomServer>
-          <CustomServerUrl>
-          </CustomServerUrl>
-          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
-        </WebProjectProperties>
-      </FlavorProperties>
-      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
-        <WebProjectProperties>
-          <StartPageUrl>
-          </StartPageUrl>
-          <StartAction>CurrentPage</StartAction>
-          <AspNetDebugging>True</AspNetDebugging>
-          <SilverlightDebugging>False</SilverlightDebugging>
-          <NativeDebugging>False</NativeDebugging>
-          <SQLDebugging>False</SQLDebugging>
-          <ExternalProgram>
-          </ExternalProgram>
-          <StartExternalURL>
-          </StartExternalURL>
-          <StartCmdLineArguments>
-          </StartCmdLineArguments>
-          <StartWorkingDirectory>
-          </StartWorkingDirectory>
-          <EnableENC>True</EnableENC>
-          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
-        </WebProjectProperties>
-      </FlavorProperties>
-    </VisualStudio>
   </ProjectExtensions>
 </Project>

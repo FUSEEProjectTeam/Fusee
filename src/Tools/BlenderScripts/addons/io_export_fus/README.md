@@ -2,9 +2,11 @@
 _by Jonas Conrad and Patrick Foerster_
 ## Installation Guide
 ### Prerequisites
+* The io_export_fus.pyproj file uses the ZIP task which is part of the MSBuild Communiy Tasks project
+  * Download and install the latest version from https://github.com/loresoft/msbuildtasks
 * Blender
 * Fusee (with the set FuseeRoot environment variable)
-* fuConv.exe (if not already done, simply build the Fusee.Engine.Simple.sln)
+* fusee.exe (if not already done, simply build the Fusee.Engine.sln)
 
 ### StepByStep Installation
 1. Python
@@ -42,15 +44,15 @@ project and directly use them out of Blender to enable debugging see "Developmen
 		* C:\ .. \Python\PythonXx\Scripts\
 		
 ### How to generate new .proto files
-1. you have to locate the fuConv.exe, you can find it in your Fusee directory in \bin\Debug\Tools.
-2. open the CMD-Window and either change to the the directory where the fuConv.exe is located or simply drag the fuConv.exe file into the CMD-Window.     
+1. Make sure a working fusee.exe exists at  %FuseeRoot%bin\Debug\Tools\.
+2. open the CMD-Window and either change to the the directory where the fusee.exe is located or simply drag the fusee.exe file into the CMD-Window.     
 In both cases you have to add the following command: `protoschema -o $OUTPUT_PATH`. This will create a .proto-file in your `$OUTPUT_PATH`.     
 **Note**: when your Fusee directory is not in your primary partition, you have to first change to the correct partition by simply typing it's letter, e.g. `D:` and then `cd path\to\tool`
 3. rename the .proto-file to __Scene.proto__
 3. download the protocol compiler from https://github.com/google/protobuf/releases, 
 	* choose the correct package protoc-$VERSION-$PLATFORM.zip, download and unzip it. 
 	* for installation simply follow the instructions in the README
-4. open the .proto-file (e.g. with Notepad++) and in the first line insert `syntax = "proto2";`.
+4. NOT NECESSARY ANY MORE: "fusee protoschema" will do that: Open the .proto-file (e.g. with Notepad++) and in the first line insert `syntax = "proto2";`.
 The first two lines should now look like this:    
 	`syntax = "proto2";`    
 	`import "bcl.proto"; // schema for protobuf-net's handling of core .NET types`

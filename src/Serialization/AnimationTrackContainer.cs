@@ -166,7 +166,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The type of the key-values stored in this animation track.
         /// </summary>
-        [ProtoMember(3, AsReference = true)] 
+        [ProtoMember(3)] 
         public TypeId TypeId;
 
         /// <summary>

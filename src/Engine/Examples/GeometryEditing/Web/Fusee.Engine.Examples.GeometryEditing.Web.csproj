@@ -69,10 +69,15 @@
     <Content Include="Assets\Styles\browser.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Styles\loading_rocket.png">
+    <Content Include="Assets\FuseeAnim.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
+    <Content Include="Assets\FuseeSpinning.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\FuseeText.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>  </ItemGroup>
   <ItemGroup>
     <!--FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
@@ -92,50 +97,50 @@
     <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
+      
       <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+      
       <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Imp\Web\Fusee.Base.Imp.Web.csproj">
-      <Project>{7e9e4c1f-e2c8-4011-acbc-e9d305dc4855}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Web.dll">
+      
       <Name>Fusee.Base.Imp.Web</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Serialization\Fusee.Serialization.csproj">
-      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
+      
       <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
-      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
+      
       <Name>Fusee.Engine.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
+      
       <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
+      
       <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj">
-      <Project>{82a2d997-b7ac-41d9-a166-65fcfed2114d}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Web.dll">
+      
       <Name>Fusee.Engine.Imp.Graphics.Web</Name>
-    </ProjectReference>
+    </Reference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj">
-      <Project>{8d61f2ea-565f-427d-b285-a8cebb3bc08f}</Project>
+      
       <Name>Fusee.Engine.Examples.GeometryEditing.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

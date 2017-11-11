@@ -67,6 +67,7 @@ namespace Fusee.Base.Common
         public static readonly ColorUint Goldenrod	= FromBgra(0xFFDAA520U);
         public static readonly ColorUint Gray	= FromBgra(0xFF808080U);
         public static readonly ColorUint Green	= FromBgra(0xFF008000U);
+        public static readonly ColorUint Greenery = FromBgra(0xFF88B04BU);   // The FUSEE Color (color of the year 2017, PANTONE 15-0343 TCX)
         public static readonly ColorUint GreenYellow	= FromBgra(0xFFADFF2FU);
         public static readonly ColorUint Honeydew	= FromBgra(0xFFF0FFF0U);
         public static readonly ColorUint HotPink	= FromBgra(0xFFFF69B4U);
