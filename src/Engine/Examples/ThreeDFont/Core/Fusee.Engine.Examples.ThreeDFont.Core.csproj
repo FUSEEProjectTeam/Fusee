@@ -8,7 +8,7 @@
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C4157BCB-D3A0-45C6-A84B-735FBD8C7AA8}</ProjectGuid>
+    <ProjectGuid>{4E534FDD-A963-448D-B2A6-F3E8B9F0BF69}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <DefaultLanguage>en-US</DefaultLanguage>
@@ -87,12 +87,12 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\FragShader.frag">
+    <None Include="Assets\FragShader.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\VertShader.vert">
+    </None>
+    <None Include="Assets\VertShader.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </None>
   </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">

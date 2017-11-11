@@ -5,7 +5,7 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.MeshingAround.Web
 {
-    public class Simple
+    public class MeshingAround
     {
         public static void Main()
         {

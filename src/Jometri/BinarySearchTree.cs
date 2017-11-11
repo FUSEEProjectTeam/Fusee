@@ -50,7 +50,7 @@ namespace Fusee.Jometri
     /// <typeparam name="TV">The type of the tree's value.</typeparam>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
-        private Node<TK, TV> _globalRoot;
+        protected Node<TK, TV> _globalRoot;
 
         /// <summary>
         /// Inserts a new node in a existing tree.
@@ -242,7 +242,7 @@ namespace Fusee.Jometri
             return FindMin(_globalRoot).Value;
         }
 
-        private static Node<TK, TV> FindMin(Node<TK, TV> root)
+        protected static Node<TK, TV> FindMin(Node<TK, TV> root)
         {
             var current = root;
 
