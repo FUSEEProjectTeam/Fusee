@@ -526,13 +526,17 @@ namespace Fusee.Tools.fuseeCmdLine
                             //9.Rename the Player's main .html file to MyFuseeApp.html
 
                             // Call JSILc on the App DLL with cwd set to %FuseeRoot%bin/Debug/Player/Desktop to have reference assemblies at hand in JS
-                            string jsilc = Path.GetFullPath(Path.Combine(fuseeRoot, "ext", "JSIL", "Compiler", "JSILc.exe"));
+
+                            string jsilRoot = Path.GetFullPath(Path.Combine(fuseeRoot, "ext", "JSIL"));
+                            // Special JSIL configuration switching off Dead Code Elimination (optimizes too much away when combined with --nodeps)
+                            string distroWebbuildConfigFilePath = Path.Combine(jsilRoot, "distrowebbuild.jsilconfig");
+                            string jsilc = Path.Combine(jsilRoot, "Compiler", "JSILc.exe");
                             string temp = Path.Combine(outPath, "tmp");
                             Directory.CreateDirectory(temp);
                             using (Process cmd = Process.Start(new ProcessStartInfo
                             {
                                 FileName = jsilc,
-                                Arguments = $"--nodeps {dllFilePath} -o {temp}",
+                                Arguments = $"--nodeps {distroWebbuildConfigFilePath} {dllFilePath} -o {temp}",
                                 UseShellExecute = false,
                                 WorkingDirectory = desktopPlayerDir,
                             }))

@@ -77,8 +77,8 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
             default=False,
             )
     isWeb = BoolProperty(
-        name="Run with Fusees Web-Application",
-        description="Export HTML-Viewer around the scene run in Web Browser after export",
+        name="Create FUSEE Web-Application",
+        description="Export HTML-Viewer around the scene and run in Web Browser after export",
         default=False,
     )
     isSaveFile = BoolProperty(
