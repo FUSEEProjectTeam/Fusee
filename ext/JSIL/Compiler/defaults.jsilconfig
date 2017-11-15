@@ -51,22 +51,9 @@
           "System\\.IO\\.Compression\\.DeflateStream",
           "System\\.Collections\\.Generic\\.IDictionary",
           "System\\.ComponentModel\\.Composition\\.Hosting",
+          "System\\.Math",
 
-          "Fusee\\.Engine\\.Common\\.Helper",
-          "Fusee\\.Engine\\.Common\\.CharInfoStruct",
-          "Fusee\\.Base\\.Common\\.ImagePixelFormat",
-          "Fusee\\.Base\\.Common\\.ImageData",
-          "Fusee\\.Base\\.Common\\.GlyphInfo",
-          "Fusee\\.Base\\.Common\\.SplitToCurveSegmentHelper",
-          "Fusee\\.Base\\.Core\\.Font",
-          "Fusee\\.Engine\\.Imp",
-          "Fusee\\.Engine\\.Core",
-          "Fusee\\.Xene\\.SceneFinderBase",
-          "Fusee\\.Jometri\\.DCEL",
-          "Fusee\\.Math\\.Core\\.float2",
-          "Fusee\\.Math\\.Core\\.float3",
-          "Fusee\\.Math\\.Core\\.float4",
-          "Fusee\\.Math\\.Core\\.float4x4"
+          "Fusee"
         ]
 		  }
 	  }
