@@ -15,7 +15,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "Model.fus";
+        public string ModelFile = "TestForFusee.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6*0.5f,
@@ -111,7 +111,7 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.Identity;
             }
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRenderer(_scene, LightingCalculationMethod.ADVANCED);
 
             // Initialize the information text line.
             _guiSubText.Text = "FUSEE 3D Scene";
