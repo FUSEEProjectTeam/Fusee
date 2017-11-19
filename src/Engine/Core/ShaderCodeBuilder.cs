@@ -435,7 +435,7 @@ namespace Fusee.Engine.Core
 
            AddTabsToMethods(ref _pixelShader);
 
-           Diagnostics.Log(string.Join("\n", _pixelShader));
+           //Diagnostics.Log(string.Join("\n", _pixelShader));
 
         }
         
