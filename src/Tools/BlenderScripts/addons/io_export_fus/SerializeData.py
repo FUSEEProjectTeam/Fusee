@@ -469,7 +469,9 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         #        textures.append(fullpath)
 
                         # get material roughness and set the specularity = 1-roughness
-                        spec.SpecularChannelContainer.Shininess = 1 - roughness
+                        spec.SpecularChannelContainer.Shininess = (1 - roughness) * 200 # multipy with factor 100 for tight specular light
+                        # specularIntensity = 1
+                        spec.SpecularChannelContainer.Intensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit
 
                         pbrMaterial.RoughnessValue = roughness
                         pbrMaterial.FresnelReflectance = specular

@@ -597,9 +597,11 @@ namespace Fusee.Engine.Core
             {
                 "vec3 N = normalize(vMVNormal);",
                 "vec3 L = normalize(position - viewPos.xyz);",
-                "if(lightType == 3) // LegacyLight;",
-                "   L = normalize(vec3(0.0,0.0,-1.0));",
                 "vec3 V = normalize(-viewPos.xyz);",
+                "if(lightType == 3) {",
+                "   L = normalize(vec3(0.0,0.0,-1.0));",
+                "   V = vec3(0);",
+                "}",
                 "vec2 o_texcoords = vUV;",
                 "",
                 _renderWithShadows ? "float shadowFactor = CalcShadowFactor(shadowLight);" : "",
