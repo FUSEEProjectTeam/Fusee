@@ -1,11 +1,7 @@
-﻿//#define DEBUG
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using Fusee.Base.Core;
-using Fusee.Math.Core;
 using Fusee.Serialization;
 
 
@@ -554,9 +550,9 @@ namespace Fusee.Engine.Core
                 "float specularTerm = 0.0;",
                 "if(dot(N, L) > 0.0)",
                 "{",
-                "// half vector",
-                "vec3 H = normalize(V + L);",
-                $"specularTerm = pow(max(0.0, dot(H, N)), {SpecularShininessName});",
+                "   // half vector",
+                "   vec3 H = normalize(V + L);",
+                $"  specularTerm = pow(max(0.0, dot(H, N)), {SpecularShininessName});",
                 "}",
                 $"return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;"
             };
@@ -659,9 +655,9 @@ namespace Fusee.Engine.Core
                         ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe) * att;"
                         : "result = Iamb + (Idif + Ispe) * att;"
                 };
-          
 
-            /*var gammaCorrection = new List<string>() // - Disable GammaCorrection for better colors
+            // - Disable GammaCorrection for better colors
+            /*var gammaCorrection = new List<string>() 
             {
                 "vec3 gamma = vec3(1.0/2.2);",
                 "result = pow(result, gamma);"

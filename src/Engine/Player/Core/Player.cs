@@ -111,7 +111,7 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.Identity;
             }
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene, LightingCalculationMethod.ADVANCED);
+            _sceneRenderer = new SceneRenderer(_scene);
 
             // Initialize the information text line.
             _guiSubText.Text = "FUSEE 3D Scene";
