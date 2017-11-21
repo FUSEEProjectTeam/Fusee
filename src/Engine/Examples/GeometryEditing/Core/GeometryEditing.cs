@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Xml;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri.DCEL;
@@ -12,6 +7,9 @@ using Fusee.Jometri.Triangulation;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.DCEL.Geometry;
@@ -78,8 +76,11 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
             _renderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
+
             //////////////////////////////////////////////////////////////////////////
+
             RC.ClearColor = new float4(.7f, .7f, .7f, 1);
+
             _activeGeometrys = new Dictionary<int, Geometry>();
 
             //Create Geometry
@@ -187,18 +188,31 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 _keyTimeout = 1;
                 int currentGeometryIndex = _parentNode.Children.IndexOf(_selectedNode);
                 _activeGeometrys.Remove(currentGeometryIndex);                
+
+                var zwerg = new Dictionary<int, Geometry>();
+                foreach (var key in _activeGeometrys.Keys)
+                {
+                    if(key > currentGeometryIndex)
+                    {
+                        var test = _activeGeometrys[key];                        
+                        zwerg.Add(key-1, test);
+                    }
+                    else { zwerg.Add(key, _activeGeometrys[key]); }
+                }
+
+                _activeGeometrys.Clear();
+                foreach (var item in zwerg)
+                {
+                    _activeGeometrys.Add(item.Key, item.Value);
+                }
+
                 _parentNode.Children.RemoveAt(currentGeometryIndex);
                 _selectedNode = null;
-                if (_activeGeometrys.Count == 0)
-                {
-                    _activeGeometrys.Clear();
-                    _parentNode.Children.Clear();
-                    _currentPick = null;
-                }
-                GC.Collect();
+                _currentPick = null;
+                
             }
 
-            //Inset
+            //Insert
             if (Keyboard.GetKey(KeyCodes.I) && _keyTimeout < 0)
             {
                 _keyTimeout = .25f;
