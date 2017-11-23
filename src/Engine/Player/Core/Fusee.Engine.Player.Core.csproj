@@ -15,12 +15,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\FuseeText.png" />
-    <None Remove="Assets\TestForFusee.fus" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\TestForFusee.fus">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
   </ItemGroup>
 
   <ItemGroup>
