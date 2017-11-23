@@ -383,7 +383,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
 
                         # get material roughness and set the specularity = 1-roughness
                         roughness = node.inputs['Roughness'].default_value
-                        specular.SpecularChannelContainer.Shininess = (1 - roughness) * 200 # multipy with factor 100 for tight specular light
+                        specular.SpecularChannelContainer.Shininess = (1 - roughness) * 200 # multipy with factor 200 for tight specular light
                         # specularIntensity = 1
                         specular.SpecularChannelContainer.Intensity = 1.0 - (roughness + 0.2) # reduce intensity quite a bit
 
