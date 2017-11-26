@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pages on FUSEE 3D</title>
+    <link>http://fusee3d.org/page/</link>
+    <description>Recent content in Pages on FUSEE 3D</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <lastBuildDate>Sat, 25 Nov 2017 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://fusee3d.org/page/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>My First FUSEE App</title>
+      <link>http://fusee3d.org/page/firstfuseeapp/</link>
+      <pubDate>Sat, 25 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://fusee3d.org/page/firstfuseeapp/</guid>
+      <description>NOTE: Developing FUSEE Apps is currently only supported on Windows operating systems.
+ After a successful FUSEE Installation you might want to create your first FUSEE App in Visual Studio Code.
+Create a simple FUSEE App  Create a new empty directory somewhere on your hard-disk. This will contain your first FUSEE App. Name the directory MyFirstFuseeApp.
+ Open the the directory in Visual Studio Code in one of the following ways.</description>
+    </item>
+    
+    <item>
+      <title>Install FUSEE</title>
+      <link>http://fusee3d.org/page/install-fusee/</link>
+      <pubDate>Sat, 25 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://fusee3d.org/page/install-fusee/</guid>
+      <description>NOTE: Developing FUSEE Apps is currently only supported on Windows operating systems.
+ Before following the FUSEE installation instructions on this page, make sure all Necessary Tools are installed.
+Installation  Download the latest FUSEE Release from the FUSEE GitHub Repository.
+ Copy or move the downloaded Fusee_v6.0.exe to a convenient place on your hard drive. Double-click on the executable file. This will extract its contents into a Fusee folder below the folder where the executable is placed.</description>
+    </item>
+    
+    <item>
+      <title>Necessary Tools</title>
+      <link>http://fusee3d.org/page/necessary-tools/</link>
+      <pubDate>Sat, 25 Nov 2017 00:00:00 +0000</pubDate>
+      
+      <guid>http://fusee3d.org/page/necessary-tools/</guid>
+      <description>NOTE: Developing FUSEE Apps is currently only supported on Windows operating systems.
+ Prerequisites Before installing FUSEE, make sure the following software is installed.
+Blender (optional) Create 3D models with the OpenSource 3D modelling Software Blender and use them as assets in your FUSEE application. The FUSEE installation will try to detect a Blender installation on your machine and will install the FUSEE Blender Add-on.
+Install blender from https://www.</description>
+    </item>
+    
+  </channel>
+</rss>

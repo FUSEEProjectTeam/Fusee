@@ -73,7 +73,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     handlePOSTRequest();
                 }
             }
-            catch (Exception e)
+            catch (Exception /* e */)
             {
                 //Console.Error.WriteLine("Exception: " + e.ToString());
                 writeFailure();
@@ -230,7 +230,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     Thread.Sleep(1);
                 }
             }
-            catch (Exception ex)
+            catch (Exception /* ex */ )
             {
                 // Just swallow everything...
                 //Console.Error.WriteLine("Exception occurred in Micro HttpServer: " + ex.ToString());
