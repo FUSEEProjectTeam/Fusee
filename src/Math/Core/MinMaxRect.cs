@@ -26,7 +26,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The rectangle's center.
         /// </value>
-        public float2 Center => 05f * (Min + Max);
+        public float2 Center => 0.5f * (Min + Max);
 
         /// <summary>
         /// Calculates the size of this rectangle.

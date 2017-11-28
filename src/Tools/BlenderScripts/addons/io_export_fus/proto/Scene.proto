@@ -49,6 +49,9 @@ message BumpChannelContainer {
    optional string Texture = 1;
    optional float Intensity = 2 [default = 0];
 }
+message CanvasTransformComponent {
+   optional MinMaxRect Offsets = 1;
+}
 message KeyValuePair_UInt32_UInt32 {
    optional uint32 Key = 1;
    optional uint32 Value = 2;
@@ -131,6 +134,7 @@ message SceneComponentContainer {
    optional BoneComponent BoneComponent = 106;
    optional ShaderComponent ShaderComponent = 107;
    optional RectTransformComponent RectTransformComponent = 108;
+   optional CanvasTransformComponent CanvasTransformComponent = 109;
 }
 message SceneContainer {
    optional SceneHeader Header = 1;

@@ -706,18 +706,64 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
+        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        {
+            var newRect = new MinMaxRect
+            {
+                Min = ctc.Size.Min,
+                Max = ctc.Size.Max
+            };
+
+            Diagnostics.Log(ctc.Name + " Center " +newRect.Center);
+            Diagnostics.Log(ctc.Name + " Size " + newRect.Size);
+
+            var transl = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            var scale = float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
+            
+            _state.UiRect = newRect;
+            _state.Model *= transl* scale;
+            Diagnostics.Log(ctc.Name + " trans " + _state.Model);
+
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+
+        }
+
+        [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
             // The Heart of the UiRect calculation: Set anchor points relative to parent
             // rectangle and add absolute offsets
-            MinMaxRect newRect = new MinMaxRect();
-            newRect.Min = _state.UiRect.Min * rtc.Anchors.Min + rtc.Offsets.Min;
-            newRect.Max = _state.UiRect.Max * rtc.Anchors.Max + rtc.Offsets.Max;
+            var newRect = new MinMaxRect
+            {
+                Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+            };
 
+            Diagnostics.Log(rtc.Name + " Center " + newRect.Center);
+            Diagnostics.Log(rtc.Name + " Min " + newRect.Min);
+            Diagnostics.Log(rtc.Name + " Max " + newRect.Max);
 
+            var trans = newRect.Center - _state.UiRect.Center;
+            
+            var scale = new float2(newRect.Size.x /_state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
+
+            var model = float4x4.CreateTranslation(trans.x, trans.y, 0)*float4x4.CreateScale(scale.x, scale.y, 1.0f);
+           
             _state.UiRect = newRect;
 
-            _state.Model *= float4x4.Identity;
+            var test = new float4x4(0,0,0,trans.x,
+                                    0,0,0, trans.y,
+                                    0,0,0,0,
+                                    0,0,0,0);
+
+            _state.Model *= float4x4.CreateScale(scale.x, scale.y, 1.0f);
+            _state.Model += test;
+
+            Diagnostics.Log(rtc.Name + " transVector " + trans);
+            Diagnostics.Log(rtc.Name + " transMatrix " + model);
+            Diagnostics.Log(rtc.Name + " model " + _state.Model);
+
             _rc.Model = _state.Model;
             _rc.View = _view;
         }
@@ -725,6 +771,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
         {
+            var Test = float4x4.CreateScale(transform.Scale);
+            Diagnostics.Log("Scale Transform Component" + Test);
+
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
             _rc.View = _view;
