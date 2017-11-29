@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Fusee.Base.Core;
 using Fusee.Serialization;
 
 
@@ -401,21 +402,27 @@ namespace Fusee.Engine.Core
                 case MaterialType.Material:
                 case MaterialType.MaterialLightComponent:
                     AddAmbientLightMethod();
-                    AddDiffuseLightMethod();
-                    AddSpecularLightMethod();
+                    if (_materialProbs.HasDiffuse)
+                        AddDiffuseLightMethod();
+                    if (_materialProbs.HasSpecular)
+                        AddSpecularLightMethod();
                     break;
                 case MaterialType.MaterialPbrComponent:
                     if (_lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
                     {
                         AddAmbientLightMethod();
-                        AddDiffuseLightMethod();
-                        AddSpecularLightMethod();
+                        if (_materialProbs.HasDiffuse)
+                            AddDiffuseLightMethod();
+                        if (_materialProbs.HasSpecular)
+                            AddSpecularLightMethod();
                     }
                     else
                     {
                         AddAmbientLightMethod();
-                        AddDiffuseLightMethod();
-                        AddPbrSpecularLightMethod(mc as MaterialPBRComponent);
+                        if (_materialProbs.HasDiffuse)
+                            AddDiffuseLightMethod();
+                        if (_materialProbs.HasSpecular)
+                            AddPbrSpecularLightMethod(mc as MaterialPBRComponent);
                     }
                     break;
                 default:
