@@ -8,14 +8,22 @@ namespace Fusee.Serialization
     /// Use this as your first element in the Interface hierarchy.
     /// </summary>
     [ProtoContract]
-
     public class CanvasTransformComponent : SceneComponentContainer
     {
+        [ProtoMember(1)]
+        public CanvasRenderMode CanvasRenderMode;
 
         /// <summary>
-        /// Absolute offset equals the size of the Canvas, because its the first element in the interface hierarchy .
+        /// Absolute size of the Canvas. First element in the interface hierarchy .
         /// </summary>
-        [ProtoMember(1)]
+        [ProtoMember(2)]
         public MinMaxRect Size;
+    }
+
+    [ProtoContract]
+    public enum CanvasRenderMode
+    {
+        WORLD,
+        SCREEN
     }
 }

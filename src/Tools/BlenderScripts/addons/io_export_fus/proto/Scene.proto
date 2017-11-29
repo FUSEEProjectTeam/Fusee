@@ -49,8 +49,13 @@ message BumpChannelContainer {
    optional string Texture = 1;
    optional float Intensity = 2 [default = 0];
 }
+enum CanvasRenderMode {
+   WORLD = 0;
+   SCREEN = 1;
+}
 message CanvasTransformComponent {
-   optional MinMaxRect Offsets = 1;
+   optional CanvasRenderMode CanvasRenderMode = 1 [default = WORLD];
+   optional MinMaxRect Size = 2;
 }
 message KeyValuePair_UInt32_UInt32 {
    optional uint32 Key = 1;
