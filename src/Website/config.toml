@@ -1,0 +1,126 @@
+baseurl = "https://username.github.io"
+DefaultContentLanguage = "en"
+title = "FUSEE 3D"
+theme = "beautifulhugo"
+metaDataFormat = "yaml"
+pygmentsUseClasses = true
+pygmentCodeFences = true
+#disqusShortname = "XXX"
+#googleAnalytics = "XXX"
+
+[Params]
+  subtitle = "Furtwangen University Simulation and Entertainment Engine"
+  logo = "img/FuseeIcon256WithText.png"
+  brandimg = ""
+  favicon = "img/favicon.ico"
+  dateFormat = "January 2, 2006"
+  commit = false
+  rss = true
+  comments = true
+#  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
+
+#[[Params.bigimg]]
+#  src = "img/triangle.jpg"
+#  desc = "Triangle"
+#[[Params.bigimg]]
+#  src = "img/sphere.jpg"
+#  desc = "Sphere"
+#[[Params.bigimg]]
+#  src = "img/hexagon.jpg"
+#  desc = "Hexagon"
+
+[Author]
+  name = "Christoph Müller"
+#  website = "yourwebsite.com"
+#  email = "youremail@domain.com"
+#  facebook = "username"
+#  googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
+#  github = "username"
+#  gitlab = "username"
+#  twitter = "username"
+#  reddit = "username"
+#  linkedin = "username"
+#  xing = "username"
+#  stackoverflow = "users/XXXXXXX/username"
+#  snapchat = "username"
+#  instagram = "username"
+#  youtube = "user/username" # or channel/channelname
+#  soundcloud = "username"
+#  spotify = "username"
+#  bandcamp = "username"
+#  itchio = "username"
+#  vk = "username"
+#  paypal = "username"
+#  telegram = "username"
+
+
+
+[[menu.main]]
+    identifier = "gettingstarted"
+    name = "Getting Started"
+    weight = 1
+
+
+  [[menu.main]]
+      parent = "gettingstarted"
+      name = "Necessary Tools"
+      url = "page/necessary-tools/"
+      weight = 10
+
+  [[menu.main]]
+      parent = "gettingstarted"
+      name = "Installl FUSEE"
+      url = "page/install-fusee/"
+      weight = 20
+
+  [[menu.main]]
+      parent = "gettingstarted"
+      name = "First FUSEE App"
+      url = "page/firstfuseeapp/"
+      weight = 30
+
+
+[[menu.main]]
+    identifier = "github"
+    name = "GitHub"
+    weight = 2
+
+  [[menu.main]]
+      parent = "github"
+      name = "Releases"
+      url = "https://github.com/FUSEEProjectTeam/Fusee/releases/"
+      weight = 1
+
+  [[menu.main]]
+      parent = "github"
+      name = "View Repo"
+      url = "https://github.com/FUSEEProjectTeam/Fusee/"
+      weight = 2
+
+#[[menu.main]]
+#    identifier = "samples"
+#    name = "Samples"
+#    weight = 3
+#
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Big Image Sample"
+#    url = "post/2017-03-07-bigimg-sample"
+#    weight = 1
+#
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Math Sample"
+#    url = "post/2017-03-05-math-sample"
+#    weight = 2
+#
+#[[menu.main]]
+#    parent = "samples"
+#    name = "Code Sample"
+#    url = "post/2016-03-08-code-sample"
+#    weight = 3
+#
+#[[menu.main]]
+#    name = "Tags"
+#    url = "tags"
+#    weight = 3
