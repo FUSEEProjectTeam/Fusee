@@ -107,7 +107,7 @@ img {
 /* --- Navbar --- */
 
 .navbar-custom {
-  background: rgba(196, 210, 163, 0.9);
+  background: rgba(236, 245, 214, 0.88);
   border-bottom: 1px solid #EAEAEA;
   font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
@@ -267,7 +267,7 @@ img {
 
 footer {
   padding: 30px 0;
-  background: rgba(196, 210, 163, 0.9);
+  background: rgba(236, 245, 214, 0.88);
   border-top: 1px #EAEAEA solid;
   margin-top: auto;
   font-size: 14px;

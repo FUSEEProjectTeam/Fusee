@@ -1,8 +1,9 @@
-baseurl = "https://username.github.io"
+baseurl = "https://username.morefusee.io"
 DefaultContentLanguage = "en"
 title = "FUSEE 3D"
 theme = "beautifulhugo"
 metaDataFormat = "yaml"
+relativeURLs = true
 pygmentsUseClasses = true
 pygmentCodeFences = true
 #disqusShortname = "XXX"
@@ -35,7 +36,7 @@ pygmentCodeFences = true
 #  email = "youremail@domain.com"
 #  facebook = "username"
 #  googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
-#  github = "username"
+#  morefusee = "username"
 #  gitlab = "username"
 #  twitter = "username"
 #  reddit = "username"
@@ -52,7 +53,6 @@ pygmentCodeFences = true
 #  vk = "username"
 #  paypal = "username"
 #  telegram = "username"
-
 
 
 [[menu.main]]
@@ -81,21 +81,28 @@ pygmentCodeFences = true
 
 
 [[menu.main]]
-    identifier = "github"
-    name = "GitHub"
+    identifier = "morefusee"
+    name = "Miscellaneous"
     weight = 2
 
-  [[menu.main]]
-      parent = "github"
-      name = "Releases"
-      url = "https://github.com/FUSEEProjectTeam/Fusee/releases/"
+ [[menu.main]]
+      parent = "morefusee"
+      name = "Api Reference"
+      url = "../xref/"
       weight = 1
 
   [[menu.main]]
-      parent = "github"
-      name = "View Repo"
-      url = "https://github.com/FUSEEProjectTeam/Fusee/"
+      parent = "morefusee"
+      name = "Releases"
+      url = "https://github.com/FUSEEProjectTeam/Fusee/releases/"
       weight = 2
+
+  [[menu.main]]
+      parent = "morefusee"
+      name = "GitHub Repo"
+      url = "https://github.com/FUSEEProjectTeam/Fusee/"
+      weight = 3
+
 
 #[[menu.main]]
 #    identifier = "samples"

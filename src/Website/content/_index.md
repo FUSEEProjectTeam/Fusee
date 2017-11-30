@@ -24,8 +24,8 @@ programming a single line of code.
 
 ## Write 3D Apps with Visual Studio Code
 
-Use the popular lightweight IDE to create FUSEE Apps, debug into your code and publish
-your App to the supported platforms. The generated code is built on top of .NET core, 
+Use the popular lightweight code editor to create FUSEE Apps, debug into your code 
+and publish your App to the supported platforms. The generated code is built on top of .NET core, 
 the Open Source platform independent variant among the different .NET implementations.
 
 FUSEE comes with a .NET core template. Start writing FUSEE Apps within VS Code by
@@ -33,11 +33,8 @@ simply typing `dotnet new fusee` at the command line.
 
 ## Publish Your App on different Platforms
 
-The FUSEE binary distribution supports two platforms out-of-the-box: 
-
 - **.NET App**. This will embed your application code into a .NET Framework
-  3D application and bundles all necessary files into one directory. Easily distribute
-  your 
+  3D application and bundles all necessary files into one directory. 
 
 - **Web App**. This will cross-compile your application code into a
   a HTML/JavaScript WebGL-based Web-App runnable on most browsers, including

@@ -143,8 +143,10 @@ UpgradeLog*.XML
 
 # Sandcastle Help File Builder
 *.shfbproj_*
-Help/LastBuild.log
-Help/Working
+docs/xref/LastBuild.log
+docs/xref/Working
+# Keep 5000+ generated html files out of the repo
+docs/xref/*
 
 #Dominik Steffens Thesis Project - LinqForGeometry
 Hellknight.jpg

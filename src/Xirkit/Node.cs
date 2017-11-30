@@ -5,16 +5,17 @@ using System.Diagnostics;
 namespace Fusee.Xirkit
 {
     /// <summary>
+    /// <para>
     /// Major building block of the Xirkit library. Each <see cref="Circuit"/> contains Node instances.
-    /// </summary>
-    /// <remarks>
+    /// </para>
+    /// <para>
     /// A single object instance of any type can be hosted inside a node. This way any arbitrary object 
-    /// can participate in a Circuit. This makes the Xirkit library extremely versatile since it can
-    /// handle any type of object out of the box without any further 
-    /// Node instances within a <see cref="Circuit"/> are typically interconnected using in-pins and out-pins.
+    /// can participate in a Circuit. Node instances within a <see cref="Circuit"/> are interconnected 
+    /// using in-pins and out-pins.
     /// The internal connection from pins to actual members (properties and fields) of the contained object
     /// are done using <see cref="IMemberAccessor{T}"/>s.
-    /// </remarks>
+    /// </para>
+    /// </summary>
     [DebuggerDisplay("{O}")]
     public class Node
     {
@@ -89,7 +90,7 @@ namespace Fusee.Xirkit
         /// </summary>
         /// <param name="thisMember">The member of this node to attach.</param>
         /// <param name="other">The other node.</param>
-        /// <param name="otherMember">The other node's object's (sic) member.</param>
+        /// <param name="otherMember">The other node's object's member.</param>
         /// <remarks>
         /// This is a high-level method users can call to do the wiring inside a <see cref="Circuit"/>. It creates all the necessary in- and out-pins
         /// togegher with their respective member accessors.

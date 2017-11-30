@@ -35,7 +35,7 @@ https://www.microsoft.com/net/download/
 ### Visual Studio Code (_required_)
 
 Edit your FUSEE App source code, debug into your app's functionality, build your app and publish it to the supported platforms from within
-the popular OpenSource lightweight integrated development environment. 
+the popular OpenSource lightweight code editor. 
 
 Install Visual Studio Code from
 https://code.visualstudio.com/download
@@ -52,6 +52,4 @@ Either install the C# Extension from the link above or
 - Open the `Extensions` pane (`Ctrl+Shift+X`)
 - Enter `C#` into the search box
 - From the search results, install the "C# for Visual Studio Code (powered by OmniSharp)" Extension
-
-
 

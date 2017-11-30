@@ -711,8 +711,15 @@ namespace Fusee.Engine.Core
             // The Heart of the UiRect calculation: Set anchor points relative to parent
             // rectangle and add absolute offsets
             MinMaxRect newRect = new MinMaxRect();
-            newRect.Min = _state.UiRect.Min * rtc.Anchors.Min + rtc.Offsets.Min;
-            newRect.Max = _state.UiRect.Max * rtc.Anchors.Max + rtc.Offsets.Max;
+            newRect.Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min;
+            newRect.Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max;
+
+            var trans = newRect.Center - _state.UiRect.Center;
+            var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
+            var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
+            // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
+
+
 
 
             _state.UiRect = newRect;

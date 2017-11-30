@@ -15,7 +15,7 @@ In order to make this Add-On work, you have to do the following:
 bl_info = {
     "name": ".fus format",
     "author": "Christoph Mueller, Jonas Conrad, Patrick Foerster",
-    "version": (0, 6, 0),
+    "version": (0, 6, 1),
     "blender": (2, 79, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",

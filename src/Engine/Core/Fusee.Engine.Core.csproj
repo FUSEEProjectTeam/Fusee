@@ -56,6 +56,7 @@
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="GearConstraint.cs" />
     <Compile Include="Generic6DofConstraint.cs" />

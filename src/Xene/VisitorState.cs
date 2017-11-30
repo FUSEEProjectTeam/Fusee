@@ -293,6 +293,7 @@ namespace Fusee.Xene
     ///        RegisterState(_stringState);
     ///        RegisterState(_intState);
     ///     }
+    /// }
     /// </code>
     /// </example>
     public class VisitorState : IStateStack

@@ -6,8 +6,6 @@ namespace Fusee.Xirkit
     /// <summary>
     /// A Circuit contains arbitrary objects. Connections between the objects' members (fields and properties) automatically
     /// handle value propagation - if a source value changes, all the connected members will be set to the updated value.
-    /// </summary>
-    /// <remarks>
     /// <para>
     /// This is the main object of the Xirkit package. Compare a Circuit to a real electronic circuit with the electronic
     /// components being instances of objects, their pins welded to the board being instances of <see cref="IInPin"/> 
@@ -28,7 +26,7 @@ namespace Fusee.Xirkit
     /// which in turn might trigger subsequent propagation along the graph. Nodes exposing the <see cref="ICalculationPerformer"/> 
     /// interface are triggered to perform their calculation before the values at their out-pins are further propagated.
     /// </para>
-    /// </remarks>
+    /// </summary>
     public class Circuit
     {
         private List<Node> _nodeList;
@@ -91,13 +89,11 @@ namespace Fusee.Xirkit
 
         /// <summary>
         /// Executes this circuit. 
-        /// </summary>
-        /// <remarks>
         /// Propagates the values of all out-pins at the root nodes to the their connected in-pins. If these nodes have out-pins 
         /// connected to subsequent nodes' in-pins, their values will be further propagated. Nodes exposing the 
         /// <see cref="ICalculationPerformer"/> interface are triggered to perform their calculation before 
         /// the values at their out-pins are further propagated.
-        /// </remarks>
+        /// </summary>
         public void Execute()
         {
             Reset();
