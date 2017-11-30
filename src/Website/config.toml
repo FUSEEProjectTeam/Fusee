@@ -88,7 +88,7 @@ pygmentCodeFences = true
  [[menu.main]]
       parent = "morefusee"
       name = "Api Reference"
-      url = "../xref/"
+      url = "http://fusee3d.org/xref/"
       weight = 1
 
   [[menu.main]]
