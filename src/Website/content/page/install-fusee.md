@@ -16,7 +16,7 @@ Before following the FUSEE installation instructions on this page, make sure all
 ## Installation
 
 - Download the latest 
-  [FUSEE Release](https://github.com/FUSEEProjectTeam/Fusee/releases/download/v0.6-BinDist/Fusee_v6.1.exe) 
+  [FUSEE Release](https://github.com/FUSEEProjectTeam/Fusee/releases/download/v0.6.1-BinDist/Fusee_v6.1.exe) 
   from the 
   [FUSEE GitHub Repository](https://github.com/FUSEEProjectTeam/Fusee/releases).
 
