@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.DCEL
+namespace Fusee.Jometri
 {
     /// <summary>
     /// Each vertex contains:

@@ -175,7 +175,7 @@ namespace Fusee.Jometri
             _globalRoot = DeleteNode(_globalRoot, key);
         }
 
-        private static Node<TK,TV> DeleteNode(Node<TK, TV> root, TK key)
+        private static Node<TK, TV> DeleteNode(Node<TK, TV> root, TK key)
         {
             if (root == null) return null;
             if (key.CompareTo(root.Key) < 0)

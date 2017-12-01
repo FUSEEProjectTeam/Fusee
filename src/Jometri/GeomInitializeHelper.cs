@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.DCEL
+namespace Fusee.Jometri
 {
 
     /// <summary>
@@ -26,7 +25,7 @@ namespace Fusee.Jometri.DCEL
     /// <summary>
     /// Helper class for initializing Geometry objects.
     /// </summary>
-    public static class InitializeGeometryHelper
+    public static class GeomInitializeHelper
     {
         private static Geometry _geometry;
 

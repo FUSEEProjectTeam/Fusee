@@ -1,8 +1,6 @@
-﻿using Fusee.Jometri.DCEL;
-
-namespace Fusee.Jometri.Triangulation
+﻿namespace Fusee.Jometri
 {
-    internal class StatusEdge 
+    internal class TriStatusEdge
     {
         //A key that is needed to insert the Node into a binary search tree and to find the edge directly left of an vertex. 
         internal float IntersectionPointX;
@@ -21,7 +19,7 @@ namespace Fusee.Jometri.Triangulation
         private readonly Face _face;
 
 
-        public StatusEdge(Geometry geometry, Face face, Vertex origin, Vertex target, Vertex eventPoint)
+        public TriStatusEdge(Geometry geometry, Face face, Vertex origin, Vertex target, Vertex eventPoint)
         {
             _geometry = geometry;
             _face = face;
@@ -34,18 +32,18 @@ namespace Fusee.Jometri.Triangulation
         //If the half edge is parallel (m = -Infinity) to x or y axis: Key = x value of the intersection point from sweep line with HalfEdge. Else, Key = origin.x
         internal void SetKey(Vertex eventPoint)
         {
-            var targetPos = _geometry.Get2DVertPos(_face,_target.Handle);
-            var originPos = _geometry.Get2DVertPos(_face,_origin.Handle);
+            var targetPos = _geometry.Get2DVertPos(_face, _target.Handle);
+            var originPos = _geometry.Get2DVertPos(_face, _origin.Handle);
 
-            var y = _geometry.Get2DVertPos(_face,eventPoint.Handle).y;
+            var y = _geometry.Get2DVertPos(_face, eventPoint.Handle).y;
             var m = (targetPos.y - originPos.y) / (targetPos.x - originPos.x);
 
             if (targetPos.y.Equals(originPos.y) || targetPos.x.Equals(originPos.x))
                 IntersectionPointX = originPos.x;
             else
             {
-                var b = originPos.y - (m* originPos.x);
-                IntersectionPointX = (y - b)/m;
+                var b = originPos.y - (m * originPos.x);
+                IntersectionPointX = (y - b) / m;
             }
         }
     }

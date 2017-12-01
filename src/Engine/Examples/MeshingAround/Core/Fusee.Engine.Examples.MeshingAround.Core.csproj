@@ -65,40 +65,35 @@
       <Name>Fusee.Engine.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      
       <Name>Fusee.Base.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      
       <Name>Fusee.Base.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Jometri.dll">
-      
       <Name>Fusee.Jometri</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      
       <Name>Fusee.Math.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      
       <Name>Fusee.Serialization</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll">
-      
       <Name>Fusee.Xene</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      
       <Name>Fusee.Engine.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      
       <Name>Fusee.Engine.Core</Name>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Assets\" />
+    <None Include="Assets\RocketModelAnim.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
