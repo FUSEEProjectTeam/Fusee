@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Jometri.Manipulation;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.DCEL
+namespace Fusee.Jometri
 {
     /// <summary>
-    /// This class provides public methods to create geometry from scratch. The Geometry is stored in DCEL
+    /// This class provides public methods to create primitive geometry from scratch. The Geometry is stored in DCEL
     /// </summary>
-    public class CreateGeometry
+    public class CreatePrimitiveGeometry
     {
         #region Creating Primitives  
 
@@ -25,9 +24,9 @@ namespace Fusee.Jometri.DCEL
             //check input
             if (dimensionX <= 0 || dimensionY <= 0 || dimensionZ <= 0) throw new ArgumentException("The dimension values can not be <= 0");
 
-            float xPos = dimensionX / 2.0f;
-            float yPos = dimensionY / 2.0f;
-            float zPos = dimensionZ / 2.0f;
+            var xPos = dimensionX / 2.0f;
+            var yPos = dimensionY / 2.0f;
+            var zPos = dimensionZ / 2.0f;
 
             var outlineRectangle = new PolyBoundary //CCW
             {
@@ -62,46 +61,46 @@ namespace Fusee.Jometri.DCEL
             if (horizontalResolution <= 3) horizontalResolution = 3;
             if (verticalResolution <= 2) verticalResolution = 2;
 
-            Geometry sphere = new Geometry();
-            Vertex northPole = new Vertex(sphere.CreateVertHandleId(), new float3(0, radius, 0));
-            Vertex southPole = new Vertex(sphere.CreateVertHandleId(), new float3(0, -radius, 0));
+            var sphere = new Geometry();
+            var northPole = new Vertex(sphere.CreateVertHandleId(), new float3(0, radius, 0));
+            var southPole = new Vertex(sphere.CreateVertHandleId(), new float3(0, -radius, 0));
 
-            double horizontalAngleStep = System.Math.PI * 2 / horizontalResolution; // s
-            double verrticalAngleStep = System.Math.PI / verticalResolution; // t
+            var horizontalAngleStep = System.Math.PI * 2 / horizontalResolution; // s
+            var verrticalAngleStep = System.Math.PI / verticalResolution; // t
 
-            int[] currentLatitudeVerticesHandles = new int[horizontalResolution];
-            int[] lastLaitudeVerticesHandles = new int[horizontalResolution]; //stores last vertices to connect them later with the next latidute vertices
+            var currentLatitudeVerticesHandles = new int[horizontalResolution];
+            var lastLaitudeVerticesHandles = new int[horizontalResolution]; //stores last vertices to connect them later with the next latidute vertices
 
-            for (int i = 1; i < verticalResolution + 1; i++)
+            for (var i = 1; i < verticalResolution + 1; i++)
             {
                 //create all vertices
                 if (i < verticalResolution)
                 {
-                    for (int j = 0; j < horizontalResolution; j++)
+                    for (var j = 0; j < horizontalResolution; j++)
                     {
                         //create all Vertices of current latitude
-                        float xPos = (float)(radius * System.Math.Sin(horizontalAngleStep * j) * System.Math.Sin(verrticalAngleStep * i));
-                        float yPos = (float)(radius * System.Math.Cos(verrticalAngleStep * (i)));
-                        float zPos = (float)(radius * System.Math.Cos(horizontalAngleStep * j) * System.Math.Sin(verrticalAngleStep * i));
+                        var xPos = (float)(radius * System.Math.Sin(horizontalAngleStep * j) * System.Math.Sin(verrticalAngleStep * i));
+                        var yPos = (float)(radius * System.Math.Cos(verrticalAngleStep * (i)));
+                        var zPos = (float)(radius * System.Math.Cos(horizontalAngleStep * j) * System.Math.Sin(verrticalAngleStep * i));
 
-                        Vertex circleVertex = new Vertex(sphere.CreateVertHandleId(), new float3(xPos, yPos, zPos));
+                        var circleVertex = new Vertex(sphere.CreateVertHandleId(), new float3(xPos, yPos, zPos));
                         sphere.DictVertices.Add(circleVertex.Handle, circleVertex);
                         currentLatitudeVerticesHandles[j] = circleVertex.Handle;
                     }
                 }
 
                 //create faces
-                int[] topHeHandles = new int[horizontalResolution];
-                for (int j = 0; j < horizontalResolution; j++)
+                var topHeHandles = new int[horizontalResolution];
+                for (var j = 0; j < horizontalResolution; j++)
                 {
                     // bottom triangles of sphere
                     if (i == verticalResolution)
                     {
-                        Face bottomTriangle = new Face(sphere.CreateFaceHandleId());
+                        var bottomTriangle = new Face(sphere.CreateFaceHandleId());
 
-                        HalfEdge h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
                         topHeHandles[j] = h1.Handle;
 
                         h1.NextHalfEdge = h2.Handle;
@@ -113,8 +112,8 @@ namespace Fusee.Jometri.DCEL
                         h1.IncidentFace = bottomTriangle.Handle;
                         h2.IncidentFace = bottomTriangle.Handle;
                         h3.IncidentFace = bottomTriangle.Handle;
-                        h1.OriginVertex = currentLatitudeVerticesHandles[j]; 
-                        h2.OriginVertex = j == horizontalResolution - 1 ? currentLatitudeVerticesHandles[0] : currentLatitudeVerticesHandles[j + 1]; 
+                        h1.OriginVertex = currentLatitudeVerticesHandles[j];
+                        h2.OriginVertex = j == horizontalResolution - 1 ? currentLatitudeVerticesHandles[0] : currentLatitudeVerticesHandles[j + 1];
                         h3.OriginVertex = southPole.Handle;
                         bottomTriangle.OuterHalfEdge = h1.Handle;
 
@@ -130,11 +129,11 @@ namespace Fusee.Jometri.DCEL
                     // top triangles of sphere
                     else if (i == 1)
                     {
-                        Face topTriangle = new Face(sphere.CreateFaceHandleId());
+                        var topTriangle = new Face(sphere.CreateFaceHandleId());
 
-                        HalfEdge h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
                         topHeHandles[j] = h1.Handle;
 
                         h1.NextHalfEdge = h2.Handle;
@@ -151,7 +150,7 @@ namespace Fusee.Jometri.DCEL
                         h3.OriginVertex = northPole.Handle;
                         topTriangle.OuterHalfEdge = h1.Handle;
 
-                        Vertex currentVertex = sphere.GetVertexByHandle(currentLatitudeVerticesHandles[j]);
+                        var currentVertex = sphere.GetVertexByHandle(currentLatitudeVerticesHandles[j]);
                         currentVertex.IncidentHalfEdge = h2.Handle;
                         northPole.IncidentHalfEdge = h3.Handle;
 
@@ -165,12 +164,12 @@ namespace Fusee.Jometri.DCEL
                     // middle quads of sphere
                     else
                     {
-                        Face quad = new Face(sphere.CreateFaceHandleId());
+                        var quad = new Face(sphere.CreateFaceHandleId());
 
-                        HalfEdge h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
-                        HalfEdge h4 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h1 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h2 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h3 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
+                        var h4 = new HalfEdge(sphere.CreateHalfEdgeHandleId());
                         topHeHandles[j] = h1.Handle;
 
                         h1.NextHalfEdge = h2.Handle;
@@ -192,7 +191,7 @@ namespace Fusee.Jometri.DCEL
                         h2.OriginVertex = j == horizontalResolution - 1 ? lastLaitudeVerticesHandles[0] : lastLaitudeVerticesHandles[j + 1];
                         h1.OriginVertex = lastLaitudeVerticesHandles[j];
 
-                        Vertex currentVertex = sphere.GetVertexByHandle(currentLatitudeVerticesHandles[j]);
+                        var currentVertex = sphere.GetVertexByHandle(currentLatitudeVerticesHandles[j]);
                         currentVertex.IncidentHalfEdge = h4.Handle;
 
                         //write changes
@@ -214,10 +213,10 @@ namespace Fusee.Jometri.DCEL
                     {
                         int nextH1Index;
                         nextH1Index = j == 0 ? horizontalResolution - 1 : j - 1;
-                        HalfEdge h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
-                        HalfEdge h2 = sphere.GetHalfEdgeByHandle(h1.NextHalfEdge);
-                        HalfEdge nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
-                        HalfEdge nextH3 = sphere.GetHalfEdgeByHandle(nextH1.PrevHalfEdge);
+                        var h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
+                        var h2 = sphere.GetHalfEdgeByHandle(h1.NextHalfEdge);
+                        var nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
+                        var nextH3 = sphere.GetHalfEdgeByHandle(nextH1.PrevHalfEdge);
                         nextH3.TwinHalfEdge = h2.Handle;
                         h2.TwinHalfEdge = nextH3.Handle;
 
@@ -228,10 +227,10 @@ namespace Fusee.Jometri.DCEL
                     {
                         int nextH1Index;
                         nextH1Index = j == 0 ? horizontalResolution - 1 : j - 1;
-                        HalfEdge h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
-                        HalfEdge h3 = sphere.GetHalfEdgeByHandle(h1.PrevHalfEdge);
-                        HalfEdge nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
-                        HalfEdge nextH2 = sphere.GetHalfEdgeByHandle(nextH1.NextHalfEdge);
+                        var h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
+                        var h3 = sphere.GetHalfEdgeByHandle(h1.PrevHalfEdge);
+                        var nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
+                        var nextH2 = sphere.GetHalfEdgeByHandle(nextH1.NextHalfEdge);
                         nextH2.TwinHalfEdge = h3.Handle;
                         h3.TwinHalfEdge = nextH2.Handle;
 
@@ -240,15 +239,15 @@ namespace Fusee.Jometri.DCEL
                     }
                     else //set twins of adjacent quads 
                     {
-                        HalfEdge h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
-                        HalfEdge h4 = sphere.GetHalfEdgeByHandle(h1.PrevHalfEdge);
+                        var h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
+                        var h4 = sphere.GetHalfEdgeByHandle(h1.PrevHalfEdge);
 
                         int nextH1Index;
 
-                        nextH1Index = j == 0 ? horizontalResolution -1 : j - 1;
+                        nextH1Index = j == 0 ? horizontalResolution - 1 : j - 1;
 
-                        HalfEdge nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
-                        HalfEdge nextH2 = sphere.GetHalfEdgeByHandle(nextH1.NextHalfEdge);
+                        var nextH1 = sphere.GetHalfEdgeByHandle(topHeHandles[nextH1Index]);
+                        var nextH2 = sphere.GetHalfEdgeByHandle(nextH1.NextHalfEdge);
 
                         nextH2.TwinHalfEdge = h4.Handle;
                         h4.TwinHalfEdge = nextH2.Handle;
@@ -260,9 +259,9 @@ namespace Fusee.Jometri.DCEL
                     //set twin of face on top
                     if (i > 1)
                     {
-                        HalfEdge h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
-                        Vertex lastVertex = sphere.GetVertexByHandle(lastLaitudeVerticesHandles[j]);
-                        HalfEdge topH1 = sphere.GetHalfEdgeByHandle(lastVertex.IncidentHalfEdge); 
+                        var h1 = sphere.GetHalfEdgeByHandle(topHeHandles[j]);
+                        var lastVertex = sphere.GetVertexByHandle(lastLaitudeVerticesHandles[j]);
+                        var topH1 = sphere.GetHalfEdgeByHandle(lastVertex.IncidentHalfEdge);
                         while (true)
                         {
                             if (topH1.TwinHalfEdge == 0) break;
@@ -276,7 +275,8 @@ namespace Fusee.Jometri.DCEL
 
                 }
 
-                lastLaitudeVerticesHandles = CopyArray(currentLatitudeVerticesHandles);
+                Array.Copy(currentLatitudeVerticesHandles, lastLaitudeVerticesHandles,
+                    currentLatitudeVerticesHandles.Length);
             }
             sphere.DictVertices.Add(northPole.Handle, northPole);
             sphere.DictVertices.Add(southPole.Handle, southPole);
@@ -289,14 +289,6 @@ namespace Fusee.Jometri.DCEL
             }
 
             return sphere;
-        }
-
-        private static int[] CopyArray(int[] source)
-        {
-            int[] result = new int[source.Length];
-            Buffer.BlockCopy(source, 0, result, 0, source.Length * sizeof(int));
-            return result;
-
         }
 
         /// <summary>
@@ -312,29 +304,29 @@ namespace Fusee.Jometri.DCEL
             if (sliceCount < 3) sliceCount = 3;
             if (baseRadius <= 0 || dimensionY <= 0) throw new ArgumentException("You can not input paramaters <= 0");
 
-            Geometry cone = new Geometry();
-            Vertex northPole = new Vertex(cone.CreateVertHandleId(), new float3(0, dimensionY / 2, 0));
-            Vertex southPole = new Vertex(cone.CreateVertHandleId(), new float3(0, -dimensionY / 2, 0));
+            var cone = new Geometry();
+            var northPole = new Vertex(cone.CreateVertHandleId(), new float3(0, dimensionY / 2, 0));
+            var southPole = new Vertex(cone.CreateVertHandleId(), new float3(0, -dimensionY / 2, 0));
 
-            double angleStep = System.Math.PI * 2 / sliceCount;
-            float yPos = -dimensionY / 2.0f;
+            var angleStep = System.Math.PI * 2 / sliceCount;
+            var yPos = -dimensionY / 2.0f;
 
             int[] firstHandles = null; //stores the handles of the first slice to connect it later with the last slice
 
-            HalfEdge lastH3 = new HalfEdge();
-            HalfEdge lastH2 = new HalfEdge();
-            Vertex lastVertex = southPole;
+            var lastH3 = new HalfEdge();
+            var lastH2 = new HalfEdge();
+            var lastVertex = southPole;
 
-            for (int i = 1; i < sliceCount + 1; i++)
+            for (var i = 1; i < sliceCount + 1; i++)
             {
-                float x = (float)System.Math.Cos(angleStep * i) * baseRadius;
-                float z = (float)System.Math.Sin(angleStep * i) * baseRadius;
+                var x = (float)System.Math.Cos(angleStep * i) * baseRadius;
+                var z = (float)System.Math.Sin(angleStep * i) * baseRadius;
 
-                Vertex tempVertex = new Vertex(cone.CreateVertHandleId(), new float3(x, yPos, z));
+                var tempVertex = new Vertex(cone.CreateVertHandleId(), new float3(x, yPos, z));
 
                 //south to temp
-                HalfEdge h1 = new HalfEdge(cone.CreateHalfEdgeHandleId());
-                HalfEdge h2 = new HalfEdge(cone.CreateHalfEdgeHandleId()); //twin of h1
+                var h1 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+                var h2 = new HalfEdge(cone.CreateHalfEdgeHandleId()); //twin of h1
 
                 tempVertex.IncidentHalfEdge = h2.Handle;
                 h1.OriginVertex = southPole.Handle;
@@ -343,8 +335,8 @@ namespace Fusee.Jometri.DCEL
                 h2.TwinHalfEdge = h1.Handle;
 
                 //temp to north
-                HalfEdge h3 = new HalfEdge(cone.CreateHalfEdgeHandleId());
-                HalfEdge h4 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+                var h3 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+                var h4 = new HalfEdge(cone.CreateHalfEdgeHandleId());
 
                 northPole.IncidentHalfEdge = h3.Handle;
                 southPole.IncidentHalfEdge = h1.Handle;
@@ -369,8 +361,8 @@ namespace Fusee.Jometri.DCEL
                 }
 
                 //temp to last
-                HalfEdge h5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
-                HalfEdge h6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+                var h5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+                var h6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
 
                 h5.OriginVertex = lastVertex.Handle;
                 h6.OriginVertex = tempVertex.Handle;
@@ -378,7 +370,7 @@ namespace Fusee.Jometri.DCEL
                 h6.TwinHalfEdge = h5.Handle;
 
                 //create top triangles south-temp-last
-                Face triangle1 = new Face(cone.CreateFaceHandleId());
+                var triangle1 = new Face(cone.CreateFaceHandleId());
                 h5.NextHalfEdge = h4.Handle;
                 triangle1.OuterHalfEdge = h5.Handle;
                 h4.NextHalfEdge = lastH3.Handle;
@@ -391,7 +383,7 @@ namespace Fusee.Jometri.DCEL
                 h4.PrevHalfEdge = h5.Handle;
 
                 //north-last-temp
-                Face triangle2 = new Face(cone.CreateFaceHandleId());
+                var triangle2 = new Face(cone.CreateFaceHandleId());
                 h6.NextHalfEdge = lastH2.Handle;
                 triangle2.OuterHalfEdge = h6.Handle;
                 lastH2.NextHalfEdge = h1.Handle;
@@ -426,20 +418,20 @@ namespace Fusee.Jometri.DCEL
             cone.DictVertices.Add(northPole.Handle, northPole);
 
             //create last 2 traingles
-            HalfEdge firtstH1 = cone.GetHalfEdgeByHandle(firstHandles[1]);
-            HalfEdge firstH4 = cone.GetHalfEdgeByHandle(firstHandles[2]);
-            Vertex firstVertex = cone.GetVertexByHandle(firstHandles[0]);
+            var firstVertex = cone.GetVertexByHandle(firstHandles[0]);
+            var firtstH1 = cone.GetHalfEdgeByHandle(firstHandles[1]);
+            var firstH4 = cone.GetHalfEdgeByHandle(firstHandles[2]);
 
-            HalfEdge lastH5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
-            HalfEdge lastH6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+            var lastH5 = new HalfEdge(cone.CreateHalfEdgeHandleId());
+            var lastH6 = new HalfEdge(cone.CreateHalfEdgeHandleId());
 
             lastH5.OriginVertex = lastVertex.Handle;
-            lastH6.OriginVertex = firstVertex.Handle;            
+            lastH6.OriginVertex = firstVertex.Handle;
             lastH5.TwinHalfEdge = lastH6.Handle;
             lastH6.TwinHalfEdge = lastH5.Handle;
 
             //create to triangles south-temp-last, north-last-temp
-            Face triangleL1 = new Face(cone.CreateFaceHandleId()) { OuterHalfEdge = lastH5.Handle };
+            var triangleL1 = new Face(cone.CreateFaceHandleId()) { OuterHalfEdge = lastH5.Handle };
             lastH5.NextHalfEdge = firstH4.Handle;
             firstH4.NextHalfEdge = lastH3.Handle;
             lastH3.NextHalfEdge = lastH5.Handle;
@@ -450,7 +442,7 @@ namespace Fusee.Jometri.DCEL
             lastH3.PrevHalfEdge = firstH4.Handle;
             firstH4.PrevHalfEdge = lastH5.Handle;
 
-            Face triangleL2 = new Face(cone.CreateFaceHandleId()) { OuterHalfEdge = lastH6.Handle };
+            var triangleL2 = new Face(cone.CreateFaceHandleId()) { OuterHalfEdge = lastH6.Handle };
             lastH6.NextHalfEdge = lastH2.Handle;
             lastH2.NextHalfEdge = firtstH1.Handle;
             firtstH1.NextHalfEdge = lastH6.Handle;
@@ -473,7 +465,7 @@ namespace Fusee.Jometri.DCEL
 
             //face normals
             var allFaces = cone.GetAllFaces().ToList();
-            foreach (Face face in allFaces)
+            foreach (var face in allFaces)
             {
                 cone.SetFaceNormal(cone.GetFaceVertices(face.Handle).ToList(), face);
             }
@@ -493,12 +485,12 @@ namespace Fusee.Jometri.DCEL
             //check input
             if (dimensionX <= 0 || dimensionY <= 0 || dimensionZ <= 0) throw new ArgumentException("The dimension values can not be <= 0");
 
-            float xPos = dimensionX / 2.0f;
-            float yPos = dimensionY / 2.0f;
-            float zPos = dimensionZ / 2.0f;
+            var xPos = dimensionX / 2.0f;
+            var yPos = dimensionY / 2.0f;
+            var zPos = dimensionZ / 2.0f;
 
-            Geometry pyramid = new Geometry();
-            float3[] positions = new float3[5];
+            var pyramid = new Geometry();
+            var positions = new float3[5];
 
             //stores all Vertices positions
             positions[0] = new float3(-xPos, -yPos, -zPos);
@@ -507,9 +499,9 @@ namespace Fusee.Jometri.DCEL
             positions[3] = new float3(-xPos, -yPos, zPos);
             positions[4] = new float3(0, yPos, 0);
 
-            Face baseFace = new Face(6) { OuterHalfEdge = 4 };
+            var baseFace = new Face(6) { OuterHalfEdge = 4 };
             //create nad add vertices 
-            for (int i = 0; i < 5; i++)
+            for (var i = 0; i < 5; i++)
             {
                 Vertex current = new Vertex(pyramid.CreateVertHandleId(), positions[i]);
                 if (i < 4) current.IncidentHalfEdge = i * 4 + 1;
@@ -518,14 +510,14 @@ namespace Fusee.Jometri.DCEL
             }
 
             //create add Edges and Faces
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
-                HalfEdge h1 = new HalfEdge(i * 4 + 1);
-                HalfEdge h2 = new HalfEdge(i * 4 + 2);
-                HalfEdge h3 = new HalfEdge(i * 4 + 3);
-                HalfEdge h4 = new HalfEdge(i * 4 + 4);
+                var h1 = new HalfEdge(i * 4 + 1);
+                var h2 = new HalfEdge(i * 4 + 2);
+                var h3 = new HalfEdge(i * 4 + 3);
+                var h4 = new HalfEdge(i * 4 + 4);
 
-                Face sideFace = new Face(i + 2) { OuterHalfEdge = h1.Handle };
+                var sideFace = new Face(i + 2) { OuterHalfEdge = h1.Handle };
 
                 h1.IncidentFace = sideFace.Handle;
                 h2.IncidentFace = sideFace.Handle;
@@ -582,7 +574,7 @@ namespace Fusee.Jometri.DCEL
             pyramid.SetHighestHandles();
 
             var allFaces = pyramid.GetAllFaces().ToList();
-            foreach (Face face in allFaces)
+            foreach (var face in allFaces)
             {
                 var faceVertices = pyramid.GetFaceVertices(face.Handle).ToList();
                 pyramid.SetFaceNormal(faceVertices, face);
@@ -592,14 +584,12 @@ namespace Fusee.Jometri.DCEL
         }
         #endregion
 
-        /// <summary>
-        /// Creates a exact copy of the Geometry.
-        /// </summary>
-        /// <param name="geometry">The geometry to copy.</param>
-        /// <returns></returns>
-        public static Geometry CopyGeometry(Geometry geometry)
+        /*private static int[] CopyArray(int[] source)
         {
-            return geometry.CloneGeometry();
-        }
+            var result = new int[source.Length];
+            Buffer.BlockCopy(source, 0, result, 0, source.Length * sizeof(int));
+            return result;
+
+        }*/
     }
 }

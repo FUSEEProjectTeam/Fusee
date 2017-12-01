@@ -5,15 +5,19 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <inheritdoc />
+    /// <summary>
+    /// Creates a fusee-compatible mesh from a triangulated Jometri geometry
+    /// </summary>
     public class JometriMesh : Mesh
     {
-        public JometriMesh(Jometri.DCEL.Geometry geometry)
+        /// <summary>
+        /// Creates a fusee-compatible mesh from a Jometri geometry
+        /// </summary>
+        /// <param name="geometry">The triangulated Jometri geometry, saved in a doubly connected edge list</param>
+        public JometriMesh(Jometri.Geometry geometry)
         {
-            float3[] vertices;
-            ushort[] triangles;
-            List<float3> normals;
-
-            ConvertToMesh(geometry, out vertices, out triangles, out normals);
+            ConvertToMesh(geometry, out var vertices, out var triangles, out var normals);
 
             Vertices = vertices;
             Triangles = triangles;
@@ -21,7 +25,7 @@ namespace Fusee.Engine.Core
         }
 
         //Geometry has to be triangulated! Translates a Jometri.Geometry into a Fusee.Mesh.
-        private static void ConvertToMesh(Jometri.DCEL.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
+        private static void ConvertToMesh(Jometri.Geometry geometry, out float3[] vertices, out ushort[] triangles, out List<float3> normals)
         {
             var faces = geometry.GetAllFaces().ToList();
             if(faces[0].Handle == 1)

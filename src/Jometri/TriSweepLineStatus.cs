@@ -1,8 +1,6 @@
-﻿using Fusee.Jometri.DCEL;
-
-namespace Fusee.Jometri.Triangulation
+﻿namespace Fusee.Jometri
 {
-    internal class SweepLineStatus : BinarySearchTree<float, StatusEdge>
+    internal class TriSweepLineStatus : BinarySearchTree<float, TriStatusEdge>
     {
         //Updates the nodes (key and value) according to the sweep lines intersection point with a certain status edge.
         internal void UpdateNodes(Vertex eventPoint)
@@ -15,7 +13,7 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //Finds StatusEdge according to its Handle using preorder traversal.
-        internal StatusEdge FindStatusEdgeWithHandle(int handle)
+        internal TriStatusEdge FindStatusEdgeWithHandle(int handle)
         {
             foreach (var n in PreorderTraverseTreeValues())
             {
@@ -26,11 +24,11 @@ namespace Fusee.Jometri.Triangulation
         }
 
         //---------- The follwoing methods are only needed because of JSIL's "CompareTo not found in context" error, delete them if this is fixed --------------//
-        public new void InsertNode(float key, StatusEdge value)
+        public new void InsertNode(float key, TriStatusEdge value)
         {
             if (_globalRoot == null)
             {
-                _globalRoot = new Node<float, StatusEdge>(key, value);
+                _globalRoot = new Node<float, TriStatusEdge>(key, value);
             }
             else
             {
@@ -39,11 +37,11 @@ namespace Fusee.Jometri.Triangulation
         }
 
 
-        private static Node<float, StatusEdge> InsertNode(Node<float, StatusEdge> root, float key, StatusEdge value)
+        private static Node<float, TriStatusEdge> InsertNode(Node<float, TriStatusEdge> root, float key, TriStatusEdge value)
         {
             if (root == null)
             {
-                root = new Node<float, StatusEdge>(key, value);
+                root = new Node<float, TriStatusEdge>(key, value);
             }
             else
             {
@@ -65,7 +63,7 @@ namespace Fusee.Jometri.Triangulation
             _globalRoot = DeleteNode(_globalRoot, key);
         }
 
-        private static Node<float, StatusEdge> DeleteNode(Node<float, StatusEdge> root, float key)
+        private static Node<float, TriStatusEdge> DeleteNode(Node<float, TriStatusEdge> root, float key)
         {
             if (root == null) return null;
             if (key.CompareTo(root.Key) < 0)
@@ -96,13 +94,13 @@ namespace Fusee.Jometri.Triangulation
             return root;
         }
 
-        public new StatusEdge FindLargestSmallerThanInBalanced(float key)
+        public new TriStatusEdge FindLargestSmallerThanInBalanced(float key)
         {
             var res = FindLargestSmallerThanInBalanced(_globalRoot, key);
             return res.Value;
         }
 
-        private static Node<float, StatusEdge> FindLargestSmallerThanInBalanced(Node<float, StatusEdge> root, float key)
+        private static Node<float, TriStatusEdge> FindLargestSmallerThanInBalanced(Node<float, TriStatusEdge> root, float key)
         {
             var res = root;
 
@@ -121,16 +119,16 @@ namespace Fusee.Jometri.Triangulation
             return res;
         }
 
-        public new StatusEdge FindNode(float key)
+        public new TriStatusEdge FindNode(float key)
         {
             var res = FindNode(_globalRoot, key);
 
             return res.Value;
         }
 
-        private static Node<float, StatusEdge> FindNode(Node<float, StatusEdge> root, float key)
+        private static Node<float, TriStatusEdge> FindNode(Node<float, TriStatusEdge> root, float key)
         {
-            Node<float, StatusEdge> res = null;
+            Node<float, TriStatusEdge> res = null;
             if (root.LeftNode != null)
                 res = FindNode(root.LeftNode, key);
 

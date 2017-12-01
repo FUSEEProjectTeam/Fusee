@@ -1,4 +1,4 @@
-﻿namespace Fusee.Jometri.Triangulation
+﻿namespace Fusee.Jometri
 {
     /// <summary>
     /// To divide a polygon into y monotone pieces, the corners of this polygon must be divided into different categories.

@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri.DCEL;
-using Fusee.Jometri.Manipulation;
-using Fusee.Jometri.Triangulation;
+using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
-using Geometry = Fusee.Jometri.DCEL.Geometry;
+using Geometry = Fusee.Jometri.Geometry;
 
 
 namespace Fusee.Engine.Examples.MeshingAround.Core

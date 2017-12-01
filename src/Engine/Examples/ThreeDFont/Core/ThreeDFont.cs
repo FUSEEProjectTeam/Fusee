@@ -2,10 +2,9 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Jometri.Manipulation;
+using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
-using Fusee.Jometri.Triangulation;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
@@ -37,7 +36,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
             var outlinesLato = _threeDFontHelper.GetTextOutlinesWAngle(20);
-            var geomLato = new Jometri.DCEL.Geometry(outlinesLato);
+            var geomLato = new Jometri.Geometry(outlinesLato);
             geomLato.Extrude2DPolygon(2000, false);
             geomLato.Triangulate();
             _textMeshLato = new JometriMesh(geomLato);
@@ -45,7 +44,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
            
             _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
             var outlinesVlad = _threeDFontHelper.GetTextOutlinesWAngle(7);
-            var geomVlad = new Jometri.DCEL.Geometry(outlinesVlad);
+            var geomVlad = new Jometri.Geometry(outlinesVlad);
             geomVlad.Extrude2DPolygon(200, false);
             geomVlad.Triangulate();
             _textMeshVlad = new JometriMesh(geomVlad);
@@ -53,7 +52,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
             var outlinesGnu = _threeDFontHelper.GetTextOutlinesWAngle(40);
-            var geomGnu = new Jometri.DCEL.Geometry(outlinesGnu);
+            var geomGnu = new Jometri.Geometry(outlinesGnu);
             //geomVlad.Extrude2DPolygon(200, false);
             geomGnu.Triangulate();
             _textMeshGnu = new JometriMesh(geomGnu);

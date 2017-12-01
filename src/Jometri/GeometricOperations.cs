@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Common;
-using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
 namespace Fusee.Jometri
@@ -31,7 +29,7 @@ namespace Fusee.Jometri
             }
 
             //If the normal equals the negative z axis of the world coodrinate system: use the original coordinates.
-            if (normal == float3.UnitZ*-1)
+            if (normal == float3.UnitZ * -1)
                 return vertPos;
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
