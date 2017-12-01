@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Common;
-using Fusee.Jometri.DCEL;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.Manipulation
+namespace Fusee.Jometri
 {
     /// <summary>
-    /// Provides extrusion functionality for geometry.
+    /// Provides extrusion functionality for geometries.
     /// </summary>
     public static class Extrude
     {
@@ -23,7 +21,7 @@ namespace Fusee.Jometri.Manipulation
             CreateTopSurface(geometry, offset, extrudeAlongNormal);
             CreateSidefaces(geometry);
 
-            var extrusion = new Geometry()
+            var extrusion = new Geometry
             {
                 DictFaces = new Dictionary<int, Face>(geometry.DictFaces),
                 DictVertices = new Dictionary<int, Vertex>(geometry.DictVertices),
@@ -36,12 +34,162 @@ namespace Fusee.Jometri.Manipulation
             return extrusion;
         }
 
+        /// <summary>
+        /// Extrudes a given Face by a given offset along its normal vector.
+        /// </summary>
+        /// <param name="geometry">The geometry.</param>
+        /// <param name="faceHandle">The handle of the face to extrude.</param>
+        /// <param name="offset">How far the face shoul get ertuded.</param>
+        /// <returns></returns>
+        public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset)
+        {
+            var face = geometry.GetFaceByHandle(faceHandle);
+            return ExtrudeFaceByHandle(geometry, faceHandle, offset, face.FaceData.FaceNormal);
+        }
+
+        /// <summary>
+        /// Extrudes a given Face along a specified Vector.
+        /// </summary>
+        /// <param name="geometry"></param>
+        /// <param name="faceHandle"></param>
+        /// <param name="offset"></param>
+        /// <param name="extrusionVector"></param>
+        /// <returns></returns>
+        public static Geometry ExtrudeFace(this Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
+        {
+            extrusionVector.Normalize();
+            return ExtrudeFaceByHandle(geometry, faceHandle, offset, extrusionVector);
+        }
+
+        private static Geometry ExtrudeFaceByHandle(Geometry geometry, int faceHandle, float offset, float3 extrusionVector)
+        {
+            var face = geometry.GetFaceByHandle(faceHandle);
+
+            //get HE of Face
+            var start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
+            var next = start;
+
+            var vertexIncHe = new Dictionary<int, List<HalfEdge>>();
+            var allFaceVertices = geometry.GetFaceVertices(faceHandle);
+            foreach (var vertex in allFaceVertices)
+                vertexIncHe.Add(vertex.Handle, geometry.GetVertexStartingHalfEdges(vertex.Handle).ToList());
+            var allH2NEdges = new List<HalfEdge>();
+
+            do
+            {
+                var nextOriginV = geometry.GetVertexByHandle(next.OriginVertex);
+                var newVertex = new Vertex(geometry.CreateVertHandleId(), nextOriginV.VertData.Pos);
+
+                var twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
+                var prevEdge = geometry.GetHalfEdgeByHandle(next.PrevHalfEdge);
+                var prevTwinEdge = geometry.GetHalfEdgeByHandle(prevEdge.TwinHalfEdge);
+
+                nextOriginV.VertData.Pos = nextOriginV.VertData.Pos + extrusionVector * offset;
+
+                var h4 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+                var h2n = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+
+                var h1 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+
+                var currentList = vertexIncHe[nextOriginV.Handle];
+                foreach (var halfEdge in currentList)
+                {
+                    if (halfEdge == next) continue;
+                    var edge = GeomEditing.UpdateHalfEdgeOrigin(halfEdge, newVertex.Handle);
+                    geometry.ReplaceHalfEdge(edge);
+                }
+
+                nextOriginV.IncidentHalfEdge = next.Handle;
+
+                h4.OriginVertex = nextOriginV.Handle;
+                h2n.OriginVertex = newVertex.Handle;
+                h1.OriginVertex = newVertex.Handle;
+
+                h4.TwinHalfEdge = h2n.Handle;
+                h2n.TwinHalfEdge = h4.Handle;
+
+                h4.NextHalfEdge = h1.Handle;
+                h1.PrevHalfEdge = h4.Handle;
+
+                h1.TwinHalfEdge = next.TwinHalfEdge;
+                twinEdge.TwinHalfEdge = h1.Handle;
+
+                prevTwinEdge.OriginVertex = newVertex.Handle;
+
+                newVertex.IncidentHalfEdge = h2n.Handle;
+
+                geometry.ReplaceHalfEdge(twinEdge);
+                geometry.ReplaceHalfEdge(prevTwinEdge);
+                geometry.ReplaceVertex(nextOriginV);
+                geometry.DictVertices.Add(newVertex.Handle, newVertex);
+                geometry.DictHalfEdges.Add(h4.Handle, h4);
+                geometry.DictHalfEdges.Add(h1.Handle, h1);
+                geometry.DictHalfEdges.Add(h2n.Handle, h2n);
+
+                allH2NEdges.Add(h2n);
+
+                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
+            } while (start != next);
+
+            start = geometry.GetHalfEdgeByHandle(face.OuterHalfEdge);
+            next = start;
+            do
+            {
+                var newFace = new Face(geometry.CreateFaceHandleId());
+
+                var twinEdge = geometry.GetHalfEdgeByHandle(next.TwinHalfEdge);
+
+                var h1 = geometry.GetHalfEdgeByHandle(twinEdge.TwinHalfEdge);
+                var h2 = allH2NEdges.First(n => n.OriginVertex == twinEdge.OriginVertex);
+                var h3 = new HalfEdge(geometry.CreateHalfEdgeHandleId());
+                var h4 = geometry.GetHalfEdgeByHandle(h1.PrevHalfEdge);
+
+                //set Face
+                h1.IncidentFace = newFace.Handle;
+                h2.IncidentFace = newFace.Handle;
+                h3.IncidentFace = newFace.Handle;
+                h4.IncidentFace = newFace.Handle;
+
+                h1.NextHalfEdge = h2.Handle;
+                h2.NextHalfEdge = h3.Handle;
+                h3.NextHalfEdge = h4.Handle;
+                h4.NextHalfEdge = h1.Handle;
+
+                h1.PrevHalfEdge = h4.Handle;
+                h2.PrevHalfEdge = h1.Handle;
+                h3.PrevHalfEdge = h2.Handle;
+                h4.PrevHalfEdge = h3.Handle;
+
+                h3.TwinHalfEdge = next.Handle;
+                h3.OriginVertex = geometry.GetHalfEdgeByHandle(next.NextHalfEdge).OriginVertex;
+                next.TwinHalfEdge = h3.Handle;
+                newFace.OuterHalfEdge = h1.Handle;
+
+                //write all changes
+                geometry.ReplaceHalfEdge(h1);
+                geometry.ReplaceHalfEdge(h2);
+                geometry.ReplaceHalfEdge(h4);
+                geometry.ReplaceHalfEdge(next);
+
+                geometry.DictHalfEdges.Add(h3.Handle, h3);
+                geometry.DictFaces.Add(newFace.Handle, newFace);
+
+                newFace.FaceData.FaceNormal = GeometricOperations.CalculateFaceNormal(geometry.GetFaceVertices(newFace.Handle).ToList());
+
+                geometry.ReplaceFace(newFace);
+
+                next = geometry.GetHalfEdgeByHandle(next.NextHalfEdge);
+            } while (start != next);
+
+            return geometry;
+        }
+
         private static void CreateTopSurface(Geometry geometry, float zOffset, bool exturdeAlongNormal)
         {
             //Clone frontface.
             var backface = geometry.CloneGeometry();
 
-            if(!exturdeAlongNormal)
+            if (!exturdeAlongNormal)
                 //Add zOffset to each vertex coord.
                 UpdateVertexZCoord(backface, zOffset);
             else
@@ -68,7 +216,7 @@ namespace Fusee.Jometri.Manipulation
         {
             foreach (var v in verts)
             {
-                var newPos = v.VertData.Pos + normal*zOffset;
+                var newPos = v.VertData.Pos + normal * zOffset;
                 var vert = new Vertex(v, newPos);
                 backface.DictVertices[vert.Handle] = vert;
             }

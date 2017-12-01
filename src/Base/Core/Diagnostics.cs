@@ -3,9 +3,9 @@ using JSIL.Meta;
 
 namespace Fusee.Base.Core
 {
-     /// <summary>
-     /// Contains some mostly static functions for diagnostic purposes.
-     /// </summary>
+    /// <summary>
+    /// Contains some mostly static functions for diagnostic purposes.
+    /// </summary>
     public static class Diagnostics
     {
         #region Fields

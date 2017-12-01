@@ -25,6 +25,7 @@ Visual Studio Code.
    - ***Or*** In Windows Explorer, right-click on the `MyFirstFuseeApp` directory and select "Open With Code" from the context menu.
    - ***Or*** In a Console (Command Prompt or PowerShell), `cd` to `MyFirstFuseeApp` and enter `code .` at the command line.
 
+
 3. In Visual Studio Code (with the open folder), Open the integrated terminal ("View &rarr; Integrated Terminal" from the menu, ``Ctrl+` `` on English 
    keybards, `Ctrl+Ö` on German keyboards).
 
@@ -48,8 +49,7 @@ Visual Studio Code.
    never built before, the build process might take some time.
 
 4. As a result, the FUSEE Player application starts and runs the code from your FUSEE application. Try to 
-   view the rocket from different angles by clicking and dragging the mouse. Don't forget to click on the 
-   "Stop" button (red square) in Visual Studio Code after closing the browser window.
+   view the rocket from different angles by clicking and dragging the mouse.
 
 #### Screen Cast: Build and run the App
 ![Build and run the App](buildandruntheapp.gif)
@@ -71,7 +71,8 @@ in your project directory.
    - A local Web Server will be started hosting the generated Web App on port 4655 (Hex-Ascii for "FU").
    - Your System's default browser will be started on "localhost:4655" to display your FUSEE Web App
 
-3. As a result, you should see your new web-ified FUSEE App a inside a web browser.
+3. As a result, you should see your new web-ified FUSEE App a inside a web browser. Don't forget to 
+   click on the "Stop" button (red square) in Visual Studio Code after closing the browser window.
 
 4. The "publish as web app" process generated the Web App below `MyFirstFuseeApp/pub/Web`. Look at the 
    folder contents. Simply copy the entire folder contents to some Web Space to deploy your FUSEE App

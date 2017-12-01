@@ -45,6 +45,7 @@
     <Compile Include="Diagnostics.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="IO.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

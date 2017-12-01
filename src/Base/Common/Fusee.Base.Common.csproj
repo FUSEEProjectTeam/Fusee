@@ -52,6 +52,7 @@
     <Compile Include="ColorUint.cs" />
     <Compile Include="Enums.cs" />
     <Compile Include="IFontImp.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="SplitToCurveSegmentHelper.cs" />
     <Compile Include="StreamAssetProvider.cs" />
     <Compile Include="IAssetProvider.cs" />

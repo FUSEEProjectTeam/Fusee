@@ -16,12 +16,19 @@ Before following the FUSEE installation instructions on this page, make sure all
 ## Installation
 
 - Download the latest 
-  [FUSEE Release](https://github.com/FUSEEProjectTeam/Fusee/releases/download/v0.6-BinDist/Fusee_v6.0.exe) 
+  [FUSEE Release](https://github.com/FUSEEProjectTeam/Fusee/releases/download/v0.6.1-BinDist/Fusee_v6.1.exe) 
   from the 
   [FUSEE GitHub Repository](https://github.com/FUSEEProjectTeam/Fusee/releases).
 
-- Copy or move the downloaded `Fusee_v6.0.exe` to a convenient place on your hard drive. Double-click on the executable file.
-  This will extract its contents into a `Fusee` folder below the folder where the executable is placed.
+- Copy or move the downloaded `Fusee_v6.1.exe` to a convenient place on your hard drive. This will
+  become the home of your FUSEE installation.
+
+>  **IMPORTANT:** On some systems, the executable file is blocked and it may fail to run.
+>  Before double-clicking it, right click on the executable file, select Properties, and click on the Unblock button 
+>  if it is present in the lower right corner of the General tab in the properties dialog.
+  
+- Double-click on the executable file.
+  This will extract its contents into a `Fusee` folder below the folder where the executable file is placed.
 
 - In the newly extracted `Fusee` folder, 
 

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
 
-namespace Fusee.Jometri.DCEL
+namespace Fusee.Jometri
 {
     /// <summary>
     /// Stores geometry in a DCEL (doubly connected (half) edge list).
@@ -77,7 +77,11 @@ namespace Fusee.Jometri.DCEL
         }
         #endregion
 
-        internal Geometry CloneGeometry()
+        /// <summary>
+        /// Creates an exact copy of the given Geometry.
+        /// </summary>
+        /// <returns></returns>
+        public Geometry CloneGeometry()
         {
             var clone = new Geometry
             {
@@ -102,9 +106,8 @@ namespace Fusee.Jometri.DCEL
 
         internal float3 Get2DVertPos(Face face, int vertHandle)
         {
-            Dictionary<int, float3> verts;
             float3 pos;
-            if (_vertPos2DCache.TryGetValue(face, out verts))
+            if (_vertPos2DCache.TryGetValue(face, out var verts))
             {
                 if (verts.TryGetValue(vertHandle, out pos))
                     return pos;
@@ -520,160 +523,6 @@ namespace Fusee.Jometri.DCEL
 
         #endregion
 
-        #region Insert Diagonal
-
-        /// <summary>
-        /// Inserts a pair of HalfEdges between two (non adjacent) vertices of a Face.
-        /// </summary>
-        /// <param name="p">First Vertex handle.</param>
-        /// <param name="q">Second Vertex handle.</param>
-        /// <exception cref="Exception"></exception>
-        public void InsertDiagonal(int p, int q)
-        {
-            var pStartHe = new HalfEdge();
-            var qStartHe = new HalfEdge();
-
-            var face = GetFaceToInsertDiag(p, q, ref pStartHe, ref qStartHe);
-
-            if (this.IsVertexAdjacentToVertex(p, q, pStartHe, qStartHe))
-                throw new ArgumentException("A diagonal can't be inserted between adjacent Vertices!");
-
-            var newFromP = new HalfEdge(CreateHalfEdgeHandleId());
-            var newFromQ = new HalfEdge(CreateHalfEdgeHandleId());
-
-            newFromP.OriginVertex = p;
-            newFromP.NextHalfEdge = qStartHe.Handle;
-            newFromP.PrevHalfEdge = pStartHe.PrevHalfEdge;
-            newFromP.IncidentFace = face.Handle;
-
-            newFromQ.OriginVertex = q;
-            newFromQ.NextHalfEdge = pStartHe.Handle;
-            newFromQ.PrevHalfEdge = qStartHe.PrevHalfEdge;
-            newFromQ.IncidentFace = face.Handle;
-
-            newFromP.TwinHalfEdge = newFromQ.Handle;
-            newFromQ.TwinHalfEdge = newFromP.Handle;
-
-            DictHalfEdges.Add(newFromP.Handle, newFromP);
-            DictHalfEdges.Add(newFromQ.Handle, newFromQ);
-
-            //Assign new sucessor to previous HalfEdges from p and q & assign new predecessor for qStartHe and pStartHe.
-            var prevHeP = GetHalfEdgeByHandle(pStartHe.PrevHalfEdge);
-            var prevHeQ = GetHalfEdgeByHandle(qStartHe.PrevHalfEdge);
-
-            var prevHePUpdate = DictHalfEdges[prevHeP.Handle];
-            prevHePUpdate.NextHalfEdge = newFromP.Handle;
-            DictHalfEdges[prevHeP.Handle] = prevHePUpdate;
-
-            var prevHeQUpdate = DictHalfEdges[prevHeQ.Handle];
-            prevHeQUpdate.NextHalfEdge = newFromQ.Handle;
-            DictHalfEdges[prevHeQ.Handle] = prevHeQUpdate;
-
-            var nextHePUpdate = DictHalfEdges[pStartHe.Handle];
-            nextHePUpdate.PrevHalfEdge = newFromQ.Handle;
-            DictHalfEdges[pStartHe.Handle] = nextHePUpdate;
-
-            var nextHeQUpdate = DictHalfEdges[qStartHe.Handle];
-            nextHeQUpdate.PrevHalfEdge = newFromP.Handle;
-            DictHalfEdges[qStartHe.Handle] = nextHeQUpdate;
-
-            var holes = GetHoles(face);
-
-            if (holes.Count != 0 && IsNewEdgeToHole(holes, p, q, face)) return;
-
-            var newFace = new Face(CreateFaceHandleId(), newFromQ.Handle);
-
-            //The face normal of the newFace equals the normal of the original Face because adding a diagonal does not change the face vertices position.
-            var newFaceData = newFace.FaceData;
-            newFaceData.FaceNormal = face.FaceData.FaceNormal;
-            newFace.FaceData = newFaceData;
-
-            DictFaces.Add(newFace.Handle, newFace);
-
-            //Assign the handle of the new Face to its HalfEdges.
-            AssignFaceHandle(newFace.OuterHalfEdge, newFace);
-
-            //Set Face.OuterHalfEdge to newFromP - old OuterHalfEdge can be part of new Face now!
-            var currentFace = face;
-            currentFace.OuterHalfEdge = newFromP.Handle;
-            face = currentFace;
-            DictFaces[face.Handle] = face;
-        }
-
-        private Dictionary<int, List<HalfEdge>> GetHoles(Face face)
-        {
-            var holes = new Dictionary<int, List<HalfEdge>>();
-
-            foreach (var he in face.InnerHalfEdges)
-            {
-                holes.Add(he, GetHalfEdgeLoop(he).ToList());
-            }
-
-            return holes;
-        }
-
-        private void AssignFaceHandle(int heHandle, Face newFace)
-        {
-            var oldFaceHandle = GetHalfEdgeByHandle(heHandle).IncidentFace;
-            var currentHe = GetHalfEdgeByHandle(heHandle);
-            do
-            {
-                currentHe.IncidentFace = newFace.Handle;
-
-                DictHalfEdges[currentHe.Handle] = currentHe;
-
-                currentHe = GetHalfEdgeByHandle(currentHe.NextHalfEdge);
-            } while (currentHe.Handle != heHandle);
-
-            //Assign newFace to possible holes in the "old" face.
-            var oldFace = GetFaceByHandle(oldFaceHandle);
-            if (oldFace.InnerHalfEdges.Count == 0) return;
-
-            var inner = new List<int>();
-            inner.AddRange(oldFace.InnerHalfEdges);
-
-            foreach (var heh in inner)
-            {
-                var origin = GetHalfEdgeByHandle(heh).OriginVertex;
-
-                if (!this.IsPointInPolygon(newFace, GetVertexByHandle(origin))) continue;
-
-                oldFace.InnerHalfEdges.Remove(heh);
-                newFace.InnerHalfEdges.Add(heh);
-
-                var curHe = GetHalfEdgeByHandle(heh);
-                do
-                {
-                    curHe.IncidentFace = newFace.Handle;
-
-                    DictHalfEdges[curHe.Handle] = curHe;
-
-                    curHe = GetHalfEdgeByHandle(curHe.NextHalfEdge);
-
-                } while (curHe.Handle != heh);
-            }
-        }
-
-        private static bool IsNewEdgeToHole(Dictionary<int, List<HalfEdge>> holes, int pHandle, int qHandle,
-            Face face)
-        {
-            if (holes.Count == 0) return false;
-
-            foreach (var hole in holes)
-            {
-                foreach (var heHandle in hole.Value)
-                {
-                    if (pHandle != heHandle.OriginVertex && qHandle != heHandle.OriginVertex) continue;
-
-                    face.InnerHalfEdges.Remove(hole.Key);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        #endregion
-
         #region ID creation for Vert-, Face- and HalfEdgeHandles
 
         internal int CreateVertHandleId()
@@ -723,9 +572,8 @@ namespace Fusee.Jometri.DCEL
                 return face;
             }
 
-            for (var i = 0; i < heWithSameFaceP.Count; i++)
+            foreach (var he in heWithSameFaceP)
             {
-                var he = heWithSameFaceP[i];
                 var face = GetFaceByHandle(he.IncidentFace);
 
                 if (face.Handle == 1) continue;
@@ -749,92 +597,6 @@ namespace Fusee.Jometri.DCEL
                 return face;
             }
             throw new ArgumentException("Vertex " + p + " vertex " + q + " have no common Face!");
-        }
-        #endregion
-
-        #region Insert new vertex
-        /// <summary>
-        /// Inserts a new Vertex between two given exsisting Vertices.
-        /// </summary>
-        /// <param name="p">Handle of Vertex one.</param>
-        /// <param name="q">Handle of Vertex two.</param>
-        /// <param name="pos">Position of the new Vertex</param>
-        /// <returns>New Vertex Handle.</returns>
-        internal int InsertVertex(int p, int q, float3 pos)
-        {
-            var adjacentVertices = GetVertexAdjacentVertices(p).ToList();
-            for (int i = 0; i < adjacentVertices.Count; i++)
-            {
-                if (adjacentVertices[i].Handle == q) break;
-                if (i == adjacentVertices.Count - 1) throw new ArgumentException("Vertices with Handle q=" + q + " and p=" + p + " are not adjacent!");
-            }
-
-            Vertex newVertex = new Vertex(CreateVertHandleId(), pos);
-
-            //add two new Half Edges
-            HalfEdge newHalfEdge1 = new HalfEdge(CreateHalfEdgeHandleId());
-            HalfEdge newHalfEdge2 = new HalfEdge(CreateHalfEdgeHandleId());
-
-            //set origin to new Vertex
-            newHalfEdge1.OriginVertex = newVertex.Handle;
-            newHalfEdge2.OriginVertex = newVertex.Handle;
-
-            newVertex.IncidentHalfEdge = newHalfEdge2.Handle;
-
-            Vertex vertexP = GetVertexByHandle(p);
-            Vertex vertexQ = GetVertexByHandle(q);
-
-            //Find Half Edge between p and q
-            var incomingEdges = GetVertexStartingHalfEdges(vertexP.Handle);
-
-            HalfEdge he1 = new HalfEdge();
-            HalfEdge he2 = new HalfEdge();
-
-            foreach (HalfEdge halfEdge in incomingEdges)
-            {
-                var twinEdge = GetHalfEdgeByHandle(halfEdge.TwinHalfEdge);
-                if (twinEdge.OriginVertex == vertexQ.Handle)
-                {
-                    he1 = halfEdge;
-                    he2 = twinEdge;
-                }
-            }
-
-            HalfEdge next1 = GetHalfEdgeByHandle(he2.NextHalfEdge);
-            HalfEdge next2 = GetHalfEdgeByHandle(he1.NextHalfEdge);
-
-            //change Handels
-            he1.TwinHalfEdge = newHalfEdge1.Handle;
-            newHalfEdge1.TwinHalfEdge = he1.Handle;
-            newHalfEdge1.NextHalfEdge = he2.NextHalfEdge;
-            he2.NextHalfEdge = newHalfEdge1.Handle;
-            newHalfEdge1.PrevHalfEdge = he2.Handle;
-            next1.PrevHalfEdge = newHalfEdge1.Handle;
-
-            he2.TwinHalfEdge = newHalfEdge2.Handle;
-            newHalfEdge2.TwinHalfEdge = he2.Handle;
-            newHalfEdge2.NextHalfEdge = he1.NextHalfEdge;
-            he1.NextHalfEdge = newHalfEdge2.Handle;
-            newHalfEdge2.PrevHalfEdge = he1.Handle;
-            next2.PrevHalfEdge = newHalfEdge2.Handle;
-
-            //reconnect faces
-            newHalfEdge1.IncidentFace = he2.IncidentFace;
-            newHalfEdge2.IncidentFace = he1.IncidentFace;
-
-            //replace exsisnting Edges
-            ReplaceHalfEdge(he1);
-            ReplaceHalfEdge(he2);
-
-            ReplaceHalfEdge(next1);
-            ReplaceHalfEdge(next2);
-
-            //add to dict
-            DictVertices.Add(newVertex.Handle, newVertex);
-            DictHalfEdges.Add(newHalfEdge1.Handle, newHalfEdge1);
-            DictHalfEdges.Add(newHalfEdge2.Handle, newHalfEdge2);
-
-            return newVertex.Handle;
         }
         #endregion
     }

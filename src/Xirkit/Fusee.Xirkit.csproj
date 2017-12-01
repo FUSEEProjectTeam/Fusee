@@ -63,6 +63,7 @@
     <Compile Include="Keyframe.cs" />
     <Compile Include="Lerp.cs" />
     <Compile Include="ListSort.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="OutPin.cs" />
     <Compile Include="Pin.cs" />

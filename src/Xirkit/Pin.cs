@@ -4,11 +4,11 @@ namespace Fusee.Xirkit
 {
     /// <summary>
     /// A pin is a connection point where <see cref="Node"/> instances can be connected to each others.
-    /// Pin connections carry values of certain types. There are in-pins and out-pins. One out-pin
+    /// Pin connections carry values of certain types. There are <see cref="InPin{T}"/>s and <see cref="OutPin{T}"/>s. One out-pin
     /// can be connected to one or more in-pins but each in-pin can only be connected to one out-pin.
     /// </summary>
     /// <remarks>
-    /// This calss contains base implementations similar on all pin types, no matter which type 
+    /// This class contains base implementations similar on all pin types, no matter which type 
     /// its value is or whether it's an in- or an out-pin. It is a building block to create various 
     /// pin types used within Xirkit.
     /// </remarks>

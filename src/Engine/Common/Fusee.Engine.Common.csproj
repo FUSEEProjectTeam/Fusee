@@ -106,6 +106,7 @@
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="Light.cs" />
     <Compile Include="MouseEventArgs.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Point.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RCEnums.cs" />

@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 
-namespace Fusee.Jometri.DCEL
+namespace Fusee.Jometri
 {
     /// <summary>
     /// Contains additional information that can be added to Vertices.

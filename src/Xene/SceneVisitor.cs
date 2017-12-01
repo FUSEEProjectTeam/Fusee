@@ -69,19 +69,19 @@ namespace Fusee.Xene
 
 
     /// <summary>
-    /// Work-in-Progress. This class tries to serve three goals
+    /// This class tries to serve three goals
     /// <list type="number">
     /// <item>As a base class for visitor patterns. Users can add visitor methods and provide code for different types of visited items.</item>
     /// <item>As building block for enumerators. Visitor methods can yield an enumeration.</item>
     /// <item>As a toolset to implement transformations on scenes. Transformations operate on scenes and alter their structure.</item>
     /// </list>
     /// 
-    /// Serves as a base class for advanced visitor pattern implementations traversing scenes. Visitors derived from this class may implement
+    /// Visitors derived from this class may implement
     /// their own Visit methods for all kinds of scene graph elements. Visitor methods can be defined for scene nodes (although many implementations
     /// will most likely NOT have a very big inheritance tree for nodes) as well as for scene components.
     /// A Visitor method can be any instance method (not static) taking one parameter either derived from <see cref="SceneNodeContainer"/> or derived from
     /// <see cref="SceneComponentContainer"/>. To mark such a method as a Visitor method it needs to be decorated with the <see cref="VisitMethodAttribute"/> 
-    /// attribute. Visitor methods can have arbitrary names and don't need to be virtual. 
+    /// attribute. Visitor methods can have arbitrary names and don't necessarily need to be virtual. 
     /// </summary>
     public class SceneVisitor
     {

@@ -53,19 +53,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinarySearchTree.cs" />
-    <Compile Include="DCEL\Components.cs" />
-    <Compile Include="DCEL\AttributeInformation.cs" />
-    <Compile Include="DCEL\CreateGeometry.cs" />
-    <Compile Include="DCEL\InitializeGeometryHelper.cs" />
-    <Compile Include="Manipulation\Extrude.cs" />
-    <Compile Include="Manipulation\GeometryEditing.cs" />
-    <Compile Include="Manipulation\SubdivisionSurface.cs" />
-    <Compile Include="Triangulation\StatusEdge.cs" />
-    <Compile Include="Triangulation\SweepLineStatus.cs" />
-    <Compile Include="Triangulation\Triangulate.cs" />
-    <Compile Include="DCEL\Geometry.cs" />
+    <Compile Include="GeomComponents.cs" />
+    <Compile Include="GeomAttributeInformation.cs" />
+    <Compile Include="CreatePrimitiveGeometry.cs" />
+    <Compile Include="GeomInitializeHelper.cs" />
+    <Compile Include="Extrude.cs" />
+    <Compile Include="GeomEditing.cs" />
+    <Compile Include="SubdivisionSurface.cs" />
+    <Compile Include="TriStatusEdge.cs" />
+    <Compile Include="TriSweepLineStatus.cs" />
+    <Compile Include="Triangulation.cs" />
+    <Compile Include="Geometry.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Triangulation\VertexType.cs" />
+    <Compile Include="VertexType.cs" />
     <Compile Include="GeometricOperations.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
