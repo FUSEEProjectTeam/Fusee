@@ -24,8 +24,8 @@ Before following the FUSEE installation instructions on this page, make sure all
   become the home of your FUSEE installation.
 
 >  **IMPORTANT:** On some systems, the executable file is blocked and it may fail to run.
->  Before double-clicking it, right click on the executable file, select Properties, and click on the Unblock button 
->  if it is present in the lower right corner of the General tab in the properties dialog.
+>  Before double-clicking it, [unblock](https://blogs.msdn.microsoft.com/delay/p/unblockingdownloadedfile/)
+>  the file `Fusee_v0.6.1.exe`.
   
 - Double-click on the executable file.
   This will extract its contents into a `Fusee` folder below the folder where the executable file is placed.
