@@ -234,6 +234,7 @@ namespace Fusee.Engine.Core
         {
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+            private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
 
             public float4x4 Model
             {
@@ -245,6 +246,12 @@ namespace Fusee.Engine.Core
             {
                 get { return _uiRect.Tos; }
                 set { _uiRect.Tos = value; }
+            }
+
+            public float4x4 CanvasXForm
+            {
+                get => _canvasXForm.Tos;
+                set => _canvasXForm.Tos = value;
             }
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
@@ -261,7 +268,7 @@ namespace Fusee.Engine.Core
                 RegisterState(_effect);
                 RegisterState(_uiRect);
             }
-        };
+        }
 
         private RendererState _state;
         private float4x4 _view;
@@ -680,6 +687,7 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(rc);
         }
 
+        
         #region Visitors
 
         [VisitMethod]
@@ -714,14 +722,9 @@ namespace Fusee.Engine.Core
                 Max = ctc.Size.Max
             };
 
-            var transl = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-            var scale = float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
-
+            _state.CanvasXForm =  _state.Model * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            //_state.Model = _state.CanvasXForm;
             _state.UiRect = newRect;
-            _state.Model = transl * scale * _state.Model;
-            
-            _rc.Model = _state.Model;
-            _rc.View = _view;
         }
 
         [VisitMethod]
@@ -734,19 +737,25 @@ namespace Fusee.Engine.Core
                 Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
                 Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
             };
-
-            var scaleFactor = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
-            var scale = float4x4.CreateScale(scaleFactor.x, scaleFactor.y, 1);
-            var scaleAroundCenter = float4x4.CreateTranslation(_state.UiRect.Center.x, _state.UiRect.Center.y, 0) * scale * float4x4.CreateTranslation(-_state.UiRect.Center.x, -_state.UiRect.Center.y, 0);
-
-            var transVector = newRect.Center - _state.UiRect.Center;
-            var trans = float4x4.CreateTranslation(transVector.x, transVector.y, 0);
-
+            
+            var transformChild = float4x4.CreateTranslation(newRect.Center.x - _state.UiRect.Center.x, newRect.Center.y -_state.UiRect.Center.y, 0);
+            
             _state.UiRect = newRect;
-            _state.Model = trans * scaleAroundCenter * _state.Model;
+            _state.CanvasXForm *= transformChild;
+            //_state.Model = _state.CanvasXForm;
+
+        }
+
+        [VisitMethod]
+        public void RenderXForm(XFormComponent xfc)
+        {
+            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            
+            _state.Model =  _state.CanvasXForm * scale;
             _rc.Model = _state.Model;
             _rc.View = _view;
         }
+
 
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)

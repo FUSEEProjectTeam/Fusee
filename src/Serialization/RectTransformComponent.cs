@@ -7,7 +7,6 @@ namespace Fusee.Serialization
     /// Building block to set up User Interface hierarchies.
     /// </summary>
     [ProtoContract]
-
     public class RectTransformComponent : SceneComponentContainer
     {
         /// <summary>
