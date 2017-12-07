@@ -722,8 +722,8 @@ namespace Fusee.Engine.Core
                 Max = ctc.Size.Max
             };
 
-            _state.CanvasXForm =  _state.Model * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-            //_state.Model = _state.CanvasXForm;
+            _state.CanvasXForm = _state.Model;
+            _state.Model = _state.CanvasXForm  * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
             _state.UiRect = newRect;
         }
 
@@ -738,11 +738,10 @@ namespace Fusee.Engine.Core
                 Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
             };
             
-            var transformChild = float4x4.CreateTranslation(newRect.Center.x - _state.UiRect.Center.x, newRect.Center.y -_state.UiRect.Center.y, 0);
+            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
             
             _state.UiRect = newRect;
-            _state.CanvasXForm *= transformChild;
-            //_state.Model = _state.CanvasXForm;
+            _state.Model = _state.CanvasXForm * transformChild;
 
         }
 
@@ -751,7 +750,7 @@ namespace Fusee.Engine.Core
         {
             var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
             
-            _state.Model =  _state.CanvasXForm * scale;
+            _state.Model *=  scale;
             _rc.Model = _state.Model;
             _rc.View = _view;
         }
