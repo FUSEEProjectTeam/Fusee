@@ -91,6 +91,7 @@
     <Compile Include="Shaders.cs" />
     <Compile Include="ShadowFrameBufferObject.cs" />
     <Compile Include="SliderConstraint.cs" />
+    <Compile Include="Sphere.cs" />
     <Compile Include="SphereShape.cs" />
     <Compile Include="StaticPlaneShape.cs" />
     <Compile Include="Network.cs" />
