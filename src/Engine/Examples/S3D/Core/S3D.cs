@@ -12,6 +12,9 @@ namespace Fusee.Engine.Examples.S3D.Core
     [FuseeApplication(Name = "fuseeStereoApp", Description = "Yet another FUSEE App.")]
     public class S3D : RenderCanvas
     {
+        private static float _fov = M.PiOver4;
+        private static float _aspectRatio;
+
         // Horizontal and vertical rotation Angles for the displayed object 
         private static float _angleHorz = M.PiOver4, _angleVert;
 
@@ -120,8 +123,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             if (Input.Keyboard.GetKey(KeyCodes.F2))
             {
                 ResetAllParams();
-                // TODO: Replace with scene Group BC
-                _scene = AssetStorage.Get<SceneContainer>("balls_sky.fus");
+                _scene = AssignmentShapeRatioHelper.CreateScene();
                 _sceneRenderer = new SceneRenderer(_scene);
                 _assignment = Assignment.BC;
             }
@@ -163,7 +165,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             RC.Viewport(0, 0, Width, Height);
 
-            var aspectRatio = Width / (float)(Height);
+            var aspectRatio = Width / (Height/2f);
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
@@ -206,37 +208,68 @@ namespace Fusee.Engine.Examples.S3D.Core
 
 
         // B) gibt es Szenen-Stauchungseffekte bei Renderkameras mit sehr langen Brennweiten (schmales viewing frustum)?
-        private static float _fov = M.PiOver2;
+        //Assumption: 1 Fusee unit equals 1 meter
         private void GroupBC()
         {
-            // DEBUG
-            SetWindowSize(1920, 1080, 0, 0, true);
+            const float physicalDisplayWidth = 0.93f;
+            const float interaxial = 0.05f;
+
+            const int hitInPx = 30;
+
+            const int resolutionW = 1920;
+            const int resolutonH = 1080;
+
+            
+            SetWindowSize(resolutionW, resolutonH, 0, 0, true);
             Diagnostics.Log($"FOV: {_fov}.");
+
+            const int camOffset = 5;
+
+            //in mm for shape ratio calculation
+            var distCamToObjOne = (camOffset + AssignmentShapeRatioHelper.SphereOneDistToRoot);
+            var distCamToObjTwo = (camOffset + AssignmentShapeRatioHelper.SphereTwoDistToRoot);
+
+            
+            var hitInMeter = AssignmentShapeRatioHelper.PixelToMeter(hitInPx, distCamToObjOne/1000f, _fov, resolutionW, _aspectRatio, physicalDisplayWidth); //TODO: convert meter to px (and back) for S3D calculation purposes
+            
+            #region set params for shape ratio calculation
+            //All following parameters are given in millimeters
+            AssignmentShapeRatioHelper.Interaxial = interaxial; 
+            AssignmentShapeRatioHelper.EyeSeparation = 65 /1000f;
+            AssignmentShapeRatioHelper.FocalLength = M.RadiansToDegrees(_fov) /1000f;
+            AssignmentShapeRatioHelper.Hit = hitInMeter;
+            AssignmentShapeRatioHelper.Magnification = 1;
+            AssignmentShapeRatioHelper.ViewingDistance = 2500 / 1000f;
+
+            var shapeRatioObjOne = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjOne);
+            var shapeRatioObjTwo = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjTwo);
+
+            #endregion
             
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             Debug.WriteLine(Input.Mouse.WheelVel);
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
 
-            var aspectRatio = Width / (Height / 2f); // Set aspect ratio ganze Weite halbe Höhe
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, aspectRatio, 1, 200000); // Erzeuge Projektionsmatrix Öffnugnswinkel PiOver4, nearplane 1, farplane 2000
+            _aspectRatio = Width / (float)(Height); // Set aspect ratio ganze Weite halbe Höhe
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, _aspectRatio, 1, 200000); // Erzeuge Projektionsmatrix Öffnugnswinkel PiOver4, nearplane 1, farplane 2000
             RC.Projection = projection; // Setze Projektionsmatrix
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); // Create rotation around X and Y asix based upon mouse angle input
-            var mtxCam = float4x4.LookAt(0, 0, -7, 0, 0, 0, 0, 1, 0); // Create Camera Matrix. Position of Camera = 0,0,-10, camera aims/looks at 0,0,0; y-axis up
-            RC.ModelView = mtxCam * mtxRot; // Rotation * Cameramatrix = new RenderContext ModelView Matrix (== Cameramatrix)
+            // "Over" Camera  - Create the camera matrix and set it as the current ModelView transformation
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); 
+            var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0); 
+            RC.ModelView = mtxCam * mtxRot; 
 
-            RC.Viewport(20, 0, Width, Height / 2); // Adjust the viewport and hence the visible render ouput. Start at 0,0 and fill the complete window width but only half of the window height
+            RC.Viewport(hitInPx/2, 0, Width, Height / 2); 
 
             // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC); // Render the scene to the viewport with current RC.ModelView-Matrix and current RC.Projection-Matrix!
+            _sceneRenderer.Render(RC); 
 
-            // Create the second camera matrix and set it as the current ModelView transformation
-            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); // Create rotation around X and Y asix based upon mouse angle input
-            mtxCam = float4x4.LookAt(-0.5f, 0, -7, -0.5f, 0, 0, 0, 1, 0); // Create Camera Matrix. Position of Camera = 2,0,-10, camera aims/looks at 2,0,0; y-axis up
-            RC.ModelView = mtxCam * mtxRot; // Rotation * Cameramatrix = new RenderContext ModelView Matrix (== Cameramatrix)
+            // "Under" Camera -  Create the second camera matrix and set it as the current ModelView transformation
+            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); 
+            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0); 
+            RC.ModelView = mtxCam * mtxRot; 
 
-            RC.Viewport(-20, Height / 2, Width, Height / 2); // Adjust the viewport and hence the visible render ouput. Starte bei 0 und der Hälfte der Höhe des Fensters und rendere damit den unteren Teil des Viewports.
+            RC.Viewport(-hitInPx/2, Height / 2, Width, Height / 2); // Adjust the viewport and hence the visible render ouput. Starte bei 0 und der Hälfte der Höhe des Fensters und rendere damit den unteren Teil des Viewports.
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC); // Render the scene to the viewport with current RC.ModelView-Matrix and current RC.Projection-Matrix!
@@ -283,12 +316,12 @@ namespace Fusee.Engine.Examples.S3D.Core
             //RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)(Height);
+            _aspectRatio = Width / (float)(Height);
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, _aspectRatio, 1, 20000);
             RC.Projection = projection;
         }
     }
