@@ -5,12 +5,13 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Unit Icosahedron primitive.
+    /// Creates a Icosahedron geomentry straight from the code.
     /// </summary>
     public class Icosahedron : Mesh
     {
         /// <summary>
-        /// Creates an unit Icosahedron. Used to create a Icosphere.
+        /// Initializes a new instance of the <see cref="Icosahedron" /> class.
+        /// All Vertices of the Icosahedron are lying on the unit sphere.
         /// </summary>
         public Icosahedron()
         {
@@ -76,7 +77,7 @@ namespace Fusee.Engine.Core
 
 
     /// <summary>
-    /// Unit Icosphere primitive.
+    /// Creates a Icosphere geomentry straight from the code.
     /// </summary>
     public class Icosphere : Mesh
     {
@@ -85,7 +86,8 @@ namespace Fusee.Engine.Core
         private readonly List<float3> _sphereVertices;
 
         /// <summary>
-        /// Creates an unit Icosphere from an Icosahedron.
+        /// Initializes a new instance of the <see cref="Icosphere" /> class.
+        /// All Vertices of the Icosphere are lying on the unit sphere.
         /// </summary>
         /// <param name="subdivLevel">Defines the number subdivisions and therefor the number of triangles and the smoothness of the sphere.</param>
         public Icosphere(int subdivLevel)
@@ -232,6 +234,7 @@ namespace Fusee.Engine.Core
             else
             {
                 var averageNormal = (triNormal + normals[triIndex]) / 2;
+                averageNormal.Normalize();
                 normals[triIndex] = averageNormal;
             }
         }

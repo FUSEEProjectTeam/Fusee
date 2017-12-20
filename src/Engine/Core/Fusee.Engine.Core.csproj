@@ -56,6 +56,7 @@
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />
+    <Compile Include="Icosphere.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
@@ -91,7 +92,6 @@
     <Compile Include="Shaders.cs" />
     <Compile Include="ShadowFrameBufferObject.cs" />
     <Compile Include="SliderConstraint.cs" />
-    <Compile Include="Sphere.cs" />
     <Compile Include="SphereShape.cs" />
     <Compile Include="StaticPlaneShape.cs" />
     <Compile Include="Network.cs" />

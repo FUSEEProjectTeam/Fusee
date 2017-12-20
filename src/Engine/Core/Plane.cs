@@ -2,8 +2,15 @@
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Creates a simple plane geomentry straight from the code.
+    /// </summary>
     public class Plane : Mesh
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Plane" /> class.
+        /// The default plane is 1 unit big.
+        /// </summary>
         public Plane()
         {
             #region Fields
