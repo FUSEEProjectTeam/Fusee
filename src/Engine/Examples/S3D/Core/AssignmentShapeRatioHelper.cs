@@ -1,6 +1,4 @@
-﻿
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -12,7 +10,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         #region Create Scene
         public static int SphereOneDistToRoot = 0;
         public static int SphereTwoDistToRoot = 3;
-        
+
         public static SceneContainer CreateScene()
         {
             var sphere = new Icosphere(5);
@@ -131,7 +129,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                             }
 
                         }
-                        
+
                     },
                 }
             };
@@ -140,43 +138,18 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         #region Calculate shape ratio
 
-        //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
-        public static float ViewingDistance;//Distance User to Display (V)
-        public static float Interaxial;     //Stereo base (t)
-        public static float Magnification;  //Magnification factor sensor to image (M)
-        public static float FocalLength;    //Camera focal lenght - only fov for calculation... (f)
-        public static float Hit;            //Image to Sensor offset (h)
-        public static float EyeSeparation;    //Eye separation of the user (e)
-
         //distCamObject: Distance camera to object in question (Z0)
-        public static float CalculateShapeRatio(float distCamObject)
-        {
-            return (ViewingDistance * Interaxial) / (Magnification * FocalLength * Interaxial -
-                    distCamObject * (2 * Magnification * Hit - EyeSeparation));
-        }
-
+        public static float CalculateShapeRatio(float distCamObject) =>
+            S3D.ViewingDistance * S3D.Interaxial /
+            (S3D.Magnification * S3D.FocalLength * S3D.Interaxial - distCamObject * (2 * S3D.Magnification * S3D.Hit - S3D.EyeSeparation));
         #endregion
 
-        #region Calculate pixel to meter conversion for given object and display width
-
+        #region Calculate pixel to meter conversion hit value
         //distCamToObject: fusee unity == meter
         //fov: degree
         //displayWidth: meter
-        public static float PixelToMeter(int hitInPx, float distCamToObject, float fov, float widthResolution, float aspectRatio, float physicalDisplayWidth)
-        {
-
-            /*var angle = M.RadiansToDegrees(fov);
-            var halfHeight = (float)System.Math.Tan(angle/ 2) * distCamToObject;
-            var halfWidth = halfHeight * aspectRatio;
-
-            var q = 100 / widthResolution;
-            var p = hitInPx * q;*/
-
-            var pxSize = physicalDisplayWidth / widthResolution;
-
-            return hitInPx * pxSize;
-        }
-
+        public static float PixelToMeter(int hitInPx, float widthResolution, float physicalDisplayWidth) =>
+            (physicalDisplayWidth / widthResolution) * hitInPx;
         #endregion
     }
 }

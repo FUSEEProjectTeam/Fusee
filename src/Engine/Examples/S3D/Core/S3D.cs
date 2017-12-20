@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -10,8 +9,17 @@ namespace Fusee.Engine.Examples.S3D.Core
 {
 
     [FuseeApplication(Name = "fuseeStereoApp", Description = "Yet another FUSEE App.")]
-    public class S3D : RenderCanvas
-    {
+    public class S3D : RenderCanvas{
+
+        //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
+        public static float ViewingDistance;//Distance User to Display (V)
+        public static float Interaxial;     //Stereo base (t)
+        public static float Magnification;  //Magnification factor sensor to image (M)
+        public static float FocalLength;    //Camera focal lenght - only fov for calculation... (f)
+        public static float Hit;            //Image to Sensor offset (h)
+        public static float EyeSeparation;  //Eye separation of the user (e)
+
+
         private static float _fov = M.PiOver4;
         private static float _aspectRatio;
 
@@ -50,7 +58,6 @@ namespace Fusee.Engine.Examples.S3D.Core
             // Fullscreen
             SetWindowSize(1920, 1080, 0, 0, true);
 
-            // Load the rocket model
             // TODO: Replace with scene from group A
             _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
@@ -213,12 +220,9 @@ namespace Fusee.Engine.Examples.S3D.Core
         {
             const float physicalDisplayWidth = 0.93f;
             const float interaxial = 0.05f;
-
             const int hitInPx = 30;
-
             const int resolutionW = 1920;
             const int resolutonH = 1080;
-
             
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
             Diagnostics.Log($"FOV: {_fov}.");
@@ -230,16 +234,14 @@ namespace Fusee.Engine.Examples.S3D.Core
             var distCamToObjTwo = (camOffset + AssignmentShapeRatioHelper.SphereTwoDistToRoot);
 
             
-            var hitInMeter = AssignmentShapeRatioHelper.PixelToMeter(hitInPx, distCamToObjOne/1000f, _fov, resolutionW, _aspectRatio, physicalDisplayWidth); //TODO: convert meter to px (and back) for S3D calculation purposes
-            
             #region set params for shape ratio calculation
             //All following parameters are given in millimeters
-            AssignmentShapeRatioHelper.Interaxial = interaxial; 
-            AssignmentShapeRatioHelper.EyeSeparation = 65 /1000f;
-            AssignmentShapeRatioHelper.FocalLength = M.RadiansToDegrees(_fov) /1000f;
-            AssignmentShapeRatioHelper.Hit = hitInMeter;
-            AssignmentShapeRatioHelper.Magnification = 1;
-            AssignmentShapeRatioHelper.ViewingDistance = 2500 / 1000f;
+            Interaxial = interaxial; 
+            EyeSeparation = 65 /1000f;
+            FocalLength = 3;//(float)(1/System.Math.Tan(_fov*0.5f)); //see http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/graphics_6_1_ger_web.html#1 p. 17
+            Hit = AssignmentShapeRatioHelper.PixelToMeter(hitInPx,resolutionW,physicalDisplayWidth);
+            Magnification = 1; //factor is 1 because we only have perspective projection, the only factor that affects the objects size in the picture is fov.
+            ViewingDistance = 2500 / 1000f;
 
             var shapeRatioObjOne = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjOne);
             var shapeRatioObjTwo = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjTwo);
@@ -247,7 +249,6 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
             
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
-            Debug.WriteLine(Input.Mouse.WheelVel);
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
 
             _aspectRatio = Width / (float)(Height); // Set aspect ratio ganze Weite halbe Höhe
