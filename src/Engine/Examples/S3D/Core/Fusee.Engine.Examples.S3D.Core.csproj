@@ -73,6 +73,12 @@
     <Content Include="Assets\FuseeText.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\grid.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\icoWorld.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\RocketModel.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

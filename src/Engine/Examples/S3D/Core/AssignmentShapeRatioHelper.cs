@@ -13,7 +13,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         public static SceneContainer CreateScene()
         {
-            var sphere = new Icosphere(5);
+            var sphere = new Icosphere(6);
             var plane = new Plane();
 
             return new SceneContainer
@@ -80,7 +80,12 @@ namespace Fusee.Engine.Examples.S3D.Core
 
                                     new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer{ Color = new float3(1,0.9f,0.4f)},
+                                        Diffuse = new MatChannelContainer
+                                        {
+                                            Color = new float3(1,0.9f,0.4f),
+                                            Texture = "grid.jpg",
+                                            Mix = 0.1f
+                                        },
                                         Specular =  new SpecularChannelContainer
                                         {
                                             Color = new float3(1,1,1),
@@ -88,11 +93,13 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             Shininess = 100f
                                         }
                                     },
+                                    
                                     new MeshComponent
                                     {
                                         Vertices = sphere.Vertices,
                                         Triangles = sphere.Triangles,
-                                        Normals = sphere.Normals
+                                        Normals = sphere.Normals,
+                                        UVs = sphere.UVs
                                     }
 
                                 }
@@ -110,7 +117,13 @@ namespace Fusee.Engine.Examples.S3D.Core
 
                                     new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer{ Color = new float3(0.1f,0.8f,0.4f)},
+                                        Diffuse = new MatChannelContainer
+                                        {
+                                            Color = new float3(0.1f,0.8f,0.4f),
+                                            Texture = "grid.jpg",
+                                            Mix = 0.1f
+
+                                        },
                                         Specular =  new SpecularChannelContainer
                                         {
                                             Color = new float3(1,1,1),
@@ -122,7 +135,8 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     {
                                         Vertices = sphere.Vertices,
                                         Triangles = sphere.Triangles,
-                                        Normals = sphere.Normals
+                                        Normals = sphere.Normals,
+                                        UVs = sphere.UVs
                                     }
 
                                 }
@@ -130,7 +144,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
                         }
 
-                    },
+                    }
                 }
             };
         }

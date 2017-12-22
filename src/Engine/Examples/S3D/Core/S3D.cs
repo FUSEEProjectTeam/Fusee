@@ -1,7 +1,9 @@
 ﻿using System;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -9,8 +11,10 @@ namespace Fusee.Engine.Examples.S3D.Core
 {
 
     [FuseeApplication(Name = "fuseeStereoApp", Description = "Yet another FUSEE App.")]
-    public class S3D : RenderCanvas{
+    public class S3D : RenderCanvas
+    {
 
+        #region S3D fields
         //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
         public static float ViewingDistance;//Distance User to Display (V)
         public static float Interaxial;     //Stereo base (t)
@@ -19,10 +23,11 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static float Hit;            //Image to Sensor offset (h)
         public static float EyeSeparation;  //Eye separation of the user (e)
 
-
         private static float _fov = M.PiOver4;
         private static float _aspectRatio;
+        #endregion
 
+        #region Mouse control fields
         // Horizontal and vertical rotation Angles for the displayed object 
         private static float _angleHorz = M.PiOver4, _angleVert;
 
@@ -34,8 +39,22 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         // Damping factor 
         private const float Damping = 0.8f;
+        #endregion
 
-        private SceneContainer _scene;
+        #region GUI BC
+
+        private GUIHandler _guiHandler;
+        private GUIText _distToCamTextOne;
+        private GUIText _shapeRatioTextOne;
+        private GUIText _distToCamTextTwo;
+        private GUIText _shapeRatioTextTwo;
+        private GUIText _fovText;
+        private FontMap _guiLatoBlackMap;
+        #endregion
+
+        private SceneContainer _sceneA;
+        private SceneContainer _sceneBc;
+        private SceneContainer _sceneD;
         private SceneRenderer _sceneRenderer;
 
         private bool _keys;
@@ -59,16 +78,38 @@ namespace Fusee.Engine.Examples.S3D.Core
             SetWindowSize(1920, 1080, 0, 0, true);
 
             // TODO: Replace with scene from group A
-            _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneBc = AssignmentShapeRatioHelper.CreateScene();
+            _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRenderer(_sceneA);
+
+            _guiHandler = new GUIHandler();
+            _guiHandler.AttachToContext(RC);
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            fontLato.UseKerning = true;
+
+            #region GUI BC
+            _guiLatoBlackMap = new FontMap(fontLato, 18);
+            _distToCamTextOne = new GUIText("Distance Camera to yellow", _guiLatoBlackMap, 50, 50) { TextColor = ColorUint.Tofloat4(ColorUint.Greenery) };
+            _shapeRatioTextOne = new GUIText("Shape ratio yellow", _guiLatoBlackMap, 50, 70) { TextColor = ColorUint.Tofloat4(ColorUint.Greenery) };
+            _distToCamTextTwo = new GUIText("Distance to green", _guiLatoBlackMap, 50, 150) { TextColor = ColorUint.Tofloat4(ColorUint.Greenery) };
+            _shapeRatioTextTwo = new GUIText("Shape ratio green", _guiLatoBlackMap, 50, 180) { TextColor = ColorUint.Tofloat4(ColorUint.Greenery) };
+            _fovText = new GUIText("Fiel of View (degree)", _guiLatoBlackMap, 50, 250) { TextColor = ColorUint.Tofloat4(ColorUint.Greenery) };
+
+            _guiHandler.Add(_distToCamTextOne);
+            _guiHandler.Add(_shapeRatioTextOne);
+            _guiHandler.Add(_distToCamTextTwo);
+            _guiHandler.Add(_shapeRatioTextTwo);
+            _guiHandler.Add(_fovText);
+            #endregion
+
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -123,23 +164,20 @@ namespace Fusee.Engine.Examples.S3D.Core
             {
                 ResetAllParams();
                 // TODO: Replace with scene Group A
-                _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-                _sceneRenderer = new SceneRenderer(_scene);
+                _sceneRenderer = new SceneRenderer(_sceneA);
                 _assignment = Assignment.A;
             }
             if (Input.Keyboard.GetKey(KeyCodes.F2))
             {
                 ResetAllParams();
-                _scene = AssignmentShapeRatioHelper.CreateScene();
-                _sceneRenderer = new SceneRenderer(_scene);
+                _sceneRenderer = new SceneRenderer(_sceneBc);
                 _assignment = Assignment.BC;
             }
             if (Input.Keyboard.GetKey(KeyCodes.F3))
             {
                 ResetAllParams();
                 // TODO: Replace with scene Group D
-                _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-                _sceneRenderer = new SceneRenderer(_scene);
+                _sceneRenderer = new SceneRenderer(_sceneD);
                 _assignment = Assignment.D;
             }
 
@@ -150,7 +188,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                     GroupA();
                     break;
                 case Assignment.BC:
-                    GroupBC();
+                    GroupBc();
                     break;
                 case Assignment.D:
                     GroupD();
@@ -162,23 +200,6 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        // Reset ModelView and ProjectionMatrix between group switch
-        private void ResetAllParams()
-        {
-
-            RC.ModelView = float4x4.LookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
-
-            RC.Viewport(0, 0, Width, Height);
-
-            var aspectRatio = Width / (Height/2f);
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
-
-            // Fullscreen
-            SetWindowSize(1920, 1080, 0, 0, true);
-
         }
 
         private void GroupA()
@@ -205,75 +226,85 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             RC.Viewport(0, Height / 2, Width, Height / 2); // Adjust the viewport and hence the visible render ouput. Starte bei 0 und der Hälfte der Höhe des Fensters und rendere damit den unteren Teil des Viewports.
 
-
-
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC); // Render the scene to the viewport with current RC.ModelView-Matrix and current RC.Projection-Matrix!
 
         }
 
-
-
-        // B) gibt es Szenen-Stauchungseffekte bei Renderkameras mit sehr langen Brennweiten (schmales viewing frustum)?
+        // B) Are there perceptible shape ratio changes (high, low fov values)?
         //Assumption: 1 Fusee unit equals 1 meter
-        private void GroupBC()
+        private void GroupBc()
         {
-            const float physicalDisplayWidth = 0.93f;
-            const float interaxial = 0.05f;
-            const int hitInPx = 30;
+            const float physicalDisplayWidth = 1.107f;
+            const float interaxial = 0.1f;
+            const int hitInPx = 18;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
-            
+            const int camOffset = 5;
+
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
             Diagnostics.Log($"FOV: {_fov}.");
 
-            const int camOffset = 5;
-
             //in mm for shape ratio calculation
-            var distCamToObjOne = (camOffset + AssignmentShapeRatioHelper.SphereOneDistToRoot);
-            var distCamToObjTwo = (camOffset + AssignmentShapeRatioHelper.SphereTwoDistToRoot);
+            var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.SphereOneDistToRoot;
+            var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.SphereTwoDistToRoot;
 
-            
-            #region set params for shape ratio calculation
+            #region Shape ratio calculation
             //All following parameters are given in millimeters
-            Interaxial = interaxial; 
-            EyeSeparation = 65 /1000f;
-            FocalLength = 3;//(float)(1/System.Math.Tan(_fov*0.5f)); //see http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/graphics_6_1_ger_web.html#1 p. 17
-            Hit = AssignmentShapeRatioHelper.PixelToMeter(hitInPx,resolutionW,physicalDisplayWidth);
+            Interaxial = interaxial;
+            EyeSeparation = 65 / 1000f;
+            FocalLength = RC.Projection.M11; //see http://www.terathon.com/gdc07_lengyel.pdf 
+            // f = 1/tan(0.5f*_fov) see http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/graphics_6_1_ger_web.html#1 p. 17
+            Hit = AssignmentShapeRatioHelper.PixelToMeter(hitInPx, resolutionW, physicalDisplayWidth);
             Magnification = 1; //factor is 1 because we only have perspective projection, the only factor that affects the objects size in the picture is fov.
-            ViewingDistance = 2500 / 1000f;
+            ViewingDistance = 2.5f;
 
             var shapeRatioObjOne = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjOne);
             var shapeRatioObjTwo = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjTwo);
+            #endregion
+
+            #region GUI
+            _distToCamTextOne.Text = "Distance to camera yellow: " + distCamToObjOne;
+            _shapeRatioTextOne.Text = "Calculated shape ratio yellow: " + shapeRatioObjOne;
+            _distToCamTextTwo.Text = "Distance to camera green: " + distCamToObjTwo;
+            _shapeRatioTextTwo.Text = "Calculated shape ratio green: " + shapeRatioObjTwo;
+            _fovText.Text = "Field of View (degree): " + M.RadiansToDegrees(_fov);
+            #endregion
+
+            #region Set Viewport - UNDER Camera
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
+
+            RC.ModelView = mtxCam * mtxRot;
+
+            RC.Viewport(hitInPx / 2, 0, Width, Height / 2);
+            _guiHandler.RenderGUI();
+
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
+            #endregion
+
+            #region Set Viewport - OVER Camera
+            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
+            RC.ModelView = mtxCam * mtxRot;
+
+            RC.Viewport(-hitInPx / 2, Height / 2, Width, Height / 2);
+            _guiHandler.RenderGUI();
+
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 
             #endregion
-            
+
+            #region Projection
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
 
-            _aspectRatio = Width / (float)(Height); // Set aspect ratio ganze Weite halbe Höhe
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, _aspectRatio, 1, 200000); // Erzeuge Projektionsmatrix Öffnugnswinkel PiOver4, nearplane 1, farplane 2000
-            RC.Projection = projection; // Setze Projektionsmatrix
-
-            // "Over" Camera  - Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); 
-            var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0); 
-            RC.ModelView = mtxCam * mtxRot; 
-
-            RC.Viewport(hitInPx/2, 0, Width, Height / 2); 
-
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC); 
-
-            // "Under" Camera -  Create the second camera matrix and set it as the current ModelView transformation
-            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); 
-            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0); 
-            RC.ModelView = mtxCam * mtxRot; 
-
-            RC.Viewport(-hitInPx/2, Height / 2, Width, Height / 2); // Adjust the viewport and hence the visible render ouput. Starte bei 0 und der Hälfte der Höhe des Fensters und rendere damit den unteren Teil des Viewports.
-
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC); // Render the scene to the viewport with current RC.ModelView-Matrix and current RC.Projection-Matrix!
+            _aspectRatio = Width / (float)(Height); // Set aspect ratio
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, _aspectRatio, 1, 20000);
+            RC.Projection = projection;
+            #endregion
         }
 
         private void GroupD()
@@ -290,19 +321,35 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void HotLoadSceneGroupA()
         {
             // Load the rocket model
-            _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRenderer(_sceneA);
         }
 
         private void HotLoadSceneGroupD()
         {
             // Load the rocket model
-            _scene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRenderer(_sceneD);
+        }
+
+        // Reset ModelView and ProjectionMatrix between group switch
+        private void ResetAllParams()
+        {
+            RC.ModelView = float4x4.LookAt(0, 0, -10, 0, 0, 0, 0, 1, 0);
+
+            RC.Viewport(0, 0, Width, Height);
+
+            var aspectRatio = Width / (Height / 2f);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            RC.Projection = projection;
+
+            // Fullscreen
+            SetWindowSize(1920, 1080, 0, 0, true);
+
         }
 
         private InputDevice Creator(IInputDeviceImp device)

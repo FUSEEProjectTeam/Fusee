@@ -71,7 +71,15 @@ namespace Fusee.Engine.Core
             };
 
             Normals = new float3[] { };
-            CalcNormalHelper.CreateVertexNormals(this);
+            NormalAndUvHelper.CreateVertexNormals(this);
+
+            UVs = NormalAndUvHelper.CreateUVs();
+            for (var i = 0; i < Vertices.Length; i++)
+            {
+                UVs[i] =
+                    new float2(0.5f + ((float) System.Math.Atan2(Vertices[i].z, Vertices[i].x) / (2 * M.Pi)),
+                        0.5f - ((float) System.Math.Asin(Vertices[i].y) / M.Pi));
+            }
         }
     }
 
@@ -105,11 +113,14 @@ namespace Fusee.Engine.Core
             Vertices = sphere.Vertices;
             Triangles = sphere.Triangles;
             Normals = sphere.Normals;
+            UVs = sphere.UVs;
         }
 
         private Mesh Create(int recursionLevel)
         {
             Mesh mesh = new Icosahedron();
+
+            if (recursionLevel == 0) return mesh;
 
             //Add Verts to temp vert list
             foreach (var vert in mesh.Vertices)
@@ -129,9 +140,9 @@ namespace Fusee.Engine.Core
                     if (tri.Count != 3) continue;
 
                     //Replace triangle by four triangles.
-                    var a = GetMiddlePoint(tri[0], tri[1]);
-                    var b = GetMiddlePoint(tri[1], tri[2]);
-                    var c = GetMiddlePoint(tri[2], tri[0]);
+                    var a = MiddlePoint(tri[0], tri[1]);
+                    var b = MiddlePoint(tri[1], tri[2]);
+                    var c = MiddlePoint(tri[2], tri[0]);
 
                     var temp = new List<ushort>
                     {
@@ -144,13 +155,21 @@ namespace Fusee.Engine.Core
                     faces2.AddRange(temp);
 
                     tri = new List<ushort>();
+
                 }
                 mesh.Triangles = faces2.ToArray();
             }
 
             mesh.Vertices = _sphereVertices.ToArray();
-            CalcNormalHelper.CreateVertexNormals(mesh);
-            
+            NormalAndUvHelper.CreateVertexNormals(mesh);
+
+            mesh.UVs = new float2[mesh.Vertices.Length];
+
+            for (var i = 0; i < mesh.Vertices.Length; i++)
+            {
+                mesh.UVs[i] = new float2(0.5f+((float)System.Math.Atan2(mesh.Vertices[i].z, mesh.Vertices[i].x) / (2*M.Pi)), 0.5f-((float)System.Math.Asin(mesh.Vertices[i].y) / M.Pi));
+            }
+
             return mesh;
         }
 
@@ -164,7 +183,7 @@ namespace Fusee.Engine.Core
         }
 
         //Return the index of the point in the middle between p1 and p2.
-        private ushort GetMiddlePoint(int p1, int p2)
+        private ushort MiddlePoint(int p1, int p2)
         {
 
             //Check the cache...
@@ -197,8 +216,9 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Contains static methods to calculate the normals for a mesh.
     /// </summary>
-    public static class CalcNormalHelper
+    public static class NormalAndUvHelper
     {
+        #region Normals
         /// <summary>
         /// Calculates the vertex normals for a given mesh by calculating the avarage of all normals of faces, adjacent to a vertex.
         /// </summary>
@@ -249,6 +269,81 @@ namespace Fusee.Engine.Core
             normal.Normalize();
             return normal;
         }
-    }
+        #endregion
 
+        #region Uvs
+        public static float2[] CreateUVs()
+        {
+            //The number of vertices in the resulting uv map horizontally
+            const float w = 5.5f;
+            //The number of vertices in the resulting uv map horizontally
+            const float h = 3f;
+
+            var uvs = new float2[22];
+
+            uvs[0] = new float2(1, 0);
+            uvs[1] = new float2(1, 1);
+            uvs[2] = new float2(0, 1);
+            uvs[3] = new float2(4f / w, 1);
+            uvs[4] = new float2(5f / w, 1);
+
+            uvs[5] = new float2(0.5f / w, 2 / h);
+            uvs[6] = new float2(1.5f / w, 2 / h);
+            uvs[7] = new float2(2.5f / w, 2 / h);
+            uvs[8] = new float2(3.5f / w, 2 / h);
+            uvs[9] = new float2(4.5f / w, 2 / h);
+            uvs[10] = new float2(1, 2 / h);
+
+            uvs[11] = new float2(0, 1 / h);
+            uvs[12] = new float2(1f / w, 1 / h);
+            uvs[13] = new float2(2f / w, 1 / h);
+            uvs[14] = new float2(3f / w, 1 / h);
+            uvs[15] = new float2(4f / w, 1 / h);
+            uvs[16] = new float2(5f / w, 1 / h);
+
+            uvs[17] = new float2(0.5f / w, 0);
+            uvs[18] = new float2(1.5f / w, 0);
+            uvs[19] = new float2(2.5f / w, 0);
+            uvs[20] = new float2(3.5f / w, 0);
+            uvs[21] = new float2(4.5f / w, 0);
+
+            return uvs;
+        }
+
+        private static float2 Middle(float2 v1, float2 v2) => (v2 - v1) * 0.5f + v1;
+
+        public static void SubdivUVs(this Mesh sphere)
+        {
+            var newUVs = new List<float2>();
+
+            for (var i = 0; i < sphere.Vertices.Length; i += 3)
+            {
+                //Find the middle points
+                var newVector1 = Middle(sphere.UVs[i], sphere.UVs[i + 1]);
+                var newVector2 = Middle(sphere.UVs[i + 1], sphere.UVs[i + 2]);
+                var newVector3 = Middle(sphere.UVs[i + 2], sphere.UVs[i]);
+
+                //Add the new faces
+                newUVs.Add(newVector3);
+                newUVs.Add(sphere.UVs[i]);
+                newUVs.Add(newVector1);
+
+                newUVs.Add(newVector1);
+                newUVs.Add(sphere.UVs[i + 1]);
+                newUVs.Add(newVector2);
+
+                newUVs.Add(newVector2);
+                newUVs.Add(sphere.UVs[i + 2]);
+                newUVs.Add(newVector3);
+
+                newUVs.Add(newVector1);
+                newUVs.Add(newVector2);
+                newUVs.Add(newVector3);
+            }
+            //Replace old points with new
+            sphere.UVs = newUVs.ToArray();
+        }
+
+        #endregion
+    }
 }
