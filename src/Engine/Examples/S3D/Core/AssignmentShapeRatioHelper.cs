@@ -8,13 +8,14 @@ namespace Fusee.Engine.Examples.S3D.Core
     public static class AssignmentShapeRatioHelper
     {
         #region Create Scene
-        public static int SphereOneDistToRoot = 0;
-        public static int SphereTwoDistToRoot = 3;
+        public static int ObjOneDistToRoot = 0;
+        public static int ObjTwoDistToRoot = 3;
 
         public static SceneContainer CreateScene()
         {
             var sphere = new Icosphere(6);
             var plane = new Plane();
+            var cube = new Cube();
 
             return new SceneContainer
             {
@@ -69,13 +70,13 @@ namespace Fusee.Engine.Examples.S3D.Core
 
                             new SceneNodeContainer
                             {
-                                Name = "Sphere",
+                                Name = "Cube",
                                 Components = new List<SceneComponentContainer>
                                 {
                                     new TransformComponent
                                     {
                                         Scale = new float3(1,1,1),
-                                        Translation = new float3(0,0,SphereOneDistToRoot)
+                                        Translation = new float3(0,0,ObjOneDistToRoot)
                                     },
 
                                     new MaterialComponent
@@ -96,10 +97,10 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     
                                     new MeshComponent
                                     {
-                                        Vertices = sphere.Vertices,
-                                        Triangles = sphere.Triangles,
-                                        Normals = sphere.Normals,
-                                        UVs = sphere.UVs
+                                        Vertices = cube.Vertices,
+                                        Triangles = cube.Triangles,
+                                        Normals = cube.Normals,
+                                        UVs = cube.UVs
                                     }
 
                                 }
@@ -111,8 +112,8 @@ namespace Fusee.Engine.Examples.S3D.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Scale = new float3(1,1,1),
-                                        Translation = new float3(0,0,SphereTwoDistToRoot)
+                                        Scale = new float3(0.5f,0.5f,0.5f),
+                                        Translation = new float3(0,0,ObjTwoDistToRoot)
                                     },
 
                                     new MaterialComponent

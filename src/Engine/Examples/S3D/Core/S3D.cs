@@ -236,25 +236,24 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void GroupBc()
         {
             const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0.1f;
+            const float interaxial = 0.01f;
             const int hitInPx = 18;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
-            const int camOffset = 5;
+            const int camOffset = 10;
 
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
             Diagnostics.Log($"FOV: {_fov}.");
 
             //in mm for shape ratio calculation
-            var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.SphereOneDistToRoot;
-            var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.SphereTwoDistToRoot;
+            var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.ObjOneDistToRoot;
+            var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.ObjTwoDistToRoot;
 
             #region Shape ratio calculation
             //All following parameters are given in millimeters
             Interaxial = interaxial;
             EyeSeparation = 65 / 1000f;
-            FocalLength = RC.Projection.M11; //see http://www.terathon.com/gdc07_lengyel.pdf 
-            // f = 1/tan(0.5f*_fov) see http://www.mathematik.uni-marburg.de/~thormae/lectures/graphics1/graphics_6_1_ger_web.html#1 p. 17
+            FocalLength = (float)System.Math.Tan(0.5f * _fov);
             Hit = AssignmentShapeRatioHelper.PixelToMeter(hitInPx, resolutionW, physicalDisplayWidth);
             Magnification = 1; //factor is 1 because we only have perspective projection, the only factor that affects the objects size in the picture is fov.
             ViewingDistance = 2.5f;
@@ -271,25 +270,47 @@ namespace Fusee.Engine.Examples.S3D.Core
             _fovText.Text = "Field of View (degree): " + M.RadiansToDegrees(_fov);
             #endregion
 
-            #region Set Viewport - UNDER Camera
+            #region RIGHT Camera setup
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
 
             RC.ModelView = mtxCam * mtxRot;
 
-            RC.Viewport(hitInPx / 2, 0, Width, Height / 2);
+            var n = 1;
+            var f = 20000;
+            var h = (float)(n * System.Math.Tan(_fov / 2));
+            var nHeight = (h * 2) / _aspectRatio;
+
+            var camPos = new float3(-interaxial / 2f, 0, -camOffset);
+            var l = camPos.x - h;
+            var r = camPos.x + h;
+            var t = camPos.y + nHeight / 2;
+            var b = camPos.y - nHeight / 2;
+
+            var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
+            RC.Projection = offCenterPorjection;
+
+            RC.Viewport(hitInPx / 2, 0, Width / 2, Height);
             _guiHandler.RenderGUI();
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             #endregion
 
-            #region Set Viewport - OVER Camera
-            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            #region LEFT Camera setup
             mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
-            RC.Viewport(-hitInPx / 2, Height / 2, Width, Height / 2);
+            camPos = new float3(interaxial / 2f, 0, -camOffset);
+            l = camPos.x - h;
+            r = camPos.x + h;
+            t = camPos.y + nHeight / 2;
+            b = camPos.y - nHeight / 2;
+
+            offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
+            RC.Projection = offCenterPorjection;
+
+            RC.Viewport((Width / 2) - hitInPx / 2, 0, Width / 2, Height);
             _guiHandler.RenderGUI();
 
             // Render the scene loaded in Init()
@@ -297,13 +318,9 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             #endregion
 
-            #region Projection
+            #region Control FOV
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
-
-            _aspectRatio = Width / (float)(Height); // Set aspect ratio
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fov, _aspectRatio, 1, 20000);
-            RC.Projection = projection;
             #endregion
         }
 
