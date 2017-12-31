@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -123,6 +124,19 @@ namespace Fusee.Engine.Core
                 new float2(0, 0)
             };
         }
+
+        public static MeshComponent CreateCube()
+        {
+            var cube = new Cube();
+            return new MeshComponent
+            {
+                Vertices = cube.Vertices,
+                Triangles = cube.Triangles,
+                UVs = cube.UVs,
+                Normals = cube.Normals,
+            };
+        }
+
         #endregion
     }
 }
