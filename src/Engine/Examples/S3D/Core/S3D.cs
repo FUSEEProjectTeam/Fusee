@@ -236,7 +236,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void GroupBc()
         {
             const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0.01f;
+            const float interaxial = 0;//0.01f;
             const int hitInPx = 18;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
@@ -270,14 +270,14 @@ namespace Fusee.Engine.Examples.S3D.Core
             _fovText.Text = "Field of View (degree): " + M.RadiansToDegrees(_fov);
             #endregion
 
-            #region RIGHT Camera setup
+            #region LEFT Camera setup
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
 
             RC.ModelView = mtxCam * mtxRot;
 
-            var n = 1;
-            var f = 20000;
+            const int n = 1;
+            const int f = 20000;
             var h = (float)(n * System.Math.Tan(_fov / 2));
             var nHeight = (h * 2) / _aspectRatio;
 
@@ -290,15 +290,15 @@ namespace Fusee.Engine.Examples.S3D.Core
             var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport(hitInPx / 2, 0, Width / 2, Height);
+            RC.Viewport(-hitInPx, 0-hitInPx, Width / 2  +hitInPx, Height + hitInPx);
             _guiHandler.RenderGUI();
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             #endregion
 
-            #region LEFT Camera setup
-            mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
+            #region RIGHT Camera setup
+            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             camPos = new float3(interaxial / 2f, 0, -camOffset);
@@ -310,7 +310,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport((Width / 2) - hitInPx / 2, 0, Width / 2, Height);
+            RC.Viewport(Width / 2, 0-hitInPx, Width / 2+hitInPx, Height+hitInPx);
             _guiHandler.RenderGUI();
 
             // Render the scene loaded in Init()
