@@ -148,9 +148,9 @@ docs/xref/Working
 # Keep 5000+ generated html files out of the repo
 docs/xref/*
 
-#Dominik Steffens Thesis Project - LinqForGeometry
-Hellknight.jpg
-Hellknight.obj.model
+# Binary FUSEE distribution (should be published as Release in the repo)
+bin/Fusee_v*.exe
+
 *.db
 src/Uniplug/Cinema4D/ManagedPlugIn.VC.db
 

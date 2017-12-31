@@ -831,7 +831,7 @@ namespace Fusee.Tools.fuseeCmdLine
                                 using (Process cmd = Process.Start(new ProcessStartInfo
                                 {
                                     FileName = "dotnet",
-                                    Arguments = $"new --install {templateDir}",
+                                    Arguments = $"new --install \"{templateDir}\"",
                                     UseShellExecute = false,
                                     WorkingDirectory = Directory.GetCurrentDirectory(),
                                     RedirectStandardOutput = true,
@@ -990,6 +990,10 @@ namespace Fusee.Tools.fuseeCmdLine
 
 
                         // Uninstall the dotnet new fusee template
+                        // If anything went wrong during installation: 
+                        // Manually uninstall template: https://dotnetthoughts.net/create-a-dot-net-new-project-template-in-dot-net-core/
+                        //  - mainly says: Remove your template in all json files below 
+                        //    C:\Users\[USERNAME]\.templateengine\dotnetcli\
                         if (instDotnet)
                         {
                             try
@@ -997,7 +1001,7 @@ namespace Fusee.Tools.fuseeCmdLine
                                 using (Process cmd = Process.Start(new ProcessStartInfo
                                 {
                                     FileName = "dotnet",
-                                    Arguments = $"new --uninstall {templateDir}",
+                                    Arguments = $"new --uninstall \"{templateDir}\"",
                                     UseShellExecute = false,
                                     WorkingDirectory = Directory.GetCurrentDirectory(),
                                     RedirectStandardOutput = true,
