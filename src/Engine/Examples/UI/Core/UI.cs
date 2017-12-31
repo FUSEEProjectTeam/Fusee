@@ -10,7 +10,7 @@ namespace Fusee.Engine.Examples.UI.Core
     public class UI : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -20,7 +20,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private bool _keys;
 
-        private SceneContainer CreateScene()
+        private SceneContainer CreateAnchorTestScene()
         {
             return new SceneContainer
             {
@@ -171,6 +171,63 @@ namespace Fusee.Engine.Examples.UI.Core
                 }
             };
         }
+        private SceneContainer CreateImageTestScene()
+        {
+            return new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>
+                {
+                    new SceneNodeContainer
+                    {
+                        Name = "Null_Transform",
+                        Children = new List<SceneNodeContainer>
+                        {
+                            new SceneNodeContainer
+                            {
+                                Name = "Canvas",
+                                Components = new List<SceneComponentContainer>
+                                {
+                                    new CanvasTransformComponent
+                                    {
+                                        Name = "Canvas_CanvasTransform",
+                                        CanvasRenderMode = CanvasRenderMode.WORLD,
+                                        Size = new MinMaxRect
+                                        {
+                                            Min = new float2(-5,0),
+                                            Max = new float2(5,3)
+                                        }
+                                    }
+                                },
+                                Children = new List<SceneNodeContainer>
+                                {
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Canvas_XForm",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new XFormComponent
+                                            {
+                                                Name = "Canvas_XForm"
+                                            },
+                                            new MaterialComponent
+                                            {
+                                                Diffuse = new MatChannelContainer
+                                                {
+                                                    Texture = "holz.jpg",
+                                                    Mix =1
+                                                },
+                                            },
+                                            Plane.CreatePlane(Orientation.FRONT)
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            };
+        }
 
         // Init is called on startup. 
         public override void Init()
@@ -179,7 +236,8 @@ namespace Fusee.Engine.Examples.UI.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _scene = CreateScene();
+            //_scene = CreateAnchorTestScene();
+            _scene = CreateImageTestScene();
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
