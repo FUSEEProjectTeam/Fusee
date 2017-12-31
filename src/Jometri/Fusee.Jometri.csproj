@@ -59,6 +59,7 @@
     <Compile Include="GeomInitializeHelper.cs" />
     <Compile Include="Extrude.cs" />
     <Compile Include="GeomEditing.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="SubdivisionSurface.cs" />
     <Compile Include="TriStatusEdge.cs" />
     <Compile Include="TriSweepLineStatus.cs" />

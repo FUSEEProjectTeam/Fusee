@@ -31,7 +31,7 @@ Create a simple FUSEE App  Create a new empty directory somewhere on your hard-d
       <description>NOTE: Developing FUSEE Apps is currently only supported on Windows operating systems.
  Before following the FUSEE installation instructions on this page, make sure all Necessary Tools are installed.
 Installation  Download the latest FUSEE Release from the FUSEE GitHub Repository.
- Copy or move the downloaded Fusee_v6.1.exe to a convenient place on your hard drive. This will become the home of your FUSEE installation.
+ Copy or move the downloaded Fusee_v0.6.1.exe to a convenient place on your hard drive. This will become the home of your FUSEE installation.
    IMPORTANT: On some systems, the executable file is blocked and it may fail to run.</description>
     </item>
     

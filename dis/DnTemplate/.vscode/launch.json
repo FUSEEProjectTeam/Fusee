@@ -27,18 +27,5 @@
             "console": "externalTerminal",
             "noDebug": true
         }
-        // {
-        //     "name": ".NET Core Attach",
-        //     "type": "coreclr",
-        //     "request": "attach",
-        //     "processId": "${command:pickProcess}"
-        // }
-        
-        {
-            "name": ".NET Core Attach",
-            "type": "coreclr",
-            "request": "attach",
-            "processId": "${command:pickProcess}"
-        }
     ]
 }

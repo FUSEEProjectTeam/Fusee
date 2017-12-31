@@ -111,7 +111,7 @@ When creating new FUSEE Apps in the way described above, several things in your 
 after your project folder. Make sure your folder name obeys to the C# identifier rules. Roughly, that means:
 
 - First character may be only letter (`a`-`z`, `A`-`Z`) or underscore (`_`).
-- Every other character may be letter, underscore or number (`0`-`9`).
+- All other characters may be letter, underscore or number (`0`-`9`).
 - **Don't** start the folder name with a number.
 - **Don't** use punctuation or other special characters in the folder name, not even a minus (`-`)!
 
