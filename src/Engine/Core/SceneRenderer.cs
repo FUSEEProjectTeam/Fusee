@@ -795,6 +795,13 @@ namespace Fusee.Engine.Core
             _state.Effect = effect;
         }
 
+
+        [VisitMethod]
+        public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
+        {
+            _state.Effect = shaderComponent.Effect;
+        }
+
         [VisitMethod]
         public void RenderMesh(MeshComponent meshComponent)
         {
@@ -1143,6 +1150,7 @@ namespace Fusee.Engine.Core
         }
 
 
+ 
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
             ShaderEffect shaderEffect;
