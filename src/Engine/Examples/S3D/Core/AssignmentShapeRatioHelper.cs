@@ -151,7 +151,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         }
         #endregion
 
-        #region Calculate shape ratio
+        #region Calculate shape ratio (Smith, Collar)
 
         //distCamObject: Distance camera to object in question (Z0)
         public static float CalculateShapeRatio(float distCamObject) =>
@@ -166,5 +166,13 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static float PixelToMeter(int hitInPx, float widthResolution, float physicalDisplayWidth) =>
             (physicalDisplayWidth / widthResolution) * hitInPx;
         #endregion
+
+
+        public static float2 WorldToScreenCoord(float3 posInWorldSpace, RenderContext ctx, int canvasHeight, int canvasWidth)
+        {
+            var clipSpace = posInWorldSpace.TransformPerspective(ctx.Projection * ctx.View * ctx.Model);
+            var zwerg = new float2(clipSpace.x, clipSpace.y);
+            return (zwerg * new float2(0.5f, -0.5f) + new float2(0.5f, 0.5f)) * new float2(canvasHeight, canvasWidth);
+        }
     }
 }
