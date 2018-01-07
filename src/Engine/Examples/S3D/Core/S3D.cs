@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -29,7 +30,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         #region Mouse control fields
         // Horizontal and vertical rotation Angles for the displayed object 
-        private static float _angleHorz = M.PiOver4, _angleVert;
+        private static float _angleHorz, _angleVert = M.DegreesToRadians(-10 );
 
         // Horizontal and vertical angular speed
         private static float _angleVelHorz, _angleVelVert;
@@ -158,7 +159,8 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-
+            Debug.WriteLine(_angleVelVert);
+            Debug.WriteLine(_angleVelHorz);
             // switch groups
             if (Input.Keyboard.GetKey(KeyCodes.F1))
             {
@@ -236,15 +238,14 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void GroupBc()
         {
             const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0;//0.01f;
-            const int hitInPx = 18;
+            const float interaxial = 0.01f;
+            const int hitInPx = 0;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
             const int camOffset = 10;
 
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
-            Diagnostics.Log($"FOV: {_fov}.");
-
+            
             //in mm for shape ratio calculation
             var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.ObjOneDistToRoot;
             var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.ObjTwoDistToRoot;
@@ -258,6 +259,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             Magnification = 1; //factor is 1 because we only have perspective projection, the only factor that affects the objects size in the picture is fov.
             ViewingDistance = 2.5f;
 
+            //Smith Collar
             var shapeRatioObjOne = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjOne);
             var shapeRatioObjTwo = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjTwo);
             #endregion
@@ -293,8 +295,32 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.Viewport(-hitInPx, 0-hitInPx, Width / 2  +hitInPx, Height + hitInPx);
             _guiHandler.RenderGUI();
 
+
+            var screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
+            var screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
+            var screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
+            
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
+
+            // Calc prallax from ModelCoords
+            var test = RC.ModelViewProjection * new float3(-0.5f, 0.5f, -0.5f);
+            var mvpL = RC.ModelViewProjection;
+
+            // Calc DepthMag3D from ModelCoords
+            var xa_L = (RC.ModelViewProjection * new float3(-0.5f, 0.5f, -0.5f)).x;
+            var xb_L = (RC.ModelViewProjection * new float3(0.5f, 0.5f, -0.5f)).x;
+
+            var debugL = new[]
+            {
+                screenCoord1, screenCoord2, screenCoord3,
+            };
+
+            foreach (var item in debugL)
+            {
+                Debug.WriteLine(item);
+            }
+
             #endregion
 
             #region RIGHT Camera setup
@@ -313,8 +339,36 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.Viewport(Width / 2, 0-hitInPx, Width / 2+hitInPx, Height+hitInPx);
             _guiHandler.RenderGUI();
 
+
+            screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
+            screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
+            screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
+            
+            // Calc prallax from ModelCoords in mm
+            var testT = RC.ModelView;
+            var mvpR = RC.ModelViewProjection;
+            var parallaxInMm = AssignmentShapeRatioHelper.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f),mvpR,mvpL,resolutionW/2, 0.4843f);
+            
+            //Calc Xi in mm
+            var xiP1 = AssignmentShapeRatioHelper.CalcXi (new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
+            var ziP1 = AssignmentShapeRatioHelper.CalcZi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f, 2500);
+
+            // Calc DepthMag3D from ModelCoords
+            var widthMag3D = AssignmentShapeRatioHelper.CalcWidthMag3D(new float3(-0.5f, 0.5f, -0.5f),
+                new float3(0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
+
+            var debugR = new[]
+            {
+                screenCoord1, screenCoord2, screenCoord3,
+            };
+
+            foreach (var item in debugR)
+            {
+                Debug.WriteLine(item);
+            }
 
             #endregion
 
