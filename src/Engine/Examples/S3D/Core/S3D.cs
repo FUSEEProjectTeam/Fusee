@@ -280,14 +280,14 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             const int n = 1;
             const int f = 20000;
-            var h = (float)(n * System.Math.Tan(_fov / 2));
-            var nHeight = (h * 2) / _aspectRatio;
+            var w = (float)(n * System.Math.Tan(_fov / 2));
+            var nHeight = w / _aspectRatio;
 
             var camPos = new float3(-interaxial / 2f, 0, -camOffset);
-            var l = camPos.x - h;
-            var r = camPos.x + h;
-            var t = camPos.y + nHeight / 2;
-            var b = camPos.y - nHeight / 2;
+            var l = camPos.x - w;
+            var r = camPos.x + w;
+            var t = camPos.y + nHeight;
+            var b = camPos.y - nHeight;
 
             var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
             RC.Projection = offCenterPorjection;
@@ -328,10 +328,10 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.ModelView = mtxCam * mtxRot;
 
             camPos = new float3(interaxial / 2f, 0, -camOffset);
-            l = camPos.x - h;
-            r = camPos.x + h;
-            t = camPos.y + nHeight / 2;
-            b = camPos.y - nHeight / 2;
+            l = camPos.x - w;
+            r = camPos.x + w;
+            t = camPos.y + nHeight;
+            b = camPos.y - nHeight;
 
             offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
             RC.Projection = offCenterPorjection;
