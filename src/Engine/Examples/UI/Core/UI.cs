@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -9,6 +10,39 @@ namespace Fusee.Engine.Examples.UI.Core
 {
     public class UI : RenderCanvas
     {
+        protected readonly string GUIVS = @"
+            uniform mat4 guiXForm;
+            attribute vec3 fuVertex;
+            attribute vec2 fuUV;
+            attribute vec4 fuColor;
+            attribute mat4 FUSEE_MV;                 
+
+            varying vec2 vUV;
+            varying vec4 vColor;
+
+            void main()
+            {
+                vUV = fuUV;
+                vColor = fuColor;
+
+                gl_Position = guiXForm * vec4(fuVertex, 1);
+            }";
+
+        protected readonly string TEXTUREPS = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif    
+  
+            uniform vec4 blendColor;
+            varying vec2 vUV;
+            varying vec4 vColor;
+
+            uniform sampler2D tex;
+            
+            void main(void) {
+                gl_FragColor = vec4(texture2D(tex, vUV));   
+            }";
+
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -24,10 +58,6 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             return new SceneContainer
             {
-                Header = new SceneHeader
-                {
-
-                },
                 Children = new List<SceneNodeContainer>
                 {
                     new SceneNodeContainer
@@ -154,7 +184,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                                    {
                                                                        Diffuse = new MatChannelContainer {Color = ColorUint.Yellow.Tofloat3()},
                                                                    },
-                                                                    Cube.CreateCube()
+                                                                   Cube.CreateCube()
                                                                }
                                                            }
                                                        }
@@ -213,15 +243,72 @@ namespace Fusee.Engine.Examples.UI.Core
                                             {
                                                 Diffuse = new MatChannelContainer
                                                 {
-                                                    Texture = "holz.jpg",
-                                                    Mix =1
-                                                },
+                                                   Color = new float3(1,0,0)
+                                                }
                                             },
                                             Plane.CreatePlane(Orientation.FRONT)
                                         }
+                                    },
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Child",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new RectTransformComponent
+                                            {
+                                                Name = "Child_RectTransform",
+                                                Anchors = new MinMaxRect
+                                                {
+                                                    Min = new float2(0,0),
+                                                    Max = new float2(1,0)
+                                                },
+                                                Offsets = new MinMaxRect
+                                                {
+                                                    Min = new float2(1,0),
+                                                    Max = new float2(-1,2)
+                                                }
+
+                                             }
+                                        },
+                                        Children =  new List<SceneNodeContainer>
+                                        {
+                                            new SceneNodeContainer
+                                            {
+                                                Name = "Child_XForm",
+                                                Components = new List<SceneComponentContainer>
+                                                {
+                                                    new XFormComponent
+                                                    {
+                                                        Name = "Child_XForm"
+                                                    },
+                                                    new ShaderEffectComponent(RC, new ShaderEffect(new[]
+                                                        {
+                                                            new EffectPassDeclaration
+                                                            {
+                                                                VS = GUIVS,
+                                                                PS = TEXTUREPS,
+                                                                StateSet = new RenderStateSet
+                                                                {
+                                                                    AlphaBlendEnable = true,
+                                                                    SourceBlend = Blend.SourceAlpha,
+                                                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                                                    BlendOperation = BlendOperation.Add,
+                                                                    ZEnable = false
+                                                                }
+                                                            }
+                                                        },
+                                                        new[]
+                                                        {
+                                                            new EffectParameterDeclaration {Name = "tex", Value = RC.CreateTexture(AssetStorage.Get<ImageData>("FuseeText.png"))},
+                                                            new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "blendColor", Value = float4.One},
+                                                        })),
+                                                        Plane.CreatePlane(Orientation.FRONT)
+                                                },
+                                            }
+                                        }
                                     }
                                 }
-
                             }
                         }
                     }

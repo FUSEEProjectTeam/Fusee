@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
         public Plane(Orientation orientation)
         {
             var rotMat = float4x4.Identity;
-
+            
             switch (orientation)
             {
                 case Orientation.UP:
@@ -67,17 +67,22 @@ namespace Fusee.Engine.Core
 
             UVs = new[]
             {
-                new float2(1, 0),
-                new float2(1, 1),
+                new float2(0, 0),
                 new float2(0, 1),
-                new float2(0, 0)
+                new float2(1, 1),
+                new float2(1, 0),
+                
             };
         }
         #endregion
 
 
 
-        public static MeshComponent CreatePlane(Orientation orientation)
+        /// <summary>
+        /// Creates a MeshComponent from a new Plane.
+        /// </summary>
+        /// <param name="orientation">Facing direction of the Plane.</param>
+       public static MeshComponent CreatePlane(Orientation orientation)
         {
             var plane = new Plane(orientation);
             return new MeshComponent

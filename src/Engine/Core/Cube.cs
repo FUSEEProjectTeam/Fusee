@@ -125,7 +125,10 @@ namespace Fusee.Engine.Core
             };
         }
 
-        public static MeshComponent CreateCube()
+        /// <summary>
+        /// Creates a MeshComponent from a new Cube.
+        /// </summary>
+       public static MeshComponent CreateCube()
         {
             var cube = new Cube();
             return new MeshComponent
