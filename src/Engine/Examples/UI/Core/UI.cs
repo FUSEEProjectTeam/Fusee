@@ -15,7 +15,7 @@ namespace Fusee.Engine.Examples.UI.Core
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
-            attribute mat4 FUSEE_MV;                 
+            uniform mat4 FUSEE_MVP;                 
 
             varying vec2 vUV;
             varying vec4 vColor;
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 vUV = fuUV;
                 vColor = fuColor;
 
-                gl_Position = guiXForm * vec4(fuVertex, 1);
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1);
             }";
 
         protected readonly string TEXTUREPS = @"
@@ -246,7 +246,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                    Color = new float3(1,0,0)
                                                 }
                                             },
-                                            Plane.CreatePlane(Orientation.FRONT)
+                                            Plane.CreatePlane(Orientation.UP)
                                         }
                                     },
                                     new SceneNodeContainer
@@ -300,11 +300,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                                         new[]
                                                         {
                                                             new EffectParameterDeclaration {Name = "tex", Value = RC.CreateTexture(AssetStorage.Get<ImageData>("FuseeText.png"))},
-                                                            new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
+                                                            //new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
                                                             new EffectParameterDeclaration {Name = "blendColor", Value = float4.One},
                                                         })),
-                                                        Plane.CreatePlane(Orientation.FRONT)
-                                                },
+                                                    Plane.CreatePlane(Orientation.UP)
+                                                }
                                             }
                                         }
                                     }
