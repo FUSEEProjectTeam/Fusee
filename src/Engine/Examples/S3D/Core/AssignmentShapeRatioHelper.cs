@@ -26,7 +26,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                 gl_Position = FUSEE_MVP * vec4(fuVertex, 1);
             }";
 
-       static readonly string TEXTUREPS = @"
+        static readonly string TEXTUREPS = @"
             #ifdef GL_ES
                 precision highp float;
             #endif    
@@ -45,7 +45,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static int ObjTwoDistToRoot = 2;
         public static float Convergence = 5f;
         public static float CamOffset = 5;
-        
+
         public static SceneContainer CreateScene(RenderContext rc)
         {
             return new SceneContainer
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             Shininess = 100f
                                         }
                                     },
-                                    
+
                                     Cube.CreateCube()
 
                                 },
@@ -203,11 +203,11 @@ namespace Fusee.Engine.Examples.S3D.Core
             return (zwerg * new float2(0.5f, -0.5f) + new float2(0.5f, 0.5f)) * new float2(canvasWidth, canvasHeight);
         }
 
-        public static float CalcParallaxFromModelCoord(float3 pointInModelCoord, float4x4 mvpR, float4x4 mvpL, int resW,float pixelWidth) =>
+        public static float CalcParallaxFromModelCoord(float3 pointInModelCoord, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth) =>
             ((mvpR * pointInModelCoord - mvpL * pointInModelCoord) * resW).x * pixelWidth;
-        
 
-        public static float CalcXi(float3 pointInModelCoord,float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
+
+        public static float CalcXi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
             eyeSep = eyeSep * 1000;
 
@@ -221,43 +221,50 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             zwerg = zwerg * resW * pixelWidth;
 
-            
-            var parallax = CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resW/2 , pixelWidth);
+
+            var parallax = CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resW / 2, pixelWidth);
 
             var nominator = eyeSep * zwerg;
-            var denominator = 2*(eyeSep- parallax);
+            var denominator = 2 * (eyeSep - parallax);
             return nominator / denominator;
         }
 
-        public static float CalcZi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW,float pixelWidth, float viewingDistInMm)
+        public static float CalcZi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, float viewingDistInMm)
         {
             eyeSep = eyeSep * 1000;
             var nominator = eyeSep * viewingDistInMm;
-            var denominator = eyeSep - (CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW/2, pixelWidth));
+            var denominator = eyeSep - (CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW / 2, pixelWidth));
             return nominator / denominator;
         }
 
 
-        public static float CalcWidthMag3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
+        public static float CalcWidth3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
             eyeSep = eyeSep * 1000;
             var zwerg1 = ((mvpL * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
                          (mvpR * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
-            
+
             var zwerg2 = ((mvpL * pointTwoInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
                           (mvpR * pointTwoInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
             var prallax = CalcParallaxFromModelCoord(pointOneInModelCoord, mvpR, mvpL, resW / 2, pixelWidth);
-            
-            var nominator = eyeSep * ((zwerg2 - zwerg1)* resW * pixelWidth);
+
+            var nominator = eyeSep * ((zwerg2 - zwerg1) * resW * pixelWidth);
             var denominatro = 2 * (eyeSep - prallax);
 
             return nominator / denominatro;
 
         }
 
-        public static float CalcWidthMag3D(float xiOne, float xiTwo) => xiTwo - xiOne;
+        public static float CalcWidth3D(float xiOne, float xiTwo) => xiTwo - xiOne;
 
+        public static float CalcWidthMag3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep,
+            float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, int objWidthInMm)
+            => CalcWidth3D(pointOneInModelCoord, pointTwoInModelCoord, eyeSep, mvpR, mvpL, resW, pixelWidth) /
+               objWidthInMm;
 
+        public static float CalcWidthMag3D(float xiOne, float xiTwo, int objWidthInMm)
+            => CalcWidth3D(xiOne, xiTwo) /
+               objWidthInMm;
     }
 }

@@ -16,7 +16,7 @@ namespace Fusee.Engine.Examples.S3D.Core
     [FuseeApplication(Name = "fuseeStereoApp", Description = "Yet another FUSEE App.")]
     public class S3D : RenderCanvas
     {
-        
+
         #region S3D fields
         //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
         public static float ViewingDistance;//Distance User to Display (V)
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void GroupBc()
         {
             const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0.1f;
+            const float interaxial = 0.2f;
             const int hitInPx = 0;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
@@ -275,27 +275,27 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
             #region LEFT Camera setup
-            
+
             //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
 
             RC.ModelView = mtxCam;//* mtxRot;
-            
+
             const int n = 1;
             const int f = 20000;
             var convergence = AssignmentShapeRatioHelper.Convergence;
             var tanFov = (float)System.Math.Tan(_fov / 2);
 
-            var top =  n * tanFov;
-            var bottom = - top;
+            var top = n * tanFov;
+            var bottom = -top;
 
             var a = _aspectRatio * tanFov * convergence;
 
             var b = a - Interaxial / 2;
             var c = a + Interaxial / 2;
 
-            var left = - b * n / convergence;
-            var right = + c * n / convergence;
+            var left = -b * n / convergence;
+            var right = +c * n / convergence;
 
 
             var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
@@ -313,12 +313,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             _sceneRenderer.Render(RC);
 
             // Calc prallax from ModelCoords
-            var test = RC.ModelViewProjection * new float3(-0.5f, 0.5f, -0.5f);
             var mvpL = RC.ModelViewProjection;
-
-            // Calc DepthMag3D from ModelCoords
-            var xa_L = (RC.ModelViewProjection * new float3(-0.5f, 0.5f, -0.5f)).x;
-            var xb_L = (RC.ModelViewProjection * new float3(0.5f, 0.5f, -0.5f)).x;
 
             var debugL = new[]
             {
@@ -333,13 +328,13 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
             #region RIGHT Camera setup
-            
+
             mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam; //* mtxRot;
 
-            top =  n * tanFov;
-            bottom = - top;
-            left = - c * n / convergence;
+            top = n * tanFov;
+            bottom = -top;
+            left = -c * n / convergence;
             right = b * n / convergence;
 
             offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
@@ -354,17 +349,16 @@ namespace Fusee.Engine.Examples.S3D.Core
             screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
 
             // Calc prallax from ModelCoords in mm
-            var testT = RC.ModelView;
             var mvpR = RC.ModelViewProjection;
             var parallaxInMm = AssignmentShapeRatioHelper.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resolutionW / 2, 0.4843f);
 
             //Calc Xi in mm
             var xiP1 = AssignmentShapeRatioHelper.CalcXi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
+            var xiP2 = AssignmentShapeRatioHelper.CalcXi(new float3(0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
             var ziP1 = AssignmentShapeRatioHelper.CalcZi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f, 2500);
 
-            // Calc DepthMag3D from ModelCoords
-            var widthMag3D = AssignmentShapeRatioHelper.CalcWidthMag3D(new float3(-0.5f, 0.5f, -0.5f),
-                new float3(0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
+            // Calc DepthMag3D
+            var withMag3D = AssignmentShapeRatioHelper.CalcWidthMag3D(xiP1, xiP2, 100);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -380,10 +374,10 @@ namespace Fusee.Engine.Examples.S3D.Core
             }
 
             var cubeTransform = (TransformComponent)_sceneBc.Children[0].Children[0].Components[0];
-            cubeTransform.Rotation = new float3(_angleVert,_angleHorz,0);
+            cubeTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
 
             #endregion
-            
+
             #region Control FOV
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
