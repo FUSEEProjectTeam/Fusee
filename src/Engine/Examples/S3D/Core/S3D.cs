@@ -295,7 +295,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             var c = a + Interaxial / 2;
 
             var left = -b * n / convergence;
-            var right = +c * n / convergence;
+            var right = c * n / convergence;
 
 
             var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);

@@ -78,7 +78,8 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     new TransformComponent
                                     {
                                         Scale = new float3(1,1,1),
-                                        Translation = new float3(0,0,ObjOneDistToRoot)
+                                        Translation = new float3(0,0,ObjOneDistToRoot),
+                                        Rotation = new float3(S3D._angleVert, S3D._angleHorz, 0)
 
                                     },
 
@@ -211,11 +212,6 @@ namespace Fusee.Engine.Examples.S3D.Core
         {
             eyeSep = eyeSep * 1000;
 
-            //var xsL = ((mvpL * pointInModelCoord * new float3(0.5f, -0.5f,0) + new float3(0.5f, 0.5f, 0))*resW).x * pixelWidth;
-            //var xsR = ((mvpR * pointInModelCoord * new float3(0.5f, -0.5f,0) + new float3(0.5f, 0.5f, 0))*resW).x * pixelWidth;
-
-            //var zwerg = xsL + xsR;
-
             var zwerg = ((mvpL * pointInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
                        (mvpR * pointInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
@@ -241,10 +237,10 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static float CalcWidth3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
             eyeSep = eyeSep * 1000;
-            var zwerg1 = ((mvpL * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
+            var zwerg1 = (mvpL * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0) +
                          (mvpR * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
-            var zwerg2 = ((mvpL * pointTwoInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
+            var zwerg2 = (mvpL * pointTwoInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0) +
                           (mvpR * pointTwoInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
             var prallax = CalcParallaxFromModelCoord(pointOneInModelCoord, mvpR, mvpL, resW / 2, pixelWidth);
