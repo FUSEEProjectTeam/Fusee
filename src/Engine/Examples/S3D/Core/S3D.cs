@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -7,6 +8,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.S3D.Core
 {
@@ -30,10 +32,10 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         #region Mouse control fields
         // Horizontal and vertical rotation Angles for the displayed object 
-        private static float _angleHorz, _angleVert = M.DegreesToRadians(-10);
+        public static float _angleHorz, _angleVert = M.DegreesToRadians(-10);
 
         // Horizontal and vertical angular speed
-        private static float _angleVelHorz, _angleVelVert;
+        public static float _angleVelHorz, _angleVelVert;
 
         // Overall speed factor. Change this to adjust how fast the rotation reacts to input
         private const float RotationSpeed = 7;
@@ -80,7 +82,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             // TODO: Replace with scene from group A
             _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-            _sceneBc = AssignmentShapeRatioHelper.CreateScene();
+            _sceneBc = AssignmentShapeRatioHelper.CreateScene(RC);
             _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
@@ -242,7 +244,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             const int hitInPx = 0;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
-            const int camOffset = 5;
+            float camOffset = AssignmentShapeRatioHelper.CamOffset;
 
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
 
@@ -273,14 +275,15 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
             #region LEFT Camera setup
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            
+            //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
 
-            RC.ModelView = mtxCam * mtxRot;
-
+            RC.ModelView = mtxCam;//* mtxRot;
+            
             const int n = 1;
             const int f = 20000;
-            const float convergence = 4.5f;
+            var convergence = AssignmentShapeRatioHelper.Convergence;
             var tanFov = (float)System.Math.Tan(_fov / 2);
 
             var top =  n * tanFov;
@@ -330,9 +333,10 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
             #region RIGHT Camera setup
-            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
             
+            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
+            RC.ModelView = mtxCam; //* mtxRot;
+
             top =  n * tanFov;
             bottom = - top;
             left = - c * n / convergence;
@@ -375,8 +379,11 @@ namespace Fusee.Engine.Examples.S3D.Core
                 Debug.WriteLine(item);
             }
 
-            #endregion
+            var cubeTransform = (TransformComponent)_sceneBc.Children[0].Children[0].Components[0];
+            cubeTransform.Rotation = new float3(_angleVert,_angleHorz,0);
 
+            #endregion
+            
             #region Control FOV
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;

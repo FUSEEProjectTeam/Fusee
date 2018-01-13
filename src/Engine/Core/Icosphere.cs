@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -209,6 +210,22 @@ namespace Fusee.Engine.Core
 
             _middlePointIndexCache.Add(key, i);
             return i;
+        }
+
+        /// <summary>
+        /// Creates a MeshComponent from a new Plane.
+        /// </summary>
+        /// <param name="subdivLvl">Subdivision levels for the Icosphere</param>
+        public static MeshComponent CreateIcosphere(int subdivLvl)
+        {
+            var plane = new Icosphere(subdivLvl);
+            return new MeshComponent
+            {
+                Vertices = plane.Vertices,
+                Triangles = plane.Triangles,
+                UVs = plane.UVs,
+                Normals = plane.Normals,
+            };
         }
 
     }

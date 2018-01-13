@@ -1,4 +1,7 @@
 ﻿using System.Collections.Generic;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -7,16 +10,44 @@ namespace Fusee.Engine.Examples.S3D.Core
 {
     public static class AssignmentShapeRatioHelper
     {
+
+        static readonly string GUIVS = @"
+            uniform mat4 guiXForm;
+            attribute vec3 fuVertex;
+            attribute vec2 fuUV;
+            attribute vec4 fuColor;
+            uniform mat4 FUSEE_MVP;                 
+            varying vec2 vUV;
+            varying vec4 vColor;
+            void main()
+            {
+                vUV = fuUV;
+                vColor = fuColor;
+                gl_Position = FUSEE_MVP * vec4(fuVertex, 1);
+            }";
+
+       static readonly string TEXTUREPS = @"
+            #ifdef GL_ES
+                precision highp float;
+            #endif    
+  
+            uniform vec4 blendColor;
+            varying vec2 vUV;
+            varying vec4 vColor;
+            uniform sampler2D tex;
+            
+            void main(void) {
+                gl_FragColor = vec4(vec3(0.5,0.5,0.5), 0.7);   
+            }";
+
         #region Create Scene
         public static int ObjOneDistToRoot = 0;
         public static int ObjTwoDistToRoot = 2;
-
-        public static SceneContainer CreateScene()
+        public static float Convergence = 5f;
+        public static float CamOffset = 5;
+        
+        public static SceneContainer CreateScene(RenderContext rc)
         {
-            var sphere = new Icosphere(6);
-            var plane = new Plane();
-            var cube = new Cube();
-
             return new SceneContainer
             {
                 Header = new SceneHeader
@@ -27,7 +58,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                 {
                     new SceneNodeContainer
                     {
-                        Name = "Null_Transform",
+                        Name = "RootNull_Transform",
                         Components = new List<SceneComponentContainer>
                         {
                             new TransformComponent
@@ -38,35 +69,6 @@ namespace Fusee.Engine.Examples.S3D.Core
                         },
                         Children = new List<SceneNodeContainer>
                         {
-                            //new SceneNodeContainer
-                            //{
-                            //    Name = "Floor",
-                            //    Components = new List<SceneComponentContainer>
-                            //    {
-                            //        new TransformComponent
-                            //        {
-                            //            Scale = new float3(50,50,1),
-                            //            Translation = new float3(0,-4,0),
-                            //            Rotation = new float3(90,0,0)
-                            //        },
-                            //        new MaterialComponent
-                            //        {
-                            //            Diffuse = new MatChannelContainer{ Color = new float3(0.5f,0.5f,0.5f)},
-                            //            Specular =  new SpecularChannelContainer
-                            //            {
-                            //                Color = new float3(1,1,1),
-                            //                Intensity = 0.5f,
-                            //                Shininess = 100f
-                            //            }
-                            //        },
-                            //        new MeshComponent
-                            //        {
-                            //            Vertices = plane.Vertices,
-                            //            Triangles = plane.Triangles,
-                            //            Normals = plane.Normals
-                            //        }
-                            //    }
-                            //},
 
                             new SceneNodeContainer
                             {
@@ -77,6 +79,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     {
                                         Scale = new float3(1,1,1),
                                         Translation = new float3(0,0,ObjOneDistToRoot)
+
                                     },
 
                                     new MaterialComponent
@@ -95,53 +98,79 @@ namespace Fusee.Engine.Examples.S3D.Core
                                         }
                                     },
                                     
-                                    new MeshComponent
-                                    {
-                                        Vertices = cube.Vertices,
-                                        Triangles = cube.Triangles,
-                                        Normals = cube.Normals,
-                                        UVs = cube.UVs
-                                    }
+                                    Cube.CreateCube()
 
+                                },
+                                Children = new List<SceneNodeContainer>()
+                                {
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Sphere",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new TransformComponent
+                                            {
+                                                Scale = new float3(0.5f,0.5f,0.5f),
+                                                Translation = new float3(0,0,ObjTwoDistToRoot)
+                                            },
+
+                                            new MaterialComponent
+                                            {
+                                                Diffuse = new MatChannelContainer
+                                                {
+                                                    Color = new float3(0.1f,0.8f,0.4f),
+                                                    Texture = "grid.jpg",
+                                                    Mix = 0.1f
+
+                                                },
+                                                Specular =  new SpecularChannelContainer
+                                                {
+                                                    Color = new float3(1,1,1),
+                                                    Intensity = 0.5f,
+                                                    Shininess = 100f
+                                                }
+                                            },
+                                            Icosphere.CreateIcosphere(6)
+
+                                        }
+                                    },
                                 }
                             },
+
                             new SceneNodeContainer
                             {
-                                Name = "Sphere",
+                                Name = "ConvergencePlane",
                                 Components = new List<SceneComponentContainer>
                                 {
                                     new TransformComponent
                                     {
-                                        Scale = new float3(0.5f,0.5f,0.5f),
-                                        Translation = new float3(0,0,ObjTwoDistToRoot)
+                                        Scale = new float3(5,5,1),
+                                        Translation = new float3(0,0,-CamOffset+Convergence),
                                     },
-
-                                    new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer
+                                    new ShaderEffectComponent(rc, new ShaderEffect(new[]
                                         {
-                                            Color = new float3(0.1f,0.8f,0.4f),
-                                            Texture = "grid.jpg",
-                                            Mix = 0.1f
-
+                                            new EffectPassDeclaration
+                                            {
+                                                VS = GUIVS,
+                                                PS = TEXTUREPS,
+                                                StateSet = new RenderStateSet
+                                                {
+                                                    AlphaBlendEnable = true,
+                                                    SourceBlend = Blend.SourceAlpha,
+                                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                                    BlendOperation = BlendOperation.Add,
+                                                    ZEnable = true
+                                                }
+                                            }
                                         },
-                                        Specular =  new SpecularChannelContainer
+                                        new[]
                                         {
-                                            Color = new float3(1,1,1),
-                                            Intensity = 0.5f,
-                                            Shininess = 100f
-                                        }
-                                    },
-                                    new MeshComponent
-                                    {
-                                        Vertices = sphere.Vertices,
-                                        Triangles = sphere.Triangles,
-                                        Normals = sphere.Normals,
-                                        UVs = sphere.UVs
-                                    }
-
+                                            new EffectParameterDeclaration {Name = "tex", Value = rc.CreateTexture(AssetStorage.Get<ImageData>("grid.jpg"))},
+                                            new EffectParameterDeclaration {Name = "blendColor", Value = new float4(0.5f,0.5f,0.5f,0.5f)},
+                                        })),
+                                   Plane.CreatePlane(Orientation.FRONT)
                                 }
-                            }
+                            },
 
                         }
 
