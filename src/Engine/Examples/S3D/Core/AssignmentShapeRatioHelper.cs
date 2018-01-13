@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Xml.Serialization;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -10,7 +9,7 @@ namespace Fusee.Engine.Examples.S3D.Core
     {
         #region Create Scene
         public static int ObjOneDistToRoot = 0;
-        public static int ObjTwoDistToRoot = 3;
+        public static int ObjTwoDistToRoot = 2;
 
         public static SceneContainer CreateScene()
         {

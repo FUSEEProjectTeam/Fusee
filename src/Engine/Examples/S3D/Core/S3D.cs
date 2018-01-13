@@ -14,7 +14,7 @@ namespace Fusee.Engine.Examples.S3D.Core
     [FuseeApplication(Name = "fuseeStereoApp", Description = "Yet another FUSEE App.")]
     public class S3D : RenderCanvas
     {
-
+        
         #region S3D fields
         //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
         public static float ViewingDistance;//Distance User to Display (V)
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         #region Mouse control fields
         // Horizontal and vertical rotation Angles for the displayed object 
-        private static float _angleHorz, _angleVert = M.DegreesToRadians(-10 );
+        private static float _angleHorz, _angleVert = M.DegreesToRadians(-10);
 
         // Horizontal and vertical angular speed
         private static float _angleVelHorz, _angleVelVert;
@@ -238,14 +238,14 @@ namespace Fusee.Engine.Examples.S3D.Core
         private void GroupBc()
         {
             const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0.01f;
+            const float interaxial = 0.1f;
             const int hitInPx = 0;
             const int resolutionW = 1920;
             const int resolutonH = 1080;
-            const int camOffset = 10;
+            const int camOffset = 5;
 
             SetWindowSize(resolutionW, resolutonH, 0, 0, true);
-            
+
             //in mm for shape ratio calculation
             var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.ObjOneDistToRoot;
             var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.ObjTwoDistToRoot;
@@ -280,26 +280,32 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             const int n = 1;
             const int f = 20000;
-            var w = (float)(n * System.Math.Tan(_fov / 2));
-            var nHeight = w / _aspectRatio;
+            const float convergence = 4.5f;
+            var tanFov = (float)System.Math.Tan(_fov / 2);
 
-            var camPos = new float3(-interaxial / 2f, 0, -camOffset);
-            var l = camPos.x - w;
-            var r = camPos.x + w;
-            var t = camPos.y + nHeight;
-            var b = camPos.y - nHeight;
+            var top =  n * tanFov;
+            var bottom = - top;
 
-            var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
+            var a = _aspectRatio * tanFov * convergence;
+
+            var b = a - Interaxial / 2;
+            var c = a + Interaxial / 2;
+
+            var left = - b * n / convergence;
+            var right = + c * n / convergence;
+
+
+            var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport(-hitInPx, 0-hitInPx, Width / 2  +hitInPx, Height + hitInPx);
+            RC.Viewport(-hitInPx, 0 - hitInPx, Width / 2 + hitInPx, Height + hitInPx);
             _guiHandler.RenderGUI();
 
 
             var screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
             var screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
             var screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
-            
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
@@ -326,31 +332,30 @@ namespace Fusee.Engine.Examples.S3D.Core
             #region RIGHT Camera setup
             mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
+            
+            top =  n * tanFov;
+            bottom = - top;
+            left = - c * n / convergence;
+            right = b * n / convergence;
 
-            camPos = new float3(interaxial / 2f, 0, -camOffset);
-            l = camPos.x - w;
-            r = camPos.x + w;
-            t = camPos.y + nHeight;
-            b = camPos.y - nHeight;
-
-            offCenterPorjection = float4x4.CreatePerspectiveOffCenter(l, r, b, t, n, f);
+            offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport(Width / 2, 0-hitInPx, Width / 2+hitInPx, Height+hitInPx);
+            RC.Viewport(Width / 2, 0 - hitInPx, Width / 2 + hitInPx, Height + hitInPx);
             _guiHandler.RenderGUI();
 
 
             screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
             screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
             screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
-            
+
             // Calc prallax from ModelCoords in mm
             var testT = RC.ModelView;
             var mvpR = RC.ModelViewProjection;
-            var parallaxInMm = AssignmentShapeRatioHelper.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f),mvpR,mvpL,resolutionW/2, 0.4843f);
-            
+            var parallaxInMm = AssignmentShapeRatioHelper.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resolutionW / 2, 0.4843f);
+
             //Calc Xi in mm
-            var xiP1 = AssignmentShapeRatioHelper.CalcXi (new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
+            var xiP1 = AssignmentShapeRatioHelper.CalcXi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
             var ziP1 = AssignmentShapeRatioHelper.CalcZi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f, 2500);
 
             // Calc DepthMag3D from ModelCoords
