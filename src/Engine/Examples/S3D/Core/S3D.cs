@@ -17,25 +17,16 @@ namespace Fusee.Engine.Examples.S3D.Core
     public class S3D : RenderCanvas
     {
 
-        #region S3D fields
-        //Assumption: 1 fusee unit = 1 meter, all following varaiables are in meters
-        public static float ViewingDistance;//Distance User to Display (V)
-        public static float Interaxial;     //Stereo base (t)
-        public static float Magnification;  //Magnification factor sensor to image (M)
-        public static float FocalLength;    //Camera focal lenght - only fov for calculation... (f)
-        public static float Hit;            //Image to Sensor offset (h)
-        public static float EyeSeparation;  //Eye separation of the user (e)
-
         private static float _fov = M.PiOver4;
         private static float _aspectRatio;
-        #endregion
+
 
         #region Mouse control fields
         // Horizontal and vertical rotation Angles for the displayed object 
-        public static float _angleHorz, _angleVert = M.DegreesToRadians(-10);
+        public static float AngleHorz, AngleVert = M.DegreesToRadians(-10);
 
         // Horizontal and vertical angular speed
-        public static float _angleVelHorz, _angleVelVert;
+        public static float AngleVelHorz, AngleVelVert;
 
         // Overall speed factor. Change this to adjust how fast the rotation reacts to input
         private const float RotationSpeed = 7;
@@ -54,6 +45,10 @@ namespace Fusee.Engine.Examples.S3D.Core
         private GUIText _fovText;
         private FontMap _guiLatoBlackMap;
         #endregion
+
+        private TransformComponent _cubeTransform;
+        private TransformComponent _sphereTransform;
+        private float4x4 _sphereModelMatrix;
 
         private SceneContainer _sceneA;
         private SceneContainer _sceneBc;
@@ -82,7 +77,18 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             // TODO: Replace with scene from group A
             _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-            _sceneBc = AssignmentShapeRatioHelper.CreateScene(RC);
+
+            #region Initialize members BC
+
+            _sceneBc = UtilityBc.CreateScene(RC);
+            _cubeTransform = (TransformComponent)_sceneBc.Children[0].Children[0].Components[0];
+            _sphereTransform = (TransformComponent)_sceneBc.Children[0].Children[0].Children[0].Components[0];
+            _sphereModelMatrix = _sphereTransform.Matrix();
+            UtilityBc.CamPosBc = new float3(0, 0, -UtilityBc.CamOffset);
+
+            #endregion
+
+
             _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
 
             // Wrap a SceneRenderer around the model.
@@ -133,36 +139,36 @@ namespace Fusee.Engine.Examples.S3D.Core
             if (Input.Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
+                AngleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
+                AngleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
             }
             else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _keys = false;
                 var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
+                AngleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
+                AngleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
-                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
+                    AngleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
+                    AngleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
                 }
                 else
                 {
                     var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
+                    AngleVelHorz *= curDamp;
+                    AngleVelVert *= curDamp;
                 }
             }
 
 
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-            Debug.WriteLine(_angleVelVert);
-            Debug.WriteLine(_angleVelHorz);
+            AngleHorz += AngleVelHorz;
+            AngleVert += AngleVelVert;
+            
+
             // switch groups
             if (Input.Keyboard.GetKey(KeyCodes.F1))
             {
@@ -214,7 +220,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.Projection = projection; // Setze Projektionsmatrix
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); // Create rotation around X and Y asix based upon mouse angle input
+            var mtxRot = float4x4.CreateRotationX(AngleVert) * float4x4.CreateRotationY(AngleHorz); // Create rotation around X and Y asix based upon mouse angle input
             var mtxCam = float4x4.LookAt(0, 0, -10, 0, 0, 0, 0, 1, 0); // Create Camera Matrix. Position of Camera = 0,0,-10, camera aims/looks at 0,0,0; y-axis up
             RC.ModelView = mtxCam * mtxRot; // Rotation * Cameramatrix = new RenderContext ModelView Matrix (== Cameramatrix)
 
@@ -224,7 +230,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             _sceneRenderer.Render(RC); // Render the scene to the viewport with current RC.ModelView-Matrix and current RC.Projection-Matrix!
 
             // Create the second camera matrix and set it as the current ModelView transformation
-            mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz); // Create rotation around X and Y asix based upon mouse angle input
+            mtxRot = float4x4.CreateRotationX(AngleVert) * float4x4.CreateRotationY(AngleHorz); // Create rotation around X and Y asix based upon mouse angle input
             mtxCam = float4x4.LookAt(2, 0, -10, 2, 0, 0, 0, 1, 0); // Create Camera Matrix. Position of Camera = 2,0,-10, camera aims/looks at 2,0,0; y-axis up
             RC.ModelView = mtxCam * mtxRot; // Rotation * Cameramatrix = new RenderContext ModelView Matrix (== Cameramatrix)
 
@@ -236,78 +242,43 @@ namespace Fusee.Engine.Examples.S3D.Core
         }
 
         // B) Are there perceptible shape ratio changes (high, low fov values)?
-        //Assumption: 1 Fusee unit equals 1 meter
+        //Assumption: 1 Fusee unit equals 1 decimeter
         private void GroupBc()
         {
-            const float physicalDisplayWidth = 1.107f;
-            const float interaxial = 0.2f;
-            const int hitInPx = 0;
-            const int resolutionW = 1920;
-            const int resolutonH = 1080;
-            float camOffset = AssignmentShapeRatioHelper.CamOffset;
-
-            SetWindowSize(resolutionW, resolutonH, 0, 0, true);
-
-            //in mm for shape ratio calculation
-            var distCamToObjOne = camOffset + AssignmentShapeRatioHelper.ObjOneDistToRoot;
-            var distCamToObjTwo = camOffset + AssignmentShapeRatioHelper.ObjTwoDistToRoot;
-
-            #region Shape ratio calculation
-            //All following parameters are given in millimeters
-            Interaxial = interaxial;
-            EyeSeparation = 65 / 1000f;
-            FocalLength = (float)System.Math.Tan(0.5f * _fov);
-            Hit = AssignmentShapeRatioHelper.PixelToMeter(hitInPx, resolutionW, physicalDisplayWidth);
-            Magnification = 1; //factor is 1 because we only have perspective projection, the only factor that affects the objects size in the picture is fov.
-            ViewingDistance = 2.5f;
-
-            //Smith Collar
-            var shapeRatioObjOne = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjOne);
-            var shapeRatioObjTwo = AssignmentShapeRatioHelper.CalculateShapeRatio(distCamToObjTwo);
-            #endregion
-
-            #region GUI
-            _distToCamTextOne.Text = "Distance to camera yellow: " + distCamToObjOne;
-            _shapeRatioTextOne.Text = "Calculated shape ratio yellow: " + shapeRatioObjOne;
-            _distToCamTextTwo.Text = "Distance to camera green: " + distCamToObjTwo;
-            _shapeRatioTextTwo.Text = "Calculated shape ratio green: " + shapeRatioObjTwo;
-            _fovText.Text = "Field of View (degree): " + M.RadiansToDegrees(_fov);
-            #endregion
+            SetWindowSize(UtilityBc.ResolutionW, UtilityBc.ResolutonH, 0, 0, true);
 
             #region LEFT Camera setup
 
-            //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(-interaxial / 2f, 0, -camOffset, -interaxial / 2f, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(-UtilityBc.Interaxial / 2f, 0, -UtilityBc.CamOffset, -UtilityBc.Interaxial / 2f, 0, 0, 0, 1, 0);
 
             RC.ModelView = mtxCam;//* mtxRot;
 
             const int n = 1;
             const int f = 20000;
-            var convergence = AssignmentShapeRatioHelper.Convergence;
             var tanFov = (float)System.Math.Tan(_fov / 2);
 
             var top = n * tanFov;
             var bottom = -top;
 
-            var a = _aspectRatio * tanFov * convergence;
+            var a = _aspectRatio * tanFov * UtilityBc.ConvergenceDist;
 
-            var b = a - Interaxial / 2;
-            var c = a + Interaxial / 2;
+            var b = a - UtilityBc.Interaxial / 2;
+            var c = a + UtilityBc.Interaxial / 2;
 
-            var left = -b * n / convergence;
-            var right = c * n / convergence;
+            var left = -b * n / UtilityBc.ConvergenceDist;
+            var right = c * n / UtilityBc.ConvergenceDist;
 
 
             var offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport(-hitInPx, 0 - hitInPx, Width / 2 + hitInPx, Height + hitInPx);
+            RC.Viewport(-UtilityBc.HitInPx, 0 - UtilityBc.HitInPx, Width / 2 + UtilityBc.HitInPx, Height + UtilityBc.HitInPx);
             _guiHandler.RenderGUI();
 
 
-            var screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
-            var screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
-            var screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
+            var screenCoord1 = UtilityBc.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            var screenCoord2 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            var screenCoord3 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -329,36 +300,36 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             #region RIGHT Camera setup
 
-            mtxCam = float4x4.LookAt(interaxial / 2f, 0, -camOffset, interaxial / 2f, 0, 0, 0, 1, 0);
+            mtxCam = float4x4.LookAt(UtilityBc.Interaxial / 2f, 0, -UtilityBc.CamOffset, UtilityBc.Interaxial / 2f, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam; //* mtxRot;
 
             top = n * tanFov;
             bottom = -top;
-            left = -c * n / convergence;
-            right = b * n / convergence;
+            left = -c * n / UtilityBc.ConvergenceDist;
+            right = b * n / UtilityBc.ConvergenceDist;
 
             offCenterPorjection = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, n, f);
             RC.Projection = offCenterPorjection;
 
-            RC.Viewport(Width / 2, 0 - hitInPx, Width / 2 + hitInPx, Height + hitInPx);
+            RC.Viewport(Width / 2, 0 - UtilityBc.HitInPx, Width / 2 + UtilityBc.HitInPx, Height + UtilityBc.HitInPx);
             _guiHandler.RenderGUI();
 
 
-            screenCoord1 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
-            screenCoord2 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, resolutonH, resolutionW / 2);
-            screenCoord3 = AssignmentShapeRatioHelper.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, resolutonH, resolutionW / 2);
+            screenCoord1 = UtilityBc.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            screenCoord2 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            screenCoord3 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
 
             // Calc prallax from ModelCoords in mm
             var mvpR = RC.ModelViewProjection;
-            var parallaxInMm = AssignmentShapeRatioHelper.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resolutionW / 2, 0.4843f);
+            var parallaxInMm = UtilityBc.CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, UtilityBc.ResolutionW / 2, 0.4843f);
 
             //Calc Xi in mm
-            var xiP1 = AssignmentShapeRatioHelper.CalcXi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
-            var xiP2 = AssignmentShapeRatioHelper.CalcXi(new float3(0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f);
-            var ziP1 = AssignmentShapeRatioHelper.CalcZi(new float3(-0.5f, 0.5f, -0.5f), EyeSeparation, mvpR, mvpL, resolutionW, 0.4843f, 2500);
+            var xiP1 = UtilityBc.CalcXi(new float3(-0.5f, 0.5f, -0.5f), UtilityBc.EyeSeparation, mvpR, mvpL, UtilityBc.ResolutionW, 0.4843f);
+            var xiP2 = UtilityBc.CalcXi(new float3(0.5f, 0.5f, -0.5f), UtilityBc.EyeSeparation, mvpR, mvpL, UtilityBc.ResolutionW, 0.4843f);
+            var ziP1 = UtilityBc.CalcZi(new float3(-0.5f, 0.5f, -0.5f), UtilityBc.EyeSeparation, mvpR, mvpL, UtilityBc.ResolutionW, 0.4843f, 2500);
 
             // Calc DepthMag3D
-            var withMag3D = AssignmentShapeRatioHelper.CalcWidthMag3D(xiP1, xiP2, 100);
+            var withMag3D = UtilityBc.CalcWidthMag3D(xiP1, xiP2, 100);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -373,15 +344,45 @@ namespace Fusee.Engine.Examples.S3D.Core
                 Debug.WriteLine(item);
             }
 
-            var cubeTransform = (TransformComponent)_sceneBc.Children[0].Children[0].Components[0];
-            cubeTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
+            Debug.WriteLine(" ");
 
             #endregion
 
-            #region Control FOV
+            #region Controls
+
+            //control fov
             var fovDelta = _fov + Input.Mouse.WheelVel * 0.001f;
             _fov += fovDelta > 0.01f && fovDelta < M.Pi ? Input.Mouse.WheelVel * 0.001f : 0;
+
+            //Rotate Cube and its children via mouse
+            _cubeTransform.Rotation = new float3(AngleVert, AngleHorz, 0);
             #endregion
+
+            #region Shape ratio calculation
+
+            var distCamToObjOne = UtilityBc.CamOffset + UtilityBc.ObjOneDistToRoot;
+            var sphereModelMat = _cubeTransform.Matrix() * _sphereModelMatrix;
+            var sphereWorldPos = new float3(sphereModelMat.M14, sphereModelMat.M24, sphereModelMat.M34);
+            var distCamToObjTwo = (sphereWorldPos - UtilityBc.CamPosBc).z;
+
+            const float interaxialInMm = UtilityBc.Interaxial * 100;
+            var convPlaneWInMm = a * 2 * 100; //a is half of the convergence plane width in the viewing frustum calculation
+            var convDistInMm = UtilityBc.ConvergenceDist * 100;
+
+            var shapeRatioObjOne = UtilityBc.CalcRoundnessFactor(interaxialInMm, UtilityBc.ViewingDistance, convPlaneWInMm, distCamToObjOne * 100, UtilityBc.EyeSeparation, UtilityBc.PhysicalDisplayWidth, convDistInMm);
+            var shapeRatioObjTwo = UtilityBc.CalcRoundnessFactor(interaxialInMm, UtilityBc.ViewingDistance, convPlaneWInMm, distCamToObjTwo * 100, UtilityBc.EyeSeparation, UtilityBc.PhysicalDisplayWidth, convDistInMm);
+
+            #endregion
+
+            #region GUI
+            _distToCamTextOne.Text = "Distance to camera Cube (Fusee units): " + distCamToObjOne;
+            _shapeRatioTextOne.Text = "Calculated shape ratio Sphere: " + shapeRatioObjOne;
+            _distToCamTextTwo.Text = "Distance to camera green (Fusee units): " + distCamToObjTwo;
+            _shapeRatioTextTwo.Text = "Calculated shape ratio green: " + shapeRatioObjTwo;
+            _fovText.Text = "Field of View (degree): " + M.RadiansToDegrees(_fov);
+            #endregion
+
+
         }
 
         private void GroupD()

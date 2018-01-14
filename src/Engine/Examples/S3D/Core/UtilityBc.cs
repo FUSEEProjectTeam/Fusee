@@ -8,8 +8,23 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.S3D.Core
 {
-    public static class AssignmentShapeRatioHelper
+    public static class UtilityBc
     {
+
+        public static int ObjOneDistToRoot = 0;         //Fusee units    
+        public static int ObjTwoDistToRoot = 2;         //Fusee units
+        public static float ConvergenceDist = 5;        //Fusee units
+        public static float CamOffset = 5;              //Fusee units
+
+        public const float PhysicalDisplayWidth = 930;  //mm
+        public const float Interaxial = 0.2f;           //Fusee units
+        public const int HitInPx = 0;                   //px
+        public const int ResolutionW = 1920;            //px
+        public const int ResolutonH = 1080;             //px
+        public const int EyeSeparation = 65;            //mm
+        public const int ViewingDistance = 2500;        //mm
+        public const int Magnification = 1;             //ratio
+        public static float3 CamPosBc;
 
         static readonly string GUIVS = @"
             uniform mat4 guiXForm;
@@ -40,20 +55,12 @@ namespace Fusee.Engine.Examples.S3D.Core
                 gl_FragColor = vec4(vec3(0.5,0.5,0.5), 0.7);   
             }";
 
-        #region Create Scene
-        public static int ObjOneDistToRoot = 0;
-        public static int ObjTwoDistToRoot = 2;
-        public static float Convergence = 5f;
-        public static float CamOffset = 5;
-
+        #region Create Scene    
+        
         public static SceneContainer CreateScene(RenderContext rc)
         {
             return new SceneContainer
             {
-                Header = new SceneHeader
-                {
-
-                },
                 Children = new List<SceneNodeContainer>
                 {
                     new SceneNodeContainer
@@ -79,7 +86,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     {
                                         Scale = new float3(1,1,1),
                                         Translation = new float3(0,0,ObjOneDistToRoot),
-                                        Rotation = new float3(S3D._angleVert, S3D._angleHorz, 0)
+                                        Rotation = new float3(S3D.AngleVert, S3D.AngleHorz, 0)
 
                                     },
 
@@ -145,8 +152,8 @@ namespace Fusee.Engine.Examples.S3D.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Scale = new float3(5,5,1),
-                                        Translation = new float3(0,0,-CamOffset+Convergence),
+                                        Scale = new float3(5* (16/9),5,1),
+                                        Translation = new float3(0,0,-CamOffset+ConvergenceDist),
                                     },
                                     new ShaderEffectComponent(rc, new ShaderEffect(new[]
                                         {
@@ -184,16 +191,15 @@ namespace Fusee.Engine.Examples.S3D.Core
         #region Calculate shape ratio (Smith, Collar)
 
         //distCamObject: Distance camera to object in question (Z0)
-        public static float CalculateShapeRatio(float distCamObject) =>
-            S3D.ViewingDistance * S3D.Interaxial /
-            (S3D.Magnification * S3D.FocalLength * S3D.Interaxial - distCamObject * (2 * S3D.Magnification * S3D.Hit - S3D.EyeSeparation));
+        public static float CalculateShapeRatio(float distCamObject, int hitInMm, float focalLength) =>
+            ViewingDistance * Interaxial /
+            (Magnification * focalLength * Interaxial - distCamObject * (2 * Magnification * hitInMm - EyeSeparation));
         #endregion
 
         #region Calculate pixel to meter conversion hit value
-        //distCamToObject: fusee unity == meter
         //fov: degree
-        //displayWidth: meter
-        public static float PixelToMeter(int hitInPx, float widthResolution, float physicalDisplayWidth) =>
+        //displayWidth: millimeter
+        public static float PixelToMillimter(int hitInPx, float widthResolution, float physicalDisplayWidth) =>
             (physicalDisplayWidth / widthResolution) * hitInPx;
         #endregion
 
@@ -262,5 +268,14 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static float CalcWidthMag3D(float xiOne, float xiTwo, int objWidthInMm)
             => CalcWidth3D(xiOne, xiTwo) /
                objWidthInMm;
+
+        //All parameters given in mm
+        public static float CalcRoundnessFactor(float interaxial, float V, float cWidth, float zo, float eyeWidth, float screenWidth, float c)
+        {
+            var nominator = interaxial * V * cWidth;
+            var denominator = zo * (eyeWidth * cWidth - interaxial * screenWidth) + interaxial * c * screenWidth;
+
+            return nominator / denominator;
+        }
     }
 }
