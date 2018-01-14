@@ -275,16 +275,11 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.Viewport(-UtilityBc.HitInPx, 0 - UtilityBc.HitInPx, Width / 2 + UtilityBc.HitInPx, Height + UtilityBc.HitInPx);
             _guiHandler.RenderGUI();
 
+            #region Debug
 
-            var screenCoord1 = UtilityBc.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            /*var screenCoord1 = UtilityBc.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
             var screenCoord2 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
             var screenCoord3 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
-
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
-            // Calc prallax from ModelCoords
-            var mvpL = RC.ModelViewProjection;
 
             var debugL = new[]
             {
@@ -296,6 +291,14 @@ namespace Fusee.Engine.Examples.S3D.Core
                 Debug.WriteLine(item);
             }
 
+            // Calc prallax from ModelCoords
+            var mvpL = RC.ModelViewProjection;*/
+
+            #endregion
+
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
+            
             #endregion
 
             #region RIGHT Camera setup
@@ -314,10 +317,13 @@ namespace Fusee.Engine.Examples.S3D.Core
             RC.Viewport(Width / 2, 0 - UtilityBc.HitInPx, Width / 2 + UtilityBc.HitInPx, Height + UtilityBc.HitInPx);
             _guiHandler.RenderGUI();
 
+            #region Debug
 
+            /*
             screenCoord1 = UtilityBc.WorldToScreenCoord(new float3(-0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
             screenCoord2 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, -0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
             screenCoord3 = UtilityBc.WorldToScreenCoord(new float3(0.5f, 0.5f, 0.5f), RC, UtilityBc.ResolutonH, UtilityBc.ResolutionW / 2);
+            
 
             // Calc prallax from ModelCoords in mm
             var mvpR = RC.ModelViewProjection;
@@ -331,9 +337,6 @@ namespace Fusee.Engine.Examples.S3D.Core
             // Calc DepthMag3D
             var withMag3D = UtilityBc.CalcWidthMag3D(xiP1, xiP2, 100);
 
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
             var debugR = new[]
             {
                 screenCoord1, screenCoord2, screenCoord3,
@@ -345,6 +348,11 @@ namespace Fusee.Engine.Examples.S3D.Core
             }
 
             Debug.WriteLine(" ");
+            */
+
+            #endregion
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 
             #endregion
 

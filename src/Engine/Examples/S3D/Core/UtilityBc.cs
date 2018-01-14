@@ -270,9 +270,12 @@ namespace Fusee.Engine.Examples.S3D.Core
                objWidthInMm;
 
         //All parameters given in mm
-        public static float CalcRoundnessFactor(float interaxial, float V, float cWidth, float zo, float eyeWidth, float screenWidth, float c)
+        public static float CalcRoundnessFactor(float interaxial, float viewingDistance, float cWidth, float zo, float eyeWidth, float screenWidth, float c)
         {
-            var nominator = interaxial * V * cWidth;
+            if (zo.Equals(c))
+                return screenWidth/cWidth;
+            
+            var nominator = interaxial * viewingDistance * cWidth;
             var denominator = zo * (eyeWidth * cWidth - interaxial * screenWidth) + interaxial * c * screenWidth;
 
             return nominator / denominator;
