@@ -216,8 +216,6 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         public static float CalcXi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
-            eyeSep = eyeSep * 1000;
-
             var zwerg = ((mvpL * pointInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
                        (mvpR * pointInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
@@ -233,7 +231,6 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         public static float CalcZi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, float viewingDistInMm)
         {
-            eyeSep = eyeSep * 1000;
             var nominator = eyeSep * viewingDistInMm;
             var denominator = eyeSep - (CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW / 2, pixelWidth));
             return nominator / denominator;
@@ -242,7 +239,6 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         public static float CalcWidth3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
-            eyeSep = eyeSep * 1000;
             var zwerg1 = (mvpL * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0) +
                          (mvpR * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0))).x;
 
