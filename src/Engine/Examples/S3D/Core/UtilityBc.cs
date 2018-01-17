@@ -13,10 +13,10 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         public static int ObjOneDistToRoot = 0;         //Fusee units    
         public static int ObjTwoDistToRoot = 2;         //Fusee units
-        public static float ConvergenceDist = 5;        //Fusee units
-        public static float CamOffset = 5;              //Fusee units
+        public static float ConvergenceDist = 10;       //Fusee units
+        public static float CamOffset = 10;             //Fusee units
 
-        public const float PhysicalDisplayWidth = 930;  //mm
+        public const float PhysicalDisplayWidth = 2500; //mm
         public const float Interaxial = 0.2f;           //Fusee units
         public const int HitInPx = 0;                   //px
         public const int ResolutionW = 1920;            //px
@@ -26,6 +26,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         public const int Magnification = 1;             //ratio
         public static float3 CamPosBc;
 
+        #region Shader
         static readonly string GUIVS = @"
             uniform mat4 guiXForm;
             attribute vec3 fuVertex;
@@ -55,8 +56,10 @@ namespace Fusee.Engine.Examples.S3D.Core
                 gl_FragColor = vec4(vec3(0.5,0.5,0.5), 0.7);   
             }";
 
+        #endregion
+
         #region Create Scene    
-        
+
         public static SceneContainer CreateScene(RenderContext rc)
         {
             return new SceneContainer
@@ -188,21 +191,9 @@ namespace Fusee.Engine.Examples.S3D.Core
         }
         #endregion
 
-        #region Calculate shape ratio (Smith, Collar)
+        #region S3D Calculation
 
-        //distCamObject: Distance camera to object in question (Z0)
-        public static float CalculateShapeRatio(float distCamObject, int hitInMm, float focalLength) =>
-            ViewingDistance * Interaxial /
-            (Magnification * focalLength * Interaxial - distCamObject * (2 * Magnification * hitInMm - EyeSeparation));
-        #endregion
-
-        #region Calculate pixel to meter conversion hit value
-        //fov: degree
-        //displayWidth: millimeter
-        public static float PixelToMillimter(int hitInPx, float widthResolution, float physicalDisplayWidth) =>
-            (physicalDisplayWidth / widthResolution) * hitInPx;
-        #endregion
-
+        //Returns the screen coordinates in pixel for a given point in world space.
         public static float2 WorldToScreenCoord(float3 posInWorldSpace, RenderContext ctx, int canvasHeight, int canvasWidth)
         {
             var clipSpace = posInWorldSpace.TransformPerspective(ctx.ModelViewProjection);
@@ -210,10 +201,20 @@ namespace Fusee.Engine.Examples.S3D.Core
             return (zwerg * new float2(0.5f, -0.5f) + new float2(0.5f, 0.5f)) * new float2(canvasWidth, canvasHeight);
         }
 
+        //Calculates the absolute parallaxe for a point in model/ local space in millimeters.
+        //mvpR:         Modelviewprojection matrix for the right camera.
+        //mvpL:         Modelviewprojection matrix for the left camera.
+        //resW:         Target screen resolution (width).
+        //pixelWidth:   Width of one pixel of the target screen  in millimeters.
         public static float CalcParallaxFromModelCoord(float3 pointInModelCoord, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth) =>
             ((mvpR * pointInModelCoord - mvpL * pointInModelCoord) * resW).x * pixelWidth;
 
-
+        //Calculates the x coordinate of the perceived position of a point in model/ local space. Returns the value in millimeters.
+        //eyeSep:       Eye separation of the viewer  in millimeters.
+        //mvpR:         Modelviewprojection matrix for the right camera.
+        //mvpL:         Modelviewprojection matrix for the left camera.
+        //resW:         Target screen resolution (width).
+        //pixelWidth:   Width of one pixel of the target screen in millimeters.
         public static float CalcXi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
             var zwerg = ((mvpL * pointInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0)) +
@@ -229,6 +230,14 @@ namespace Fusee.Engine.Examples.S3D.Core
             return nominator / denominator;
         }
 
+
+        //Calculates the z coordinate of the perceived position of a point in model/ local space. Returns the value in millimeters.
+        //eyeSep:               Eye separation of the viewer in millimeters.
+        //mvpR:                 Modelviewprojection matrix for the right camera.
+        //mvpL:                 Modelviewprojection matrix for the left camera.
+        //resW:                 Target screen resolution (width).
+        //pixelWidth:           Width of one pixel of the target screen in millimeters.
+        //viewingDistanceInMm:  Viewing distance - viewer to screen.
         public static float CalcZi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, float viewingDistInMm)
         {
             var nominator = eyeSep * viewingDistInMm;
@@ -236,7 +245,12 @@ namespace Fusee.Engine.Examples.S3D.Core
             return nominator / denominator;
         }
 
-
+        //Calculates the perceived width of a object from two points in model / local space. Returns the value in millimeters.
+        //eyeSep:       Eye separation of the viewer  in millimeters.
+        //mvpR:         Modelviewprojection matrix for the right camera.
+        //mvpL:         Modelviewprojection matrix for the left camera.
+        //resW:         Target screen resolution (width).
+        //pixelWidth:   Width of one pixel of the target screen.
         public static float CalcWidth3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth)
         {
             var zwerg1 = (mvpL * pointOneInModelCoord * new float3(0.5f, -0.5f, 0) + new float3(0.5f, 0.5f, 0) +
@@ -254,27 +268,45 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         }
 
+        //Calculates the perceived width of a object from the x coordinates of the perceived position of two points. Returns the value in millimeters.
         public static float CalcWidth3D(float xiOne, float xiTwo) => xiTwo - xiOne;
 
+        //Ratio of the perveived width of an object to the "real" object width (e.g a unit cube would have a "real" width of one fusee unit).
+        //The ratio is calculated by two points given in model / local space.
+        //eyeSep:       Eye separation of the viewer in millimeters.
+        //mvpR:         Modelviewprojection matrix for the right camera.
+        //mvpL:         Modelviewprojection matrix for the left camera.
+        //resW:         Target screen resolution (width).
+        //pixelWidth:   Width of one pixel of the target screen.
+        //objWidthInMm: "Real" Object width, given in millimeters.
         public static float CalcWidthMag3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep,
             float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, int objWidthInMm)
             => CalcWidth3D(pointOneInModelCoord, pointTwoInModelCoord, eyeSep, mvpR, mvpL, resW, pixelWidth) /
                objWidthInMm;
 
+        //Ratio of the perveived width of an object to the "real" object width (e.g a unit cube would have a "real" width of one fusee unit).
+        //The ratio is calculated from the x coordinates of the perceived position of two points.
+        //objWidthInMm: "Real" Object width, given in millimeters.
         public static float CalcWidthMag3D(float xiOne, float xiTwo, int objWidthInMm)
             => CalcWidth3D(xiOne, xiTwo) /
                objWidthInMm;
 
-        //All parameters given in mm
-        public static float CalcRoundnessFactor(float interaxial, float viewingDistance, float cWidth, float zo, float eyeWidth, float screenWidth, float c)
+        //Calculates the roundness facator for an object.
+        //All parameters need to be given in millimeters.
+        //interaxial:       Distance between the two rendering cameras.
+        //viewingDistance:  Distance between viewer and screen.
+        //cWidth:           Width of the covergence plane.
+        //zo:               Distance from camera to object.
+        //eyeSep:           Eye separation of the viewer in.
+        //screenWidth:      Width of the target screen.
+        //c:                Distance from the camera to the convergence plane.
+        public static float CalcRoundnessFactor(float interaxial, float viewingDistance, float cWidth, float zo, float eyeSep, float screenWidth, float c)
         {
-            if (zo.Equals(c))
-                return screenWidth/cWidth;
-            
             var nominator = interaxial * viewingDistance * cWidth;
-            var denominator = zo * (eyeWidth * cWidth - interaxial * screenWidth) + interaxial * c * screenWidth;
+            var denominator = zo * (eyeSep * cWidth - interaxial * screenWidth) + interaxial * c * screenWidth;
 
             return nominator / denominator;
         }
+        #endregion
     }
 }

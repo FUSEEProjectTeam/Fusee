@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -167,7 +165,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             AngleHorz += AngleVelHorz;
             AngleVert += AngleVelVert;
-            
+
 
             // switch groups
             if (Input.Keyboard.GetKey(KeyCodes.F1))
@@ -298,13 +296,13 @@ namespace Fusee.Engine.Examples.S3D.Core
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-            
+
             #endregion
 
             #region RIGHT Camera setup
 
             mtxCam = float4x4.LookAt(UtilityBc.Interaxial / 2f, 0, -UtilityBc.CamOffset, UtilityBc.Interaxial / 2f, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam; //* mtxRot;
+            RC.ModelView = mtxCam;
 
             top = n * tanFov;
             bottom = -top;
@@ -374,7 +372,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             var distCamToObjTwo = (sphereWorldPos - UtilityBc.CamPosBc).z;
 
             const float interaxialInMm = UtilityBc.Interaxial * 100;
-            var convPlaneWInMm = a * 2 * 100; //a is half of the convergence plane width in the viewing frustum calculation
+            var convPlaneWInMm = a * 2 * 100; //"a" is half of the convergence plane width in the viewing frustum calculation
             var convDistInMm = UtilityBc.ConvergenceDist * 100;
 
             var shapeRatioObjOne = UtilityBc.CalcRoundnessFactor(interaxialInMm, UtilityBc.ViewingDistance, convPlaneWInMm, distCamToObjOne * 100, UtilityBc.EyeSeparation, UtilityBc.PhysicalDisplayWidth, convDistInMm);
