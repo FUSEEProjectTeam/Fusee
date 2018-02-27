@@ -7,7 +7,6 @@ namespace Fusee.Serialization
     /// <summary>
     /// Provides the abillity to create or interact directly with the point data.
     /// </summary>
-    /// <remarks>For an example how you can use it, see <see cref="Cube"/>.</remarks>
      
     [ProtoContract]
     public class Mesh : SceneComponentContainer, IDisposable
@@ -16,7 +15,14 @@ namespace Fusee.Serialization
 
         #region RenderContext Asset Management
         // Event of mesh Data changes
+        /// <summary>
+        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
+        /// </summary>
         public event EventHandler<MeshDataEventArgs> MeshChanged;
+
+        /// <summary>
+        /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
+        /// </summary>
         public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
         #endregion
 
@@ -231,6 +237,9 @@ namespace Fusee.Serialization
 
         #endregion
 
+        /// <summary>
+        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// </summary>
         public void Dispose()
         {
             var del = MeshChanged;
@@ -240,6 +249,9 @@ namespace Fusee.Serialization
             }
         }
 
+        /// <summary>
+        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// </summary>
         ~Mesh()
         {
             Dispose();
