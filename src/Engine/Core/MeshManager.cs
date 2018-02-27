@@ -9,10 +9,6 @@ namespace Fusee.Engine.Core
         private readonly IRenderContextImp _renderContextImp;
 
         private Stack<IMeshImp> _toBeDeletedMeshImps = new Stack<IMeshImp>();
-        //private Dictionary<ulong, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<ulong, IMeshImp>();
-
-        //private Stack<ulong> _reusableIdentifiers = new Stack<ulong>();
-        //private ulong primitiveIdentifier = 0;
 
         private Dictionary<Suid, IMeshImp> _identifierToMeshImpDictionary = new Dictionary<Suid, IMeshImp>();
 
@@ -82,40 +78,15 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.BoneWeights:
                     _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
                     break;
-                default:
-                    break;
-
             }
         }
 
-        //private ulong CreateUniqueIdentifier(ulong defaultIdentifier = 0)
-        //{
-        //    ulong result = defaultIdentifier;
-        //    // Identifier is default? -> assign valid unique Identifier
-        //    if (result == 0)
-        //    {
-        //        if (_reusableIdentifiers.Count > 0)
-        //        {
-        //            result = _reusableIdentifiers.Pop();
-        //        }
-        //        else
-        //        {
-        //            primitiveIdentifier++;
-        //            result = primitiveIdentifier;
-        //        }
-        //    }
-        //    return result;
-        //}
-
         private IMeshImp RegisterNewMesh(Mesh mesh)
         {
-            // Create new Identifier for the Mesh
-            //mesh.Identifier = CreateUniqueIdentifier(mesh.Identifier);
-
             // Configure newly created MeshImp to reflect Mesh's properties on GPU (allocate buffers)
             IMeshImp meshImp = _renderContextImp.CreateMeshImp();
 
-            // Begin Setup GPU Buffers
+            // Begin Setup GPU Buffers / allocate GPU memory
             if (mesh.VerticesSet)
                 _renderContextImp.SetVertices(meshImp, mesh.Vertices);
 
@@ -148,6 +119,10 @@ namespace Fusee.Engine.Core
             return meshImp;
         }
 
+        /// <summary>
+        /// Creates a new Instance of MeshManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
+        /// </summary>
+        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterMesh.</param>
         public MeshManager(IRenderContextImp renderContextImp)
         {
             _renderContextImp = renderContextImp;
@@ -163,6 +138,9 @@ namespace Fusee.Engine.Core
             return foundMeshImp;
         }
 
+        /// <summary>
+        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// </summary>
         public void Cleanup()
         {
             if (_toBeDeletedMeshImps == null || _toBeDeletedMeshImps.Count == 0)
