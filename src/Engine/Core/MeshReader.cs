@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Fusee.Math.Core;
 using JSIL.Meta;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {

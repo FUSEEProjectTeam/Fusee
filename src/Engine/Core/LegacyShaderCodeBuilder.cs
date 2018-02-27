@@ -53,7 +53,7 @@ namespace Fusee.Engine.Core
         /// <param name="pbrMaterialPbrComponent"></param>
         /// <param name="mesh">The Mesh</param>
         /// <param name="wc">WeightCompoennt for animations</param>
-        public LegacyShaderCodeBuilder(MaterialPBRComponent pbrMaterialPbrComponent, MeshComponent mesh, WeightComponent wc = null)
+        public LegacyShaderCodeBuilder(MaterialPBRComponent pbrMaterialPbrComponent, Mesh mesh, WeightComponent wc = null)
         {
 
             // Check WC
@@ -103,7 +103,7 @@ namespace Fusee.Engine.Core
         /// <param name="mlc">The MaterialLightComponent</param>
         /// <param name="mesh">The Mesh</param>
         /// <param name="wc">WeightCompoennt for animations</param>
-        public LegacyShaderCodeBuilder(MaterialLightComponent mlc, MeshComponent mesh, WeightComponent wc = null)
+        public LegacyShaderCodeBuilder(MaterialLightComponent mlc, Mesh mesh, WeightComponent wc = null)
         {
 
             // Check WC
@@ -148,7 +148,7 @@ namespace Fusee.Engine.Core
        
         }
 
-        public LegacyShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null)
+        public LegacyShaderCodeBuilder(MaterialComponent mc, Mesh mesh, WeightComponent wc = null)
         {
             if (wc != null)
             {
@@ -211,7 +211,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        private void AnalyzeMesh(MeshComponent mesh)
+        private void AnalyzeMesh(Mesh mesh)
         {
             _hasVertices = (mesh.Vertices != null && mesh.Vertices.Length > 0);
             _hasNormals = (mesh.Normals != null && mesh.Normals.Length > 0);

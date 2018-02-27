@@ -3,6 +3,7 @@ using System.IO;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core.GUI
 {
