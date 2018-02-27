@@ -1451,7 +1451,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
@@ -1461,7 +1461,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
@@ -1471,7 +1471,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
@@ -1481,7 +1481,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).UVBufferObject);
@@ -1491,7 +1491,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).ElementBufferObject);
@@ -1501,7 +1501,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).BoneWeightBufferObject);
@@ -1511,7 +1511,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).BoneIndexBufferObject);
