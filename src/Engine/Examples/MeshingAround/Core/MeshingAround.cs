@@ -110,7 +110,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
 
-            var meshCOne = new MeshComponent
+            var meshCOne = new Mesh
             {
                 Vertices = meshOne.Vertices,
                 Triangles = meshOne.Triangles,
@@ -129,7 +129,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             ///////////////////////////////////////////////////////////
             var sceneNodeCCube = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshCCube = new MeshComponent
+            var meshCCube = new Mesh
             {
                 Vertices = cube.Vertices,
                 Triangles = cube.Triangles,
@@ -147,7 +147,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             //////////////////////////////////////////////////////////////////
             var sceneNodeCTri = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshCTri = new MeshComponent
+            var meshCTri = new Mesh
             {
                 Vertices = triangle.Vertices,
                 Triangles = triangle.Triangles,
