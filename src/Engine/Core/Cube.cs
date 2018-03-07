@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core
                 new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = -0.5f, y = -0.5f, z = -0.5f}
-            
+
             };
 
             Triangles = new ushort[]
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
 
                 // bottom face
                 20, 22, 21, 20, 23, 22
-            
+
             };
 
             Normals = new[]
@@ -124,22 +124,22 @@ namespace Fusee.Engine.Core
                 new float2(0, 0)
             };
         }
+        #endregion
 
-        /// <summary>
-        /// Creates a MeshComponent from a new Cube.
-        /// </summary>
-       public static MeshComponent CreateCube()
+        /// <summary> 
+        /// Creates a Mesh from a new Cube. 
+        /// </summary> 
+        public static Mesh CreateCube()
         {
             var cube = new Cube();
-            return new MeshComponent
+            return new Mesh
             {
                 Vertices = cube.Vertices,
-                Triangles = cube.Triangles,
-                UVs = cube.UVs,
                 Normals = cube.Normals,
+                Triangles = cube.Triangles,
+                UVs = cube.UVs
             };
-        }
 
-        #endregion
+        }
     }
 }
