@@ -216,10 +216,10 @@ namespace Fusee.Engine.Core
         /// Creates a MeshComponent from a new Plane.
         /// </summary>
         /// <param name="subdivLvl">Subdivision levels for the Icosphere</param>
-        public static MeshComponent CreateIcosphere(int subdivLvl)
+        public static Mesh CreateIcosphere(int subdivLvl)
         {
             var plane = new Icosphere(subdivLvl);
-            return new MeshComponent
+            return new Mesh
             {
                 Vertices = plane.Vertices,
                 Triangles = plane.Triangles,
@@ -289,7 +289,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Uvs
-        public static float2[] CreateUVs()
+        internal static float2[] CreateUVs()
         {
             //The number of vertices in the resulting uv map horizontally
             const float w = 5.5f;
@@ -329,7 +329,7 @@ namespace Fusee.Engine.Core
 
         private static float2 Middle(float2 v1, float2 v2) => (v2 - v1) * 0.5f + v1;
 
-        public static void SubdivUVs(this Mesh sphere)
+        internal static void SubdivUVs(this Mesh sphere)
         {
             var newUVs = new List<float2>();
 

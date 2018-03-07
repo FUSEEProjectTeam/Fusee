@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             SetWindowSize(1920, 1080, 0, 0, true);
 
             // TODO: Replace with scene from group A
-            _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneA = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
 
             #region Initialize members BC
 
@@ -87,7 +87,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
 
-            _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _sceneD = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_sceneA);
@@ -404,8 +404,8 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         private void HotLoadSceneGroupA()
         {
-            // Load the rocket model
-            _sceneA = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            // Load the scene
+            _sceneA = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_sceneA);
@@ -413,8 +413,8 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         private void HotLoadSceneGroupD()
         {
-            // Load the rocket model
-            _sceneD = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            // Load the scene
+            _sceneD = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_sceneD);

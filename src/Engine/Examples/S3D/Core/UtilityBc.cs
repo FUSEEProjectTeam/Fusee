@@ -179,7 +179,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             new EffectParameterDeclaration {Name = "tex", Value = rc.CreateTexture(AssetStorage.Get<ImageData>("grid.jpg"))},
                                             new EffectParameterDeclaration {Name = "blendColor", Value = new float4(0.5f,0.5f,0.5f,0.5f)},
                                         })),
-                                   Plane.CreatePlane(Orientation.FRONT)
+                                   Plane.CreatePlane()
                                 }
                             },
 
