@@ -68,12 +68,12 @@ def SerializeData(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDis
 
 
 # recursivly get each node and its components and serialize them
-def add_vertex(vi, face, i, meshComponent, uv_layer):
-    vert = meshComponent.Vertices.add()
+def add_vertex(vi, face, i, mesh, uv_layer):
+    vert = mesh.Vertices.add()
     vert.x = face.loops[vi].vert.co.x
     vert.y = face.loops[vi].vert.co.z
     vert.z = face.loops[vi].vert.co.y
-    norm = meshComponent.Normals.add()
+    norm = mesh.Normals.add()
     # Doesn't work, see (https://developer.blender.org/T45151) meshNorm = face.loops[vi].calc_normal()
     if face.smooth:
         meshNorm = face.loops[vi].vert.normal
@@ -82,14 +82,14 @@ def add_vertex(vi, face, i, meshComponent, uv_layer):
     norm.x = meshNorm.x
     norm.y = meshNorm.z
     norm.z = meshNorm.y
-    uv = meshComponent.UVs.add()
+    uv = mesh.UVs.add()
     if uv_layer is not None:
         uv.x = face.loops[vi][uv_layer].uv.x
         uv.y = face.loops[vi][uv_layer].uv.y
     else:
         uv.x = 0
         uv.y = 0
-    tri = meshComponent.Triangles.append(i)
+    tri = mesh.Triangles.append(i)
 
 
 def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
@@ -150,7 +150,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
 
         # init
         rootTransformComponent = Scene.SceneComponentContainer()
-        rootMeshComponent = Scene.SceneComponentContainer()
+        rootmesh = Scene.SceneComponentContainer()
 
         # set current object as the active one
         bpy.context.scene.objects.active = obj
@@ -215,7 +215,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
 
-        meshComponent = rootMeshComponent.MeshComponent
+        mesh = rootmesh.Mesh
         i = 0
         for face in bm.faces:
             '''
@@ -230,11 +230,11 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                 print('  --V2: co:' + str(face.loops[2].vert.co) + ' normal:' +  str(face.loops[2].calc_normal()))
             '''
             # TODO: assert that len(face.loops) == 3!
-            add_vertex(0, face, i, meshComponent, uv_layer)
+            add_vertex(0, face, i, mesh, uv_layer)
             i += 1
-            add_vertex(1, face, i, meshComponent, uv_layer)
+            add_vertex(1, face, i, mesh, uv_layer)
             i += 1
-            add_vertex(2, face, i, meshComponent, uv_layer)
+            add_vertex(2, face, i, mesh, uv_layer)
             i += 1
 
         # </CM's Checks
@@ -267,20 +267,20 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         vertNormList = copy.copy(vertFNormList)
 
         #write data to protobuf structure              
-        meshComponent = rootMeshComponent.MeshComponent
+        mesh = rootmesh.Mesh
         for vert in range(0,len(vertIndexList)):
             vertexIndex = vertIndexList[vert]
             vertexCo = vertFCoList[vert]
             vertexNormal = vertNormList[vert]
-            rootVert = meshComponent.Vertices.add()
+            rootVert = mesh.Vertices.add()
             #VERTICES
             #the coordinate system of Blender is different to that one used by Fusee,
             #therefore the axis need to be changed:
             rootVert.x = vertexCo.x
             rootVert.y = vertexCo.z
             rootVert.z = vertexCo.y
-            meshComponent.Triangles.append(vertexIndex)
-            normal = meshComponent.Normals.add()
+            mesh.Triangles.append(vertexIndex)
+            normal = mesh.Normals.add()
             #NORMALS
             #the coordinate system of Blender is different to that one used by Fusee,
             #therefore the axis need to be changed:
@@ -300,7 +300,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                     uv = loop[uv_layer].uv
                     uvList[index] = uv     
             for uvs in uvList:
-                uv = meshComponent.UVs.add()
+                uv = mesh.UVs.add()
                 uv.x = uvs.x
                 uv.y = uvs.y    
         '''
@@ -311,17 +311,17 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         for bboxVal in bbox:
             bboxList.append(list(bboxVal))
 
-        # find min and max values of the bounding box and write them to the meshComponent
+        # find min and max values of the bounding box and write them to the mesh
         bboxMin = min(bboxList)
         bboxMax = max(bboxList)
         # the coordinate system of Blender is different to that one used by Fusee,
         # therefore the axis need to be changed:
-        meshComponent.BoundingBox.max.x = bboxMax[0]
-        meshComponent.BoundingBox.max.y = bboxMax[2]
-        meshComponent.BoundingBox.max.z = bboxMax[1]
-        meshComponent.BoundingBox.min.x = bboxMin[0]
-        meshComponent.BoundingBox.min.y = bboxMin[2]
-        meshComponent.BoundingBox.min.z = bboxMin[1]
+        mesh.BoundingBox.max.x = bboxMax[0]
+        mesh.BoundingBox.max.y = bboxMax[2]
+        mesh.BoundingBox.max.z = bboxMax[1]
+        mesh.BoundingBox.min.x = bboxMin[0]
+        mesh.BoundingBox.min.y = bboxMin[2]
+        mesh.BoundingBox.min.z = bboxMin[1]
 
         # MATERIAL COMPONENT
         # check, if a material is set, otherwise use default material
@@ -488,7 +488,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # write rootComponents to rootNode
         rootComponent1.payload = rootTransformComponent.SerializePartialToString()
         rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
-        rootComponent3.payload = rootMeshComponent.SerializePartialToString()
+        rootComponent3.payload = rootmesh.SerializePartialToString()
 
         # if obj has got children, find them recursively,
         # serialize them and write them to root as children

@@ -6,6 +6,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using JSIL.Meta;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -33,6 +34,8 @@ namespace Fusee.Engine.Core
         private readonly LightParamNames[] _lightShaderParams;
         */
 
+        // Mesh Management
+        private readonly MeshManager _meshManager;
 
         private bool _updatedShaderParams;
 
@@ -735,6 +738,9 @@ namespace Fusee.Engine.Core
             View = float4x4.Identity;
             Model = float4x4.Identity;
             Projection = float4x4.Identity;
+
+            // mesh management
+            _meshManager = new MeshManager(_rci);
 
             // Make JSIL run through this one time. 
             _col = ColorUint.White.Tofloat3();
@@ -1570,45 +1576,11 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            if (m._meshImp == null)
-                m._meshImp = _rci.CreateMeshImp();
+            IMeshImp meshImp = _meshManager.GetMeshImpFromMesh(m);
+            _rci.Render(meshImp);
 
-            if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
-                _rci.SetColors(m._meshImp, m.Colors);
-
-            /*
-             * Not using tangent space normals right now
-             * 
-             * if (NeedTangents
-                && (m.Vertices != null && m.UVs != null && m.Normals != null)
-                && (m.Vertices.Length != 0 && m.UVs.Length != 0 && m.Normals.Length != 0)
-                && !(m.VerticesSet && m.UVsSet && m.NormalsSet))
-            {
-                // This will set vertices, uvs and normals and also calculate tangents and bitangents
-                _rci.SetVertexData(m._meshImp, m.Vertices, m.UVs, m.Normals);
-            }
-            else*/
-            {
-                if (m.Vertices != null && m.Vertices.Length != 0 && !m.VerticesSet)
-                    _rci.SetVertices(m._meshImp, m.Vertices);
-
-                if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
-                    _rci.SetUVs(m._meshImp, m.UVs);
-
-                if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
-                    _rci.SetNormals(m._meshImp, m.Normals);
-            }
-
-            if (m.BoneIndices != null && m.BoneIndices.Length != 0 && !m.BoneIndicesSet)
-                _rci.SetBoneIndices(m._meshImp, m.BoneIndices);
-
-            if (m.BoneWeights != null && m.BoneWeights.Length != 0 && !m.BoneWeightsSet)
-                _rci.SetBoneWeights(m._meshImp, m.BoneWeights);
-
-            if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
-                _rci.SetTriangles(m._meshImp, m.Triangles);
-
-            _rci.Render(m._meshImp);
+            // After rendering always cleanup pending meshes
+            _meshManager.Cleanup();
         }
       
         public uint GetHardwareCapabilities(HardwareCapability capability)
@@ -1619,26 +1591,6 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Other Members
-        /// <summary>
-        /// Call this function in order to deallocate the memory on the gpu managed by buffers.
-        /// Adds the meshes to a list which is then later taken on by <see cref="Render(Mesh)"/> in order 
-        /// to delete the memory managed by their buffers. This is due to multithreading, that memory can not deleted
-        /// at any time.
-        /// </summary>
-        /// <param name="m">The mesh of which buffers should be deallocated from the memory.</param>
-        public void Remove(Mesh m)
-        {
-            if (m._meshImp == null)
-                return;
-
-            _rci.RemoveVertices(m._meshImp);
-            _rci.RemoveNormals(m._meshImp);
-            _rci.RemoveColors(m._meshImp);
-            _rci.RemoveUVs(m._meshImp);
-            _rci.RemoveTriangles(m._meshImp);
-            _rci.RemoveBoneWeights(m._meshImp);
-            _rci.RemoveBoneIndices(m._meshImp);
-        }
 
         /// <summary>
         /// This method returns the color of one or more pixels from the backbuffer.

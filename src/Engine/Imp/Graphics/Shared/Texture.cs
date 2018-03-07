@@ -22,6 +22,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal int gBufferDepthTextureHandle;
         internal int gDepthRenderbufferHandle;
 
+        // RenderTexture
+        internal int renderToTextureBufferHandle = -1;
+        internal int intermediateToTextureBufferHandle = -1;
+        internal bool toggle = false;
+        internal int depthHandle;
+
         internal int textureWidth;
         internal int textureHeight;
     }
