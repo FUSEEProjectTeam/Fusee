@@ -8,6 +8,7 @@ using Fusee.Math.Core;
 using Fusee.Xene;
 using AsQuaternion = Assimp.Quaternion;
 using FuQuaternion = Fusee.Math.Core.Quaternion;
+using Mesh = Fusee.Serialization.Mesh;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -17,7 +18,7 @@ namespace Fusee.Tools.fuseeCmdLine
         private Scene _assimpScene;
         private readonly StateStack<Node> _currentAssimpNode;
         private readonly Dictionary<int, MaterialComponent> _matCache;
-        private readonly Dictionary<int, MeshComponent> _meshCache;
+        private readonly Dictionary<int, Mesh> _meshCache;
 
         public static SceneContainer FuseefyScene(Scene assimpScene)
         {
@@ -57,7 +58,7 @@ namespace Fusee.Tools.fuseeCmdLine
         {
             _currentAssimpNode = new StateStack<Node>();
             _matCache = new Dictionary<int, MaterialComponent>();
-            _meshCache = new Dictionary<int, MeshComponent>();
+            _meshCache = new Dictionary<int, Mesh>();
         }
 
         private SceneNodeContainer FuseefyNode(Node assimpNode)
@@ -224,9 +225,9 @@ namespace Fusee.Tools.fuseeCmdLine
             };
         } */
 
-        private MeshComponent GetMesh(int meshIndex)
+        private Mesh GetMesh(int meshIndex)
         {
-            MeshComponent fuMesh;
+            Mesh fuMesh;
             if (_meshCache.TryGetValue(meshIndex, out fuMesh))
                 return fuMesh;
 
@@ -259,7 +260,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     }
                 }
 
-                // ... add it to components of MeshComponent
+                // ... add it to components of Mesh
                 fuMeshVerticies[i] = vertex;
                 fuMeshNormals[i] = normal;
                 fuMeshTexCords = texCord;
@@ -285,8 +286,8 @@ namespace Fusee.Tools.fuseeCmdLine
             // TODO: Test if this method works!
             EvaluateAABB(fuMeshVerticies, out min, out max);
 
-            // Create new MeshComponent
-            var fuMeshComponent =  new MeshComponent
+            // Create new Mesh
+            fuMesh =  new Mesh
             {
                 Name = assimpMesh.Name,
                 Vertices = fuMeshVerticies,
@@ -297,9 +298,9 @@ namespace Fusee.Tools.fuseeCmdLine
             };
 
             // Add to cache
-            _meshCache.Add(meshIndex, fuMeshComponent);
+            _meshCache.Add(meshIndex, fuMesh);
 
-            return fuMeshComponent;
+            return fuMesh;
         }
 
         // ReSharper disable once InconsistentNaming
@@ -326,7 +327,7 @@ namespace Fusee.Tools.fuseeCmdLine
             max = maxVert;
         }
 
-        private static SceneNodeContainer CreateFuseeNode(string name, TransformComponent xform, MaterialComponent mat, MeshComponent mesh)
+        private static SceneNodeContainer CreateFuseeNode(string name, TransformComponent xform, MaterialComponent mat, Mesh mesh)
         {
             var fuNode = new SceneNodeContainer { Name = name };
 

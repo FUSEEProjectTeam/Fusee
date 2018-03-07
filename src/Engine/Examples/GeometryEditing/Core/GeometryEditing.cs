@@ -227,7 +227,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new MeshComponent
+                var meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -251,7 +251,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new MeshComponent
+                var meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -275,7 +275,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 currentSelectedGeometry.Triangulate();
 
                 var geometryMesh = new JometriMesh(currentSelectedGeometry);
-                var meshComponent = new MeshComponent
+                var meshComponent = new Mesh
                 {
                     Vertices = geometryMesh.Vertices,
                     Triangles = geometryMesh.Triangles,
@@ -386,7 +386,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
             var sceneNodeContainer = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshComponent = new MeshComponent
+            var meshComponent = new Mesh
             {
                 Vertices = geometryMesh.Vertices,
                 Triangles = geometryMesh.Triangles,

@@ -158,10 +158,10 @@ namespace Fusee.Engine.Core
         /// Creates vertex and pixel shader for given material, mesh, weight; light calculation is simple per default
         /// </summary>
         /// <param name="mc">The MaterialCpmponent</param>
-        /// <param name="mesh">The MeshComponent</param>
+        /// <param name="mesh">The Mesh</param>
         /// <param name="wc">Teh WeightComponent</param>
         /// <param name="renderWithShadows">Should the resulting shader include shadowcalculation</param>
-        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh, WeightComponent wc = null, bool renderWithShadows = false)
+        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, WeightComponent wc = null, bool renderWithShadows = false)
             : this(mc, mesh, LightingCalculationMethod.SIMPLE, wc, renderWithShadows)
         { }
 
@@ -169,11 +169,11 @@ namespace Fusee.Engine.Core
         /// Creates vertex and pixel shader for given material, mesh, weight; light calculation is simple per default
         /// </summary>
         /// <param name="mc">The MaterialCpmponent</param>
-        /// <param name="mesh">The MeshComponent</param>
+        /// <param name="mesh">The Mesh</param>
         /// <param name="wc">The WeightComponent</param>
         /// <param name="lightingCalculation">Method of light calculation; simple BLINN PHONG or advanced physically based</param>
         /// <param name="renderWithShadows">Should the resulting shader include shadowcalculation</param>
-        public ShaderCodeBuilder(MaterialComponent mc, MeshComponent mesh,
+        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh,
             LightingCalculationMethod lightingCalculation = LightingCalculationMethod.SIMPLE,
             WeightComponent wc = null, bool renderWithShadows = false)
         {
@@ -238,7 +238,7 @@ namespace Fusee.Engine.Core
         }
 
 
-        private void AnalyzeMesh(MeshComponent mesh, WeightComponent wc = null)
+        private void AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
         {
             _meshProbs = new MeshProbs
             {

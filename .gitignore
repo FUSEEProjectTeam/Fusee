@@ -157,3 +157,5 @@ src/Uniplug/Cinema4D/ManagedPlugIn.VC.db
 #PTSV generated stuff below Blender Python AddOn
 src/Tools/BlenderScripts/addons/io_export_fus/bin/
 
+/art/RocketModel/RocketFus.blend1
+/art/RocketModel/RocketLogo.blend1

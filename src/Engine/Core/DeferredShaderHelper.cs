@@ -2,6 +2,7 @@
 using Fusee.Engine.Common;
 using Fusee.Engine.Imp.Graphics.Web;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
