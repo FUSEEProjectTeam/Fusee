@@ -73,7 +73,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new NotImplementedException();
         }
-
+     
         [JSExternal]
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
         {

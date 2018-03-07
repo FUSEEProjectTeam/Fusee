@@ -457,10 +457,11 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 });
-                _defaultEffect.AttachToContext(_rc);
+                // _defaultEffect.AttachToContext(_rc);
+                _rc.SetShaderEffect(_defaultEffect);
 
-                // Check for hardware capabilities:
-                DoRenderDeferred = _wantToRenderDeferred;
+                 // Check for hardware capabilities:
+                 DoRenderDeferred = _wantToRenderDeferred;
                 DoRenderWithShadows = _wantToRenderWithShadows;
                 DoRenderEnvMap = _wantToRenderEnvMap;
             }
@@ -477,15 +478,15 @@ namespace Fusee.Engine.Core
             
             if (DoRenderWithShadows)
             {
-                RenderWithShadow(rc);
+            //    RenderWithShadow(rc);
             }
             else if (DoRenderDeferred)
             {
-                RenderDeferredPasses(rc);
+             //   RenderDeferredPasses(rc);
             }
             else if (DoRenderEnvMap)
             {
-                RenderEnvMapPasses(rc);
+             //   RenderEnvMapPasses(rc);
             }
             else
             {
@@ -495,7 +496,7 @@ namespace Fusee.Engine.Core
          }
 
 
-        private void RenderDeferredPasses(RenderContext rc)
+ /*       private void RenderDeferredPasses(RenderContext rc)
         {
             SetContext(rc);
             
@@ -677,7 +678,7 @@ namespace Fusee.Engine.Core
             DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
             DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(rc);
         }
-
+        */
         #region Visitors
 
         [VisitMethod]
@@ -868,27 +869,27 @@ namespace Fusee.Engine.Core
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
-                    RenderFirstShadowPass(rm);
+                  //  RenderFirstShadowPass(rm);
                 }
                 else
                 {
-                    RenderSecondShadowPass(rm, effect);
+                  //  RenderSecondShadowPass(rm, effect);
                 }
             }
             else if (DoRenderDeferred)
             {
-                if (DeferredShaderHelper.CurrentRenderPass == 0)
-                    RenderDeferredModelPass(rm, effect);
+               // if (DeferredShaderHelper.CurrentRenderPass == 0)
+                 //   RenderDeferredModelPass(rm, effect);
             }
             else if (DoRenderEnvMap)
             {
                 if (DeferredShaderHelper.CurrentRenderPass == 0)
                 {
-                    RenderEnvMapFirstPass(rm, effect);
+                   // RenderEnvMapFirstPass(rm, effect);
                 }
                 else
                 {
-                    RenderEnvMapSecondPass(rm, effect);
+                   // RenderEnvMapSecondPass(rm, effect);
                 }
             }
             else
@@ -903,12 +904,14 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < _lightComponents.Keys.Count; i++)
             {
                 UpdateLightParamsInPixelShader(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], effect);
-                effect.RenderMesh(rm);
+                //effect.RenderMesh(rm);
+                _rc.SetShaderEffect(effect);
+                _rc.Render(rm);
             }
         }
 
         // TODO: Assemble all effect params accordingly from current ShaderEffect and pass them to GBufferPassShaderEffect
-        private static void RenderDeferredModelPass(Mesh rm, ShaderEffect effect)
+       /* private static void RenderDeferredModelPass(Mesh rm, ShaderEffect effect)
         {
             var diffuse = float3.One;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
@@ -918,14 +921,14 @@ namespace Fusee.Engine.Core
             /*   var specularIntensity = 1.0f;
             if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
                 specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
-                */
+                */ /*
             DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
             //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
 
             DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
-        }
+        } */
 
-        private void RenderDeferredLightPass() {
+    /*    private void RenderDeferredLightPass() {
             
             if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
 
@@ -1068,7 +1071,7 @@ namespace Fusee.Engine.Core
             // Now we can render a normal pass
             RenderStandardPass(rm, effect);
 
-        }
+        } */
 
         private static void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
         {
@@ -1093,7 +1096,8 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
+            //mat.AttachToContext(_rc);
             _matMap.Add(mc, mat);
             return mat;
         }
@@ -1103,7 +1107,8 @@ namespace Fusee.Engine.Core
             if (_lightMatMap.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            //mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
             _lightMatMap.Add(mc, mat);
             return mat;
         }
@@ -1114,7 +1119,8 @@ namespace Fusee.Engine.Core
             if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            //mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
             _pbrComponent.Add(mc, mat);
             return mat;
         }
@@ -1127,7 +1133,8 @@ namespace Fusee.Engine.Core
             if (_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect)) return shaderEffect;
 
             shaderEffect = MakeShader(shaderComponent);
-            shaderEffect.AttachToContext(_rc);
+            //shaderEffect.AttachToContext(_rc);
+            _rc.SetShaderEffect(shaderEffect);
             _shaderEffectMap.Add(shaderComponent, shaderEffect);
             return shaderEffect;
         }

@@ -352,19 +352,21 @@ namespace Fusee.Engine.Core.GUI
 
             if (RContext != null)
             {
-                TextShader.DetachFromContext();
+                //TextShader.DetachFromContext();
                 TextShader = null;
             }
 
             RContext = rc;
 
             if (GUIShader != null)
-                GUIShader.AttachToContext(RContext);
+                rc.SetShaderEffect(GUIShader);
+                //GUIShader.AttachToContext(RContext);
 
             if (FontMap != null)
             { 
                 CreateTextShader(rc.CreateTexture(FontMap.Image));
-                TextShader.AttachToContext(RContext);
+                //TextShader.AttachToContext(RContext);
+                rc.SetShaderEffect(GUIShader);
             }
 
             Refresh();
@@ -374,8 +376,8 @@ namespace Fusee.Engine.Core.GUI
         {
             RContext = null;
  
-            if (GUIShader != null) GUIShader.DetachFromContext();
-            if (TextShader != null) TextShader.DetachFromContext();
+           // if (GUIShader != null) GUIShader.DetachFromContext();
+           // if (TextShader != null) TextShader.DetachFromContext();
         }
 
         protected void SetTextMesh(int posX, int posY)
@@ -603,12 +605,14 @@ namespace Fusee.Engine.Core.GUI
 
 
             if (GUIShader != null && GUIMesh != null)
-                GUIShader.RenderMesh(GUIMesh);
+                //GUIShader.RenderMesh(GUIMesh); // TODO: FIX THIS
+                rc.SetShaderEffect(GUIShader);
 
             if (TextShader != null && TextMesh != null)
             {
                 TextShader.SetEffectParam("uColor", _textColor);
-                TextShader.RenderMesh(TextMesh);
+                // TextShader.RenderMesh(TextMesh); // TODO: FIX THIS
+                rc.SetShaderEffect(GUIShader);
             }
         }
     }

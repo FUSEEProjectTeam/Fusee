@@ -125,6 +125,6 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Occurs when [Resize] is called.
         /// </summary>
-        event EventHandler<ResizeEventArgs> Resize;    
+        event EventHandler Resize;    
     }
 }

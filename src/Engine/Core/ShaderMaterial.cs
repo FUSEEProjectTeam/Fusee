@@ -53,7 +53,7 @@
         /// <param name="rc">The rc.</param>
         public void UpdateMaterial(RenderContext rc)
         {
-            rc.SetShader(_sp);
+           // rc.SetShader(_sp);
         }
 
         #endregion

@@ -203,6 +203,7 @@ namespace Fusee.Engine.Common
         /// <param name="gHandle">The GBufferHandle</param>
         void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle);
 
+
         /// <summary>
         /// Updates the texture from video the given video stream.
         /// </summary>

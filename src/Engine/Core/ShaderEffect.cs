@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using System.Dynamic;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -13,21 +15,27 @@ namespace Fusee.Engine.Core
     /// </summary>
     public struct EffectPassDeclaration
     {
+        /// <summary>
+        /// 
+        /// </summary>
         public RenderStateSet StateSet;
         public string VS;
         public string PS;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public struct EffectParameterDeclaration
     {
         public string Name;
         public object Value;
     }
 
-    internal sealed class EffectParam
+    public sealed class EffectParam
     {
         public ShaderParamInfo Info;
-        public Object Value;
+        public object Value;
         public List<int> ShaderInxs;
     }
 
@@ -36,17 +44,36 @@ namespace Fusee.Engine.Core
     /// pair of Pixel and Vertex Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect
+    public class ShaderEffect //: DynamicObject, IDisposable
     {
-        private readonly RenderStateSet[] _states;
-        private ShaderProgram[] _compiledShaders; 
-        private readonly string[] _vertexShaderSrc;
-        private readonly string[] _pixelShaderSrc;
-        private Dictionary<string, EffectParam> _parameters;
-        private List<List<EffectParam>> _paramsPerPass;
-        private Dictionary<string, object> _paramDecl;
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly string[] VertexShaderSrc;
+        /// <summary>
+        /// 
+        /// </summary>
+        public readonly string[] PixelShaderSrc;
 
-        internal RenderContext _rc;
+        public readonly RenderStateSet[] States;
+        public IShaderProgramImp[] CompiledShaders;
+
+        public Dictionary<string, EffectParam> Parameters;
+        public List<List<EffectParam>> ParamsPerPass;
+        public Dictionary<string, object> ParamDecl;
+
+        //internal RenderContext _rc; // removed https://github.com/FUSEEProjectTeam/Fusee/issues/39
+
+        // Event of mesh Data changes
+        /// <summary>
+        /// MeshChanged event notifies observing MeshManager about property changes and the Mesh's disposal.
+        /// </summary>
+        public event EventHandler<ShaderEffectChangedArgs> ShaderEffectChanged;
+
+        /// <summary>
+        /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
+        /// </summary>
+        public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
 
         /// <summary>
         /// The constructor to create a shader effect.
@@ -63,33 +90,35 @@ namespace Fusee.Engine.Core
         public ShaderEffect(EffectPassDeclaration[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
             if (effectPasses == null || effectPasses.Length == 0)
-                throw new ArgumentNullException("effectPasses", "must not be null and must contain at least one pass");
+                throw new ArgumentNullException(nameof(effectPasses), "must not be null and must contain at least one pass");
             
-            int nPasses = effectPasses.Length;
+            var nPasses = effectPasses.Length;
             
-            _states = new RenderStateSet[nPasses];
-            _compiledShaders = new ShaderProgram[nPasses];
-            _vertexShaderSrc = new string[nPasses];
-            _pixelShaderSrc = new string[nPasses];
+            States = new RenderStateSet[nPasses];
+            CompiledShaders = new IShaderProgramImp[nPasses];
+            VertexShaderSrc = new string[nPasses];
+            PixelShaderSrc = new string[nPasses];
 
-            for (int i = 0; i < nPasses; i++)
+            for (var i = 0; i < nPasses; i++)
             {
-                _states[i] = effectPasses[i].StateSet;
-                _vertexShaderSrc[i] = effectPasses[i].VS;
-                _pixelShaderSrc[i] = effectPasses[i].PS;
+                States[i] = effectPasses[i].StateSet;
+                VertexShaderSrc[i] = effectPasses[i].VS;
+                PixelShaderSrc[i] = effectPasses[i].PS;
             }
 
-            _paramDecl = new Dictionary<string, object>();
+            ParamDecl = new Dictionary<string, object>();
 
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
                 {
-                    _paramDecl.Add(param.Name, param.Value);
+                    ParamDecl.Add(param.Name, param.Value);
                 }
             }
         }
 
+
+        /*
         /// <summary>
         /// Attaches this instance to a RenderContext. 
         /// </summary>
@@ -182,7 +211,9 @@ namespace Fusee.Engine.Core
                 }
             }                   
         }
+        */
 
+        /*
         /// <summary>
         /// Detaches the shader effect from a given context.
         /// </summary>
@@ -194,76 +225,77 @@ namespace Fusee.Engine.Core
             _compiledShaders = null;
             _rc = null;
         }
+        */
 
- 
-        /// <summary>
-        /// Renders geometry on the attached RenderContext using this shader effect. All rendering passes are applied 
-        /// to the geometry in the order of appearance within the <see cref="EffectPassDeclaration"/> array provided
-        /// in the constructor.
-        /// </summary>
-        /// <param name="mesh">The mesh to render.</param>
-        public void RenderMesh(Mesh mesh)
+        /*
+    /// <summary>
+    /// Renders geometry on the attached RenderContext using this shader effect. All rendering passes are applied 
+    /// to the geometry in the order of appearance within the <see cref="EffectPassDeclaration"/> array provided
+    /// in the constructor.
+    /// </summary>
+    /// <param name="mesh">The mesh to render.</param>
+    public void RenderMesh(Mesh mesh)
+    {
+        int i = 0, nPasses = _vertexShaderSrc.Length;
+        try
         {
-            int i = 0, nPasses = _vertexShaderSrc.Length;
-            try
+            for (i = 0; i < nPasses; i++)
             {
-                for (i = 0; i < nPasses; i++)
+                // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
+                _rc.SetShader(_compiledShaders[i]);
+                foreach (var param in _paramsPerPass[i])
                 {
-                    // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    _rc.SetShader(_compiledShaders[i]);
-                    foreach (var param in _paramsPerPass[i])
+                    if (param.Info.Type == typeof (int))
                     {
-                        if (param.Info.Type == typeof (int))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (int) param.Value);
-                        }
-                        else if (param.Info.Type == typeof (float))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float) param.Value);
-                        }
-                        else if (param.Info.Type == typeof(float2))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float2)param.Value);
-                        }
-                        else if (param.Info.Type == typeof(float3))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float3)param.Value);
-                        }
-                        else if (param.Info.Type == typeof(float4))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float4)param.Value);
-                        }
-                        else if (param.Info.Type == typeof(float4x4))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
-                        }
-                        else if (param.Info.Type == typeof(float4x4[]))
-                        {
-                            _rc.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
-                        }
-                        else if (param.Info.Type == typeof(ITexture))
-                        {
-                            _rc.SetShaderParamTexture(param.Info.Handle, (ITexture) param.Value);
-                        }
+                        _rc.SetShaderParam(param.Info.Handle, (int) param.Value);
                     }
-                    _rc.SetRenderState(_states[i]);
-
-                    // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
-                    _rc.Render(mesh);
+                    else if (param.Info.Type == typeof (float))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float) param.Value);
+                    }
+                    else if (param.Info.Type == typeof(float2))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float2)param.Value);
+                    }
+                    else if (param.Info.Type == typeof(float3))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float3)param.Value);
+                    }
+                    else if (param.Info.Type == typeof(float4))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float4)param.Value);
+                    }
+                    else if (param.Info.Type == typeof(float4x4))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                    }
+                    else if (param.Info.Type == typeof(float4x4[]))
+                    {
+                        _rc.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                    }
+                    else if (param.Info.Type == typeof(ITexture))
+                    {
+                        _rc.SetShaderParamTexture(param.Info.Handle, (ITexture) param.Value);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass " + i, ex);
+                _rc.SetRenderState(_states[i]);
+
+                // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
+                _rc.Render(mesh);
             }
         }
+        catch (Exception ex)
+        {
+            throw new Exception("Error while rendering pass " + i, ex);
+        }
+    } */
 
         public void SetEffectParam(string name, object value)
         {
             EffectParam param;
 
-            if (_parameters != null)
-                if (_parameters.TryGetValue(name, out param))
+            if (Parameters != null)
+                if (Parameters.TryGetValue(name, out param))
                 {
                     param.Value = value;
                 }           
@@ -272,11 +304,81 @@ namespace Fusee.Engine.Core
         public object GetEffectParam(string name)
         {
             EffectParam param;
-            if (_parameters.TryGetValue(name, out param))
+            if (Parameters.TryGetValue(name, out param))
             {
                 return param.Value;
             }
             return null;
         }
+
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        protected virtual void OnShaderEffectChanged()
+        {
+            ShaderEffectChanged?.Invoke(this, new ShaderEffectChangedArgs(this, Core.ShaderEffectChanged.UNIFORM_VAR_UPDATED));
+        }
+
+        /// <summary>
+        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// </summary>
+        public void Dispose()
+        {
+            var del = ShaderEffectChanged;
+            del?.Invoke(this, new ShaderEffectChangedArgs(this, Core.ShaderEffectChanged.DISPOSED));
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// </summary>
+        ~ShaderEffect()
+        {
+            Dispose();
+        }
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public class ShaderEffectChangedArgs : EventArgs
+    {
+        /// <summary>
+        /// This ShaderEffect fires the changed event
+        /// </summary>
+        public ShaderEffect Effect { get; }
+
+        /// <summary>
+        /// This is the changed event (e.g. updated uniform variable)
+        /// </summary>
+        public ShaderEffectChanged EffectEnum { get; }
+
+        /// <summary>
+        /// Creates a new ShaderEffectChanged object
+        /// </summary>
+        /// <param name="effect">Which ShaderEffect fires this event?</param>
+        /// <param name="effectEnum">The event (e.g. updated uniform variable)</param>
+        public ShaderEffectChangedArgs(ShaderEffect effect, ShaderEffectChanged effectEnum)
+        {
+            Effect = effect;
+            EffectEnum = effectEnum;
+        }
+    }
+
+    /// <summary>
+    /// This enum descripes all kinds of changes a ShaderEffect can fire
+    /// </summary>
+    [SuppressMessage("ReSharper", "InconsistentNaming")]
+    public enum ShaderEffectChanged
+    {
+        /// <summary>
+        /// 
+        /// </summary>
+        UNIFORM_VAR_UPDATED = 0,
+        /// <summary>
+        /// 
+        /// </summary>
+        DISPOSED
     }
 }

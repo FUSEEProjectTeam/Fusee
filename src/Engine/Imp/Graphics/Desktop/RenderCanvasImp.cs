@@ -259,6 +259,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // TODO: implement something useful here.
         }
 
+        public event EventHandler Resize;
+
         /// <summary>
         /// Runs this application instance.
         /// </summary>
@@ -595,6 +597,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _gameWindow.Exit();
         }
 
+        public event EventHandler Resize;
+
         /// <summary>
         /// Presents this application instance. Call this function after rendering to show the final image. 
         /// After Present is called the render buffers get flushed.
@@ -681,7 +685,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Occurs when [resize].
         /// </summary>
-        public event EventHandler<ResizeEventArgs> Resize;
+        public event EventHandler Resize;
 
         #endregion
 
@@ -720,7 +724,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         internal protected void DoResize()
         {
             if (Resize != null)
-                Resize(this, new ResizeEventArgs());
+                Resize(this, EventArgs.Empty);
         }
 
         #endregion

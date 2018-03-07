@@ -322,7 +322,7 @@ namespace Fusee.Engine.Core
             switch (_activeMode)
             {
                 case Stereo3DMode.Oculus:
-                    _rc.SetShader(_shaderProgram);
+                    //_rc.SetShader(_shaderProgram);
 
                     RenderDistortedEye(Stereo3DEye.Left);
                     RenderDistortedEye(Stereo3DEye.Right);
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
                     break;
 
                 case Stereo3DMode.Anaglyph:
-                    _rc.SetShader(_shaderProgram);
+                    //_rc.SetShader(_shaderProgram);
 
                     RenderColorMaskedEye(Stereo3DEye.Left, true, false, false, false);
                     _rc.Clear(ClearFlags.Depth);

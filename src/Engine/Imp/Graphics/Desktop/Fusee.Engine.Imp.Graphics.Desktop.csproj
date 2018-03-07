@@ -89,6 +89,10 @@
       <Name>Fusee.Engine.Common</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Core\Fusee.Engine.Core.csproj">
+      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+      <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="..\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
