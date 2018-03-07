@@ -107,12 +107,15 @@ message MaterialPBRComponent {
    optional float FresnelReflectance = 2 [default = 0];
    optional float DiffuseFraction = 3 [default = 0];
 }
-message MeshComponent {
+message Mesh {
    repeated float3 Vertices = 1;
-   repeated float3 Normals = 2;
-   repeated float2 UVs = 3;
-   repeated uint32 Triangles = 4;
-   optional AABBf BoundingBox = 5;
+   repeated uint32 Colors = 2;
+   repeated float3 Normals = 3;
+   repeated float2 UVs = 4;
+   repeated float4 BoneWeights = 5;
+   repeated float4 BoneIndices = 6;
+   repeated uint32 Triangles = 7;
+   optional AABBf BoundingBox = 8;
 }
 message MinMaxRect {
    optional float2 Min = 1;
@@ -131,7 +134,7 @@ message SceneComponentContainer {
    optional string Name = 1;
    // the following represent sub-types; at most 1 should have a value
    optional TransformComponent TransformComponent = 100;
-   optional MeshComponent MeshComponent = 101;
+   optional Mesh Mesh = 101;
    optional MaterialComponent MaterialComponent = 102;
    optional LightComponent LightComponent = 103;
    optional WeightComponent WeightComponent = 104;

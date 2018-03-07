@@ -99,11 +99,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Do not call. Used for internal traversal purposes only
         /// </summary>
-        /// <param name="meshComponent">The mesh component.</param>
+        /// <param name="mesh">The mesh component.</param>
         [VisitMethod]
-        public void OnMesh(MeshComponent meshComponent)
+        public void OnMesh(Mesh mesh)
         {
-            var box = _state.ModelView * meshComponent.BoundingBox;
+            var box = _state.ModelView * mesh.BoundingBox;
             if (!_boxValid)
             {
                 _result = box;
@@ -209,7 +209,6 @@ namespace Fusee.Engine.Core
 
         #region Traversal information
 
-        private Dictionary<MeshComponent, Mesh> _meshMap;
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
@@ -447,7 +446,6 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
                 _rcViewportOriginalSize = new float2(_rc.ViewportWidth, _rc.ViewportHeight);
-                _meshMap = new Dictionary<MeshComponent, Mesh>();
                 _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
                 _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
                 _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
@@ -804,14 +802,14 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void RenderMesh(MeshComponent meshComponent)
+        public void RenderMesh(Mesh mesh)
         {
-            Mesh rm;
-            if (!_meshMap.TryGetValue(meshComponent, out rm))
-            {
-                rm = MakeMesh(meshComponent);
-                _meshMap.Add(meshComponent, rm);
-            }
+            Mesh rm = mesh;
+            //if (!_meshMap.TryGetValue(mesh, out rm))
+            //{
+            //    rm = MakeMesh(mesh);
+            //    _meshMap.Add(mesh, rm);
+            //}
 
             RenderCurrentPass(rm, _state.Effect);
         }
@@ -1163,7 +1161,7 @@ namespace Fusee.Engine.Core
             return shaderEffect;
         }
 
-        public Mesh MakeMesh(MeshComponent mc)
+        public Mesh MakeMesh(Mesh mc)
         {
             WeightComponent wc = CurrentNode.GetWeights();
             Mesh rm;

@@ -254,6 +254,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return texID;
         }
 
+        
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
         /// Creates also a framebufferobject and installs convenience methods for binding and reading.
@@ -273,7 +274,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         case WritableTextureFormat.CubeMap:
                         returnTexture = CreateCubeMapFramebuffer(width, height);
                         break;
-                        case WritableTextureFormat.GBuffer:
+                        case WritableTextureFormat.RenderTargetTexture:
+                        returnTexture = CreateRenderTargetTextureFramebuffer(width, height);
+                        break;
+                    case WritableTextureFormat.GBuffer:
                         returnTexture = CreateGBufferFramebuffer(width, height);
                         break;
                     default:
@@ -444,7 +448,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return new Texture { handle = textureHandle, fboHandle = fboHandle };
         }
 
-        private static Texture CreateCubeMapFramebuffer(int width ,int height)
+        private static Texture CreateCubeMapFramebuffer(int width, int height)
         {
 
             //throw new NotImplementedException("Currently not implemented!");
@@ -469,21 +473,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                (int)TextureWrapMode.ClampToEdge);
 
             // HDR Texture
-             for (var i = 0; i < 6; i++) 
+            for (var i = 0; i < 6; i++)
                 GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgb32f, width, height, 0,
                     OpenTK.Graphics.OpenGL.PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            
+
             // create the fbo
             GL.GenFramebuffers(1, out framebuffer);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMap, cubeMapTextureHandle, 0);
-            
+
             // create the uniform depth buffer
             GL.GenRenderbuffers(1, out depthBuffer);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-          
+
             // Bind normal buffer again
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
             //GL.BindTexture(TextureTarget.TextureCubeMap, 0);
@@ -492,8 +496,59 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
-            
+
             return new Texture { handle = cubeMapTextureHandle, fboHandle = framebuffer };
+        }
+
+        private static Texture CreateRenderTargetTextureFramebuffer(int width, int height)
+        {
+            // configure 4x MSAA framebuffer
+            int msaa_level = 4;
+            // --------------------------
+            GL.GenFramebuffers(1, out int framebuffer);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
+
+            // create a multisampled color attachment texture
+            var textureColorBufferMultiSampled = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2DMultisample, textureColorBufferMultiSampled);
+            GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, msaa_level, PixelInternalFormat.Rgba32f, width, height, true);
+            GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
+                TextureTarget.Texture2DMultisample, textureColorBufferMultiSampled, 0);
+            
+            // create a (also multisampled) renderbuffer object for depth and stencil attachments
+            GL.GenRenderbuffers(1, out int rbo);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
+            GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, msaa_level, RenderbufferStorage.Depth24Stencil8, width, height);
+            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
+            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment,
+                RenderbufferTarget.Renderbuffer, rbo);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            {
+                throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            }
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+            // configure second post-processing framebuffer
+            //unsigned int intermediateFBO;
+            GL.GenFramebuffers(1, out int intermediateFbo);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, intermediateFbo);
+
+            //// create a color attachment texture (multisampled texture will be blitted into screenTexture)
+            int screenTexture = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, screenTexture);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, width, height, 0, OpenTK.Graphics.OpenGL.PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0,
+                TextureTarget.Texture2D, screenTexture, 0);
+
+            // Handle= the blitted texture that will be used as shaderparam sampler2D...
+            return new Texture { handle = screenTexture, renderToTextureBufferHandle = framebuffer, intermediateToTextureBufferHandle = intermediateFbo, textureWidth = width, textureHeight = height };
         }
 
         #endregion
@@ -1396,7 +1451,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
@@ -1406,7 +1461,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveNormals(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).NormalBufferObject);
@@ -1416,7 +1471,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveColors(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).ColorBufferObject);
@@ -1426,7 +1481,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveUVs(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).UVBufferObject);
@@ -1436,7 +1491,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveTriangles(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).ElementBufferObject);
@@ -1446,7 +1501,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneWeights(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).BoneWeightBufferObject);
@@ -1456,7 +1511,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
-        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveBoneIndices(IMeshImp mr)
         {
             GL.DeleteBuffer(((MeshImp)mr).BoneIndexBufferObject);
@@ -2053,6 +2108,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //Clear(ClearFlags.Depth | ClearFlags.Color);
 
         }
+
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
@@ -2090,7 +2146,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
               
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
-            } 
+            }
+            // RenderToTexture Handle is set -> OffScreen FrameBuffer with Color and Depth attachment
+            else if (textureImp.renderToTextureBufferHandle != -1)
+            {
+                if (!textureImp.toggle)
+                {
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.renderToTextureBufferHandle);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, textureImp.handle, 0);
+                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+                    GL.Enable(EnableCap.DepthTest);
+                    GL.Enable(EnableCap.Multisample);
+                    textureImp.toggle = true;
+                }
+                else
+                {
+                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.renderToTextureBufferHandle);
+                    GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.intermediateToTextureBufferHandle);
+                    GL.BlitFramebuffer(0, 0, textureImp.textureWidth, textureImp.textureHeight, 0, 0,
+                        textureImp.textureWidth, textureImp.textureHeight, ClearBufferMask.ColorBufferBit,
+                        BlitFramebufferFilter.Nearest);
+                    //glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+                    textureImp.toggle = false;
+                }
+                
+            }
         }
 
         
