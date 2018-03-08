@@ -49,22 +49,6 @@ namespace Fusee.Engine.Core
             };
         }
         #endregion
-
-
-        /// <summary>
-        /// Creates a MeshComponent from a new Plane.
-        /// </summary>
-        public static Mesh CreatePlane()
-        {
-            var plane = new Plane();
-            return new Mesh
-            {
-                Vertices = plane.Vertices,
-                Triangles = plane.Triangles,
-                UVs = plane.UVs,
-                Normals = plane.Normals,
-            };
-        }
     }
 }
 

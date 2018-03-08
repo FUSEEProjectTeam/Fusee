@@ -109,7 +109,7 @@ namespace Fusee.Engine.Core
 
             _sphereVertices = new List<float3>();
             _middlePointIndexCache = new Dictionary<Int64, int>();
-            var sphere = Create(subdivLevel);
+            var sphere = CreateIcosphere(subdivLevel);
 
             Vertices = sphere.Vertices;
             Triangles = sphere.Triangles;
@@ -117,7 +117,7 @@ namespace Fusee.Engine.Core
             UVs = sphere.UVs;
         }
 
-        private Mesh Create(int recursionLevel)
+        private Mesh CreateIcosphere(int recursionLevel)
         {
             Mesh mesh = new Icosahedron();
 
@@ -211,23 +211,6 @@ namespace Fusee.Engine.Core
             _middlePointIndexCache.Add(key, i);
             return i;
         }
-
-        /// <summary>
-        /// Creates a MeshComponent from a new Plane.
-        /// </summary>
-        /// <param name="subdivLvl">Subdivision levels for the Icosphere</param>
-        public static Mesh CreateIcosphere(int subdivLvl)
-        {
-            var plane = new Icosphere(subdivLvl);
-            return new Mesh
-            {
-                Vertices = plane.Vertices,
-                Triangles = plane.Triangles,
-                UVs = plane.UVs,
-                Normals = plane.Normals,
-            };
-        }
-
     }
 
     /// <summary>

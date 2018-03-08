@@ -28,7 +28,7 @@ namespace Fusee.Engine.Examples.S3D.Core
 
         #region Shader
         static readonly string GUIVS = @"
-            uniform mat4 guiXForm;
+            
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
@@ -50,8 +50,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             uniform vec4 blendColor;
             varying vec2 vUV;
             varying vec4 vColor;
-            uniform sampler2D tex;
-            
+                        
             void main(void) {
                 gl_FragColor = vec4(vec3(0.5,0.5,0.5), 0.7);   
             }";
@@ -108,8 +107,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             Shininess = 100f
                                         }
                                     },
-
-                                    Cube.CreateCube()
+                                    new Cube()
 
                                 },
                                 Children = new List<SceneNodeContainer>()
@@ -141,7 +139,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                                     Shininess = 100f
                                                 }
                                             },
-                                            Icosphere.CreateIcosphere(6)
+                                            new Icosphere(6)
 
                                         }
                                     },
@@ -179,7 +177,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             new EffectParameterDeclaration {Name = "tex", Value = rc.CreateTexture(AssetStorage.Get<ImageData>("grid.jpg"))},
                                             new EffectParameterDeclaration {Name = "blendColor", Value = new float4(0.5f,0.5f,0.5f,0.5f)},
                                         })),
-                                   Plane.CreatePlane()
+                                   new Plane()
                                 }
                             },
 

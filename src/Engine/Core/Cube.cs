@@ -125,21 +125,6 @@ namespace Fusee.Engine.Core
             };
         }
 
-        /// <summary>
-        /// Creates a MeshComponent from a new Cube.
-        /// </summary>
-       public static Mesh CreateCube()
-        {
-            var cube = new Cube();
-            return new Mesh
-            {
-                Vertices = cube.Vertices,
-                Triangles = cube.Triangles,
-                UVs = cube.UVs,
-                Normals = cube.Normals,
-            };
-        }
-
         #endregion
     }
 }

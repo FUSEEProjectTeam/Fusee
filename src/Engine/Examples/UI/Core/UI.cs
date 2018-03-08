@@ -11,7 +11,7 @@ namespace Fusee.Engine.Examples.UI.Core
     public class UI : RenderCanvas
     {
         protected readonly string GUIVS = @"
-            uniform mat4 guiXForm;
+            
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
@@ -33,7 +33,6 @@ namespace Fusee.Engine.Examples.UI.Core
                 precision highp float;
             #endif    
   
-            uniform vec4 blendColor;
             varying vec2 vUV;
             varying vec4 vColor;
 
@@ -105,7 +104,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                             {
                                                 Diffuse = new MatChannelContainer {Color = new float3(0,1,0)},
                                             },
-                                            Cube.CreateCube()
+                                            new Cube()
                                         }
                                     },
 
@@ -145,7 +144,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                     {
                                                         Diffuse = new MatChannelContainer {Color = new float3(1,0,0)}
                                                     },
-                                                    Cube.CreateCube()
+                                                    new Cube()
                                                 },
                                                 Children = new List<SceneNodeContainer>
                                                 {
@@ -184,7 +183,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                                    {
                                                                        Diffuse = new MatChannelContainer {Color = ColorUint.Yellow.Tofloat3()},
                                                                    },
-                                                                   Cube.CreateCube()
+                                                                   new Cube()
                                                                }
                                                            }
                                                        }
@@ -246,7 +245,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                    Color = new float3(1,0,0)
                                                 }
                                             },
-                                            Plane.CreatePlane(Orientation.UP)
+                                            new Plane()
                                         }
                                     },
                                     new SceneNodeContainer
@@ -300,10 +299,9 @@ namespace Fusee.Engine.Examples.UI.Core
                                                         new[]
                                                         {
                                                             new EffectParameterDeclaration {Name = "tex", Value = RC.CreateTexture(AssetStorage.Get<ImageData>("FuseeText.png"))},
-                                                            //new EffectParameterDeclaration {Name = "guiXForm", Value = float4x4.Identity},
                                                             new EffectParameterDeclaration {Name = "blendColor", Value = float4.One},
                                                         })),
-                                                    Plane.CreatePlane(Orientation.UP)
+                                                    new Plane()
                                                 }
                                             }
                                         }
