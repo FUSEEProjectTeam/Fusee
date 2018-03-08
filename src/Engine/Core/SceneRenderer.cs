@@ -798,6 +798,7 @@ namespace Fusee.Engine.Core
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
             _state.Effect = shaderComponent.Effect;
+           // _state.Effect.SetEffectParam("guiXForm", _rc.ModelViewProjection);
         }
 
         [VisitMethod]

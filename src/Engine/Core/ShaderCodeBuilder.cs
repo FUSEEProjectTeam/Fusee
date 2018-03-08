@@ -540,7 +540,7 @@ namespace Fusee.Engine.Core
             };
 
             if (_materialProbs.HasDiffuseTexture)
-                methodBody.Add($"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
+                methodBody.Add($"return (texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName}) + (1.0- {DiffuseMixName} )*( max(diffuseTerm, 0.0)* {DiffuseColorName}* intensities);");
             else
                 methodBody.Add($"return ({DiffuseColorName} * intensities * diffuseTerm);");
 

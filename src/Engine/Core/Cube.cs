@@ -124,6 +124,7 @@ namespace Fusee.Engine.Core
                 new float2(0, 0)
             };
         }
+
         #endregion
     }
 }

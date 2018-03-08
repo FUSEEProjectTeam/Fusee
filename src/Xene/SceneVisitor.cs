@@ -525,18 +525,62 @@ namespace Fusee.Xene
         private void DoVisitComponent(SceneComponentContainer component)
         {
             VisitComponentMethod visitComponent;
-            if (_visitors.Components.TryGetValue(component.GetType(), out visitComponent))
+            var compType = component.GetType();
+
+            if (_visitors.Components.TryGetValue(compType, out visitComponent))
             {
+                // Fast lane: we found a directly matching Visitor. Call it and leave.
                 visitComponent(this, component);
+            }
+            else
+            {
+                // See if we find a matching Visitor up the inheritance hierarchy of the component's type
+                var ancestorType = compType.BaseType;
+                while (ancestorType != null)
+                {
+                    if (_visitors.Components.TryGetValue(ancestorType, out visitComponent))
+                    {
+                        // Found a handler. Register it for fast handling of future Visits of components with the same type!
+                        _visitors.Components[compType] = visitComponent;
+                        visitComponent(this, component);
+                        return;
+                    }
+                    // one step up the inheritance hierarchy
+                    ancestorType = ancestorType.BaseType;
+                }
+                // No matching Visitor among the ancestors. Add a dummy
+                _visitors.Components[compType] = (th, comp) => { };
             }
         }
 
         private void DoVisitNode(SceneNodeContainer node)
         {
             VisitNodeMethod visitNode;
-            if (_visitors.Nodes.TryGetValue(node.GetType(), out visitNode))
+            var nodeType = node.GetType();
+
+            if (_visitors.Nodes.TryGetValue(nodeType, out visitNode))
             {
+                // Fast lane: we found a directly matching Visitor. Call it and leave.
                 visitNode(this, node);
+            }
+            else
+            {
+                // See if we find a matching Visitor up the inheritance hierarchy of the nodes's type
+                var ancestorType = nodeType.BaseType;
+                while (ancestorType != null)
+                {
+                    if (_visitors.Nodes.TryGetValue(ancestorType, out visitNode))
+                    {
+                        // Found a handler. Register it for fast handling of future Visits of nodes with the same type!
+                        _visitors.Nodes[nodeType] = visitNode;
+                        visitNode(this, node);
+                        return;
+                    }
+                    // one step up the inheritance hierarchy
+                    ancestorType = ancestorType.BaseType;
+                }
+                // No matching Visitor among the ancestors. Add a dummy
+                _visitors.Nodes[nodeType] = (th, comp) => { };
             }
         }
     }
