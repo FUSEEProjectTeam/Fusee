@@ -15,6 +15,7 @@ namespace Fusee.Engine.Examples.UI.Core
             attribute vec3 fuVertex;
             attribute vec2 fuUV;
             attribute vec4 fuColor;
+
             uniform mat4 FUSEE_MVP;                 
 
             varying vec2 vUV;

@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core
                 new float3 {x = +0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = -0.5f, y = -0.5f, z = +0.5f},
                 new float3 {x = -0.5f, y = -0.5f, z = -0.5f}
-            
+
             };
 
             Triangles = new ushort[]
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
 
                 // bottom face
                 20, 22, 21, 20, 23, 22
-            
+
             };
 
             Normals = new[]
@@ -124,6 +124,7 @@ namespace Fusee.Engine.Core
                 new float2(0, 0)
             };
         }
+        #endregion
 
         #endregion
     }
