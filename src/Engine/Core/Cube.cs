@@ -125,7 +125,5 @@ namespace Fusee.Engine.Core
             };
         }
         #endregion
-
-        #endregion
     }
 }
