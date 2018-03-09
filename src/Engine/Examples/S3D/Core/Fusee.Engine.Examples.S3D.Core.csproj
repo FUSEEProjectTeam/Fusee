@@ -96,7 +96,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\baymax_scene.fus">
+    <None Include="Assets\Baymax.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Assets\Sandbox.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             SetWindowSize(1920, 1080, 0, 0, true);
 
             // TODO: Replace with scene from group A
-            _sceneA = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
+            _sceneA = AssetStorage.Get<SceneContainer>("Sandbox.fus");
 
             #region Initialize members BC
 
@@ -87,7 +87,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             #endregion
 
 
-            _sceneD = AssetStorage.Get<SceneContainer>("baymax_scene.fus");
+            _sceneD = AssetStorage.Get<SceneContainer>("Baymax.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_sceneA);
