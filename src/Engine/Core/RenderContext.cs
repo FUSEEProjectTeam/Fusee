@@ -28,6 +28,7 @@ namespace Fusee.Engine.Core
 
         private ShaderProgram _currentShader;
         private readonly MatrixParamNames _currentShaderParams;
+        private ShaderEffect _currentShaderEffect;
 
         /* Removed Light support
         private readonly Light[] _lightParams;
@@ -1334,6 +1335,105 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Activates the passed shader effect as the current shader for geometry rendering.
+        /// </summary>
+        /// <param name="ef">The shader effect to compile and use.</param>
+        /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
+        /// task performed in this method is compiling the provided shader source code and uploading the shaders to
+        /// the gpu.</remarks>
+        public void SetShaderEffect(ShaderEffect ef)
+        {
+            if (_rci == null)
+               throw new ArgumentNullException("rc", "must pass a valid render context.");
+
+            if (ef == null)
+                return;
+
+
+            int i = 0, nPasses = ef.VertexShaderSrc.Length;
+
+            try // to compile all the shaders
+            {
+                for (i = 0; i < nPasses; i++)
+                {
+                    ef.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while compiling shader for pass " + i, ex);
+            }
+
+            // Enumerate all shader parameters of all passes and enlist them in lookup tables
+            ef.Parameters = new Dictionary<string, EffectParam>();
+            ef.ParamsPerPass = new List<List<EffectParam>>();
+            for (i = 0; i < nPasses; i++)
+            {
+                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
+                ef.ParamsPerPass.Add(new List<EffectParam>());
+                foreach (var paramNew in paramList)
+                {
+                    Object initValue;
+                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
+                    {
+                        // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
+                        // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
+                        // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
+
+                        // ReSharper disable UseMethodIsInstanceOfType
+                        // ReSharper disable OperatorIsCanBeUsed
+                        var initValType = initValue.GetType();
+                        if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
+                                  &&
+                                  (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
+                                )
+                                ||
+                                (paramNew.Type.IsAssignableFrom(initValType))
+                              )
+                           )
+                        {
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
+                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
+                        }
+                        // ReSharper restore OperatorIsCanBeUsed
+                        // ReSharper restore UseMethodIsInstanceOfType
+
+                        // Parameter was declared by user and type is correct in shader - carry on.
+                        EffectParam paramExisting;
+                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramExisting))
+                        {
+                            // The parameter is already there from a previous pass.
+                            if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                            {
+                                // This should never happen due to the previous error check. Check it anyway...
+                                throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
+                                                    paramNew.Name +
+                                                    " already defined with a different type in effect pass " +
+                                                    paramExisting.ShaderInxs[0]);
+                            }
+                            // List the current pass to use this shader parameter
+                            paramExisting.ShaderInxs.Add(i);
+                        }
+                        else
+                        {
+                            paramExisting = new EffectParam()
+                            {
+                                Info = paramNew,
+                                ShaderInxs = new List<int>(new int[] { i }),
+                                Value = initValue
+                            };
+                            ef.Parameters.Add(paramNew.Name, paramExisting);
+                        }
+                        ef.ParamsPerPass[i].Add(paramExisting);
+                    }
+                }
+
+                // register this shader effect as current shader
+                _currentShaderEffect = ef;
+            }
+        }
+
+        /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>
         /// <param name="program">The shader program to query for parameters.</param>
@@ -1563,9 +1663,7 @@ namespace Fusee.Engine.Core
         {
             _rci.SetCubeMapRenderTarget(texture, position);
         }
-
-
-
+        
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1576,11 +1674,64 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            IMeshImp meshImp = _meshManager.GetMeshImpFromMesh(m);
-            _rci.Render(meshImp);
+            if (_currentShaderEffect == null) return;
 
-            // After rendering always cleanup pending meshes
-            _meshManager.Cleanup();
+            int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
+            try
+            {
+                for (i = 0; i < nPasses; i++)
+                {
+                    // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
+                    SetShader(_currentShaderEffect.CompiledShaders[i]);
+                    foreach (var param in _currentShaderEffect.ParamsPerPass[i])
+                    {
+                        if (param.Info.Type == typeof(int))
+                        {
+                            SetShaderParam(param.Info.Handle, (int)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float))
+                        {
+                            SetShaderParam(param.Info.Handle, (float)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float2))
+                        {
+                            SetShaderParam(param.Info.Handle, (float2)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float3))
+                        {
+                            SetShaderParam(param.Info.Handle, (float3)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float4))
+                        {
+                            SetShaderParam(param.Info.Handle, (float4)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float4x4))
+                        {
+                            SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                        }
+                        else if (param.Info.Type == typeof(float4x4[]))
+                        {
+                            SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                        }
+                        else if (param.Info.Type == typeof(ITexture))
+                        {
+                            SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
+                        }
+                    }
+                    SetRenderState(_currentShaderEffect.States[i]);
+
+                    // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
+                    var meshImp = _meshManager.GetMeshImpFromMesh(m);
+                    _rci.Render(meshImp);
+
+                    // After rendering always cleanup pending meshes
+                    _meshManager.Cleanup();
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error while rendering pass " + i, ex);
+            }
         }
       
         public uint GetHardwareCapabilities(HardwareCapability capability)

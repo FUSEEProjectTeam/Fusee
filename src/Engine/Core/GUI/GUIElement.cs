@@ -352,20 +352,10 @@ namespace Fusee.Engine.Core.GUI
 
             if (RContext != null)
             {
-                TextShader.DetachFromContext();
                 TextShader = null;
             }
 
             RContext = rc;
-
-            if (GUIShader != null)
-                GUIShader.AttachToContext(RContext);
-
-            if (FontMap != null)
-            { 
-                CreateTextShader(rc.CreateTexture(FontMap.Image));
-                TextShader.AttachToContext(RContext);
-            }
 
             Refresh();
         }
@@ -373,9 +363,6 @@ namespace Fusee.Engine.Core.GUI
         protected internal virtual void DetachFromContext()
         {
             RContext = null;
- 
-            if (GUIShader != null) GUIShader.DetachFromContext();
-            if (TextShader != null) TextShader.DetachFromContext();
         }
 
         protected void SetTextMesh(int posX, int posY)
@@ -586,7 +573,6 @@ namespace Fusee.Engine.Core.GUI
         {
             PreRender(rc);
 
-
             float3 clipPivot = new float3(
                                  XPivot * 2.0f / RContext.ViewportWidth - 1.0f, 1.0f - YPivot * 2.0f / RContext.ViewportHeight, 0);
 
@@ -596,20 +582,31 @@ namespace Fusee.Engine.Core.GUI
                                     * float4x4.CreateScale(1.0f, (float)RContext.ViewportHeight / (float)RContext.ViewportWidth, 1) *
                                 float4x4.CreateTranslation(-clipPivot);
 
-            if (FontMap != null)
-                TextShader.SetEffectParam("guiXForm", guiXForm);
-            else
+            if (GUIShader != null)
+            {
+                RContext.SetShaderEffect(GUIShader);
+
                 GUIShader.SetEffectParam("guiXForm", guiXForm);
 
-
-            if (GUIShader != null && GUIMesh != null)
-                GUIShader.RenderMesh(GUIMesh);
-
-            if (TextShader != null && TextMesh != null)
-            {
-                TextShader.SetEffectParam("uColor", _textColor);
-                TextShader.RenderMesh(TextMesh);
+                if (GUIShader != null && GUIMesh != null)
+                    RContext.Render(GUIMesh);
             }
+
+            if (FontMap != null)
+            {
+                CreateTextShader(rc.CreateTexture(FontMap.Image));
+                RContext.SetShaderEffect(TextShader);
+
+                TextShader.SetEffectParam("guiXForm", guiXForm);
+
+                if (TextShader != null && TextMesh != null)
+                {
+                    TextShader.SetEffectParam("uColor", _textColor);
+                    RContext.Render(TextMesh);
+                }
+            }
+
+
         }
     }
 }
