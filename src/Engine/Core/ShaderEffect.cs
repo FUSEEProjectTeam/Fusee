@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
     /// pair of Pixel and Vertex Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect
+    public class ShaderEffect: IDisposable
     {
         public readonly RenderStateSet[] States;
         public ShaderProgram[] CompiledShaders;
@@ -46,7 +46,16 @@ namespace Fusee.Engine.Core
         public List<List<EffectParam>> ParamsPerPass;
         public Dictionary<string, object> ParamDecl;
 
-        //internal RenderContext _rc;
+        // Event ShaderEffect changes
+        /// <summary>
+        /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
+        /// </summary>
+        public event EventHandler<ShaderEffectEventArgs> ShaderEffectChanged;
+
+        /// <summary>
+        /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
+        /// </summary>
+        public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
 
         /// <summary>
         /// The constructor to create a shader effect.
@@ -90,6 +99,19 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// </summary>
+        ~ShaderEffect()
+        {
+            Dispose();
+        }
+
+        public void Dispose()
+        {
+            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
+        }
+
         public void SetEffectParam(string name, object value)
         {
             EffectParam param;
@@ -98,7 +120,8 @@ namespace Fusee.Engine.Core
                 if (Parameters.TryGetValue(name, out param))
                 {
                     param.Value = value;
-                }           
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM));
+                }
         }
 
         public object GetEffectParam(string name)
@@ -111,4 +134,24 @@ namespace Fusee.Engine.Core
             return null;
         }
     }
+
+    public class ShaderEffectEventArgs : EventArgs
+    {
+        public ShaderEffect Effect { get; }
+        public ShaderEffectChangedEnum Changed { get; }
+
+        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed)
+        {
+            Effect = effect;
+            Changed = changed;
+        }
+    }
+
+    public enum ShaderEffectChangedEnum
+    {
+        DISPOSE = 0,
+        CHANGED_EFFECT_PARAM
+
+    }
+
 }

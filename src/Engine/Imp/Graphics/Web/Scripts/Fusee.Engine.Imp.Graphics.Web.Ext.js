@@ -1123,7 +1123,27 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             var ret = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp();
             ret.Program = program;
+
+            // mr: Detach Shader & delete
+            this.gl.detachShader(program, fragmentObject);
+            this.gl.detachShader(program, vertexObject);
+            this.gl.deleteShader(fragmentObject);
+            this.gl.deleteShader(vertexObject);
+
             return ret;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "RemoveShader",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderProgramImp")]),
+        function RemoveShader(shader) {
+
+            if (this.context == null) return;
+
+            this.gl.finish();
+            this.gl.flush();
+            this.gl.deleteShader(shader);
+            this.gl.deleteProgram(shader);
         }
     );
 
