@@ -12,7 +12,6 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core;
 using ClampColorMode = OpenTK.Graphics.OpenGL4.ClampColorMode;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
@@ -788,7 +787,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
             return f;
         }
+        
+        /// <inheritdoc />
+        /// <summary>
+        /// Removes shader from the GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            if (_renderContextImpImplementation == null) return; // if no RenderContext is available return otherwise memory read error
+          
+            var program = ((ShaderProgramImp) sp).Program;
+            
+            // wait for all threads to be finished
+            GL.Finish();
+            GL.Flush();
 
+            // cleanup
+            GL.DeleteShader(program);
+            GL.DeleteProgram(program);
+        }
 
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
@@ -1025,7 +1043,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-
         #endregion
 
         #region Clear Fields
@@ -1118,6 +1135,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
+
+            // mr: Detach Shader & delete
+            GL.DetachShader(program, fragmentObject);
+            GL.DetachShader(program, vertexObject);
+            GL.DeleteShader(fragmentObject);
+            GL.DeleteShader(vertexObject);
+
             return new ShaderProgramImp {Program = program};
         }
 

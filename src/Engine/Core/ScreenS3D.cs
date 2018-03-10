@@ -244,7 +244,7 @@ namespace Fusee.Engine.Core
 
             if (textureColor != null && textureDepth != null)
             {
-                //_rc.SetShader(_stereo3DShaderProgram);
+                _rc.SetShader(_stereo3DShaderProgram);
                 _rc.SetShaderParamTexture(_colorTextureShaderParam, textureColor);
                 _rc.SetShaderParamTexture(_depthTextureShaderParam, textureDepth);
                 _rc.SetShaderParam(_depthShaderParamScale, Config.ScaleDepth);

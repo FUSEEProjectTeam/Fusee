@@ -19,19 +19,6 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new NotImplementedException();
         }
 
-        event EventHandler IRenderCanvasImp.Resize
-        {
-            add
-            {
-                throw new NotImplementedException();
-            }
-
-            remove
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         [JSExternal]
         public int Width { get; set; }
         [JSExternal]

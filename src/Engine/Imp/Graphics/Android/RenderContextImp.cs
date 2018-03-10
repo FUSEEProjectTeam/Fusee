@@ -11,7 +11,6 @@ using Fusee.Base.Core;
 using OpenTK;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Core;
 //using OpenTK.Graphics.ES11;
 using OpenTK.Graphics.ES30;
 using Path = Fusee.Base.Common.Path;
@@ -439,6 +438,26 @@ namespace Fusee.Engine.Imp.Graphics.Android
             return f;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Removes shader from the GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            if (_androidContext == null) return; // if no RenderContext is available return - otherwise memory read error
+
+            var program = ((ShaderProgramImp)sp).Program;
+
+            // wait for all threads to be finished
+            GL.Finish();
+            GL.Flush();
+
+            // cleanup
+            GL.DeleteShader(program);
+            GL.DeleteProgram(program);
+        }
+
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
         /// </summary>
@@ -625,7 +644,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.ActiveTexture(All.Texture0 + texUnit);
             GL.BindTexture(All.Texture2D, ((Texture)texId).handle);
         }
-
         #endregion
 
         #region Clear Fields

@@ -194,7 +194,7 @@ namespace Fusee.Engine.Core
         public void AttachToContext(RenderContext rc)
         {
             _rc = rc;
-            _clearColor = rc.ClearColor;
+            //_clearColor = rc.ClearColor;
 
             var imgData = new ImageData();
             imgData.Width = _screenWidth;
@@ -271,7 +271,7 @@ namespace Fusee.Engine.Core
                     break;
             }
 
-            _rc.ClearColor = _clearColor;
+            //_rc.ClearColor = _clearColor;
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
@@ -314,7 +314,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void Display()
         {
-            _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
+            //_rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var currShader = _rc.CurrentShader;
@@ -322,7 +322,7 @@ namespace Fusee.Engine.Core
             switch (_activeMode)
             {
                 case Stereo3DMode.Oculus:
-                    //_rc.SetShader(_shaderProgram);
+                    _rc.SetShader(_shaderProgram);
 
                     RenderDistortedEye(Stereo3DEye.Left);
                     RenderDistortedEye(Stereo3DEye.Right);
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
                     break;
 
                 case Stereo3DMode.Anaglyph:
-                    //_rc.SetShader(_shaderProgram);
+                    _rc.SetShader(_shaderProgram);
 
                     RenderColorMaskedEye(Stereo3DEye.Left, true, false, false, false);
                     _rc.Clear(ClearFlags.Depth);

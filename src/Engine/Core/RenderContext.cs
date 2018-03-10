@@ -4,7 +4,6 @@ using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Engine.Imp.Graphics.Web;
 using JSIL.Meta;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -27,14 +26,16 @@ namespace Fusee.Engine.Core
         internal int ViewportWidth { get; private set; }
         internal int ViewportHeight { get; private set; }
 
-        private ShaderEffect _currentShader;
+        private ShaderProgram _currentShader;
         private readonly MatrixParamNames _currentShaderParams;
+        private ShaderEffect _currentShaderEffect;
+
         // Mesh Management
         private readonly MeshManager _meshManager;
 
-        // Shader Management
+        // ShaderEffect Management
         private readonly ShaderEffectManager _shaderEffectManager;
-       
+
         private bool _updatedShaderParams;
 
         private readonly ShaderProgram _debugShader;
@@ -131,20 +132,6 @@ namespace Fusee.Engine.Core
             // ReSharper restore InconsistentNaming
         };
 
-        internal struct LightParamNames
-        {
-            /*
-            // ReSharper disable InconsistentNaming
-            public IShaderParam AMBIENT;
-            public IShaderParam DIFFUSE;
-            public IShaderParam SPECULAR;
-            public IShaderParam POSITION;
-            public IShaderParam DIRECTION;
-            public IShaderParam SPOTANGLE;
-            public IShaderParam ACTIVE;
-            // ReSharper restore InconsistentNaming
-            */
-        }
 
         #endregion
 
@@ -740,17 +727,12 @@ namespace Fusee.Engine.Core
             // mesh management
             _meshManager = new MeshManager(_rci);
 
-            // shader effect management
             _shaderEffectManager = new ShaderEffectManager(_rci);
 
             // Make JSIL run through this one time. 
             _col = ColorUint.White.Tofloat3();
 
-            /* Removed Light support
-            // Todo: Remove multiple Lights per shader !!!
-            _lightParams = new Light[8];
-            _lightShaderParams = new LightParamNames[8];
-            */
+       
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
@@ -827,35 +809,7 @@ namespace Fusee.Engine.Core
             // Bones (if any)
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
                 SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
-
-
-            /* Removed light support
-            // Todo: Remove multiple Lights per shader !!!
-            for (var i = 0; i < 8; i++)
-            {
-                if (_lightShaderParams[i].AMBIENT != null)
-                    SetShaderParam(_lightShaderParams[i].AMBIENT, _lightParams[i].AmbientColor);
-
-                if (_lightShaderParams[i].DIFFUSE != null)
-                    SetShaderParam(_lightShaderParams[i].DIFFUSE, _lightParams[i].DiffuseColor);
-
-                if (_lightShaderParams[i].SPECULAR != null)
-                    SetShaderParam(_lightShaderParams[i].SPECULAR, _lightParams[i].SpecularColor);
-
-                if (_lightShaderParams[i].POSITION != null)
-                    SetShaderParam(_lightShaderParams[i].POSITION, _lightParams[i].Position);
-
-                if (_lightShaderParams[i].DIRECTION != null)
-                    SetShaderParam(_lightShaderParams[i].DIRECTION, _lightParams[i].Direction);
-
-                if (_lightShaderParams[i].ACTIVE != null)
-                    SetShaderParam(_lightShaderParams[i].ACTIVE, _lightParams[i].Active);
-
-                if (_lightShaderParams[i].SPOTANGLE != null)
-                    SetShaderParam(_lightShaderParams[i].SPOTANGLE, _lightParams[i].Angle);
-            }
-            */
-
+            
         }
 
         private void UpdateShaderParams()
@@ -866,32 +820,30 @@ namespace Fusee.Engine.Core
                 return;
             }
 
-           
-
             // Normal versions of MV and P
-            _currentShaderParams.FUSEE_M = GetShaderParam(_currentShader, "FUSEE_M");
-            _currentShaderParams.FUSEE_V = GetShaderParam(_currentShader, "FUSEE_V");
-            _currentShaderParams.FUSEE_MV = GetShaderParam(_currentShader, "FUSEE_MV");
-            _currentShaderParams.FUSEE_P = GetShaderParam(_currentShader, "FUSEE_P");
-            _currentShaderParams.FUSEE_MVP = GetShaderParam(_currentShader, "FUSEE_MVP");
+            _currentShaderParams.FUSEE_M = _currentShader.GetShaderParam("FUSEE_M");
+            _currentShaderParams.FUSEE_V = _currentShader.GetShaderParam("FUSEE_V");
+            _currentShaderParams.FUSEE_MV = _currentShader.GetShaderParam("FUSEE_MV");
+            _currentShaderParams.FUSEE_P = _currentShader.GetShaderParam("FUSEE_P");
+            _currentShaderParams.FUSEE_MVP = _currentShader.GetShaderParam("FUSEE_MVP");
 
             // Inverted versions
-            _currentShaderParams.FUSEE_IMV = GetShaderParam(_currentShader, "FUSEE_IMV");
-            _currentShaderParams.FUSEE_IP = GetShaderParam(_currentShader, "FUSEE_IP");
-            _currentShaderParams.FUSEE_IMVP = GetShaderParam(_currentShader, "FUSEE_IMVP");
+            _currentShaderParams.FUSEE_IMV = _currentShader.GetShaderParam("FUSEE_IMV");
+            _currentShaderParams.FUSEE_IP = _currentShader.GetShaderParam("FUSEE_IP");
+            _currentShaderParams.FUSEE_IMVP = _currentShader.GetShaderParam("FUSEE_IMVP");
 
             // Transposed versions
-            _currentShaderParams.FUSEE_TMV = GetShaderParam(_currentShader, "FUSEE_TMV");
-            _currentShaderParams.FUSEE_TP = GetShaderParam(_currentShader, "FUSEE_TP");
-            _currentShaderParams.FUSEE_TMVP = GetShaderParam(_currentShader, "FUSEE_TMVP");
+            _currentShaderParams.FUSEE_TMV = _currentShader.GetShaderParam("FUSEE_TMV");
+            _currentShaderParams.FUSEE_TP = _currentShader.GetShaderParam("FUSEE_TP");
+            _currentShaderParams.FUSEE_TMVP = _currentShader.GetShaderParam("FUSEE_TMVP");
 
             // Inverted and transposed versions
-            _currentShaderParams.FUSEE_ITMV = GetShaderParam(_currentShader, "FUSEE_ITMV");
-            _currentShaderParams.FUSEE_ITP = GetShaderParam(_currentShader, "FUSEE_ITP");
-            _currentShaderParams.FUSEE_ITMVP = GetShaderParam(_currentShader, "FUSEE_ITMVP");
+            _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
+            _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
+            _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
 
             // Bones
-            _currentShaderParams.FUSEE_BONES = GetShaderParam(_currentShader, "FUSEE_BONES[0]"); 
+            _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1036,6 +988,8 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        #region Light related Members
+
         /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>
@@ -1067,7 +1021,8 @@ namespace Fusee.Engine.Core
             set { _rci.ClearDepth = value; }
             get { return _rci.ClearDepth; }
         }
- 
+
+
         #endregion
 
         #region Shader related Members
@@ -1078,7 +1033,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The current shader.
         /// </value>
-        public ShaderEffect CurrentShader
+        public ShaderProgram CurrentShader
         {
             get { return _currentShader; }
         }
@@ -1110,22 +1065,53 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// 
+        /// Removes given shaderprogramm from GPU
         /// </summary>
-        /// <param name="ef"></param>
+        /// <param name="ef">The ShaderEffect</param>
+        public void RemoveShader(ShaderEffect ef)
+        {
+            foreach (var program in ef.CompiledShaders)
+            {
+                _rci.RemoveShader(program._spi);
+            }
+        }
+
+        /// <summary>
+        /// Activates the passed shader program as the current shader for geometry rendering.
+        /// </summary>
+        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
+        /// <seealso cref="RenderContext.CreateShader"/>
+        /// <seealso cref="RenderContext.Render(Mesh)"/>
+        public void SetShader(ShaderProgram program)
+        {
+            _updatedShaderParams = false;
+
+            if (_currentShader != program)
+            {
+                _currentShader = program;
+                _rci.SetShader(program._spi);
+            }
+            UpdateShaderParams();
+        }
+
+        /// <summary>
+        /// Activates the passed shader effect as the current shader for geometry rendering.
+        /// </summary>
+        /// <param name="ef">The shader effect to compile and use.</param>
+        /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
+        /// task performed in this method is compiling the provided shader source code and uploading the shaders to
+        /// the gpu.</remarks>
         public void SetShaderEffect(ShaderEffect ef)
         {
             if (_rci == null)
-                throw new ArgumentNullException("SetShaderEffect", "no valid RenderContext.");
+               throw new ArgumentNullException("rc", "must pass a valid render context.");
+
             if (ef == null)
                 return;
 
-            // try to get chached shader
-            if (_shaderEffectManager.GetShaderEffect(ef.SessionUniqueIdentifier) != null)
-            {
-                SetShader(ef); // Test this
-                return;
-            }
+            // Is this shadereffect already built?
+            if (_shaderEffectManager.GetShaderEffect(ef) != null)
+                _currentShaderEffect = ef;
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
@@ -1133,7 +1119,7 @@ namespace Fusee.Engine.Core
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    ef.CompiledShaders[i] = _rci.CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
+                    ef.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
                 }
             }
             catch (Exception ex)
@@ -1146,86 +1132,71 @@ namespace Fusee.Engine.Core
             ef.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
-                IEnumerable<ShaderParamInfo> paramList = _rci.GetShaderParamList(ef.CompiledShaders[i]);
+                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
                 ef.ParamsPerPass.Add(new List<EffectParam>());
                 foreach (var paramNew in paramList)
                 {
-                    if (!ef.ParamDecl.TryGetValue(paramNew.Name, out var initValue)) continue;
-
-                    // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
-                    // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
-                    // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
-
-                    // ReSharper disable UseMethodIsInstanceOfType
-                    // ReSharper disable OperatorIsCanBeUsed
-                    var initValType = initValue.GetType();
-                    if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
-                           &&
-                           (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
-                          )
-                          ||
-                          (paramNew.Type.IsAssignableFrom(initValType))
-                        )
-                    )
+                    Object initValue;
+                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
-                        throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
-                                            paramNew.Type.ToString() + " " + paramNew.Name +
-                                            " was defined as " + initValType.ToString() + " " + paramNew.Name +
-                                            " during initialization (different types).");
-                    }
-                    // ReSharper restore OperatorIsCanBeUsed
-                    // ReSharper restore UseMethodIsInstanceOfType
+                        // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
+                        // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
+                        // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
 
-                    // Parameter was declared by user and type is correct in shader - carry on.
-                    if (ef.Parameters.TryGetValue(paramNew.Name, out var paramExisting))
-                    {
-                        // The parameter is already there from a previous pass.
-                        if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                        // ReSharper disable UseMethodIsInstanceOfType
+                        // ReSharper disable OperatorIsCanBeUsed
+                        var initValType = initValue.GetType();
+                        if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
+                                  &&
+                                  (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
+                                )
+                                ||
+                                (paramNew.Type.IsAssignableFrom(initValType))
+                              )
+                           )
                         {
-                            // This should never happen due to the previous error check. Check it anyway...
-                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
-                                                paramNew.Name +
-                                                " already defined with a different type in effect pass " +
-                                                paramExisting.ShaderInxs[0]);
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
+                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
                         }
-                        // List the current pass to use this shader parameter
-                        paramExisting.ShaderInxs.Add(i);
-                    }
-                    else
-                    {
-                        paramExisting = new EffectParam()
+                        // ReSharper restore OperatorIsCanBeUsed
+                        // ReSharper restore UseMethodIsInstanceOfType
+
+                        // Parameter was declared by user and type is correct in shader - carry on.
+                        EffectParam paramExisting;
+                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramExisting))
                         {
-                            Info = paramNew,
-                            ShaderInxs = new List<int>(new int[] {i}),
-                            Value = initValue
-                        };
-                        ef.Parameters.Add(paramNew.Name, paramExisting);
+                            // The parameter is already there from a previous pass.
+                            if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                            {
+                                // This should never happen due to the previous error check. Check it anyway...
+                                throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
+                                                    paramNew.Name +
+                                                    " already defined with a different type in effect pass " +
+                                                    paramExisting.ShaderInxs[0]);
+                            }
+                            // List the current pass to use this shader parameter
+                            paramExisting.ShaderInxs.Add(i);
+                        }
+                        else
+                        {
+                            paramExisting = new EffectParam()
+                            {
+                                Info = paramNew,
+                                ShaderInxs = new List<int>(new int[] { i }),
+                                Value = initValue
+                            };
+                            ef.Parameters.Add(paramNew.Name, paramExisting);
+                        }
+                        ef.ParamsPerPass[i].Add(paramExisting);
                     }
-                    ef.ParamsPerPass[i].Add(paramExisting);
                 }
+
+                // Register built shadereffect
+                _shaderEffectManager.RegisterShaderEffect(ef);
+
+                // register this shader effect as current shader
+                _currentShaderEffect = ef;
             }
-            // eventually register this compiled ShaderProgram
-            _shaderEffectManager.RegisterNewShaderEffect(ef);
-
-            SetShader(ef); // Test this
-        }
-
-        /// <summary>
-        /// Activates the passed shader program as the current shader for geometry rendering.
-        /// </summary>
-        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="RenderContext.CreateShader"/>
-        /// <seealso cref="RenderContext.Render(Mesh)"/>
-        public void SetShader(ShaderEffect program)
-        {
-            _updatedShaderParams = false;
-
-            if (_currentShader != program)
-            {
-                _currentShader = program;
-                _rci.SetShader(program.CompiledShaders[0]);
-            }
-            UpdateShaderParams();
         }
 
         /// <summary>
@@ -1253,9 +1224,9 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader paramter.
         /// </remarks>
-        public IShaderParam GetShaderParam(ShaderEffect program, string paramName)
+        public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
-            return _rci.GetShaderParam(program.CompiledShaders[0], paramName);
+            return _rci.GetShaderParam(program._spi, paramName);
         }
 
         /// <summary>
@@ -1469,14 +1440,16 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            int i = 0, nPasses = _currentShader.VertexShaderSrc.Length;
+            if (_currentShaderEffect == null) return;
+
+            int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
             {
                 for (i = 0; i < nPasses; i++)
                 {
                     // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    SetShader(_currentShader);
-                    foreach (var param in _currentShader.ParamsPerPass[i])
+                    SetShader(_currentShaderEffect.CompiledShaders[i]);
+                    foreach (var param in _currentShaderEffect.ParamsPerPass[i])
                     {
                         if (param.Info.Type == typeof(int))
                         {
@@ -1511,21 +1484,25 @@ namespace Fusee.Engine.Core
                             SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
                         }
                     }
-                    SetRenderState(_currentShader.States[i]);
+                    SetRenderState(_currentShaderEffect.States[i]);
 
-                    IMeshImp meshImp = _meshManager.GetMeshImpFromMesh(m);
+                    // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
+                    var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
 
                     // After rendering always cleanup pending meshes
                     _meshManager.Cleanup();
                 }
+
+                // After rendering all passes cleanup shadereffect
+               _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
             {
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }
-
+      
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
@@ -1585,7 +1562,7 @@ namespace Fusee.Engine.Core
                 end /= 2;
 
                 var oldShader = _currentShader;
-                //SetShader(_debugShader);
+                SetShader(_debugShader);
 
                 SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
                 SetShaderParam(_debugColor, color);
@@ -1659,6 +1636,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        #endregion
     }
 
 }

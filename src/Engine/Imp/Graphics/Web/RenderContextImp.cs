@@ -26,6 +26,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
         public RenderContextImp(IRenderCanvasImp canvas)
         {
             throw new System.NotImplementedException();
@@ -73,7 +79,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new NotImplementedException();
         }
-     
+
         [JSExternal]
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
         {

@@ -1,89 +1,79 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Core;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public class ShaderEffectManager
+    internal class ShaderEffectManager
     {
         private readonly IRenderContextImp _rci;
 
-        private Stack<ShaderEffect> _shaderEffectsToDelete = new Stack<ShaderEffect>();
+        private readonly Stack<ShaderEffect>  _shaderEffectsToBeDeleted = new Stack<ShaderEffect>();
 
-        private Dictionary<Suid, ShaderEffect> _allShaderEffects = new Dictionary<Suid, ShaderEffect>();
+        private readonly Dictionary<Suid, ShaderEffect> _allShaderEffects = new Dictionary<Suid, ShaderEffect>();
 
-        private void Remove(IMeshImp meshImp)
+        private void Remove(ShaderEffect ef)
         {
-            if (meshImp.VerticesSet)
-                _rci.RemoveVertices(meshImp);
-
-            if (meshImp.NormalsSet)
-                _rci.RemoveNormals(meshImp);
-
-            if (meshImp.ColorsSet)
-                _rci.RemoveColors(meshImp);
-
-            if (meshImp.UVsSet)
-                _rci.RemoveUVs(meshImp);
-
-            if (meshImp.TrianglesSet)
-                _rci.RemoveTriangles(meshImp);
-
-            if (meshImp.BoneWeightsSet)
-                _rci.RemoveBoneWeights(meshImp);
-
-            if (meshImp.BoneIndicesSet)
-                _rci.RemoveBoneIndices(meshImp);
+            foreach (var program in ef.CompiledShaders)
+            {
+                _rci.RemoveShader(program._spi);
+            }
         }
 
-        private void ShaderEffectChanged(object sender, ShaderEffectChangedArgs args)
+        private void ShaderEffectChanged(object sender, ShaderEffectEventArgs args)
         {
-         
+            if (args == null || sender == null) return;
+            switch (args.Changed)
+            {
+                case ShaderEffectChangedEnum.DISPOSE:
+                    Remove(sender as ShaderEffect);
+                    break;
+                case ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM:
+                    // Nothing to do here, for further implementation
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public ShaderEffect GetShaderEffect(Suid id)
+        public void RegisterShaderEffect(ShaderEffect ef)
         {
-            return _allShaderEffects.TryGetValue(id, out var returnEffect) ? returnEffect : null;
-        }
+            if (GetShaderEffect(ef) != null) return;
 
-        public void RegisterNewShaderEffect(ShaderEffect ef)
-        {
-            // Register new ShaderEffect in RC
+            // Setup handler to observe changes of the mesh data and dispose event (deallocation)
+            ef.ShaderEffectChanged += ShaderEffectChanged;
 
-            // Add ShaderEffect to dictonary
             _allShaderEffects.Add(ef.SessionUniqueIdentifier, ef);
 
-            // Setup handler to observe changes of the shadereffect and dispose event (deallocation)
-            ef.ShaderEffectChanged += ShaderEffectChanged;
         }
 
         /// <summary>
-        /// Creates a new Instance of MeshManager. Th instance is handling the memory allocation and deallocation on the GPU by observing Mesh.cs objects.
+        /// Creates a new Instance of ShaderEffectManager. Th instance is handling the memory allocation and deallocation on the GPU by observing ShaderEffect.cs objects.
         /// </summary>
-        /// <param name="rci">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterMesh.</param>
-        public ShaderEffectManager(IRenderContextImp rci)
+        /// <param name="renderContextImp">The RenderContextImp is used for GPU memory allocation and deallocation. See RegisterShaderEffect.</param>
+        public ShaderEffectManager(IRenderContextImp renderContextImp)
         {
-            _rci = rci;
+            _rci = renderContextImp;
         }
 
+        public ShaderEffect GetShaderEffect(ShaderEffect ef)
+        {
+            ShaderEffect shaderEffect;
+            return _allShaderEffects.TryGetValue(ef.SessionUniqueIdentifier, out shaderEffect) ? shaderEffect : null;
+        }
 
         /// <summary>
         /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {
-
-            Diagnostics.Log("Cleanup");
-
+            while (_shaderEffectsToBeDeleted.Count > 0)
+            {
+                var tmPop = _shaderEffectsToBeDeleted.Pop();
+                Remove(tmPop);
+            }
         }
+
     }
 }
