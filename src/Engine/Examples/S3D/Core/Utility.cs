@@ -8,23 +8,27 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.S3D.Core
 {
-    public static class UtilityBc
+    internal static class Utility
     {
+        public static readonly float Cam2ObjDistanceHyperHypo = 4f; // Distance between camera and target object.
 
-        public static int ObjOneDistToRoot = 0;         //Fusee units    
-        public static int ObjTwoDistToRoot = 2;         //Fusee units
-        public static float ConvergenceDist = 10;       //Fusee units
-        public static float CamOffset = 10;             //Fusee units
+        internal static int ObjOneDistToRootShapeRatio = 0;         //Fusee units    
+        internal static int ObjTwoDistToRootShapeRatio = 2;         //Fusee units
+        internal static float ConvergenceDist = 10;                 //Fusee units
+        internal static float CamOffset = 10;                       //Fusee units
 
-        public const float PhysicalDisplayWidth = 2500; //mm
-        public const float Interaxial = 0.2f;           //Fusee units
-        public const int HitInPx = 0;                   //px
-        public const int ResolutionW = 1920;            //px
-        public const int ResolutonH = 1080;             //px
-        public const int EyeSeparation = 65;            //mm
-        public const int ViewingDistance = 2500;        //mm
-        public const int Magnification = 1;             //ratio
-        public static float3 CamPosBc;
+        internal const float PhysicalDisplayWidth = 3200;           //mm
+        internal static float Interaxial = 0.2f;                    //Fusee units
+        internal const int HitInPx = 0;                             //px
+        internal const int ResolutionW = 1920;                      //px
+        internal const int ResolutonH = 1080;                       //px
+        internal const int EyeSeparationMm = 65;                    //mm
+        internal const float EyeSeparationM = 0.065f;               //m
+        internal const int ViewingDistance = 2500;                  //mm
+        internal static float3 CamPosBc;
+
+        internal static float3 RightUpperCorner = new float3(0, 2.4f, 0);
+        internal static float3 LeftUpperCorner = new float3(-3.6f, 2.4f, 0);
 
         #region Shader
         static readonly string GUIVS = @"
@@ -87,7 +91,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                     new TransformComponent
                                     {
                                         Scale = new float3(1,1,1),
-                                        Translation = new float3(0,0,ObjOneDistToRoot),
+                                        Translation = new float3(0,0,ObjOneDistToRootShapeRatio),
                                         Rotation = new float3(S3D.AngleVert, S3D.AngleHorz, 0)
 
                                     },
@@ -120,7 +124,7 @@ namespace Fusee.Engine.Examples.S3D.Core
                                             new TransformComponent
                                             {
                                                 Scale = new float3(0.5f,0.5f,0.5f),
-                                                Translation = new float3(0,0,ObjTwoDistToRoot)
+                                                Translation = new float3(0,0,ObjTwoDistToRootShapeRatio)
                                             },
 
                                             new MaterialComponent
@@ -221,7 +225,7 @@ namespace Fusee.Engine.Examples.S3D.Core
             zwerg = zwerg * resW * pixelWidth;
 
 
-            var parallax = CalcParallaxFromModelCoord(new float3(-0.5f, 0.5f, -0.5f), mvpR, mvpL, resW / 2, pixelWidth);
+            var parallax = CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW, pixelWidth);
 
             var nominator = eyeSep * zwerg;
             var denominator = 2 * (eyeSep - parallax);
@@ -239,7 +243,7 @@ namespace Fusee.Engine.Examples.S3D.Core
         public static float CalcZi(float3 pointInModelCoord, float eyeSep, float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, float viewingDistInMm)
         {
             var nominator = eyeSep * viewingDistInMm;
-            var denominator = eyeSep - (CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW / 2, pixelWidth));
+            var denominator = eyeSep - (CalcParallaxFromModelCoord(pointInModelCoord, mvpR, mvpL, resW, pixelWidth));
             return nominator / denominator;
         }
 
@@ -260,9 +264,9 @@ namespace Fusee.Engine.Examples.S3D.Core
             var prallax = CalcParallaxFromModelCoord(pointOneInModelCoord, mvpR, mvpL, resW / 2, pixelWidth);
 
             var nominator = eyeSep * ((zwerg2 - zwerg1) * resW * pixelWidth);
-            var denominatro = 2 * (eyeSep - prallax);
+            var denominator = 2 * (eyeSep - prallax);
 
-            return nominator / denominatro;
+            return nominator / denominator;
 
         }
 
@@ -278,14 +282,19 @@ namespace Fusee.Engine.Examples.S3D.Core
         //pixelWidth:   Width of one pixel of the target screen.
         //objWidthInMm: "Real" Object width, given in millimeters.
         public static float CalcWidthMag3D(float3 pointOneInModelCoord, float3 pointTwoInModelCoord, float eyeSep,
-            float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, int objWidthInMm)
-            => CalcWidth3D(pointOneInModelCoord, pointTwoInModelCoord, eyeSep, mvpR, mvpL, resW, pixelWidth) /
-               objWidthInMm;
+            float4x4 mvpR, float4x4 mvpL, int resW, float pixelWidth, float objWidthInMm)
+        {
+            var xi1 = CalcXi(pointOneInModelCoord,eyeSep,mvpR,mvpL,resW,pixelWidth);
+            var xi2 = CalcXi(pointTwoInModelCoord, eyeSep, mvpR, mvpL, resW, pixelWidth);
+
+            return CalcWidth3D(xi1,xi2) /
+                   objWidthInMm;
+        }
 
         //Ratio of the perveived width of an object to the "real" object width (e.g a unit cube would have a "real" width of one fusee unit).
         //The ratio is calculated from the x coordinates of the perceived position of two points.
         //objWidthInMm: "Real" Object width, given in millimeters.
-        public static float CalcWidthMag3D(float xiOne, float xiTwo, int objWidthInMm)
+        public static float CalcWidthMag3D(float xiOne, float xiTwo, float objWidthInMm)
             => CalcWidth3D(xiOne, xiTwo) /
                objWidthInMm;
 
