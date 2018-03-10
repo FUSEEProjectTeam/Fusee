@@ -50,6 +50,7 @@
     <Compile Include="AnimationComponent.cs" />
     <Compile Include="AnimationTrackContainer.cs" />
     <Compile Include="BoneComponent.cs" />
+    <Compile Include="CanvasTransformComponent.cs" />
     <Compile Include="LightComponent.cs" />
     <Compile Include="MaterialComponent.cs" />
     <Compile Include="MaterialLightComponent.cs" />
@@ -69,6 +70,7 @@
     <Compile Include="TypeContainer.cs" />
     <Compile Include="WeightComponent.cs" />
     <Compile Include="TransformComponent.cs" />
+    <Compile Include="XFormComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Math\Core\Fusee.Math.Core.csproj">

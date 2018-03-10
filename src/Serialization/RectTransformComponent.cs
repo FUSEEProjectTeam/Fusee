@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization
@@ -8,7 +7,6 @@ namespace Fusee.Serialization
     /// Building block to set up User Interface hierarchies.
     /// </summary>
     [ProtoContract]
-
     public class RectTransformComponent : SceneComponentContainer
     {
         /// <summary>
