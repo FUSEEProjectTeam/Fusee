@@ -52,7 +52,6 @@
     <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
-    <Compile Include="DeferredShaderHelper.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="ScreenS3D.cs" />
     <Compile Include="LegacyShaderCodeBuilder.cs" />
     <Compile Include="ShaderEffectComponent.cs" />
+    <Compile Include="ShaderEffectManager.cs" />
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />

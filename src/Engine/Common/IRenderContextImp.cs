@@ -50,6 +50,12 @@ namespace Fusee.Engine.Common
         IShaderProgramImp CreateShader(string vs, string ps);
 
         /// <summary>
+        /// Removes given shaderprogramm from GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        void RemoveShader(IShaderProgramImp sp);
+
+        /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>
         /// <param name="shaderProgram">The shader program to query for parameters.</param>
