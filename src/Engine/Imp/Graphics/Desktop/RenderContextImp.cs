@@ -1591,7 +1591,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (((MeshImp) mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp) mr).ElementBufferObject);
-                GL.DrawElements(BeginMode.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.DrawElements(PrimitiveType.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                 //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
             }
             if (((MeshImp) mr).VertexBufferObject != 0)
@@ -1624,7 +1624,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            GL.Begin(BeginMode.Lines);
+            GL.Begin(PrimitiveType.Lines);
             GL.Vertex3(start.x, start.y, start.z);
             GL.Vertex3(end.x, end.y, end.z);
             GL.End();
