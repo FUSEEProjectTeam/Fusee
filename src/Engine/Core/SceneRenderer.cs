@@ -183,6 +183,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Try to render with Shadows. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderWithShadows
         {
             private set { _renderWithShadows = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -192,6 +193,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Try to render deferred. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderDeferred
         {
             private set { _renderDeferred = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -201,6 +203,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Try to render with EM. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderEnvMap
         {
             private set { _renderEnvMap = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -516,9 +519,7 @@ namespace Fusee.Engine.Core
             var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
             var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
             // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
-
-
-
+            
 
             _state.UiRect = newRect;
 
