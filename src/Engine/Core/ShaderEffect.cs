@@ -118,26 +118,12 @@ namespace Fusee.Engine.Core
                 object pa;
 
                 if (Parameters != null)
-                {
                     if (Parameters.TryGetValue(name, out pa))
                     {
                         var param = (EffectParam) pa;
-                        // do nothing if new value = old value
-                        if (param.Value.Equals(value)) return; // TODO: Write a better compare method
-
                         param.Value = value;
-                        ShaderEffectChanged?.Invoke(this,
-                            new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM));
                     }
-                    else
-                    {
-                        if(name != null && value != null)
-                            // not in Parameters, try to get it anyway through ShaderProgram
-                            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
-                }
-                      
-                }
-                   
             }
 
             public object GetEffectParam(string name)
@@ -168,6 +154,20 @@ namespace Fusee.Engine.Core
             // set the result parameter to the property value and return true.
             // Otherwise, return false.
             return Parameters.TryGetValue(name, out result);
+        }
+
+        // If you try to set a value of a property that is
+        // not defined in the class, this method is called.
+        public override bool TrySetMember(
+            SetMemberBinder binder, object value)
+        {
+            // Converting the property name to lowercase
+            // so that property names become case-insensitive.
+            Parameters[binder.Name.ToLower()] = value;
+
+            // You can always add a value to a dictionary,
+            // so this method always returns true.
+            return true;
         }
 
         // If you try to set a value of a property that is
