@@ -40,6 +40,18 @@
     <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Assets\banana.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\bananaTex.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\hierarchy.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />  
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />

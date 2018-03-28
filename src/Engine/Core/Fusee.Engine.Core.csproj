@@ -50,6 +50,7 @@
     <Compile Include="ConeShape.cs" />
     <Compile Include="ConeTwistConstraint.cs" />
     <Compile Include="ConvexHullShape.cs" />
+    <Compile Include="ConvSceneToHighLevel.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
     <Compile Include="DynamicWorld.cs" />

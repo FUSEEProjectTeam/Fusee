@@ -8,6 +8,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 
@@ -109,7 +110,9 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
-                        return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
+                        
+                        var convScene  = new ConVSceneToHighLevel(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                        return convScene.Convert();
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
