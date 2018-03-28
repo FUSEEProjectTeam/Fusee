@@ -736,8 +736,8 @@ namespace Fusee.Engine.Core
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
-            _debugShader = Shaders.GetColorShader(this);
-            _debugColor = _debugShader.GetShaderParam("color");
+            //_debugShader = Shaders.GetColorShader(this);
+            //_debugColor = _debugShader.GetShaderParam("color");
         }
 
         #endregion
@@ -1049,7 +1049,7 @@ namespace Fusee.Engine.Core
         /// The result is already compiled to code executable on the GPU. <see cref="RenderContext.SetShader(ShaderProgram)"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        public ShaderProgram CreateShader(string vs, string ps)
+        private ShaderProgram CreateShader(string vs, string ps)
         {
             var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
 
@@ -1068,7 +1068,7 @@ namespace Fusee.Engine.Core
         /// Removes given shaderprogramm from GPU
         /// </summary>
         /// <param name="ef">The ShaderEffect</param>
-        public void RemoveShader(ShaderEffect ef)
+        private void RemoveShader(ShaderEffect ef)
         {
             foreach (var program in ef.CompiledShaders)
             {
@@ -1082,7 +1082,7 @@ namespace Fusee.Engine.Core
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
         /// <seealso cref="RenderContext.CreateShader"/>
         /// <seealso cref="RenderContext.Render(Mesh)"/>
-        public void SetShader(ShaderProgram program)
+        private void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
 
@@ -1111,7 +1111,11 @@ namespace Fusee.Engine.Core
 
             // Is this shadereffect already built?
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
+            {
                 _currentShaderEffect = ef;
+                return;
+            }
+               
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 

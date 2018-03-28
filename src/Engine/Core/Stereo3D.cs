@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core
                     _guiRImage.AttachToContext(rc);
                     _guiRImage.Refresh();
 
-                    _shaderProgram = _rc.CreateShader(OculusVs, OculusPs);
+                    //_shaderProgram = _rc.CreateShader(OculusVs, OculusPs);
                     _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
 
                     _lensCenterParam = _shaderProgram.GetShaderParam("LensCenter");
@@ -232,7 +232,7 @@ namespace Fusee.Engine.Core
                     break;
 
                 case Stereo3DMode.Anaglyph:
-                    _shaderProgram = _rc.CreateShader(AnaglyphVs, AnaglyphPs);
+                   // _shaderProgram = _rc.CreateShader(AnaglyphVs, AnaglyphPs);
                     _shaderTexture = _shaderProgram.GetShaderParam("vTexture");
 
                     _guiLImage = new GUIImage(default(ImageData), 0, 0, _screenWidth, _screenHeight);
@@ -322,7 +322,7 @@ namespace Fusee.Engine.Core
             switch (_activeMode)
             {
                 case Stereo3DMode.Oculus:
-                    _rc.SetShader(_shaderProgram);
+                   // _rc.SetShader(_shaderProgram);
 
                     RenderDistortedEye(Stereo3DEye.Left);
                     RenderDistortedEye(Stereo3DEye.Right);
@@ -330,7 +330,7 @@ namespace Fusee.Engine.Core
                     break;
 
                 case Stereo3DMode.Anaglyph:
-                    _rc.SetShader(_shaderProgram);
+                  //  _rc.SetShader(_shaderProgram);
 
                     RenderColorMaskedEye(Stereo3DEye.Left, true, false, false, false);
                     _rc.Clear(ClearFlags.Depth);
@@ -341,7 +341,7 @@ namespace Fusee.Engine.Core
                     break;
             }
 
-            _rc.SetShader(currShader);
+            //_rc.SetShader(currShader);
         }
 
         #region OculusRift

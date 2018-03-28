@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Core
+﻿using System;
+
+namespace Fusee.Engine.Core
 {
     // TODO: Implement proper Material handler
     /// <summary>
@@ -53,7 +55,8 @@
         /// <param name="rc">The rc.</param>
         public void UpdateMaterial(RenderContext rc)
         {
-            rc.SetShader(_sp);
+            throw new NotImplementedException();
+            //rc.SetShader(_sp);
         }
 
         #endregion
