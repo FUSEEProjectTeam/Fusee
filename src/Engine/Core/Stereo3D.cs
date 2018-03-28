@@ -194,7 +194,7 @@ namespace Fusee.Engine.Core
         public void AttachToContext(RenderContext rc)
         {
             _rc = rc;
-            _clearColor = rc.ClearColor;
+            //_clearColor = rc.ClearColor;
 
             var imgData = new ImageData();
             imgData.Width = _screenWidth;
@@ -271,7 +271,7 @@ namespace Fusee.Engine.Core
                     break;
             }
 
-            _rc.ClearColor = _clearColor;
+            //_rc.ClearColor = _clearColor;
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
         }
 
@@ -314,7 +314,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void Display()
         {
-            _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
+            //_rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var currShader = _rc.CurrentShader;

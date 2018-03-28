@@ -787,7 +787,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetUniform(((ShaderProgramImp) program).Program, ((ShaderParam) param).handle, out f);
             return f;
         }
+        
+        /// <inheritdoc />
+        /// <summary>
+        /// Removes shader from the GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            if (_renderContextImpImplementation == null) return; // if no RenderContext is available return otherwise memory read error
+          
+            var program = ((ShaderProgramImp) sp).Program;
+            
+            // wait for all threads to be finished
+            GL.Finish();
+            GL.Flush();
 
+            // cleanup
+            GL.DeleteShader(program);
+            GL.DeleteProgram(program);
+        }
 
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
@@ -1116,6 +1135,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
+
+            // mr: Detach Shader & delete
+            GL.DetachShader(program, fragmentObject);
+            GL.DetachShader(program, vertexObject);
+            GL.DeleteShader(fragmentObject);
+            GL.DeleteShader(vertexObject);
+
             return new ShaderProgramImp {Program = program};
         }
 
@@ -1565,7 +1591,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (((MeshImp) mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp) mr).ElementBufferObject);
-                GL.DrawElements(BeginMode.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                GL.DrawElements(PrimitiveType.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                 //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
             }
             if (((MeshImp) mr).VertexBufferObject != 0)
@@ -1598,7 +1624,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            GL.Begin(BeginMode.Lines);
+            GL.Begin(PrimitiveType.Lines);
             GL.Vertex3(start.x, start.y, start.z);
             GL.Vertex3(end.x, end.y, end.z);
             GL.End();

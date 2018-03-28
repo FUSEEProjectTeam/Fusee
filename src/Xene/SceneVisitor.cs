@@ -56,13 +56,13 @@ namespace Fusee.Xene
         [JSExternal]
         public static VisitComponentMethod MakeComponentVisitor(MethodInfo info)
         {
-            return delegate(SceneVisitor visitor, SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
+            return delegate (SceneVisitor visitor, SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
         }
 
         [JSExternal]
         public static VisitNodeMethod MakeNodeVistor(MethodInfo info)
         {
-            return delegate(SceneVisitor visitor, SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };
+            return delegate (SceneVisitor visitor, SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };
         }
 
     }
@@ -92,7 +92,7 @@ namespace Fusee.Xene
             public Dictionary<Type, VisitComponentMethod> Components = new Dictionary<Type, VisitComponentMethod>();
         }
 
- 
+
         // The list of visitor methods defined in a concrete child class of SceneVisitor
         private VisitorSet _visitors;
 
@@ -224,7 +224,7 @@ namespace Fusee.Xene
         /// <value>
         ///   <c>true</c> if the current enumeration should yield; otherwise, <c>false</c>.
         /// </value>
-        protected bool YieldEnumeration {get { return YieldOnCurrentComponent || YieldOnCurrentNode; }}
+        protected bool YieldEnumeration { get { return YieldOnCurrentComponent || YieldOnCurrentNode; } }
         private Stack<IEnumerator<SceneNodeContainer>> _nodeEnumeratorStack;
         private IEnumerator<SceneNodeContainer> _curNodeEnumerator;
         private IEnumerator<SceneComponentContainer> _curCompEnumerator;
@@ -402,14 +402,14 @@ namespace Fusee.Xene
         /// </summary>
         private void ScanForVisitors()
         {
-            if (_visitors != null) 
+            if (_visitors != null)
                 return;
 
             if (_visitorMap == null)
                 _visitorMap = new Dictionary<Type, VisitorSet>();
 
             Type myType = GetType();
-            if (_visitorMap.TryGetValue(myType, out _visitors)) 
+            if (_visitorMap.TryGetValue(myType, out _visitors))
                 return;
 
             _visitors = new VisitorSet();
@@ -419,7 +419,7 @@ namespace Fusee.Xene
                     continue;
 
                 ParameterInfo[] parameters = methodInfo.GetParameters();
-                if (parameters.Length != 1) 
+                if (parameters.Length != 1)
                     continue;
 
                 Type paramType = parameters[0].ParameterType;
@@ -467,7 +467,7 @@ namespace Fusee.Xene
             return (a != null && a.Length > 0);
         }
 
- 
+
         private void DoTraverseNoComponents(SceneNodeContainer node)
         {
             CurrentNode = node;
@@ -492,7 +492,7 @@ namespace Fusee.Xene
         {
             CurrentNode = node;
             PushState();
-            
+
             DoVisitNode(node);
 
             DoVisitComponents(node);
