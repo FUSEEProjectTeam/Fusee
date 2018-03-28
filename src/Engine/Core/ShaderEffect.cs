@@ -126,11 +126,16 @@ namespace Fusee.Engine.Core
                         if (param.Value.Equals(value)) return; // TODO: Write a better compare method
 
                         param.Value = value;
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
+                        ShaderEffectChanged?.Invoke(this,
+                            new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
                     }
                     else
-                        // not in Parameters, try to get it anyway through ShaderProgram
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
+                    {
+                        if(name != null && value != null)
+                            // not in Parameters, try to get it anyway through ShaderProgram
+                            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
+                }
+                      
                 }
                    
             }
@@ -209,7 +214,8 @@ namespace Fusee.Engine.Core
             Changed = changed;
             if(effectParam != null)
                 EffectParameter = effectParam;
-            if (UnknownUniformName != null && UnknownUniformObject != null)
+
+            if (unknownUniformName != null && unknownUniformObject != null)
             {
                 UnknownUniformName = unknownUniformName;
                 UnknownUniformObject = unknownUniformObject;
