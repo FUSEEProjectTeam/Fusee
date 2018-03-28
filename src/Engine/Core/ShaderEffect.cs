@@ -130,7 +130,7 @@ namespace Fusee.Engine.Core
                     }
                     else
                         // not in Parameters, try to get it anyway through ShaderProgram
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, new Tuple<string, object>(name, value)));
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
                 }
                    
             }
@@ -200,16 +200,21 @@ namespace Fusee.Engine.Core
         public ShaderEffectChangedEnum Changed { get; }
         public EffectParam EffectParameter { get; }
 
-        public Tuple<string, object> UnknownUniformName { get; }
+        public string UnknownUniformName { get; }
+        public object UnknownUniformObject { get; }
 
-        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null, Tuple<string, object> unknownUniform = null)
+        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null, string unknownUniformName = null, object unknownUniformObject = null)
         {
             Effect = effect;
             Changed = changed;
             if(effectParam != null)
                 EffectParameter = effectParam;
-            if (unknownUniform != null)
-                UnknownUniformName = unknownUniform;
+            if (UnknownUniformName != null && UnknownUniformObject != null)
+            {
+                UnknownUniformName = unknownUniformName;
+                UnknownUniformObject = unknownUniformObject;
+            }
+               
         }
     }
 
