@@ -36,7 +36,7 @@ namespace Fusee.Engine.Core
                 case ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM:
                     foreach (var program in args.Effect.CompiledShaders)
                     {
-                        var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName.Item1);
+                        var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName);
                         if (unknownParamHandle != null)
                         {
                             var tmpEffectParam = new EffectParam
@@ -44,20 +44,22 @@ namespace Fusee.Engine.Core
                                 Info = new ShaderParamInfo
                                 {
                                     Handle = unknownParamHandle,
-                                    Name = args.UnknownUniformName.Item1,
-                                    Type = args.UnknownUniformName.Item2.GetType()
+                                    Name = args.UnknownUniformName,
+                                    Type = args.UnknownUniformObject.GetType()
                                 },
                                 ShaderInxs = new List<int>(),
-                                Value = args.UnknownUniformName.Item2
+                                Value = args.UnknownUniformObject
                             };
                             SetShaderParams(tmpEffectParam);
 
                             // update ShaderParamList
                             var ef = sender as ShaderEffect;
-                            ef.ParamDecl.Add(args.UnknownUniformName.Item1, args.UnknownUniformName.Item2);
-                            ef.Parameters.Add(args.UnknownUniformName.Item1, tmpEffectParam);
+                            if (ef != null)
+                            {
+                                ef.ParamDecl.Add(args.UnknownUniformName, args.UnknownUniformObject);
+                                ef.Parameters.Add(args.UnknownUniformName, tmpEffectParam);
+                            }
                         }
-                            
                     }
                     break;
                 default:
