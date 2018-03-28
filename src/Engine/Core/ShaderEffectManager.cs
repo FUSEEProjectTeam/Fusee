@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -29,12 +30,78 @@ namespace Fusee.Engine.Core
                 case ShaderEffectChangedEnum.DISPOSE:
                     Remove(sender as ShaderEffect);
                     break;
-                case ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM:
-                    // Nothing to do here, for further implementation
+                case ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM: // TODO: Redundant code ref: public void SetShaderParamT(EffectParam param) in RenderContext
+                    SetShaderParams(args.EffectParameter);
+                    break;
+                case ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM:
+                    foreach (var program in args.Effect.CompiledShaders)
+                    {
+                        var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName.Item1);
+                        if (unknownParamHandle != null)
+                        {
+                            var tmpEffectParam = new EffectParam
+                            {
+                                Info = new ShaderParamInfo
+                                {
+                                    Handle = unknownParamHandle,
+                                    Name = args.UnknownUniformName.Item1,
+                                    Type = args.UnknownUniformName.Item2.GetType()
+                                },
+                                ShaderInxs = new List<int>(),
+                                Value = args.UnknownUniformName.Item2
+                            };
+                            SetShaderParams(tmpEffectParam);
+
+                            // update ShaderParamList
+                            var ef = sender as ShaderEffect;
+                            ef.ParamDecl.Add(args.UnknownUniformName.Item1, args.UnknownUniformName.Item2);
+                            ef.Parameters.Add(args.UnknownUniformName.Item1, tmpEffectParam);
+                        }
+                            
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+
+        public void SetShaderParams(EffectParam param)
+        {
+
+            if (param.Info.Type == typeof(int))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
+            }
+            else if (param.Info.Type == typeof(float))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
+            }
+            else if (param.Info.Type == typeof(float2))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
+            }
+            else if (param.Info.Type == typeof(float3))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4[]))
+            {
+                _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+            }
+            else if (param.Info.Type == typeof(ITexture))
+            {
+                _rci.SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
+            }
+            // Nothing to do here, for further implementation
         }
 
         public void RegisterShaderEffect(ShaderEffect ef)

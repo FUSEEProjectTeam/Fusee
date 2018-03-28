@@ -118,12 +118,21 @@ namespace Fusee.Engine.Core
                 object pa;
 
                 if (Parameters != null)
+                {
                     if (Parameters.TryGetValue(name, out pa))
                     {
                         var param = (EffectParam) pa;
+                        // do nothing if new value = old value
+                        if (param.Value.Equals(value)) return; // TODO: Write a better compare method
+
                         param.Value = value;
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM));
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
                     }
+                    else
+                        // not in Parameters, try to get it anyway through ShaderProgram
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, new Tuple<string, object>(name, value)));
+                }
+                   
             }
 
             public object GetEffectParam(string name)
@@ -175,18 +184,26 @@ namespace Fusee.Engine.Core
     {
         public ShaderEffect Effect { get; }
         public ShaderEffectChangedEnum Changed { get; }
+        public EffectParam EffectParameter { get; }
 
-        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed)
+        public Tuple<string, object> UnknownUniformName { get; }
+
+        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null, Tuple<string, object> unknownUniform = null)
         {
             Effect = effect;
             Changed = changed;
+            if(effectParam != null)
+                EffectParameter = effectParam;
+            if (unknownUniform != null)
+                UnknownUniformName = unknownUniform;
         }
     }
 
     public enum ShaderEffectChangedEnum
     {
         DISPOSE = 0,
-        CHANGED_EFFECT_PARAM
+        CHANGED_EFFECT_PARAM,
+        CHANGED_UNKNOWN_EFFECT_PARAM
 
     }
 
