@@ -3,7 +3,7 @@
     /// <summary>
     ///     Contains all pixel and vertex shaders and a method to create a ShaderProgram in Rendercontext.
     /// </summary>
-    public static class Shaders
+  /*  public static class Shaders
     {
         /// <summary>
         /// Creates a simple unlit color shader in RenderContext.
@@ -481,5 +481,5 @@
 
                 gl_FragColor = texture2D(texture1, vUV) * endInt; 
             }";
-    }
+    }*/
 }
