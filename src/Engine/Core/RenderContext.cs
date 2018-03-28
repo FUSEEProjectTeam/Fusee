@@ -1535,10 +1535,10 @@ namespace Fusee.Engine.Core
             }
             else if (param.Info.Type == typeof(ITexture))
             {
-                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+                SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
             }
         }
-
+      
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);

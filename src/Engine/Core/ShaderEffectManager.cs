@@ -35,39 +35,31 @@ namespace Fusee.Engine.Core
                     SetShaderParams(args.EffectParameter);
                     break;
                 case ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM:
-                    // update ShaderParamList
-                    var ef = sender as ShaderEffect;
-                    if (ef != null)
+                    foreach (var program in args.Effect.CompiledShaders)
                     {
-                        foreach (var program in args.Effect.CompiledShaders)
+                        var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName.Item1);
+                        if (unknownParamHandle != null)
                         {
-                            //var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName);
-                            ShaderParamInfo param;
-                            if (program._paramsByName.TryGetValue(args.UnknownUniformName, out param))
+                            var tmpEffectParam = new EffectParam
                             {
-                                for (var i = 0; i < ef.VertexShaderSrc.Length; i++)
+                                Info = new ShaderParamInfo
                                 {
-                                    var tmpEffectParam = new EffectParam
-                                    {
-                                        Info = new ShaderParamInfo
-                                        {
-                                            Handle = param.Handle,
-                                            Name = args.UnknownUniformName,
-                                            Type = args.UnknownUniformObject.GetType()
-                                        },
-                                        ShaderInxs = new List<int> {i},
-                                        Value = args.UnknownUniformObject
-                                    };
-                                    SetShaderParams(tmpEffectParam);
+                                    Handle = unknownParamHandle,
+                                    Name = args.UnknownUniformName.Item1,
+                                    Type = args.UnknownUniformName.Item2.GetType()
+                                },
+                                ShaderInxs = new List<int>(),
+                                Value = args.UnknownUniformName.Item2
+                            };
+                            SetShaderParams(tmpEffectParam);
 
-                                    ef.ParamDecl.Add(args.UnknownUniformName, args.UnknownUniformObject);
-                                    ef.Parameters.Add(args.UnknownUniformName, tmpEffectParam);
-
-                                }
-                            }
+                            // update ShaderParamList
+                            var ef = sender as ShaderEffect;
+                            ef.ParamDecl.Add(args.UnknownUniformName.Item1, args.UnknownUniformName.Item2);
+                            ef.Parameters.Add(args.UnknownUniformName.Item1, tmpEffectParam);
                         }
+                            
                     }
-                  
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

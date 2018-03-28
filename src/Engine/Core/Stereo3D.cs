@@ -315,7 +315,7 @@
 //            _rc.ClearColor = new float4(0, 0, 0, 0); // _clearColor
 //            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-//            var currShader = _rc.CurrentShader;
+            //var currShader = _rc.CurrentShader;
 
 //            switch (_activeMode)
 //            {
