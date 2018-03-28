@@ -1128,11 +1128,12 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
+                Diagnostics.Log(ef.PixelShaderSrc[0]);
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
-            ef.Parameters = new Dictionary<string, EffectParam>();
+            ef.Parameters = new Dictionary<string, object>();
             ef.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
@@ -1166,9 +1167,10 @@ namespace Fusee.Engine.Core
                         // ReSharper restore UseMethodIsInstanceOfType
 
                         // Parameter was declared by user and type is correct in shader - carry on.
-                        EffectParam paramExisting;
-                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramExisting))
+                        object paramEx;
+                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramEx))
                         {
+                            var paramExisting = (EffectParam) paramEx;
                             // The parameter is already there from a previous pass.
                             if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
                             {
@@ -1183,15 +1185,15 @@ namespace Fusee.Engine.Core
                         }
                         else
                         {
-                            paramExisting = new EffectParam()
+                            paramEx = new EffectParam()
                             {
                                 Info = paramNew,
                                 ShaderInxs = new List<int>(new int[] { i }),
                                 Value = initValue
                             };
-                            ef.Parameters.Add(paramNew.Name, paramExisting);
+                            ef.Parameters.Add(paramNew.Name, paramEx);
                         }
-                        ef.ParamsPerPass[i].Add(paramExisting);
+                        ef.ParamsPerPass[i].Add((EffectParam) paramEx);
                     }
                 }
 
