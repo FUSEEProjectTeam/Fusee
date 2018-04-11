@@ -200,7 +200,7 @@ namespace Fusee.Xene
         /// <value>
         /// The current component.
         /// </value>
-        protected SceneComponentContainer CurrentComponent { get; set; }
+        protected SceneComponentContainer CurrentComponent { get; private set; }
         #endregion
 
         #region Enumeration Building Blocks
@@ -508,7 +508,7 @@ namespace Fusee.Xene
             CurrentNode = null;
         }
 
-        protected virtual void DoVisitComponents(SceneNodeContainer node)
+        private void DoVisitComponents(SceneNodeContainer node)
         {
             // Are there any components at all?
             if (node.Components == null)
@@ -522,7 +522,7 @@ namespace Fusee.Xene
             }
         }
 
-        protected void DoVisitComponent(SceneComponentContainer component)
+        private void DoVisitComponent(SceneComponentContainer component)
         {
             VisitComponentMethod visitComponent;
             var compType = component.GetType();
