@@ -167,7 +167,7 @@ namespace Fusee.Engine.Core
             }
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
-                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.ADVANCED, wc);
+                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
             }
             else
             {
@@ -176,9 +176,8 @@ namespace Fusee.Engine.Core
 
             var effectParameters = AssembleEffectParamers(mc);
 
-            if (scb != null)
-            {
-                var ret = new ShaderEffect(new[]
+            if (scb == null) throw new Exception("Material could not be evaluated or be built!");
+            var ret = new ShaderEffect(new[]
                 {
                     new EffectPassDeclaration()
                     {
@@ -192,12 +191,9 @@ namespace Fusee.Engine.Core
                         }
                     }
                 },
-                    effectParameters
-                    );
-                return ret;
-            }
-
-            throw new Exception("Material could not be evaluated or be built!");
+                effectParameters
+            );
+            return ret;
         }
 
         private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
@@ -338,7 +334,6 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
 
             mat = MakeMaterial(mc);
-            //_rc.SetShaderEffect(mat);
             _matMap.Add(mc, mat);
             return mat;
         }
@@ -347,7 +342,6 @@ namespace Fusee.Engine.Core
             if (_lightMatMap.TryGetValue(mc, out var mat)) return mat;
 
             mat = MakeMaterial(mc);
-            //_rc.SetShaderEffect(mat);
             _lightMatMap.Add(mc, mat);
             return mat;
         }
@@ -357,7 +351,6 @@ namespace Fusee.Engine.Core
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
 
             mat = MakeMaterial(mc);
-            //_rc.SetShaderEffect(mat);
             _pbrComponent.Add(mc, mat);
             return mat;
         }
