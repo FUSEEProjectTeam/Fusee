@@ -13,10 +13,9 @@ namespace Fusee.Engine.Core
         public ShaderEffect Effect { get; set; }
 
 
-        public ShaderEffectComponent(RenderContext rc, ShaderEffect effect)
+        public ShaderEffectComponent(ShaderEffect effect)
         {
             Effect = effect;
-            rc.SetShaderEffect(effect);
         }
     }
 }

@@ -293,7 +293,9 @@ namespace Fusee.Engine.Core.GUI
             XPivot = xPivot;
             YPivot = yPivot;
             // shader
-            // if (FontMap != null) CreateTextShader();
+            //if (FontMap != null) CreateTextShader(RContext.CreateTexture(FontMap.Image));
+
+
         }
 
         protected virtual void CreateGUIShader()
@@ -356,6 +358,8 @@ namespace Fusee.Engine.Core.GUI
             }
 
             RContext = rc;
+
+            if (FontMap != null) CreateTextShader(RContext.CreateTexture(FontMap.Image));
 
             Refresh();
         }
@@ -594,7 +598,7 @@ namespace Fusee.Engine.Core.GUI
 
             if (FontMap != null)
             {
-                CreateTextShader(rc.CreateTexture(FontMap.Image));
+                //
                 RContext.SetShaderEffect(TextShader);
 
                 TextShader.SetEffectParam("guiXForm", guiXForm);

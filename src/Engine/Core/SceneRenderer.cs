@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -167,8 +164,6 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SceneRenderer : SceneVisitor
     {
-        // Choose Lightning Method
-        public static LightingCalculationMethod LightingCalculationMethod;
         // All lights
         public static Dictionary<LightComponent, LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
         // Multipass
@@ -212,9 +207,7 @@ namespace Fusee.Engine.Core
 
         #region Traversal information
 
-        private Dictionary<MaterialComponent, ShaderEffect> _matMap;
-        private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
-        private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
+
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
         private Animation _animation;
@@ -279,19 +272,14 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup
 
-        public SceneRenderer(SceneContainer sc, LightingCalculationMethod lightCalcMethod, bool RenderDeferred = false, bool RenderShadows = false)
+        public SceneRenderer(SceneContainer sc, bool RenderDeferred = false, bool RenderShadows = false)
              : this(sc)
         {
-            LightingCalculationMethod = lightCalcMethod;
-
             if (RenderShadows)
                 _wantToRenderWithShadows = true;
 
             if (RenderDeferred)
                 _wantToRenderDeferred = true;
-
-            if (lightCalcMethod == LightingCalculationMethod.ADVANCEDwENVMAP)
-                _wantToRenderEnvMap = true;
         }
 
         public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
@@ -438,7 +426,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private float2 _rcViewportOriginalSize;
 
         public void SetContext(RenderContext rc)
         {
@@ -448,25 +435,12 @@ namespace Fusee.Engine.Core
             if (rc != _rc)
             {
                 _rc = rc;
-                _rcViewportOriginalSize = new float2(_rc.ViewportWidth, _rc.ViewportHeight);
-                _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
-                _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
-                _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
-                _defaultEffect = MakeMaterial(new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer()
-                    {
-                        Color = new float3(0.5f, 0.5f, 0.5f)
-                    },
-                    Specular = new SpecularChannelContainer()
-                    {
-                        Color = new float3(1, 1, 1),
-                        Intensity = 0.5f,
-                        Shininess = 22
-                    }
-                });
+
+                //TODO: replace with (currently not existing) helper method in ShaderCodeBuilder (Mat --> ShaderEffect)
+                _defaultEffect = CreateDefaultShaderEffect();
+                
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
 
@@ -477,15 +451,71 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private ShaderEffect CreateDefaultShaderEffect()
+        {
+            var defulatMat = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = new float3(0.5f, 0.5f, 0.5f)
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = new float3(1, 1, 1),
+                    Intensity = 0.5f,
+                    Shininess = 22
+                }
+            };
+            var scb = new ShaderCodeBuilder(defulatMat, null, CurrentNode.GetWeights());
+            return new ShaderEffect(new[]
+                {
+                        new EffectPassDeclaration
+                        {
+                            VS = scb.VS,
+                            //VS = VsBones,
+                            PS = scb.PS,
+                            StateSet = new RenderStateSet
+                            {
+                                ZEnable = true,
+                                AlphaBlendEnable = false
+                            }
+                        }
+                    },
+                new[]
+                {
+                        new EffectParameterDeclaration
+                        {
+                            Name = ShaderCodeBuilder.DiffuseColorName,
+                            Value = defulatMat.Diffuse.Color
+                        },
+                        new EffectParameterDeclaration
+                        {
+                            Name = ShaderCodeBuilder.SpecularColorName,
+                            Value = defulatMat.Specular.Color
+                        },
+                        new EffectParameterDeclaration
+                        {
+                        Name = ShaderCodeBuilder.SpecularShininessName,
+                        Value = defulatMat.Specular.Shininess
+                        },
+                        new EffectParameterDeclaration
+                        {
+                        Name = ShaderCodeBuilder.SpecularIntensityName,
+                        Value = defulatMat.Specular.Intensity
+                        }
+                }
+            );
+        }
+
         #endregion
-        
+
         public void Render(RenderContext rc)
         {
             SetContext(rc);
-            
+
             rc.SetRenderTarget(null);
             Traverse(_sc.Children);
-         }
+        }
 
 
         #region Visitors
@@ -523,7 +553,7 @@ namespace Fusee.Engine.Core
             };
 
             _state.CanvasXForm = _state.Model;
-            _state.Model = _state.CanvasXForm  * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            _state.Model = _state.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
             _state.UiRect = newRect;
         }
 
@@ -537,9 +567,9 @@ namespace Fusee.Engine.Core
                 Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
                 Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
             };
-            
+
             var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-            
+
             _state.UiRect = newRect;
             _state.Model = _state.CanvasXForm * transformChild;
 
@@ -547,7 +577,7 @@ namespace Fusee.Engine.Core
             var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
             var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
             // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
-            
+
 
             _state.UiRect = newRect;
 
@@ -567,29 +597,6 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void RenderMaterial(MaterialComponent matComp)
-        {
-            var effect = LookupMaterial(matComp);
-            UpdateEffectParameters(matComp, effect);
-            _state.Effect = effect;
-        }
-
-        [VisitMethod]
-        public void RenderMaterial(MaterialLightComponent matComp)
-        {
-            var effect = LookupMaterial(matComp);
-            _state.Effect = effect;
-        }
-
-        [VisitMethod]
-        public void RenderMaterial(MaterialPBRComponent matComp)
-        {
-            var effect = LookupMaterial(matComp);
-            _state.Effect = effect;
-        }
-
-
-        [VisitMethod]
         public void RenderShader(ShaderComponent shaderComponent)
         {
             var effect = BuildMaterialFromShaderComponent(shaderComponent);
@@ -601,7 +608,7 @@ namespace Fusee.Engine.Core
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
             _state.Effect = shaderComponent.Effect;
-           // _state.Effect.SetEffectParam("guiXForm", _rc.ModelViewProjection);
+            _rc.SetShaderEffect(shaderComponent.Effect);
         }
 
         [VisitMethod]
@@ -720,44 +727,6 @@ namespace Fusee.Engine.Core
 
         #region RenderContext/Asset Setup
 
-
-        private ShaderEffect LookupMaterial(MaterialComponent mc)
-        {
-            ShaderEffect mat;
-            if (_matMap.TryGetValue(mc, out mat)) return mat;
-
-            mat = MakeMaterial(mc);
-            _rc.SetShaderEffect(mat);
-           // mat.AttachToContext(_rc);
-            _matMap.Add(mc, mat);
-            return mat;
-        }
-        private ShaderEffect LookupMaterial(MaterialLightComponent mc)
-        {
-            ShaderEffect mat;
-            if (_lightMatMap.TryGetValue(mc, out mat)) return mat;
-
-            mat = MakeMaterial(mc);
-            _rc.SetShaderEffect(mat);
-            //mat.AttachToContext(_rc);
-            _lightMatMap.Add(mc, mat);
-            return mat;
-        }
-
-        private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
-        {
-            ShaderEffect mat;
-            if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
-
-            mat = MakeMaterial(mc);
-            _rc.SetShaderEffect(mat);
-           // mat.AttachToContext(_rc);
-            _pbrComponent.Add(mc, mat);
-            return mat;
-        }
-
-
- 
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
             ShaderEffect shaderEffect;
@@ -948,13 +917,6 @@ namespace Fusee.Engine.Core
             return rm;
         }
 
-        private ITexture LoadTexture(string path)
-        {
-            // string texturePath = Path.Combine(_scenePathDirectory, path);
-            var image = AssetStorage.Get<ImageData>(path);
-            return _rc.CreateTexture(image);
-        }
-
         // Creates Shader from given shaderComponent
         private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
@@ -1055,262 +1017,9 @@ namespace Fusee.Engine.Core
             return returnEffectParameterDeclaration;
         }
 
-        private ShaderEffect MakeMaterial(MaterialComponent mc)
-        {
-            WeightComponent wc = CurrentNode.GetWeights();
-
-            ShaderCodeBuilder scb = null;
-
-            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
-            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
-            if (mc.GetType() == typeof(MaterialLightComponent))
-            {
-                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc, _renderWithShadows);
-            }
-            else if (mc.GetType() == typeof(MaterialPBRComponent))
-            {
-                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod, wc, _renderWithShadows);
-            }
-            else
-            {
-                scb = new ShaderCodeBuilder(mc, null, wc, _renderWithShadows); // TODO, CurrentNode.GetWeights() != null);
-            }
-
-            var effectParameters = AssembleEffectParamers(mc, scb);
-
-            if (scb != null)
-            {
-                var ret = new ShaderEffect(new[]
-                {
-                    new EffectPassDeclaration()
-                    {
-                        VS = scb.VS,
-                        //VS = VsBones,
-                        PS = scb.PS,
-                        StateSet = new RenderStateSet()
-                        {
-                            ZEnable = true,
-                            AlphaBlendEnable = false
-                        }
-                    }
-                },
-                    effectParameters
-                    );
-                return ret;
-            }
-
-            throw new Exception("Material could not be evaluated or be built!");
-        }
-
-        private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
-        {
-            var effectParameters = new List<EffectParameterDeclaration>();
-
-            if (mc.HasDiffuse)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.DiffuseColorName,
-                    Value = (object)mc.Diffuse.Color
-                });
-                if (mc.Diffuse.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.DiffuseMixName,
-                        Value = mc.Diffuse.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.DiffuseTextureName,
-                        Value = LoadTexture(mc.Diffuse.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasSpecular)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.SpecularColorName,
-                    Value = (object)mc.Specular.Color
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.SpecularShininessName,
-                    Value = (object)mc.Specular.Shininess
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.SpecularIntensityName,
-                    Value = (object)mc.Specular.Intensity
-                });
-                if (mc.Specular.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.SpecularMixName,
-                        Value = mc.Specular.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.SpecularTextureName,
-                        Value = LoadTexture(mc.Specular.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasEmissive)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.EmissiveColorName,
-                    Value = (object)mc.Emissive.Color
-                });
-                if (mc.Emissive.Texture != null)
-                {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.EmissiveMixName,
-                        Value = mc.Emissive.Mix
-                    });
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = ShaderCodeBuilder.EmissiveTextureName,
-                        Value = LoadTexture(mc.Emissive.Texture)
-                    });
-                }
-            }
-
-            if (mc.HasBump)
-            {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.BumpIntensityName,
-                    Value = mc.Bump.Intensity
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.BumpTextureName,
-                    Value = LoadTexture(mc.Bump.Texture)
-                });
-            }
-
-            SetLightEffectParameters(ref effectParameters);
-
-            return effectParameters;
-        }
-
-        private static void SetLightEffectParameters(ref List<EffectParameterDeclaration> effectParameters)
-        {
-            for (var i = 0; i < AllLightResults.Keys.Count; i++)
-            {
-                if (!AllLightResults[AllLightResults.Keys.ElementAt(i)].Active)
-                    continue;
-
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].position",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].PositionWorldSpace
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].intensities",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].Color
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].attenuation",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].Attenuation
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].ambientCoefficient",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].AmbientCoefficient
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].coneAngle",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].ConeAngle
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].coneDirection",
-                    Value = AllLightResults[AllLightResults.Keys.ElementAt(i)].ConeDirection
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = "allLights[" + i + "].lightType",
-                    Value = (int)AllLightResults[AllLightResults.Keys.ElementAt(i)].Type
-                });
-            }
-        }
 
 
-        private void UpdateEffectParameters(MaterialComponent mc, ShaderEffect fx)
-        {
-            if (mc.HasDiffuse)
-            {
-                fx.SetEffectParam(ShaderCodeBuilder.DiffuseColorName, mc.Diffuse.Color);
-                if (mc.Diffuse.Texture != null)
-                {
-                    fx.SetEffectParam(ShaderCodeBuilder.DiffuseMixName, mc.Diffuse.Mix);
-                    // TODO: fx.SetEffectParam(scb.DiffuseTextureName, LookupTexture(mc.Diffuse.Texture));
-                }
-            }
 
-            if (mc.HasSpecular)
-            {
-                fx.SetEffectParam(ShaderCodeBuilder.SpecularColorName, mc.Specular.Color);
-                fx.SetEffectParam(ShaderCodeBuilder.SpecularShininessName, mc.Specular.Shininess);
-                fx.SetEffectParam(ShaderCodeBuilder.SpecularIntensityName, mc.Specular.Intensity);
-                if (mc.Specular.Texture != null)
-                {
-                    fx.SetEffectParam(ShaderCodeBuilder.SpecularMixName, mc.Specular.Mix);
-                    // TODO: fx.SetEffectParam(scb.SpecularTextureName, LookupTexture(mc.Specular.Texture));
-                }
-            }
-
-            if (mc.HasEmissive)
-            {
-                fx.SetEffectParam(ShaderCodeBuilder.EmissiveColorName, mc.Emissive.Color);
-                if (mc.Emissive.Texture != null)
-                {
-                    fx.SetEffectParam(ShaderCodeBuilder.EmissiveMixName, mc.Emissive.Mix);
-                    // TODO: fx.SetEffectParam(scb.EmissiveTextureName, LookupTexture(mc.Emissive.Texture));
-                }
-            }
-
-            if (mc.HasBump)
-            {
-                fx.SetEffectParam(ShaderCodeBuilder.BumpIntensityName, mc.Bump.Intensity);
-                // TODO: fx.SetEffectParam(scb.BumpTextureName, LookupTexture(mc.Bump.Texture));
-            }
-
-            /*
-            // Any light calculation needed at all?
-            if (mc.HasDiffuse || mc.HasSpecular)
-            {
-                // Light calculation parameters
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightColorName,
-                    Value = new float3(1, 1, 1)
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightIntensityName,
-                    Value = (float)1
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = ShaderCodeBuilder.LightDirectionName,
-                    Value = new float3(0, 0, 1)
-                });
-            }
-            */
-
-        }
         #endregion
 
     }
