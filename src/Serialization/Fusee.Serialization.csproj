@@ -70,6 +70,7 @@
     <Compile Include="TypeContainer.cs" />
     <Compile Include="WeightComponent.cs" />
     <Compile Include="TransformComponent.cs" />
+    <Compile Include="XFormComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Math\Core\Fusee.Math.Core.csproj">

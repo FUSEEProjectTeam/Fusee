@@ -116,6 +116,7 @@
     <Compile Include="RenderEventArgs.cs" />
     <Compile Include="ResizeEventArgs.cs" />
     <Compile Include="ShaderParamInfo.cs" />
+    <Compile Include="TextureComponent.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta">

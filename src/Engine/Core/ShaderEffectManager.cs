@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core
     {
         private readonly IRenderContextImp _rci;
 
-        private readonly Stack<ShaderEffect> _shaderEffectsToBeDeleted = new Stack<ShaderEffect>();
+        private readonly Stack<ShaderEffect>  _shaderEffectsToBeDeleted = new Stack<ShaderEffect>();
 
         private readonly Dictionary<Suid, ShaderEffect> _allShaderEffects = new Dictionary<Suid, ShaderEffect>();
 
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
                                             Name = args.UnknownUniformName,
                                             Type = args.UnknownUniformObject.GetType()
                                         },
-                                        ShaderInxs = new List<int> { i },
+                                        ShaderInxs = new List<int> {i},
                                         Value = args.UnknownUniformObject
                                     };
                                     SetShaderParams(tmpEffectParam);
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
                             }
                         }
                     }
-
+                  
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -106,9 +106,9 @@ namespace Fusee.Engine.Core
             {
                 _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
-            else if (param.Info.Type == typeof(ITextureHandle))
+            else if (param.Info.Type == typeof(ITexture))
             {
-                _rci.SetShaderParamTexture(param.Info.Handle, (ITextureHandle)param.Value);
+                _rci.SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
             }
             // Nothing to do here, for further implementation
         }

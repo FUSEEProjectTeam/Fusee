@@ -113,43 +113,43 @@ namespace Fusee.Engine.Core
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
 
-        public void SetEffectParam(string name, object value)
-        {
-            object pa;
-
-            if (Parameters != null)
+            public void SetEffectParam(string name, object value)
             {
+                object pa;
+
+                if (Parameters != null)
+                {
+                    if (Parameters.TryGetValue(name, out pa))
+                    {
+                        var param = (EffectParam) pa;
+                        // do nothing if new value = old value
+                        if (param.Value.Equals(value)) return; // TODO: Write a better compare method
+
+                        param.Value = value;
+                        ShaderEffectChanged?.Invoke(this,
+                            new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
+                    }
+                    else
+                    {
+                        if(name != null && value != null)
+                            // not in Parameters, try to get it anyway through ShaderProgram
+                            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
+                }
+                      
+                }
+                   
+            }
+
+            public object GetEffectParam(string name)
+            {
+                object pa;
                 if (Parameters.TryGetValue(name, out pa))
                 {
-                    var param = (EffectParam)pa;
-                    // do nothing if new value = old value
-                    if (param.Value.Equals(value)) return; // TODO: Write a better compare method
-
-                    param.Value = value;
-                    ShaderEffectChanged?.Invoke(this,
-                        new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
+                    var param = (EffectParam) pa;
+                    return param.Value;
                 }
-                else
-                {
-                    if (name != null && value != null)
-                        // not in Parameters, try to get it anyway through ShaderProgram
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
-                }
-
+                return null;
             }
-
-        }
-
-        public object GetEffectParam(string name)
-        {
-            object pa;
-            if (Parameters.TryGetValue(name, out pa))
-            {
-                var param = (EffectParam)pa;
-                return param.Value;
-            }
-            return null;
-        }
 
         // This property returns the number of elements
         // in the inner dictionary.
@@ -198,7 +198,7 @@ namespace Fusee.Engine.Core
         {
             Effect = effect;
             Changed = changed;
-            if (effectParam != null)
+            if(effectParam != null)
                 EffectParameter = effectParam;
 
             if (unknownUniformName != null && unknownUniformObject != null)
@@ -206,9 +206,19 @@ namespace Fusee.Engine.Core
                 UnknownUniformName = unknownUniformName;
                 UnknownUniformObject = unknownUniformObject;
             }
-
+               
         }
     }
+
+    public enum ShaderEffectChangedEnum
+    {
+        DISPOSE = 0,
+        CHANGED_EFFECT_PARAM,
+        CHANGED_UNKNOWN_EFFECT_PARAM
+
+    }
+
+}
 
     public enum ShaderEffectChangedEnum
     {

@@ -763,7 +763,7 @@ namespace Fusee.Engine.Core
 
             // Normal versions of MV and P
             if (_currentShaderParams.FUSEE_M != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_M", Model);
+               _currentShaderEffect.SetEffectParam("FUSEE_M", Model);
 
             if (_currentShaderParams.FUSEE_V != null)
                 _currentShaderEffect.SetEffectParam("FUSEE_V", View);
@@ -1110,7 +1110,7 @@ namespace Fusee.Engine.Core
         public void SetShaderEffect(ShaderEffect ef)
         {
             if (_rci == null)
-                throw new ArgumentNullException("rc", "must pass a valid render context.");
+               throw new ArgumentNullException("rc", "must pass a valid render context.");
 
             if (ef == null)
                 return;
@@ -1121,7 +1121,7 @@ namespace Fusee.Engine.Core
                 _currentShaderEffect = ef;
                 return;
             }
-
+               
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
@@ -1176,7 +1176,7 @@ namespace Fusee.Engine.Core
                         object paramEx;
                         if (ef.Parameters.TryGetValue(paramNew.Name, out paramEx))
                         {
-                            var paramExisting = (EffectParam)paramEx;
+                            var paramExisting = (EffectParam) paramEx;
                             // The parameter is already there from a previous pass.
                             if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
                             {
@@ -1199,7 +1199,7 @@ namespace Fusee.Engine.Core
                             };
                             ef.Parameters.Add(paramNew.Name, paramEx);
                         }
-                        ef.ParamsPerPass[i].Add((EffectParam)paramEx);
+                        ef.ParamsPerPass[i].Add((EffectParam) paramEx);
                     }
                 }
 
@@ -1441,7 +1441,7 @@ namespace Fusee.Engine.Core
         {
             _rci.SetCubeMapRenderTarget(texture, position);
         }
-
+        
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
