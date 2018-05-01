@@ -193,7 +193,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamTexture(IShaderParam param, ITexture texId);
+        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -201,14 +201,14 @@ namespace Fusee.Engine.Common
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
         /// <param name="gHandle">The GBufferHandle</param>
-        void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle);
+        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle);
 
         /// <summary>
         /// Updates the texture from video the given video stream.
         /// </summary>
         /// <param name="stream">The video stream to retrieve an individual image.</param>
         /// <param name="tex">The texture to fill with the image from the video.</param>
-        void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex);
+        void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex);
 
         /// <summary>
         /// Updates the given region of a texture with te passed image data.
@@ -219,7 +219,7 @@ namespace Fusee.Engine.Common
         /// <param name="startY">The start y.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height);
+        void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height);
 
         /// <summary>
         /// Creates a new texture and binds it to the shader.
@@ -233,25 +233,36 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An ITexture that can be used for texturing in the shader.
         /// </returns>
-        ITexture CreateTexture(ImageData imageData, bool repeat);
+        ITextureHandle CreateTexture(ITexture imageData, bool repeat);
+
+        /// <summary>
+        /// Removes the TextureHandle's buffers and textures from the graphics card's memory
+        /// </summary>
+        /// <remarks>
+        /// Method should be called after an TextureHandle is no longer required by the application.
+        /// </remarks>
+        /// <param name="textureHandle">An TextureHandle object, containing necessary information for the upload to the graphics card.</param>
+        void RemoveTextureHandle(ITextureHandle textureHandle);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="texture"></param>
-        void CopyDepthBufferFromDeferredBuffer(ITexture texture);
+        void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture);
 
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
         /// This is done by creating a framebuffer and a renderbuffer (if needed).
         /// All bufferhandles are returned with the texture.
-        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// For binding this texture call <see cref="SetRenderTarget"/>
+        /// <param name="width"></param>
+        /// <param name="height"></param>SetRenderTarget
         /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
         /// </summary>
         /// <returns>
-        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
+        /// An <see cref="ITextureHandle"/>ITextureHandle that can be used for of screen rendering
         /// </returns>
-        ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
+        ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
 
         /*
         /// <summary>
@@ -577,7 +588,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="quad">The quad.</param>
         /// <param name="texId">The tex identifier.</param>
-        void GetBufferContent(Rectangle quad, ITexture texId);
+        void GetBufferContent(Rectangle quad, ITextureHandle texId);
 
         /// <summary>
         /// Creates the mesh implementation.
@@ -601,16 +612,16 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
-        /// <param name="texture">The texture as target</param>
-        /// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
-        void SetRenderTarget(ITexture texture);
+        /// <param name="textureHandle">The textureHandle as target</param>
+        ///// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
+        void SetRenderTarget(ITextureHandle textureHandle);
 
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
         /// <param name="position">The texture position within a cubemap</param>
-        void SetCubeMapRenderTarget(ITexture texture, int position);
+        void SetCubeMapRenderTarget(ITextureHandle texture, int position);
 
         /*
          * TODO: NO tangent space normal maps at this time...
@@ -630,14 +641,14 @@ namespace Fusee.Engine.Common
          * */
 
         /// <summary>
-        /// Retrieves a sub-image of the giben region.
+        /// Retrieves a sub-image of the given region.
         /// </summary>
         /// <param name="x">The x value of the start of the region.</param>
         /// <param name="y">The y value of the start of the region.</param>
         /// <param name="w">The width to copy.</param>
         /// <param name="h">The height to copy.</param>
         /// <returns>The specified sub-image</returns>
-        ImageData GetPixelColor(int x, int y, int w, int h);
+        IImageData GetPixelColor(int x, int y, int w, int h);
 
         /// <summary>
         /// Retrieves the Z-value at the given pixel position.

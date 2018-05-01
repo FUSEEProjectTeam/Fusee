@@ -102,6 +102,10 @@
     <Compile Include="ShaderEffect.cs" />
     <Compile Include="Stereo3D.cs" />
     <Compile Include="StereoCameraRig.cs" />
+    <Compile Include="Texture.cs" />
+    <Compile Include="TextureChangedEnum.cs" />
+    <Compile Include="TextureDataEventArgs.cs" />
+    <Compile Include="TextureManager.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="TouchDevice.cs" />
     <Compile Include="VideoManager.cs" />

@@ -26,7 +26,7 @@ namespace Fusee.Base.Imp.Web
         }
 
         [JSExternal]
-        public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
+        public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
         {
             throw new NotImplementedException();
         }

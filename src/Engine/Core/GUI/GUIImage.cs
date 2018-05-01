@@ -142,9 +142,12 @@ namespace Fusee.Engine.Core.GUI
 
             if (!ImgSrc.IsEmpty)
             {
-                GUITexture = rc.CreateTexture(ImgSrc,
-                    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
 
+                // (dd) old, currently no repeat option?
+                //GUITexture = rc.CreateTexture(ImgSrc,
+                //    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
+                
+                GUITexture = rc.CreateTextureHandle(new Texture(ImgSrc), M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
                 CreateGUIShader();
             }
 

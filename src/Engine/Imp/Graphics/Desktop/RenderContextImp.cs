@@ -58,16 +58,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="stream">The Video from which the images are taken.</param>
         /// <param name="tex">The texture to which the ImageData is bound to.</param>
         /// <remarks>Look at the VideoTextureExample for further information.</remarks>
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
         {
-            ImageData img = stream.GetCurrentFrame();
+            ITexture img = stream.GetCurrentFrame();
             OpenTK.Graphics.OpenGL.PixelFormat format;
-            switch (img.PixelFormat)
+            switch (img.PixelFormat.ColorFormat)
             {
-                case ImagePixelFormat.RGBA:
+                case ColorFormat.RGBA:
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
                     break;
-                case ImagePixelFormat.RGB:
+                case ColorFormat.RGB:
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
                     break;
                 default:
@@ -78,7 +78,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (tex == null)
                     tex = CreateTexture(img, false);
 
-                GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
                     format, PixelType.UnsignedByte, img.PixelData);
             }
@@ -95,22 +95,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="width">The width of the rectangle.</param>
         /// <param name="height">The height of the rectangle.</param>
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
-        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+        public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
             OpenTK.Graphics.OpenGL.PixelFormat format;
-            switch (img.PixelFormat)
+            switch (img.PixelFormat.ColorFormat)
             {
-                case ImagePixelFormat.RGBA:
+                case ColorFormat.RGBA:
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
                     break;
-                case ImagePixelFormat.RGB:
+                case ColorFormat.RGB:
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture) tex).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, img.PixelData);
         }
@@ -134,7 +134,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, ColorFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 PixelData = new byte[bytes],
                 Height = bmpData.Height,
                 Width = bmpData.Width,
-                PixelFormat = ImagePixelFormat.RGBA,
+                ColorFormat = ImagePixelFormat.RGBA,
                 Stride = bmpData.Stride
             };
 
@@ -172,7 +172,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             GCHandle arrayHandle = GCHandle.Alloc(imgDataNew.PixelData,
                 GCHandleType.Pinned);
-            var bmp = new Bitmap(imgDataNew.Width, imgDataNew.Height, imgDataNew.Stride, PixelFormat.Format32bppArgb,
+            var bmp = new Bitmap(imgDataNew.Width, imgDataNew.Height, imgDataNew.Stride, ColorFormat.Format32bppArgb,
                 arrayHandle.AddrOfPinnedObject());
 
             // Flip before writing text on bmp
@@ -189,7 +189,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
 
             BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
+                ImageLockMode.ReadWrite, ColorFormat.Format32bppArgb);
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs)*bmp.Height;
 
@@ -210,23 +210,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
-        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateTexture(ImageData img, bool repeat)
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(ITexture img, bool repeat)
         {
             PixelInternalFormat internalFormat;
             OpenTK.Graphics.OpenGL.PixelFormat format;
-            switch (img.PixelFormat)
+            switch (img.PixelFormat.ColorFormat)
             {
-                case ImagePixelFormat.RGBA:
+                case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
                     break;
-                case ImagePixelFormat.RGB:
+                case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case ImagePixelFormat.Intensity:
+                case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = OpenTK.Graphics.OpenGL.PixelFormat.Alpha;
                     break;
@@ -249,20 +249,84 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
                 (repeat) ? (int) TextureWrapMode.Repeat : (int) TextureWrapMode.ClampToEdge);
 
-            ITexture texID = new Texture {handle = id};
+            ITextureHandle texID = new TextureHandle { handle = id};
 
             return texID;
         }
 
+        public void RemoveTextureHandle(ITextureHandle textureHandle)
+        {
+            TextureHandle texHandle = (TextureHandle) textureHandle;
+
+            if (texHandle.renderToTextureBufferHandle != -1)
+            {
+                GL.DeleteFramebuffer(texHandle.renderToTextureBufferHandle);
+            }
+
+            if (texHandle.fboHandle != -1)
+            {
+                GL.DeleteFramebuffer(texHandle.fboHandle);
+            }
+
+            if (texHandle.intermediateToTextureBufferHandle != -1)
+            {
+                GL.DeleteFramebuffer(texHandle.intermediateToTextureBufferHandle);
+            }
+
+            if (texHandle.gBufferHandle != -1)
+            {
+                GL.DeleteFramebuffer(texHandle.gBufferHandle);
+
+                if (texHandle.gDepthRenderbufferHandle != -1)
+                {
+                    GL.DeleteFramebuffer(texHandle.gDepthRenderbufferHandle);
+                }
+
+                if (texHandle.gBufferAlbedoSpecTextureHandle != -1)
+                {
+                    GL.DeleteTexture(texHandle.gBufferAlbedoSpecTextureHandle);
+                }
+
+                if (texHandle.gBufferDepthTextureHandle != -1)
+                {
+                    GL.DeleteTexture(texHandle.gBufferDepthTextureHandle);
+                }
+
+                if (texHandle.gBufferNormalTextureHandle != -1)
+                {
+                    GL.DeleteTexture(texHandle.gBufferNormalTextureHandle);
+                }
+
+                if (texHandle.gBufferPositionTextureHandle != -1)
+                {
+                    GL.DeleteTexture(texHandle.gBufferPositionTextureHandle);
+                }
+            }
+
+            // TODO: (dd) ?? TBD
+            if (texHandle.depthHandle != -1)
+            {
+
+            }
+
+            if (texHandle.handle != -1)
+            {
+                GL.DeleteTexture(texHandle.handle);
+            }
+
+
+            
+            
+        }
         
         /// <summary>
         /// Creates a new writable texture and binds it to the shader.
         /// Creates also a framebufferobject and installs convenience methods for binding and reading.
         /// </summary>
-        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
-            Texture returnTexture = null;
+            TextureHandle returnTexture = null;
 
             try
             {
@@ -292,7 +356,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
 
-        private static Texture CreateGBufferFramebuffer(int width, int height)
+        private static TextureHandle CreateGBufferFramebuffer(int width, int height)
         {
             // TODO: Add Speculardata
             // Set up G-Buffer
@@ -390,7 +454,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
       
             // Fill texture with all params
-            return new Texture
+            return new TextureHandle
             {
                 gBufferHandle = gBufferHandle,
                 gBufferPositionTextureHandle = gBufferPositionTextureHandle,
@@ -405,7 +469,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         // Creates a depth framebuffer
-        private static Texture CreateDepthFramebuffer(int width, int height)
+        private static TextureHandle CreateDepthFramebuffer(int width, int height)
         {
             var textureHandle = 0;
             var fboHandle = 0;
@@ -445,10 +509,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
-            return new Texture { handle = textureHandle, fboHandle = fboHandle };
+            return new TextureHandle { handle = textureHandle, fboHandle = fboHandle };
         }
 
-        private static Texture CreateCubeMapFramebuffer(int width, int height)
+        private static TextureHandle CreateCubeMapFramebuffer(int width, int height)
         {
 
             //throw new NotImplementedException("Currently not implemented!");
@@ -497,10 +561,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
-            return new Texture { handle = cubeMapTextureHandle, fboHandle = framebuffer };
+            return new TextureHandle { handle = cubeMapTextureHandle, fboHandle = framebuffer };
         }
 
-        private static Texture CreateRenderTargetTextureFramebuffer(int width, int height)
+        private static TextureHandle CreateRenderTargetTextureFramebuffer(int width, int height)
         {
             // configure 4x MSAA framebuffer
             int msaa_level = 4;
@@ -548,7 +612,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 TextureTarget.Texture2D, screenTexture, 0);
 
             // Handle= the blitted texture that will be used as shaderparam sampler2D...
-            return new Texture { handle = screenTexture, renderToTextureBufferHandle = framebuffer, intermediateToTextureBufferHandle = intermediateFbo, textureWidth = width, textureHeight = height };
+            return new TextureHandle { handle = screenTexture, renderToTextureBufferHandle = framebuffer, intermediateToTextureBufferHandle = intermediateFbo, textureWidth = width, textureHeight = height };
         }
 
         #endregion
@@ -662,7 +726,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindTexture(TextureTarget.Texture2D, tex);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, maxWidth, potH, 0,
-                OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
+                OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
 
             // texture settings
             GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
@@ -699,7 +763,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
 
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, offX, offY, face.Glyph.Bitmap.Width, face.Glyph.Bitmap.Rows,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
+                    OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
 
                 // char informations
                 texAtlas.CharInfo[i].AdvanceX = (int) face.Glyph.Advance.X;
@@ -841,11 +905,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
 
                     case ActiveUniformType.Sampler2D:
-                        paramInfo.Type = typeof (ITexture);
+                        paramInfo.Type = typeof (ITextureHandle);
                         break;
 
                     case ActiveUniformType.SamplerCube:
-                        paramInfo.Type = typeof(ITexture);
+                        paramInfo.Type = typeof(ITextureHandle);
                         break;
 
                     default:
@@ -964,8 +1028,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
             int iParam = ((ShaderParam)param).handle;
             int texUnit;
@@ -977,37 +1041,37 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture)texId).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).handle);
         }
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
+        /// <param name="texId">An ITextureHandle probably returned from CreateWritableTexture method</param>
         /// <param name="gHandle">The GBufferHandle</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
         {
             switch (gHandle)
             {
                 case GBufferHandle.GPositionHandle:
-                    ((Texture) texId).handle = ((Texture) texId).gBufferPositionTextureHandle;
+                    ((TextureHandle) texId).handle = ((TextureHandle) texId).gBufferPositionTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GNormalHandle:
-                    ((Texture)texId).handle = ((Texture)texId).gBufferNormalTextureHandle;
+                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferNormalTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GAlbedoHandle:
-                    ((Texture)texId).handle = ((Texture)texId).gBufferAlbedoSpecTextureHandle;
+                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferAlbedoSpecTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GDepth:
-                    ((Texture)texId).handle = ((Texture)texId).gBufferDepthTextureHandle;
+                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferDepthTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.EnvMap:
-                    ((Texture)texId).handle = ((Texture)texId).handle;
+                    ((TextureHandle)texId).handle = ((TextureHandle)texId).handle;
                     var iParam = ((ShaderParam)param).handle;
                     int texUnit;
                     if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
@@ -1017,7 +1081,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     GL.Uniform1(iParam, texUnit);
                     GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).handle);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
@@ -1609,9 +1673,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
         /// <param name="texId">The tex identifier.</param>
-        public void GetBufferContent(Common.Rectangle quad, ITexture texId)
+        public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((Texture) texId).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) texId).handle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -2074,9 +2138,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Copies Depthbuffer from a deferred buffer texture
         /// </summary>
         /// <param name="texture"></param>
-        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        public void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture)
         {
-            var textureImp = (Texture)texture;
+            var textureImp = (TextureHandle)texture;
 
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gDepthRenderbufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
@@ -2092,9 +2156,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="texture"></param>
         /// <param name="position"></param>
-        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
         {
-            var textureImp = (Texture)texture;
+            var textureImp = (TextureHandle)texture;
 
               // Enable writes to the color buffer
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.fboHandle);
@@ -2113,9 +2177,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITexture texture) // TODO: Clear deferredNormalPass
+        public void SetRenderTarget(ITextureHandle texture) // TODO: Clear deferredNormalPass
         {
-            var textureImp = (Texture) texture;
+            var textureImp = (TextureHandle) texture;
 
             // If texture is null bind frambuffer 0, this is the main screen
             if (textureImp == null)
@@ -2234,7 +2298,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="w">The width to copy.</param>
         /// <param name="h">The height to copy.</param>
         /// <returns>The specified sub-image</returns>
-        public ImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
+        public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
             GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr /* yuk, yuk ??? */, PixelType.UnsignedByte, image.PixelData);
@@ -2243,8 +2307,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             /*
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
             Bitmap bmp = new Bitmap(w, h);
-            BitmapData data = bmp.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
+            BitmapData data = bmp.LockBits(rect, ImageLockMode.WriteOnly, ColorFormat.Format24bppRgb);
+            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.ColorFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
 
             bmp.UnlockBits(data);
             return bmp;

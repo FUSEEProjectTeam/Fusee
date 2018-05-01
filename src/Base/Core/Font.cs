@@ -113,7 +113,7 @@ namespace Fusee.Base.Core
         /// <returns>
         ///     An image data structure containing an image of the given character.
         /// </returns>
-        public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop) => _fontImp.RenderGlyph(c, out bitmapLeft, out bitmapTop);
+        public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop) => _fontImp.RenderGlyph(c, out bitmapLeft, out bitmapTop);
 
         /// <summary>
         /// Gets the kerning offset between a pair of two consecutive characters in a text string.

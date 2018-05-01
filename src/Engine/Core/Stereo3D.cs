@@ -1,4 +1,5 @@
 ﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
@@ -74,8 +75,8 @@ namespace Fusee.Engine.Core
 
         #region Stereo3D Shaders
 
-        private ITexture _contentLTex;
-        private ITexture _contentRTex;
+        private Texture _contentLTex;
+        private Texture _contentRTex;
 
         #region OculusRift
 
@@ -196,17 +197,14 @@ namespace Fusee.Engine.Core
             _rc = rc;
             _clearColor = rc.ClearColor;
 
-            var imgData = new ImageData();
-            imgData.Width = _screenWidth;
-            imgData.Height = _screenHeight;
-            imgData.PixelFormat = ImagePixelFormat.RGBA;
-            imgData.Stride = 4;
+            var imgData = new ImageData(new byte[_screenWidth * _screenHeight], _screenWidth, _screenHeight,
+                new ImagePixelFormat(ColorFormat.RGBA));
             
             //this seems is not working in the new FUSEE verison
             //var imgData = ImageData.CreateImage(_screenWidth, _screenHeight, ColorUint.Black);
 
-            _contentLTex = _rc.CreateTexture(imgData);
-            _contentRTex = _rc.CreateTexture(imgData);
+            _contentLTex = new Texture(imgData);
+            _contentRTex = new Texture(imgData);
 
             // initialize shader and image
             switch (_activeMode)

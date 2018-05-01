@@ -14,9 +14,9 @@ namespace Fusee.Engine.Core
         public static ShaderEffect GBufferPassShaderEffect = null;
         public static ShaderEffect GBufferDrawPassShaderEffect = null;
         public static ShaderEffect EnvMapPassShaderEffect = null;
-        public static ITexture ShadowTexture = null;
-        public static ITexture GBufferTexture = null;
-        public static ITexture EnvMapTexture = null;
+        public static ITextureHandle ShadowTexture = null;
+        public static ITextureHandle GBufferTexture = null;
+        public static ITextureHandle EnvMapTexture = null;
 
         public static int EnvMapTextureOrientation = 0;
 

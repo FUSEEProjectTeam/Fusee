@@ -6,10 +6,10 @@ using JSIL.Meta;
 
 namespace Fusee.Engine.Imp.Graphics.Web
 {
-    class Texture : ITexture
+    class TextureHandle : ITextureHandle
     {
         [JSExternal]
-        public Texture()
+        public TextureHandle()
         {
             throw new System.NotImplementedException();
         }

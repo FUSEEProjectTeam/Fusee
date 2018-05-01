@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -29,7 +30,7 @@ namespace Fusee.Engine.Core.GUI
         protected FontMap FontMap;
 
         protected ImageData ImgSrc;
-        protected ITexture GUITexture;
+        protected ITextureHandle GUITexture;
 
         // shader
         protected ShaderEffect GUIShader;
@@ -320,7 +321,7 @@ namespace Fusee.Engine.Core.GUI
             );
         }
 
-        protected void CreateTextShader(ITexture textAtlas)
+        protected void CreateTextShader(ITextureHandle textAtlas)
         {
             TextShader = new ShaderEffect(new[]
             {
@@ -362,8 +363,8 @@ namespace Fusee.Engine.Core.GUI
                 GUIShader.AttachToContext(RContext);
 
             if (FontMap != null)
-            { 
-                CreateTextShader(rc.CreateTexture(FontMap.Image));
+            {
+                CreateTextShader(rc.CreateTextureHandle(new Texture(FontMap.Image))); // TODO: (dd) new Texture? check whether implementation is OK
                 TextShader.AttachToContext(RContext);
             }
 

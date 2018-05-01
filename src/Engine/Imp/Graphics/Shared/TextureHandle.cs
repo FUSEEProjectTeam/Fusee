@@ -9,24 +9,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
     /// <summary>
     /// Texture Implementation for OpenTK, an integer value is used as a handle
     /// </summary>
-    class Texture : ITexture
+    class TextureHandle : ITextureHandle
     {
-        internal int handle;
+        internal int handle = -1;
         internal int fboHandle = -1;
 
         // GBUFFER
         internal int gBufferHandle = -1;
-        internal int gBufferPositionTextureHandle;
-        internal int gBufferNormalTextureHandle;
-        internal int gBufferAlbedoSpecTextureHandle;
-        internal int gBufferDepthTextureHandle;
-        internal int gDepthRenderbufferHandle;
+        internal int gBufferPositionTextureHandle = -1;
+        internal int gBufferNormalTextureHandle = -1;
+        internal int gBufferAlbedoSpecTextureHandle = -1;
+        internal int gBufferDepthTextureHandle = -1;
+        internal int gDepthRenderbufferHandle = -1;
 
         // RenderTexture
         internal int renderToTextureBufferHandle = -1;
         internal int intermediateToTextureBufferHandle = -1;
         internal bool toggle = false;
-        internal int depthHandle;
+        internal int depthHandle = -1;
 
         internal int textureWidth;
         internal int textureHeight;

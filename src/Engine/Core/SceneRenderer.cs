@@ -489,7 +489,9 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                rc.SetRenderTarget(null);
+                // TODO: (dd) BROKEN! remove TextureHandles from scenerenderer???
+                ITextureHandle broken = null;
+                rc.SetRenderTarget(broken);
                 Traverse(_sc.Children);
             }
          }
@@ -517,8 +519,10 @@ namespace Fusee.Engine.Core
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass++;
 
-                    // copy depthbuffer to current buffer
-                    rc.SetRenderTarget(null);
+            // copy depthbuffer to current buffer
+            // TODO: (dd) BROKEN! remove this 
+            ITextureHandle broken = null;
+            rc.SetRenderTarget(broken);
                     rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);
 
                     RenderDeferredLightPass();
@@ -548,8 +552,9 @@ namespace Fusee.Engine.Core
                 Traverse(_sc.Children);
             }
             DeferredShaderHelper.CurrentRenderPass++;
-
-            rc.SetRenderTarget(null);
+            // TODO: (dd) BROKEN! remove this 
+            ITextureHandle broken = null;
+            rc.SetRenderTarget(broken);
             Traverse(_sc.Children);
             DeferredShaderHelper.CurrentRenderPass--;
         }
@@ -600,7 +605,9 @@ namespace Fusee.Engine.Core
                     DeferredShaderHelper.CurrentRenderPass++;
             
                     // Set RenderTarget to Screenbuffer
-                    rc.SetRenderTarget(null);
+            // TODO: (dd) BROKEN! remove this 
+                    ITextureHandle broken = null;
+                    rc.SetRenderTarget(broken);
                     Traverse(_sc.Children);
                     DeferredShaderHelper.CurrentRenderPass--;
             
@@ -1310,11 +1317,14 @@ namespace Fusee.Engine.Core
             return rm;
         }
 
+
+        // ??? kann vielleicht raus
         private ITexture LoadTexture(string path)
         {
             // string texturePath = Path.Combine(_scenePathDirectory, path);
             var image = AssetStorage.Get<ImageData>(path);
-            return _rc.CreateTexture(image);
+            return new Texture(image);
+            //return _rc.CreateTexture(texture);
         }
         
         // Creates Shader from given shaderComponent

@@ -64,42 +64,49 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
             throw new System.NotImplementedException();
         }
 
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
         {
             throw new NotImplementedException();
         }
 
         [JSExternal]
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
-        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+        public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
             throw new System.NotImplementedException();
         }
 
         [JSExternal]
-        public ITexture CreateTexture(ImageData imageData, bool repeat)
+        public ITextureHandle CreateTexture(ITexture imageData, bool repeat)
         {
             throw new System.NotImplementedException();
         }
 
-        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        [JSExternal]
+        public void RemoveTextureHandle(ITextureHandle textureHandle)
         {
             throw new NotImplementedException();
         }
 
-        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        [JSExternal]
+        public void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture)
         {
-            Texture returnTexture = null;
+            throw new NotImplementedException();
+        }
+
+        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        {
+            TextureHandle returnTexture = null;
 
             try
             {
@@ -128,29 +135,29 @@ namespace Fusee.Engine.Imp.Graphics.Web
             return returnTexture;
         }
 
-        private Texture CreateGBufferFramebuffer(int width, int height)
+        private TextureHandle CreateGBufferFramebuffer(int width, int height)
         {
             throw new NotImplementedException();
         }
 
         [JSExternal]
-        private Texture CreateRenderTargetTextureFramebuffer(int width, int height)
+        private TextureHandle CreateRenderTargetTextureFramebuffer(int width, int height)
         {
             throw new NotImplementedException();
         }
 
-        private Texture CreateCubeMapFramebuffer(int width, int height)
+        private TextureHandle CreateCubeMapFramebuffer(int width, int height)
         {
             throw new NotImplementedException();
         }
 
-        private Texture CreateDepthFramebuffer(int width, int height)
+        private TextureHandle CreateDepthFramebuffer(int width, int height)
         {
             throw new NotImplementedException();
         }
 
         // This should not be extern for the moment
-        public ITexture CreateWritableTexture()
+        public ITextureHandle CreateWritableTexture()
         {
             throw new NotImplementedException("CreateWritableTexture not implmented!");
         }
@@ -316,7 +323,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
-        public void GetBufferContent(Rectangle quad, ITexture texId)
+        public void GetBufferContent(Rectangle quad, ITextureHandle texId)
         {
             throw new System.NotImplementedException();
         }
@@ -339,7 +346,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
-        //public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        //public void SetRenderTarget(ITextureHandle texture, bool deferredNormalPass = false)
         //{
         //    throw new NotImplementedException();
         //}
@@ -349,12 +356,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         /// </summary>
         /// <param name="texture"></param>
         [JSExternal]
-        public void SetRenderTarget(ITexture texture)
+        public void SetRenderTarget(ITextureHandle texture)
         {
             throw new NotImplementedException();
         }
 
-        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
         {
             throw new NotImplementedException();
         }
@@ -362,7 +369,7 @@ namespace Fusee.Engine.Imp.Graphics.Web
       
 
         [JSExternal]
-        public ImageData GetPixelColor(int x, int y, int w, int h)
+        public IImageData GetPixelColor(int x, int y, int w, int h)
         {
             throw new System.NotImplementedException();
         }

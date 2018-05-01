@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core
     {
         public IVideoStreamImp _imp;
 
-        public ImageData GetCurrentFrame ()
+        public IImageData GetCurrentFrame ()
         {
             return _imp.GetCurrentFrame();
         }

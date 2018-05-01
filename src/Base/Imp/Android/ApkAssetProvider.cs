@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Android.Content;
 using Android.Graphics;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Base.Imp.Android
@@ -118,14 +119,8 @@ namespace Fusee.Base.Imp.Android
             int[] pxls = new int[nPixels];
             bmp.GetPixels(pxls, 0, bmp.Width, 0, 0, bmp.Width, bmp.Height);
 
-            var ret = new ImageData
-            {
-                PixelData = new byte[nBytes],
-                Height = bmp.Height,
-                Width = bmp.Width,
-                PixelFormat = ImagePixelFormat.RGBA,
-                Stride = bmp.Width
-            };
+            var ret = new ImageData(new byte[nBytes], bmp.Width, bmp.Height,
+                new ImagePixelFormat(ColorFormat.RGBA));
 
             // Flip upside down
             for (int iLine = 0; iLine < ret.Height; iLine++)

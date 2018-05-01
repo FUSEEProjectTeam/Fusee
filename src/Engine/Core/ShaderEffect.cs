@@ -241,9 +241,9 @@ namespace Fusee.Engine.Core
                         {
                             _rc.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
                         }
-                        else if (param.Info.Type == typeof(ITexture))
+                        else if (param.Info.Type == typeof(Texture))
                         {
-                            _rc.SetShaderParamTexture(param.Info.Handle, (ITexture) param.Value);
+                            _rc.SetShaderParamTexture(param.Info.Handle, (Texture) param.Value);
                         }
                     }
                     _rc.SetRenderState(_states[i]);

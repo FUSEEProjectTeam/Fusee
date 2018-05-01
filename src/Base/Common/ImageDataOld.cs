@@ -1,36 +1,18 @@
 ﻿
 using System;
+using System.Collections.Generic;
 using System.ServiceModel;
 using Fusee.Math.Core;
 
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// The Enumerator specifying the PixelFormat of an Image.
-    /// </summary>
-    public enum ImagePixelFormat
-    {
-        /// <summary>
-        /// Used for images containing an alpha-channel. Each pixel consists of four bytes.
-        /// </summary>
-        RGBA,
-
-        /// <summary>
-        /// Used for images without an alpha-channel. Each pixel consists of three bytes.
-        /// </summary>
-        RGB,
-
-        /// <summary>
-        /// Used for Images containing a single grey-scale value per-pixel. Each pixel consists of one byte.
-        /// </summary>
-        Intensity
-    }
-
-    /// <summary>
     /// Struct containing Image Data for further processing (e.g. texturing)
     /// </summary>
-    public struct ImageData
+    public struct ImageDataOld
     {
+
+        /*
         /// <summary>
         /// The width in pixel units. 
         /// </summary>
@@ -52,30 +34,7 @@ namespace Fusee.Base.Common
         /// </summary>
         public byte[] PixelData;
 
-        /// <summary>
-        /// Returns the byes per pixel with respect to the <see cref="PixelFormat"/>.
-        /// </summary>
-        /// <value>
-        /// The number of bytes each pixel consists of.
-        /// </value>
-        /// <exception cref="System.ArgumentOutOfRangeException">For unknown pixel formats.</exception>
-        public int BytesPerPixel
-        {
-            get
-            {
-                switch (PixelFormat)
-                {
-                    case ImagePixelFormat.RGBA:
-                        return 4;
-                    case ImagePixelFormat.RGB:
-                        return 3;
-                    case ImagePixelFormat.Intensity:
-                        return 1;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-        }
+
 
         /// <summary>
         /// Gets a value indicating whether this instance has alpha with respect to the <see cref="PixelFormat"/>.
@@ -419,6 +378,8 @@ namespace Fusee.Base.Common
 
             return ret;
         }
+
+    */
 
     }
 }

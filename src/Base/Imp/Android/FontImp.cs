@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Math.Core;
 using SharpFont;
 
@@ -165,26 +166,16 @@ namespace Fusee.Base.Imp.Android
         /// <returns>
         ///     An image data structure containing an image of the given character.
         /// </returns>
-        public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
+        public IImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
         {
             _face.LoadChar(c, LoadFlags.Default, LoadTarget.Normal);
             _face.Glyph.RenderGlyph(RenderMode.Normal);
 
             FTBitmap bmp = _face.Glyph.Bitmap;
 
-            ImageData ret = new ImageData
-            {
-                Height = bmp.Rows,
-                Width = bmp.Width,
-                Stride = bmp.Width,
-                PixelFormat = ImagePixelFormat.Intensity,
-            };
+            ImageData ret = new ImageData(bmp.BufferData, bmp.Width, bmp.Rows,
+                new ImagePixelFormat(ColorFormat.Intensity));
 
-            if (!ret.IsEmpty)
-            {
-                ret.PixelData = new byte[bmp.BufferData.Length];
-                Array.Copy(bmp.BufferData, ret.PixelData, bmp.BufferData.Length);
-            }
             bitmapLeft = _face.Glyph.BitmapLeft;
             bitmapTop = _face.Glyph.BitmapTop;
             return ret;
