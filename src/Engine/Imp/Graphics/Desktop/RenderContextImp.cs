@@ -852,6 +852,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return f;
         }
 
+        /// <inheritdoc />
+        /// <summary>
+        /// Removes shader from the GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            if (_renderContextImpImplementation == null) return; // if no RenderContext is available return otherwise memory read error
+
+            var program = ((ShaderProgramImp)sp).Program;
+
+            // wait for all threads to be finished
+            GL.Finish();
+            GL.Flush();
+
+            // cleanup
+            GL.DeleteShader(program);
+            GL.DeleteProgram(program);
+        }
+
 
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 

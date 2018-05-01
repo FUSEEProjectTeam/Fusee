@@ -1,4 +1,6 @@
-﻿namespace Fusee.Engine.Core
+﻿using System;
+
+namespace Fusee.Engine.Core
 {
     // TODO: Implement proper Material handler
     /// <summary>
@@ -25,14 +27,14 @@
             //}
         }
 
-//        public void SetValue(string name, dynamic value)
-//        {
-//            ShaderParamInfo info;
-//            if (_sp._paramsByName.TryGetValue(name, out info))
-//                _sp._rci.SetShaderParam(info.Handle, value);
-//            if (_list.ContainsKey(name))
-//                _list[name] = value;
-//        }
+        //        public void SetValue(string name, dynamic value)
+        //        {
+        //            ShaderParamInfo info;
+        //            if (_sp._paramsByName.TryGetValue(name, out info))
+        //                _sp._rci.SetShaderParam(info.Handle, value);
+        //            if (_list.ContainsKey(name))
+        //                _list[name] = value;
+        //        }
 
         /// <summary>
         /// Gets the shaderprogram.
@@ -53,9 +55,10 @@
         /// <param name="rc">The rc.</param>
         public void UpdateMaterial(RenderContext rc)
         {
-            rc.SetShader(_sp);
+            throw new NotImplementedException();
+            //rc.SetShader(_sp);
         }
 
         #endregion
-    }   
+    }
 }

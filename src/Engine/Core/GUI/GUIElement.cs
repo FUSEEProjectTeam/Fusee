@@ -294,7 +294,9 @@ namespace Fusee.Engine.Core.GUI
             XPivot = xPivot;
             YPivot = yPivot;
             // shader
-            // if (FontMap != null) CreateTextShader();
+            //if (FontMap != null) CreateTextShader(RContext.CreateTexture(FontMap.Image));
+
+
         }
 
         protected virtual void CreateGUIShader()
@@ -346,7 +348,7 @@ namespace Fusee.Engine.Core.GUI
                 });
         }
 
-        private Texture placeHolder;
+        private Texture placeholderTexture;
         protected internal virtual void AttachToContext(RenderContext rc)
         {
             if (RContext == rc)
@@ -354,20 +356,15 @@ namespace Fusee.Engine.Core.GUI
 
             if (RContext != null)
             {
-                TextShader.DetachFromContext();
                 TextShader = null;
             }
 
             RContext = rc;
 
-            if (GUIShader != null)
-                GUIShader.AttachToContext(RContext);
-
             if (FontMap != null)
             {
-                placeHolder = new Texture(FontMap.Image);
-                CreateTextShader(rc.CreateTextureHandle(placeHolder)); // TODO: (dd) new Texture? check whether implementation is OK
-                TextShader.AttachToContext(RContext);
+                placeholderTexture = new Texture(FontMap.Image);
+                CreateTextShader(RContext.CreateTexture(placeholderTexture));
             }
 
             Refresh();
@@ -376,9 +373,6 @@ namespace Fusee.Engine.Core.GUI
         protected internal virtual void DetachFromContext()
         {
             RContext = null;
- 
-            if (GUIShader != null) GUIShader.DetachFromContext();
-            if (TextShader != null) TextShader.DetachFromContext();
         }
 
         protected void SetTextMesh(int posX, int posY)
@@ -387,16 +381,16 @@ namespace Fusee.Engine.Core.GUI
                 return;
 
             // relative coordinates from -1 to +1
-            var scaleX = (float) 2/RContext.ViewportWidth;
-            var scaleY = (float) 2/RContext.ViewportHeight;
+            var scaleX = (float)2 / RContext.ViewportWidth;
+            var scaleY = (float)2 / RContext.ViewportHeight;
 
-            var x = -1 + posX*scaleX;
-            var y = +1 - posY*scaleY;
+            var x = -1 + posX * scaleX;
+            var y = +1 - posY * scaleY;
 
             // build complete structure
-            var vertices = new float3[4*Text.Length];
-            var uvs = new float2[4*Text.Length];
-            var indices = new ushort[6*Text.Length];
+            var vertices = new float3[4 * Text.Length];
+            var uvs = new float2[4 * Text.Length];
+            var indices = new ushort[6 * Text.Length];
 
             // var charInfo = Font.CharInfo;
             var atlasWidth = FontMap.Image.Width;
@@ -411,13 +405,13 @@ namespace Fusee.Engine.Core.GUI
                 GlyphOnMap glyphOnMap = FontMap.GetGlyphOnMap(letter);
                 GlyphInfo glyphInfo = FontMap.Font.GetGlyphInfo(letter);
 
-                var x2 = x + glyphOnMap.BitmapL*scaleX;
-                var y2 = -y - glyphOnMap.BitmapT*scaleY;
-                var w = glyphOnMap.BitmapW*scaleX;
-                var h = glyphOnMap.BitmapH*scaleY;
+                var x2 = x + glyphOnMap.BitmapL * scaleX;
+                var y2 = -y - glyphOnMap.BitmapT * scaleY;
+                var w = glyphOnMap.BitmapW * scaleX;
+                var h = glyphOnMap.BitmapH * scaleY;
 
-                x += glyphInfo.AdvanceX*scaleX;
-                y += glyphInfo.AdvanceY*scaleY;
+                x += glyphInfo.AdvanceX * scaleX;
+                y += glyphInfo.AdvanceY * scaleY;
 
                 // skip glyphs that have no pixels
                 if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
@@ -435,19 +429,19 @@ namespace Fusee.Engine.Core.GUI
                 vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
 
                 // uvs
-                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH/atlasHeight);
+                uvs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
                 uvs[vertex + 1] = new float2(texOffsetX, texOffsetY);
-                uvs[vertex + 2] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY + bitmapH/atlasHeight);
-                uvs[vertex + 3] = new float2(texOffsetX + bitmapW/atlasWidth, texOffsetY);
+                uvs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
+                uvs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
 
                 // indices
-                indices[index++] = (ushort) (vertex + 1);
+                indices[index++] = (ushort)(vertex + 1);
                 indices[index++] = vertex;
-                indices[index++] = (ushort) (vertex + 2);
+                indices[index++] = (ushort)(vertex + 2);
 
-                indices[index++] = (ushort) (vertex + 1);
-                indices[index++] = (ushort) (vertex + 2);
-                indices[index++] = (ushort) (vertex + 3);
+                indices[index++] = (ushort)(vertex + 1);
+                indices[index++] = (ushort)(vertex + 2);
+                indices[index++] = (ushort)(vertex + 3);
 
                 vertex += 4;
             }
@@ -464,17 +458,17 @@ namespace Fusee.Engine.Core.GUI
             var y = PosY + OffsetY;
 
             // relative coordinates from -1 to +1
-            var scaleX = (float) 2/RContext.ViewportWidth;
-            var scaleY = (float) 2/RContext.ViewportHeight;
+            var scaleX = (float)2 / RContext.ViewportWidth;
+            var scaleY = (float)2 / RContext.ViewportHeight;
 
-            var xS = -1 + x*scaleX;
-            var yS = +1 - y*scaleY;
+            var xS = -1 + x * scaleX;
+            var yS = +1 - y * scaleY;
 
-            var width = Width*scaleX;
-            var height = Height*scaleY;
+            var width = Width * scaleX;
+            var height = Height * scaleY;
 
-            var borderX = System.Math.Max(0, borderWidth*scaleX);
-            var borderY = System.Math.Max(0, borderWidth*scaleY);
+            var borderX = System.Math.Max(0, borderWidth * scaleX);
+            var borderY = System.Math.Max(0, borderWidth * scaleY);
 
             // build complete structure
             var vertices = new float3[(borderWidth > 0) ? 8 : 4];
@@ -521,19 +515,19 @@ namespace Fusee.Engine.Core.GUI
             colors[vtStart + 3] = colorInt;
 
             // indices
-            indices[indStart + 0] = (ushort) (vtStart + 1);
-            indices[indStart + 1] = (ushort) (vtStart + 0);
-            indices[indStart + 2] = (ushort) (vtStart + 2);
+            indices[indStart + 0] = (ushort)(vtStart + 1);
+            indices[indStart + 1] = (ushort)(vtStart + 0);
+            indices[indStart + 2] = (ushort)(vtStart + 2);
 
-            indices[indStart + 3] = (ushort) (vtStart + 1);
-            indices[indStart + 4] = (ushort) (vtStart + 2);
-            indices[indStart + 5] = (ushort) (vtStart + 3);
+            indices[indStart + 3] = (ushort)(vtStart + 1);
+            indices[indStart + 4] = (ushort)(vtStart + 2);
+            indices[indStart + 5] = (ushort)(vtStart + 3);
         }
 
         protected void CreateGUIMesh(float3[] vertices, float2[] uvs, ushort[] indices, uint[] colors)
         {
             if (GUIMesh == null)
-                GUIMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors};
+                GUIMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices, Colors = colors };
             else
             {
                 GUIMesh.Vertices = vertices;
@@ -546,7 +540,7 @@ namespace Fusee.Engine.Core.GUI
         protected void CreateTextMesh(float3[] vertices, float2[] uvs, ushort[] indices)
         {
             if (TextMesh == null)
-                TextMesh = new Mesh {Vertices = vertices, UVs = uvs, Triangles = indices};
+                TextMesh = new Mesh { Vertices = vertices, UVs = uvs, Triangles = indices };
             else
             {
                 TextMesh.Vertices = vertices;
@@ -589,7 +583,6 @@ namespace Fusee.Engine.Core.GUI
         {
             PreRender(rc);
 
-
             float3 clipPivot = new float3(
                                  XPivot * 2.0f / RContext.ViewportWidth - 1.0f, 1.0f - YPivot * 2.0f / RContext.ViewportHeight, 0);
 
@@ -599,20 +592,31 @@ namespace Fusee.Engine.Core.GUI
                                     * float4x4.CreateScale(1.0f, (float)RContext.ViewportHeight / (float)RContext.ViewportWidth, 1) *
                                 float4x4.CreateTranslation(-clipPivot);
 
-            if (FontMap != null)
-                TextShader.SetEffectParam("guiXForm", guiXForm);
-            else
+            if (GUIShader != null)
+            {
+                RContext.SetShaderEffect(GUIShader);
+
                 GUIShader.SetEffectParam("guiXForm", guiXForm);
 
-
-            if (GUIShader != null && GUIMesh != null)
-                GUIShader.RenderMesh(GUIMesh);
-
-            if (TextShader != null && TextMesh != null)
-            {
-                TextShader.SetEffectParam("uColor", _textColor);
-                TextShader.RenderMesh(TextMesh);
+                if (GUIShader != null && GUIMesh != null)
+                    RContext.Render(GUIMesh);
             }
+
+            if (FontMap != null)
+            {
+                //
+                RContext.SetShaderEffect(TextShader);
+
+                TextShader.SetEffectParam("guiXForm", guiXForm);
+
+                if (TextShader != null && TextMesh != null)
+                {
+                    TextShader.SetEffectParam("uColor", _textColor);
+                    RContext.Render(TextMesh);
+                }
+            }
+
+
         }
     }
 }

@@ -149,7 +149,7 @@ namespace Fusee.Engine.Core.GUI
                 //GUITexture = rc.CreateTexture(ImgSrc,
                 //    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
                 placeHolder = new Texture(ImgSrc);
-                GUITexture = rc.CreateTextureHandle(placeHolder, M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
+                GUITexture = rc.CreateTexture(placeHolder, M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
                 CreateGUIShader();
             }
 
