@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -12,6 +14,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
+        public static RenderContext SuperhackRenderContext;
+
         private SceneContainer _convertedScene;
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
@@ -217,7 +221,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = ShaderCodeBuilder.DiffuseTextureName,
-                        //Value = LoadTexture(mc.Diffuse.Texture) TODO: uncomment if Texture issue is resolved
+                        Value = LoadTexture(mc.Diffuse.Texture) //TODO: uncomment if Texture issue is resolved
                     });
                 }
             }
@@ -249,7 +253,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = ShaderCodeBuilder.SpecularTextureName,
-                        //Value = LoadTexture(mc.Specular.Texture) TODO: uncomment if Texture issue is resolved
+                        Value = LoadTexture(mc.Specular.Texture) //TODO: uncomment if Texture issue is resolved
                     });
                 }
             }
@@ -271,7 +275,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = ShaderCodeBuilder.EmissiveTextureName,
-                        //Value = LoadTexture(mc.Emissive.Texture) TODO: uncomment if Texture issue is resolved
+                        Value = LoadTexture(mc.Emissive.Texture) //TODO: uncomment if Texture issue is resolved
                     });
                 }
             }
@@ -286,7 +290,7 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = ShaderCodeBuilder.BumpTextureName,
-                    //Value = LoadTexture(mc.Bump.Texture)
+                    Value = LoadTexture(mc.Bump.Texture) // ?
                 });
             }
 
@@ -355,12 +359,15 @@ namespace Fusee.Engine.Core
             return mat;
         }
 
-        /*private ITexture LoadTexture(string path)
+        static List<Texture> brokenTextures = new List<Texture>();
+        private ITextureHandle LoadTexture(string path)
         {
             // string texturePath = Path.Combine(_scenePathDirectory, path);
             var image = AssetStorage.Get<ImageData>(path);
-            return _rc.CreateTexture(image); // TODO: Texture is not a Component, ShaderEffect references TextureObject. TextureObject needs to know the RenderContext?
-        }*/
+            Texture brokenTexture = new Texture(image);
+            brokenTextures.Add(brokenTexture);
+            return SuperhackRenderContext.CreateTexture(brokenTexture); // TODO: Texture is not a Component, ShaderEffect references TextureObject. TextureObject needs to know the RenderContext? (dd) yes
+        }
 
         #endregion
     }

@@ -81,7 +81,7 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
+            ConvertSceneGraph.SuperhackRenderContext = RC;
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
             AABBCalculator aabbc = new AABBCalculator(_scene);

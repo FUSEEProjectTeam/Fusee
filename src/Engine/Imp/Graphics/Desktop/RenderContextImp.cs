@@ -872,17 +872,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.DeleteProgram(program);
         }
 
-            var program = ((ShaderProgramImp)sp).Program;
-
-            // wait for all threads to be finished
-            GL.Finish();
-            GL.Flush();
-
-            // cleanup
-            GL.DeleteShader(program);
-            GL.DeleteProgram(program);
-        }
-
 
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 

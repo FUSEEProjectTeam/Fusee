@@ -1461,10 +1461,12 @@ namespace Fusee.Engine.Core
                 {
                     // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
                     SetShader(_currentShaderEffect.CompiledShaders[i]);
+
                     foreach (var param in _currentShaderEffect.ParamsPerPass[i])
                     {
                         SetShaderParamT(param);
                     }
+
                     SetRenderState(_currentShaderEffect.States[i]);
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);

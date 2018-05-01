@@ -24,7 +24,7 @@ namespace Fusee.Serialization
             //increment threadsafe... idCounter is static -> the lockObject must be static.
             lock (LockObject)
             {
-                _idCounter = _idCounter++;
+                _idCounter = _idCounter + 1;
             }
             return new Suid(_idCounter);
         }

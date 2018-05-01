@@ -219,13 +219,3 @@ namespace Fusee.Engine.Core
     }
 
 }
-
-    public enum ShaderEffectChangedEnum
-    {
-        DISPOSE = 0,
-        CHANGED_EFFECT_PARAM,
-        CHANGED_UNKNOWN_EFFECT_PARAM
-
-    }
-
-}
