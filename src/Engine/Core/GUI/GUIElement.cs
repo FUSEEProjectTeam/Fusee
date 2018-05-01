@@ -346,6 +346,7 @@ namespace Fusee.Engine.Core.GUI
                 });
         }
 
+        private Texture placeHolder;
         protected internal virtual void AttachToContext(RenderContext rc)
         {
             if (RContext == rc)
@@ -364,7 +365,8 @@ namespace Fusee.Engine.Core.GUI
 
             if (FontMap != null)
             {
-                CreateTextShader(rc.CreateTextureHandle(new Texture(FontMap.Image))); // TODO: (dd) new Texture? check whether implementation is OK
+                placeHolder = new Texture(FontMap.Image);
+                CreateTextShader(rc.CreateTextureHandle(placeHolder)); // TODO: (dd) new Texture? check whether implementation is OK
                 TextShader.AttachToContext(RContext);
             }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Dynamic;
 using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
@@ -170,7 +171,7 @@ namespace Fusee.Engine.Core
         // Choose Lightning Method
         public static LightingCalculationMethod LightingCalculationMethod;
         // All lights
-        public static Dictionary<LightComponent,LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
+        public static Dictionary<LightComponent, LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
         // Multipass
         private bool _renderWithShadows;
         private bool _renderDeferred;
@@ -178,11 +179,12 @@ namespace Fusee.Engine.Core
         private readonly bool _wantToRenderWithShadows;
         private readonly bool _wantToRenderDeferred;
         private readonly bool _wantToRenderEnvMap;
-        public float2 ShadowMapSize { set; get; } = new float2(1024,1024);
+        public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
         /// <summary>
         /// Try to render with Shadows. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderWithShadows
         {
             private set { _renderWithShadows = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -192,6 +194,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Try to render deferred. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderDeferred
         {
             private set { _renderDeferred = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -201,6 +204,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Try to render with EM. If not possible, fallback to false.
         /// </summary>
+        [Obsolete("Will be migrated to seperate SceneRenderer")]
         public bool DoRenderEnvMap
         {
             private set { _renderEnvMap = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
@@ -220,7 +224,7 @@ namespace Fusee.Engine.Core
         private RenderContext _rc;
 
 
-        private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>(); 
+        private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
 
         private string _scenePathDirectory;
         private ShaderEffect _defaultEffect;
@@ -236,14 +240,14 @@ namespace Fusee.Engine.Core
 
             public float4x4 Model
             {
-               get { return _model.Tos; }
-                 set { _model.Tos = value; }
+                get { return _model.Tos; }
+                set { _model.Tos = value; }
             }
 
             public MinMaxRect UiRect
             {
-               get { return _uiRect.Tos; }
-               set { _uiRect.Tos = value; }
+                get { return _uiRect.Tos; }
+                set { _uiRect.Tos = value; }
             }
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
@@ -273,7 +277,7 @@ namespace Fusee.Engine.Core
              : this(sc)
         {
             LightingCalculationMethod = lightCalcMethod;
-            
+
             if (RenderShadows)
                 _wantToRenderWithShadows = true;
 
@@ -315,7 +319,7 @@ namespace Fusee.Engine.Core
                     Type = LightType.Legacy
                 });
             }
-           
+
             _sc = sc;
             // _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
@@ -337,82 +341,82 @@ namespace Fusee.Engine.Core
                         {
                             // if (typeof(int).IsAssignableFrom(t))
                             case TypeId.Int:
-                            {
-                                Channel<int> channel = new Channel<int>(Lerp.IntLerp);
-                                foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
                                 {
-                                    channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                                    Channel<int> channel = new Channel<int>(Lerp.IntLerp);
+                                    foreach (AnimationKeyContainerInt key in animTrackContainer.KeyFrames)
+                                    {
+                                        channel.AddKeyframe(new Keyframe<int>(key.Time, key.Value));
+                                    }
+                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                        animTrackContainer.Property);
                                 }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
-                            }
                                 break;
                             //else if (typeof(float).IsAssignableFrom(t))
                             case TypeId.Float:
-                            {
-                                Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
-                                foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
                                 {
-                                    channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                                    Channel<float> channel = new Channel<float>(Lerp.FloatLerp);
+                                    foreach (AnimationKeyContainerFloat key in animTrackContainer.KeyFrames)
+                                    {
+                                        channel.AddKeyframe(new Keyframe<float>(key.Time, key.Value));
+                                    }
+                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                        animTrackContainer.Property);
                                 }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
-                            }
                                 break;
 
                             // else if (typeof(float2).IsAssignableFrom(t))
                             case TypeId.Float2:
-                            {
-                                Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
-                                foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
                                 {
-                                    channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                                    Channel<float2> channel = new Channel<float2>(Lerp.Float2Lerp);
+                                    foreach (AnimationKeyContainerFloat2 key in animTrackContainer.KeyFrames)
+                                    {
+                                        channel.AddKeyframe(new Keyframe<float2>(key.Time, key.Value));
+                                    }
+                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                        animTrackContainer.Property);
                                 }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
-                            }
                                 break;
                             // else if (typeof(float3).IsAssignableFrom(t))
                             case TypeId.Float3:
-                            {
-                                Channel<float3>.LerpFunc lerpFunc;
-                                switch (animTrackContainer.LerpType)
                                 {
-                                    case LerpType.Lerp:
-                                        lerpFunc = Lerp.Float3Lerp;
-                                        break;
-                                    case LerpType.Slerp:
-                                        lerpFunc = Lerp.Float3QuaternionSlerp;
-                                        break;
-                                    default:
-                                        // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
-                                        // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
-                                        throw new InvalidOperationException(
-                                            "Unknown lerp type: animTrackContainer.LerpType: " +
-                                            (int) animTrackContainer.LerpType);
+                                    Channel<float3>.LerpFunc lerpFunc;
+                                    switch (animTrackContainer.LerpType)
+                                    {
+                                        case LerpType.Lerp:
+                                            lerpFunc = Lerp.Float3Lerp;
+                                            break;
+                                        case LerpType.Slerp:
+                                            lerpFunc = Lerp.Float3QuaternionSlerp;
+                                            break;
+                                        default:
+                                            // C# 6throw new InvalidEnumArgumentException(nameof(animTrackContainer.LerpType), (int)animTrackContainer.LerpType, typeof(LerpType));
+                                            // throw new InvalidEnumArgumentException("animTrackContainer.LerpType", (int)animTrackContainer.LerpType, typeof(LerpType));
+                                            throw new InvalidOperationException(
+                                                "Unknown lerp type: animTrackContainer.LerpType: " +
+                                                (int)animTrackContainer.LerpType);
+                                    }
+                                    Channel<float3> channel = new Channel<float3>(lerpFunc);
+                                    foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
+                                    {
+                                        channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
+                                    }
+                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                        animTrackContainer.Property);
                                 }
-                                Channel<float3> channel = new Channel<float3>(lerpFunc);
-                                foreach (AnimationKeyContainerFloat3 key in animTrackContainer.KeyFrames)
-                                {
-                                    channel.AddKeyframe(new Keyframe<float3>(key.Time, key.Value));
-                                }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
-                            }
                                 break;
                             // else if (typeof(float4).IsAssignableFrom(t))
                             case TypeId.Float4:
-                            {
-                                Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
-                                foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
                                 {
-                                    channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                                    Channel<float4> channel = new Channel<float4>(Lerp.Float4Lerp);
+                                    foreach (AnimationKeyContainerFloat4 key in animTrackContainer.KeyFrames)
+                                    {
+                                        channel.AddKeyframe(new Keyframe<float4>(key.Time, key.Value));
+                                    }
+                                    _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
+                                        animTrackContainer.Property);
                                 }
-                                _animation.AddAnimation(channel, animTrackContainer.SceneComponent,
-                                    animTrackContainer.Property);
-                            }
                                 break;
-                            //TODO : Add cases for each type
+                                //TODO : Add cases for each type
                         }
                     }
                 }
@@ -457,7 +461,8 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 });
-                _defaultEffect.AttachToContext(_rc);
+                //_defaultEffect.AttachToContext(_rc);
+                _rc.SetShaderEffect(_defaultEffect);
 
                 // Check for hardware capabilities:
                 DoRenderDeferred = _wantToRenderDeferred;
@@ -467,223 +472,15 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-        
 
         public void Render(RenderContext rc)
         {
-            // Set Context here, so that even the first pass is rendered defered or with shadows
-            // otherwise DeferredShaderHelper.GBufferPassShaderEffect is not initialized and null leading to an exception
-            SetContext(rc);
-            
-            if (DoRenderWithShadows)
-            {
-                RenderWithShadow(rc);
-            }
-            else if (DoRenderDeferred)
-            {
-                RenderDeferredPasses(rc);
-            }
-            else if (DoRenderEnvMap)
-            {
-                RenderEnvMapPasses(rc);
-            }
-            else
-            {
-                // TODO: (dd) BROKEN! remove TextureHandles from scenerenderer???
-                ITextureHandle broken = null;
-                rc.SetRenderTarget(broken);
-                Traverse(_sc.Children);
-            }
-         }
-
-
-        private void RenderDeferredPasses(RenderContext rc)
-        {
-            SetContext(rc);
-            
-            if (DeferredShaderHelper.GBufferTexture == null)
-                DeferredShaderHelper.GBufferTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.GBuffer);
-
-            if (DeferredShaderHelper.GBufferPassShaderEffect == null)
-                CreateGBufferPassEffect(rc);
-            
-            if (DeferredShaderHelper.GBufferDrawPassShaderEffect == null)
-                CreateGBufferDrawPassEffect(rc);
-
-            if (DeferredShaderHelper.GBufferPassShaderEffect != null)
-                DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
-
-                    // Set RenderTarget to gBuffer
-                    rc.SetRenderTarget(DeferredShaderHelper.GBufferTexture);
-                    //rc.SetRenderTarget(null);
-                    Traverse(_sc.Children);
-                    DeferredShaderHelper.CurrentRenderPass++;
-
-            // copy depthbuffer to current buffer
-            // TODO: (dd) BROKEN! remove this 
-            ITextureHandle broken = null;
-            rc.SetRenderTarget(broken);
-                    rc.CopyDepthBufferFromDeferredBuffer(DeferredShaderHelper.GBufferTexture);
-
-                    RenderDeferredLightPass();
-                    //Traverse(_sc.Children);
-                    DeferredShaderHelper.CurrentRenderPass--;
-
-        }
-
-        private void RenderEnvMapPasses(RenderContext rc)
-        {
             SetContext(rc);
 
-            if (DeferredShaderHelper.EnvMapTexture == null)
-                DeferredShaderHelper.EnvMapTexture = rc.CreateWritableTexture(rc.ViewportWidth, rc.ViewportHeight, WritableTextureFormat.CubeMap);
-
-            if(DeferredShaderHelper.EnvMapPassShaderEffect == null)
-                CreateEnvMapPassEffect(rc);
-
-            if (DeferredShaderHelper.EnvMapPassShaderEffect != null)
-                    DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
-
-            // Set RenderTarget to EnvMap
-            for (var i = 0; i < 6; i++) // render all sides
-            {
-                rc.SetCubeMapRenderTarget(DeferredShaderHelper.EnvMapTexture, i);
-                DeferredShaderHelper.EnvMapTextureOrientation = i;
-                Traverse(_sc.Children);
-            }
-            DeferredShaderHelper.CurrentRenderPass++;
-            // TODO: (dd) BROKEN! remove this 
-            ITextureHandle broken = null;
-            rc.SetRenderTarget(broken);
+            rc.SetRenderTarget(null);
             Traverse(_sc.Children);
-            DeferredShaderHelper.CurrentRenderPass--;
         }
 
-        private static void CreateEnvMapPassEffect(RenderContext rc)
-        {
-         
-
-            var effectPass = new EffectPassDeclaration[1];
-             effectPass[0] = new EffectPassDeclaration
-            {
-                PS = DeferredShaderHelper.EnvMapPixelShader,
-                VS = DeferredShaderHelper.EnvMapVertexShader,
-                StateSet = new RenderStateSet
-                {
-                    //CullMode = Cull.Clockwise // This is not working due to the fact, that we cant change the RenderStateSet for the normal render pass
-                    //therefore we are using GL.Cull(Front / Back) in RenderContextImp!
-                }
-                };
-                var effectParameter = new List<EffectParameterDeclaration>
-                {
-                    new EffectParameterDeclaration {Name = "ViewMatrix", Value = float4x4.Identity},
-                    new EffectParameterDeclaration {Name = "DiffuseColor", Value = new float3(0.5f,0.5f,0.5f)},
-                };
-
-                DeferredShaderHelper.EnvMapPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-                DeferredShaderHelper.EnvMapPassShaderEffect.AttachToContext(rc);
-        }
-
-        private void RenderWithShadow(RenderContext rc)
-        {
-
-            // ShadowMap Size 1024x1024:
-            ShadowMapSize = new float2(1024,1024);
-
-            SetContext(rc);
-            
-            // Create ShadowTexture if none avaliable
-            if (DeferredShaderHelper.ShadowTexture == null)
-                DeferredShaderHelper.ShadowTexture = rc.CreateWritableTexture((int) ShadowMapSize.x, (int) ShadowMapSize.y, WritableTextureFormat.Depth);
-
-            if (DeferredShaderHelper.ShadowPassShaderEffect == null)
-                CreateShadowPassShaderEffect(rc);
-      
-                    // Set RenderTarget to FBO
-                    rc.SetRenderTarget(DeferredShaderHelper.ShadowTexture);
-                    Traverse(_sc.Children);
-                    DeferredShaderHelper.CurrentRenderPass++;
-            
-                    // Set RenderTarget to Screenbuffer
-            // TODO: (dd) BROKEN! remove this 
-                    ITextureHandle broken = null;
-                    rc.SetRenderTarget(broken);
-                    Traverse(_sc.Children);
-                    DeferredShaderHelper.CurrentRenderPass--;
-            
-        }
-
-        private static void CreateShadowPassShaderEffect(RenderContext rc)
-        {
-            var effectPass = new EffectPassDeclaration[1];
-            effectPass[0] = new EffectPassDeclaration
-            {
-                PS = DeferredShaderHelper.OrtographicShadowMapMvPixelShader(),
-                VS = DeferredShaderHelper.OrtographicShadowMapMvVertexShader(),
-                StateSet = new RenderStateSet
-                {
-                    //CullMode = Cull.Clockwise // This is not working due to the fact, that we cant change the RenderStateSet for the normal render pass
-                    //therefore we are using GL.Cull(Front / Back) in RenderContextImp!
-                }
-            };
-            var effectParameter = new List<EffectParameterDeclaration>
-                        {
-                            new EffectParameterDeclaration {Name = "LightMVP", Value = DeferredShaderHelper.ShadowMapMVP}
-                        };
-
-            DeferredShaderHelper.ShadowPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.ShadowPassShaderEffect.AttachToContext(rc);
-        }
-
-        private static void CreateGBufferPassEffect(RenderContext rc)
-        {
-            var effectPass = new EffectPassDeclaration[1];
-            effectPass[0] = new EffectPassDeclaration
-            {
-                VS = DeferredShaderHelper.DeferredPassVertexShader(),
-                PS = DeferredShaderHelper.DeferredPassPixelShader(),
-                StateSet = new RenderStateSet()
-            };
-            
-            var effectParameter = new List<EffectParameterDeclaration>
-                        {
-                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float3.Zero },
-                            new EffectParameterDeclaration {Name = "SpecularIntensity", Value = float3.One }
-                        };
-
-            DeferredShaderHelper.GBufferPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.GBufferPassShaderEffect.AttachToContext(rc);
-        }
-
-        private void CreateGBufferDrawPassEffect(RenderContext rc)
-        {
-            // Set MAXLights
-            DeferredShaderHelper.Maxlights = AllLightResults.Count;
-
-            var effectPass = new EffectPassDeclaration[1];
-            effectPass[0] = new EffectPassDeclaration
-            {
-                VS = DeferredShaderHelper.DeferredDrawPassVertexShader(),
-                PS = DeferredShaderHelper.DeferredDrawPassPixelShader(),
-                StateSet = new RenderStateSet()
-            };
-
-            //Debug.WriteLine(DeferredShaderHelper.DeferredDrawPassPixelShader());
-
-            var effectParameter = new List<EffectParameterDeclaration>
-            {
-                new EffectParameterDeclaration { Name = "gPosition", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gNormal", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gAlbedoSpec", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gViewDir", Value = DeferredShaderHelper.GBufferTexture },
-                new EffectParameterDeclaration { Name = "gScreenSize", Value = new float2(_rc.ViewportWidth, _rc.ViewportHeight) }
-            };
-
-            SetLightEffectParameters(ref effectParameter);
-
-            DeferredShaderHelper.GBufferDrawPassShaderEffect = new ShaderEffect(effectPass, effectParameter);
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.AttachToContext(rc);
-        }
 
         #region Visitors
 
@@ -723,8 +520,6 @@ namespace Fusee.Engine.Core
             var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
             var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
             // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
-
-
 
 
             _state.UiRect = newRect;
@@ -793,29 +588,29 @@ namespace Fusee.Engine.Core
             RenderCurrentPass(rm, _state.Effect);
         }
 
-       [VisitMethod]
+        [VisitMethod]
         public void AccumulateLight(LightComponent lightComponent)
-       {
-           LightResult result;
-           if (AllLightResults.TryGetValue(lightComponent, out result)) return;
+        {
+            LightResult result;
+            if (AllLightResults.TryGetValue(lightComponent, out result)) return;
 
             // chache miss
             // accumulate all lights and...
             // NEEDED FOR JSIL; do not use .toDictonary(x => x.Values, x => x.Keys)
             var results = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
-           
-           foreach (var keyValuePair in results)
-           {
-               if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
+
+            foreach (var keyValuePair in results)
+            {
+                if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
                 _lightComponents.Add(keyValuePair.Key, keyValuePair.Value);
-           }
-           // _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(result => result.Key, result => result.Value);
+            }
+            // _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(result => result.Key, result => result.Value);
             // ...set them
             AllLightResults = _lightComponents;
             // and multiply them with current modelview matrix
             // normalize etc.
             LightsToModelViewSpace();
-            
+
         }
         private void LightsToModelViewSpace()
         {
@@ -823,7 +618,7 @@ namespace Fusee.Engine.Core
             foreach (var key in AllLightResults.Keys.ToList())
             {
                 var light = AllLightResults[key];
-                
+
                 // Multiply LightPosition with modelview
                 light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
 
@@ -832,7 +627,7 @@ namespace Fusee.Engine.Core
                                           0.0f);
                 lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
                 lightConeDirectionFloat4.Normalize();
-                light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);   
+                light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);
 
                 // convert spotlight angle from degrees to radians
                 light.ConeAngle = M.DegreesToRadians(light.ConeAngle);
@@ -848,7 +643,7 @@ namespace Fusee.Engine.Core
         {
             _state.Clear();
             _state.Model = float4x4.Identity;
-            _state.UiRect = new MinMaxRect {Min = -float2.One, Max = float2.One};
+            _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _defaultEffect;
 
             _view = _rc.ModelView;
@@ -871,209 +666,12 @@ namespace Fusee.Engine.Core
 
         public void RenderCurrentPass(Mesh rm, ShaderEffect effect)
         {
-            if (DoRenderWithShadows)
-            {
-                if (DeferredShaderHelper.CurrentRenderPass == 0)
-                {
-                    RenderFirstShadowPass(rm);
-                }
-                else
-                {
-                    RenderSecondShadowPass(rm, effect);
-                }
-            }
-            else if (DoRenderDeferred)
-            {
-                if (DeferredShaderHelper.CurrentRenderPass == 0)
-                    RenderDeferredModelPass(rm, effect);
-            }
-            else if (DoRenderEnvMap)
-            {
-                if (DeferredShaderHelper.CurrentRenderPass == 0)
-                {
-                    RenderEnvMapFirstPass(rm, effect);
-                }
-                else
-                {
-                    RenderEnvMapSecondPass(rm, effect);
-                }
-            }
-            else
-            {
-                RenderStandardPass(rm, effect);
-            }
-        }
-
-
-        private void RenderStandardPass(Mesh rm, ShaderEffect effect)
-        {
             for (var i = 0; i < _lightComponents.Keys.Count; i++)
             {
+                _rc.SetShaderEffect(effect);
                 UpdateLightParamsInPixelShader(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], effect);
-                effect.RenderMesh(rm);
+                _rc.Render(rm);
             }
-        }
-
-        // TODO: Assemble all effect params accordingly from current ShaderEffect and pass them to GBufferPassShaderEffect
-        private static void RenderDeferredModelPass(Mesh rm, ShaderEffect effect)
-        {
-            var diffuse = float3.One;
-            if (effect._rc.CurrentShader != null && effect.GetEffectParam("DiffuseColor") != null)
-                 diffuse = (float3) effect.GetEffectParam("DiffuseColor");
-            //Diagnostics.Log(diffuse);
-         
-            /*   var specularIntensity = 1.0f;
-            if (effect._rc.CurrentShader != null && effect.GetEffectParam("SpecularIntensity") != null)
-                specularIntensity = (float)effect.GetEffectParam("SpecularIntensity");
-                */
-            DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
-            //    DeferredShaderHelper.GBufferPassShaderEffect.SetEffectParam("SpecularIntensity", specularIntensity);
-
-            DeferredShaderHelper.GBufferPassShaderEffect.RenderMesh(rm);
-        }
-
-        private void RenderDeferredLightPass() {
-            
-            if(DeferredShaderHelper.GBufferDrawPassShaderEffect == null) return;
-
-            var programm = _rc.CreateShader(DeferredShaderHelper.DeferredDrawPassVertexShader(),
-                DeferredShaderHelper.DeferredDrawPassPixelShader());
-
-            DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShader(programm);
-            
-
-            // Set textures from first GBuffer pass
-            var gPosition = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gPosition");
-                if (gPosition != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gPosition, DeferredShaderHelper.GBufferTexture, GBufferHandle.GPositionHandle);
-
-                var gNormal = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gNormal");
-                if (gNormal != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gNormal, DeferredShaderHelper.GBufferTexture, GBufferHandle.GNormalHandle);
-
-                var gAlbedoSpec = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gAlbedoSpec");
-                if (gAlbedoSpec != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gAlbedoSpec, DeferredShaderHelper.GBufferTexture, GBufferHandle.GAlbedoHandle);
-
-                var gDepth = DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.CurrentShader.GetShaderParam("gDepth");
-                if (gDepth != null)
-                    DeferredShaderHelper.GBufferDrawPassShaderEffect._rc.SetShaderParamTexture(gDepth, DeferredShaderHelper.GBufferTexture, GBufferHandle.GDepth);
-                
-
-            // Set Viewport
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.SetEffectParam("gScreenSize", new float2(_rc.ViewportWidth, _rc.ViewportHeight));
-
-
-            for (var i = 0; i < _lightComponents.Keys.Count; i++)
-            {
-                UpdateGBufferDrawPassLights(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], DeferredShaderHelper.GBufferDrawPassShaderEffect);
-            }
-
-            DeferredShaderHelper.GBufferDrawPassShaderEffect.RenderMesh(DeferredShaderHelper.DeferredFullscreenQuad());
-            
-        }
-
-        private static void UpdateGBufferDrawPassLights(int position, LightResult light, ShaderEffect effect)
-        {
-             if (!light.Active) return;
-
-                // Set params in model space since the lightning calculation is in model space!
-                effect.SetEffectParam($"allLights[{position}].position", light.PositionWorldSpace);
-                effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
-                effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
-                effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
-                effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-                effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirectionWorldSpace);
-                effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
-        }
-
-        private void RenderEnvMapFirstPass(Mesh rm, ShaderEffect effect)
-        {
-            var View = float4x4.Identity;
-
-            switch (DeferredShaderHelper.EnvMapTextureOrientation)
-            {
-                case 0:
-                    View = float4x4.LookAt(0, 0, 0, 1, 0, 0, 0, 1, 0);
-                    break; 
-                case 1:
-                    View = float4x4.LookAt(0, 0, 0, -1, 0, 0, 0, 1, 0);
-                    break;
-                case 2:
-                    View = float4x4.LookAt(0, 0, 0, 0, 10, 0, 1, 0, 0);
-                    break;
-                case 3:
-                    View = float4x4.LookAt(0, 0, 0, 0, -10, 0, 1, 0, 0);
-                    break;
-                case 4:
-                    View = float4x4.LookAt(0, 0, 0, 0, 0, 10, 0, 1, 0);
-                    break;
-                case 5:
-                    View = float4x4.LookAt(0, 0, 0, 0, 0, -10, 0, 1, 0);
-                    break;
-            }
-
-            View = _rc.Projection * View * _state.Model;
-
-            if (AllLightResults.Count == 0) return;
-
-            var diffuse = float3.One;
-            if (effect.GetEffectParam("DiffuseColor") != null)
-                diffuse = (float3)effect.GetEffectParam("DiffuseColor");
-
-            // Set Values here
-            //DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("cube_texture", DeferredShaderHelper.EnvMapTexture);
-            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("DiffuseColor", diffuse);
-            DeferredShaderHelper.EnvMapPassShaderEffect.SetEffectParam("ViewMatrix", View);
-            DeferredShaderHelper.EnvMapPassShaderEffect.RenderMesh(rm);
-
-        }
-
-        private void RenderEnvMapSecondPass(Mesh rm, ShaderEffect effect)
-        {
-            if (effect._rc.CurrentShader == null) return;
-            
-            // Set ShaderParams
-            var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "envMap");
-            if (handle != null)
-                effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.EnvMapTexture, GBufferHandle.EnvMap);
-               
-            // Now we can render a normal pass
-            RenderStandardPass(rm, effect);
-        }
-
-
-        private void RenderFirstShadowPass(Mesh rm)
-        {
-           // if(_shadowPassShaderEffect == null) return;
-            if(AllLightResults.Count == 0) return;
-
-            // Set viewport to ShadowMapSize
-            _rc.Viewport(0, 0, (int) ShadowMapSize.x, (int) ShadowMapSize.y);
-
-            DeferredShaderHelper.SetShadowMapMVP(AllLightResults[AllLightResults.Keys.ElementAt(0)].Position, AllLightResults[AllLightResults.Keys.ElementAt(0)].ConeDirection, 1.0f, _view);
-            DeferredShaderHelper.ShadowPassShaderEffect.SetEffectParam("LightMVP", DeferredShaderHelper.ShadowMapMVP);
-            DeferredShaderHelper.ShadowPassShaderEffect.RenderMesh(rm);
-        }
-
-        private void RenderSecondShadowPass(Mesh rm, ShaderEffect effect)
-        {
-            if(effect._rc.CurrentShader == null) return;
-
-            // reset Viewport to orginal size; is wrong size due to creation of shadowmap with different viewportsize
-            _rc.Viewport(0, 0, (int)_rcViewportOriginalSize.x, (int)_rcViewportOriginalSize.y);
-
-            // Set ShaderParams
-            var handleLight = effect._rc.GetShaderParam(effect._rc.CurrentShader, "shadowMVP");
-            if (handleLight != null)
-                effect._rc.SetShaderParam(handleLight, DeferredShaderHelper.ShadowMapMVP);
-
-            var handle = effect._rc.GetShaderParam(effect._rc.CurrentShader, "firstPassTex");
-            if (handle != null)
-                effect._rc.SetShaderParamTexture(handle, DeferredShaderHelper.ShadowTexture);
-
-            // Now we can render a normal pass
-            RenderStandardPass(rm, effect);
 
         }
 
@@ -1088,7 +686,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
             effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirectionModelViewSpace);
-            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);            
+            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
         }
 
         #region RenderContext/Asset Setup
@@ -1100,7 +698,8 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
+            // mat.AttachToContext(_rc);
             _matMap.Add(mc, mat);
             return mat;
         }
@@ -1110,7 +709,8 @@ namespace Fusee.Engine.Core
             if (_lightMatMap.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
+            //mat.AttachToContext(_rc);
             _lightMatMap.Add(mc, mat);
             return mat;
         }
@@ -1121,20 +721,22 @@ namespace Fusee.Engine.Core
             if (_pbrComponent.TryGetValue(mc, out mat)) return mat;
 
             mat = MakeMaterial(mc);
-            mat.AttachToContext(_rc);
+            _rc.SetShaderEffect(mat);
+            // mat.AttachToContext(_rc);
             _pbrComponent.Add(mc, mat);
             return mat;
         }
 
 
- 
+
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
             ShaderEffect shaderEffect;
             if (_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect)) return shaderEffect;
 
             shaderEffect = MakeShader(shaderComponent);
-            shaderEffect.AttachToContext(_rc);
+            _rc.SetShaderEffect(shaderEffect);
+            //shaderEffect.AttachToContext(_rc);
             _shaderEffectMap.Add(shaderComponent, shaderEffect);
             return shaderEffect;
         }
@@ -1317,16 +919,13 @@ namespace Fusee.Engine.Core
             return rm;
         }
 
-
-        // ??? kann vielleicht raus
         private ITexture LoadTexture(string path)
         {
             // string texturePath = Path.Combine(_scenePathDirectory, path);
             var image = AssetStorage.Get<ImageData>(path);
-            return new Texture(image);
-            //return _rc.CreateTexture(texture);
+            return _rc.CreateTexture(image);
         }
-        
+
         // Creates Shader from given shaderComponent
         private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
@@ -1473,7 +1072,7 @@ namespace Fusee.Engine.Core
 
             throw new Exception("Material could not be evaluated or be built!");
         }
-    
+
         private IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, ShaderCodeBuilder scb)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
@@ -1567,7 +1166,7 @@ namespace Fusee.Engine.Core
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
-           
+
             SetLightEffectParameters(ref effectParameters);
 
             return effectParameters;
@@ -1748,7 +1347,7 @@ namespace Fusee.Engine.Core
         public float3 ConeDirectionModelViewSpace;
     }
 
-   
+
 
     public class LightSetupState : VisitorState
     {
@@ -1812,5 +1411,5 @@ namespace Fusee.Engine.Core
             YieldItem(new KeyValuePair<LightComponent, LightResult>(lightComponent, lightResult));
         }
     }
-#endregion
+    #endregion
 }

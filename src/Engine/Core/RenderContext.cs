@@ -863,6 +863,7 @@ namespace Fusee.Engine.Core
 
         }
 
+
         private void UpdateShaderParams()
         {
             if (_currentShader == null)
