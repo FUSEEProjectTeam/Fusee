@@ -12,7 +12,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         // internal Face Face;
 
         // texture atlas
-        public ITextureHandle TexAtlas { get; internal set; }
+        public ITexture TexAtlas { get; internal set; }
 
         public int Width { get; internal set; }
         public int Height { get; internal set; }

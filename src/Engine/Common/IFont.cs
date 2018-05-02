@@ -60,7 +60,7 @@
         /// <remarks>
         ///     This texture contains all pre-rendered chars of a font in a specific font size.
         /// </remarks>
-        ITextureHandle TexAtlas { get; }
+        ITexture TexAtlas { get; }
 
         /// <summary>
         ///     Gets the width of the texture atlas.

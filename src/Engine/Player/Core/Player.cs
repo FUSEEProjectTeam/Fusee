@@ -65,7 +65,7 @@ namespace Fusee.Engine.Player.Core
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
             _guiSubText = new GUIText("FUSEE Player", _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Black);
+            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);

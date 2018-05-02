@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core
 
                     if (!glyphImg.IsEmpty)
                     {
-                        glyphImg.Blt(offX, offY, _image);
+                        _image.Blt(offX, offY, glyphImg); // blit glyph into _image
                     }
 
                     // char information
