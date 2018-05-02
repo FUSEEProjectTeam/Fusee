@@ -263,7 +263,7 @@ namespace Fusee.Engine.Core
             _vertexShader.Add(Version());
 
             // Head
-            AddVertexAttributes();
+            AddVertexAttributes(wc);
             AddVertexUniforms(wc);
 
             // Main
@@ -273,8 +273,11 @@ namespace Fusee.Engine.Core
         }
 
 
-        private void AddVertexAttributes()
+        private void AddVertexAttributes(WeightComponent wc)
         {
+            if (_meshProbs.HasWeightMap)
+                _vertexShader.Add($"#define BONES {wc.Joints.Count}");
+
             if (_meshProbs.HasVertices)
                 _vertexShader.Add(GLSL.CreateAttribute(Type.Vec3, "fuVertex"));
 
@@ -325,10 +328,10 @@ namespace Fusee.Engine.Core
 
             if (_meshProbs.HasWeightMap)
             {
-                //returnString += "uniform mat4 FUSEE_V;\n"; legacy code, there is no sperate view anymore!
+                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_V"));
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_P"));
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, $"FUSEE_BONES[{wc.Joints.Count}]"));
+                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_BONES[BONES]"));
             }
 
             _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
@@ -366,7 +369,7 @@ namespace Fusee.Engine.Core
 
                 // At this point the normal is in World space - transform back to model space
                 // TODO: Is it a hack to invert Model AND View? Should we rather only invert MODEL (and NOT VIEW)??
-                _vertexShader.Add("vNormal = mat3(FUSEE_IMV) * newNormal.xyz;");
+                _vertexShader.Add("vMVNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
             }
 
             if (_materialProbs.HasSpecular)
@@ -381,7 +384,8 @@ namespace Fusee.Engine.Core
             if (_meshProbs.HasUVs)
                 _vertexShader.Add("vUV = fuUV;");
 
-            _vertexShader.Add("vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
+            if (_meshProbs.HasNormals && !_meshProbs.HasWeightMap)
+                _vertexShader.Add("vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
 
             _vertexShader.Add("viewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
 
@@ -389,7 +393,7 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add("shadowLight = shadowMVP * viewPos;");
 
             _vertexShader.Add(_meshProbs.HasWeightMap
-                ? "gl_Position = FUSEE_P * FUSEE_V * vec4(vec3(newVertex), 1.0);"
+                ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
                 : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
 
             // End of main
