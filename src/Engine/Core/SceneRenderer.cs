@@ -607,6 +607,25 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
+            /*Dictionary<string, Texture> tempDictionary = new Dictionary<string, Texture>();
+            var paramDecls = shaderComponent.Effect.ParamDecl;
+            foreach (KeyValuePair<string, object> keyValuePair in paramDecls)
+            {
+                Texture keyvalueTexture = keyValuePair.Value as Texture;
+                if (keyvalueTexture != null)
+                {
+                    tempDictionary.Add(keyValuePair.Key, keyvalueTexture);
+                }
+            }
+
+            foreach (KeyValuePair<string, Texture> keyValuePair in tempDictionary)
+            {
+                ITextureHandle textureHandle = _rc.CreateTexture(keyValuePair.Value);
+                paramDecls[keyValuePair.Key] = textureHandle;
+            }
+
+            shaderComponent.Effect.ParamDecl = paramDecls;
+            */
             _state.Effect = shaderComponent.Effect;
             _rc.SetShaderEffect(shaderComponent.Effect);
         }

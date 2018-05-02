@@ -925,11 +925,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
 
                     case ActiveUniformType.Sampler2D:
-                        paramInfo.Type = typeof (ITextureHandle);
+                        paramInfo.Type = typeof (ITexture);
                         break;
 
                     case ActiveUniformType.SamplerCube:
-                        paramInfo.Type = typeof(ITextureHandle);
+                        paramInfo.Type = typeof(ITexture);
                         break;
 
                     default:

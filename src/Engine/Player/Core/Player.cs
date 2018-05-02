@@ -15,7 +15,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "FUSEERocket.fus";
+        public string ModelFile = "banana.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6*0.5f,
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Player.Core
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
             _guiSubText = new GUIText("FUSEE Player", _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
+            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Black);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);

@@ -71,7 +71,7 @@ namespace Fusee.Engine.Examples.ImageBlit.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Core.Simple();
+                var app = new Core.ImageBlit();
 
 		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
 		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });

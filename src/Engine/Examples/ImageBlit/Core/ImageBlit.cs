@@ -26,9 +26,6 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
-        private SceneContainer _rocketScene;
-        private SceneRenderer _sceneRenderer;
-
         private bool _keys;
 
         #if GUI_SIMPLE
@@ -36,6 +33,8 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
 
         private GUIButton _guiFuseeLink;
         private GUIImage _guiFuseeLogo;
+        private GUIImage _guiBlitDestinationImage;
+        private GUIImage _guiBlitSourceImage;
         private FontMap _guiLatoBlack;
         private GUIText _guiSubText;
         private float _subtextHeight;
@@ -59,7 +58,19 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
             _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
             _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
             _guiHandler.Add(_guiFuseeLink);
+
             _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
+
+            // BEGIN blit test
+            ImageData blitDestination = AssetStorage.Get<ImageData>("monkey.jpg");
+            ImageData blitSource = AssetStorage.Get<ImageData>("paper.png");
+            ImageData solidColorImage = ImageData.CreateImage(20, 20, ColorUint.Red);
+            blitDestination.Blt(-100, 13, blitSource, 0, 0, blitDestination.Width, blitDestination.Height);
+
+            _guiBlitDestinationImage = new GUIImage(blitDestination, 100, 0, 427, 640);
+            _guiHandler.Add(_guiBlitDestinationImage);
+            // END Blit Test
+
             _guiHandler.Add(_guiFuseeLogo);
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
@@ -67,8 +78,8 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
 
             _text = "Simple FUSEE Example";
 
-            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
+            _guiSubText = new GUIText(_text, _guiLatoBlack, 300, 100);
+            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Black);
             _guiHandler.Add(_guiSubText);
             _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
             _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
@@ -78,11 +89,7 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-
-            // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            
         }
 
         // RenderAFrame is called once a frame
@@ -136,7 +143,7 @@ namespace Fusee.Engine.Examples.ImageBlit.Core
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
+            
 
             #if GUI_SIMPLE
             _guiHandler.RenderGUI();

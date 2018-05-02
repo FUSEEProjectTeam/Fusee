@@ -359,14 +359,11 @@ namespace Fusee.Engine.Core
             return mat;
         }
 
-        static List<Texture> brokenTextures = new List<Texture>();
-        private ITextureHandle LoadTexture(string path)
+        private Texture LoadTexture(string path)
         {
             // string texturePath = Path.Combine(_scenePathDirectory, path);
             var image = AssetStorage.Get<ImageData>(path);
-            Texture brokenTexture = new Texture(image);
-            brokenTextures.Add(brokenTexture);
-            return SuperhackRenderContext.CreateTexture(brokenTexture); // TODO: Texture is not a Component, ShaderEffect references TextureObject. TextureObject needs to know the RenderContext? (dd) yes
+            return new Texture(image);
         }
 
         #endregion

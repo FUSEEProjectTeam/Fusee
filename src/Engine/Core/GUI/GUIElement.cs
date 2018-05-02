@@ -30,7 +30,7 @@ namespace Fusee.Engine.Core.GUI
         protected FontMap FontMap;
 
         protected ImageData ImgSrc;
-        protected ITextureHandle GUITexture;
+        protected ITexture GUITexture;
 
         // shader
         protected ShaderEffect GUIShader;
@@ -323,7 +323,7 @@ namespace Fusee.Engine.Core.GUI
             );
         }
 
-        protected void CreateTextShader(ITextureHandle textAtlas)
+        protected void CreateTextShader(Texture textAtlas)
         {
             TextShader = new ShaderEffect(new[]
             {
@@ -348,7 +348,6 @@ namespace Fusee.Engine.Core.GUI
                 });
         }
 
-        private Texture placeholderTexture;
         protected internal virtual void AttachToContext(RenderContext rc)
         {
             if (RContext == rc)
@@ -363,8 +362,7 @@ namespace Fusee.Engine.Core.GUI
 
             if (FontMap != null)
             {
-                placeholderTexture = new Texture(FontMap.Image);
-                CreateTextShader(RContext.CreateTexture(placeholderTexture));
+                CreateTextShader(new Texture(FontMap.Image));
             }
 
             Refresh();

@@ -163,7 +163,7 @@ namespace Fusee.Base.Core
                 if (srcScanLine != null)
                 {
                     byte[] srcScanLineBytes = srcScanLine.GetScanLineBytes();
-                    int destinationIndex = yDst * PixelFormat.BytesPerPixel + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
+                    int destinationIndex = yDst * PixelFormat.BytesPerPixel*Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
                     CopyLine(srcScanLineBytes, destinationIndex);
                     yDst++; // increment yDst == move to the next line
                 }
@@ -394,11 +394,27 @@ namespace Fusee.Base.Core
         /// <returns>The newly created image.</returns>
         public static ImageData CreateImage(int width, int height, ColorUint color)
         {
-            var ret = new ImageData(new byte[width * height], width, height, new ImagePixelFormat(ColorFormat.RGBA));
+            int colorVal = color.ToBgra();
+            int nPixels = width * height;
+            int nBytes = nPixels * 4;
+            int[] pxls = new int[nPixels];
+
+            for (int i = 0; i < pxls.Length; i++)
+                pxls[i] = colorVal;
+
+            var ret = new ImageData(new byte[nBytes], width, height,
+                new ImagePixelFormat(ColorFormat.RGBA));
+
+            Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
+            return ret;
+
+
+            /*
+            var ret = new ImageData(new byte[width * height*4], width, height, new ImagePixelFormat(ColorFormat.RGBA));
 
             MemSet(ret.PixelData, color.ToArray());
 
-            return ret;
+            return ret;*/
         }
 
         /// <summary>

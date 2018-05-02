@@ -867,9 +867,10 @@ namespace Fusee.Engine.Core
             _rci.UpdateTextureFromVideoStream(stream, textureHandle);
         }
 
-        public void UpdateTextureRegion(ITextureHandle tex, Texture img, int startX, int startY, int width, int height)
+        public void UpdateTextureRegion(Texture tex, Texture img, int startX, int startY, int width, int height)
         {
-            _rci.UpdateTextureRegion(tex, img, startX, startY, width, height);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
+            _rci.UpdateTextureRegion(textureHandle, img, startX, startY, width, height);
         }
 
         /*
@@ -947,9 +948,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
+        public void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
-            _rci.SetShaderParamTexture(param, texId);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            _rci.SetShaderParamTexture(param, textureHandle);
         }
 
         /// <summary>
@@ -1144,6 +1146,7 @@ namespace Fusee.Engine.Core
             for (i = 0; i < nPasses; i++)
             {
                 IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
+  
                 ef.ParamsPerPass.Add(new List<EffectParam>());
                 foreach (var paramNew in paramList)
                 {
@@ -1427,9 +1430,17 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITextureHandle texture)
+        public void SetRenderTarget(Texture texture)
         {
-            _rci.SetRenderTarget(texture);
+            if (texture != null)
+            {
+                ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+                _rci.SetRenderTarget(textureHandle);
+            }
+            else
+            {
+                _rci.SetRenderTarget(null);
+            }
         }
 
         /// <summary>
@@ -1437,9 +1448,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="texture">The texture as target</param>
         /// <param name="position">The texture position within a cubemap</param>
-        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
+        public void SetCubeMapRenderTarget(Texture texture, int position)
         {
-            _rci.SetCubeMapRenderTarget(texture, position);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            _rci.SetCubeMapRenderTarget(textureHandle, position);
         }
         
         /// <summary>
@@ -1521,9 +1533,9 @@ namespace Fusee.Engine.Core
             {
                 SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
-            else if (param.Info.Type == typeof(ITextureHandle))
+            else if (param.Info.Type == typeof(ITexture))
             {
-                SetShaderParamTexture(param.Info.Handle, (ITextureHandle)param.Value);
+                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
         }
 
