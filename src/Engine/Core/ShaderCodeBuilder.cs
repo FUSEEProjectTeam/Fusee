@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-
 
 namespace Fusee.Engine.Core
 {
@@ -645,28 +645,28 @@ namespace Fusee.Engine.Core
             applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
 
 
-            var attenuation = new List<string>()
+            var attenuation = new List<string>
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
                 "float distance = pow(distanceToLight/attenuation,4.0);",
                 "float att = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);"
             };
 
-            var pointLight = new List<string>()
+            var pointLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe) * att;"
                     : "result = Iamb + (Idif + Ispe) * att;"
             };
 
-            var parallelLight = new List<string>()
+            var parallelLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe);"
                     : "result =  Iamb + (Idif + Ispe);"
             };
 
-            var spotLight = new List<string>()
+            var spotLight = new List<string>
             {
                 "float lightToSurfaceAngle = dot(-L, coneDirection);",
                 "if (lightToSurfaceAngle > coneAngle)",
@@ -964,7 +964,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null) 
+        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             ShaderCodeBuilder scb = null;
 
@@ -988,12 +988,12 @@ namespace Fusee.Engine.Core
             if (scb == null) throw new Exception("Material could not be evaluated or be built!");
             var ret = new ShaderEffect(new[]
                 {
-                    new EffectPassDeclaration()
+                    new EffectPassDeclaration
                     {
                         VS = scb.VS,
                         //VS = VsBones,
                         PS = scb.PS,
-                        StateSet = new RenderStateSet()
+                        StateSet = new RenderStateSet
                         {
                             ZEnable = true,
                             AlphaBlendEnable = false
@@ -1013,20 +1013,20 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.DiffuseColorName,
+                    Name = DiffuseColorName,
                     Value = mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.DiffuseMixName,
+                        Name = DiffuseMixName,
                         Value = mc.Diffuse.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.DiffuseTextureName,
-                        //Value = LoadTexture(mc.Diffuse.Texture) TODO: uncomment if Texture issue is resolved
+                        Name = DiffuseTextureName,
+                        Value = LoadTexture(mc.Diffuse.Texture)
                     });
                 }
             }
@@ -1035,30 +1035,30 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.SpecularColorName,
+                    Name = SpecularColorName,
                     Value = mc.Specular.Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.SpecularShininessName,
+                    Name = SpecularShininessName,
                     Value = mc.Specular.Shininess
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.SpecularIntensityName,
+                    Name = SpecularIntensityName,
                     Value = mc.Specular.Intensity
                 });
                 if (mc.Specular.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.SpecularMixName,
+                        Name = SpecularMixName,
                         Value = mc.Specular.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.SpecularTextureName,
-                        //Value = LoadTexture(mc.Specular.Texture) TODO: uncomment if Texture issue is resolved
+                        Name = SpecularTextureName,
+                        Value = LoadTexture(mc.Specular.Texture)
                     });
                 }
             }
@@ -1067,20 +1067,20 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.EmissiveColorName,
+                    Name = EmissiveColorName,
                     Value = mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.EmissiveMixName,
+                        Name = EmissiveMixName,
                         Value = mc.Emissive.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = ShaderCodeBuilder.EmissiveTextureName,
-                        //Value = LoadTexture(mc.Emissive.Texture) TODO: uncomment if Texture issue is resolved
+                        Name = EmissiveTextureName,
+                        Value = LoadTexture(mc.Emissive.Texture)
                     });
                 }
             }
@@ -1089,13 +1089,13 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.BumpIntensityName,
+                    Name = BumpIntensityName,
                     Value = mc.Bump.Intensity
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = ShaderCodeBuilder.BumpTextureName,
-                    //Value = LoadTexture(mc.Bump.Texture)
+                    Name = BumpTextureName,
+                    Value = LoadTexture(mc.Bump.Texture)
                 });
             }
 
@@ -1138,11 +1138,11 @@ namespace Fusee.Engine.Core
             return effectParameters;
         }
 
-        /*private Texture LoadTexture(string path)
+        private static Texture LoadTexture(string path)
         {
-            // string texturePath = Path.Combine(_scenePathDirectory, path);
+            var image = AssetStorage.Get<ImageData>(path);
             return new Texture(image);
-        }*/
+        }
 
         #endregion
     }

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
-using Fusee.Math.Core;
+﻿using System.Collections.Generic;
 using Fusee.Serialization;
 using Fusee.Xene;
 
@@ -181,13 +177,6 @@ namespace Fusee.Engine.Core
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights());
             _pbrComponent.Add(mc, mat);
             return mat;
-        }
-
-        private Texture LoadTexture(string path)
-        {
-            // string texturePath = Path.Combine(_scenePathDirectory, path);
-            var image = AssetStorage.Get<ImageData>(path);
-            return new Texture(image);
         }
 
         #endregion
