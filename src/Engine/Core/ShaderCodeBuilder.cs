@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Fusee.Base.Core;
+using Fusee.Math.Core;
 using Fusee.Serialization;
-
 
 namespace Fusee.Engine.Core
 {
@@ -644,28 +645,28 @@ namespace Fusee.Engine.Core
             applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
 
 
-            var attenuation = new List<string>()
+            var attenuation = new List<string>
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
                 "float distance = pow(distanceToLight/attenuation,4.0);",
                 "float att = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);"
             };
 
-            var pointLight = new List<string>()
+            var pointLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe) * att;"
                     : "result = Iamb + (Idif + Ispe) * att;"
             };
 
-            var parallelLight = new List<string>()
+            var parallelLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe);"
                     : "result =  Iamb + (Idif + Ispe);"
             };
 
-            var spotLight = new List<string>()
+            var spotLight = new List<string>
             {
                 "float lightToSurfaceAngle = dot(-L, coneDirection);",
                 "if (lightToSurfaceAngle > coneAngle)",
@@ -951,6 +952,197 @@ namespace Fusee.Engine.Core
         /// </summary>
         [Obsolete("LightIntensity is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
         public static string LightIntensityName { get; } = "LightIntensity";
+
+        #endregion
+
+        #region Make ShaderEffect
+
+        /// <summary>
+        /// Creates a ShaderEffectComponent from a MaterialComponent
+        /// </summary>
+        /// <param name="mc">The MaterialComponent</param>
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        {
+            ShaderCodeBuilder scb = null;
+
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
+            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
+            if (mc.GetType() == typeof(MaterialLightComponent))
+            {
+                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
+            }
+            else if (mc.GetType() == typeof(MaterialPBRComponent))
+            {
+                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
+            }
+            else
+            {
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+            }
+
+            var effectParameters = AssembleEffectParamers(mc);
+
+            if (scb == null) throw new Exception("Material could not be evaluated or be built!");
+            var ret = new ShaderEffect(new[]
+                {
+                    new EffectPassDeclaration
+                    {
+                        VS = scb.VS,
+                        //VS = VsBones,
+                        PS = scb.PS,
+                        StateSet = new RenderStateSet
+                        {
+                            ZEnable = true,
+                            AlphaBlendEnable = false
+                        }
+                    }
+                },
+                effectParameters
+            );
+            return ret;
+        }
+
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        {
+            var effectParameters = new List<EffectParameterDeclaration>();
+
+            if (mc.HasDiffuse)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = DiffuseColorName,
+                    Value = mc.Diffuse.Color
+                });
+                if (mc.Diffuse.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = DiffuseMixName,
+                        Value = mc.Diffuse.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = DiffuseTextureName,
+                        Value = LoadTexture(mc.Diffuse.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasSpecular)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularColorName,
+                    Value = mc.Specular.Color
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularShininessName,
+                    Value = mc.Specular.Shininess
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularIntensityName,
+                    Value = mc.Specular.Intensity
+                });
+                if (mc.Specular.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = SpecularMixName,
+                        Value = mc.Specular.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = SpecularTextureName,
+                        Value = LoadTexture(mc.Specular.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasEmissive)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = EmissiveColorName,
+                    Value = mc.Emissive.Color
+                });
+                if (mc.Emissive.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = EmissiveMixName,
+                        Value = mc.Emissive.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = EmissiveTextureName,
+                        Value = LoadTexture(mc.Emissive.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasBump)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = BumpIntensityName,
+                    Value = mc.Bump.Intensity
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = BumpTextureName,
+                    Value = LoadTexture(mc.Bump.Texture)
+                });
+            }
+
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].position",
+                Value = new float3(0, 0, -1)
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].intensities",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].attenuation",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].ambientCoefficient",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneAngle",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneDirection",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].lightType",
+                Value = 1
+            });
+
+            return effectParameters;
+        }
+
+        private static Texture LoadTexture(string path)
+        {
+            var image = AssetStorage.Get<ImageData>(path);
+            return new Texture(image);
+        }
 
         #endregion
     }
