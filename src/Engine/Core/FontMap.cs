@@ -140,14 +140,15 @@ namespace Fusee.Engine.Core
                 int texMapHeight = ++potH;
 
                 // Create the font atlas (the texture containting ALL glyphs)
-                _image = new ImageData
-                {
-                    Width = texMapWidth,
-                    Height = texMapHeight,
-                    Stride = texMapWidth,
-                    PixelFormat = ImagePixelFormat.Intensity,
-                    PixelData = new byte[texMapWidth * texMapHeight]
-                };
+                _image = new ImageData(new byte[texMapWidth * texMapHeight], texMapWidth, texMapHeight, new ImagePixelFormat(ColorFormat.Intensity));
+                //_image = new ImageData
+                //{
+                //    PixelData = new byte[texMapWidth * texMapHeight],
+                //    Width = texMapWidth,
+                //    Height = texMapHeight,
+                //    ColorFormat = ImagePixelFormat.Intensity,
+                //    
+                //};
 
                 var offX = 0;
                 var offY = 0;
@@ -157,7 +158,7 @@ namespace Fusee.Engine.Core
                 foreach (char c in _alphabet)
                 {
                     int bitmapLeft, bitmapTop;
-                    ImageData glyphImg = _font.RenderGlyph((uint) c, out bitmapLeft, out bitmapTop);
+                    IImageData glyphImg = _font.RenderGlyph((uint) c, out bitmapLeft, out bitmapTop);
                     if (offX + glyphImg.Width + 1 >= maxWidth)
                     {
                         offY += rowH;
@@ -166,7 +167,9 @@ namespace Fusee.Engine.Core
                     }
 
                     if (!glyphImg.IsEmpty)
-                        ImageData.Blt(_image, offX, offY, glyphImg);
+                    {
+                        _image.Blt(offX, offY, glyphImg); // blit glyph into _image
+                    }
 
                     // char information
                     GlyphOnMap glyphOnMap = new GlyphOnMap
@@ -197,7 +200,7 @@ namespace Fusee.Engine.Core
                 GL.BindTexture(TextureTarget.Texture2D, tex);
 
                 GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, maxWidth, potH, 0,
-                    OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
+                    OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
 
                 // texture settings
                 GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
@@ -234,7 +237,7 @@ namespace Fusee.Engine.Core
                     }
 
                     GL.TexSubImage2D(TextureTarget.Texture2D, 0, offX, offY, face.Glyph.Bitmap.Width, face.Glyph.Bitmap.Rows,
-                        OpenTK.Graphics.OpenGL.PixelFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
+                        OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
 
                     // char informations
                     texAtlas.CharInfo[i].AdvanceX = (int)face.Glyph.Advance.X;

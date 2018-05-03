@@ -101,6 +101,7 @@
     <Compile Include="ISphereShapeImp.cs" />
     <Compile Include="IStaticPlaneShapeImp.cs" />
     <Compile Include="ITexture.cs" />
+    <Compile Include="ITextureHandle.cs" />
     <Compile Include="IVideoManagerImp.cs" />
     <Compile Include="IVideoStreamImp.cs" />
     <Compile Include="KeyEventArgs.cs" />

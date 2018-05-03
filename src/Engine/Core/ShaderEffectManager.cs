@@ -106,9 +106,9 @@ namespace Fusee.Engine.Core
             {
                 _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
-            else if (param.Info.Type == typeof(ITexture))
+            else if (param.Info.Type == typeof(ITextureHandle))
             {
-                _rci.SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
+                _rci.SetShaderParamTexture(param.Info.Handle, (ITextureHandle)param.Value);
             }
             // Nothing to do here, for further implementation
         }

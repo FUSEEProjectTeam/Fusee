@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -12,6 +14,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
+        public static RenderContext SuperhackRenderContext;
+
         private SceneContainer _convertedScene;
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
@@ -178,6 +182,14 @@ namespace Fusee.Engine.Core
             _pbrComponent.Add(mc, mat);
             return mat;
         }
+
+        private Texture LoadTexture(string path)
+        {
+            // string texturePath = Path.Combine(_scenePathDirectory, path);
+            var image = AssetStorage.Get<ImageData>(path);
+            return new Texture(image);
+        }
+
         #endregion
     }
 }
