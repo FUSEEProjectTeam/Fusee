@@ -499,50 +499,6 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void RenderCanvasTransform(CanvasTransformComponent ctc)
-        {
-            var newRect = new MinMaxRect
-            {
-                Min = ctc.Size.Min,
-                Max = ctc.Size.Max
-            };
-
-            _state.CanvasXForm = _state.Model;
-            _state.Model = _state.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-            _state.UiRect = newRect;
-        }
-
-        [VisitMethod]
-        public void RenderRectTransform(RectTransformComponent rtc)
-        {
-            // The Heart of the UiRect calculation: Set anchor points relative to parent
-            // rectangle and add absolute offsets
-            var newRect = new MinMaxRect
-            {
-                Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
-                Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
-            };
-
-            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-
-            _state.UiRect = newRect;
-            _state.Model = _state.CanvasXForm * transformChild;
-
-            var trans = newRect.Center - _state.UiRect.Center;
-            var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
-            var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
-            // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
-
-
-            _state.UiRect = newRect;
-
-            _state.Model *= float4x4.Identity;
-            _rc.Model = _state.Model;
-            _rc.View = _view;
-        }
-
-
-        [VisitMethod]
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();

@@ -1,18 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using PixelFormat = System.Drawing.Imaging.PixelFormat;
-using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using ClampColorMode = OpenTK.Graphics.OpenGL4.ClampColorMode;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {

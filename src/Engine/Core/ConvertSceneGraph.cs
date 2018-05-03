@@ -10,8 +10,6 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
-        public static RenderContext SuperhackRenderContext;
-
         private SceneContainer _convertedScene;
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
@@ -134,18 +132,6 @@ namespace Fusee.Engine.Core
 
         [VisitMethod]
         public void ConVWeight(WeightComponent weight)
-        {
-
-        }
-
-        [VisitMethod]
-        public void ConCanvasTransform(CanvasTransformComponent ctc)
-        {
-
-        }
-
-        [VisitMethod]
-        public void ConvRectTransform(RectTransformComponent rtc)
         {
 
         }
