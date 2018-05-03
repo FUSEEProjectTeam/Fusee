@@ -101,9 +101,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                             {
                                                 Name = "Canvas_XForm"
                                             },
-                                            new MaterialComponent
+                                            new ShaderEffectComponent
                                             {
-                                                Diffuse = new MatChannelContainer {Color = new float3(0,1,0)},
+                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                                                {
+                                                    Diffuse = new MatChannelContainer {Color = new float3(0,1,0)},
+                                                })
                                             },
                                             new Cube()
                                         }
@@ -141,9 +144,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                                     {
                                                         Name = "Child_XForm"
                                                     },
-                                                    new MaterialComponent
+                                                    new ShaderEffectComponent
                                                     {
-                                                        Diffuse = new MatChannelContainer {Color = new float3(1,0,0)}
+                                                        Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                                                        {
+                                                            Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
+                                                        })
                                                     },
                                                     new Cube()
                                                 },
@@ -180,9 +186,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                                                    {
                                                                        Name = "GrandChild_XForm"
                                                                    },
-                                                                   new MaterialComponent
+                                                                   new ShaderEffectComponent
                                                                    {
-                                                                       Diffuse = new MatChannelContainer {Color = ColorUint.Yellow.Tofloat3()},
+                                                                       Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                                                                       {
+                                                                           Diffuse = new MatChannelContainer {Color = ColorUint.Yellow.Tofloat3()},
+                                                                       })
                                                                    },
                                                                    new Cube()
                                                                }
@@ -239,12 +248,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                             {
                                                 Name = "Canvas_XForm"
                                             },
-                                            new MaterialComponent
+                                            new ShaderEffectComponent
                                             {
-                                                Diffuse = new MatChannelContainer
+                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
                                                 {
-                                                   Color = new float3(1,0,0)
-                                                }
+                                                    Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
+                                                })
                                             },
                                             new Plane()
                                         }
@@ -281,7 +290,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                     {
                                                         Name = "Child_XForm"
                                                     },
-                                                    new ShaderEffectComponent(RC, new ShaderEffect(new[]
+                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
                                                         {
                                                             new EffectPassDeclaration
                                                             {
@@ -299,9 +308,9 @@ namespace Fusee.Engine.Examples.UI.Core
                                                         },
                                                         new[]
                                                         {
-                                                            new EffectParameterDeclaration {Name = "tex", Value = RC.CreateTexture(AssetStorage.Get<ImageData>("FuseeText.png"))},
+                                                            new EffectParameterDeclaration {Name = "tex", Value = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"))},
                                                             new EffectParameterDeclaration {Name = "blendColor", Value = float4.One},
-                                                        })),
+                                                        })},
                                                     new Plane()
                                                 }
                                             }

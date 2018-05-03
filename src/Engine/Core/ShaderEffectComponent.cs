@@ -11,11 +11,5 @@ namespace Fusee.Engine.Core
         /// The effect.
         /// </summary>
         public ShaderEffect Effect { get; set; }
-
-
-        public ShaderEffectComponent(ShaderEffect effect)
-        {
-            Effect = effect;
-        }
     }
 }

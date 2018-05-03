@@ -438,8 +438,7 @@ namespace Fusee.Engine.Core
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
 
-                //TODO: replace with (currently not existing) helper method in ShaderCodeBuilder (Mat --> ShaderEffect)
-                var defulatMat = new MaterialComponent
+                var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
                     {
@@ -452,7 +451,7 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defulatMat);
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
                 
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
@@ -529,15 +528,14 @@ namespace Fusee.Engine.Core
             _state.UiRect = newRect;
             _state.Model = _state.CanvasXForm * transformChild;
 
-            var trans = newRect.Center - _state.UiRect.Center;
-            var scale = new float2(newRect.Size.x / _state.UiRect.Size.x, newRect.Size.y / _state.UiRect.Size.y);
-            var model = float4x4.CreateTranslation(trans.x, trans.y, 0) * float4x4.Scale(scale.x, scale.y, 1.0f);
-            // var model = float4x4.Invert(_state.Model) *  float4x4.CreateTranslation(newRectCenter.x, newRectCenter.y, 0) * float4x4.Scale(0.5f * newRect.Size.x, 0.5f * newRect.Size.y, 1.0f);
+        }
 
+        [VisitMethod]
+        public void RenderXForm(XFormComponent xfc)
+        {
+            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
 
-            _state.UiRect = newRect;
-
-            _state.Model *= float4x4.Identity;
+            _state.Model *= scale;
             _rc.Model = _state.Model;
             _rc.View = _view;
         }
