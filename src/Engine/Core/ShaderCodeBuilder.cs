@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 
@@ -951,6 +952,197 @@ namespace Fusee.Engine.Core
         /// </summary>
         [Obsolete("LightIntensity is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
         public static string LightIntensityName { get; } = "LightIntensity";
+
+        #endregion
+
+        #region Make ShaderEffect
+
+        /// <summary>
+        /// Creates a ShaderEffectComponent from a MaterialComponent
+        /// </summary>
+        /// <param name="mc">The MaterialComponent</param>
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null) 
+        {
+            ShaderCodeBuilder scb = null;
+
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
+            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
+            if (mc.GetType() == typeof(MaterialLightComponent))
+            {
+                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
+            }
+            else if (mc.GetType() == typeof(MaterialPBRComponent))
+            {
+                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
+            }
+            else
+            {
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+            }
+
+            var effectParameters = AssembleEffectParamers(mc);
+
+            if (scb == null) throw new Exception("Material could not be evaluated or be built!");
+            var ret = new ShaderEffect(new[]
+                {
+                    new EffectPassDeclaration()
+                    {
+                        VS = scb.VS,
+                        //VS = VsBones,
+                        PS = scb.PS,
+                        StateSet = new RenderStateSet()
+                        {
+                            ZEnable = true,
+                            AlphaBlendEnable = false
+                        }
+                    }
+                },
+                effectParameters
+            );
+            return ret;
+        }
+
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        {
+            var effectParameters = new List<EffectParameterDeclaration>();
+
+            if (mc.HasDiffuse)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.DiffuseColorName,
+                    Value = mc.Diffuse.Color
+                });
+                if (mc.Diffuse.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.DiffuseMixName,
+                        Value = mc.Diffuse.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.DiffuseTextureName,
+                        //Value = LoadTexture(mc.Diffuse.Texture) TODO: uncomment if Texture issue is resolved
+                    });
+                }
+            }
+
+            if (mc.HasSpecular)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.SpecularColorName,
+                    Value = mc.Specular.Color
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.SpecularShininessName,
+                    Value = mc.Specular.Shininess
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.SpecularIntensityName,
+                    Value = mc.Specular.Intensity
+                });
+                if (mc.Specular.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.SpecularMixName,
+                        Value = mc.Specular.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.SpecularTextureName,
+                        //Value = LoadTexture(mc.Specular.Texture) TODO: uncomment if Texture issue is resolved
+                    });
+                }
+            }
+
+            if (mc.HasEmissive)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.EmissiveColorName,
+                    Value = mc.Emissive.Color
+                });
+                if (mc.Emissive.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.EmissiveMixName,
+                        Value = mc.Emissive.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = ShaderCodeBuilder.EmissiveTextureName,
+                        //Value = LoadTexture(mc.Emissive.Texture) TODO: uncomment if Texture issue is resolved
+                    });
+                }
+            }
+
+            if (mc.HasBump)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.BumpIntensityName,
+                    Value = mc.Bump.Intensity
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = ShaderCodeBuilder.BumpTextureName,
+                    //Value = LoadTexture(mc.Bump.Texture)
+                });
+            }
+
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].position",
+                Value = new float3(0, 0, -1)
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].intensities",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].attenuation",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].ambientCoefficient",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneAngle",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneDirection",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].lightType",
+                Value = 1
+            });
+
+            return effectParameters;
+        }
+
+        /*private Texture LoadTexture(string path)
+        {
+            // string texturePath = Path.Combine(_scenePathDirectory, path);
+            return new Texture(image);
+        }*/
 
         #endregion
     }

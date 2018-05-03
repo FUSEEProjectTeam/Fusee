@@ -439,7 +439,20 @@ namespace Fusee.Engine.Core
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
 
                 //TODO: replace with (currently not existing) helper method in ShaderCodeBuilder (Mat --> ShaderEffect)
-                _defaultEffect = CreateDefaultShaderEffect();
+                var defulatMat = new MaterialComponent
+                {
+                    Diffuse = new MatChannelContainer
+                    {
+                        Color = new float3(0.5f, 0.5f, 0.5f)
+                    },
+                    Specular = new SpecularChannelContainer
+                    {
+                        Color = new float3(1, 1, 1),
+                        Intensity = 0.5f,
+                        Shininess = 22
+                    }
+                };
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defulatMat);
                 
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
@@ -450,63 +463,6 @@ namespace Fusee.Engine.Core
                 DoRenderEnvMap = _wantToRenderEnvMap;
             }
         }
-
-        private ShaderEffect CreateDefaultShaderEffect()
-        {
-            var defulatMat = new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer
-                {
-                    Color = new float3(0.5f, 0.5f, 0.5f)
-                },
-                Specular = new SpecularChannelContainer
-                {
-                    Color = new float3(1, 1, 1),
-                    Intensity = 0.5f,
-                    Shininess = 22
-                }
-            };
-            var scb = new ShaderCodeBuilder(defulatMat, null, CurrentNode.GetWeights());
-            return new ShaderEffect(new[]
-                {
-                        new EffectPassDeclaration
-                        {
-                            VS = scb.VS,
-                            //VS = VsBones,
-                            PS = scb.PS,
-                            StateSet = new RenderStateSet
-                            {
-                                ZEnable = true,
-                                AlphaBlendEnable = false
-                            }
-                        }
-                    },
-                new[]
-                {
-                        new EffectParameterDeclaration
-                        {
-                            Name = ShaderCodeBuilder.DiffuseColorName,
-                            Value = defulatMat.Diffuse.Color
-                        },
-                        new EffectParameterDeclaration
-                        {
-                            Name = ShaderCodeBuilder.SpecularColorName,
-                            Value = defulatMat.Specular.Color
-                        },
-                        new EffectParameterDeclaration
-                        {
-                        Name = ShaderCodeBuilder.SpecularShininessName,
-                        Value = defulatMat.Specular.Shininess
-                        },
-                        new EffectParameterDeclaration
-                        {
-                        Name = ShaderCodeBuilder.SpecularIntensityName,
-                        Value = defulatMat.Specular.Intensity
-                        }
-                }
-            );
-        }
-
         #endregion
 
         public void Render(RenderContext rc)
