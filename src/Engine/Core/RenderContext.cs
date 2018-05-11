@@ -33,6 +33,9 @@ namespace Fusee.Engine.Core
         // Mesh Management
         private readonly MeshManager _meshManager;
 
+        // Texture Management
+        private readonly TextureManager _textureManager;
+
         // ShaderEffect Management
         private readonly ShaderEffectManager _shaderEffectManager;
 
@@ -207,7 +210,7 @@ namespace Fusee.Engine.Core
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _view*_model;
+                _modelView = _view * _model;
 
                 UpdateCurrentShader();
             } //TODO: Flags
@@ -598,7 +601,7 @@ namespace Fusee.Engine.Core
                 return _invTransView;
             }
         }
-        
+
         /// <summary>
         /// The inverse transpose of the Model matrix.
         /// </summary>
@@ -706,7 +709,7 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-        
+
         #endregion
 
         #region Constructors
@@ -727,12 +730,15 @@ namespace Fusee.Engine.Core
             // mesh management
             _meshManager = new MeshManager(_rci);
 
+            // texture management
+            _textureManager = new TextureManager(_rci);
+
             _shaderEffectManager = new ShaderEffectManager(_rci);
 
             // Make JSIL run through this one time. 
             _col = ColorUint.White.Tofloat3();
 
-       
+
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
@@ -855,14 +861,16 @@ namespace Fusee.Engine.Core
 
         #region Image Data related Members
 
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, Texture tex)
         {
-            _rci.UpdateTextureFromVideoStream(stream, tex);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
+            _rci.UpdateTextureFromVideoStream(stream, textureHandle);
         }
 
-        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+        public void UpdateTextureRegion(Texture tex, Texture img, int startX, int startY, int width, int height)
         {
-            _rci.UpdateTextureRegion(tex, img, startX, startY, width, height);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
+            _rci.UpdateTextureRegion(textureHandle, img, startX, startY, width, height);
         }
 
         /*
@@ -905,16 +913,18 @@ namespace Fusee.Engine.Core
         /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
         /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>
-        /// An <see cref="ITexture"/> that can be used for texturing in the shader.
+        /// An <see cref="Texture"/> that can be used for texturing in the shader.
         /// </returns>
-        public ITexture CreateTexture(ImageData imgData, bool repeat = false)
+        public ITextureHandle CreateTexture(Texture imgData, bool repeat = false)
         {
-            return _rci.CreateTexture(imgData, repeat);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(imgData, repeat);
+            return textureHandle;
         }
 
-        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        public void CopyDepthBufferFromDeferredBuffer(Texture texture)
         {
-            _rci.CopyDepthBufferFromDeferredBuffer(texture);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            _rci.CopyDepthBufferFromDeferredBuffer(textureHandle);
         }
 
         /// <summary>
@@ -927,20 +937,21 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
         /// </returns>
-        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
             return _rci.CreateWritableTexture(width, height, textureFormat);
         }
-  
+
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        public void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
-            _rci.SetShaderParamTexture(param, texId);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            _rci.SetShaderParamTexture(param, textureHandle);
         }
 
         /// <summary>
@@ -949,7 +960,7 @@ namespace Fusee.Engine.Core
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateWritableTexture() method.</param>
         /// <param name="gHandle">The desired gBuffer texture</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
         {
             _rci.SetShaderParamTexture(param, texId, gHandle);
         }
@@ -1033,10 +1044,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The current shader.
         /// </value>
-        public ShaderProgram CurrentShader
-        {
-            get { return _currentShader; }
-        }
+        public ShaderEffect CurrentShader => _currentShaderEffect;
 
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
@@ -1138,6 +1146,7 @@ namespace Fusee.Engine.Core
             for (i = 0; i < nPasses; i++)
             {
                 IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
+  
                 ef.ParamsPerPass.Add(new List<EffectParam>());
                 foreach (var paramNew in paramList)
                 {
@@ -1421,9 +1430,17 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITexture texture)
+        public void SetRenderTarget(Texture texture)
         {
-            _rci.SetRenderTarget(texture);
+            if (texture != null)
+            {
+                ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+                _rci.SetRenderTarget(textureHandle);
+            }
+            else
+            {
+                _rci.SetRenderTarget(null);
+            }
         }
 
         /// <summary>
@@ -1431,9 +1448,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="texture">The texture as target</param>
         /// <param name="position">The texture position within a cubemap</param>
-        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        public void SetCubeMapRenderTarget(Texture texture, int position)
         {
-            _rci.SetCubeMapRenderTarget(texture, position);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+            _rci.SetCubeMapRenderTarget(textureHandle, position);
         }
         
         /// <summary>
@@ -1455,10 +1473,12 @@ namespace Fusee.Engine.Core
                 {
                     // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
                     SetShader(_currentShaderEffect.CompiledShaders[i]);
+
                     foreach (var param in _currentShaderEffect.ParamsPerPass[i])
                     {
                         SetShaderParamT(param);
                     }
+
                     SetRenderState(_currentShaderEffect.States[i]);
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
@@ -1466,10 +1486,11 @@ namespace Fusee.Engine.Core
 
                     // After rendering always cleanup pending meshes
                     _meshManager.Cleanup();
+                    _textureManager.Cleanup();
                 }
 
                 // After rendering all passes cleanup shadereffect
-               _shaderEffectManager.Cleanup();
+                _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
             {
@@ -1535,7 +1556,7 @@ namespace Fusee.Engine.Core
         /// <param name="w">Width</param>
         /// <param name="h">Height</param>
         /// <returns>The requested rectangular area</returns>
-        public ImageData GetPixelColor(int x, int y, int w, int h)
+        public IImageData GetPixelColor(int x, int y, int w, int h)
         {
             return _rci.GetPixelColor(x, y, w, h);
         }
@@ -1610,9 +1631,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="quad">The <see cref="Rectangle"/>.</param>
         /// <param name="texId">The <see cref="ITexture"/>.</param>
-        public void GetBufferContent(Rectangle quad, ITexture texId)
+        public void GetBufferContent(Rectangle quad, Texture texId)
         {
-            _rci.GetBufferContent(quad, texId);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texId);
+            _rci.GetBufferContent(quad, textureHandle);
         }
 
         /// <summary>
@@ -1632,7 +1654,7 @@ namespace Fusee.Engine.Core
 
             _rci.Viewport(x, y, width, height);
         }
-    
+
 
         /// <summary>
         /// Enable or disable Color channels to be written to the frame buffer (final image).

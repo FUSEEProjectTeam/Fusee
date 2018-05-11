@@ -27,14 +27,14 @@ namespace Fusee.Engine.Core
             //}
         }
 
-//        public void SetValue(string name, dynamic value)
-//        {
-//            ShaderParamInfo info;
-//            if (_sp._paramsByName.TryGetValue(name, out info))
-//                _sp._rci.SetShaderParam(info.Handle, value);
-//            if (_list.ContainsKey(name))
-//                _list[name] = value;
-//        }
+        //        public void SetValue(string name, dynamic value)
+        //        {
+        //            ShaderParamInfo info;
+        //            if (_sp._paramsByName.TryGetValue(name, out info))
+        //                _sp._rci.SetShaderParam(info.Handle, value);
+        //            if (_list.ContainsKey(name))
+        //                _list[name] = value;
+        //        }
 
         /// <summary>
         /// Gets the shaderprogram.
@@ -60,5 +60,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-    }   
+    }
 }

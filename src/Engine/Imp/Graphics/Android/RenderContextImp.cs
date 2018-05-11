@@ -52,7 +52,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Image data related Members
 
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId, GBufferHandle gHandle)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
         {
             throw new NotImplementedException();
         }
@@ -61,21 +61,21 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Updates a texture with images obtained from a Video.
         /// </summary>
         /// <param name="stream">The Video from which the images are taken.</param>
-        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <param name="tex">The textureHandle to which the ImageData is bound to.</param>
         /// <remarks>Look at the VideoTextureExample for further information.</remarks>
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITexture tex)
+        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
         {
             throw new NotImplementedException("TODO: VIdeo textures on android.");
             /*
             ImageData img = stream.GetCurrentFrame();
-            OpenTK.Graphics.OpenGL.PixelFormat format;
-            switch (img.PixelFormat)
+            OpenTK.Graphics.OpenGL.ColorFormat format;
+            switch (img.ColorFormat)
             {
                 case ImagePixelFormat.RGBA:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    format = OpenTK.Graphics.OpenGL.ColorFormat.Bgra;
                     break;
                 case ImagePixelFormat.RGB:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    format = OpenTK.Graphics.OpenGL.ColorFormat.Bgr;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -102,22 +102,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="width">The width of the rectangle.</param>
         /// <param name="height">The height of the rectangle.</param>
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
-        public void UpdateTextureRegion(ITexture tex, ImageData img, int startX, int startY, int width, int height)
+        public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
             All format;
-            switch (img.PixelFormat)
+            switch (img.PixelFormat.ColorFormat)
             {
-                case ImagePixelFormat.RGBA:
+                case ColorFormat.RGBA:
                     format = All.Rgba;
                     break;
-                case ImagePixelFormat.RGB:
+                case ColorFormat.RGB:
                     format = All.Rgb;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
-            GL.BindTexture(All.Texture2D, ((Texture) tex).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle) tex).handle);
             GL.TexSubImage2D(All.Texture2D, 0, startX, startY, width, height,
                 format, All.UnsignedByte, img.PixelData);
         }
@@ -139,14 +139,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             for (int i = 0; i < pxls.Length; i++)
                 pxls[i] = colorVal;
 
-            var ret = new ImageData
-            {
-                PixelData = new byte[nBytes],
-                Height = height,
-                Width = width,
-                PixelFormat = ImagePixelFormat.RGBA,
-                Stride = width
-            };
+            var ret = new ImageData(new byte[nBytes], width, height,
+                new ImagePixelFormat(ColorFormat.RGBA));
 
             Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
             return ret;
@@ -175,22 +169,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITexture CreateTexture(ImageData img, bool repeat)
+        public ITextureHandle CreateTexture(ITexture imageData, bool repeat)
         {
             int internalFormat;
             All format;
-            switch (img.PixelFormat)
+            switch (imageData.PixelFormat.ColorFormat)
             {
-                case ImagePixelFormat.RGBA:
+                case ColorFormat.RGBA:
                     internalFormat = (int) All.Rgba;
                     format = All.Rgba;
                     break;
-                case ImagePixelFormat.RGB:
+                case ColorFormat.RGB:
                     internalFormat = (int) All.Rgb;
                     format = All.Rgb;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case ImagePixelFormat.Intensity:
+                case ColorFormat.Intensity:
                     internalFormat = (int) All.Alpha;
                     format = All.Alpha;
                     break;
@@ -201,8 +195,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             int id;
             GL.GenTextures(1, out id);
             GL.BindTexture(All.Texture2D, id);
-            GL.TexImage2D(All.Texture2D, 0, internalFormat, img.Width, img.Height, 0,
-                format, All.UnsignedByte, img.PixelData);
+            GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0,
+                format, All.UnsignedByte, imageData.PixelData);
 
             GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int) All.Linear);
             GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int) All.Linear);
@@ -210,27 +204,92 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(All.Texture2D, All.TextureWrapS, (repeat) ? (int)All.Repeat : (int)All.ClampToEdge);
             GL.TexParameter(All.Texture2D, All.TextureWrapT, (repeat) ? (int)All.Repeat : (int)All.ClampToEdge);
 
-            ITexture texID = new Texture {handle = id};
+            ITextureHandle texId = new TextureHandle { handle = id};
 
-            return texID;
+            return texId;
         }
 
-        public void CopyDepthBufferFromDeferredBuffer(ITexture texture)
+        public void RemoveTextureHandle(ITextureHandle textureHandle)
+        {
+            TextureHandle texHandle = (TextureHandle)textureHandle;
+
+            if (texHandle.renderToTextureBufferHandle != -1)
+            {
+                GL.DeleteFramebuffers(1, ref texHandle.renderToTextureBufferHandle);
+            }
+
+            if (texHandle.fboHandle != -1)
+            {
+                GL.DeleteFramebuffers(1, ref texHandle.fboHandle);
+            }
+
+            if (texHandle.intermediateToTextureBufferHandle != -1)
+            {
+                GL.DeleteFramebuffers(1, ref texHandle.intermediateToTextureBufferHandle);
+            }
+
+            if (texHandle.gBufferHandle != -1)
+            {
+                GL.DeleteFramebuffers(1, ref texHandle.gBufferHandle);
+
+                if (texHandle.gDepthRenderbufferHandle != -1)
+                {
+                    GL.DeleteFramebuffers(1, ref texHandle.gDepthRenderbufferHandle);
+                }
+
+                if (texHandle.gBufferAlbedoSpecTextureHandle != -1)
+                {
+                    GL.DeleteTextures(1, ref texHandle.gBufferAlbedoSpecTextureHandle);
+                }
+
+                if (texHandle.gBufferDepthTextureHandle != -1)
+                {
+                    GL.DeleteTextures(1, ref texHandle.gBufferDepthTextureHandle);
+                }
+
+                if (texHandle.gBufferNormalTextureHandle != -1)
+                {
+                    GL.DeleteTextures(1, ref texHandle.gBufferNormalTextureHandle);
+                }
+
+                if (texHandle.gBufferPositionTextureHandle != -1)
+                {
+                    GL.DeleteTextures(1, ref texHandle.gBufferPositionTextureHandle);
+                }
+            }
+
+            // TODO: (dd) ?? TBD
+            if (texHandle.depthHandle != -1)
+            {
+
+            }
+
+            if (texHandle.handle != -1)
+            {
+                GL.DeleteTextures(1, ref texHandle.handle);
+            }
+
+
+
+
+        }
+
+        public void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture)
         {
             throw new NotImplementedException();
         }
 
-        public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
             throw new NotImplementedException();
         }
 
-        public ITexture CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
+        public ITextureHandle CreateWritableTexture(int width, int height, ImagePixelFormat pixelFormat)
         {
             throw new NotImplementedException();
         }
 
-        public ITexture CreateWritableTexture()
+        public ITextureHandle CreateWritableTexture()
         {
             throw new NotImplementedException();
         }
@@ -511,7 +570,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         break;
 
                     case All.Sampler2D:
-                        paramInfo.Type = typeof (ITexture);
+                        paramInfo.Type = typeof (ITextureHandle);
                         break;
 
                     default:
@@ -631,7 +690,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture method</param>
-        public void SetShaderParamTexture(IShaderParam param, ITexture texId)
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
             int iParam = ((ShaderParam)param).handle;
             int texUnit;
@@ -642,7 +701,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(All.Texture0 + texUnit);
-            GL.BindTexture(All.Texture2D, ((Texture)texId).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle)texId).handle);
         }
         #endregion
 
@@ -1287,9 +1346,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="quad">The Rectangle where the content is draw into.</param>
         /// <param name="texId">The tex identifier.</param>
-        public void GetBufferContent(Common.Rectangle quad, ITexture texId)
+        public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(All.Texture2D, ((Texture) texId).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle) texId).handle);
             GL.CopyTexImage2D(All.Texture2D, 0, All.Rgba, quad.Left, quad.Top, quad.Width,
                 quad.Height, 0);
         }
@@ -1741,13 +1800,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
-        public void SetRenderTarget(ITexture texture)
+        public void SetRenderTarget(ITextureHandle texture)
         {
             if (texture != null)
                 throw new NotImplementedException();
         }
 
-        public void SetCubeMapRenderTarget(ITexture texture, int position)
+        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
         {
             throw new NotImplementedException();
         }
@@ -1816,7 +1875,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="w">The width to copy.</param>
         /// <param name="h">The height to copy.</param>
         /// <returns>The specified sub-image</returns>
-        public ImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
+        public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
             ImageData image = CreateImage(w, h, ColorUint.Black);
             GL.ReadPixels(x, y, w, h, All.Rgb, All.UnsignedByte, image.PixelData);
@@ -1825,8 +1884,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
             /*
             System.Drawing.Rectangle rect = new System.Drawing.Rectangle(0, 0, w, h);
             Bitmap bmp = new Bitmap(w, h);
-            BitmapData data = bmp.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
-            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.PixelFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
+            BitmapData data = bmp.LockBits(rect, ImageLockMode.WriteOnly, ColorFormat.Format24bppRgb);
+            GL.ReadPixels(x, y, w, h, OpenTK.Graphics.OpenGL.ColorFormat.Bgr, PixelType.UnsignedByte, data.Scan0);
 
             bmp.UnlockBits(data);
             return bmp;

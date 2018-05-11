@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Fusee.Base.Core;
 using FileMode = System.IO.FileMode;
 using Path = Fusee.Base.Common.Path;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
@@ -181,14 +182,8 @@ namespace Fusee.Base.Imp.Desktop
             int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
             int bytes = (strideAbs) * bmp.Height;
 
-            var ret = new ImageData
-            {
-                PixelData = new byte[bytes],
-                Height = bmpData.Height,
-                Width = bmpData.Width,
-                PixelFormat = ImagePixelFormat.RGBA,
-                Stride = bmpData.Stride
-            };
+            var ret = new ImageData(new byte[bytes], bmpData.Width, bmpData.Height,
+                new ImagePixelFormat(ColorFormat.RGBA));
 
             Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
 

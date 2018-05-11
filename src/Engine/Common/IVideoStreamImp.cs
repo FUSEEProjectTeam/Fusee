@@ -12,7 +12,7 @@ namespace Fusee.Engine.Common
         /// Gets the current frame.
         /// </summary>
         /// <returns></returns>
-        ImageData GetCurrentFrame();
+        ITexture GetCurrentFrame();
         /// <summary>
         /// Starts this stream.
         /// </summary>

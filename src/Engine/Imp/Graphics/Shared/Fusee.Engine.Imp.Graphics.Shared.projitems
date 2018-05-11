@@ -13,6 +13,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)MeshImp.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShaderParam.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)ShaderProgramImp.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Texture.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)TextureHandle.cs" />
   </ItemGroup>
 </Project>

@@ -109,14 +109,6 @@ message Mesh {
    repeated uint32 Triangles = 7;
    optional AABBf BoundingBox = 8;
 }
-message MinMaxRect {
-   optional float2 Min = 1;
-   optional float2 Max = 2;
-}
-message RectTransformComponent {
-   optional MinMaxRect Anchors = 1;
-   optional MinMaxRect Offsets = 2;
-}
 message RenderPass {
    optional string VS = 1;
    optional string PS = 2;
@@ -133,7 +125,6 @@ message SceneComponentContainer {
    optional AnimationComponent AnimationComponent = 105;
    optional BoneComponent BoneComponent = 106;
    optional ShaderComponent ShaderComponent = 107;
-   optional RectTransformComponent RectTransformComponent = 108;
 }
 message SceneContainer {
    optional SceneHeader Header = 1;

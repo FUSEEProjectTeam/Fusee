@@ -46,7 +46,7 @@
     <Compile Include="RenderContextImp.cs" />
     <Compile Include="ShaderParam.cs" />
     <Compile Include="ShaderProgramImp.cs" />
-    <Compile Include="Texture.cs" />
+    <Compile Include="TextureHandle.cs" />
   </ItemGroup>
   <ItemGroup>
     <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Graphics.Web.Ext.js" />

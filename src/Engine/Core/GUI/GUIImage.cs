@@ -136,15 +136,18 @@ namespace Fusee.Engine.Core.GUI
             });
         }
 
+
         protected internal override void AttachToContext(RenderContext rc)
         {
             if (RContext == rc) return;
 
             if (!ImgSrc.IsEmpty)
             {
-                GUITexture = rc.CreateTexture(ImgSrc,
-                    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
 
+                // (dd) old, currently no repeat option?
+                //GUITexture = rc.CreateTexture(ImgSrc,
+                //    M.IsPowerOfTwo(ImgSrc.Width) && M.IsPowerOfTwo(ImgSrc.Height));
+                GUITexture = new Texture(ImgSrc);
                 CreateGUIShader();
             }
 

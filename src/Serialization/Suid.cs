@@ -1,10 +1,13 @@
-﻿namespace Fusee.Serialization
+﻿using System.Threading;
+
+namespace Fusee.Serialization
 {
     /// <summary>
     /// Session unique Id.
     /// </summary>
     public struct Suid
     {
+        private static readonly object LockObject = new object();
         private static ulong _idCounter = 0;
         private readonly ulong _id;
         private Suid(ulong id)
@@ -18,8 +21,12 @@
         /// <returns></returns>
         public static Suid GenerateSuid()
         {
-            // Counter (ggf. threadsafe) hochzählen und Wert zurückgeben
-            return new Suid(++_idCounter);
+            //increment threadsafe... idCounter is static -> the lockObject must be static.
+            lock (LockObject)
+            {
+                _idCounter = _idCounter + 1;
+            }
+            return new Suid(_idCounter);
         }
 
         /// <summary>
