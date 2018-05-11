@@ -59,6 +59,7 @@
     <Compile Include="Icosphere.cs" />
     <Compile Include="MeshManager.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NineSlicePlane.cs" />
     <Compile Include="Plane.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="GearConstraint.cs" />

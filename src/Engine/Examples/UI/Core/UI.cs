@@ -13,34 +13,39 @@ namespace Fusee.Engine.Examples.UI.Core
         protected readonly string GUIVS = @"
             
             attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
             attribute vec2 fuUV;
-            attribute vec4 fuColor;
-
-            uniform mat4 FUSEE_MVP;                 
-
             varying vec2 vUV;
-            varying vec4 vColor;
-
-            void main()
-            {
-                vUV = fuUV;
-                vColor = fuColor;
-
-                gl_Position = FUSEE_MVP * vec4(fuVertex, 1);
+            varying vec3 vMVNormal;
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+        
+            void main() {
+               
+               vUV = fuUV;
+               vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+               gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
             }";
 
         protected readonly string TEXTUREPS = @"
+            #version 100
+
             #ifdef GL_ES
                 precision highp float;
-            #endif    
-  
-            varying vec2 vUV;
-            varying vec4 vColor;
-
-            uniform sampler2D tex;
+            #endif
             
-            void main(void) {
-                gl_FragColor = vec4(texture2D(tex, vUV));   
+            varying vec3 vMVNormal;            
+            varying vec2 vUV;            
+            uniform mat4 FUSEE_MV;
+            uniform sampler2D DiffuseTexture;
+            uniform vec4 DiffuseColor;
+            uniform float DiffuseMix;
+            
+            void main()
+            {
+                vec3 N = normalize(vMVNormal);
+                vec3 L = normalize(vec3(0.0,0.0,-1.0));
+                gl_FragColor = (texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
             }";
 
         // angle variables
@@ -308,10 +313,126 @@ namespace Fusee.Engine.Examples.UI.Core
                                                         },
                                                         new[]
                                                         {
-                                                            new EffectParameterDeclaration {Name = "tex", Value = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"))},
-                                                            new EffectParameterDeclaration {Name = "blendColor", Value = float4.One},
+                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"))},
+                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f}
                                                         })},
                                                     new Plane()
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        private SceneContainer CreateNineSliceTestScene()
+        {
+            return new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>
+                {
+                    new SceneNodeContainer
+                    {
+                        Name = "Null_Transform",
+                        Children = new List<SceneNodeContainer>
+                        {
+                            new SceneNodeContainer
+                            {
+                                Name = "Canvas",
+                                Components = new List<SceneComponentContainer>
+                                {
+                                    new CanvasTransformComponent
+                                    {
+                                        Name = "Canvas_CanvasTransform",
+                                        CanvasRenderMode = CanvasRenderMode.WORLD,
+                                        Size = new MinMaxRect
+                                        {
+                                            Min = new float2(-5,-5),
+                                            Max = new float2(5,5)
+                                        }
+                                    }
+                                },
+                                Children = new List<SceneNodeContainer>
+                                {
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Canvas_XForm",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new XFormComponent
+                                            {
+                                                Name = "Canvas_XForm"
+                                            },
+                                            new ShaderEffectComponent
+                                            {
+                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                                                {
+                                                    Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
+                                                })
+                                            },
+                                            new Plane()
+                                        }
+                                    },
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Child",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new RectTransformComponent
+                                            {
+                                                Name = "Child_RectTransform",
+                                                Anchors = new MinMaxRect
+                                                {
+                                                    Min = new float2(0,0),
+                                                    Max = new float2(1,0)
+                                                },
+                                                Offsets = new MinMaxRect
+                                                {
+                                                    Min = new float2(1,0),
+                                                    Max = new float2(-1,8)
+                                                }
+
+                                             }
+                                        },
+                                        Children =  new List<SceneNodeContainer>
+                                        {
+                                            new SceneNodeContainer
+                                            {
+                                                Name = "Child_XForm",
+                                                Components = new List<SceneComponentContainer>
+                                                {
+                                                    new XFormComponent
+                                                    {
+                                                        Name = "Child_XForm"
+                                                    },
+                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
+                                                        {
+                                                            new EffectPassDeclaration
+                                                            {
+                                                                VS = GUIVS,
+                                                                PS = TEXTUREPS,
+                                                                StateSet = new RenderStateSet
+                                                                {
+                                                                    AlphaBlendEnable = true,
+                                                                    SourceBlend = Blend.SourceAlpha,
+                                                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                                                    BlendOperation = BlendOperation.Add,
+                                                                    ZEnable = false
+                                                                }
+                                                            }
+                                                        },
+                                                        new[]
+                                                        {
+                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
+                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                                                        })},
+                                                    new NineSlicePlane()
                                                 }
                                             }
                                         }
@@ -332,7 +453,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Load the rocket model
             //_scene = CreateAnchorTestScene();
-            _scene = CreateImageTestScene();
+            _scene = CreateNineSliceTestScene();
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
