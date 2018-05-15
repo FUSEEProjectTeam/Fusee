@@ -27,6 +27,50 @@ namespace Fusee.Engine.Examples.UI.Core
                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
             }";
 
+        protected readonly string NINESLICEVS = @"
+            
+            attribute vec3 fuVertex;
+            attribute vec3 fuNormal;
+            attribute vec2 fuUV;
+            varying vec2 vUV;
+            varying vec3 vMVNormal;
+            uniform mat4 FUSEE_MVP;
+            uniform mat4 FUSEE_ITMV;
+
+            uniform vec4 borders;
+        
+            void main() {
+               
+               vUV = fuUV;
+               vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+
+               //Translate vertices before MVP (unit nine sclice plane) relative to borders
+                float offsetL = (0.5* borders.x);
+                float offsetR = (0.5* borders.y);
+                float offsetT = (0.5* borders.z);
+                float offsetB = (0.5* borders.w);
+                
+                vec4 translateToTopLeft =       vec4(-offsetL,offsetT,0.0,0.0);
+                vec4 translateToTopRight =      vec4(offsetR,offsetT,0.0,0.0);
+                vec4 translateToBottomLeft =    vec4(-offsetL,-offsetB,0.0,0.0);
+                vec4 translateToBottomRight =   vec4(offsetR,-offsetB,0.0,0.0);
+                vec4 translateUp =              vec4(0.0,offsetT,0.0,0.0);
+                vec4 translateDown =            vec4(0.0,-offsetB,0.0,0.0);
+                vec4 translateLeft =            vec4(-offsetL,0.0,0.0,0.0); 
+                vec4 translateRight =           vec4(offsetR,0.0,0.0,0.0); 
+               
+                
+                if((abs(vUV.x - 0) < 0.00001) && (abs(vUV.y - 1/3) < 0.00001)){
+                    gl_Position = (FUSEE_MVP * vec4(fuVertex , 1.0))+ translateDown;
+                }
+                else{ 
+                    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+                }
+                
+
+                
+            }";
+
         protected readonly string TEXTUREPS = @"
             #version 100
 
@@ -406,15 +450,15 @@ namespace Fusee.Engine.Examples.UI.Core
                                                 Name = "Child_XForm",
                                                 Components = new List<SceneComponentContainer>
                                                 {
-                                                    new XFormComponent
+                                                    new NineSliceComponent(0.1f,0.1f,0.1f,0.1f) //TODO: Bridge from Component to Shader?
                                                     {
-                                                        Name = "Child_XForm"
+                                                        Name = "Child_XForm",
                                                     },
                                                     new ShaderEffectComponent{Effect = new ShaderEffect(new[]
                                                         {
                                                             new EffectPassDeclaration
                                                             {
-                                                                VS = GUIVS,
+                                                                VS = NINESLICEVS,
                                                                 PS = TEXTUREPS,
                                                                 StateSet = new RenderStateSet
                                                                 {
@@ -431,6 +475,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
                                                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from Component to Shader?
                                                         })},
                                                     new NineSlicePlane()
                                                 }

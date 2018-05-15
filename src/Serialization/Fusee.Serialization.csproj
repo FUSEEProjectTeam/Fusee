@@ -59,6 +59,7 @@
     <Compile Include="MeshChangedEnum.cs" />
     <Compile Include="MeshDataEventArgs.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="NineSliceComponent.cs" />
     <Compile Include="SceneComponentContainer.cs" />
     <Compile Include="SceneContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
