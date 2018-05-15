@@ -439,7 +439,7 @@ namespace Fusee.Engine.Core
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
                 _meshMap = new Dictionary<Mesh, Mesh>();
-                _defaultEffect = MakeMaterial(new MaterialComponent
+                var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
                     {

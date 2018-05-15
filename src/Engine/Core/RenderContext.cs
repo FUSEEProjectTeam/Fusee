@@ -1535,7 +1535,7 @@ namespace Fusee.Engine.Core
             }
             else if (param.Info.Type == typeof(ITexture))
             {
-                SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
+                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
         }
       
