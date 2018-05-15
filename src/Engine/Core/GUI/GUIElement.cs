@@ -365,6 +365,7 @@ namespace Fusee.Engine.Core.GUI
                 CreateTextShader(new Texture(FontMap.Image));
             }
 
+
             Refresh();
         }
 
