@@ -6,6 +6,7 @@ using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
+
 namespace Fusee.Engine.Core
 {
     internal struct MeshProbs
@@ -476,6 +477,8 @@ namespace Fusee.Engine.Core
                 _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
             }
 
+          
+
             if (_meshProbs.HasUVs)
                 _pixelShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
 
@@ -491,6 +494,9 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IV"));
+
+            if(_materialProbs.HasBump)
+                _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
 
             // Multipass
             _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, "firstPassTex"));
@@ -544,7 +550,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "ambientLighting",
-                new[] {GLSL.CreateVar(Type.Float, "ambientCoefficient")}, methodBody));
+                new[] { GLSL.CreateVar(Type.Float, "ambientCoefficient") }, methodBody));
         }
 
         private void AddDiffuseLightMethod()
@@ -611,7 +617,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Float, "CalcShadowFactor",
-                new[] {GLSL.CreateVar(Type.Vec4, "fragPosLightSpace")}, methodBody));
+                new[] { GLSL.CreateVar(Type.Vec4, "fragPosLightSpace") }, methodBody));
         }
 
 
@@ -620,9 +626,25 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
 
-            var applyLightParams = new List<string>
+            var bumpNormals = new List<string>
             {
-                "vec3 N = normalize(vMVNormal);",
+                "// First implementation ONLY working with object space normals. See",
+                "// http://gamedev.stackexchange.com/a/72806/44105",
+                "// http://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping",
+                "// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/",
+                "vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);",
+                "bv = vec3(bv.x, bv.y, -bv.z);",
+                "vec3 N =  normalize(bv);"
+            };
+
+            var normals = new List<string>
+            {
+                "vec3 N = normalize(vMVNormal);"
+            };
+
+            var applyLightParamsWithoutNormals = new List<string>
+            {
+                //"vec3 N = normalize(vMVNormal);",
                 "vec3 L = normalize(position - viewPos.xyz);",
                 "vec3 V = normalize(-viewPos.xyz);",
                 "if(lightType == 3) {",
@@ -638,6 +660,11 @@ namespace Fusee.Engine.Core
                 ""
             };
 
+            var applyLightParams = new List<string>();
+            applyLightParams.AddRange(_materialProbs.HasBump ? bumpNormals : normals);
+
+            applyLightParams.AddRange(applyLightParamsWithoutNormals);
+
 
             if (_materialProbs.HasDiffuse)
                 applyLightParams.Add("Idif = diffuseLighting(N, L, intensities);");
@@ -649,7 +676,7 @@ namespace Fusee.Engine.Core
             applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
 
 
-            var attenuation = new List<string>
+            var attenuation = new List<string>()
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
                 "float distance = pow(distanceToLight/attenuation,4.0);",
@@ -754,7 +781,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         private void AddPbrSpecularLightMethod(MaterialPBRComponent mc)
         {
-            var nfi = new NumberFormatInfo {NumberDecimalSeparator = "."};
+            var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             var delta = 0.0000001;
 
@@ -836,7 +863,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
-                new[] {""}, methodBody));
+                new[] { "" }, methodBody));
         }
 
 
@@ -871,109 +898,21 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region StaticUniformVariablesNames
+        #region Make ShaderEffect 
 
-        /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseColorName { get; } = "DiffuseColor";
-
-        /// <summary>
-        /// The var name for the uniform SpecularColor variable within the pixelshaders
-        /// </summary>
-        public static string SpecularColorName { get; } = "SpecularColor";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveColor variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveColorName { get; } = "EmissiveColor";
-
-
-        /// <summary>
-        /// The var name for the uniform DiffuseTexture variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseTextureName { get; } = "DiffuseTexture";
-
-        /// <summary>
-        /// The var name for the uniform SpecularTexture variable within the pixelshaders
-        /// </summary>
-        public static string SpecularTextureName { get; } = "SpecularTexture";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveTexture variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveTextureName { get; } = "EmissiveTexture";
-
-        /// <summary>
-        /// The var name for the uniform BumpTexture variable within the pixelshaders
-        /// </summary>
-        public static string BumpTextureName { get; } = "BumpTexture";
-
-        /// <summary>
-        /// The var name for the uniform DiffuseMix variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseMixName { get; } = "DiffuseMix";
-
-        /// <summary>
-        /// The var name for the uniform SpecularMix variable within the pixelshaders
-        /// </summary>
-        public static string SpecularMixName { get; } = "SpecularMix";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveMix variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveMixName { get; } = "EmissiveMix";
-
-        /// <summary>
-        /// The var name for the uniform SpecularShininess variable within the pixelshaders
-        /// </summary>
-        public static string SpecularShininessName { get; } = "SpecularShininess";
-
-        /// <summary>
-        /// The var name for the uniform SpecularIntensity variable within the pixelshaders
-        /// </summary>
-        public static string SpecularIntensityName { get; } = "SpecularIntensity";
-
-        /// <summary>
-        /// The var name for the uniform BumpIntensity variable within the pixelshaders
-        /// </summary>
-        public static string BumpIntensityName { get; } = "BumpIntensity";
-
-        /// <summary>
-        /// The var name for the uniform LightDirection variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightDirection is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightDirectionName { get; } = "LightDirection";
-
-        /// <summary>
-        /// The var name for the uniform LightColor variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightColor is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightColorName { get; } = "LightColor";
-
-        /// <summary>
-        /// The var name for the uniform LightIntensity variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightIntensity is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightIntensityName { get; } = "LightIntensity";
-
-        #endregion
-
-        #region Make ShaderEffect
-
-        /// <summary>
-        /// Creates a ShaderEffectComponent from a MaterialComponent
-        /// </summary>
-        /// <param name="mc">The MaterialComponent</param>
-        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
+        /// <summary> 
+        /// Creates a ShaderEffectComponent from a MaterialComponent 
+        /// </summary> 
+        /// <param name="mc">The MaterialComponent</param> 
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param> 
+        /// <returns></returns> 
+        /// <exception cref="Exception"></exception> 
         public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             ShaderCodeBuilder scb = null;
 
-            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight
-            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight 
+            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS 
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
                 if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
@@ -984,7 +923,7 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null);
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null); 
             }
 
             var effectParameters = AssembleEffectParamers(mc);
@@ -994,8 +933,8 @@ namespace Fusee.Engine.Core
                 {
                     new EffectPassDeclaration
                     {
-                        VS = scb.VS,
-                        //VS = VsBones,
+                        VS = scb.VS, 
+                        //VS = VsBones, 
                         PS = scb.PS,
                         StateSet = new RenderStateSet
                         {
@@ -1149,5 +1088,94 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
+
+        #region StaticUniformVariablesNames
+
+        /// <summary>
+        /// The var name for the uniform DiffuseColor variable within the pixelshaders
+        /// </summary>
+        public static string DiffuseColorName { get; } = "DiffuseColor";
+
+        /// <summary>
+        /// The var name for the uniform SpecularColor variable within the pixelshaders
+        /// </summary>
+        public static string SpecularColorName { get; } = "SpecularColor";
+
+        /// <summary>
+        /// The var name for the uniform EmissiveColor variable within the pixelshaders
+        /// </summary>
+        public static string EmissiveColorName { get; } = "EmissiveColor";
+
+
+        /// <summary>
+        /// The var name for the uniform DiffuseTexture variable within the pixelshaders
+        /// </summary>
+        public static string DiffuseTextureName { get; } = "DiffuseTexture";
+
+        /// <summary>
+        /// The var name for the uniform SpecularTexture variable within the pixelshaders
+        /// </summary>
+        public static string SpecularTextureName { get; } = "SpecularTexture";
+
+        /// <summary>
+        /// The var name for the uniform EmissiveTexture variable within the pixelshaders
+        /// </summary>
+        public static string EmissiveTextureName { get; } = "EmissiveTexture";
+
+        /// <summary>
+        /// The var name for the uniform BumpTexture variable within the pixelshaders
+        /// </summary>
+        public static string BumpTextureName { get; } = "BumpTexture";
+
+        /// <summary>
+        /// The var name for the uniform DiffuseMix variable within the pixelshaders
+        /// </summary>
+        public static string DiffuseMixName { get; } = "DiffuseMix";
+
+        /// <summary>
+        /// The var name for the uniform SpecularMix variable within the pixelshaders
+        /// </summary>
+        public static string SpecularMixName { get; } = "SpecularMix";
+
+        /// <summary>
+        /// The var name for the uniform EmissiveMix variable within the pixelshaders
+        /// </summary>
+        public static string EmissiveMixName { get; } = "EmissiveMix";
+
+        /// <summary>
+        /// The var name for the uniform SpecularShininess variable within the pixelshaders
+        /// </summary>
+        public static string SpecularShininessName { get; } = "SpecularShininess";
+
+        /// <summary>
+        /// The var name for the uniform SpecularIntensity variable within the pixelshaders
+        /// </summary>
+        public static string SpecularIntensityName { get; } = "SpecularIntensity";
+
+        /// <summary>
+        /// The var name for the uniform BumpIntensity variable within the pixelshaders
+        /// </summary>
+        public static string BumpIntensityName { get; } = "BumpIntensity";
+
+        /// <summary>
+        /// The var name for the uniform LightDirection variable within the pixelshaders
+        /// </summary>
+        [Obsolete("LightDirection is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
+        public static string LightDirectionName { get; } = "LightDirection";
+
+        /// <summary>
+        /// The var name for the uniform LightColor variable within the pixelshaders
+        /// </summary>
+        [Obsolete("LightColor is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
+        public static string LightColorName { get; } = "LightColor";
+
+        /// <summary>
+        /// The var name for the uniform LightIntensity variable within the pixelshaders
+        /// </summary>
+        [Obsolete("LightIntensity is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
+        public static string LightIntensityName { get; } = "LightIntensity";
+
+        #endregion
     }
 }
+
