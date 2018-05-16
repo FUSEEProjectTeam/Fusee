@@ -210,6 +210,7 @@ namespace Fusee.Engine.Core
 
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
+        private Dictionary<Mesh, Mesh> _meshMap;
         private Animation _animation;
         private readonly SceneContainer _sc;
 
@@ -437,7 +438,7 @@ namespace Fusee.Engine.Core
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
-
+                _meshMap = new Dictionary<Mesh, Mesh>();
                 var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
@@ -481,9 +482,9 @@ namespace Fusee.Engine.Core
             SceneNodeContainer boneContainer = CurrentNode;
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform))
-                _boneMap.Add(boneContainer, _rc.ModelView); // Changed from Model to ModelView
+                _boneMap.Add(boneContainer, _rc.Model); 
             else
-                _boneMap[boneContainer] = _rc.ModelView; // Changed from Model to ModelView
+                _boneMap[boneContainer] = _rc.Model;
         }
 
         [VisitMethod]
@@ -526,11 +527,11 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             Mesh rm = mesh;
-            //if (!_meshMap.TryGetValue(mesh, out rm))
-            //{
-            //    rm = MakeMesh(mesh);
-            //    _meshMap.Add(mesh, rm);
-            //}
+            if (!_meshMap.TryGetValue(mesh, out rm))
+            {
+                rm = MakeMesh(mesh);
+                _meshMap.Add(mesh, rm);
+            }
 
             RenderCurrentPass(rm, _state.Effect);
         }
