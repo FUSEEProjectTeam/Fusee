@@ -6,6 +6,7 @@ using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
+
 namespace Fusee.Engine.Core
 {
     internal struct MeshProbs
@@ -476,6 +477,8 @@ namespace Fusee.Engine.Core
                 _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
             }
 
+          
+
             if (_meshProbs.HasUVs)
                 _pixelShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
 
@@ -491,6 +494,9 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IV"));
+
+            if(_materialProbs.HasBump)
+                _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
 
             // Multipass
             _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, "firstPassTex"));
@@ -544,7 +550,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "ambientLighting",
-                new[] {GLSL.CreateVar(Type.Float, "ambientCoefficient")}, methodBody));
+                new[] { GLSL.CreateVar(Type.Float, "ambientCoefficient") }, methodBody));
         }
 
         private void AddDiffuseLightMethod()
@@ -611,7 +617,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Float, "CalcShadowFactor",
-                new[] {GLSL.CreateVar(Type.Vec4, "fragPosLightSpace")}, methodBody));
+                new[] { GLSL.CreateVar(Type.Vec4, "fragPosLightSpace") }, methodBody));
         }
 
 
@@ -620,9 +626,25 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
 
-            var applyLightParams = new List<string>
+            var bumpNormals = new List<string>
             {
-                "vec3 N = normalize(vMVNormal);",
+                "// First implementation ONLY working with object space normals. See",
+                "// http://gamedev.stackexchange.com/a/72806/44105",
+                "// http://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping",
+                "// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/",
+                "vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);",
+                "bv = vec3(bv.x, bv.y, -bv.z);",
+                "vec3 N =  normalize(bv);"
+            };
+
+            var normals = new List<string>
+            {
+                "vec3 N = normalize(vMVNormal);"
+            };
+
+            var applyLightParamsWithoutNormals = new List<string>
+            {
+                //"vec3 N = normalize(vMVNormal);",
                 "vec3 L = normalize(position - viewPos.xyz);",
                 "vec3 V = normalize(-viewPos.xyz);",
                 "if(lightType == 3) {",
@@ -638,6 +660,11 @@ namespace Fusee.Engine.Core
                 ""
             };
 
+            var applyLightParams = new List<string>();
+            applyLightParams.AddRange(_materialProbs.HasBump ? bumpNormals : normals);
+
+            applyLightParams.AddRange(applyLightParamsWithoutNormals);
+
 
             if (_materialProbs.HasDiffuse)
                 applyLightParams.Add("Idif = diffuseLighting(N, L, intensities);");
@@ -649,7 +676,7 @@ namespace Fusee.Engine.Core
             applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
 
 
-            var attenuation = new List<string>
+            var attenuation = new List<string>()
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
                 "float distance = pow(distanceToLight/attenuation,4.0);",
@@ -754,7 +781,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         private void AddPbrSpecularLightMethod(MaterialPBRComponent mc)
         {
-            var nfi = new NumberFormatInfo {NumberDecimalSeparator = "."};
+            var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             var delta = 0.0000001;
 
@@ -836,7 +863,7 @@ namespace Fusee.Engine.Core
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
-                new[] {""}, methodBody));
+                new[] { "" }, methodBody));
         }
 
 
@@ -867,6 +894,197 @@ namespace Fusee.Engine.Core
         private static string Version()
         {
             return "#version 100\n";
+        }
+
+        #endregion
+
+        #region Make ShaderEffect 
+
+        /// <summary> 
+        /// Creates a ShaderEffectComponent from a MaterialComponent 
+        /// </summary> 
+        /// <param name="mc">The MaterialComponent</param> 
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param> 
+        /// <returns></returns> 
+        /// <exception cref="Exception"></exception> 
+        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        {
+            ShaderCodeBuilder scb = null;
+
+            // If MaterialLightComponent is found call the LegacyShaderCodeBuilder with the MaterialLight 
+            // The LegacyShaderCodeBuilder is intelligent enough to handle all the necessary compilations needed for the VS & PS 
+            if (mc.GetType() == typeof(MaterialLightComponent))
+            {
+                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
+            }
+            else if (mc.GetType() == typeof(MaterialPBRComponent))
+            {
+                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
+            }
+            else
+            {
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null); 
+            }
+
+            var effectParameters = AssembleEffectParamers(mc);
+
+            if (scb == null) throw new Exception("Material could not be evaluated or be built!");
+            var ret = new ShaderEffect(new[]
+                {
+                    new EffectPassDeclaration
+                    {
+                        VS = scb.VS, 
+                        //VS = VsBones, 
+                        PS = scb.PS,
+                        StateSet = new RenderStateSet
+                        {
+                            ZEnable = true,
+                            AlphaBlendEnable = false
+                        }
+                    }
+                },
+                effectParameters
+            );
+            return ret;
+        }
+
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        {
+            var effectParameters = new List<EffectParameterDeclaration>();
+
+            if (mc.HasDiffuse)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = DiffuseColorName,
+                    Value = mc.Diffuse.Color
+                });
+                if (mc.Diffuse.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = DiffuseMixName,
+                        Value = mc.Diffuse.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = DiffuseTextureName,
+                        Value = LoadTexture(mc.Diffuse.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasSpecular)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularColorName,
+                    Value = mc.Specular.Color
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularShininessName,
+                    Value = mc.Specular.Shininess
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = SpecularIntensityName,
+                    Value = mc.Specular.Intensity
+                });
+                if (mc.Specular.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = SpecularMixName,
+                        Value = mc.Specular.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = SpecularTextureName,
+                        Value = LoadTexture(mc.Specular.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasEmissive)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = EmissiveColorName,
+                    Value = mc.Emissive.Color
+                });
+                if (mc.Emissive.Texture != null)
+                {
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = EmissiveMixName,
+                        Value = mc.Emissive.Mix
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = EmissiveTextureName,
+                        Value = LoadTexture(mc.Emissive.Texture)
+                    });
+                }
+            }
+
+            if (mc.HasBump)
+            {
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = BumpIntensityName,
+                    Value = mc.Bump.Intensity
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = BumpTextureName,
+                    Value = LoadTexture(mc.Bump.Texture)
+                });
+            }
+
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].position",
+                Value = new float3(0, 0, -1)
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].intensities",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].attenuation",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].ambientCoefficient",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneAngle",
+                Value = 0
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].coneDirection",
+                Value = float3.Zero
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].lightType",
+                Value = 1
+            });
+
+            return effectParameters;
+        }
+
+        private static Texture LoadTexture(string path)
+        {
+            var image = AssetStorage.Get<ImageData>(path);
+            return new Texture(image);
         }
 
         #endregion
@@ -960,4 +1178,4 @@ namespace Fusee.Engine.Core
         #endregion
     }
 }
-        
+
