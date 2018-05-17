@@ -1,4 +1,6 @@
-﻿using Fusee.Math.Core;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -13,29 +15,34 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="NineSlicePlane" /> class.
         /// The default NineSlicePlane is 1 unit big.
         /// </summary>
-        public NineSlicePlane()
+        public NineSlicePlane(float L, float R, float B, float T)
         {
             #region Fields
+
+            var offsetL = L;
+            var offsetR = R;
+            var offsetT = T;
+            var offsetB = B;
 
             Vertices = new[]
             {
                 new float3 {x = -0.5f, y = -0.5f, z = 0},
-                new float3 {x = -0.5f, y = -1/6f, z = 0},
-                new float3 {x = -0.5f, y = 1/6f, z = 0},
+                new float3 {x = -0.5f, y = -(0.5f-offsetB), z = 0},
+                new float3 {x = -0.5f, y = (0.5f-offsetT), z = 0},
                 new float3 {x = -0.5f, y = +0.5f, z = 0},
-                new float3 {x = -1/6f, y = 0.5f, z = 0},
-                new float3 {x = 1/6f, y = 0.5f, z = 0},
+                new float3 {x = -(0.5f-offsetL), y = 0.5f, z = 0},
+                new float3 {x = (0.5f-offsetR), y = 0.5f, z = 0},
                 new float3 {x = +0.5f, y = +0.5f, z = 0},
-                new float3 {x = 0.5f, y = 1/6f, z = 0},
-                new float3 {x = 0.5f, y = -1/6f, z = 0},
+                new float3 {x = 0.5f, y = (0.5f-offsetT), z = 0},
+                new float3 {x = 0.5f, y = -(0.5f-offsetB), z = 0},
                 new float3 {x = +0.5f, y = -0.5f, z = 0},
-                new float3 {x = 1/6f, y = -0.5f, z = 0},
-                new float3 {x = -1/6f, y = -0.5f, z = 0},
+                new float3 {x = (0.5f-offsetR), y = -0.5f, z = 0},
+                new float3 {x = -(0.5f-offsetL), y = -0.5f, z = 0},
 
-                new float3 {x = -1/6f, y = -1/6f, z = 0},
-                new float3 {x = -1/6f, y = 1/6f, z = 0},
-                new float3 {x = 1/6f, y = 1/6f, z = 0},
-                new float3 {x = 1/6f, y = -1/6f, z = 0},
+                new float3 {x = -(0.5f-offsetL), y = -(0.5f-offsetB), z = 0},
+                new float3 {x = -(0.5f-offsetL), y = (0.5f-offsetT), z = 0},
+                new float3 {x = (0.5f-offsetR), y = (0.5f-offsetT), z = 0},
+                new float3 {x = (0.5f-offsetR), y = -(0.5f-offsetB), z = 0},
             };
 
 
@@ -91,31 +98,7 @@ namespace Fusee.Engine.Core
                 new float3(0, 0, -1)
             };
 
-            UVs = new[]
-            {
-                new float2(0, 0),
-                new float2(0, 1/3f),
-                new float2(0, 2/3f),
-                new float2(0, 1),
-
-                new float2(1/3f, 1),
-                new float2(2/3f, 1),
-                new float2(1, 1),
-                new float2(1,2/3f),
-
-                new float2(1, 1/3f),
-                new float2(1, 0),
-                new float2(2/3f, 0),
-                new float2(1/3f, 0),
-
-                new float2(1/3f, 1/3f),
-                new float2(1/3f, 2/3f),
-                new float2(2/3f, 2/3f),
-                new float2(2/3f, 1/3f),
-
-
-
-            };
+            UVs = Vertices.Select(vert => new float2(vert.x, vert.y) + new float2(0.5f, 0.5f)).ToArray();
         }
         #endregion
     }

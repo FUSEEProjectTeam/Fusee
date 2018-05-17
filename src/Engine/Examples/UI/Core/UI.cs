@@ -27,52 +27,150 @@ namespace Fusee.Engine.Examples.UI.Core
                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
             }";
 
-        protected readonly string NINESLICEVS = @"
-            
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-            attribute vec2 fuUV;
-            varying vec2 vUV;
-            varying vec3 vMVNormal;
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
+        protected readonly string NINESLICEVS = @"#version 330            
 
-            uniform vec4 borders;
-        
-            void main() {
+attribute vec3 fuVertex;
+attribute vec3 fuNormal;
+attribute vec2 fuUV;
+
+varying vec2 vUV;
+varying vec3 vMVNormal;
+
+uniform mat4 FUSEE_MVP;
+uniform mat4 FUSEE_ITMV;
+uniform mat4 FUSEE_IMV;
+uniform mat4 FUSEE_M;
+uniform mat4 FUSEE_V;
+uniform mat4 FUSEE_P;
+uniform vec4 borders;
+
+bool isFloatEqual(float a, float b)
+{
+	return (a + 0.000001 >= b) && (a - 0.000001 <= b);
+}
+
+vec4 calculateTranslationVector(vec2 scale, float borderX, bool isXnegative, float borderY, bool isYnegative, vec3 coordinateSysVecX, vec3 coordinateSysVecY)
+{                
+	vec4 translateXVec = vec4(0.0,0.0,0.0,0.0);
+	vec4 translateYVec = vec4(0.0,0.0,0.0,0.0);
+	float translateX = 0.0;
+	float translateY = 0.0;
+                
+	if( borderX > 0.00001)
+	{
+		float isX = abs(fuVertex.x * (scale.x));
+		float translateToX = ((scale.x/2.0) - borderX) - isX; 
+		translateXVec = (isXnegative) ? vec4(coordinateSysVecX * -translateToX,0.0) : vec4(coordinateSysVecX * translateToX,0.0);                    
+	}
+                
+	if( borderY  > 0.00001 )
+	{
+		float isY = abs(fuVertex.y * (scale.y));
+		float translateToY = ((scale.y/2.0) - borderY) - isY;
+                    
+		translateYVec = (isYnegative) ? vec4(coordinateSysVecY * -translateToY,0.0) : vec4(coordinateSysVecY * translateToY,0.0);                    
+	} 
+	return (translateXVec + translateYVec);
+}
+
+vec4 calculateGlPosAccordingToUvs()
+{
+	vec2 scale =  vec2(length(FUSEE_M[0]),length(FUSEE_M[1]));
+
+	mat4 origPlaneCoord = mat4(1.0);
+	origPlaneCoord[2][2] = -1;
+
+    mat4 planeCoord =  FUSEE_M * origPlaneCoord;
+
+    vec3 xVec = normalize(planeCoord[0].xyz);
+    vec3 yVec = normalize(planeCoord[1].xyz);
                
-               vUV = fuUV;
-               vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+    float offsetL = borders.x;
+    float offsetR = borders.y;
+    float offsetT = borders.z;
+    float offsetB = borders.w;                
 
-               //Translate vertices before MVP (unit nine sclice plane) relative to borders
-                float offsetL = (0.5* borders.x);
-                float offsetR = (0.5* borders.y);
-                float offsetT = (0.5* borders.z);
-                float offsetB = (0.5* borders.w);
-                
-                vec4 translateToTopLeft =       vec4(-offsetL,offsetT,0.0,0.0);
-                vec4 translateToTopRight =      vec4(offsetR,offsetT,0.0,0.0);
-                vec4 translateToBottomLeft =    vec4(-offsetL,-offsetB,0.0,0.0);
-                vec4 translateToBottomRight =   vec4(offsetR,-offsetB,0.0,0.0);
-                vec4 translateUp =              vec4(0.0,offsetT,0.0,0.0);
-                vec4 translateDown =            vec4(0.0,-offsetB,0.0,0.0);
-                vec4 translateLeft =            vec4(-offsetL,0.0,0.0,0.0); 
-                vec4 translateRight =           vec4(offsetR,0.0,0.0,0.0); 
-               
-                
-                if((abs(vUV.x - 0) < 0.00001) && (abs(vUV.y - 1/3) < 0.00001)){
-                    gl_Position = (FUSEE_MVP * vec4(fuVertex , 1.0))+ translateDown;
-                }
-                else{ 
-                    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-                }
-                
+	//left bottom corner
+    if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, offsetB))	
+    {
+         vec4 translateVec = calculateTranslationVector(scale, offsetL, true, offsetB, true, xVec, yVec);
+         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
+    }
+	if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, 0.0))
+    {
+		vec4 translateVec = calculateTranslationVector(scale, offsetL, true, 0.0, true, xVec, yVec);
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	if(isFloatEqual(vUV.y, offsetB) && isFloatEqual(vUV.x, 0.0))
+    {
+        vec4 translateVec = calculateTranslationVector(scale, 0.0, true, offsetB, true, xVec, yVec);
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	//left top corner
+	if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, (1-offsetT)))
+    {
+         vec4 translateVec = calculateTranslationVector(scale, offsetL, true, offsetT, false, xVec, yVec);
+         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
+    }
+	if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, 1.0))
+    {
+		vec4 translateVec = calculateTranslationVector(scale, offsetL, true, 0.0, true, xVec, yVec); 
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	if(isFloatEqual(vUV.y, 1-offsetT) && isFloatEqual(vUV.x, 0.0))
+    {
+        vec4 translateVec = calculateTranslationVector(scale, 0.0, true, offsetT, false, xVec, yVec); 
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	//right bottom corner
+    if(isFloatEqual(vUV.x, 1-offsetR) && isFloatEqual(vUV.y, offsetB))	
+    {
+         vec4 translateVec = calculateTranslationVector(scale, offsetR, false, offsetB, true, xVec, yVec);
+         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
+    }
+	if(isFloatEqual(vUV.x, 1-offsetR) && isFloatEqual(vUV.y, 0.0))
+    {
+		vec4 translateVec = calculateTranslationVector(scale, offsetR, false, 0.0, true, xVec, yVec);
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	if(isFloatEqual(vUV.y, offsetB) && isFloatEqual(vUV.x, 1.0))
+    {
+        vec4 translateVec = calculateTranslationVector(scale, 0.0, true, offsetB, true, xVec, yVec);
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	//right top corner
+	if(isFloatEqual(vUV.x, 1-offsetR) && isFloatEqual(vUV.y, (1-offsetT)))
+    {
+         vec4 translateVec = calculateTranslationVector(scale, offsetR, false, offsetT, false, xVec, yVec);
+         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
+    }
+	if(isFloatEqual(vUV.x, 1-offsetR) && isFloatEqual(vUV.y, 1.0))
+    {
+		vec4 translateVec = calculateTranslationVector(scale, offsetR, false, 0.0, true, xVec, yVec); 
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	if(isFloatEqual(vUV.y, 1-offsetT) && isFloatEqual(vUV.x, 1.0))
+    {
+        vec4 translateVec = calculateTranslationVector(scale, 0.0, false, offsetT, false, xVec, yVec); 
+        return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
+    }
+	//corner vertices
+    if((isFloatEqual(vUV.x, 1.0) && isFloatEqual(vUV.y, 0.0)) || (isFloatEqual(vUV.x, 1.0) && isFloatEqual(vUV.y, 1.0)) || (isFloatEqual(vUV.x,0.0) && isFloatEqual(vUV.y, 1.0)) || (isFloatEqual(vUV.x, 0.0) && isFloatEqual(vUV.y, 0.0)))
+	{ 
+		return(FUSEE_P * FUSEE_V * FUSEE_M * vec4(fuVertex, 1.0));
+	}	
+}
+                    
+void main() 
+{
+	vUV = fuUV;	
 
-                
-            }";
+	vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+	gl_Position = calculateGlPosAccordingToUvs();
+}";//AssetStorage.Get<string>("nineSlice.vert");
 
         protected readonly string TEXTUREPS = @"
-            #version 100
+            #version 330
 
             #ifdef GL_ES
                 precision highp float;
@@ -89,7 +187,7 @@ namespace Fusee.Engine.Examples.UI.Core
             {
                 vec3 N = normalize(vMVNormal);
                 vec3 L = normalize(vec3(0.0,0.0,-1.0));
-                gl_FragColor = (texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
+                gl_FragColor = vec4(texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
             }";
 
         // angle variables
@@ -383,6 +481,15 @@ namespace Fusee.Engine.Examples.UI.Core
                     new SceneNodeContainer
                     {
                         Name = "Null_Transform",
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent()
+                            {
+                                Translation = new float3(0,0,0),
+                                Rotation = new float3(0,45,0),
+                                Scale = new float3(1,1,1)
+                            }
+                        },
                         Children = new List<SceneNodeContainer>
                         {
                             new SceneNodeContainer
@@ -396,8 +503,8 @@ namespace Fusee.Engine.Examples.UI.Core
                                         CanvasRenderMode = CanvasRenderMode.WORLD,
                                         Size = new MinMaxRect
                                         {
-                                            Min = new float2(-5,-5),
-                                            Max = new float2(5,5)
+                                            Min = new float2(-10,-5),
+                                            Max = new float2(10,5)
                                         }
                                     }
                                 },
@@ -424,12 +531,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                     },
                                     new SceneNodeContainer
                                     {
-                                        Name = "Child",
+                                        Name = "Child1",
                                         Components = new List<SceneComponentContainer>
                                         {
                                             new RectTransformComponent
                                             {
-                                                Name = "Child_RectTransform",
+                                                Name = "Child1_RectTransform",
                                                 Anchors = new MinMaxRect
                                                 {
                                                     Min = new float2(0,0),
@@ -437,8 +544,8 @@ namespace Fusee.Engine.Examples.UI.Core
                                                 },
                                                 Offsets = new MinMaxRect
                                                 {
-                                                    Min = new float2(1,0),
-                                                    Max = new float2(-1,8)
+                                                    Min = new float2(7.5f,0),
+                                                    Max = new float2(-7.5f,5)
                                                 }
 
                                              }
@@ -447,12 +554,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                         {
                                             new SceneNodeContainer
                                             {
-                                                Name = "Child_XForm",
+                                                Name = "Child1_XForm",
                                                 Components = new List<SceneComponentContainer>
                                                 {
-                                                    new NineSliceComponent(0.1f,0.1f,0.1f,0.1f) //TODO: Bridge from Component to Shader?
+                                                    new XFormComponent()
                                                     {
-                                                        Name = "Child_XForm",
+                                                        Name = "Child1_XForm",
                                                     },
                                                     new ShaderEffectComponent{Effect = new ShaderEffect(new[]
                                                         {
@@ -475,9 +582,69 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
                                                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from Component to Shader?
+                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from (Mesh or XForm) Component to Shader?
                                                         })},
-                                                    new NineSlicePlane()
+                                                    new NineSlicePlane(0.1f,0.1f,0.1f,0.1f)
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Child2",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new RectTransformComponent
+                                            {
+                                                Name = "Child2_RectTransform",
+                                                Anchors = new MinMaxRect
+                                                {
+                                                    Min = new float2(1,1),
+                                                    Max = new float2(1,1)
+                                                },
+                                                Offsets = new MinMaxRect
+                                                {
+                                                    Min = new float2(-8,-4),
+                                                    Max = new float2(0,0)
+                                                }
+
+                                             }
+                                        },
+                                        Children =  new List<SceneNodeContainer>
+                                        {
+                                            new SceneNodeContainer
+                                            {
+                                                Name = "Child2_XForm",
+                                                Components = new List<SceneComponentContainer>
+                                                {
+                                                    new XFormComponent()
+                                                    {
+                                                        Name = "Child2_XForm",
+                                                    },
+                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
+                                                        {
+                                                            new EffectPassDeclaration
+                                                            {
+                                                                VS = NINESLICEVS,
+                                                                PS = TEXTUREPS,
+                                                                StateSet = new RenderStateSet
+                                                                {
+                                                                    AlphaBlendEnable = true,
+                                                                    SourceBlend = Blend.SourceAlpha,
+                                                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                                                    BlendOperation = BlendOperation.Add,
+                                                                    ZEnable = false
+                                                                }
+                                                            }
+                                                        },
+                                                        new[]
+                                                        {
+                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png"))},
+                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from (Mesh or XForm) Component to Shader?
+                                                        })},
+                                                    new NineSlicePlane(0.1f,0.1f,0.1f,0.1f)
                                                 }
                                             }
                                         }
@@ -555,7 +722,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
 
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -30, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             //View Space

@@ -94,22 +94,24 @@ namespace Fusee.Engine.Player.Core
                 },
             };
             
+            var nsp = new NineSlicePlane(0.1f, 0.1f, 0.1f, 0.1f);
+
             // Load the standard model
             //_scene = AssetStorage.Get<SceneContainer>(ModelFile);
             _scene = new SceneContainer
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new List<SceneNodeContainer>
                 {
-                    new SceneNodeContainer()
+                    new SceneNodeContainer
                     {
                         Components = new List<SceneComponentContainer>
                         {
-                            new TransformComponent()
+                            new TransformComponent
                             {
                                 Scale = new float3(100,100,1)
                             },
-                            new ShaderEffectComponent(){Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mat)},
-                            new NineSlicePlane()
+                            new ShaderEffectComponent{Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mat)},
+                            nsp
                         }
                     }
                 }
