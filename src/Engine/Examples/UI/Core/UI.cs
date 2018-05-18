@@ -166,6 +166,7 @@ void main()
 	vUV = fuUV;	
 
 	vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
+	//gl_Position = FUSEE_P * FUSEE_V * FUSEE_M * vec4(fuVertex, 1.0);
 	gl_Position = calculateGlPosAccordingToUvs();
 }";//AssetStorage.Get<string>("nineSlice.vert");
 

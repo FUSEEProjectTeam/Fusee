@@ -88,6 +88,11 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Assets\nineSlice.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
   <!-- ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
       <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
