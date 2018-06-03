@@ -181,7 +181,7 @@ namespace Fusee.Base.Core
                 throw new ArgumentOutOfRangeException("Cannot get ScanLineEnumerator due to exceeding ImageData Height=" + Height + ". Choose ySrc+height to be smaller than Height of ImageData");
             }
 
-            for (int i = ySrc; i < height; i++)
+            for (int i = ySrc; i < ySrc + height; i++)
             {
                 // 1D offsetCoordinate that represents location in PixelData byte array (sizeof PixelData is Width*Height*BytesPerPixel)
                 int srcOffset = ((PixelFormat.BytesPerPixel * Width) * i) + xSrc * PixelFormat.BytesPerPixel; // go down vertical along i by width times BytesPerPixel and then add horizontal width offset times BytesPerPixel

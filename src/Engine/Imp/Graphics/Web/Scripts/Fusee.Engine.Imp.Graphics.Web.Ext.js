@@ -55,8 +55,16 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp", functi
     return function(newThisType) { $thisType = newThisType; };
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Texture", function ($)
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TextureHandle", function ($)
 {
+    // empty constructor
+    $.Method({ Static: false, Public: true }, ".ctor",
+        new JSIL.MethodSignature(null, [], []),
+        function () {
+           
+        }
+    );
+
     $.Field({ Static: false, Public: true }, "handle", $.Object, null);
     $.Field({ Static: false, Public: true }, "fboHandle", $.Object, null);
 
@@ -143,8 +151,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderParam", function ($)
 {
     $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, []),
-        function _ctor() {
+        new JSIL.MethodSignature(null, [],[]),
+        function() {
             // not implemented
         }
     );
@@ -169,7 +177,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this._canvas = document.getElementById("canvas");
 
             var premAlpha = jsilConfig.premultipliedAlpha;
-            this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha }) ||
+            this.gl = this._canvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
 						this._canvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
 
             this.currWidth = 0;
@@ -416,7 +424,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "SetRenderTarget",
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
         function SetRenderTarget(texture) {
             var textureImp = texture;
 
@@ -473,7 +481,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: false }, "CreateRenderTargetTextureFramebuffer",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), [$.Int32, $.Int32]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle"), [$.Int32, $.Int32]),
         function CreateRenderTargetTextureFramebuffer(width, height) {
             // configure 4x MSAA framebuffer
             var msaaLevel = 4;
@@ -547,7 +555,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
 
             // handle = the blitted texture that will be used as shaderparam sampler2D...
-            var resultTex = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Texture();
+            var resultTex = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.TextureHandle();
             resultTex.handle = texture;
             resultTex.renderToTextureBufferHandle = framebufferRenderBuffer;
             resultTex.intermediateToTextureBufferHandle = framebufferColorBuffer;
@@ -628,10 +636,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     // </IRenderContextImp Properties implementation>
 
     $.Method({ Static: false, Public: true }, "UpdateTextureFromVideoStream",
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture")]),
-        function UpdateTextureRegion(stream, tex) {
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
+        function UpdateTextureFromVideoStream(stream, tex) {
             if (tex == null) {
-                tex = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Texture();
+                tex = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.TextureHandle();
                 var glTexOb = this.gl.createTexture();
                 tex.handle = glTexOb;
                 this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
@@ -694,23 +702,36 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true }, "UpdateTextureRegion",
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), $WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.Int32, $.Int32, $.Int32, $.Int32]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), $.Int32, $.Int32, $.Int32, $.Int32]),
         function UpdateTextureRegion(tex, img, startX, startY, width, height) {
-            var ubyteView = new Uint8Array(img.PixelData);
+            //var ubyteView = new Uint8Array(img.PixelData);
             var format;
-            switch (img.PixelFormat) {
-                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA:
+            switch (img.PixelFormat.ColorFormat) {
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA:
                     format = this.gl.RGBA;
                     break;
-                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGB:
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGB:
                     format = this.gl.RGB;
                     break;
             }
 
+            // copy the bytes from img to GPU texture
+            var bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
+            var scanlines = img.ScanLines(startX, startY, width, height);
+            var bytes = new Uint8Array(bytesTotal);
+            var offset = 0;
+            do {
+                if (scanlines.System_Collections_IEnumerator_Current != null) {
+                    var lineBytes = new Uint8Array(scanlines.System_Collections_IEnumerator_Current.GetScanLineBytes());
+                    bytes.set(lineBytes, offset);
+                    offset += lineBytes.length;
+                }
+            } while (scanlines.MoveNext());
+
             this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
             this.gl.texSubImage2D(this.gl.TEXTURE_2D, 0, startX, startY, width, height, format,
-                this.gl.UNSIGNED_BYTE, ubyteView);
-            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
+                this.gl.UNSIGNED_BYTE, bytes);
+            //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
 
         }
 
@@ -776,7 +797,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true }, "LoadImage",
-        new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$jsilcore.TypeRef("System.IO.Stream")]),
+        new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), [$jsilcore.TypeRef("System.IO.Stream")]),
         function LoadImage(stream) {
             // var image = JSIL.Host.getImage(filename);
             var mimeType = this.GetImageType(stream);
@@ -804,19 +825,19 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             context.drawImage(image, 0, 0);
 
             var myData = context.getImageData(0, 0, image.width, image.height);
-            var imageData = new $fuseeCommon.Fusee.Base.Common.ImageData();
-            imageData.Width = image.width;
-            imageData.Height = image.height;
-            imageData.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
-            imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
-            imageData.PixelData = myData.data;
+            var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat($WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA) );
+            //imageData.Width = image.width;
+            //imageData.Height = image.height;
+            //imageData.PixelFormat.ColorFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
+            //imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
+            //imageData.PixelData = myData.data;
             isloaded = true;
             return imageData;
         }
     );
 
     $.Method({ Static: false, Public: true }, "TextOnImage",
-        new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.String, $.Int32, $.String, $.String, $.Int32, $.Int32]),
+        new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), [$WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), $.String, $.Int32, $.String, $.String, $.Int32, $.Int32]),
         function TextOnImage(imgData, fontname, fontsize, text, textcolor, startposx, startposy) {
 
             var canvas = document.createElement("canvas");
@@ -845,19 +866,19 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
 
     $.Method({ Static: false, Public: true }, "CreateTexture",
-        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), [$WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), $.Boolean]),
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle"), [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), $.Boolean]),
         function CreateTexture(img, repeat) {
             var ubyteView = new Uint8Array(img.PixelData);
             var format;
-            switch (img.PixelFormat) {
-                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA:
+            switch (img.PixelFormat.ColorFormat) {
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA:
                     format = this.gl.RGBA;
                     break;
-                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGB:
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGB:
                     format = this.gl.RGB;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.Intensity:
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.Intensity:
                     format = this.gl.ALPHA;
                     break;
                 default:
@@ -880,7 +901,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
 
-            var texRet = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Texture();
+            var texRet = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.TextureHandle();
             texRet.handle = glTexOb;
 
             return texRet;
@@ -963,7 +984,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 
-            texAtlas.TexAtlas = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Texture();
+            texAtlas.TexAtlas = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.TextureHandle();
             texAtlas.TexAtlas.handle = tex;
 
             // paste the glyph images into the texture atlas
@@ -1359,7 +1380,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
     $.Method({ Static: false, Public: true }, "GetBufferContent",
 
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.Rectangle"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.Rectangle"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
         function GetBufferContent(rect, texId) {
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
 
@@ -1451,7 +1472,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     );
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
 
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
         function SetShaderParamTexture(param, texId) {
             var iParam = param.handle;
             var texUnit = -1;
@@ -2221,7 +2242,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp", true, [], function ($interfaceBuilder) {
     $ = $interfaceBuilder;
 
-    $.Field({ Static: false, Public: true }, "_nextFrame", $WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), null);
+    $.Field({ Static: false, Public: true }, "_nextFrame", $WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), null);
     $.Field({ Static: false, Public: true }, "_videoElement", $.Object, null);
     $.Field({ Static: false, Public: true }, "_filename", $.String, null);
     $.Field({ Static: false, Public: true }, "_isPlaying", $.Boolean, null);
@@ -2237,8 +2258,8 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
            this._loopVideo = loopVideo;
            this._useAudio = useAudio;
            this._canvas = document.createElement("canvas");
-
-           this._nextFrame = new $fuseeCommon.Fusee.Base.Common.ImageData();
+           // (dd) 01.06.2018: obsolete initialization
+           //this._nextFrame = new $WebBaseCore.Fusee.Base.Core.ImageData();
 
 
        }
@@ -2270,7 +2291,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
                var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);
                this._nextFrame.Width = this._videoElement.videoWidth;
                this._nextFrame.Height = this._videoElement.videoHeight;
-               this._nextFrame.PixelFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
+               this._nextFrame.PixelFormat.ColorFormat = $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA;
                this._nextFrame.Stride = this._videoElement.width * 4; //TODO: Adjust pixel-size
                this._nextFrame.PixelData = myData.data;
 
@@ -2279,7 +2300,7 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
        );
 
     $.Method({ Static: false, Public: true }, "GetCurrentFrame",
-     new JSIL.MethodSignature($WebBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), []),
+        new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), []),
      function VideoStreamImp_GetCurrentFrame() {
          if (this._videoElement == null) {
              this._canvas = document.createElement('canvas');

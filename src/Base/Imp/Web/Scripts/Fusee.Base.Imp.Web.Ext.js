@@ -1,4 +1,5 @@
 var $fuseeBaseCommon = JSIL.GetAssembly("Fusee.Base.Common");
+var $WebBaseCore = JSIL.GetAssembly("Fusee.Base.Core");
 var $fuseeMathCore = JSIL.GetAssembly("Fusee.Math.Core");
 
 JSIL.DeclareNamespace("Fusee");
@@ -38,16 +39,9 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
 
     // public static ImageData LoadImage(object assetOb)
     $.Method({ Static: true, Public: true }, "WrapImage",
-        new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [$.Object]),
+        new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), [$.Object]),
         function WrapImage(assetOb) {
             var image = assetOb.image;
-
-            // Create and initialize return object (FUSEE ImageData)
-            var imageData = new $fuseeBaseCommon.Fusee.Base.Common.ImageData();
-            imageData.Width = image.width;
-            imageData.Height = image.height;
-            imageData.PixelFormat = $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
-            imageData.Stride = image.width * 4; //TODO: Adjust pixel-size
 
             // Akquire and copy pixel data
             var canvas = document.createElement("canvas");
@@ -59,8 +53,8 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
             context.translate(-canvas.width / 2, -canvas.height / 2);
             context.drawImage(image, 0, 0);
             var myData = context.getImageData(0, 0, image.width, image.height);
-            imageData.PixelData = myData.data;
-
+            // Create and initialize return object (FUSEE ImageData)
+            var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat($fuseeBaseCommon.Fusee.Base.Common.ColorFormat.RGBA));
             return imageData;
         }
     );
@@ -205,7 +199,7 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
 
     //public ImageData RenderGlyph(uint c, out int bitmapLeft, out int bitmapTop)
     $.Method({ Static: false, Public: true }, "RenderGlyph",
-      new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.ImageData"), [
+      new JSIL.MethodSignature($fuseeBaseCommon.TypeRef("Fusee.Base.Common.IImageData"), [
               $.UInt32, $jsilcore.TypeRef("JSIL.Reference", [$.Int32]),
               $jsilcore.TypeRef("JSIL.Reference", [$.Int32])
       ]),
@@ -222,7 +216,7 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
               var bmpWidth = xMax - xMin;
               var bmpRows = yMax - yMin;
 
-              var retImage = new $fuseeBaseCommon.Fusee.Base.Common.ImageData();
+              var retImage; // = new $WebBaseCore.Fusee.Base.Core.ImageData();
               var bmpLeft = +0;
               var bmpTop = +0;
               if (bmpWidth > 0 && bmpRows > 0) {
@@ -240,12 +234,12 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.FontImp",
                   for (var pix = 3; pix < canvas.width * canvas.height * 4; pix += 4) {
                       alpha[alphaChan++] = bitmap.data[pix];
                   }
-                  retImage.Width = bmpWidth;
-                  retImage.Height = bmpRows;
-                  retImage.PixelFormat = $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat.Intensity;
-                  retImage.Stride = bmpWidth;
-                  retImage.PixelData = alpha;
-
+                  //retImage.Width = bmpWidth;
+                  //retImage.Height = bmpRows;
+                  //retImage.PixelFormat = $fuseeBaseCommon.Fusee.Base.Common.ColorFormat.Intensity;
+                  //retImage.Stride = bmpWidth;
+                  //retImage.PixelData = alpha;
+                  retImage = new $WebBaseCore.Fusee.Base.Core.ImageData(alpha, bmpWidth, bmpRows, new $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat($fuseeBaseCommon.Fusee.Base.Common.ColorFormat.Intensity));
                   bmpLeft = glyph.xMin * fontScale;
                   bmpTop = glyph.yMax * fontScale;
               }

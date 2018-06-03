@@ -88,7 +88,7 @@ namespace Fusee.Engine.Core.GUI
         ///     The z-index: lower values means further away. If two elements have the same z-index
         ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
         /// </remarks>
-        public GUIImage(ImageData image, int x, int y, int z, int width, int height)
+        public GUIImage(IImageData image, int x, int y, int z, int width, int height)
             : base(String.Empty, null, x, y, z, width, height)
         {
             // settings
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core.GUI
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIImage(ImageData image, int x, int y, int width, int height)
+        public GUIImage(IImageData image, int x, int y, int width, int height)
             : base(String.Empty, null, x, y, 0, width, height)
         {
             // settings

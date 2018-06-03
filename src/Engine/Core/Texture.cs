@@ -58,15 +58,28 @@ namespace Fusee.Engine.Core
             _imageData = new ImageData(pixelData, width, height, colorFormat);
         }
 
-        public Texture(ImageData imageData)
+        public Texture(IImageData imageData)
         {
-            _imageData = imageData;
+            _imageData = new ImageData(
+                new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
+                imageData.Width, imageData.Height, imageData.PixelFormat);
+            _imageData.Blt(0,0, imageData);
         }
 
         public void Blt(int xDst, int yDst, IImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             // Blit into private _imageData
-            _imageData.Blt(xDst,yDst, src, xSrc, ySrc, width, height);
+            _imageData.Blt(xDst, yDst, src, xSrc, ySrc, width, height);
+            if (width == 0)
+                width = src.Width;
+            if (height == 0)
+                height = src.Height;
+
+            ClipBlt(ref xDst, Width, ref xSrc, src.Width, ref width);
+            ClipBlt(ref yDst, Height, ref ySrc, src.Height, ref height);
+
+            if (width <= 0 || height <= 0)
+                return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
             var del = this.TextureChanged;
@@ -99,6 +112,45 @@ namespace Fusee.Engine.Core
         ~Texture()
         {
             Dispose();
+        }
+
+        /// <summary>
+        /// Performs clipping along one dimension of a blt operation.
+        /// </summary>
+        /// <param name="iDst">The destination coordinate.</param>
+        /// <param name="sizeDst">The size of the destination buffer.</param>
+        /// <param name="iSrc">The source coordinate.</param>
+        /// <param name="sizeSrc">The size of the source coordinate.</param>
+        /// <param name="sizeBlk">The size of the block to copy.</param>
+        /// <remarks>
+        ///    All parameters decorated with "ref" might be altered to avoid out-of-bounds indices.
+        ///    If the resulting number of items to copy is 0, only sizeBlk will be set to 0. No other
+        ///    ref-parameter will be altered then.
+        /// </remarks>
+        private static void ClipBlt(ref int iDst, int sizeDst, ref int iSrc, int sizeSrc, ref int sizeBlk)
+        {
+            // Adjust left border
+            // The negative number with the biggest magnitude of negative start indices (or 0, if both are 0 or bigger).
+            // int iDeltaL = M.Min(0, M.Min(iDst, iSrc));
+            int iDeltaL = (iDst < iSrc) ? iDst : iSrc;
+            if (iDeltaL > 0)
+                iDeltaL = 0;
+
+            // Adjust right border
+            // The biggest overlap over the right border (or 0 if no overlap).
+            // int iDeltaR = M.Max(0, M.Max(iDst + sizeBlk - sizeDst, iSrc + sizeBlk - sizeSrc));
+            int dstRB = iDst + sizeBlk - sizeDst;
+            int srcRB = iSrc + sizeBlk - sizeSrc;
+            int iDeltaR = (dstRB > srcRB) ? dstRB : srcRB;
+            if (iDeltaR < 0)
+                iDeltaR = 0;
+
+            iDst -= iDeltaL;
+            iSrc -= iDeltaL;
+            sizeBlk += iDeltaL;
+            sizeBlk -= iDeltaR;
+            if (sizeBlk < 0)
+                sizeBlk = 0;
         }
 
     }

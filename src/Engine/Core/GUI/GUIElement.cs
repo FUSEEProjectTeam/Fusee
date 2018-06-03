@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core.GUI
         // protected IFont Font;
         protected FontMap FontMap;
 
-        protected ImageData ImgSrc;
+        protected IImageData ImgSrc;
         protected Texture GUITexture;
 
         // shader

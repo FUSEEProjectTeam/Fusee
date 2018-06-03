@@ -95,18 +95,34 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 case ColorFormat.RGB:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    format = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
 
+            // copy the bytes from img to GPU texture
+            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
+            var scanlines = img.ScanLines(startX, startY, width, height);
+            byte[] bytes = new byte[bytesTotal];
+            int offset = 0;
+            do
+            {
+                if (scanlines.Current != null)
+                {
+                    var lineBytes = scanlines.Current.GetScanLineBytes();
+                    Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
+                    offset += lineBytes.Length;
+                }
+                    
+            } while(scanlines.MoveNext());
+
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, img.PixelData);
+                format, PixelType.UnsignedByte, bytes);
         }
 
 
