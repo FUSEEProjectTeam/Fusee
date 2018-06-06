@@ -43,6 +43,7 @@ uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_P;
 uniform vec4 borders;
+uniform float borderThickness;
 
 bool isFloatEqual(float a, float b)
 {
@@ -59,16 +60,16 @@ vec4 calculateTranslationVector(vec2 scale, float borderX, bool isXnegative, flo
 	if( borderX > 0.00001)
 	{
 		float isX = abs(fuVertex.x * (scale.x));
-		float translateToX = ((scale.x/2.0) - borderX) - isX; 
-		translateXVec = (isXnegative) ? vec4(coordinateSysVecX * -translateToX,0.0) : vec4(coordinateSysVecX * translateToX,0.0);                    
+		float translateToX = (((scale.x/2.0) - (borderThickness * borderX)) - isX);
+		translateXVec = (isXnegative) ? vec4(normalize(coordinateSysVecX) * -translateToX,0.0) : vec4(coordinateSysVecX * translateToX,0.0);                    
 	}
                 
 	if( borderY  > 0.00001 )
 	{
 		float isY = abs(fuVertex.y * (scale.y));
-		float translateToY = ((scale.y/2.0) - borderY) - isY;
+		float translateToY = (((scale.y/2.0) - (borderThickness * borderY)) - isY);
                     
-		translateYVec = (isYnegative) ? vec4(coordinateSysVecY * -translateToY,0.0) : vec4(coordinateSysVecY * translateToY,0.0);                    
+		translateYVec = (isYnegative) ? vec4(normalize(coordinateSysVecY) * -translateToY,0.0) : vec4(coordinateSysVecY * translateToY,0.0);                    
 	} 
 	return (translateXVec + translateYVec);
 }
@@ -93,16 +94,22 @@ vec4 calculateGlPosAccordingToUvs()
 	//left bottom corner
     if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, offsetB))	
     {
-         vec4 translateVec = calculateTranslationVector(scale, offsetL, true, offsetB, true, xVec, yVec);
+         gl_Position =FUSEE_P * FUSEE_V * FUSEE_M * vec4(-(0.5f-offsetL), -(0.5f-offsetB), 0.0, 1.0);
+
+		 vec4 translateVec = calculateTranslationVector(scale, offsetL, true, offsetB, true, xVec, yVec);
          return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));
     }
 	if(isFloatEqual(vUV.x, offsetL) && isFloatEqual(vUV.y, 0.0))
     {
+		gl_Position = FUSEE_P * FUSEE_V * FUSEE_M *vec4(-(0.5f-offsetL), -0.5f-offsetB, 0.0, 1.0);
+
 		vec4 translateVec = calculateTranslationVector(scale, offsetL, true, 0.0, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
 	if(isFloatEqual(vUV.y, offsetB) && isFloatEqual(vUV.x, 0.0))
     {
+		gl_Position = FUSEE_P * FUSEE_V * FUSEE_M *vec4(-0.5f, -0.5f-offsetB, 0.0, 1.0);
+
         vec4 translateVec = calculateTranslationVector(scale, 0.0, true, offsetB, true, xVec, yVec);
         return(FUSEE_P * FUSEE_V * ((FUSEE_M *  vec4(fuVertex, 1.0)) + translateVec));                    
     }
@@ -584,6 +591,7 @@ void main()
                                                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from (Mesh or XForm) Component to Shader?
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 5f}
                                                         })},
                                                     new NineSlicePlane(0.1f,0.1f,0.1f,0.1f)
                                                 }
@@ -644,6 +652,7 @@ void main()
                                                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},//TODO: Bridge from (Mesh or XForm) Component to Shader?
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 1f}
                                                         })},
                                                     new NineSlicePlane(0.1f,0.1f,0.1f,0.1f)
                                                 }

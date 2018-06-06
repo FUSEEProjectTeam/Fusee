@@ -45,6 +45,27 @@ namespace Fusee.Engine.Core
                 new float3 {x = (0.5f-offsetR), y = -(0.5f-offsetB), z = 0},
             };
 
+            //Vertices = new[]
+            //{
+            //    new float3 {x = -0.5f, y = -0.5f, z = 0},
+            //    new float3 {x = -0.5f, y = -1/6f, z = 0},
+            //    new float3 {x = -0.5f, y = 1/6f, z = 0},
+            //    new float3 {x = -0.5f, y = +0.5f, z = 0},
+            //    new float3 {x = -1/6f, y = 0.5f, z = 0},
+            //    new float3 {x = 1/6f, y = 0.5f, z = 0},
+            //    new float3 {x = +0.5f, y = +0.5f, z = 0},
+            //    new float3 {x = 0.5f, y = 1/6f, z = 0},
+            //    new float3 {x = 0.5f, y = -1/6f, z = 0},
+            //    new float3 {x = +0.5f, y = -0.5f, z = 0},
+            //    new float3 {x = 1/6f, y = -0.5f, z = 0},
+            //    new float3 {x = -1/6f, y = -0.5f, z = 0},
+
+            //    new float3 {x = -1/6f, y = -1/6f, z = 0},
+            //    new float3 {x = -1/6f, y = 1/6f, z = 0},
+            //    new float3 {x = 1/6f, y = 1/6f, z = 0},
+            //    new float3 {x = 1/6f, y = -1/6f, z = 0},
+            //};
+
 
             Triangles = new ushort[]
             {

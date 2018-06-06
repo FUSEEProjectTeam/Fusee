@@ -14,6 +14,7 @@ uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_P;
 uniform vec4 borders;
+uniform float borderThickness;
 
 bool isFloatEqual(float a, float b)
 {
@@ -30,16 +31,16 @@ vec4 calculateTranslationVector(vec2 scale, float borderX, bool isXnegative, flo
 	if( borderX > 0.00001)
 	{
 		float isX = abs(fuVertex.x * (scale.x));
-		float translateToX = ((scale.x/2.0) - borderX) - isX; 
-		translateXVec = (isXnegative) ? vec4(coordinateSysVecX * -translateToX,0.0) : vec4(coordinateSysVecX * translateToX,0.0);                    
+		float translateToX = (((scale.x/2.0) - (borderThickness * borderX)) - isX);
+		translateXVec = (isXnegative) ? vec4(normalize(coordinateSysVecX) * -translateToX,0.0) : vec4(coordinateSysVecX * translateToX,0.0);                    
 	}
                 
 	if( borderY  > 0.00001 )
 	{
 		float isY = abs(fuVertex.y * (scale.y));
-		float translateToY = ((scale.y/2.0) - borderY) - isY;
+		float translateToY = (((scale.y/2.0) - (borderThickness * borderY)) - isY);
                     
-		translateYVec = (isYnegative) ? vec4(coordinateSysVecY * -translateToY,0.0) : vec4(coordinateSysVecY * translateToY,0.0);                    
+		translateYVec = (isYnegative) ? vec4(normalize(coordinateSysVecY) * -translateToY,0.0) : vec4(coordinateSysVecY * translateToY,0.0);                    
 	} 
 	return (translateXVec + translateYVec);
 }
