@@ -94,7 +94,7 @@ namespace Fusee.Engine.Player.Core
                 },
             };
             
-            var nsp = new NineSlicePlane(0.1f, 0.1f, 0.1f, 0.1f);
+            var nsp = new NineSlicePlane();
 
             // Load the standard model
             //_scene = AssetStorage.Get<SceneContainer>(ModelFile);

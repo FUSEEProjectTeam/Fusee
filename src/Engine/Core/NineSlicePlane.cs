@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -15,56 +14,30 @@ namespace Fusee.Engine.Core
         /// Initializes a new instance of the <see cref="NineSlicePlane" /> class.
         /// The default NineSlicePlane is 1 unit big.
         /// </summary>
-        public NineSlicePlane(float L, float R, float B, float T)
+        public NineSlicePlane()
         {
             #region Fields
-
-            var offsetL = L;
-            var offsetR = R;
-            var offsetT = T;
-            var offsetB = B;
 
             Vertices = new[]
             {
                 new float3 {x = -0.5f, y = -0.5f, z = 0},
-                new float3 {x = -0.5f, y = -(0.5f-offsetB), z = 0},
-                new float3 {x = -0.5f, y = (0.5f-offsetT), z = 0},
+                new float3 {x = -0.5f, y = -1/6f, z = 0},
+                new float3 {x = -0.5f, y = 1/6f, z = 0},
                 new float3 {x = -0.5f, y = +0.5f, z = 0},
-                new float3 {x = -(0.5f-offsetL), y = 0.5f, z = 0},
-                new float3 {x = (0.5f-offsetR), y = 0.5f, z = 0},
+                new float3 {x = -1/6f, y = 0.5f, z = 0},
+                new float3 {x = 1/6f, y = 0.5f, z = 0},
                 new float3 {x = +0.5f, y = +0.5f, z = 0},
-                new float3 {x = 0.5f, y = (0.5f-offsetT), z = 0},
-                new float3 {x = 0.5f, y = -(0.5f-offsetB), z = 0},
+                new float3 {x = 0.5f, y = 1/6f, z = 0},
+                new float3 {x = 0.5f, y = -1/6f, z = 0},
                 new float3 {x = +0.5f, y = -0.5f, z = 0},
-                new float3 {x = (0.5f-offsetR), y = -0.5f, z = 0},
-                new float3 {x = -(0.5f-offsetL), y = -0.5f, z = 0},
+                new float3 {x = 1/6f, y = -0.5f, z = 0},
+                new float3 {x = -1/6f, y = -0.5f, z = 0},
 
-                new float3 {x = -(0.5f-offsetL), y = -(0.5f-offsetB), z = 0},
-                new float3 {x = -(0.5f-offsetL), y = (0.5f-offsetT), z = 0},
-                new float3 {x = (0.5f-offsetR), y = (0.5f-offsetT), z = 0},
-                new float3 {x = (0.5f-offsetR), y = -(0.5f-offsetB), z = 0},
+                new float3 {x = -1/6f, y = -1/6f, z = 0},
+                new float3 {x = -1/6f, y = 1/6f, z = 0},
+                new float3 {x = 1/6f, y = 1/6f, z = 0},
+                new float3 {x = 1/6f, y = -1/6f, z = 0},
             };
-
-            //Vertices = new[]
-            //{
-            //    new float3 {x = -0.5f, y = -0.5f, z = 0},
-            //    new float3 {x = -0.5f, y = -1/6f, z = 0},
-            //    new float3 {x = -0.5f, y = 1/6f, z = 0},
-            //    new float3 {x = -0.5f, y = +0.5f, z = 0},
-            //    new float3 {x = -1/6f, y = 0.5f, z = 0},
-            //    new float3 {x = 1/6f, y = 0.5f, z = 0},
-            //    new float3 {x = +0.5f, y = +0.5f, z = 0},
-            //    new float3 {x = 0.5f, y = 1/6f, z = 0},
-            //    new float3 {x = 0.5f, y = -1/6f, z = 0},
-            //    new float3 {x = +0.5f, y = -0.5f, z = 0},
-            //    new float3 {x = 1/6f, y = -0.5f, z = 0},
-            //    new float3 {x = -1/6f, y = -0.5f, z = 0},
-
-            //    new float3 {x = -1/6f, y = -1/6f, z = 0},
-            //    new float3 {x = -1/6f, y = 1/6f, z = 0},
-            //    new float3 {x = 1/6f, y = 1/6f, z = 0},
-            //    new float3 {x = 1/6f, y = -1/6f, z = 0},
-            //};
 
 
             Triangles = new ushort[]
