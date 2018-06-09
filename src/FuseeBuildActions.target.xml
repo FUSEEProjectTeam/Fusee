@@ -29,19 +29,20 @@
 	<!-- "Recursively" override BuildDependsOn including a couple of tasks before/after the "normal" VS/C# build   -->
 	  <PropertyGroup>
 		<BuildDependsOn>
-		  FuseeBeforeBuild;
-		  FuseeReferenceCompileShaders;
-		  $(BuildDependsOn);
-		  FuseeJSILCompile;
-		  FuseeCopyJSILJavaScript;
-		  FuseeCopyExternalJavaScript;
-		  FuseeCopyFrameworkJavaScript;
-		  FuseeResolveJavaScriptDependencies;
-		  FuseeCopyWebAssetsStylesNHtml;
-		  FuseeWebTools;
-		  FuseeCopyNativeLibrary;
-		  FuseeResolveNativeDependencies
-		</BuildDependsOn>
+      FuseeBeforeBuild;
+      FuseeReferenceCompileVertexShaders;
+      FuseeReferenceCompilePixelShaders;
+      $(BuildDependsOn);
+      FuseeJSILCompile;
+      FuseeCopyJSILJavaScript;
+      FuseeCopyExternalJavaScript;
+      FuseeCopyFrameworkJavaScript;
+      FuseeResolveJavaScriptDependencies;
+      FuseeCopyWebAssetsStylesNHtml;
+      FuseeWebTools;
+      FuseeCopyNativeLibrary;
+      FuseeResolveNativeDependencies
+    </BuildDependsOn>
 	  </PropertyGroup>
 
 	<!-- ########################################################################################################
@@ -128,9 +129,9 @@
         number passed to the file name string erroneously. As a result, the error is not Double-Clickable
         in Visual Studio's Error List but only in the text-based Output window.
     -->
-  <Target Name="FuseeReferenceCompileShaders"
+  <Target Name="FuseeReferenceCompileVertexShaders"
 			DependsOnTargets="FuseeEnumerateShaderSources"
-			Inputs="@(FuseeVertexShaderSource);@(FuseePixelShaderSource)"
+			Inputs="@(FuseeVertexShaderSource)"
 			Outputs="$(TargetPath)"
 	  >
 		  <Message Importance="High" Text="[vertex shader validation] %(FuseeVertexShaderSource.FullPath)" />
@@ -152,8 +153,14 @@
       <!-- Message Importance="High" Text="$(ErrFile)($(ErrLine),$(ErrCol)):$(ErrMsg)   - Code: $(ErrCode) [vertex shader result] " / -->
       <!-- Oh my god - The Error Task doesn't allow to set line numbers -->
       <Error Condition=" '$(ErrCode)' != '0' " File="$(ErrFile)($(ErrLine),$(ErrCol))" Code="$(ErrCode)" Text="$(ErrMsg) [vertex shader validation result] DOUBLE-CLICK IN OUTPUT WINDOW"/>
+  </Target>
 
 
+  <Target Name="FuseeReferenceCompilePixelShaders"
+        DependsOnTargets="FuseeEnumerateShaderSources"
+        Inputs="@(FuseePixelShaderSource)"
+        Outputs="$(TargetPath)"
+	  >
       <Message Importance="High" Text="[pixel shader validation] %(FuseePixelShaderSource.FullPath)" />
       <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseePixelShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
         <Output TaskParameter="ConsoleOutput" PropertyName="ValidationResultString" />

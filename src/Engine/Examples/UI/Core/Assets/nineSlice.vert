@@ -1,4 +1,4 @@
-﻿#version 330            
+#version 330            
 
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
