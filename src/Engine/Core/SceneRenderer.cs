@@ -210,7 +210,6 @@ namespace Fusee.Engine.Core
 
         private Dictionary<SceneNodeContainer, float4x4> _boneMap;
         private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
-        private Dictionary<Mesh, Mesh> _meshMap;
         private Animation _animation;
         private readonly SceneContainer _sc;
 
@@ -438,7 +437,6 @@ namespace Fusee.Engine.Core
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
-                _meshMap = new Dictionary<Mesh, Mesh>();
                 var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
@@ -527,11 +525,9 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             Mesh rm = mesh;
-            if (!_meshMap.TryGetValue(mesh, out rm))
-            {
-                rm = MakeMesh(mesh);
-                _meshMap.Add(mesh, rm);
-            }
+            WeightComponent wc = CurrentNode.GetWeights();
+            if (wc != null)
+                AddWeightComponentToMesh(ref mesh, wc);
 
             RenderCurrentPass(rm, _state.Effect);
         }
@@ -560,6 +556,58 @@ namespace Fusee.Engine.Core
             LightsToModelViewSpace();
 
         }
+
+        private void AddWeightComponentToMesh(ref Mesh mesh, WeightComponent wc)
+        {
+            float4[] boneWeights = new float4[wc.WeightMap.Count];
+            float4[] boneIndices = new float4[wc.WeightMap.Count];
+
+            // Iterate over the vertices
+            for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
+            {
+                VertexWeightList vwl = wc.WeightMap[iVert];
+
+                // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
+                // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
+                // the root bone (index 0).
+                if (vwl == null)
+                    vwl = new VertexWeightList();
+                if (vwl.VertexWeights == null)
+                    vwl.VertexWeights =
+                        new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
+                int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
+                for (int iJoint = 0; iJoint < nJoints; iJoint++)
+                {
+                    // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
+                    // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
+                    // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
+                    switch (iJoint)
+                    {
+                        case 0:
+                            boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].x = vwl.VertexWeights[iJoint].JointIndex;
+                            break;
+                        case 1:
+                            boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].y = vwl.VertexWeights[iJoint].JointIndex;
+                            break;
+                        case 2:
+                            boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].z = vwl.VertexWeights[iJoint].JointIndex;
+                            break;
+                        case 3:
+                            boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
+                            boneIndices[iVert].w = vwl.VertexWeights[iJoint].JointIndex;
+                            break;
+                    }
+                }
+                boneWeights[iVert].Normalize1();
+            }
+
+            mesh.BoneIndices = boneIndices;
+            mesh.BoneWeights = boneWeights;
+        }
+
         private void LightsToModelViewSpace()
         {
             // Add ModelView Matrix to all lights
@@ -651,184 +699,7 @@ namespace Fusee.Engine.Core
             return shaderEffect;
         }
 
-        public Mesh MakeMesh(Mesh mc)
-        {
-            WeightComponent wc = CurrentNode.GetWeights();
-            Mesh rm;
-            if (wc == null)
-            {
-                rm = new Mesh()
-                {
-                    Colors = null,
-                    Normals = mc.Normals,
-                    UVs = mc.UVs,
-                    Vertices = mc.Vertices,
-                    Triangles = mc.Triangles
-                };
-            }
-            else // Create Mesh with weightdata
-            {
-                float4[] boneWeights = new float4[wc.WeightMap.Count];
-                float4[] boneIndices = new float4[wc.WeightMap.Count];
-
-                // Iterate over the vertices
-                for (int iVert = 0; iVert < wc.WeightMap.Count; iVert++)
-                {
-                    VertexWeightList vwl = wc.WeightMap[iVert];
-
-                    // Security guard. Sometimes a vertex has no weight. This should be fixed in the model. But
-                    // let's just not crash here. Instead of having a completely unweighted vertex, bind it to
-                    // the root bone (index 0).
-                    if (vwl == null)
-                        vwl = new VertexWeightList();
-                    if (vwl.VertexWeights == null)
-                        vwl.VertexWeights =
-                            new List<VertexWeight>(new[] { new VertexWeight { JointIndex = 0, Weight = 1.0f } });
-                    int nJoints = System.Math.Min(4, vwl.VertexWeights.Count);
-                    for (int iJoint = 0; iJoint < nJoints; iJoint++)
-                    {
-                        // boneWeights[iVert][iJoint] = vwl.VertexWeights[iJoint].Weight;
-                        // boneIndices[iVert][iJoint] = vwl.VertexWeights[iJoint].JointIndex;
-                        // JSIL cannot handle float4 indexer. Map [0..3] to [x..z] by hand
-                        switch (iJoint)
-                        {
-                            case 0:
-                                boneWeights[iVert].x = vwl.VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].x = vwl.VertexWeights[iJoint].JointIndex;
-                                break;
-                            case 1:
-                                boneWeights[iVert].y = vwl.VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].y = vwl.VertexWeights[iJoint].JointIndex;
-                                break;
-                            case 2:
-                                boneWeights[iVert].z = vwl.VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].z = vwl.VertexWeights[iJoint].JointIndex;
-                                break;
-                            case 3:
-                                boneWeights[iVert].w = vwl.VertexWeights[iJoint].Weight;
-                                boneIndices[iVert].w = vwl.VertexWeights[iJoint].JointIndex;
-                                break;
-                        }
-                    }
-                    boneWeights[iVert].Normalize1();
-                }
-
-                rm = new Mesh()
-                {
-                    Colors = null,
-                    Normals = mc.Normals,
-                    UVs = mc.UVs,
-                    BoneIndices = boneIndices,
-                    BoneWeights = boneWeights,
-                    Vertices = mc.Vertices,
-                    Triangles = mc.Triangles
-                };
-
-
-                /*
-                // invert weightmap to handle it easier
-                float[,] invertedWeightMap = new float[wc.WeightMap[0].JointWeights.Count, wc.Joints.Count];
-                for (int i = 0; i < wc.WeightMap.Count; i++)
-                {
-                    for (int j = 0; j < wc.WeightMap[i].JointWeights.Count; j++)
-                    {
-                        invertedWeightMap[j, i] = (float) wc.WeightMap[i].JointWeights[j];
-                    }
-                }
-
-                float4[] boneWeights = new float4[invertedWeightMap.GetLength(0)];
-                float4[] boneIndices = new float4[invertedWeightMap.GetLength(0)];
-
-                // Contents of the invertedWeightMap:
-                // ----------------------------------
-                // Imagine the weight table as seen in 3d modelling programs, i.e. cinema4d;
-                // wij are values in the range between 0..1 and specify to which percentage 
-                // the vertex (i) is controlled by the bone (j).
-                //
-                //            bone 0   bone 1   bone 2   bone 3   ....  -> indexed by j
-                // vertex 0:   w00      w01      w02      w03
-                // vertex 1:   w10      w11      w12      w13
-                // vertex 2:   w20      w21      w22      w23
-                // vertex 3:   w30      w31      w32      w33
-                //   ...
-                //  indexed 
-                //   by i
-
-                // Iterate over the vertices
-                for (int iVert = 0; iVert < invertedWeightMap.GetLength(0); iVert++)
-                {
-                    boneWeights[iVert] = new float4(0, 0, 0, 0);
-                    boneIndices[iVert] = new float4(0, 0, 0, 0);
-
-                    var tempDictionary = new Dictionary<int, float>();
-
-                    // For the given vertex i, see which bones control us
-                    for (int j = 0; j < invertedWeightMap.GetLength(1); j++)
-                    {
-                        if (j < 4)
-                        {
-                            tempDictionary.Add(j, invertedWeightMap[iVert, j]);
-                        }
-                        else
-                        {
-                            float tmpWeight = invertedWeightMap[iVert, j];
-                            var keyAndValue = tempDictionary.OrderBy(kvp => kvp.Value).First();
-                            if (tmpWeight > keyAndValue.Value)
-                            {
-                                tempDictionary.Remove(keyAndValue.Key);
-                                tempDictionary.Add(j, tmpWeight);
-                            }
-                        }
-                    }
-
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[iVert].x = keyValuePair.Key;
-                        boneWeights[iVert].x = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[iVert].y = keyValuePair.Key;
-                        boneWeights[iVert].y = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[iVert].z = keyValuePair.Key;
-                        boneWeights[iVert].z = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-                    if (tempDictionary.Count != 0)
-                    {
-                        var keyValuePair = tempDictionary.First();
-                        boneIndices[iVert].w = keyValuePair.Key;
-                        boneWeights[iVert].w = keyValuePair.Value;
-                        tempDictionary.Remove(keyValuePair.Key);
-                    }
-
-                    boneWeights[iVert].Normalize1();
-                }
-
-                rm = new Mesh()
-                {
-                    Colors = null,
-                    Normals = mc.Normals,
-                    UVs = mc.UVs,
-                    BoneIndices = boneIndices,
-                    BoneWeights = boneWeights,
-                    Vertices = mc.Vertices,
-                    Triangles = mc.Triangles
-                };
-                */
-            }
-
-            return rm;
-        }
-
+     
         // Creates Shader from given shaderComponent
         private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
