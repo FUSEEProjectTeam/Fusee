@@ -482,7 +482,7 @@ namespace Fusee.Engine.Core
             SceneNodeContainer boneContainer = CurrentNode;
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform))
-                _boneMap.Add(boneContainer, _rc.Model);
+                _boneMap.Add(boneContainer, _rc.Model); 
             else
                 _boneMap[boneContainer] = _rc.Model;
         }

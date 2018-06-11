@@ -84,6 +84,26 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+
+            var newMaterial = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            {
+                Name = "bananaTexture",
+                Bump = new BumpChannelContainer
+                {
+                    Texture = "bump.jpg",
+                    Intensity = 1.0f
+                },
+                Diffuse = new MatChannelContainer()
+                {
+                    Texture = "bananaTex.png",
+                    Mix = 1.0f
+                }
+            });
+
+
+            if (_scene.Children[0].Components[1] is ShaderEffectComponent bla) bla.Effect = newMaterial;
+
+
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)

@@ -360,6 +360,7 @@ namespace Fusee.Engine.Core.GUI
 
             RContext = rc;
 
+
             if (FontMap != null)
             {
                 CreateTextShader(new Texture(FontMap.Image));
