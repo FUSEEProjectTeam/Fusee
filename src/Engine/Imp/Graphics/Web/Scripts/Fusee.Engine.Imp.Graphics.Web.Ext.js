@@ -899,7 +899,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T,
                 (repeat) ? this.gl.REPEAT : this.gl.CLAMP_TO_EDGE);
 
-            this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false);
+            //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, false); auskommentiert, pruefen
 
             var texRet = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.TextureHandle();
             texRet.handle = glTexOb;
