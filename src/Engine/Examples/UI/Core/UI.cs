@@ -27,30 +27,32 @@ namespace Fusee.Engine.Examples.UI.Core
                gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
             }";
 
+        protected readonly string TEXTUREPS = 
+        @"
+            #version 330
+
+            #ifdef GL_ES
+                precision highp float;
+            #endif
+
+            varying vec3 vMVNormal;            
+            varying vec2 vUV;            
+            uniform mat4 FUSEE_MV;
+            uniform sampler2D DiffuseTexture;
+            uniform vec4 DiffuseColor;
+            uniform float DiffuseMix;
+
+            void main()
+            {
+                vec3 N = normalize(vMVNormal);
+                vec3 L = normalize(vec3(0.0,0.0,-1.0));
+                gl_FragColor = vec4(texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
+            }";
+
         protected readonly string NINESLICEVS = AssetStorage.Get<string>("nineSlice.vert");
 
-        protected readonly string TEXTUREPS = AssetStorage.Get<string>("nineSliceTile.frag");
-        //@"
-        //    #version 330
-
-        //    #ifdef GL_ES
-        //        precision highp float;
-        //    #endif
-            
-        //    varying vec3 vMVNormal;            
-        //    varying vec2 vUV;            
-        //    uniform mat4 FUSEE_MV;
-        //    uniform sampler2D DiffuseTexture;
-        //    uniform vec4 DiffuseColor;
-        //    uniform float DiffuseMix;
-            
-        //    void main()
-        //    {
-        //        vec3 N = normalize(vMVNormal);
-        //        vec3 L = normalize(vec3(0.0,0.0,-1.0));
-        //        gl_FragColor = vec4(texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
-        //    }";
-
+        protected readonly string NINESLICETILEPS = AssetStorage.Get<string>("nineSliceTile.frag");
+        
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -427,7 +429,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectPassDeclaration
                                                             {
                                                                 VS = NINESLICEVS,
-                                                                PS = TEXTUREPS,
+                                                                PS = NINESLICETILEPS,
                                                                 StateSet = new RenderStateSet
                                                                 {
                                                                     AlphaBlendEnable = true,
@@ -440,11 +442,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                                         },
                                                         new[]
                                                         {
-                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
+                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"))},
                                                             new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(10,10)},
-                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},
+                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,5)},
+                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.11f,0.11f,0.06f,0.17f)},
                                                             new EffectParameterDeclaration {Name = "borderThickness", Value = 5f}
                                                         })},
                                                     new NineSlicePlane()
@@ -489,7 +491,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectPassDeclaration
                                                             {
                                                                 VS = NINESLICEVS,
-                                                                PS = TEXTUREPS,
+                                                                PS = NINESLICETILEPS,
                                                                 StateSet = new RenderStateSet
                                                                 {
                                                                     AlphaBlendEnable = true,
@@ -508,6 +510,68 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},
                                                             new EffectParameterDeclaration {Name = "borderThickness", Value = 1f}
+                                                        })},
+                                                    new NineSlicePlane()
+                                                }
+                                            }
+                                        }
+                                    },
+                                    new SceneNodeContainer
+                                    {
+                                        Name = "Child2",
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                            new RectTransformComponent
+                                            {
+                                                Name = "Child2_RectTransform",
+                                                Anchors = new MinMaxRect
+                                                {
+                                                    Min = new float2(0,1),
+                                                    Max = new float2(0,1)
+                                                },
+                                                Offsets = new MinMaxRect
+                                                {
+                                                    Min = new float2(0,-1),
+                                                    Max = new float2(6,0)
+                                                }
+
+                                             }
+                                        },
+                                        Children =  new List<SceneNodeContainer>
+                                        {
+                                            new SceneNodeContainer
+                                            {
+                                                Name = "Child2_XForm",
+                                                Components = new List<SceneComponentContainer>
+                                                {
+                                                    new XFormComponent()
+                                                    {
+                                                        Name = "Child2_XForm",
+                                                    },
+                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
+                                                        {
+                                                            new EffectPassDeclaration
+                                                            {
+                                                                VS = NINESLICEVS,
+                                                                PS = NINESLICETILEPS,
+                                                                StateSet = new RenderStateSet
+                                                                {
+                                                                    AlphaBlendEnable = true,
+                                                                    SourceBlend = Blend.SourceAlpha,
+                                                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                                                    BlendOperation = BlendOperation.Add,
+                                                                    ZEnable = false
+                                                                }
+                                                            }
+                                                        },
+                                                        new[]
+                                                        {
+                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
+                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,1)},
+                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.09f)},
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 2f}
                                                         })},
                                                     new NineSlicePlane()
                                                 }

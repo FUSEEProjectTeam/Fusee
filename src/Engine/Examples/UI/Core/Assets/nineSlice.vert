@@ -175,7 +175,7 @@ vec4 calculateGlPosAccordingToUvs()
 void main() 
 {
 	vUV = fuUV;
-	fragBorders = vec4(0.1,0.1,0.1,0.1);
+	fragBorders = borders;
 	
 	vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
 	//gl_Position = FUSEE_P * FUSEE_V * FUSEE_M * vec4(fuVertex, 1.0);

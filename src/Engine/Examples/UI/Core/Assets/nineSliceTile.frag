@@ -80,7 +80,7 @@ void main()
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
 			gl_FragColor = vec4(texture2D(DiffuseTexture, vec2(uvX , uvY)) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0);
-		}		
+		}	
 	}
 	else
 		gl_FragColor = vec4(texture2D(DiffuseTexture,vUV) * DiffuseMix)* DiffuseColor *  max(dot(N, L), 0.0);	
