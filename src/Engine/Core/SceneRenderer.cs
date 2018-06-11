@@ -438,7 +438,7 @@ namespace Fusee.Engine.Core
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
                 _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
-
+                _meshMap = new Dictionary<Mesh, Mesh>();
                 var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
@@ -453,7 +453,7 @@ namespace Fusee.Engine.Core
                     }
                 };
                 _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-                
+
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
 
@@ -482,7 +482,7 @@ namespace Fusee.Engine.Core
             SceneNodeContainer boneContainer = CurrentNode;
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform))
-                _boneMap.Add(boneContainer, _rc.Model); 
+                _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;
         }

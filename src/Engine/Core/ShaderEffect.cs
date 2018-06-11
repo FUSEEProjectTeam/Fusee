@@ -183,20 +183,6 @@ namespace Fusee.Engine.Core
             // so this method always returns true.
             return true;
         }
-
-        // If you try to set a value of a property that is
-        // not defined in the class, this method is called.
-        public override bool TrySetMember(
-            SetMemberBinder binder, object value)
-        {
-            // Converting the property name to lowercase
-            // so that property names become case-insensitive.
-            Parameters[binder.Name.ToLower()] = value;
-
-            // You can always add a value to a dictionary,
-            // so this method always returns true.
-            return true;
-        }
     }
 
     public class ShaderEffectEventArgs : EventArgs

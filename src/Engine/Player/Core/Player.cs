@@ -18,7 +18,7 @@ namespace Fusee.Engine.Player.Core
         public string ModelFile = "banana.fus";
 
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6*0.5f,
+        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
                              _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
         private static float2 _offsetInit;
@@ -81,29 +81,9 @@ namespace Fusee.Engine.Player.Core
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-            
+
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
-
-            var newMaterial = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-            {
-                Name = "bananaTexture",
-                Bump = new BumpChannelContainer
-                {
-                    Texture = "bump.jpg",
-                    Intensity = 1.0f
-                },
-                Diffuse = new MatChannelContainer()
-                {
-                    Texture = "bananaTex.png",
-                    Mix = 1.0f
-                }
-            });
-
-
-            if (_scene.Children[0].Components[1] is ShaderEffectComponent bla) bla.Effect = newMaterial;
-
-
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
@@ -115,7 +95,7 @@ namespace Fusee.Engine.Player.Core
                 float3 bbCenter = bbox.Value.Center;
                 float3 bbSize = bbox.Value.Size;
                 float3 center = float3.Zero;
-                if (System.Math.Abs(bbCenter.x) > bbSize.x*0.3)
+                if (System.Math.Abs(bbCenter.x) > bbSize.x * 0.3)
                     center.x = bbCenter.x;
                 if (System.Math.Abs(bbCenter.y) > bbSize.y * 0.3)
                     center.y = bbCenter.y;
@@ -174,7 +154,7 @@ namespace Fusee.Engine.Player.Core
                     _offsetInit = Touch.TwoPointMidPoint - _offset;
                     _maxPinchSpeed = 0;
                 }
-                _zoomVel = Touch.TwoPointDistanceVel*-0.01f;
+                _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
                 _angleRoll = Touch.TwoPointAngle - _angleRollInit;
                 _offset = Touch.TwoPointMidPoint - _offsetInit;
                 float pinchSpeed = Touch.TwoPointDistanceVel;
@@ -184,8 +164,8 @@ namespace Fusee.Engine.Player.Core
             {
                 _twoTouchRepeated = false;
                 _zoomVel = Mouse.WheelVel * -0.5f;
-                _angleRoll *= curDamp*0.8f;
-                _offset *= curDamp*0.8f;
+                _angleRoll *= curDamp * 0.8f;
+                _offset *= curDamp * 0.8f;
             }
 
             // UpDown / LeftRight rotation
@@ -240,7 +220,7 @@ namespace Fusee.Engine.Player.Core
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-            var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, - 2 * _offset.y / Height, 0);
+            var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 
             // Tick any animations and Render the scene loaded in Init()
@@ -265,7 +245,7 @@ namespace Fusee.Engine.Player.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width/(float) Height;
+            var aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
