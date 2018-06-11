@@ -1,4 +1,4 @@
-#version 330            
+#version 130           
 
 attribute vec3 fuVertex;
 attribute vec3 fuNormal;
@@ -6,6 +6,7 @@ attribute vec2 fuUV;
 
 varying vec2 vUV;
 varying vec3 vMVNormal;
+varying vec4 fragBorders;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_ITMV;
@@ -173,8 +174,9 @@ vec4 calculateGlPosAccordingToUvs()
                     
 void main() 
 {
-	vUV = fuUV;	
-
+	vUV = fuUV;
+	fragBorders = vec4(0.1,0.1,0.1,0.1);
+	
 	vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
 	//gl_Position = FUSEE_P * FUSEE_V * FUSEE_M * vec4(fuVertex, 1.0);
 	gl_Position = calculateGlPosAccordingToUvs();
