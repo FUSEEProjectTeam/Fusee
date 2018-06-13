@@ -861,16 +861,30 @@ namespace Fusee.Engine.Core
 
         #region Image Data related Members
 
+        /// <summary>
+        /// Copies the current frame image from a <see cref="IVideoStreamImp"/> into the given Texture.
+        /// </summary>
+        /// <param name="stream">The <see cref="IVideoStreamImp"/> that will be used as source.</param>
+        /// <param name="tex">The <see cref="Texture"/> in which the video streams current frame will be copied into.</param>
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, Texture tex)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
             _rci.UpdateTextureFromVideoStream(stream, textureHandle);
         }
 
-        public void UpdateTextureRegion(Texture tex, Texture img, int startX, int startY, int width, int height)
+        /// <summary>
+        /// Updates a rectangular region of a given Texture (dstTexture) by copying a rectangular block from another texture (srcTexture).
+        /// </summary>
+        /// <param name="dstTexture">This Textures region will be updated.</param>
+        /// <param name="srcTexture">This is the source from which the region will be copied.</param>
+        /// <param name="startX">x offset in pixels.</param>
+        /// <param name="startY">y offset in pixels.</param>
+        /// <param name="width">Width in pixels.</param>
+        /// <param name="height">Height in pixels.</param>
+        public void UpdateTextureRegion(Texture dstTexture, Texture srcTexture, int startX, int startY, int width, int height)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
-            _rci.UpdateTextureRegion(textureHandle, img, startX, startY, width, height);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(dstTexture);
+            _rci.UpdateTextureRegion(textureHandle, srcTexture, startX, startY, width, height);
         }
 
         /*
@@ -931,7 +945,9 @@ namespace Fusee.Engine.Core
         /// Creates a new writable texture and binds it to the shader.
         /// This is done by creating a framebuffer and a renderbuffer (if needed).
         /// All bufferhandles are returned with the texture.
-        /// For binding this texture call <see cref="SetRenderTarget"/>SetRenderTarget
+        /// For binding this texture call <see cref="SetRenderTarget"/>
+        /// <param name="width"></param>
+        /// <param name="height"></param>SetRenderTarget
         /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
         /// </summary>
         /// <returns>
@@ -947,7 +963,7 @@ namespace Fusee.Engine.Core
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        /// <param name="texture">An ITexture.</param>
         public void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);

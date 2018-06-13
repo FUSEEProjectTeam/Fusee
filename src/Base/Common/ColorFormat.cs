@@ -1,5 +1,8 @@
 ﻿namespace Fusee.Base.Common
 {
+    /// <summary>
+    /// ColorFormat information in enum representation. Entries are hints for Color channel encoding.
+    /// </summary>
     public enum ColorFormat
     {
         /// <summary>

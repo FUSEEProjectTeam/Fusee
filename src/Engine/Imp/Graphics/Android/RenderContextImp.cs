@@ -117,7 +117,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     throw new ArgumentOutOfRangeException();
             }
 
-            GL.BindTexture(All.Texture2D, ((TextureHandle) tex).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle) tex).Handle);
             GL.TexSubImage2D(All.Texture2D, 0, startX, startY, width, height,
                 format, All.UnsignedByte, img.PixelData);
         }
@@ -204,7 +204,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.TexParameter(All.Texture2D, All.TextureWrapS, (repeat) ? (int)All.Repeat : (int)All.ClampToEdge);
             GL.TexParameter(All.Texture2D, All.TextureWrapT, (repeat) ? (int)All.Repeat : (int)All.ClampToEdge);
 
-            ITextureHandle texId = new TextureHandle { handle = id};
+            ITextureHandle texId = new TextureHandle { Handle = id};
 
             return texId;
         }
@@ -213,60 +213,60 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             TextureHandle texHandle = (TextureHandle)textureHandle;
 
-            if (texHandle.renderToTextureBufferHandle != -1)
+            if (texHandle.RenderToTextureBufferHandle != -1)
             {
-                GL.DeleteFramebuffers(1, ref texHandle.renderToTextureBufferHandle);
+                GL.DeleteFramebuffers(1, ref texHandle.RenderToTextureBufferHandle);
             }
 
-            if (texHandle.fboHandle != -1)
+            if (texHandle.FboHandle != -1)
             {
-                GL.DeleteFramebuffers(1, ref texHandle.fboHandle);
+                GL.DeleteFramebuffers(1, ref texHandle.FboHandle);
             }
 
-            if (texHandle.intermediateToTextureBufferHandle != -1)
+            if (texHandle.IntermediateToTextureBufferHandle != -1)
             {
-                GL.DeleteFramebuffers(1, ref texHandle.intermediateToTextureBufferHandle);
+                GL.DeleteFramebuffers(1, ref texHandle.IntermediateToTextureBufferHandle);
             }
 
-            if (texHandle.gBufferHandle != -1)
+            if (texHandle.GBufferHandle != -1)
             {
-                GL.DeleteFramebuffers(1, ref texHandle.gBufferHandle);
+                GL.DeleteFramebuffers(1, ref texHandle.GBufferHandle);
 
-                if (texHandle.gDepthRenderbufferHandle != -1)
+                if (texHandle.GDepthRenderbufferHandle != -1)
                 {
-                    GL.DeleteFramebuffers(1, ref texHandle.gDepthRenderbufferHandle);
+                    GL.DeleteFramebuffers(1, ref texHandle.GDepthRenderbufferHandle);
                 }
 
-                if (texHandle.gBufferAlbedoSpecTextureHandle != -1)
+                if (texHandle.GBufferAlbedoSpecTextureHandle != -1)
                 {
-                    GL.DeleteTextures(1, ref texHandle.gBufferAlbedoSpecTextureHandle);
+                    GL.DeleteTextures(1, ref texHandle.GBufferAlbedoSpecTextureHandle);
                 }
 
-                if (texHandle.gBufferDepthTextureHandle != -1)
+                if (texHandle.GBufferDepthTextureHandle != -1)
                 {
-                    GL.DeleteTextures(1, ref texHandle.gBufferDepthTextureHandle);
+                    GL.DeleteTextures(1, ref texHandle.GBufferDepthTextureHandle);
                 }
 
-                if (texHandle.gBufferNormalTextureHandle != -1)
+                if (texHandle.GBufferNormalTextureHandle != -1)
                 {
-                    GL.DeleteTextures(1, ref texHandle.gBufferNormalTextureHandle);
+                    GL.DeleteTextures(1, ref texHandle.GBufferNormalTextureHandle);
                 }
 
-                if (texHandle.gBufferPositionTextureHandle != -1)
+                if (texHandle.GBufferPositionTextureHandle != -1)
                 {
-                    GL.DeleteTextures(1, ref texHandle.gBufferPositionTextureHandle);
+                    GL.DeleteTextures(1, ref texHandle.GBufferPositionTextureHandle);
                 }
             }
 
             // TODO: (dd) ?? TBD
-            if (texHandle.depthHandle != -1)
+            if (texHandle.DepthHandle != -1)
             {
 
             }
 
-            if (texHandle.handle != -1)
+            if (texHandle.Handle != -1)
             {
-                GL.DeleteTextures(1, ref texHandle.handle);
+                GL.DeleteTextures(1, ref texHandle.Handle);
             }
 
 
@@ -701,7 +701,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(All.Texture0 + texUnit);
-            GL.BindTexture(All.Texture2D, ((TextureHandle)texId).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle)texId).Handle);
         }
         #endregion
 
@@ -1348,7 +1348,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(All.Texture2D, ((TextureHandle) texId).handle);
+            GL.BindTexture(All.Texture2D, ((TextureHandle) texId).Handle);
             GL.CopyTexImage2D(All.Texture2D, 0, All.Rgba, quad.Left, quad.Top, quad.Width,
                 quad.Height, 0);
         }

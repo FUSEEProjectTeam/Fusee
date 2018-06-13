@@ -1,13 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using Fusee.Base.Common;
-using Fusee.Math.Core;
 
 namespace Fusee.Base.Core
 {
+    /// <summary>
+    /// ImageData solves the problem of handling bitmaps in fusee by offering functions of bitmap manipulation.
+    /// </summary>
     public class ImageData : IImageData
     {
+
+        /// <summary>
+        /// The byte array that makes up this ImageData instance.
+        /// </summary>
         public byte[] PixelData { get; set; }
+
+
+        /// <summary>
+        /// Constructor takes the pixelData byte array, width and height dimensions in pixels and the <see cref="ImagePixelFormat"/>.
+        /// </summary>
+        /// <param name="pixelData">The pixelData byte array contains all bitmap pixels.</param>
+        /// <param name="width">Width in pixels.</param>
+        /// <param name="height">Height in pixels.</param>
+        /// <param name="colorFormat"><see cref="ImagePixelFormat"/> provides additional information about pixel Encoding.</param>
         public ImageData(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat)
         {
             PixelData = pixelData;
@@ -17,11 +32,35 @@ namespace Fusee.Base.Core
             PixelFormat = colorFormat;
         }
 
+        /// <summary>
+        /// Width in pixels.
+        /// </summary>
         public int Width { get; }
+
+        /// <summary>
+        /// Height in pixels.
+        /// </summary>
         public int Height { get; }
+
+        /// <summary>
+        /// PixelFormat provides additional information about pixel encoding.
+        /// </summary>
         public ImagePixelFormat PixelFormat { get; }
 
-        // scanline verwenden um blt durchzuführen
+        /// <summary>
+        /// Copies a rectangular block of pixel data from a source image to a this image (Blt = BlockTransfer).
+        /// </summary>
+        /// <param name="xDst">The x destination coordinate (where to place the block within dst).</param>
+        /// <param name="yDst">The y destination coordinate (where to place the block within dst).</param>
+        /// <param name="src">The source image.</param>
+        /// <param name="xSrc">The x source coordinate (where to start copying from within src).</param>
+        /// <param name="ySrc">The y source coordinate (where to start copying from within src).</param>
+        /// <param name="width">The width of the block to copy. (default is src.Width).</param>
+        /// <param name="height">The height of the block to copy (default is src.Height).</param>
+        /// <remarks>
+        ///     All specified parameters are clipped to avoid out-of-bounds indices. No warnings or exceptions are issued
+        ///     in case clipping results in a smaller or an empty block.
+        /// </remarks>
         public void Blt(int xDst, int yDst, IImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             if (width == 0)
@@ -35,11 +74,11 @@ namespace Fusee.Base.Core
             if (width <= 0 || height <= 0)
                 return;
 
-            CopyFunc CopyLine = null;
+            CopyFunc copyLine;
             if (PixelFormat.ColorFormat.Equals(src.PixelFormat.ColorFormat))
             {
                 // Case: same colorspace, just loop over scanlines from src and copy linewise into this ImageData
-                CopyLine = delegate(byte[] srcScanLineBytes, int destinationIndex)
+                copyLine = delegate(byte[] srcScanLineBytes, int destinationIndex)
                 {
                     Array.Copy(srcScanLineBytes, 0, PixelData, destinationIndex, srcScanLineBytes.Length);
                 };
@@ -50,11 +89,11 @@ namespace Fusee.Base.Core
 
                 switch (PixelFormat.ColorFormat)
                 {
-                    case Common.ColorFormat.RGBA:
+                    case ColorFormat.RGBA:
                         switch (src.PixelFormat.ColorFormat)
                         {
-                            case Common.ColorFormat.RGB:
-                                CopyLine = delegate(byte[] srcLineBytes, int destinationIndex)
+                            case ColorFormat.RGB:
+                                copyLine = delegate(byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst RGBA
                                     {
@@ -65,8 +104,8 @@ namespace Fusee.Base.Core
                                     }
                                 };
                                 break;
-                            case Common.ColorFormat.Intensity:
-                                CopyLine = delegate (byte[] srcLineBytes, int destinationIndex)
+                            case ColorFormat.Intensity:
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGBA
                                     {
@@ -81,12 +120,12 @@ namespace Fusee.Base.Core
                                 throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGBA");
                         }
                         break;
-                    case Common.ColorFormat.RGB:
+                    case ColorFormat.RGB:
                         switch (src.PixelFormat.ColorFormat)
                         {
-                            case Common.ColorFormat.RGBA:
+                            case ColorFormat.RGBA:
 
-                                CopyLine = delegate (byte[] srcLineBytes, int destinationIndex)
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst RGB
                                     {
@@ -98,8 +137,8 @@ namespace Fusee.Base.Core
                                 };
 
                                 break;
-                            case Common.ColorFormat.Intensity:
-                                CopyLine = delegate (byte[] srcLineBytes, int destinationIndex)
+                            case ColorFormat.Intensity:
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i++) // jump 1 unit per loop because we want to copy src Intensity to dst RGB
                                     {
@@ -113,34 +152,34 @@ namespace Fusee.Base.Core
                                 throw new ArgumentOutOfRangeException(nameof(src), "Unknown source pixel format to copy to RGB");
                         }
                         break;
-                    case Common.ColorFormat.Intensity:
+                    case ColorFormat.Intensity:
                         switch (src.PixelFormat.ColorFormat)
                         {
-                            case Common.ColorFormat.RGB:
-                                CopyLine = delegate (byte[] srcLineBytes, int destinationIndex)
+                            case ColorFormat.RGB:
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 3) // jump 3 units per loop because we want to copy src RGB to dst Intensity
                                     {
                                         // Quick integer Luma conversion (not accurate)
                                         // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-                                        int R = srcLineBytes[destinationIndex + i + 0];
-                                        int G = srcLineBytes[destinationIndex + i + 1];
-                                        int B = srcLineBytes[destinationIndex + i + 2];
-                                        PixelData[destinationIndex + i] = (byte)((R + R + B + G + G + G) / 6);
+                                        int r = srcLineBytes[destinationIndex + i + 0];
+                                        int g = srcLineBytes[destinationIndex + i + 1];
+                                        int b = srcLineBytes[destinationIndex + i + 2];
+                                        PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
                                     }
                                 };
                                 break;
-                            case Common.ColorFormat.RGBA:
-                                CopyLine = delegate (byte[] srcLineBytes, int destinationIndex)
+                            case ColorFormat.RGBA:
+                                copyLine = delegate (byte[] srcLineBytes, int destinationIndex)
                                 {
                                     for (int i = 0; i < srcLineBytes.Length; i += 4) // jump 4 units per loop because we want to copy src RGBA to dst Intensity
                                     {
                                         // Quick integer Luma conversion (not accurate)
                                         // See http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
-                                        int R = srcLineBytes[destinationIndex + i + 0];
-                                        int G = srcLineBytes[destinationIndex + i + 1];
-                                        int B = srcLineBytes[destinationIndex + i + 2];
-                                        PixelData[destinationIndex + i] = (byte)((R + R + B + G + G + G) / 6);
+                                        int r = srcLineBytes[destinationIndex + i + 0];
+                                        int g = srcLineBytes[destinationIndex + i + 1];
+                                        int b = srcLineBytes[destinationIndex + i + 2];
+                                        PixelData[destinationIndex + i] = (byte)((r + r + b + g + g + g) / 6);
                                     }
                                 };
                                 break;
@@ -149,7 +188,7 @@ namespace Fusee.Base.Core
                         }
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(this.ToString(), "Unknown destination pixel format");
+                        throw new ArgumentOutOfRangeException(ToString(), "Unknown destination pixel format");
                 } // end switch
 
             } // end else block
@@ -164,12 +203,21 @@ namespace Fusee.Base.Core
                 {
                     byte[] srcScanLineBytes = srcScanLine.GetScanLineBytes();
                     int destinationIndex = yDst * PixelFormat.BytesPerPixel*Width + xDst * PixelFormat.BytesPerPixel; // move down by yDst and add (move right) xDst
-                    CopyLine(srcScanLineBytes, destinationIndex);
+                    copyLine(srcScanLineBytes, destinationIndex);
                     yDst++; // increment yDst == move to the next line
                 }
             }
         }
 
+        /// <summary>
+        /// Retrieve a rectangular block from this image that is represented by horizontal ScanLines from top to bottom along width and height, beginning at offsets xSrc and ySrc.
+        /// </summary>
+        /// <param name="xSrc">x offset in pixels.</param>
+        /// <param name="ySrc">y offset in pixels.</param>
+        /// <param name="width">width of ScanLines in pixels.</param>
+        /// <param name="height">Height describes how many ScanLines will be returned.</param>
+        /// <returns>Returns a rectangular block of horizontal ScanLine instances.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IEnumerator<ScanLine> ScanLines(int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             if ((xSrc + width) > Width)
@@ -187,9 +235,6 @@ namespace Fusee.Base.Core
                 int srcOffset = ((PixelFormat.BytesPerPixel * Width) * i) + xSrc * PixelFormat.BytesPerPixel; // go down vertical along i by width times BytesPerPixel and then add horizontal width offset times BytesPerPixel
                 yield return new ScanLine(PixelData,srcOffset,width, PixelFormat);
             }
-            //IEnumerator<ScanLine> result = new ScanLineEnumerator(PixelData, ColorFormat, xSrc, ySrc, width, height, Width);
-
-            //return result;
         }
 
         /// <summary>
@@ -217,9 +262,9 @@ namespace Fusee.Base.Core
             // Adjust right border
             // The biggest overlap over the right border (or 0 if no overlap).
             // int iDeltaR = M.Max(0, M.Max(iDst + sizeBlk - sizeDst, iSrc + sizeBlk - sizeSrc));
-            int dstRB = iDst + sizeBlk - sizeDst;
-            int srcRB = iSrc + sizeBlk - sizeSrc;
-            int iDeltaR = (dstRB > srcRB) ? dstRB : srcRB;
+            int dstRb = iDst + sizeBlk - sizeDst;
+            int srcRb = iSrc + sizeBlk - sizeSrc;
+            int iDeltaR = (dstRb > srcRb) ? dstRb : srcRb;
             if (iDeltaR < 0)
                 iDeltaR = 0;
 
@@ -234,21 +279,7 @@ namespace Fusee.Base.Core
 
         private delegate void CopyFunc(byte[] srcScanLineBytes, int dstIndex);
 
-        /// <summary>
-        /// Copys a rectangular block of pixel data from a source image to a destiation image (Blt = BlockTransfer).
-        /// </summary>
-        /// <param name="dst">The destination image.</param>
-        /// <param name="xDst">The x destination coordinate (where to place the block within dst).</param>
-        /// <param name="yDst">The y destination coordinate (where to place the block within dst).</param>
-        /// <param name="src">The source image.</param>
-        /// <param name="xSrc">The x source coordinate (where to start copying from within src).</param>
-        /// <param name="ySrc">The y source coordinate (where to start copying from within src).</param>
-        /// <param name="width">The width of the block to copy. (default is src.Width).</param>
-        /// <param name="height">The height of the block to copy (default is src.Height).</param>
-        /// <remarks>
-        ///     All specified parameters are clipped to avoid out-of-bounds indices. No warnings or exceptions are issued
-        ///     in case clipping results in a smaller or an empty block.
-        /// </remarks>
+        
         //private static void Blt(ImageData dst, int xDst, int yDst, ImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         //{
         //    if (width == 0)
@@ -415,47 +446,6 @@ namespace Fusee.Base.Core
             MemSet(ret.PixelData, color.ToArray());
 
             return ret;*/
-        }
-
-        /// <summary>
-        /// Sets the contents of a byte array to a given pattern.
-        /// </summary>
-        /// <param name="array">The array to fill.</param>
-        /// <param name="value">The (multi-byte) pattern value.</param>
-        /// <exception cref="System.ArgumentNullException">
-        /// Array and value must not be null and not empty.
-        /// </exception>
-        /// <remarks>
-        ///     See remarks on <see cref="MemSet(byte[],byte)"/> for implementation details.
-        /// </remarks>
-        private static void MemSet(byte[] array, byte[] value)
-        {
-            if (array == null || array.Length == 0) throw new ArgumentNullException(nameof(array), "Must not be null and not an empty array.");
-            if (value == null || value.Length == 0) throw new ArgumentNullException(nameof(value), "Must not be null and not an empty array.");
-
-            // should work without this check as well
-            // if (array.Length < value.Length || array.Length % value.Length != 0) 
-            //    throw new InvalidOperationException($"Length of {nameof(value)} ({value.Length}) does not fit into {nameof(array)} (Length: {array.Length}).");
-
-            int valLength = value.Length;
-            int block = 32 * valLength;
-            int length = M.Min(block, array.Length);
-
-            //Fill the initial array
-            int index = 0;
-            while (index < length)
-            {
-                Buffer.BlockCopy(value, 0, array, index, M.Min(valLength, length - index));
-                index += valLength;
-            }
-
-            length = array.Length;
-            while (index < length)
-            {
-                Buffer.BlockCopy(array, 0, array, index, M.Min(block, length - index));
-                index += block;
-                block *= 2;
-            }
         }
     }
 }

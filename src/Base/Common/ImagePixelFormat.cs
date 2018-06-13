@@ -2,15 +2,28 @@
 
 namespace Fusee.Base.Common
 {
+    /// <summary>
+    /// Offers additional Information for ColorFormat.
+    /// </summary>
     public struct ImagePixelFormat
     {
-
+        /// <summary>
+        /// Constructor requires <see cref="ColorFormat"/> to extract additional information.
+        /// </summary>
+        /// <param name="colorFormat">The input <see cref="ColorFormat"/>.</param>
         public ImagePixelFormat(ColorFormat colorFormat)
         {
             ColorFormat = colorFormat;
         }
+
+        /// <summary>
+        /// Pixel encoding enum.
+        /// </summary>
         public ColorFormat ColorFormat { get; private set; }
 
+        /// <summary>
+        /// Returns how many bytes make up one pixel. Example RGB = 3 Bytes, each channel consists of 1 byte.
+        /// </summary>
         public int BytesPerPixel
         {
             get
@@ -25,6 +38,9 @@ namespace Fusee.Base.Common
             }
         }
 
+        /// <summary>
+        /// Returns a <see cref="PixelChannel"/> for each channel of <see cref="ColorFormat"/> providing additional information about channel offset and bits per channel.
+        /// </summary>
         public IEnumerator<ImagePixelChannel> PixelChannel
         {
             get

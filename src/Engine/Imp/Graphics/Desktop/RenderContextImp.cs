@@ -72,7 +72,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (tex == null)
                     tex = CreateTexture(img, false);
 
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).handle);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).Handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height,
                     format, PixelType.UnsignedByte, img.PixelData);
             }
@@ -120,7 +120,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     
             } while(scanlines.MoveNext());
 
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).Handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
                 format, PixelType.UnsignedByte, bytes);
         }
@@ -259,69 +259,73 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
                 (repeat) ? (int) TextureWrapMode.Repeat : (int) TextureWrapMode.ClampToEdge);
 
-            ITextureHandle texID = new TextureHandle { handle = id};
+            ITextureHandle texID = new TextureHandle { Handle = id};
 
             return texID;
         }
 
+        /// <summary>
+        /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
+        /// </summary>
+        /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>
         public void RemoveTextureHandle(ITextureHandle textureHandle)
         {
             TextureHandle texHandle = (TextureHandle) textureHandle;
 
-            if (texHandle.renderToTextureBufferHandle != -1)
+            if (texHandle.RenderToTextureBufferHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.renderToTextureBufferHandle);
+                GL.DeleteFramebuffer(texHandle.RenderToTextureBufferHandle);
             }
 
-            if (texHandle.fboHandle != -1)
+            if (texHandle.FboHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.fboHandle);
+                GL.DeleteFramebuffer(texHandle.FboHandle);
             }
 
-            if (texHandle.intermediateToTextureBufferHandle != -1)
+            if (texHandle.IntermediateToTextureBufferHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.intermediateToTextureBufferHandle);
+                GL.DeleteFramebuffer(texHandle.IntermediateToTextureBufferHandle);
             }
 
-            if (texHandle.gBufferHandle != -1)
+            if (texHandle.GBufferHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.gBufferHandle);
+                GL.DeleteFramebuffer(texHandle.GBufferHandle);
 
-                if (texHandle.gDepthRenderbufferHandle != -1)
+                if (texHandle.GDepthRenderbufferHandle != -1)
                 {
-                    GL.DeleteFramebuffer(texHandle.gDepthRenderbufferHandle);
+                    GL.DeleteFramebuffer(texHandle.GDepthRenderbufferHandle);
                 }
 
-                if (texHandle.gBufferAlbedoSpecTextureHandle != -1)
+                if (texHandle.GBufferAlbedoSpecTextureHandle != -1)
                 {
-                    GL.DeleteTexture(texHandle.gBufferAlbedoSpecTextureHandle);
+                    GL.DeleteTexture(texHandle.GBufferAlbedoSpecTextureHandle);
                 }
 
-                if (texHandle.gBufferDepthTextureHandle != -1)
+                if (texHandle.GBufferDepthTextureHandle != -1)
                 {
-                    GL.DeleteTexture(texHandle.gBufferDepthTextureHandle);
+                    GL.DeleteTexture(texHandle.GBufferDepthTextureHandle);
                 }
 
-                if (texHandle.gBufferNormalTextureHandle != -1)
+                if (texHandle.GBufferNormalTextureHandle != -1)
                 {
-                    GL.DeleteTexture(texHandle.gBufferNormalTextureHandle);
+                    GL.DeleteTexture(texHandle.GBufferNormalTextureHandle);
                 }
 
-                if (texHandle.gBufferPositionTextureHandle != -1)
+                if (texHandle.GBufferPositionTextureHandle != -1)
                 {
-                    GL.DeleteTexture(texHandle.gBufferPositionTextureHandle);
+                    GL.DeleteTexture(texHandle.GBufferPositionTextureHandle);
                 }
             }
 
             // TODO: (dd) ?? TBD
-            if (texHandle.depthHandle != -1)
+            if (texHandle.DepthHandle != -1)
             {
 
             }
 
-            if (texHandle.handle != -1)
+            if (texHandle.Handle != -1)
             {
-                GL.DeleteTexture(texHandle.handle);
+                GL.DeleteTexture(texHandle.Handle);
             }
 
 
@@ -466,15 +470,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // Fill texture with all params
             return new TextureHandle
             {
-                gBufferHandle = gBufferHandle,
-                gBufferPositionTextureHandle = gBufferPositionTextureHandle,
-                gBufferAlbedoSpecTextureHandle = gBufferAlbedoTextureHandle,
-                gBufferNormalTextureHandle = gBufferNormalTextureHandle,
-                gBufferDepthTextureHandle = gBufferDepthTextureHandle,
-                gDepthRenderbufferHandle = gDepthRenderbufferHandle,
+                GBufferHandle = gBufferHandle,
+                GBufferPositionTextureHandle = gBufferPositionTextureHandle,
+                GBufferAlbedoSpecTextureHandle = gBufferAlbedoTextureHandle,
+                GBufferNormalTextureHandle = gBufferNormalTextureHandle,
+                GBufferDepthTextureHandle = gBufferDepthTextureHandle,
+                GDepthRenderbufferHandle = gDepthRenderbufferHandle,
 
-                textureWidth = width,
-                textureHeight = height
+                TextureWidth = width,
+                TextureHeight = height
             };
         }
 
@@ -519,7 +523,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
-            return new TextureHandle { handle = textureHandle, fboHandle = fboHandle };
+            return new TextureHandle { Handle = textureHandle, FboHandle = fboHandle };
         }
 
         private static TextureHandle CreateCubeMapFramebuffer(int width, int height)
@@ -571,7 +575,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
-            return new TextureHandle { handle = cubeMapTextureHandle, fboHandle = framebuffer };
+            return new TextureHandle { Handle = cubeMapTextureHandle, FboHandle = framebuffer };
         }
 
         private static TextureHandle CreateRenderTargetTextureFramebuffer(int width, int height)
@@ -622,7 +626,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 TextureTarget.Texture2D, screenTexture, 0);
 
             // Handle= the blitted texture that will be used as shaderparam sampler2D...
-            return new TextureHandle { handle = screenTexture, renderToTextureBufferHandle = framebuffer, intermediateToTextureBufferHandle = intermediateFbo, textureWidth = width, textureHeight = height };
+            return new TextureHandle { Handle = screenTexture, RenderToTextureBufferHandle = framebuffer, IntermediateToTextureBufferHandle = intermediateFbo, TextureWidth = width, TextureHeight = height };
         }
 
         #endregion
@@ -1071,7 +1075,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
         }
 
         /// <summary>
@@ -1085,23 +1089,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (gHandle)
             {
                 case GBufferHandle.GPositionHandle:
-                    ((TextureHandle) texId).handle = ((TextureHandle) texId).gBufferPositionTextureHandle;
+                    ((TextureHandle) texId).Handle = ((TextureHandle) texId).GBufferPositionTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GNormalHandle:
-                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferNormalTextureHandle;
+                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferNormalTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GAlbedoHandle:
-                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferAlbedoSpecTextureHandle;
+                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferAlbedoSpecTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.GDepth:
-                    ((TextureHandle)texId).handle = ((TextureHandle)texId).gBufferDepthTextureHandle;
+                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferDepthTextureHandle;
                     SetShaderParamTexture(param, texId);
                     break;
                 case GBufferHandle.EnvMap:
-                    ((TextureHandle)texId).handle = ((TextureHandle)texId).handle;
+                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).Handle;
                     var iParam = ((ShaderParam)param).handle;
                     int texUnit;
                     if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
@@ -1111,7 +1115,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     GL.Uniform1(iParam, texUnit);
                     GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).handle);
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).Handle);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
@@ -1712,7 +1716,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) texId).handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) texId).Handle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -2179,11 +2183,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             var textureImp = (TextureHandle)texture;
 
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.gDepthRenderbufferHandle);
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.GDepthRenderbufferHandle);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
                                                                       // copy depth
-            var width = textureImp.textureWidth;
-            var height = textureImp.textureHeight;
+            var width = textureImp.TextureWidth;
+            var height = textureImp.TextureHeight;
             GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
         }
 
@@ -2198,10 +2202,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var textureImp = (TextureHandle)texture;
 
               // Enable writes to the color buffer
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.fboHandle);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.FboHandle);
 
             // bind correct texture
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + position, textureImp.handle, 0);
+            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + position, textureImp.Handle, 0);
             
           
             //GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
@@ -2227,49 +2231,49 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             }
             // FBO Handle is set -> ShadowMap
-            else if (textureImp.fboHandle != -1)
+            else if (textureImp.FboHandle != -1)
             {
                 // To prevent Peter Panning
                 // GL.CullFace(CullFaceMode.Front); //TODO: Move this to SceneRender
 
                 // Bind buffer - now we are rendering to this buffer!
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.fboHandle);
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.FboHandle);
 
                 // Clear 
                 Clear(ClearFlags.Depth);
             }
             // GBufferHandle is set -> Bind GBuffer
-            else if (textureImp.gBufferHandle != -1)
+            else if (textureImp.GBufferHandle != -1)
             {
                 // Bind buffer - now we are rendering to this buffer!
                 // Framebuffer or DrawFrameBuffer as Target?
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.gBufferHandle);
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.GBufferHandle);
               
                 // Clear Depth & Color for GBuffer!
                 Clear(ClearFlags.Depth | ClearFlags.Color);
             }
             // RenderToTexture Handle is set -> OffScreen FrameBuffer with Color and Depth attachment
-            else if (textureImp.renderToTextureBufferHandle != -1)
+            else if (textureImp.RenderToTextureBufferHandle != -1)
             {
-                if (!textureImp.toggle)
+                if (!textureImp.Toggle)
                 {
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.renderToTextureBufferHandle);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, textureImp.handle, 0);
+                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.RenderToTextureBufferHandle);
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, textureImp.Handle, 0);
                     GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
                     GL.Enable(EnableCap.DepthTest);
                     GL.Enable(EnableCap.Multisample);
-                    textureImp.toggle = true;
+                    textureImp.Toggle = true;
                 }
                 else
                 {
-                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.renderToTextureBufferHandle);
-                    GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.intermediateToTextureBufferHandle);
-                    GL.BlitFramebuffer(0, 0, textureImp.textureWidth, textureImp.textureHeight, 0, 0,
-                        textureImp.textureWidth, textureImp.textureHeight, ClearBufferMask.ColorBufferBit,
+                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.RenderToTextureBufferHandle);
+                    GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.IntermediateToTextureBufferHandle);
+                    GL.BlitFramebuffer(0, 0, textureImp.TextureWidth, textureImp.TextureHeight, 0, 0,
+                        textureImp.TextureWidth, textureImp.TextureHeight, ClearBufferMask.ColorBufferBit,
                         BlitFramebufferFilter.Nearest);
                     //glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
                     GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    textureImp.toggle = false;
+                    textureImp.Toggle = false;
                 }
                 
             }
