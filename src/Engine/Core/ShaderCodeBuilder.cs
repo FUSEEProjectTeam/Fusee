@@ -1045,7 +1045,7 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].position",
-                Value = new float3(0, 0, -1)
+                Value = new float3(0, 0, -1.0f)
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
@@ -1055,17 +1055,17 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].attenuation",
-                Value = 0
+                Value = 0.0f
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].ambientCoefficient",
-                Value = 0
+                Value = 0.0f
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].coneAngle",
-                Value = 0
+                Value = 0.0f
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
@@ -1075,7 +1075,7 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].lightType",
-                Value = 1
+                Value = 1.0f
             });
 
             return effectParameters;

@@ -305,7 +305,7 @@ namespace Fusee.Engine.Core
                     Position = float3.UnitZ,
                     Active = true,
                     AmbientCoefficient = 0.0f,
-                    Attenuation = 0,
+                    Attenuation = 0.0f,
                     Color = new float3(1.0f, 1.0f, 1.0f),
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
