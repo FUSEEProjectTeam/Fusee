@@ -50,6 +50,7 @@
     <Compile Include="AnimationComponent.cs" />
     <Compile Include="AnimationTrackContainer.cs" />
     <Compile Include="BoneComponent.cs" />
+    <Compile Include="CanvasTransformComponent.cs" />
     <Compile Include="LightComponent.cs" />
     <Compile Include="MaterialComponent.cs" />
     <Compile Include="MaterialLightComponent.cs" />
@@ -59,6 +60,7 @@
     <Compile Include="MeshDataEventArgs.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="NineSliceComponent.cs" />
+    <Compile Include="RectTransformComponent.cs" />
     <Compile Include="SceneComponentContainer.cs" />
     <Compile Include="SceneContainer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

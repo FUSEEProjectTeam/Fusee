@@ -450,22 +450,7 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-
-                var defaultMat = new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer
-                    {
-                        Color = new float3(0.5f, 0.5f, 0.5f)
-                    },
-                    Specular = new SpecularChannelContainer
-                    {
-                        Color = new float3(1, 1, 1),
-                        Intensity = 0.5f,
-                        Shininess = 22
-                    }
-                };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);                
                 
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
