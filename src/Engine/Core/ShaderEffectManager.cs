@@ -43,7 +43,8 @@ namespace Fusee.Engine.Core
                         {
                             //var unknownParamHandle = _rci.GetShaderParam(program._spi, args.UnknownUniformName);
                             ShaderParamInfo param;
-                            if (program._paramsByName.TryGetValue(args.UnknownUniformName, out param))
+                            
+                            if (program._paramsByName.TryGetValue(args.UnknownUniformName, out param) || args.UnknownUniformName.Contains("FUSEE_BONES"))
                             {
                                 for (var i = 0; i < ef.VertexShaderSrc.Length; i++)
                                 {
@@ -51,7 +52,7 @@ namespace Fusee.Engine.Core
                                     {
                                         Info = new ShaderParamInfo
                                         {
-                                            Handle = param.Handle,
+                                            Handle = _rci.GetShaderParam(program._spi, args.UnknownUniformName),
                                             Name = args.UnknownUniformName,
                                             Type = args.UnknownUniformObject.GetType()
                                         },

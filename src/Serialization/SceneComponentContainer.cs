@@ -33,8 +33,6 @@ namespace Fusee.Serialization
     [ProtoInclude(105, typeof(AnimationComponent))]
     [ProtoInclude(106, typeof(BoneComponent))]
     [ProtoInclude(107, typeof(ShaderComponent))]
-    [ProtoInclude(108, typeof(RectTransformComponent))]
-    [ProtoInclude(109, typeof(CanvasTransformComponent))]
     public class SceneComponentContainer
     {
         /// <summary>

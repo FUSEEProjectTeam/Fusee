@@ -135,18 +135,6 @@ namespace Fusee.Engine.Core
         {
 
         }
-
-        [VisitMethod]
-        public void ConCanvasTransform(CanvasTransformComponent ctc)
-        {
-
-        }
-
-        [VisitMethod]
-        public void ConvRectTransform(RectTransformComponent rtc)
-        {
-
-        }
         #endregion
 
         #region Make ShaderEffect

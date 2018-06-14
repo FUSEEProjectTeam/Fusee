@@ -7,6 +7,9 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Texture implements <see cref="IImageData"/> and is used inside <see cref="RenderContext"/> to render bitmaps in fusee.
+    /// </summary>
     public class Texture : ITexture, IDisposable
     {
         #region RenderContext Asset Management
@@ -22,22 +25,37 @@ namespace Fusee.Engine.Core
         public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
         #endregion
 
-        private ImageData _imageData;
+        private readonly ImageData _imageData;
 
         #region Properties
+
+        /// <summary>
+        /// Width in pixels.
+        /// </summary>
         public int Width
         {
             get { return _imageData.Width; }
         }
+
+        /// <summary>
+        /// Height in pixels.
+        /// </summary>
         public int Height
         {
             get { return _imageData.Height; }
         }
+
+        /// <summary>
+        /// The raw Pixeldata byte buffer. This byte buffer will be uploaded to the GPU inside <see cref="RenderContext"/>
+        /// </summary>
         public byte[] PixelData
         {
             get { return _imageData.PixelData; }
         }
 
+        /// <summary>
+        /// Provides additional information abut this Texture's pixel encoding.
+        /// </summary>
         public ImagePixelFormat PixelFormat
         {
             get { return _imageData.PixelFormat; }
@@ -53,20 +71,58 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        /// <summary>
+        /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
+        /// </summary>
+        /// <param name="pixelData">The raw pixelData byte buffer that makes up the texture.</param>
+        /// <param name="width">Width in pixels.</param>
+        /// <param name="height">Height in pixels.</param>
+        /// <param name="colorFormat">Provides additional information about pixel encoding.</param>
         public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat)
         {
             _imageData = new ImageData(pixelData, width, height, colorFormat);
         }
 
-        public Texture(ImageData imageData)
+        /// <summary>
+        /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="Blt"/> command.
+        /// </summary>
+        /// <param name="imageData">The existing <see cref="IImageData"/> that will be copied to initialize a Texture instance.</param>
+        public Texture(IImageData imageData)
         {
-            _imageData = imageData;
+            _imageData = new ImageData(
+                new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
+                imageData.Width, imageData.Height, imageData.PixelFormat);
+            _imageData.Blt(0,0, imageData);
         }
 
+        /// <summary>
+        /// Copies a rectangular block of pixel data from a source image to a this image (Blt = BlockTransfer).
+        /// </summary>
+        /// <param name="xDst">The x destination coordinate (where to place the block within dst).</param>
+        /// <param name="yDst">The y destination coordinate (where to place the block within dst).</param>
+        /// <param name="src">The source image.</param>
+        /// <param name="xSrc">The x source coordinate (where to start copying from within src).</param>
+        /// <param name="ySrc">The y source coordinate (where to start copying from within src).</param>
+        /// <param name="width">The width of the block to copy. (default is src.Width).</param>
+        /// <param name="height">The height of the block to copy (default is src.Height).</param>
+        /// <remarks>
+        ///     All specified parameters are clipped to avoid out-of-bounds indices. No warnings or exceptions are issued
+        ///     in case clipping results in a smaller or an empty block.
+        /// </remarks>
         public void Blt(int xDst, int yDst, IImageData src, int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             // Blit into private _imageData
-            _imageData.Blt(xDst,yDst, src, xSrc, ySrc, width, height);
+            _imageData.Blt(xDst, yDst, src, xSrc, ySrc, width, height);
+            if (width == 0)
+                width = src.Width;
+            if (height == 0)
+                height = src.Height;
+
+            ClipBlt(ref xDst, Width, ref xSrc, src.Width, ref width);
+            ClipBlt(ref yDst, Height, ref ySrc, src.Height, ref height);
+
+            if (width <= 0 || height <= 0)
+                return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
             var del = this.TextureChanged;
@@ -76,6 +132,15 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Retrieve a rectangular block from this image that is represented by horizontal ScanLines from top to bottom along width and height, beginning at offsets xSrc and ySrc.
+        /// </summary>
+        /// <param name="xSrc">x offset in pixels.</param>
+        /// <param name="ySrc">y offset in pixels.</param>
+        /// <param name="width">width of ScanLines in pixels.</param>
+        /// <param name="height">Height describes how many ScanLines will be returned.</param>
+        /// <returns>Returns a rectangular block of horizontal ScanLine instances.</returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IEnumerator<ScanLine> ScanLines(int xSrc = 0, int ySrc = 0, int width = 0, int height = 0)
         {
             return _imageData.ScanLines(xSrc, ySrc, width, height);
@@ -99,6 +164,45 @@ namespace Fusee.Engine.Core
         ~Texture()
         {
             Dispose();
+        }
+
+        /// <summary>
+        /// Performs clipping along one dimension of a blt operation.
+        /// </summary>
+        /// <param name="iDst">The destination coordinate.</param>
+        /// <param name="sizeDst">The size of the destination buffer.</param>
+        /// <param name="iSrc">The source coordinate.</param>
+        /// <param name="sizeSrc">The size of the source coordinate.</param>
+        /// <param name="sizeBlk">The size of the block to copy.</param>
+        /// <remarks>
+        ///    All parameters decorated with "ref" might be altered to avoid out-of-bounds indices.
+        ///    If the resulting number of items to copy is 0, only sizeBlk will be set to 0. No other
+        ///    ref-parameter will be altered then.
+        /// </remarks>
+        private static void ClipBlt(ref int iDst, int sizeDst, ref int iSrc, int sizeSrc, ref int sizeBlk)
+        {
+            // Adjust left border
+            // The negative number with the biggest magnitude of negative start indices (or 0, if both are 0 or bigger).
+            // int iDeltaL = M.Min(0, M.Min(iDst, iSrc));
+            int iDeltaL = (iDst < iSrc) ? iDst : iSrc;
+            if (iDeltaL > 0)
+                iDeltaL = 0;
+
+            // Adjust right border
+            // The biggest overlap over the right border (or 0 if no overlap).
+            // int iDeltaR = M.Max(0, M.Max(iDst + sizeBlk - sizeDst, iSrc + sizeBlk - sizeSrc));
+            int dstRb = iDst + sizeBlk - sizeDst;
+            int srcRb = iSrc + sizeBlk - sizeSrc;
+            int iDeltaR = (dstRb > srcRb) ? dstRb : srcRb;
+            if (iDeltaR < 0)
+                iDeltaR = 0;
+
+            iDst -= iDeltaL;
+            iSrc -= iDeltaL;
+            sizeBlk += iDeltaL;
+            sizeBlk -= iDeltaR;
+            if (sizeBlk < 0)
+                sizeBlk = 0;
         }
 
     }
