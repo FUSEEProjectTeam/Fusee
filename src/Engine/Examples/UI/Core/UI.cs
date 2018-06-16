@@ -29,7 +29,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
         protected readonly string TEXTUREPS = 
         @"
-            #version 330
+            #version 120
 
             #ifdef GL_ES
                 precision highp float;
@@ -447,7 +447,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,5)},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.11f,0.11f,0.06f,0.17f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 5f}
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 5f},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
                                                         })},
                                                     new NineSlicePlane()
                                                 }
@@ -509,7 +513,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "Tile", Value = new float2(2,3)},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 1f}
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 1f},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
                                                         })},
                                                     new NineSlicePlane()
                                                 }
@@ -571,7 +579,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                                             new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,1)},
                                                             new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
                                                             new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.09f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 2f}
+                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 2f},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
                                                         })},
                                                     new NineSlicePlane()
                                                 }

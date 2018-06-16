@@ -1,4 +1,4 @@
-#version 120
+#version 100
 
 #ifdef GL_ES
 precision highp float;
@@ -34,20 +34,20 @@ float calculateUvY(float currentTileY, vec2 p1, vec2 p4, vec2 Tile, float height
 		return bringInRange(p1.y + (height * (currentTileY / Tile.y)), p1.y + height, p1.y, p4.y , vUV.y);
 	//Every tile inbetween
 	else
-		return bringInRange( p1.y + (height * (currentTileY / Tile.y)), p1.y + (height * ((currentTileY + 1) / Tile.y)), p1.y, p4.y , vUV.y);
+		return bringInRange( p1.y + (height * (currentTileY / Tile.y)), p1.y + (height * ((currentTileY + 1.0) / Tile.y)), p1.y, p4.y , vUV.y);
 
 }
 
 void main()
 {
 	vec3 N = normalize(vMVNormal);
-	vec3 L = normalize(vec3(0.0,0.0,-1.0));
+	vec3 L = vec3(0.0,0.0,-1.0);
 
 	//LRTB
 	vec2 p1 = vec2(fragBorders.x, fragBorders.w); //lower left
-	vec2 p2 = vec2(fragBorders.x, 1-fragBorders.z); //upper left
-	vec2 p3 = vec2(1-fragBorders.y, 1-fragBorders.w); //lower right
-	vec2 p4 = vec2(1-fragBorders.y, 1-fragBorders.z); //upper right		
+	vec2 p2 = vec2(fragBorders.x, 1.0-fragBorders.z); //upper left
+	vec2 p3 = vec2(1.0-fragBorders.y, 1.0-fragBorders.w); //lower right
+	vec2 p4 = vec2(1.0-fragBorders.y, 1.0-fragBorders.z); //upper right		
 	
 	if((vUV.x >= p1.x && vUV.y >= p1.y) && (vUV.x <= p4.x && vUV.y <= p4.y))
 	{		
@@ -76,7 +76,7 @@ void main()
 		//Every tile inbetween
 		else 
 		{
-			float uvX = bringInRange( p1.x + (width * (currentTileX / Tile.x)), p1.x + (width * ((currentTileX + 1) / Tile.x)), p1.x, p4.x , vUV.x);
+			float uvX = bringInRange( p1.x + (width * (currentTileX / Tile.x)), p1.x + (width * ((currentTileX + 1.0) / Tile.x)), p1.x, p4.x , vUV.x);
 			float uvY = calculateUvY(currentTileY,p1, p4, Tile, height);
 
 			gl_FragColor = vec4(texture2D(DiffuseTexture, vec2(uvX , uvY)) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0);
