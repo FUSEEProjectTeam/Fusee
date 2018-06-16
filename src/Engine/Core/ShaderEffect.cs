@@ -19,13 +19,19 @@ namespace Fusee.Engine.Core
         public string PS;
     }
 
+    /// <summary>
+    /// A datatype for the list of (uniform) parameters possibliy occurring in one of the shaders in the various passes.
+    /// Each of this array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
+    /// parameter's type.
+    /// </param>
+    /// </summary>
     public struct EffectParameterDeclaration
     {
         public string Name;
         public object Value;
     }
 
-    public sealed class EffectParam
+    internal sealed class EffectParam
     {
         public ShaderParamInfo Info;
         public Object Value;
@@ -39,13 +45,15 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ShaderEffect : DynamicObject, IDisposable
     {
+        public Dictionary<string, object> ParamDecl;
+
         public readonly RenderStateSet[] States;
-        public ShaderProgram[] CompiledShaders;
         public readonly string[] VertexShaderSrc;
         public readonly string[] PixelShaderSrc;
-        public Dictionary<string, object> Parameters;
-        public List<List<EffectParam>> ParamsPerPass;
-        public Dictionary<string, object> ParamDecl;
+       
+        internal ShaderProgram[] CompiledShaders;       
+        internal List<List<EffectParam>> ParamsPerPass;
+        internal Dictionary<string, object> Parameters;
 
         // Event ShaderEffect changes
         /// <summary>
@@ -94,7 +102,7 @@ namespace Fusee.Engine.Core
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                {
+                {                   
                     ParamDecl.Add(param.Name, param.Value);
                 }
             }
@@ -113,32 +121,29 @@ namespace Fusee.Engine.Core
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
 
-            public void SetEffectParam(string name, object value)
-            {
-                object pa;
+        public void SetEffectParam(string name, object value)
+        {
+                object param;
 
-                if (Parameters != null)
+                if (ParamDecl != null)
                 {
-                    if (Parameters.TryGetValue(name, out pa))
+                    if (ParamDecl.TryGetValue(name, out param))
                     {
-                        var param = (EffectParam) pa;
-                        // do nothing if new value = old value
-                        if (param.Value.Equals(value)) return; // TODO: Write a better compare method
+                    // do nothing if new value = old value
+                    if (param.Equals(value)) return; // TODO: Write a better compare method! 
 
-                        param.Value = value;
-                        ShaderEffectChanged?.Invoke(this,
-                            new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_EFFECT_PARAM, param));
+                    // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
+                    ParamDecl[name] = value;
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED));
                     }
                     else
                     {
-                        if(name != null && value != null)
-                            // not in Parameters, try to get it anyway through ShaderProgram
-                            ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.CHANGED_UNKNOWN_EFFECT_PARAM, null, name, value));
+                        // not in Parameters, call warning method!
+                        Diagnostics.Log($"Warning: uniform {name}, with value {value} of type {value.GetType()} is not known in current shader!");
+                    }
                 }
-                      
-                }
-                   
-            }
+        }                   
+            
 
             public object GetEffectParam(string name)
             {
@@ -175,12 +180,12 @@ namespace Fusee.Engine.Core
         public override bool TrySetMember(
             SetMemberBinder binder, object value)
         {
-            // Converting the property name to lowercase
-            // so that property names become case-insensitive.
-            Parameters[binder.Name.ToLower()] = value;
+            // Test if value == EffectParam
+            if (value.GetType() != typeof(EffectParam))
+                return false;
 
-            // You can always add a value to a dictionary,
-            // so this method always returns true.
+            SetEffectParam(binder.Name, value);   
+
             return true;
         }
     }
@@ -189,33 +194,21 @@ namespace Fusee.Engine.Core
     {
         public ShaderEffect Effect { get; }
         public ShaderEffectChangedEnum Changed { get; }
-        public EffectParam EffectParameter { get; }
+        internal EffectParam EffectParameter { get; }
 
-        public string UnknownUniformName { get; }
-        public object UnknownUniformObject { get; }
-
-        public ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null, string unknownUniformName = null, object unknownUniformObject = null)
+        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null)
         {
             Effect = effect;
             Changed = changed;
             if(effectParam != null)
                 EffectParameter = effectParam;
-
-            if (unknownUniformName != null && unknownUniformObject != null)
-            {
-                UnknownUniformName = unknownUniformName;
-                UnknownUniformObject = unknownUniformObject;
-            }
-               
         }
     }
 
     public enum ShaderEffectChangedEnum
     {
         DISPOSE = 0,
-        CHANGED_EFFECT_PARAM,
-        CHANGED_UNKNOWN_EFFECT_PARAM
-
+        UNIFORM_VAR_UPDATED
     }
 
 }

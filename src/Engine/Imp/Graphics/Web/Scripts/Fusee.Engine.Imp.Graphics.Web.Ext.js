@@ -1146,10 +1146,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             ret.Program = program;
 
             // mr: Detach Shader & delete
-            this.gl.detachShader(program, fragmentObject);
-            this.gl.detachShader(program, vertexObject);
-            this.gl.deleteShader(fragmentObject);
-            this.gl.deleteShader(vertexObject);
+            //this.gl.detachShader(program, fragmentObject);
+            //this.gl.detachShader(program, vertexObject);
+            //this.gl.deleteShader(fragmentObject);
+            //this.gl.deleteShader(vertexObject);
 
             return ret;
         }
@@ -1473,7 +1473,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
 
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
-        function SetShaderParamTexture(param, texId) {
+        function SetShaderParamTexture(param, texId) {          
             var iParam = param.handle;
             var texUnit = -1;
             var iParamStr = param.id.toString();
@@ -1486,7 +1486,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.uniform1i(iParam, texUnit);
             this.gl.activeTexture(this.gl.TEXTURE0 + texUnit);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
-
         }
     );
 

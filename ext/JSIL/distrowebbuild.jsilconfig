@@ -1,7 +1,7 @@
 ﻿{
    "AnalyzerSettings": {
 		  "DeadCodeAnalyzer": {
-			"DeadCodeElimination": true
+			"DeadCodeElimination": false
 		  }
 	  }
 }

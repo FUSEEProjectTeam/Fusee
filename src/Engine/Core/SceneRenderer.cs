@@ -305,12 +305,12 @@ namespace Fusee.Engine.Core
                     Position = float3.UnitZ,
                     Active = true,
                     AmbientCoefficient = 0.0f,
-                    Attenuation = 0,
+                    Attenuation = 0.0f,
                     Color = new float3(1.0f, 1.0f, 1.0f),
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
-                    Type = LightType.Legacy
+                    Type = (int) LightType.Legacy
                 });
             }
 
@@ -727,7 +727,7 @@ namespace Fusee.Engine.Core
         private static void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
         {
             if (!light.Active) return;
-
+            
             // Set params in modelview space since the lightning calculation is in modelview space
             effect.SetEffectParam($"allLights[{position}].position", light.PositionModelViewSpace);
             effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
@@ -890,7 +890,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Represents the type of the light.
         /// </summary>
-        public LightType Type;
+        public int Type;
         /// <summary>
         /// Represents the spot angle of the light.
         /// </summary>
@@ -970,7 +970,7 @@ namespace Fusee.Engine.Core
         {
             var lightResult = new LightResult
             {
-                Type = lightComponent.Type,
+                Type = (int) lightComponent.Type,
                 Color = lightComponent.Color,
                 ConeAngle = lightComponent.ConeAngle,
                 ConeDirection = lightComponent.ConeDirection,

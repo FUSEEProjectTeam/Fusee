@@ -733,7 +733,7 @@ namespace Fusee.Engine.Core
             // texture management
             _textureManager = new TextureManager(_rci);
 
-            _shaderEffectManager = new ShaderEffectManager(_rci);
+            _shaderEffectManager = new ShaderEffectManager(this);
 
             // Make JSIL run through this one time. 
             _col = ColorUint.White.Tofloat3();
@@ -1092,7 +1092,7 @@ namespace Fusee.Engine.Core
         /// Removes given shaderprogramm from GPU
         /// </summary>
         /// <param name="ef">The ShaderEffect</param>
-        private void RemoveShader(ShaderEffect ef)
+        internal void RemoveShader(ShaderEffect ef)
         {
             foreach (var program in ef.CompiledShaders)
             {
@@ -1131,7 +1131,7 @@ namespace Fusee.Engine.Core
                throw new ArgumentNullException("rc", "must pass a valid render context.");
 
             if (ef == null)
-                return;
+                return;          
 
             // Is this shadereffect already built?
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
@@ -1139,7 +1139,6 @@ namespace Fusee.Engine.Core
                 _currentShaderEffect = ef;
                 return;
             }
-               
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
@@ -1156,13 +1155,26 @@ namespace Fusee.Engine.Core
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
+            CompileAllShaderEffectVariables(ref ef);
+
+            // Register built shadereffect
+            _shaderEffectManager.RegisterShaderEffect(ef);
+
+            // register this shader effect as current shader
+            _currentShaderEffect = ef;
+        }
+
+        internal void CompileAllShaderEffectVariables(ref ShaderEffect ef)
+        {
+
+            int i = 0, nPasses = ef.VertexShaderSrc.Length;
+
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             ef.Parameters = new Dictionary<string, object>();
             ef.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
                 IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
-  
                 ef.ParamsPerPass.Add(new List<EffectParam>());
                 foreach (var paramNew in paramList)
                 {
@@ -1192,10 +1204,11 @@ namespace Fusee.Engine.Core
                         // ReSharper restore UseMethodIsInstanceOfType
 
                         // Parameter was declared by user and type is correct in shader - carry on.
-                        object paramEx;
-                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramEx))
+                        EffectParam paramExisting;
+                        object paramExistingTmp;
+                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
                         {
-                            var paramExisting = (EffectParam) paramEx;
+                            paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
                             if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
                             {
@@ -1203,30 +1216,24 @@ namespace Fusee.Engine.Core
                                 throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
                                                     paramNew.Name +
                                                     " already defined with a different type in effect pass " +
-                                                    paramExisting.ShaderInxs[0]);
+                                                   paramExisting.ShaderInxs[0]);
                             }
                             // List the current pass to use this shader parameter
                             paramExisting.ShaderInxs.Add(i);
                         }
                         else
                         {
-                            paramEx = new EffectParam()
+                            paramExisting = new EffectParam()
                             {
                                 Info = paramNew,
                                 ShaderInxs = new List<int>(new int[] { i }),
                                 Value = initValue
                             };
-                            ef.Parameters.Add(paramNew.Name, paramEx);
+                            ef.Parameters.Add(paramNew.Name, paramExisting);
                         }
-                        ef.ParamsPerPass[i].Add((EffectParam) paramEx);
+                        ef.ParamsPerPass[i].Add(paramExisting);
                     }
                 }
-
-                // Register built shadereffect
-                _shaderEffectManager.RegisterShaderEffect(ef);
-
-                // register this shader effect as current shader
-                _currentShaderEffect = ef;
             }
         }
 
@@ -1281,7 +1288,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParam1f")]
+        [JSChangeName("SetShaderParam1f")]
         public void SetShaderParam(IShaderParam param, float val)
         {
             _rci.SetShaderParam(param, val);
@@ -1297,7 +1304,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParam2f")]
+        [JSChangeName("SetShaderParam2f")]
         public void SetShaderParam(IShaderParam param, float2 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1313,7 +1320,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParam3f")]
+        [JSChangeName("SetShaderParam3f")]
         public void SetShaderParam(IShaderParam param, float3 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1329,7 +1336,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParam4f")]
+        [JSChangeName("SetShaderParam4f")]
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1345,7 +1352,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParam4fArray")]
+        [JSChangeName("SetShaderParam4fArray")]
         public void SetShaderParam(IShaderParam param, float4[] val)
         {
             _rci.SetShaderParam(param, val);
@@ -1361,7 +1368,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParamfloat4x4")]
+        [JSChangeName("SetShaderParamfloat4x4")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1377,7 +1384,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParamMtx4fArray")]
+        [JSChangeName("SetShaderParamMtx4fArray")]
         public void SetShaderParam(IShaderParam param, float4x4[] val)
         {
             _rci.SetShaderParam(param, val);
@@ -1393,7 +1400,7 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        //[JSChangeName("SetShaderParamI")]
+        [JSChangeName("SetShaderParamI")]
         public void SetShaderParam(IShaderParam param, int val)
         {
             _rci.SetShaderParam(param, val);
@@ -1480,7 +1487,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            if (_currentShaderEffect == null) return;
+            if (_currentShaderEffect == null) return;            
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
@@ -1491,7 +1498,7 @@ namespace Fusee.Engine.Core
                     SetShader(_currentShaderEffect.CompiledShaders[i]);
 
                     foreach (var param in _currentShaderEffect.ParamsPerPass[i])
-                    {
+                    {                       
                         SetShaderParamT(param);
                     }
 
@@ -1519,7 +1526,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param"></param>
         /// <param name="value"></param>
-        public void SetShaderParamT(EffectParam param)
+        internal void SetShaderParamT(EffectParam param)
         {
             if (param.Info.Type == typeof(int))
             {
