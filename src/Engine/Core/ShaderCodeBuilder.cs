@@ -524,11 +524,11 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasDiffuse)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, DiffuseColorName));
 
-            if (_materialProbs.HasDiffuseTexture)
-            {
+            //if (_materialProbs.HasDiffuseTexture)
+            //{
                 _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, DiffuseTextureName));
                 _pixelShader.Add(GLSL.CreateUniform(Type.Float, DiffuseMixName));
-            }
+            //}
 
             if (_materialProbs.HasEmissive)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, EmissiveColorName));
@@ -859,7 +859,7 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
                 "}",
-                "gl_FragColor = vec4(result, 1.0);"
+                $"gl_FragColor = vec4(result, 1.0);"
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
@@ -947,6 +947,7 @@ namespace Fusee.Engine.Core
             );
             return ret;
         }
+        
 
         private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
         {
@@ -1076,6 +1077,48 @@ namespace Fusee.Engine.Core
             {
                 Name = "allLights[" + 0 + "].lightType",
                 Value = 1.0f
+            });
+
+            // FUSEE_ PARAMS
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_M",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_MV",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_MVP",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_ITMV",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_IMV",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_V",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "FUSEE_P",
+                Value = float4x4.Identity
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                    Name = "FUSEE_BONES[BONES]",
+                    Value = float4x4.Identity
             });
 
             return effectParameters;

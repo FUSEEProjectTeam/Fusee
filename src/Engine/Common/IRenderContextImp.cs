@@ -199,6 +199,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        [JSChangeName("SetShaderParamTexture")]
         void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>

@@ -674,7 +674,7 @@ namespace Fusee.Engine.Core
         private static void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
         {
             if (!light.Active) return;
-
+            
             // Set params in modelview space since the lightning calculation is in modelview space
             effect.SetEffectParam($"allLights[{position}].position", light.PositionModelViewSpace);
             effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
