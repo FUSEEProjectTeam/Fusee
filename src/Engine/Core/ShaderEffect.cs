@@ -47,7 +47,6 @@ namespace Fusee.Engine.Core
     {
         public Dictionary<string, object> ParamDecl;
 
-
         public readonly RenderStateSet[] States;
         public readonly string[] VertexShaderSrc;
         public readonly string[] PixelShaderSrc;
@@ -123,28 +122,28 @@ namespace Fusee.Engine.Core
         }
 
         public void SetEffectParam(string name, object value)
-            {
-                object pa;
+        {
+                object param;
 
-                if (Parameters != null)
+                if (ParamDecl != null)
                 {
-                    if (Parameters.TryGetValue(name, out pa))
+                    if (ParamDecl.TryGetValue(name, out param))
                     {
-                        var param = (EffectParam) pa;
-                        // do nothing if new value = old value
-                        if (param.Value.Equals(value)) return; // TODO: Write a better compare method
+                    // do nothing if new value = old value
+                    if (param.Equals(value)) return; // TODO: Write a better compare method! 
 
-                        param.Value = value;
+                    // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
+                    ParamDecl[name] = value;
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED));
                     }
                     else
                     {
                         // not in Parameters, call warning method!
-                       Diagnostics.Log($"Warning: uniform {name}, with value {value} of type {value.GetType()} is not known in current shader!");
+                        Diagnostics.Log($"Warning: uniform {name}, with value {value} of type {value.GetType()} is not known in current shader!");
                     }
-                      
                 }
-                   
-            }
+        }                   
+            
 
             public object GetEffectParam(string name)
             {
@@ -185,11 +184,8 @@ namespace Fusee.Engine.Core
             if (value.GetType() != typeof(EffectParam))
                 return false;
 
-            // Converting the property name to lowercase
-            // so that property names become case-insensitive.
             SetEffectParam(binder.Name, value);   
-            // You can always add a value to a dictionary,
-            // so this method always returns true.
+
             return true;
         }
     }
@@ -211,7 +207,8 @@ namespace Fusee.Engine.Core
 
     public enum ShaderEffectChangedEnum
     {
-        DISPOSE = 0
+        DISPOSE = 0,
+        UNIFORM_VAR_UPDATED
     }
 
 }

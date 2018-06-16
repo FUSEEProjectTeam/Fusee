@@ -310,7 +310,7 @@ namespace Fusee.Engine.Core
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
-                    Type = LightType.Legacy
+                    Type = (int) LightType.Legacy
                 });
             }
 
@@ -837,7 +837,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Represents the type of the light.
         /// </summary>
-        public LightType Type;
+        public int Type;
         /// <summary>
         /// Represents the spot angle of the light.
         /// </summary>
@@ -917,7 +917,7 @@ namespace Fusee.Engine.Core
         {
             var lightResult = new LightResult
             {
-                Type = lightComponent.Type,
+                Type = (int) lightComponent.Type,
                 Color = lightComponent.Color,
                 ConeAngle = lightComponent.ConeAngle,
                 ConeDirection = lightComponent.ConeDirection,

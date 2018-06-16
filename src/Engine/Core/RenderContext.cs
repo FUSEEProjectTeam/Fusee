@@ -60,7 +60,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                //UpdateCurrentShader();
+                UpdateCurrentShader();
             }
         }
 
@@ -852,7 +852,7 @@ namespace Fusee.Engine.Core
             //
 
             _updatedShaderParams = true;
-            //UpdateCurrentShader();
+            UpdateCurrentShader();
         }
 
         #endregion
@@ -1139,7 +1139,6 @@ namespace Fusee.Engine.Core
                 _currentShaderEffect = ef;
                 return;
             }
-               
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
@@ -1155,6 +1154,20 @@ namespace Fusee.Engine.Core
                 //Diagnostics.Log(ef.PixelShaderSrc[0]);
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
+
+            CompileAllShaderEffectVariables(ref ef);
+
+            // Register built shadereffect
+            _shaderEffectManager.RegisterShaderEffect(ef);
+
+            // register this shader effect as current shader
+            _currentShaderEffect = ef;
+        }
+
+        internal void CompileAllShaderEffectVariables(ref ShaderEffect ef)
+        {
+
+            int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             ef.Parameters = new Dictionary<string, object>();
@@ -1174,7 +1187,7 @@ namespace Fusee.Engine.Core
 
                         // ReSharper disable UseMethodIsInstanceOfType
                         // ReSharper disable OperatorIsCanBeUsed
-                        var initValType = initValue.GetType();                        
+                        var initValType = initValue.GetType();
                         if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
                                   &&
                                   (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
@@ -1192,10 +1205,10 @@ namespace Fusee.Engine.Core
 
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
-                        object paramExistingTmp;    
+                        object paramExistingTmp;
                         if (ef.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
                         {
-                            paramExisting = (EffectParam) paramExistingTmp;    
+                            paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
                             if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
                             {
@@ -1209,7 +1222,7 @@ namespace Fusee.Engine.Core
                             paramExisting.ShaderInxs.Add(i);
                         }
                         else
-                        {                            
+                        {
                             paramExisting = new EffectParam()
                             {
                                 Info = paramNew,
@@ -1222,12 +1235,6 @@ namespace Fusee.Engine.Core
                     }
                 }
             }
-
-            // Register built shadereffect
-            _shaderEffectManager.RegisterShaderEffect(ef);
-
-            // register this shader effect as current shader
-            _currentShaderEffect = ef;
         }
 
         /// <summary>
@@ -1521,8 +1528,6 @@ namespace Fusee.Engine.Core
         /// <param name="value"></param>
         internal void SetShaderParamT(EffectParam param)
         {
-            //Diagnostics.Log(param.Info.Name);
-
             if (param.Info.Type == typeof(int))
             {
                 SetShaderParam(param.Info.Handle, (int)param.Value);
