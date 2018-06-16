@@ -524,11 +524,11 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasDiffuse)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, DiffuseColorName));
 
-            //if (_materialProbs.HasDiffuseTexture)
-            //{
+            if (_materialProbs.HasDiffuseTexture)
+            {
                 _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, DiffuseTextureName));
                 _pixelShader.Add(GLSL.CreateUniform(Type.Float, DiffuseMixName));
-            //}
+            }
 
             if (_materialProbs.HasEmissive)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, EmissiveColorName));
