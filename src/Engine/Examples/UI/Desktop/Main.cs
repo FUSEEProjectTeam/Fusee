@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -11,12 +13,25 @@ namespace Fusee.Engine.Examples.UI.Desktop
 {
     public class UI
     {
+        public static void TryAddDir(List<string> dirList, string dir)
+        {
+            if (Directory.Exists(dir))
+                dirList.Add(dir);
+        }
+
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+            List<string> assetDirs = new List<string>();
+            TryAddDir(assetDirs, "Assets");
+
+            //add GUI shader directory
+            var shaderDir = Environment.GetEnvironmentVariable("FuseeRoot") + "src\\Engine\\Core\\GUI\\Assets";
+            TryAddDir(assetDirs, shaderDir);
+
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {

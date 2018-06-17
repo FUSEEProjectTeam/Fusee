@@ -56,6 +56,7 @@
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />
+    <Compile Include="GUI\GUINodes.cs" />
     <Compile Include="Icosphere.cs" />
     <Compile Include="MeshManager.cs" />
     <Compile Include="NamespaceDoc.cs" />
@@ -161,6 +162,14 @@
       <Name>Fusee.Math.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="GUI\Assets\nineSlice.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="GUI\Assets\nineSliceTile.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />

@@ -53,15 +53,15 @@
 		 C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets -->
 	  <PropertyGroup>
 		<ApplicationResolveReferencesDependsOn>
-		FuseeBeforeAndroidResRef;
-		$(ApplicationResolveReferencesDependsOn)
-		FuseeAfterAndroidResRef;
-		</ApplicationResolveReferencesDependsOn>
+      FuseeBeforeAndroidResRef;
+      $(ApplicationResolveReferencesDependsOn)
+      FuseeAfterAndroidResRef;
+    </ApplicationResolveReferencesDependsOn>
 	  </PropertyGroup>
 
 
 	  <Target Name="FuseeBeforeAndroidResRef">
-	  </Target>
+    </Target>
 
 	  <!--  ANDROID-ONLY: Task looking for any contents in "Assets" subfolders below folders of all referenced managed .dlls (no matter if 
 	        project or assembly references.
@@ -80,14 +80,28 @@
 		<ItemGroup>
 			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
 		</ItemGroup>
+      
 		<Message Importance="High" Text="[external android asset] %(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)%(FUSEE_AndroidAsset.Filename)%(FUSEE_AndroidAsset.Extension)" />
-		<Copy 
+	  <Message Importance="High" Text="[external android UI asset] %(FUSEE_AndroidUIAsset.RootDir)%(FUSEE_AndroidUIAsset.Directory)%(FUSEE_AndroidUIAsset.Filename)%(FUSEE_AndroidUIAsset.Extension)" />
+
+      <Copy 
 			SourceFiles="@(FUSEE_AndroidAsset)" 
 			DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
-      </Target>
 
+      <ItemGroup>
+	      <FUSEE_AndroidUIAsset Include="$(FuseeRoot)src\Engine\Core\GUI\Assets\*.*"/>
+	    </ItemGroup>
+	    <Copy
+	      SourceFiles="@(FUSEE_AndroidUIAsset)"
+	      DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
+	    
+      <Copy
+	      SourceFiles="@(FUSEE_AndroidUIAsset)"
+	      DestinationFolder="%(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)" />
+
+    </Target>
 	  <!-- msbuild debugging and test stuff -->
-	  <!--Target Name="FuseeCheckAddingAssetsBefore">
+	  <!--<Target Name="FuseeCheckAddingAssetsBefore">
 		<Message Importance="High" Text="ßßßß  BEFORE ReferencePath:  @(ReferencePath)  ßßßßß" />
 		<ItemGroup>
 			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
@@ -95,13 +109,13 @@
  		<Message Importance="High" Text="ßßßß  BEFORE FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
 	  </Target>
 
-	  <Target Name="FuseeCheckAddingAssetsAfter">
-		<Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
-		<ItemGroup>
-			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
-		</ItemGroup>
- 		<Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
-	  </Target-->
+  <Target Name="FuseeCheckAddingAssetsAfter">
+    <Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
+    <ItemGroup>
+      <FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+    </ItemGroup>
+    <Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
+  </Target>-->
 	  
 	  <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
 	  <Target Name="FuseeBeforeBuild">
