@@ -1,58 +1,15 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Examples.UI.Core
 {
     public class UI : RenderCanvas
     {
-        protected readonly string GUIVS = @"
-            
-            attribute vec3 fuVertex;
-            attribute vec3 fuNormal;
-            attribute vec2 fuUV;
-            varying vec2 vUV;
-            varying vec3 vMVNormal;
-            uniform mat4 FUSEE_MVP;
-            uniform mat4 FUSEE_ITMV;
-        
-            void main() {
-               
-               vUV = fuUV;
-               vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);
-               gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
-            }";
-
-        protected readonly string TEXTUREPS = 
-        @"
-            #version 120
-
-            #ifdef GL_ES
-                precision highp float;
-            #endif
-
-            varying vec3 vMVNormal;            
-            varying vec2 vUV;            
-            uniform mat4 FUSEE_MV;
-            uniform sampler2D DiffuseTexture;
-            uniform vec4 DiffuseColor;
-            uniform float DiffuseMix;
-
-            void main()
-            {
-                vec3 N = normalize(vMVNormal);
-                vec3 L = normalize(vec3(0.0,0.0,-1.0));
-                gl_FragColor = vec4(texture2D(DiffuseTexture, vUV) * DiffuseMix) * DiffuseColor *  max(dot(N, L), 0.0) ;
-            }";
-
-        protected readonly string NINESLICEVS = AssetStorage.Get<string>("nineSlice.vert");
-
-        protected readonly string NINESLICETILEPS = AssetStorage.Get<string>("nineSliceTile.frag");
-        
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
@@ -64,7 +21,8 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private bool _keys;
 
-        private SceneContainer CreateAnchorTestScene()
+       //Build a scene graph consisting out of a canvas and three nine sliced textures
+        private SceneContainer CreateNineSliceScene()
         {
             return new SceneContainer
             {
@@ -72,281 +30,11 @@ namespace Fusee.Engine.Examples.UI.Core
                 {
                     new SceneNodeContainer
                     {
+                        //Rotate canvas and all his children
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
                             new TransformComponent
-                            {
-                                Scale = new float3(1,1,1),
-                                Translation = new float3(0,5,0),
-                                Rotation = new float3(0,45,0)
-                            }
-                        },
-                        Children = new List<SceneNodeContainer>
-                        {
-                                new SceneNodeContainer
-                                {
-                                Name = "Canvas",
-                                Components = new List<SceneComponentContainer>
-                                {
-                                    new CanvasTransformComponent
-                                    {
-                                        Name = "Canvas_CanvasTransform",
-                                        CanvasRenderMode = CanvasRenderMode.WORLD,
-                                        Size = new MinMaxRect
-                                        {
-                                            Min = new float2(-5,0),
-                                            Max = new float2(5,3)
-                                        }
-                                    }
-                                },
-                                Children = new List<SceneNodeContainer>
-                                {
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Canvas_XForm",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new XFormComponent
-                                            {
-                                                Name = "Canvas_XForm"
-                                            },
-                                            new ShaderEffectComponent
-                                            {
-                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                                                {
-                                                    Diffuse = new MatChannelContainer {Color = new float3(0,1,0)},
-                                                })
-                                            },
-                                            new Cube()
-                                        }
-                                    },
-
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Child",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new RectTransformComponent
-                                            {
-                                                Name = "Child_RectTransform",
-                                                Anchors = new MinMaxRect
-                                                {
-                                                    Min = new float2(0,0),
-                                                    Max = new float2(1,0)
-                                                },
-                                                Offsets = new MinMaxRect
-                                                {
-                                                    Min = new float2(1,0),
-                                                    Max = new float2(-1,2)
-                                                }
-
-                                             }
-                                        },
-                                        Children =  new List<SceneNodeContainer>
-                                        {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Child_XForm",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new XFormComponent
-                                                    {
-                                                        Name = "Child_XForm"
-                                                    },
-                                                    new ShaderEffectComponent
-                                                    {
-                                                        Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                                                        {
-                                                            Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
-                                                        })
-                                                    },
-                                                    new Cube()
-                                                },
-                                                Children = new List<SceneNodeContainer>
-                                                {
-                                                    new SceneNodeContainer
-                                                    {
-                                                        Name = "GrandChild_RectTransform",
-                                                        Components = new List<SceneComponentContainer>
-                                                        {
-                                                            new RectTransformComponent
-                                                            {
-                                                                Name = "GrandChild_RectTransform",
-                                                                Anchors = new MinMaxRect
-                                                                {
-                                                                    Min = new float2(1,1),
-                                                                    Max = new float2(1,1)
-                                                                },
-                                                                Offsets = new MinMaxRect
-                                                                {
-                                                                    Min = new float2(-1,-1),
-                                                                    Max = new float2(0,0)
-                                                                }
-                                                            }
-                                                        },
-                                                       Children = new List<SceneNodeContainer>
-                                                       {
-                                                           new SceneNodeContainer
-                                                           {
-                                                               Name = "GrandChild_XForm",
-                                                               Components = new List<SceneComponentContainer>
-                                                               {
-                                                                   new XFormComponent
-                                                                   {
-                                                                       Name = "GrandChild_XForm"
-                                                                   },
-                                                                   new ShaderEffectComponent
-                                                                   {
-                                                                       Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                                                                       {
-                                                                           Diffuse = new MatChannelContainer {Color = ColorUint.Yellow.Tofloat3()},
-                                                                       })
-                                                                   },
-                                                                   new Cube()
-                                                               }
-                                                           }
-                                                       }
-                                                    }
-                                                }
-
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-        private SceneContainer CreateImageTestScene()
-        {
-            return new SceneContainer
-            {
-                Children = new List<SceneNodeContainer>
-                {
-                    new SceneNodeContainer
-                    {
-                        Name = "Null_Transform",
-                        Children = new List<SceneNodeContainer>
-                        {
-                            new SceneNodeContainer
-                            {
-                                Name = "Canvas",
-                                Components = new List<SceneComponentContainer>
-                                {
-                                    new CanvasTransformComponent
-                                    {
-                                        Name = "Canvas_CanvasTransform",
-                                        CanvasRenderMode = CanvasRenderMode.WORLD,
-                                        Size = new MinMaxRect
-                                        {
-                                            Min = new float2(-5,0),
-                                            Max = new float2(5,3)
-                                        }
-                                    }
-                                },
-                                Children = new List<SceneNodeContainer>
-                                {
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Canvas_XForm",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new XFormComponent
-                                            {
-                                                Name = "Canvas_XForm"
-                                            },
-                                            new ShaderEffectComponent
-                                            {
-                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                                                {
-                                                    Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
-                                                })
-                                            },
-                                            new Plane()
-                                        }
-                                    },
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Child",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new RectTransformComponent
-                                            {
-                                                Name = "Child_RectTransform",
-                                                Anchors = new MinMaxRect
-                                                {
-                                                    Min = new float2(0,0),
-                                                    Max = new float2(1,0)
-                                                },
-                                                Offsets = new MinMaxRect
-                                                {
-                                                    Min = new float2(1,0),
-                                                    Max = new float2(-1,2)
-                                                }
-
-                                             }
-                                        },
-                                        Children =  new List<SceneNodeContainer>
-                                        {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Child_XForm",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new XFormComponent
-                                                    {
-                                                        Name = "Child_XForm"
-                                                    },
-                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
-                                                        {
-                                                            new EffectPassDeclaration
-                                                            {
-                                                                VS = GUIVS,
-                                                                PS = TEXTUREPS,
-                                                                StateSet = new RenderStateSet
-                                                                {
-                                                                    AlphaBlendEnable = true,
-                                                                    SourceBlend = Blend.SourceAlpha,
-                                                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                                                    BlendOperation = BlendOperation.Add,
-                                                                    ZEnable = false
-                                                                }
-                                                            }
-                                                        },
-                                                        new[]
-                                                        {
-                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"))},
-                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f}
-                                                        })},
-                                                    new Plane()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-        }
-
-        private SceneContainer CreateNineSliceTestScene()
-        {
-            return new SceneContainer
-            {
-                Children = new List<SceneNodeContainer>
-                {
-                    new SceneNodeContainer
-                    {
-                        Name = "Null_Transform",
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent()
                             {
                                 Translation = new float3(0,0,0),
                                 Rotation = new float3(0,45,0),
@@ -355,6 +43,7 @@ namespace Fusee.Engine.Examples.UI.Core
                         },
                         Children = new List<SceneNodeContainer>
                         {
+                            //Add canvas
                             new SceneNodeContainer
                             {
                                 Name = "Canvas",
@@ -363,7 +52,6 @@ namespace Fusee.Engine.Examples.UI.Core
                                     new CanvasTransformComponent
                                     {
                                         Name = "Canvas_CanvasTransform",
-                                        CanvasRenderMode = CanvasRenderMode.WORLD,
                                         Size = new MinMaxRect
                                         {
                                             Min = new float2(-10,-5),
@@ -392,204 +80,70 @@ namespace Fusee.Engine.Examples.UI.Core
                                             new Plane()
                                         }
                                     },
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Child1",
-                                        Components = new List<SceneComponentContainer>
+                                    //Add nine sliced textures to canvas
+                                    GUINodes.NineSliceNode
+                                    (
+                                        "Child1",
+                                        //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                                        //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                                        new MinMaxRect
                                         {
-                                            new RectTransformComponent
-                                            {
-                                                Name = "Child1_RectTransform",
-                                                Anchors = new MinMaxRect
-                                                {
-                                                    Min = new float2(0,0),
-                                                    Max = new float2(1,0)
-                                                },
-                                                Offsets = new MinMaxRect
-                                                {
-                                                    Min = new float2(7.5f,0),
-                                                    Max = new float2(-7.5f,5)
-                                                }
-
-                                             }
+                                            Min = new float2(0,0), //Anchor is in the lower left corner of the parent.
+                                            Max = new float2(1,0) //Anchor is in the lower right corner of the parent
                                         },
-                                        Children =  new List<SceneNodeContainer>
+                                        //Define Offset and therefor the size of the element.
+                                        //Min: distance to this elements Min anchor.
+                                        //Max: distance to this elements Max anchor.
+                                        new MinMaxRect
                                         {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Child1_XForm",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new XFormComponent()
-                                                    {
-                                                        Name = "Child1_XForm",
-                                                    },
-                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
-                                                        {
-                                                            new EffectPassDeclaration
-                                                            {
-                                                                VS = NINESLICEVS,
-                                                                PS = NINESLICETILEPS,
-                                                                StateSet = new RenderStateSet
-                                                                {
-                                                                    AlphaBlendEnable = true,
-                                                                    SourceBlend = Blend.SourceAlpha,
-                                                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                                                    BlendOperation = BlendOperation.Add,
-                                                                    ZEnable = false
-                                                                }
-                                                            }
-                                                        },
-                                                        new[]
-                                                        {
-                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("Kitti.jpg"))},
-                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,5)},
-                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.11f,0.11f,0.06f,0.17f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 5f},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
-                                                        })},
-                                                    new NineSlicePlane()
-                                                }
-                                            }
-                                        }
-                                    },
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Child2",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new RectTransformComponent
-                                            {
-                                                Name = "Child2_RectTransform",
-                                                Anchors = new MinMaxRect
-                                                {
-                                                    Min = new float2(1,1),
-                                                    Max = new float2(1,1)
-                                                },
-                                                Offsets = new MinMaxRect
-                                                {
-                                                    Min = new float2(-8,-4),
-                                                    Max = new float2(0,0)
-                                                }
-
-                                             }
+                                            Min = new float2(7.5f,0),
+                                            Max = new float2(-7.5f,5)
                                         },
-                                        Children =  new List<SceneNodeContainer>
+                                        //Set the diffuse texture you want to use.
+                                        new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+                                        //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched
+                                        new float2(5,5),
+                                        //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
+                                        new float4(0.11f,0.11f,0.06f,0.17f),
+                                        5
+                                    ),
+                                    GUINodes.NineSliceNode
+                                    (
+                                        "Child2",
+                                        //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
+                                        new MinMaxRect
                                         {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Child2_XForm",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new XFormComponent()
-                                                    {
-                                                        Name = "Child2_XForm",
-                                                    },
-                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
-                                                        {
-                                                            new EffectPassDeclaration
-                                                            {
-                                                                VS = NINESLICEVS,
-                                                                PS = NINESLICETILEPS,
-                                                                StateSet = new RenderStateSet
-                                                                {
-                                                                    AlphaBlendEnable = true,
-                                                                    SourceBlend = Blend.SourceAlpha,
-                                                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                                                    BlendOperation = BlendOperation.Add,
-                                                                    ZEnable = false
-                                                                }
-                                                            }
-                                                        },
-                                                        new[]
-                                                        {
-                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png"))},
-                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(2,3)},
-                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.1f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
-                                                        })},
-                                                    new NineSlicePlane()
-                                                }
-                                            }
-                                        }
-                                    },
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Child2",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new RectTransformComponent
-                                            {
-                                                Name = "Child2_RectTransform",
-                                                Anchors = new MinMaxRect
-                                                {
-                                                    Min = new float2(0,1),
-                                                    Max = new float2(0,1)
-                                                },
-                                                Offsets = new MinMaxRect
-                                                {
-                                                    Min = new float2(0,-1),
-                                                    Max = new float2(6,0)
-                                                }
-
-                                             }
+                                            Min = new float2(1,1), //Anchor is in the upper right corner.
+                                            Max = new float2(1,1) //Anchor is in the upper right corner.
                                         },
-                                        Children =  new List<SceneNodeContainer>
+                                        new MinMaxRect
                                         {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Child2_XForm",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new XFormComponent()
-                                                    {
-                                                        Name = "Child2_XForm",
-                                                    },
-                                                    new ShaderEffectComponent{Effect = new ShaderEffect(new[]
-                                                        {
-                                                            new EffectPassDeclaration
-                                                            {
-                                                                VS = NINESLICEVS,
-                                                                PS = NINESLICETILEPS,
-                                                                StateSet = new RenderStateSet
-                                                                {
-                                                                    AlphaBlendEnable = true,
-                                                                    SourceBlend = Blend.SourceAlpha,
-                                                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                                                    BlendOperation = BlendOperation.Add,
-                                                                    ZEnable = false
-                                                                }
-                                                            }
-                                                        },
-                                                        new[]
-                                                        {
-                                                            new EffectParameterDeclaration {Name = "DiffuseTexture", Value = new Texture(AssetStorage.Get<ImageData>("testTex.jpg"))},
-                                                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                                            new EffectParameterDeclaration {Name = "Tile", Value = new float2(5,1)},
-                                                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                                            new EffectParameterDeclaration {Name = "borders", Value = new float4(0.1f,0.1f,0.1f,0.09f)},
-                                                            new EffectParameterDeclaration {Name = "borderThickness", Value = 2f},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                                                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
-                                                        })},
-                                                    new NineSlicePlane()
-                                                }
-                                            }
-                                        }
-                                    }
+                                            Min = new float2(-8,-4),
+                                            Max = new float2(0,0)
+                                        },
+                                        new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
+                                        new float2(2,3),
+                                        new float4(0.1f,0.1f,0.1f,0.1f),
+                                        2
+                                    ),
+                                    GUINodes.NineSliceNode
+                                    (
+                                        "Child3",
+                                        //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                                        new MinMaxRect
+                                        {
+                                            Min = new float2(0,1), //Anchor is in the upper left corner.
+                                            Max = new float2(0,1) //Anchor is in the upper left corner.
+                                        },
+                                        new MinMaxRect
+                                        {
+                                            Min = new float2(0,-1),
+                                            Max = new float2(6,0)
+                                        },
+                                        new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                                        new float2(5,1),
+                                        new float4(0.1f,0.1f,0.1f,0.09f)
+                                    )
                                 }
                             }
                         }
@@ -606,7 +160,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Load the rocket model
             //_scene = CreateAnchorTestScene();
-            _scene = CreateNineSliceTestScene();
+            _scene = CreateNineSliceScene();
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
