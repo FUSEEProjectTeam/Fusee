@@ -115,6 +115,10 @@
       <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
       <Name>Fusee.Serialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj">
+      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+      <Name>Fusee.Xene</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>

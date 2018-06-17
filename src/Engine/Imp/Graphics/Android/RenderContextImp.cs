@@ -570,7 +570,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         break;
 
                     case All.Sampler2D:
-                        paramInfo.Type = typeof (ITextureHandle);
+                        paramInfo.Type = typeof (ITexture);
                         break;
 
                     default:
@@ -684,6 +684,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
+
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
