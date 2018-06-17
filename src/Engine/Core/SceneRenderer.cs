@@ -540,17 +540,6 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void RenderNineSlice(NineSliceComponent nsc)
-        {
-            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
-
-            _state.Model *= scale;
-            _rc.Model = _state.Model;
-            _rc.View = _view;
-        }
-
-
-        [VisitMethod]
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();

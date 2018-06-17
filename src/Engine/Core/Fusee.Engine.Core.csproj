@@ -140,7 +140,6 @@
     <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
       <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
       <Name>Fusee.Serialization</Name>
-      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\Xene\Fusee.Xene.csproj">
       <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>

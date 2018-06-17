@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -16,7 +15,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "RocketModel.fus";
+        public string ModelFile = "FUSEERocket.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
@@ -83,41 +82,8 @@ namespace Fusee.Engine.Player.Core
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-
-            var mat = new MaterialComponent
-            {
-                Diffuse = new MatChannelContainer
-                {
-                    Color = new float3(1,1,1),
-                    Texture = "testTex.jpg",
-                    Mix = 1
-                },
-            };
-            
-            var nsp = new NineSlicePlane();
-
             // Load the standard model
-            //_scene = AssetStorage.Get<SceneContainer>(ModelFile);
-            _scene = new SceneContainer
-            {
-                Children = new List<SceneNodeContainer>
-                {
-                    new SceneNodeContainer
-                    {
-                        Components = new List<SceneComponentContainer>
-                        {
-                            new TransformComponent
-                            {
-                                Scale = new float3(100,100,1)
-                            },
-                            new ShaderEffectComponent{Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mat)},
-                            nsp
-                        }
-                    }
-                }
-            };
-
-
+            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)

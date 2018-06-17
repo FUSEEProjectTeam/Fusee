@@ -634,8 +634,8 @@ namespace Fusee.Engine.Examples.UI.Core
             {
                 _keys = false;
                 var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                // _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                // _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
             }
             else
             {
