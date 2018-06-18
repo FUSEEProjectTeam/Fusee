@@ -671,18 +671,19 @@ namespace Fusee.Engine.Core
 
         }
 
-        private static void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
+        private void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
         {
             if (!light.Active) return;
-            
+
             // Set params in modelview space since the lightning calculation is in modelview space
-            effect.SetEffectParam($"allLights[{position}].position", light.PositionModelViewSpace);
-            effect.SetEffectParam($"allLights[{position}].intensities", light.Color);
-            effect.SetEffectParam($"allLights[{position}].attenuation", light.Attenuation);
-            effect.SetEffectParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
-            effect.SetEffectParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            effect.SetEffectParam($"allLights[{position}].coneDirection", light.ConeDirectionModelViewSpace);
-            effect.SetEffectParam($"allLights[{position}].lightType", light.Type);
+
+            _rc.SetFXParam($"allLights[{position}].position", light.PositionModelViewSpace);
+            _rc.SetFXParam($"allLights[{position}].intensities", light.Color);
+            _rc.SetFXParam($"allLights[{position}].attenuation", light.Attenuation);
+            _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
+            _rc.SetFXParam($"allLights[{position}].coneAngle", light.ConeAngle);
+            _rc.SetFXParam($"allLights[{position}].coneDirection", light.ConeDirectionModelViewSpace);
+            _rc.SetFXParam($"allLights[{position}].lightType", light.Type);
         }
 
         #region RenderContext/Asset Setup

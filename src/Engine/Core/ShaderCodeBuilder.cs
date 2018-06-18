@@ -1076,7 +1076,7 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].lightType",
-                Value = 1.0f
+                Value = 1
             });
 
             // FUSEE_ PARAMS

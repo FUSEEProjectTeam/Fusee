@@ -30,6 +30,13 @@ namespace Fusee.Engine.Core
         private readonly MatrixParamNames _currentShaderParams;
         private ShaderEffect _currentShaderEffect;
 
+        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// All global FX Params
+        /// Overwrites values with the same name in current ShaderEffect
+        /// </summary>
+        public readonly Dictionary<string, object> _allFXParams = new Dictionary<string, object>();
+
         // Mesh Management
         private readonly MeshManager _meshManager;
 
@@ -46,6 +53,35 @@ namespace Fusee.Engine.Core
         private bool _debugLinesEnabled = true;
 
         public bool HasPickingContext { get; private set; }
+
+        /// <summary>
+        /// Sets global FX Params
+        /// Overwrites values with the same name in current ShaderEffect
+        /// </summary>
+        /// <param name="name">FX Param name</param>
+        /// <param name="value">FX Param value</param>
+        // ReSharper disable once InconsistentNaming
+        public void SetFXParam(string name, object value)
+        {
+            object tmpFXParam;
+
+            if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in chache?
+            {
+                if (tmpFXParam.Equals(value)) return; // no new value
+
+               _allFXParams[name] = value;
+
+                // Update ShaderEffect
+                CompileAllShaderEffectVariables(ref _currentShaderEffect);
+
+                return;
+            }
+
+            _allFXParams.Add(name, value);
+
+            // Update ShaderEffect
+            CompileAllShaderEffectVariables(ref _currentShaderEffect);
+        }
 
         // Settable matrices
         private float4x4 _modelView;
@@ -763,56 +799,56 @@ namespace Fusee.Engine.Core
 
             // Normal versions of MV and P
             if (_currentShaderParams.FUSEE_M != null)
-               _currentShaderEffect.SetEffectParam("FUSEE_M", Model);
+               SetFXParam("FUSEE_M", Model);
 
             if (_currentShaderParams.FUSEE_V != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_V", View);
+                SetFXParam("FUSEE_V", View);
 
             if (_currentShaderParams.FUSEE_MV != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_MV", ModelView);
+                SetFXParam("FUSEE_MV", ModelView);
 
             if (_currentShaderParams.FUSEE_P != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_P", Projection);
+                SetFXParam("FUSEE_P", Projection);
 
             if (_currentShaderParams.FUSEE_MVP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_MVP", ModelViewProjection);
+                SetFXParam("FUSEE_MVP", ModelViewProjection);
 
             // Inverted versions
             // Todo: Add inverted versions for M and V
             if (_currentShaderParams.FUSEE_IMV != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_IMV", InvModelView);
+                SetFXParam("FUSEE_IMV", InvModelView);
 
             if (_currentShaderParams.FUSEE_IP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_IP", InvProjection);
+                SetFXParam("FUSEE_IP", InvProjection);
 
             if (_currentShaderParams.FUSEE_IMVP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_IMVP", InvModelViewProjection);
+                SetFXParam("FUSEE_IMVP", InvModelViewProjection);
 
             // Transposed versions
             // Todo: Add transposed versions for M and V
             if (_currentShaderParams.FUSEE_TMV != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_TMV", TransModelView);
+                SetFXParam("FUSEE_TMV", TransModelView);
 
             if (_currentShaderParams.FUSEE_TP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_TP", TransProjection);
+                SetFXParam("FUSEE_TP", TransProjection);
 
             if (_currentShaderParams.FUSEE_TMVP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_TMVP", TransModelViewProjection);
+                SetFXParam("FUSEE_TMVP", TransModelViewProjection);
 
             // Inverted and transposed versions
             // Todo: Add inverted & transposed versions for M and V
             if (_currentShaderParams.FUSEE_ITMV != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_ITMV", InvTransModelView);
+                SetFXParam("FUSEE_ITMV", InvTransModelView);
 
             if (_currentShaderParams.FUSEE_ITP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_ITP", InvTransProjection);
+                SetFXParam("FUSEE_ITP", InvTransProjection);
 
             if (_currentShaderParams.FUSEE_ITMVP != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_ITMVP", InvTransModelViewProjection);
+                SetFXParam("FUSEE_ITMVP", InvTransModelViewProjection);
 
             // Bones (if any)
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
-                _currentShaderEffect.SetEffectParam("FUSEE_BONES", Bones);
+                SetFXParam("FUSEE_BONES", Bones);
 
         }
 
@@ -1176,11 +1212,26 @@ namespace Fusee.Engine.Core
             {
                 IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
                 ef.ParamsPerPass.Add(new List<EffectParam>());
+
                 foreach (var paramNew in paramList)
                 {
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
+                        // OVERWRITE VARS WITH GLOBAL FXPARAMS
+                        object globalFXValue;
+                        if (_allFXParams.TryGetValue(paramNew.Name, out globalFXValue))
+                        {
+                            if (!initValue.Equals(globalFXValue))
+                            {
+                                // Diagnostics.Log($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
+
+                                initValue = globalFXValue;
+                                // update var in ParamDecl
+                                ef.ParamDecl[paramNew.Name] = globalFXValue;
+                            }
+                        }
+
                         // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
                         // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
                         // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
