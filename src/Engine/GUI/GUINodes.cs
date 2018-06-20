@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Base.Core;
 
-namespace Fusee.Engine.Core.GUI
+namespace Fusee.Engine.GUI
 {
     public class GUINodes
     {

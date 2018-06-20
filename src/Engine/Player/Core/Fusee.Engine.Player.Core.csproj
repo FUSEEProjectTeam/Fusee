@@ -49,6 +49,7 @@
     <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj" />
     <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="..\..\GUI\Fusee.Engine.GUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

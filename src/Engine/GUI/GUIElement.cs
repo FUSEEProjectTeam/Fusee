@@ -1,12 +1,11 @@
 ﻿using System;
-using System.IO;
 using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Engine.Core.GUI
+namespace Fusee.Engine.GUI
 {
     /// <summary>
     /// This abstact class allows for creating custom <see cref="GUIElement"/>s.

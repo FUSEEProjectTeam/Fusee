@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.GUI;
 using JSIL.Meta;
 
-namespace Fusee.Engine.Core.GUI
+namespace Fusee.Engine.GUI
 {
     /// <summary>
     ///     A <see cref="GUIHandler"/> is a <see cref="T:System.Collections.Generic.List`1" /> of different

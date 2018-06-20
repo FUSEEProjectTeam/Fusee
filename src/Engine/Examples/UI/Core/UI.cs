@@ -1,7 +1,7 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.GUI;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System.Collections.Generic;

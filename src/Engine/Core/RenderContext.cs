@@ -23,8 +23,8 @@ namespace Fusee.Engine.Core
 
         private readonly IRenderContextImp _rci;
 
-        internal int ViewportWidth { get; private set; }
-        internal int ViewportHeight { get; private set; }
+        public int ViewportWidth { get; private set; }
+        public int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
         private readonly MatrixParamNames _currentShaderParams;

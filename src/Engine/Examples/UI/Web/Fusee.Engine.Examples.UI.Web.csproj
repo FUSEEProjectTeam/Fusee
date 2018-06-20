@@ -19,8 +19,8 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web\</FuseeWebOutputPath>
-    <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\UI\Web\</FuseeWebOutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
@@ -39,7 +39,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web\</FuseeWebOutputPath>
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\UI\Web\</FuseeWebOutputPath>
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>

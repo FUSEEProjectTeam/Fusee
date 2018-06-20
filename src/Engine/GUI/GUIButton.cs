@@ -1,9 +1,10 @@
 ﻿using System;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
+using Fusee.Engine.Core.GUI;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core.GUI
+namespace Fusee.Engine.GUI
 {
     /// <summary>
     ///     A delegation for the event listeners of a <see cref="GUIButton" />.
