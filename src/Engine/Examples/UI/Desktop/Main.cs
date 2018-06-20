@@ -28,7 +28,7 @@ namespace Fusee.Engine.Examples.UI.Desktop
             TryAddDir(assetDirs, "Assets");
 
             //add GUI asset directory
-            var shaderDir = Environment.GetEnvironmentVariable("FuseeRoot") + "src\\Engine\\Core\\GUI\\Assets";
+            var shaderDir = Environment.GetEnvironmentVariable("FuseeRoot") + "src\\Engine\\GUI\\Assets";
             TryAddDir(assetDirs, shaderDir);
 
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
