@@ -45,6 +45,7 @@ namespace Fusee.Engine.Core
 
         // ShaderEffect Management
         private readonly ShaderEffectManager _shaderEffectManager;
+        private Dictionary<ShaderEffect, ShaderEffectParam> _allShaderEffectParameter = new Dictionary<ShaderEffect, ShaderEffectParam>();
 
         private bool _updatedShaderParams;
 
@@ -65,22 +66,24 @@ namespace Fusee.Engine.Core
         {
             object tmpFXParam;
 
+
             if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in chache?
             {
                 if (tmpFXParam.Equals(value)) return; // no new value
 
                _allFXParams[name] = value;
 
-                // Update ShaderEffect
-                CompileAllShaderEffectVariables(ref _currentShaderEffect);
+                // Update ShaderEffect TODO: FIX GLOBAL BRUTE FORCE SET
+                
+                CreateAllShaderEffectVariables(_currentShaderEffect);
 
                 return;
             }
 
             _allFXParams.Add(name, value);
 
-            // Update ShaderEffect
-            CompileAllShaderEffectVariables(ref _currentShaderEffect);
+            // Update ShaderEffect TODO: FIX GLOBAL BRUTE FORCE SET
+            CreateAllShaderEffectVariables(_currentShaderEffect);
         }
 
         // Settable matrices
@@ -1130,10 +1133,14 @@ namespace Fusee.Engine.Core
         /// <param name="ef">The ShaderEffect</param>
         internal void RemoveShader(ShaderEffect ef)
         {
-            foreach (var program in ef.CompiledShaders)
+            ShaderEffectParam sFxParam;
+            if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam)) return;
+
+            foreach (var program in sFxParam.CompiledShaders)
             {
                 _rci.RemoveShader(program._spi);
             }
+
         }
 
         /// <summary>
@@ -1178,11 +1185,16 @@ namespace Fusee.Engine.Core
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
+            var sFxParam = new ShaderEffectParam
+            {
+                CompiledShaders = new ShaderProgram[nPasses]
+            };
+
             try // to compile all the shaders
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    ef.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
+                    sFxParam.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
                 }
             }
             catch (Exception ex)
@@ -1191,7 +1203,9 @@ namespace Fusee.Engine.Core
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
-            CompileAllShaderEffectVariables(ref ef);
+            _allShaderEffectParameter.Add(ef, sFxParam);
+
+            CreateAllShaderEffectVariables(ef);
 
             // Register built shadereffect
             _shaderEffectManager.RegisterShaderEffect(ef);
@@ -1200,18 +1214,24 @@ namespace Fusee.Engine.Core
             _currentShaderEffect = ef;
         }
 
-        internal void CompileAllShaderEffectVariables(ref ShaderEffect ef)
+        internal void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
-
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
+            ShaderEffectParam sFxParam;
+            if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam))
+            {
+                sFxParam = new ShaderEffectParam();
+                _allShaderEffectParameter.Add(ef, sFxParam);
+            }
+
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
-            ef.Parameters = new Dictionary<string, object>();
-            ef.ParamsPerPass = new List<List<EffectParam>>();
+            sFxParam.Parameters = new Dictionary<string, object>();
+            sFxParam.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
-                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
-                ef.ParamsPerPass.Add(new List<EffectParam>());
+                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(sFxParam.CompiledShaders[i]);
+                sFxParam.ParamsPerPass.Add(new List<EffectParam>());
 
                 foreach (var paramNew in paramList)
                 {
@@ -1257,7 +1277,7 @@ namespace Fusee.Engine.Core
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
                         object paramExistingTmp;
-                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
+                        if (sFxParam.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
                         {
                             paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
@@ -1280,9 +1300,9 @@ namespace Fusee.Engine.Core
                                 ShaderInxs = new List<int>(new int[] { i }),
                                 Value = initValue
                             };
-                            ef.Parameters.Add(paramNew.Name, paramExisting);
+                            sFxParam.Parameters.Add(paramNew.Name, paramExisting);
                         }
-                        ef.ParamsPerPass[i].Add(paramExisting);
+                        sFxParam.ParamsPerPass[i].Add(paramExisting);
                     }
                 }
             }
@@ -1545,10 +1565,14 @@ namespace Fusee.Engine.Core
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    SetShader(_currentShaderEffect.CompiledShaders[i]);
 
-                    foreach (var param in _currentShaderEffect.ParamsPerPass[i])
+                    ShaderEffectParam sFxParam;
+                    _allShaderEffectParameter.TryGetValue(_currentShaderEffect, out sFxParam);
+
+                    // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
+                    SetShader(sFxParam.CompiledShaders[i]);
+
+                    foreach (var param in sFxParam.ParamsPerPass[i])
                     {                       
                         SetShaderParamT(param);
                     }
@@ -1748,6 +1772,34 @@ namespace Fusee.Engine.Core
         #endregion
 
         #endregion
+    }
+
+    internal sealed class EffectParam
+    {
+        public ShaderParamInfo Info;
+        public object Value;
+        public List<int> ShaderInxs;
+    }
+
+    /// <summary>
+    /// All compiled information of one ShaderEffect
+    /// </summary>
+    internal class ShaderEffectParam
+    {
+        /// <summary>
+        /// The compiled vertex- and pixelshaders
+        /// </summary>
+        internal ShaderProgram[] CompiledShaders;
+
+        /// <summary>
+        /// All parameter saved per pass with uniform handle, type and info (name, etc.) as lookup table
+        /// </summary>
+        internal List<List<EffectParam>> ParamsPerPass = new List<List<EffectParam>>();
+        /// <summary>
+        /// All shader parameters of all passes
+        /// </summary>
+        internal Dictionary<string, object> Parameters = new Dictionary<string, object>();
+
     }
 
 }
