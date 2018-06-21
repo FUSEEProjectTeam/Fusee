@@ -173,7 +173,14 @@ namespace Fusee.Base.Imp.Android
 
             FTBitmap bmp = _face.Glyph.Bitmap;
 
-            ImageData ret = new ImageData(bmp.BufferData, bmp.Width, bmp.Rows,
+            byte[] pixelData = new byte[0]; // empty?? 
+            if (bmp.Width != 0 && bmp.Rows != 0)
+            {
+                pixelData = new byte[bmp.BufferData.Length];
+                Array.Copy(bmp.BufferData, pixelData, bmp.BufferData.Length);
+            }
+
+            ImageData ret = new ImageData(pixelData, bmp.Width, bmp.Rows,
                 new ImagePixelFormat(ColorFormat.Intensity));
 
             bitmapLeft = _face.Glyph.BitmapLeft;

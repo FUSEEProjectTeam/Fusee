@@ -1254,7 +1254,7 @@ namespace Fusee.Math.Core
         {
             var v = new float4(this, 1.0f);
             v = mat * v;
-            float3 result;
+            float3 result = new float3();
 
             if (v.w > M.EpsilonFloat)
             {

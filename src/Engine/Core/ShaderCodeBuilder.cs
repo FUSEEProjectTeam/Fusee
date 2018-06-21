@@ -1076,10 +1076,11 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].lightType",
-                Value = 1.0f
+                Value = 1
             });
 
             // FUSEE_ PARAMS
+            // TODO: Just add the necessary ones!
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "FUSEE_M",
@@ -1100,6 +1101,7 @@ namespace Fusee.Engine.Core
                 Name = "FUSEE_ITMV",
                 Value = float4x4.Identity
             });
+            
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "FUSEE_IMV",
