@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private bool _keys;
 
-       //Build a scene graph consisting out of a canvas and three nine sliced textures
+       //Build a scene graph consisting out of a canvas and three nine sliced textures.
         private SceneContainer CreateNineSliceScene()
         {
             return new SceneContainer
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 {
                     new SceneNodeContainer
                     {
-                        //Rotate canvas and all his children
+                        //Rotate canvas and all his children.
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Examples.UI.Core
                         },
                         Children = new List<SceneNodeContainer>
                         {
-                            //Add canvas
+                            //Add canvas.
                             new SceneNodeContainer
                             {
                                 Name = "Canvas",
@@ -101,7 +101,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                         },
                                         //Set the diffuse texture you want to use.
                                         new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
-                                        //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched
+                                        //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                                         new float2(5,5),
                                         //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                                         new float4(0.11f,0.11f,0.06f,0.17f),
@@ -210,27 +210,9 @@ namespace Fusee.Engine.Examples.UI.Core
             _angleVert += _angleVelVert;
 
 
-            //Viewport transformation
-            // Create the camera matrix and set it as the current ModelView transformation 
-
-            //Worldspace
-
-
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
-
-            //View Space
-
-            // Pick it !
-            /*
-            if (Mouse.LeftButton)
-            {
-                PickAtPosition(_scene.Children,
-                    Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1),
-                    RC.Projection * RC.ModelView);
-            }
-            */
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);

@@ -23,6 +23,8 @@
     <FuseeRoot  Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
   </PropertyGroup>
 
+
+
   <!-- ################################################################
 	               TASKS TO PERFORM AT BUILD 
 	     ################################################################ 	-->
@@ -33,6 +35,7 @@
       FuseeReferenceCompileVertexShaders;
       FuseeReferenceCompilePixelShaders;
       $(BuildDependsOn);
+      FuseeCollectAndCopyAssets;
       FuseeJSILCompile;
       FuseeCopyJSILJavaScript;
       FuseeCopyExternalJavaScript;
@@ -44,6 +47,39 @@
       FuseeResolveNativeDependencies
     </BuildDependsOn>
   </PropertyGroup>
+
+
+  <!-- ########################################################################################################
+	               TASK TO PERFORM AT BULD, not matter the plattform  FuseeCollectAndCopyAssets
+	     ######################################################################################################## 	-->
+  <!--  Task looking for any contents in "Assets" subfolders below folders of all referenced managed .dlls (no matter if 
+	        project or assembly references.
+	        This target depends on two things:
+			1. the $(AssetDestinationFolder) PROPERTY to contain the correct output path, whether it is a web build or not. 
+			2. The @(ReferencePath) ITEM LIST to contain all referenced managed dlls as items. This item list is generated during
+			   all C# builds (and also Android builds).
+	  -->
+  <Choose>
+    <When Condition=" '$(FuseeWebOutputPath)' != '' ">
+      <PropertyGroup>
+        <AssetDestinationFolder>$(FuseeWebOutputPath)</AssetDestinationFolder>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <AssetDestinationFolder>$(OutputPath)</AssetDestinationFolder>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <Target Name="FuseeCollectAndCopyAssets" Condition=" '$(AssetDestinationFolder)' != '' ">
+    <ItemGroup>
+      <FuseeWebAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(AssetDestinationFolder)\Assets\%(RecursiveDir)" ContinueOnError="true"/>
+    <Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[copied assets] %(FuseeWebAsset.FullPath) -> $(AssetDestinationFolder)\Assets\%(RecursiveDir)%(Filename)%(Extension)" />
+  </Target>
+
 
   <!-- ########################################################################################################
 	               TASKS TO PERFORM AT ANDROID BULD STEP  ApplicationResolveReferencesDependsOn
@@ -58,7 +94,6 @@
       FuseeAfterAndroidResRef;
     </ApplicationResolveReferencesDependsOn>
   </PropertyGroup>
-
 
   <Target Name="FuseeBeforeAndroidResRef">
   </Target>
@@ -314,7 +349,7 @@
 	-->
   <Target Name="FuseeCopyWebAssetsStylesNHtml" Condition=" '$(FuseeWebOutputPath)' != '' ">
     <ItemGroup>
-      <FuseeWebAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+      <FuseeWebAsset Include="$(OutputPath)Assets\**\*" />
     </ItemGroup>
     <Message Importance="High" Text="[external web asset] %(FuseeWebAsset.RootDir)%(FuseeWebAsset.Directory)%(FuseeWebAsset.Filename)%(FuseeWebAsset.Extension)" />
     <Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\%(RecursiveDir)" ContinueOnError="true"/>

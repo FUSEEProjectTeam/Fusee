@@ -13,25 +13,12 @@ namespace Fusee.Engine.Examples.UI.Desktop
 {
     public class UI
     {
-        public static void TryAddDir(List<string> dirList, string dir)
-        {
-            if (Directory.Exists(dir))
-                dirList.Add(dir);
-        }
-
         public static void Main()
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-            List<string> assetDirs = new List<string>();
-            TryAddDir(assetDirs, "Assets");
-
-            //add GUI asset directory
-            var shaderDir = Environment.GetEnvironmentVariable("FuseeRoot") + "src\\Engine\\GUI\\Assets";
-            TryAddDir(assetDirs, shaderDir);
-
-            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {

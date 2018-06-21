@@ -32,10 +32,6 @@ namespace Fusee.Engine.Player.Desktop
             List<string> assetDirs = new List<string>();
             TryAddDir(assetDirs, "Assets");
 
-            //add GUI asset directory
-            var shaderDir = Environment.GetEnvironmentVariable("FuseeRoot")+ "src\\Engine\\Core\\GUI\\Assets";
-            TryAddDir(assetDirs, shaderDir);
-
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string Cwd = Directory.GetCurrentDirectory();
             if (Cwd != ExeDir)
