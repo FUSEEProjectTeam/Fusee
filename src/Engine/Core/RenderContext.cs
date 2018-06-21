@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -73,17 +74,16 @@ namespace Fusee.Engine.Core
 
                _allFXParams[name] = value;
 
-                // Update ShaderEffect TODO: FIX GLOBAL BRUTE FORCE SET
-                
-                CreateAllShaderEffectVariables(_currentShaderEffect);
+                // Update ShaderEffect
+               HandleAndUpdateChangedButExisistingEffectVariable(_currentShaderEffect, name, value);
 
                 return;
             }
 
             _allFXParams.Add(name, value);
 
-            // Update ShaderEffect TODO: FIX GLOBAL BRUTE FORCE SET
-            CreateAllShaderEffectVariables(_currentShaderEffect);
+            // Update ShaderEffect
+            HandleAndUpdateChangedButExisistingEffectVariable(_currentShaderEffect, name, value);
         }
 
         // Settable matrices
@@ -1214,6 +1214,29 @@ namespace Fusee.Engine.Core
             _currentShaderEffect = ef;
         }
 
+        internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
+        {
+            ShaderEffectParam sFxParam;
+            if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam)) return;
+
+            foreach (var passParams in sFxParam.ParamsPerPass)
+            {
+                foreach (var param in passParams)
+                {
+                    // if not found -> continue
+                    if (!param.Info.Name.Equals(changedName)) continue;
+
+                    // if not changed -> continue
+                    if (param.Value.Equals(changedValue))
+                        return;
+
+                    param.Value = changedValue;
+                }
+            }
+
+
+        }
+
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
@@ -1230,10 +1253,27 @@ namespace Fusee.Engine.Core
             sFxParam.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
-                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(sFxParam.CompiledShaders[i]);
+                var shaderParamInfos = GetShaderParamList(sFxParam.CompiledShaders[i]);
+
+                // check for variables which exists in ParamDecl but not in paramList
+                /* TODO: Disabled - fail @ Webbuild!
+                var paramList = shaderParamInfos as ShaderParamInfo[] ?? shaderParamInfos.ToArray();
+                var paramListDict = paramList.ToDictionary(info => info.Name);
+                foreach (var param in ef.ParamDecl)
+                {
+                    if (!paramListDict.ContainsKey(param.Key))
+                    {
+                        // TODO: Fix this, The ShaderEffect from ShaderCodeBulder.MakeShaderEffect(MaterialComponent) needs all FUSEE_ so everything works (bump, bones) unfortunately MC has no properties mc.HasBones
+                        Diagnostics.Log($"Warning: Variable {param.Key} found in ParamDecl, but there is no uniform variable present in this shader.");
+                        Diagnostics.Log("Ignore this, if you have used the built-in scenegraph!");
+                    }
+                }*/
+                
+
+
                 sFxParam.ParamsPerPass.Add(new List<EffectParam>());
 
-                foreach (var paramNew in paramList)
+                foreach (var paramNew in shaderParamInfos)
                 {
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
@@ -1303,6 +1343,11 @@ namespace Fusee.Engine.Core
                             sFxParam.Parameters.Add(paramNew.Name, paramExisting);
                         }
                         sFxParam.ParamsPerPass[i].Add(paramExisting);
+                    }
+                    else
+                    {
+                        // This should not happen due to shader compiler optimization
+                        Diagnostics.Log($"Warning: uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
                     }
                 }
             }

@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The uniform parameter and value of a <see cref="ShaderEffect"/>
         /// </summary>
-        public Dictionary<string, object> ParamDecl;
+        public readonly Dictionary<string, object> ParamDecl;
 
         /// <summary>
         /// List of <see cref="RenderStateSet"/>
@@ -154,17 +154,18 @@ namespace Fusee.Engine.Core
                 {
                     if (ParamDecl.TryGetValue(name, out param))
                     {
-                    // do nothing if new value = old value
-                    if (param.Equals(value)) return; // TODO: Write a better compare method! 
+                        // do nothing if new value = old value
+                        if (param.Equals(value)) return; // TODO: Write a better compare method! 
 
-                    // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
-                    ParamDecl[name] = value;
-                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED));
+                        // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
+                        ParamDecl[name] = value;
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED, name, value));
                     }
                     else
                     {
-                        // not in Parameters, call warning method!
-                        Diagnostics.Log($"Warning: uniform {name}, with value {value} of type {value.GetType()} is not known in current shader!");
+                        // not in Parameters yet, add it and call uniform_var_changed!
+                        ParamDecl.Add(name, value);
+                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_ADDED));
                     }
                 }
         }
@@ -244,13 +245,18 @@ namespace Fusee.Engine.Core
         internal ShaderEffect Effect { get; }
         internal ShaderEffectChangedEnum Changed { get; }
         internal EffectParam EffectParameter { get; }
+        internal string ChangedEffectName { get;  }
+        internal object ChangedEffectValue { get; }
 
-        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, EffectParam effectParam = null)
+        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
         {
             Effect = effect;
             Changed = changed;
-            if(effectParam != null)
-                EffectParameter = effectParam;
+
+            if (changedName == null || changedValue == null) return;
+
+            ChangedEffectName = changedName;
+            ChangedEffectValue = changedValue;
         }
     }
 
@@ -258,7 +264,8 @@ namespace Fusee.Engine.Core
     {
         // ReSharper disable InconsistentNaming
         DISPOSE = 0,
-        UNIFORM_VAR_UPDATED
+        UNIFORM_VAR_UPDATED,
+        UNIFORM_VAR_ADDED
         // ReSharper restore InconsistentNaming
     }
 
