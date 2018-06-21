@@ -182,8 +182,7 @@ namespace Fusee.Engine.Core
                 object pa;
                 if (ParamDecl.TryGetValue(name, out pa))
                 {
-                    var param = (EffectParam) pa;
-                    return param.Value;
+                    return pa;
                 }
                 return null;
             }

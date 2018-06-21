@@ -41,7 +41,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             geomLato.Triangulate();
             _textMeshLato = new JometriMesh(geomLato);
 
-           
+
             _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
             var outlinesVlad = _threeDFontHelper.GetTextOutlinesWAngle(7);
             var geomVlad = new Jometri.Geometry(outlinesVlad);
@@ -73,7 +73,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             parentNode.Components.Add(parentTrans);
 
-            
+
             //Vladimir
             var sceneNodeCVlad = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
@@ -140,8 +140,23 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             _renderer = new SceneRenderer(sc);
 
-            var shader = RC.CreateShader(AssetStorage.Get<string>("VertShader.vert"), AssetStorage.Get<string>("FragShader.frag"));
-            RC.SetShader(shader);
+            var shaderFX = new ShaderEffect(new EffectPassDeclaration[] {
+                new EffectPassDeclaration
+                {
+                    PS = AssetStorage.Get<string>("FragShader.frag"),
+                    VS = AssetStorage.Get<string>("VertShader.vert"),
+                    StateSet = new RenderStateSet
+                    {
+                        ZEnable = true
+                    }
+                }
+            },
+            new List<EffectParameterDeclaration>
+            {
+                new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
+            });
+
+            RC.SetShaderEffect(shaderFX);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
