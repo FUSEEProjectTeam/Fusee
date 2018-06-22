@@ -530,6 +530,28 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Interpolate / Lerp
+
+        public static float SmoothStep(float t)
+        {
+            t = Clamp(t, 0, 1);
+            return t * t * (3f - 2f * t);
+        }
+
+        public static float SmootherStep(float t)
+        {
+            t = Clamp(t, 0, 1);
+            return t * t * t * (t * (t * 6 - 15) + 10);
+        }
+
+        public static float SineStep(float t)
+        {
+            t = Clamp(t, 0, 1);
+            return 0.5f + (M.Sin((2 * t - 1) * (M.Pi / 2)) / 2);
+        }
+
+        #endregion
+
         #region Equals
 
         /// <summary>
