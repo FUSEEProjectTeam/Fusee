@@ -532,22 +532,37 @@ namespace Fusee.Math.Core
 
         #region Interpolate / Lerp
 
+        /// <summary>
+        /// Smoothes out the interpolation t when approaching 0.0 and 1.0, using the smoothstep function.
+        /// </summary>
+        /// <param name="t">t will be clamped between 0.0 and 1.0.</param>
+        /// <returns>Returns a value between 0.0 and 1.0, corresponding to t.</returns>
         public static float SmoothStep(float t)
         {
             t = Clamp(t, 0, 1);
             return t * t * (3f - 2f * t);
         }
 
+        /// <summary>
+        /// Smoothes out the interpolation t when approaching 0.0 and 1.0, using the smootherstep function.
+        /// </summary>
+        /// <param name="t">t will be clamped between 0.0 and 1.0.</param>
+        /// <returns>Returns a value between 0.0 and 1.0, corresponding to t.</returns>
         public static float SmootherStep(float t)
         {
             t = Clamp(t, 0, 1);
             return t * t * t * (t * (t * 6 - 15) + 10);
         }
 
+        /// <summary>
+        /// Smoothes out the interpolation t when approaching 0.0 and 1.0, using the sinestep function.
+        /// </summary>
+        /// <param name="t">t will be clamped between 0.0 and 1.0.</param>
+        /// <returns>Returns a value between 0.0 and 1.0, corresponding to t.</returns>
         public static float SineStep(float t)
         {
             t = Clamp(t, 0, 1);
-            return 0.5f + (M.Sin((2 * t - 1) * (M.Pi / 2)) / 2);
+            return 0.5f + (Sin((2 * t - 1) * (Pi / 2)) / 2);
         }
 
         #endregion
