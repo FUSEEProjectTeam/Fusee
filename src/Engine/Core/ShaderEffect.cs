@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core
                     if (ParamDecl.TryGetValue(name, out param))
                     {
                         // do nothing if new value = old value
-                        if (param.Equals(value)) return; // TODO: Write a better compare method! This object compare
+                        if (param.Equals(value)) return; // TODO: Write a better compare method! 
 
                         // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
                         ParamDecl[name] = value;
