@@ -91,7 +91,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            //_scenePicker = new ScenePicker(_scene);
         }
 
         // RenderAFrame is called once a frame
@@ -148,9 +148,9 @@ namespace Fusee.Engine.Examples.Picking.Core
             var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
 
             // Check 
-            if (_pick)
+            if (false && _pick)
             {
-                Diagnostics.Log(_pickPos);
+                // Diagnostics.Log(_pickPos);
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
             var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
-            _scenePicker.Projection = projection;
+            //_scenePicker.Projection = projection;
 
 #if GUI_SIMPLE
             _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
@@ -257,7 +257,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                         Name = "Base",
                         Components = new List<SceneComponentContainer>
                         {
-                            new TransformComponent { Scale = float3.One },
+                           new TransformComponent { Translation = float3.Zero, Scale = float3.One },
                            new MaterialComponent
                            {
                                 Diffuse = new MatChannelContainer { Color = ColorUint.Red.Tofloat3() },
@@ -272,7 +272,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                 Name = "Arm01",
                                 Components = new List<SceneComponentContainer>
                                 {
-                                    new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
+                                   new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
                                    new MaterialComponent
                                     {
                                         Diffuse = new MatChannelContainer { Color = ColorUint.Green.Tofloat3() },
@@ -297,11 +297,11 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                 Components = new List<SceneComponentContainer>
                                                 {
                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    new MaterialComponent
+                                                    /*new MaterialComponent
                                                     {
                                                         Diffuse = new MatChannelContainer { Color = ColorUint.Yellow.Tofloat3() },
                                                         Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
-                                                    },
+                                                    },*/
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
                                                 Children = new List<SceneNodeContainer>
@@ -321,11 +321,11 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                                 Components = new List<SceneComponentContainer>
                                                                 {
                                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    new MaterialComponent
+                                                                    /*new MaterialComponent
                                                                     {
                                                                         Diffuse = new MatChannelContainer { Color = ColorUint.Blue.Tofloat3() },
                                                                         Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
-                                                                    },
+                                                                    },*/
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }
                                                             },

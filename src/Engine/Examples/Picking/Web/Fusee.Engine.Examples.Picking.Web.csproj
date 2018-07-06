@@ -77,7 +77,8 @@
     </Content>
     <Content Include="Assets\FuseeText.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>  </ItemGroup>
+    </Content>
+  </ItemGroup>
   <ItemGroup>
     <!--FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\System.Core, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
@@ -98,39 +99,30 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
-      
       <Name>Fusee.Base.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      
       <Name>Fusee.Base.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Web.dll">
-      
       <Name>Fusee.Base.Imp.Web</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      
       <Name>Fusee.Serialization</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      
       <Name>Fusee.Engine.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      
       <Name>Fusee.Engine.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      
       <Name>Fusee.Math.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Web.dll">
-      
       <Name>Fusee.Engine.Imp.Graphics.Web</Name>
     </Reference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.Picking.Core.csproj">
-      
       <Name>Fusee.Engine.Examples.Picking.Core</Name>
     </ProjectReference>
   </ItemGroup>
@@ -138,6 +130,9 @@
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
