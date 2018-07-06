@@ -41,7 +41,7 @@ namespace Fusee.Engine.Examples.Picking.Web
                         if (Path.GetExtension(id).ToLower().Contains("fus"))
                         {
                             var ser = new Serializer();
-                            return new ConvertSceneGraph().Convert(ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer));
+                            return ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
                         }
                         return null;
                     },
