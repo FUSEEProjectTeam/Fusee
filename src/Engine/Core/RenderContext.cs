@@ -65,8 +65,10 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         public void SetFXParam(string name, object value)
         {
-            object tmpFXParam;
+            if(value == null) return;
+            
 
+            object tmpFXParam;
 
             if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in chache?
             {
@@ -74,16 +76,15 @@ namespace Fusee.Engine.Core
 
                _allFXParams[name] = value;
 
-                // Update ShaderEffect
-               HandleAndUpdateChangedButExisistingEffectVariable(_currentShaderEffect, name, value);
-
-                return;
+              // Update ShaderEffect
+              _currentShaderEffect.SetEffectParam(name, value);
+              return;
             }
 
             _allFXParams.Add(name, value);
 
             // Update ShaderEffect
-            HandleAndUpdateChangedButExisistingEffectVariable(_currentShaderEffect, name, value);
+            _currentShaderEffect.SetEffectParam(name, value);
         }
 
         // Settable matrices
@@ -801,56 +802,56 @@ namespace Fusee.Engine.Core
                 UpdateShaderParams();
 
             // Normal versions of MV and P
-            if (_currentShaderParams.FUSEE_M != null)
+           // if (_currentShaderParams.FUSEE_M != null)
                SetFXParam("FUSEE_M", Model);
 
-            if (_currentShaderParams.FUSEE_V != null)
+           // if (_currentShaderParams.FUSEE_V != null)
                 SetFXParam("FUSEE_V", View);
 
-            if (_currentShaderParams.FUSEE_MV != null)
+           // if (_currentShaderParams.FUSEE_MV != null)
                 SetFXParam("FUSEE_MV", ModelView);
 
-            if (_currentShaderParams.FUSEE_P != null)
+           // if (_currentShaderParams.FUSEE_P != null)
                 SetFXParam("FUSEE_P", Projection);
 
-            if (_currentShaderParams.FUSEE_MVP != null)
+          //  if (_currentShaderParams.FUSEE_MVP != null)
                 SetFXParam("FUSEE_MVP", ModelViewProjection);
 
             // Inverted versions
             // Todo: Add inverted versions for M and V
-            if (_currentShaderParams.FUSEE_IMV != null)
+           // if (_currentShaderParams.FUSEE_IMV != null)
                 SetFXParam("FUSEE_IMV", InvModelView);
 
-            if (_currentShaderParams.FUSEE_IP != null)
+          //  if (_currentShaderParams.FUSEE_IP != null)
                 SetFXParam("FUSEE_IP", InvProjection);
 
-            if (_currentShaderParams.FUSEE_IMVP != null)
+         //   if (_currentShaderParams.FUSEE_IMVP != null)
                 SetFXParam("FUSEE_IMVP", InvModelViewProjection);
 
             // Transposed versions
             // Todo: Add transposed versions for M and V
-            if (_currentShaderParams.FUSEE_TMV != null)
+           // if (_currentShaderParams.FUSEE_TMV != null)
                 SetFXParam("FUSEE_TMV", TransModelView);
 
-            if (_currentShaderParams.FUSEE_TP != null)
+         //   if (_currentShaderParams.FUSEE_TP != null)
                 SetFXParam("FUSEE_TP", TransProjection);
 
-            if (_currentShaderParams.FUSEE_TMVP != null)
+        //    if (_currentShaderParams.FUSEE_TMVP != null)
                 SetFXParam("FUSEE_TMVP", TransModelViewProjection);
 
             // Inverted and transposed versions
             // Todo: Add inverted & transposed versions for M and V
-            if (_currentShaderParams.FUSEE_ITMV != null)
+           // if (_currentShaderParams.FUSEE_ITMV != null)
                 SetFXParam("FUSEE_ITMV", InvTransModelView);
 
-            if (_currentShaderParams.FUSEE_ITP != null)
+           // if (_currentShaderParams.FUSEE_ITP != null)
                 SetFXParam("FUSEE_ITP", InvTransProjection);
 
-            if (_currentShaderParams.FUSEE_ITMVP != null)
+          //  if (_currentShaderParams.FUSEE_ITMVP != null)
                 SetFXParam("FUSEE_ITMVP", InvTransModelViewProjection);
 
             // Bones (if any)
-            if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
+           // if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
                 SetFXParam("FUSEE_BONES", Bones);
 
         }
@@ -1174,12 +1175,13 @@ namespace Fusee.Engine.Core
                throw new ArgumentNullException("rc", "must pass a valid render context.");
 
             if (ef == null)
-                return;          
-
+                return;
+            
             // Is this shadereffect already built?
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
             {
                 _currentShaderEffect = ef;
+                UpdateCurrentShader();
                 return;
             }
 
@@ -1219,6 +1221,15 @@ namespace Fusee.Engine.Core
             ShaderEffectParam sFxParam;
             if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam)) return;
 
+            object paramValue;
+            if (!sFxParam.Parameters.TryGetValue(changedName, out paramValue)) return;
+
+            // if not changed -> continue
+            if (paramValue.Equals(changedValue))
+                return;
+            
+            sFxParam.Parameters[changedName] = changedValue;
+
             foreach (var passParams in sFxParam.ParamsPerPass)
             {
                 foreach (var param in passParams)
@@ -1233,8 +1244,6 @@ namespace Fusee.Engine.Core
                     param.Value = changedValue;
                 }
             }
-
-
         }
 
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)
@@ -1268,8 +1277,6 @@ namespace Fusee.Engine.Core
                         Diagnostics.Log("Ignore this, if you have used the built-in scenegraph!");
                     }
                 }*/
-                
-
 
                 sFxParam.ParamsPerPass.Add(new List<EffectParam>());
 
@@ -1284,7 +1291,7 @@ namespace Fusee.Engine.Core
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
-                                // Diagnostics.Log($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
+                                 Diagnostics.Log($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
 
                                 initValue = globalFXValue;
                                 // update var in ParamDecl
@@ -1603,20 +1610,20 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            if (_currentShaderEffect == null) return;            
+            if (_currentShaderEffect == null) return;
+
+            UpdateCurrentShader();
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
             {
                 for (i = 0; i < nPasses; i++)
                 {
-
                     ShaderEffectParam sFxParam;
-                    _allShaderEffectParameter.TryGetValue(_currentShaderEffect, out sFxParam);
+                    if(!_allShaderEffectParameter.TryGetValue(_currentShaderEffect, out sFxParam)) return;
 
                     // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
                     SetShader(sFxParam.CompiledShaders[i]);
-
                     foreach (var param in sFxParam.ParamsPerPass[i])
                     {                       
                         SetShaderParamT(param);
@@ -1844,7 +1851,6 @@ namespace Fusee.Engine.Core
         /// All shader parameters of all passes
         /// </summary>
         internal Dictionary<string, object> Parameters = new Dictionary<string, object>();
-
     }
 
 }
