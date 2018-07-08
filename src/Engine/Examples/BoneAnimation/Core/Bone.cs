@@ -13,7 +13,7 @@ using Fusee.Xene;
 namespace Fusee.Engine.Examples.Bone.Core
 {
 
-    [FuseeApplication(Name = "FUSEE Bone Animation Example", Description = "Quick bump example")]
+    [FuseeApplication(Name = "FUSEE Bone Animation Example", Description = "Quick bone animation example")]
     public class Bone : RenderCanvas
     {
         // angle variables
@@ -92,10 +92,11 @@ namespace Fusee.Engine.Examples.Bone.Core
                         {
                             new TransformComponent
                             {
-                                Rotation = float3.One,
-                                Translation = new float3(0, -4, 0),
+                                Rotation = float3.Zero,
+                                Translation = new float3(0, 0, 0),
                                 Scale = float3.One
-                            }
+                            },
+                            new BoneComponent()
                         },
                         Children = new List<SceneNodeContainer>
                         {
@@ -106,9 +107,11 @@ namespace Fusee.Engine.Examples.Bone.Core
                                     new TransformComponent
                                     {
                                         Rotation = float3.Zero,
-                                        Translation = new float3(0, 0, 0),
+                                        Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
+                                    new BoneComponent(),
+                                    new WeightComponent(),
                                     new MaterialComponent
                                     {
                                         Diffuse = new MatChannelContainer
@@ -125,14 +128,11 @@ namespace Fusee.Engine.Examples.Bone.Core
             };
 
             // convert scene graph is not called in this project, so we can add a bone animation
-            // first annotate our transformcomponents as boneComponents
-            _scene.Children[0].Components.Add(new BoneComponent());
-            _scene.Children[0].Children[0].Components.Add(new BoneComponent());
 
             // then add a weightcomponent with weight matrices etc:
             // binding matrices is the start point of every transformation
             // as many entries as vertices are present in current model
-            var allMeshes = _scene.Children.FindComponents(x => x.GetType() == typeof(Mesh)).Select(x => (Mesh) x).ToList();
+            var allMeshes = _scene.Children.FindComponents(x => x.GetType() == typeof(Mesh)).Select(x => (Mesh)x).ToList();
             var vertexCount = 0;
             foreach (var mesh in allMeshes)
             {
@@ -155,30 +155,39 @@ namespace Fusee.Engine.Examples.Bone.Core
                         new VertexWeight
                         {
                             JointIndex = 0,
-                            Weight = 0
+                            Weight = 1
                         },
                         new VertexWeight()
                         {
                             JointIndex = 1,
-                            Weight = 1.0f
+                            Weight = 0.5f
                         }
                     }
                 });
             }
 
-            _scene.Children[0].Children[0].Components.Add(new WeightComponent
+            _scene.Children[0].Children[0].Components[2] = new WeightComponent
             {
                 BindingMatrices = bindingMatrices,
                 WeightMap = WeightMap,
-                Joints = new List<SceneNodeContainer>()
-            });
-            
-            // after that we need to add all bones
-            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints.Add(_scene.Children[0]);
-            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints.Add(_scene.Children[0].Children[0]);
+                Joints = new List<SceneNodeContainer> // here we need the number 2 for the converter 
+                {
+                    new SceneNodeContainer(),
+                    new SceneNodeContainer()
+                }
+            };
+
 
             // now we can convert the scene
             _scene = new ConvertSceneGraph().Convert(_scene);
+
+
+            // after CONVERSION we need to add all bones, because he safes them in a dictonary and scenenode
+            // before conversion != after conversion !!
+            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints[0] = _scene.Children[0];
+            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints[1] = _scene.Children[0].Children[0];
+
+
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -323,9 +332,10 @@ namespace Fusee.Engine.Examples.Bone.Core
 
             // move one bone
             var translation = _scene.Children[0].Children[0].GetComponent<TransformComponent>();
-            translation.Rotation.x += Input.Keyboard.ADAxis * 0.03f;
+            translation.Rotation.y -= Input.Keyboard.ADAxis * 0.05f;
+            translation.Rotation.x -= Input.Keyboard.WSAxis * 0.05f;
 
-            Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
+            //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
 
             // Tick any animations and Render the scene loaded in Init()
