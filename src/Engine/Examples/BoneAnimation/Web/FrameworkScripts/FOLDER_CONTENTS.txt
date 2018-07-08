@@ -1,0 +1,6 @@
+This Folder is empty by design. Its only purpose is to enable Visual Studio to show the
+"Scripts" folder below the .csproj contents.
+The Scripts shown in Visual Studio's Solution Explorer below Natives are directly
+listed in the respective .csproj file. Script files listed here are located
+under [FUSEE root]\ext\JSIL\FrameworkScripts. 
+To edit the list of scripts a Web project depends upon, directly edit the .cspoj file!

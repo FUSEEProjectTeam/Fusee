@@ -1131,8 +1131,8 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                    Name = "FUSEE_BONES[BONES]",
-                    Value = float4x4.Identity
+                    Name = "FUSEE_BONES",
+                    Value = new [] { float4x4.Identity }
             });
 
             return effectParameters;
