@@ -626,15 +626,27 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
 
+            /*
+               We get are our UP vector normals in RGB (BumpTexture), so we need to decode them from [0,1] to [1,1]
+               normalize it afterwards, just to be sure its length is 1
+
+               Now we neet the Tanget and Bitangent to this normal:
+                    Step 1: Calculate TBN vectors in World coordinates for each triangle
+                    Step 2: Calculate a tangent Space matrix for every single vertex by averaging the triangle-based TBNs which share that vertex: Vertex-based TBN
+               
+                p1 = u1.T + v1.B
+                p2 = u2.T + v2.B
+                p3 = u2.T + v3.B
+
+                => we have 6 equations and 6 unknowns
+
+             */
+
             var bumpNormals = new List<string>
             {
-                "// First implementation ONLY working with object space normals. See",
-                "// http://gamedev.stackexchange.com/a/72806/44105",
-                "// http://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping",
-                "// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/",
-                "vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);",
-                "bv = vec3(bv.x, bv.y, -bv.z);",
-                "vec3 N =  normalize(bv);"
+                "///////////////// BUMP MAPPING, object space ///////////////////",
+                "vec3 bumpNormalsDecoded = normalize(texture2D(BumpTexture, vUV).rgb * 2.0 - 1.0);",
+                "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
             };
 
             var normals = new List<string>

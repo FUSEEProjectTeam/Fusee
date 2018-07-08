@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core
         {
             object tmpFXParam;
 
-            if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in chache?
+            if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
             {
                 if (tmpFXParam.Equals(value)) return; // no new value
 
@@ -79,6 +79,7 @@ namespace Fusee.Engine.Core
                 return;
             }
 
+            // cache miss
             _allFXParams.Add(name, value);
 
             // Update ShaderEffect
@@ -1207,7 +1208,7 @@ namespace Fusee.Engine.Core
 
             CreateAllShaderEffectVariables(ef);
 
-            // Register built shadereffect
+            // register built shadereffect
             _shaderEffectManager.RegisterShaderEffect(ef);
 
             // register this shader effect as current shader
@@ -1217,7 +1218,7 @@ namespace Fusee.Engine.Core
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
             ShaderEffectParam sFxParam;
-            if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam)) return;
+            if (!_allShaderEffectParameter.TryGetValue(ef, out sFxParam)) return; // if ef not built -> return
 
             foreach (var passParams in sFxParam.ParamsPerPass)
             {
@@ -1226,7 +1227,7 @@ namespace Fusee.Engine.Core
                     // if not found -> continue
                     if (!param.Info.Name.Equals(changedName)) continue;
 
-                    // if not changed -> continue
+                    // if not changed -> break
                     if (param.Value.Equals(changedValue))
                         return;
 
