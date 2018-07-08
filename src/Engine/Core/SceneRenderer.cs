@@ -527,7 +527,7 @@ namespace Fusee.Engine.Core
             Mesh rm = mesh;
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)
-                AddWeightComponentToMesh(mesh, wc);
+                AddWeightComponentToMesh(ref mesh, wc);
 
             RenderCurrentPass(rm, _state.Effect);
         }
@@ -557,7 +557,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        private void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
+        private void AddWeightComponentToMesh(ref Mesh mesh, WeightComponent wc)
         {
             float4[] boneWeights = new float4[wc.WeightMap.Count];
             float4[] boneIndices = new float4[wc.WeightMap.Count];

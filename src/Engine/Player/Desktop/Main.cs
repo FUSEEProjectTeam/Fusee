@@ -127,8 +127,8 @@ namespace Fusee.Engine.Player.Desktop
                 // invoke the first public constructor with no parameters.
                 RenderCanvas app = (RenderCanvas) ctor.Invoke(new object[] { });
 
-                /*if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
-                    ((Fusee.Engine.Player.Core.Player) app).ModelFile = modelFile;*/
+                if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
+                    ((Fusee.Engine.Player.Core.Player) app).ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

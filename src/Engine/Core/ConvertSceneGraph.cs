@@ -121,22 +121,19 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvLight(LightComponent lightComponent)
         {
-            _currentNode.Components.Add(lightComponent);
+
         }
 
         [VisitMethod]
         public void ConvBone(BoneComponent bone)
         {
-            if (_currentNode.Components == null)
-                _currentNode.Components = new List<SceneComponentContainer>();
 
-            _currentNode.Components.Add(bone);
         }
 
         [VisitMethod]
         public void ConVWeight(WeightComponent weight)
         {
-            _currentNode.Components.Add(weight);
+
         }
         #endregion
 
@@ -146,7 +143,7 @@ namespace Fusee.Engine.Core
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
 
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights()); // <- broken
+            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights());
             _matMap.Add(mc, mat);
             return mat;
         }
