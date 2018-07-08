@@ -107,7 +107,7 @@ namespace Fusee.Engine.Player.Core
                                     new TransformComponent
                                     {
                                         Rotation = float3.Zero,
-                                        Translation = new float3(0, 0, 0),
+                                        Translation = new float3(0, 0.5f, 0),
                                         Scale = float3.One
                                     },
                                     new BoneComponent(),
@@ -155,12 +155,12 @@ namespace Fusee.Engine.Player.Core
                         new VertexWeight
                         {
                             JointIndex = 0,
-                            Weight = i * 0.4f
+                            Weight = 1
                         },
                         new VertexWeight()
                         {
                             JointIndex = 1,
-                            Weight = i * 0.23f
+                            Weight = 0.5f
                         }
                     }
                 });
@@ -332,10 +332,10 @@ namespace Fusee.Engine.Player.Core
 
             // move one bone
             var translation = _scene.Children[0].Children[0].GetComponent<TransformComponent>();
-            var translation2 = _scene.Children[0].GetComponent<TransformComponent>();
-            translation.Rotation.y += Input.Keyboard.ADAxis * 0.03f;
-            //translation2.Translation.x -= Input.Keyboard.ADAxis * 0.4f;
-            Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
+            translation.Rotation.y -= Input.Keyboard.ADAxis * 0.05f;
+            translation.Rotation.x -= Input.Keyboard.WSAxis * 0.05f;
+
+            //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
 
             // Tick any animations and Render the scene loaded in Init()

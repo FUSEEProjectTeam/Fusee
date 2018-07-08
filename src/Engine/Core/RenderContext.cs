@@ -851,7 +851,7 @@ namespace Fusee.Engine.Core
 
             // Bones (if any)
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
-                SetFXParam("FUSEE_BONES", Bones);
+                SetFXParam("FUSEE_BONES[0]", Bones);
 
         }
 
@@ -1254,7 +1254,16 @@ namespace Fusee.Engine.Core
             sFxParam.ParamsPerPass = new List<List<EffectParam>>();
             for (i = 0; i < nPasses; i++)
             {
-                var shaderParamInfos = GetShaderParamList(sFxParam.CompiledShaders[i]);
+                var shaderParamInfos = GetShaderParamList(sFxParam.CompiledShaders[i]).ToList();
+
+                /*for (var j = 0; j < shaderParamInfos.Count; j++)
+                {
+                    var currentShaderParamInfo =  shaderParamInfos[j];
+                    var trimmed = currentShaderParamInfo.Name.Trim((new[] { '[', '0', ']' }));
+                    currentShaderParamInfo.Name = trimmed;
+                    shaderParamInfos[j] = currentShaderParamInfo;
+                }*/
+ 
 
                 // check for variables which exists in ParamDecl but not in paramList
                 /* TODO: Disabled - fail @ Webbuild!
@@ -1269,8 +1278,6 @@ namespace Fusee.Engine.Core
                         Diagnostics.Log("Ignore this, if you have used the built-in scenegraph!");
                     }
                 }*/
-                
-
 
                 sFxParam.ParamsPerPass.Add(new List<EffectParam>());
 
@@ -1306,8 +1313,9 @@ namespace Fusee.Engine.Core
                                 )
                                 ||
                                 (paramNew.Type.IsAssignableFrom(initValType))
-                              )
-                           )
+                             ) 
+                            && !paramNew.Name.Contains("BONES")
+                        )
                         {
                             throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
                                                 " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
@@ -1610,6 +1618,7 @@ namespace Fusee.Engine.Core
             foreach (var fxParam in _allFXParams)
             {
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
+
             }
 
 
@@ -1678,6 +1687,13 @@ namespace Fusee.Engine.Core
             }
             else if (param.Info.Type == typeof(float4x4))
             {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float4x4[]) param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
                 SetShaderParam(param.Info.Handle, (float4x4)param.Value);
             }
             else if (param.Info.Type == typeof(float4x4[]))
