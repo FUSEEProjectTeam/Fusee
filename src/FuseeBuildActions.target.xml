@@ -64,7 +64,7 @@
         2. WEB Project: $(OutputPath)Assets\ - for WEB projects $(OutputPath) is the "<dll-name>" folder under temp\Obj.
            The Assets will later be copied to $(WebOutputPaath), target: "FuseeCopyWebAssetsStylesNHtml".
         3. DESKTOP Project: $(OutputPath)Assets\
-        3. ANDROID Projects: $(MonoAndroidAssetsDirIntermediate)' - see target "FuseeBeforeAndroidResRef"
+        4. ANDROID Projects: Handled in target "FuseeBeforeAndroidResRef"
     -->
   <PropertyGroup>
     <!--LIBRARY-->
@@ -73,8 +73,6 @@
     <AssetDestinationFolder Condition=" '$(FuseeWebOutputPath)' != '' ">$(OutputPath)Assets\</AssetDestinationFolder>
     <!--DESKTOP-->
     <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
-    <!--ANDROID-->
-    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Android')) And '$(OutputType)' != 'Library'">'$(MonoAndroidAssetsDirIntermediate)'</AssetDestinationFolder>
   </PropertyGroup>
 
   <!--LIBRARIES: Collect and copy Assets from this dll into the AssetDestinationFolder-->
@@ -109,7 +107,7 @@
 		 C:\Program Files (x86)\MSBuild\Xamarin\Android\Xamarin.Android.Common.targets -->
   <PropertyGroup>
     <ApplicationResolveReferencesDependsOn>
-      FuseeBeforeAndroidResRef;
+      FuseeBeforeAndroidResRef;      
       $(ApplicationResolveReferencesDependsOn)
       FuseeAfterAndroidResRef;
     </ApplicationResolveReferencesDependsOn>
@@ -134,11 +132,14 @@
     <Warning Condition=" '$(MonoAndroidAssetsDirIntermediate)' == '' "
 		         Text="FuseeBuildActions: MonoAndroidAssetsDirIntermediate not set. Assets depending on project $(MSBuildProjectFile) will most likely not be added to the APK."/>
     <ItemGroup>
-      <FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
-      <FuseeExtAssets Include="$(AssetDestinationFolder)\**\*.*"/>
+      <FuseeReferencedAssemblies Include="@(ReferencePath)" />
     </ItemGroup>
-    <Message Importance="High" Text="[external android asset] %(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)%(FUSEE_AndroidAsset.Filename)%(FUSEE_AndroidAsset.Extension)" />
-    <Message Importance="High" Text="[external android asset] %(FuseeExtAssets.RootDir)%(FuseeExtAssets.Directory)%(FuseeExtAssets.Filename)%(FuseeExtAssets.Extension)" />
+    <ItemGroup>
+      <FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+      <FuseeExtAssets Include="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Assets\*.*"/>
+    </ItemGroup>
+    <Message Importance="High" Text="[external android asset] %(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)%(FUSEE_AndroidAsset.Filename)%(FUSEE_AndroidAsset.Extension) --> $(MonoAndroidAssetsDirIntermediate)" />
+    <Message Importance="High" Text="[external android asset] %(FuseeExtAssets.RootDir)%(FuseeExtAssets.Directory)%(FuseeExtAssets.Filename)%(FuseeExtAssets.Extension) --> $(MonoAndroidAssetsDirIntermediate)" />
     <Copy
 			SourceFiles="@(FUSEE_AndroidAsset)"
 			DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
@@ -523,10 +524,9 @@
   </Target>
 
   <Target Name="FuseeCleanAssets">
-    <Message Condition="Exists('$(AssetDestinationFolder)$(AssemblyName)')" Importance="High" Text="[Assets] Deleting $(AssetDestinationFolder)$(AssemblyName) and all of its contents" />
-    <RemoveDir Condition="" Directories="$(AssetDestinationFolder)$(AssemblyName)" />
+    <Message Condition="Exists($(AssetDestinationFolder))" Importance="High"  Text="[$(AssemblyName)][Deleting assets:] $(AssetDestinationFolder) and all of its contents" />
+    <RemoveDir Directories="$(AssetDestinationFolder)" />
   </Target>
-
 
   <Target Name="FuseeCleanDependingJavaScript"  Condition=" '$(FuseeWebOutputPath)' != '' ">
     <Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')"
