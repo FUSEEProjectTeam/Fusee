@@ -7,6 +7,12 @@
     <AvailableItemName Include="FUSEE_External_JavaScript">
       <InProject>false</InProject>
     </AvailableItemName>
+    
+    <!--  FUSEE_Lib_Asset - marks Assets residing in a FUSEE project's Asset subfolder. 
+			  These files will recursively copied to the output directory  -->
+    <AvailableItemName Include="FUSEE_Lib_Asset">
+      <InProject>false</InProject>
+    </AvailableItemName>
 
     <!-- FUSEE_Native_Library - marks unmanaged DLL files typically included from [FUSEE_ROOT]\ext. 
 			 Add those files by manually editing the respective .csproj directly - never use "Add item..." 
@@ -23,8 +29,6 @@
     <FuseeRoot  Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
   </PropertyGroup>
 
-
-
   <!-- ################################################################
 	               TASKS TO PERFORM AT BUILD 
 	     ################################################################ 	-->
@@ -32,14 +36,15 @@
   <PropertyGroup>
     <BuildDependsOn>
       FuseeBeforeBuild;
-      FuseeReferenceCompileVertexShaders;
       FuseeReferenceCompilePixelShaders;
+      FuseeReferenceCompileVertexShaders;
       $(BuildDependsOn);
-      FuseeCollectAndCopyAssets;
+      FuseeCollectAndCopyExternalAssets;
+      FuseeCollectAndCopyFrameworkAssets;
       FuseeJSILCompile;
       FuseeCopyJSILJavaScript;
-      FuseeCopyExternalJavaScript;
-      FuseeCopyFrameworkJavaScript;
+      FuseeCopyExternalJavaScript;      
+      FuseeCopyFrameworkJavaScript;      
       FuseeResolveJavaScriptDependencies;
       FuseeCopyWebAssetsStylesNHtml;
       FuseeWebTools;
@@ -48,38 +53,65 @@
     </BuildDependsOn>
   </PropertyGroup>
 
+  
+  <!--  Task collecting any contents in "Assets" subfolder.
+	        This target depends on three things:
+      1. Output type has to be library.    
+			2. The $(AssetDestinationFolder) PROPERTY to contain the correct output path. 			
+    -->
+  <!-- define a destination where the dependent Assets should go. If FuseeWebOutputPath is defined, this is a web project and we want the
+			 scripts to go into the Assets\ subfolder. If FuseeWebOutputPath is not defined, this project itself is some dll (possibly referencing other dlls).
+			 Then the scripts of all depending dlls should go to to subfolder called "<dll-name>.Scripts" -->
+    <PropertyGroup>
+      <AssetDestinationFolder Condition=" '$(FuseeWebOutputPath)' == '' ">$(OutputPath)$(AssemblyName).Assets\</AssetDestinationFolder>
+      <AssetDestinationFolder Condition=" '$(FuseeWebOutputPath)' != '' ">$(FuseeWebOutputPath)Assets\</AssetDestinationFolder>
+    </PropertyGroup>
 
-  <!-- ########################################################################################################
-	               TASK TO PERFORM AT BULD, not matter the plattform  FuseeCollectAndCopyAssets
-	     ######################################################################################################## 	-->
-  <!--  Task looking for any contents in "Assets" subfolders below folders of all referenced managed .dlls (no matter if 
-	        project or assembly references.
-	        This target depends on two things:
-			1. the $(AssetDestinationFolder) PROPERTY to contain the correct output path, whether it is a web build or not. 
-			2. The @(ReferencePath) ITEM LIST to contain all referenced managed dlls as items. This item list is generated during
-			   all C# builds (and also Android builds).
-	  -->
-  <Choose>
-    <When Condition=" '$(FuseeWebOutputPath)' != '' ">
-      <PropertyGroup>
-        <AssetDestinationFolder>$(FuseeWebOutputPath)</AssetDestinationFolder>
-      </PropertyGroup>
-    </When>
-    <Otherwise>
-      <PropertyGroup>
-        <AssetDestinationFolder>$(OutputPath)</AssetDestinationFolder>
-      </PropertyGroup>
-    </Otherwise>
-  </Choose>
-
-  <Target Name="FuseeCollectAndCopyAssets" Condition=" '$(AssetDestinationFolder)' != '' ">
-    <ItemGroup>
-      <FuseeWebAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+  <!--Execute task only if output type is Library-->
+  <Target Name="FuseeCollectAndCopyExternalAssets" 
+    Condition="'$(OutputType)' == 'Library' and '$(IsExampleCore)' != true and '$(FuseeWebOutputPath)' == ''"
+    Inputs="@(FUSEE_Lib_Asset)"
+    Outputs="@(FUSEE_Lib_Asset -> '$(AssetDestinationFolder)%(Filename)%(Extension)')">
+    <Message Importance="High" Text="[copied external lib asset] @(FUSEE_Lib_Asset) -> $(AssetDestinationFolder)%(Filename)%(Extension)" />
+    <Copy
+				SourceFiles="@(FUSEE_Lib_Asset)"
+				DestinationFolder="$(AssetDestinationFolder)" />    
+    
+    <!--<ItemGroup>
+      --><!--Get paths to possible asset folders the library itself--><!--      
+      <FuseeLibAsset Include="$(FuseeRoot)src\$([System.String]::Copy('$(RootNamespace)').Replace('.','\').Replace('Fusee\',''))\Assets\*.*"/>
     </ItemGroup>
-    <Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(AssetDestinationFolder)\Assets\%(RecursiveDir)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[copied assets] %(FuseeWebAsset.FullPath) -> $(AssetDestinationFolder)\Assets\%(RecursiveDir)%(Filename)%(Extension)" />
+    --><!--Copy all assets to previeously set asset collection folder--><!--    
+    <Copy SourceFiles="%(FuseeLibAsset.FullPath)" DestinationFolder="$(AssetDestinationFolder)\%(RecursiveDir)" ContinueOnError="true"/>    
+    <Message Condition="Exists('%(FuseeLibAsset.FullPath)')" Importance="High" Text="[copied lib assets] %(FuseeLibAsset.FullPath) -> $(AssetDestinationFolder)\%(RecursiveDir)" />-->
+
+    <!--Get assets from referenced dlls-->
+    <!--<FuseeRefAsset Include="$(FuseeRoot)src\$([System.String]::Copy('%(ReferencePath.Filename)').Replace('.','\').Replace('Fusee\',''))\Assets\*.*">
+        <ReferenceName>%(ReferencePath.Filename)</ReferenceName>
+      </FuseeRefAsset>-->
+    <!--<Copy SourceFiles="%(FuseeRefAsset.FullPath)" DestinationFolder="$(AssetDestinationFolder)%(FuseeRefAsset.ReferenceName)\%(RecursiveDir)" ContinueOnError="true"/>-->
+    <!--<Message Condition="Exists('%(FuseeRefAsset.FullPath)')" Importance="High" Text="[copied external assets] %(FuseeRefAsset.FullPath) -> $(AssetDestinationFolder)%(FuseeRefAsset.ReferenceName)\%(RecursiveDir)%(Filename)%(Extension)" />-->
+    
   </Target>
 
+  <Target Name="FuseeCollectAndCopyFrameworkAssets"
+    Condition="'$(OutputType)' == 'Library' and '$(IsExampleCore)' != true and '$(FuseeWebOutputPath)' != ''">
+    <Message Importance="High" Text="[copied framework lib asset] @(FUSEE_Lib_Asset) -> $(AssetDestinationFolder)%(Filename)%(Extension)" />
+    <Copy
+				SourceFiles="@(FUSEE_Lib_Asset)"
+				DestinationFolder="$(AssetDestinationFolder)" />
+  </Target>
+
+  <!-- Task copying all assets from AssetDestinationFolder to OutputPath-->
+  <Target Name="FuseeDesktopCollectAndCopyAssets" Condition="$(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library' ">
+    <ItemGroup>
+      <FuseeAssetAddToDesktop Include="@(FUSEE_Lib_Asset)"/>
+    </ItemGroup>    
+    <Message Importance="High" Text="[add lib asset (desktop)] @(FUSEE_Lib_Asset) -> $(OutputPath)\Assets\%(Filename)%(Extension)" />
+    <Copy
+				SourceFiles="@(FuseeAssetAddToDesktop)"
+				DestinationFolder="$(OutputPath)\Assets\" />
+  </Target>
 
   <!-- ########################################################################################################
 	               TASKS TO PERFORM AT ANDROID BULD STEP  ApplicationResolveReferencesDependsOn
@@ -94,6 +126,7 @@
       FuseeAfterAndroidResRef;
     </ApplicationResolveReferencesDependsOn>
   </PropertyGroup>
+
 
   <Target Name="FuseeBeforeAndroidResRef">
   </Target>
@@ -114,14 +147,20 @@
 		         Text="FuseeBuildActions: MonoAndroidAssetsDirIntermediate not set. Assets depending on project $(MSBuildProjectFile) will most likely not be added to the APK."/>
     <ItemGroup>
       <FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+      <FuseeExtAssets Include="$(AssetDestinationFolder)\**\*.*"/>
     </ItemGroup>
     <Message Importance="High" Text="[external android asset] %(FUSEE_AndroidAsset.RootDir)%(FUSEE_AndroidAsset.Directory)%(FUSEE_AndroidAsset.Filename)%(FUSEE_AndroidAsset.Extension)" />
+    <Message Importance="High" Text="[external android asset] %(FuseeExtAssets.RootDir)%(FuseeExtAssets.Directory)%(FuseeExtAssets.Filename)%(FuseeExtAssets.Extension)" />
     <Copy
 			SourceFiles="@(FUSEE_AndroidAsset)"
 			DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
+    <Copy
+			SourceFiles="@(FuseeExtAssets)"
+			DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
   </Target>
+
   <!-- msbuild debugging and test stuff -->
-  <!--<Target Name="FuseeCheckAddingAssetsBefore">
+  <!--Target Name="FuseeCheckAddingAssetsBefore">
 		<Message Importance="High" Text="ßßßß  BEFORE ReferencePath:  @(ReferencePath)  ßßßßß" />
 		<ItemGroup>
 			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
@@ -129,13 +168,13 @@
  		<Message Importance="High" Text="ßßßß  BEFORE FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
 	  </Target>
 
-  <Target Name="FuseeCheckAddingAssetsAfter">
-    <Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
-    <ItemGroup>
-      <FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
-    </ItemGroup>
-    <Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
-  </Target>-->
+	  <Target Name="FuseeCheckAddingAssetsAfter">
+		<Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
+		<ItemGroup>
+			<FUSEE_AndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
+		</ItemGroup>
+ 		<Message Importance="High" Text="ßßßß  AFTER FUSEE_AndroidAsset:  %(FUSEE_AndroidAsset.FullPath)  ßßßßß" />
+	  </Target-->
 
   <!-- Add FUSEE targets/tasks to be performed BEFORE the normal build here -->
   <Target Name="FuseeBeforeBuild">
@@ -267,6 +306,10 @@
 				DestinationFolder="$(FuseeScriptDestination)" />
   </Target>
 
+
+
+
+
   <!-- ================================================================================================================
 	FuseeResolveJavaScriptDependencies: Checks for any referenced managed dll if there is a <dllname>.Scripts folder below Libraries
 	containing any java script containing implementation attributed with [JSExternal] in the the managed reference.
@@ -348,14 +391,24 @@
 	(FuseeWebOutputPath is set)
 	-->
   <Target Name="FuseeCopyWebAssetsStylesNHtml" Condition=" '$(FuseeWebOutputPath)' != '' ">
+    <!--Collect Assets from AssetDestinationFolder-->
     <ItemGroup>
-      <FuseeWebAsset Include="$(OutputPath)Assets\**\*" />
+      <FuseeExtAssets Include="$(AssetDestinationFolder)\**\*.*"/>
+    </ItemGroup>    
+    <!--Copy Assets to \tmp\Obj\Fusee.Engine.XY.Web\bin\($Configuration)\Assets-->
+    <Copy SourceFiles="%(FuseeExtAssets.FullPath)" DestinationFolder="$(OutputPath)\Assets\" ContinueOnError="true"/>
+    
+    <!--Collect Assets from \temp\etc.-->
+    <ItemGroup>
+      <FuseeWebAsset Include="$(OutputPath)Assets\**\*" />      
     </ItemGroup>
-    <Message Importance="High" Text="[external web asset] %(FuseeWebAsset.RootDir)%(FuseeWebAsset.Directory)%(FuseeWebAsset.Filename)%(FuseeWebAsset.Extension)" />
+    <!--Copy Assets to FuseeWebOutputPath\Assets-->
     <Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\%(RecursiveDir)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[web asset] %(FuseeWebAsset.FullPath) -> $(FuseeWebOutputPath)\Assets\%(RecursiveDir)%(Filename)%(Extension)" />
+    <!--<Copy SourceFiles="%(FuseeExtAssets.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\" ContinueOnError="true"/>-->     
+        
+    <Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[web asset] %(FuseeWebAsset.FullPath) -> $(FuseeWebOutputPath)Assets\%(RecursiveDir)%(Filename)%(Extension)" />
+    <!--<Message Condition="Exists('%(FuseeExtAssets.FullPath)')" Importance="High" Text="[ext web asset] %(FuseeExtAssets.FullPath) -> $(FuseeWebOutputPath)Assets\%(Filename)%(Extension)" />-->
   </Target>
-
 
   <!-- ================================================================================================================
 	Run the FUSEE web tools generating necessary .js manifests, html file etc. for web projects (FuseeWebOutputPath is set)
@@ -466,6 +519,7 @@
     <CleanDependsOn>
       FuseeCleanNativeDependencies;
       FuseeCleanNativeLibrary;
+      FuseeCleanAssets;
       FuseeJSILClean;
       FuseeCleanDependingJavaScript;
       FuseeCleanExternalJavaScript;
@@ -488,6 +542,11 @@
     <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
     <Message Text="[native library] Deleting $(OutputPath)$(AssemblyName).Natives\ and all of its contents" />
     <RemoveDir Directories="$(OutputPath)$(AssemblyName).Natives\" />
+  </Target>
+
+  <Target Name="FuseeCleanAssets">
+    <Message Condition="Exists('$(AssetDestinationFolder)$(AssemblyName)')" Importance="High" Text="[Assets] Deleting $(AssetDestinationFolder)$(AssemblyName) and all of its contents" />
+    <RemoveDir Condition="" Directories="$(AssetDestinationFolder)$(AssemblyName)" />
   </Target>
 
 

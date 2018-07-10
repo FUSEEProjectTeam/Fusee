@@ -6,6 +6,7 @@
     <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Core\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <IsExampleCore>true</IsExampleCore>
   </PropertyGroup>
   <!-- as suggested at https://github.com/dotnet/sdk/issues/1518 by dasMulli -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />

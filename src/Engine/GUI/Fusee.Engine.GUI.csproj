@@ -41,9 +41,9 @@
     <DocumentationFile>..\..\..\bin\Release\Libraries\Fusee.Engine.GUI.xml</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Assets\nineSlice.vert">
+    <FUSEE_Lib_Asset Include="Assets\nineSlice.vert">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </FUSEE_Lib_Asset>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
@@ -100,9 +100,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\nineSliceTile.frag">
+    <FUSEE_Lib_Asset Include="Assets\nineSliceTile.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    </FUSEE_Lib_Asset>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GUIButton.cs" />
