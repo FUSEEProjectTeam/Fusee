@@ -59,14 +59,14 @@ namespace Fusee.Engine.Core
             return $"uniform {DecodeType(type)} {varName};";
         }
 
-        public static string CreateVarying(Type type, string varName)
+        public static string CreateOut(Type type, string varName)
         {
-            return $"varying {DecodeType(type)} {varName};";
+            return $"out {DecodeType(type)} {varName};";
         }
 
-        public static string CreateAttribute(Type type, string varName)
+        public static string CreateIn(Type type, string varName)
         {
-            return $"attribute {DecodeType(type)} {varName};";
+            return $"in  {DecodeType(type)} {varName};";
         }
 
         public static string CreateVar(Type type, string varName)
@@ -194,6 +194,9 @@ namespace Fusee.Engine.Core
             VS = string.Join("\n", _vertexShader);
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
+
+            Diagnostics.Log(PS);
+            Diagnostics.Log(VS);
         }
 
         private static void AddTabsToMethods(ref List<string> list)
@@ -280,40 +283,40 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add($"#define BONES {wc.Joints.Count}");
 
             if (_meshProbs.HasVertices)
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec3, "fuVertex"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuVertex"));
 
             if (_materialProbs.HasSpecular)
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vViewDir"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
 
             if (_meshProbs.HasWeightMap)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuBoneIndex"));
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuBoneWeight"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneIndex"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneWeight"));
             }
 
             if (_meshProbs.HasNormals)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec3, "fuNormal"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuNormal"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vNormal"));
             }
 
             if (_meshProbs.HasUVs)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec2, "fuUV"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec2, "fuUV"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec2, "vUV"));
             }
 
             if (_meshProbs.HasColors)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuColor"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec4, "vColors"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuColor"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vColors"));
             }
 
-            _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "viewPos"));
-            _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vMVNormal"));
+            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "viewPos"));
+            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vMVNormal"));
 
             if (_renderWithShadows)
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec4, "shadowLight"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "shadowLight"));
 
         }
 
@@ -469,23 +472,25 @@ namespace Fusee.Engine.Core
             _pixelShader.Add($"#define MAX_LIGHTS {numberOfLights}");
             _pixelShader.Add(LightStructDeclaration());
 
-            _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vViewDir"));
+            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewDir"));
 
             if (_meshProbs.HasNormals)
             {
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vMVNormal"));
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vMVNormal"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vNormal"));
             }
 
           
 
             if (_meshProbs.HasUVs)
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec2, "vUV"));
 
-            _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "viewPos"));
+            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "viewPos"));
 
             if (_renderWithShadows)
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec4, "shadowLight"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "shadowLight"));
+
+            _pixelShader.Add(GLSL.CreateOut(Type.Vec4, "fragmentColor"));
 
         }
 
@@ -562,7 +567,7 @@ namespace Fusee.Engine.Core
 
             if (_materialProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
+                    $"return texture({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
             else
                 methodBody.Add($"return ({DiffuseColorName} * intensities * diffuseTerm);");
 
@@ -607,7 +612,7 @@ namespace Fusee.Engine.Core
                 "vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;",
                 "projCoords = projCoords * 0.5 + 0.5; // map to [0,1]",
                 "float currentDepth = projCoords.z;",
-                "float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;",
+                "float pcfDepth = texture(firstPassTex, projCoords.xy).r;",
                 "float shadow = 0.0;",
                 "shadow = currentDepth - 0.01 > pcfDepth ? 1.0 : 0.0;",
                 "if (projCoords.z > 1.0)",
@@ -645,7 +650,7 @@ namespace Fusee.Engine.Core
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, object space ///////////////////",
-                "vec3 bumpNormalsDecoded = normalize(texture2D(BumpTexture, vUV).rgb * 2.0 - 1.0);",
+                "vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0);",
                 "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
             };
 
@@ -871,7 +876,7 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
                 "}",
-                $"gl_FragColor = vec4(result, 1.0);"
+                $"fragmentColor = vec4(result, 1.0);"
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
@@ -881,9 +886,10 @@ namespace Fusee.Engine.Core
 
         private static string EsPrecision()
         {
-            return "#ifdef GL_ES\n" +
+            /*return "#ifdef GL_ES\n" +
                    "    precision highp float;\n" +
-                   "#endif\n\n";
+                   "#endif\n\n";*/
+            return "precision mediump float; \n";
         }
 
         private static string LightStructDeclaration()
@@ -905,7 +911,7 @@ namespace Fusee.Engine.Core
 
         private static string Version()
         {
-            return "#version 100\n";
+            return "#version 300 es\n";
         }
 
         #endregion

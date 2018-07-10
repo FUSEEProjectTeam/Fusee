@@ -38,14 +38,14 @@ namespace Fusee.Engine.Core.GUI
 
         protected IShaderParam ColorParam;
 
-        protected readonly string GUIVS = @"
+        protected readonly string GUIVS = @"#version 300 es
             uniform mat4 guiXForm;
-            attribute vec3 fuVertex;
-            attribute vec2 fuUV;
-            attribute vec4 fuColor;
+            in vec3 fuVertex;
+            in vec2 fuUV;
+            in vec4 fuColor;
 
-            varying vec2 vUV;
-            varying vec4 vColor;
+            out vec2 vUV;
+            out vec4 vColor;
 
             void main()
             {
@@ -55,31 +55,31 @@ namespace Fusee.Engine.Core.GUI
                 gl_Position = guiXForm * vec4(fuVertex, 1);
             }";
 
-        protected readonly string GUIPS = @"
-            #ifdef GL_ES
-                precision highp float;
-            #endif    
+        protected readonly string GUIPS = @"#version 300 es
+                precision mediump float; 
   
-            varying vec2 vUV;
-            varying vec4 vColor;
+            in vec2 vUV;
+            in vec4 vColor;
+
+            out vec4 fragColor;
 
             void main(void) {
-                gl_FragColor = vColor;
+                fragColor = vColor;
             }";
 
-        protected readonly string TEXTPS = @"
-            #ifdef GL_ES
-                precision highp float;
-            #endif    
+        protected readonly string TEXTPS = @"#version 300 es
+                precision mediump float;
   
-            varying vec2 vUV;
-            varying vec4 vColor;
+            in vec2 vUV;
+            in vec4 vColor;
 
             uniform sampler2D tex;
             uniform vec4 uColor;
 
+            out vec4 fragColor;
+
             void main(void) {
-                gl_FragColor = vec4(1, 1, 1, texture2D(tex, vUV).a) * uColor;
+                fragColor = vec4(1, 1, 1, texture(tex, vUV).a) * uColor;
             }";
 
         #endregion
