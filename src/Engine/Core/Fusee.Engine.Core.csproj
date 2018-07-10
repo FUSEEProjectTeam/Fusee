@@ -156,6 +156,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Lib_Asset Include="Assets\test.txt" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <!-- Target Name="Clean">
