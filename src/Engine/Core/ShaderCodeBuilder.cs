@@ -195,8 +195,8 @@ namespace Fusee.Engine.Core
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
 
-            Diagnostics.Log(PS);
-            Diagnostics.Log(VS);
+            //Diagnostics.Log(PS);
+            //Diagnostics.Log(VS);
         }
 
         private static void AddTabsToMethods(ref List<string> list)
@@ -650,7 +650,7 @@ namespace Fusee.Engine.Core
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, object space ///////////////////",
-                "vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0);",
+                $"vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0) * (1.0-{BumpIntensityName});",
                 "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
             };
 
@@ -889,7 +889,7 @@ namespace Fusee.Engine.Core
             /*return "#ifdef GL_ES\n" +
                    "    precision highp float;\n" +
                    "#endif\n\n";*/
-            return "precision mediump float; \n";
+            return "precision highp float; \n";
         }
 
         private static string LightStructDeclaration()

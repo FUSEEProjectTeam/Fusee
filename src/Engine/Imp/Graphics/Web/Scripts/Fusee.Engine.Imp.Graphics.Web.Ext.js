@@ -184,7 +184,6 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
                 throw Error("No WebGL2 supported.");
 
             this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha });
-            console.log(this.gl);
 
             this.currWidth = 0;
             this.currHeight = 0;
@@ -1119,6 +1118,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.shaderSource(vertexObject, vs);
             this.gl.compileShader(vertexObject);
             var info = this.gl.getShaderInfoLog(vertexObject);
+
             var statusCode = this.gl.getShaderParameter(vertexObject, this.gl.COMPILE_STATUS);
 
 
@@ -1129,6 +1129,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.shaderSource(fragmentObject, ps);
             this.gl.compileShader(fragmentObject);
             info = this.gl.getShaderInfoLog(fragmentObject);
+
             statusCode = this.gl.getShaderParameter(fragmentObject, this.gl.COMPILE_STATUS);
       
 
@@ -1402,7 +1403,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         function SetShader(program) {
             this._currentTextureUnit = 0;
             this._shaderParam2TexUnit = {};
-          
+
             this.gl.useProgram(program.Program);
         }
     );

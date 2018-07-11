@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core.GUI
             }";
 
         protected readonly string GUIPS = @"#version 300 es
-                precision mediump float; 
+                precision highp float; 
   
             in vec2 vUV;
             in vec4 vColor;
@@ -68,7 +68,7 @@ namespace Fusee.Engine.Core.GUI
             }";
 
         protected readonly string TEXTPS = @"#version 300 es
-                precision mediump float;
+                precision highp float;
   
             in vec2 vUV;
             in vec4 vColor;
@@ -79,7 +79,7 @@ namespace Fusee.Engine.Core.GUI
             out vec4 fragColor;
 
             void main(void) {
-                fragColor = vec4(1, 1, 1, texture(tex, vUV).a) * uColor;
+                fragColor = vec4(1.0, 1.0, 1.0, texture(tex, vUV).a) * uColor;
             }";
 
         #endregion
