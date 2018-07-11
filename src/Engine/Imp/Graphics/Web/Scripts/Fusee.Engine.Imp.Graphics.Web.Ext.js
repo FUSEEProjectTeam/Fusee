@@ -177,8 +177,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this._canvas = document.getElementById("canvas");
 
             var premAlpha = jsilConfig.premultipliedAlpha;
-            this.gl = this._canvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
-						this._canvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
+
+            var webgl2Supported = (typeof WebGL2RenderingContext !== 'undefined');
+
+            if (!webgl2Supported)
+                throw Error("No WebGL2 supported.");
+
+            this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha });
 
             this.currWidth = 0;
             this.currHeight = 0;
@@ -1113,7 +1118,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.shaderSource(vertexObject, vs);
             this.gl.compileShader(vertexObject);
             var info = this.gl.getShaderInfoLog(vertexObject);
+
             var statusCode = this.gl.getShaderParameter(vertexObject, this.gl.COMPILE_STATUS);
+
 
             if (statusCode != true)
                 throw new Error(info);
@@ -1122,7 +1129,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.shaderSource(fragmentObject, ps);
             this.gl.compileShader(fragmentObject);
             info = this.gl.getShaderInfoLog(fragmentObject);
+
             statusCode = this.gl.getShaderParameter(fragmentObject, this.gl.COMPILE_STATUS);
+      
 
             if (statusCode != true)
                 throw new Error(info);
