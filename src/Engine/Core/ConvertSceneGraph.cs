@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
 
@@ -116,8 +117,13 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponentContainer>();
 
-            mesh.Tangents = mesh.CalculateTangents();
-            mesh.BiTangents = mesh.CalculateBiTangents();
+            var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
+
+            if (currentNodeEffect?.Effect.GetEffectParam(ShaderCodeBuilder.BumpTextureName) != null)
+            {
+                mesh.Tangents = mesh.CalculateTangents();
+                mesh.BiTangents = mesh.CalculateBiTangents();
+            }
 
             _currentNode.Components.Add(mesh);
         }
