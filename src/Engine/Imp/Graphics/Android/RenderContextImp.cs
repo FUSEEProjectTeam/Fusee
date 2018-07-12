@@ -1178,14 +1178,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ((MeshImp)mr).InvalidateBoneIndices();
         }
 
-        public void RemoveTangents(IMeshImp mesh)
+        public void RemoveTangents(IMeshImp mr)
         {
-            throw new NotImplementedException();
+             GL.DeleteBuffers(1, ref ((MeshImp)mr).TangentBufferObject);
+            ((MeshImp)mr).InvalidateTangents();
         }
 
-        public void RemoveBiTangents(IMeshImp mesh)
+        public void RemoveBiTangents(IMeshImp mr)
         {
-            throw new NotImplementedException();
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
+            ((MeshImp)mr).InvalidateBiTangents();
         }
 
         /// <summary>

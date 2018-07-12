@@ -1147,6 +1147,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Common.Helper.NormalAttribLocation, $fuseeCommon.Fusee.Engine.Common.Helper.NormalAttribName);
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Common.Helper.BoneIndexAttribLocation, $fuseeCommon.Fusee.Engine.Common.Helper.BoneIndexAttribName);
             this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Common.Helper.BoneWeightAttribLocation, $fuseeCommon.Fusee.Engine.Common.Helper.BoneWeightAttribName);
+            this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribLocation, $fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribName);
+            this.gl.bindAttribLocation(program, $fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribLocation, $fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribName);
+
 
             // Must happen AFTER the bindAttribLocation calls
             this.gl.linkProgram(program);
@@ -1316,13 +1319,11 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                 this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Common.Helper.NormalAttribLocation, 3, this.gl.FLOAT, false, 0, 0);
             }
 
-
             if (mr.TangentBufferObject != null) {
                 this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribName);
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.TangentBufferObject);
                 this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribLocation, 4, this.gl.FLOAT, false, 0, 0);
             }
-
 
             if (mr.BitangentBufferObject != null) {
                 this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribName);
@@ -1364,6 +1365,14 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             if (mr.NormalBufferObject != null) {
                 this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.NormalAttribLocation);
+            }
+
+            if (mr.TangentBufferObject != null) {
+                this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.TangentBufferObject);
+            }
+
+            if (mr.BitangentBufferObject != null) {
+                this.gl.disableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.BitangentBufferObject);
             }
 
             if (mr.UVBufferObject != null) {
@@ -1969,10 +1978,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             //    throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
-
-    $.Method({ Static: false, Public: true }, "SetTangents",
-
-        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.Core.float3")])]),
+    $.Method({ Static: false, Public: true },
+        "SetTangents",
+        new JSIL.MethodSignature(null,
+            [
+                $fuseeCommon.TypeRef("Fusee.Engine.Common.IMeshImp"),
+                $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.Core.float4")])
+            ]),
         function SetTangents(mr, tangents) {
             if (tangents == null || tangents.length == 0) {
                 throw new Error("Tangents must not be null or empty");
@@ -1983,13 +1995,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             if (mr.Tangent == null)
                 mr.TangentBufferObject = this.gl.createBuffer();
 
-            var nFloats = tangents.length * 3;
+            var nFloats = tangents.length * 4;
             var flatBuffer = new Float32Array(nFloats);
             for (var i = 0; i < tangents.length; i++) {
-                flatBuffer[3 * i + 0] = tangents[i].x;
-                flatBuffer[3 * i + 1] = tangents[i].y;
-                flatBuffer[3 * i + 2] = tangents[i].z;
-                flatBuffer[3 * i + 3] = tangents[i].w;
+                flatBuffer[4 * i + 0] = tangents[i].x;
+                flatBuffer[4 * i + 1] = tangents[i].y;
+                flatBuffer[4 * i + 2] = tangents[i].z;
+                flatBuffer[4 * i + 3] = tangents[i].w;
             }
 
             this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.TangentBufferObject);
@@ -2006,7 +2018,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IMeshImp"), $jsilcore.TypeRef("System.Array", [$fuseeMath.TypeRef("Fusee.Math.Core.float3")])]),
         function SetBiTangents(mr, bitangents) {
             if (bitangents == null || bitangents.length == 0) {
-                throw new Error("Tangents must not be null or empty");
+                throw new Error("BiTangents must not be null or empty");
             }
 
             var vboBytes;
@@ -2027,7 +2039,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             vboBytes = this.gl.getBufferParameter(this.gl.ARRAY_BUFFER, this.gl.BUFFER_SIZE);
             // IE11 returns undefined, so we must believe uploading worked well
             //if (vboBytes != normsBytes)
-            //    throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
+            //   throw new Error("Problem uploading normal buffer to VBO (normals). Tried to upload " + normsBytes + " bytes, uploaded " + vboBytes + ".");
         }
     );
 
@@ -2205,6 +2217,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MeshImp", function ($)
         }
     );
 
+    $.Method({ Static: false, Public: true }, "get_BiTangentsSet",
+        new JSIL.MethodSignature($.Boolean, []),
+        function get_BiTangentsSet() {
+            return this.BitangentBufferObject != null;
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_UVsSet",
         new JSIL.MethodSignature($.Boolean, []),
         function get_UVsSet() {
@@ -2268,6 +2287,24 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MeshImp", function ($)
             this.NElements = null;
         }
     );
+
+    $.Method({ Static: false, Public: true }, "InvalidateTangents",
+        new JSIL.MethodSignature(null, []),
+        function InvalidateTangents() {
+            this.TangentBufferObject = null;
+            this.NElements = null;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "InvalidateBiTangents",
+        new JSIL.MethodSignature(null, []),
+        function InvalidateBiTangents() {
+            this.BitangentBufferObject = null;
+            this.NElements = null;
+        }
+    );
+
+
 
     $.Method({ Static: false, Public: true }, "InvalidateVertices",
         new JSIL.MethodSignature(null, []),

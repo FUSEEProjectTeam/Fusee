@@ -104,6 +104,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </value>
         public bool BoneIndicesSet { get { return BoneIndexBufferObject != 0; } }
 
+        public bool TangentsSet { get; }
+        public bool BiTangentsSet { get; }
+
         /// <summary>
         /// Invalidates the BoneIndices.
         /// </summary>

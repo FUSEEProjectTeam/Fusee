@@ -34,6 +34,12 @@ namespace Fusee.Engine.Core
 
             if (meshImp.BoneIndicesSet)
                 _renderContextImp.RemoveBoneIndices(meshImp);
+
+            if(meshImp.TangentsSet)
+                _renderContextImp.RemoveTangents(meshImp);
+
+            if (meshImp.BiTangentsSet)
+                _renderContextImp.RemoveBiTangents(meshImp);
         }
 
         private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
