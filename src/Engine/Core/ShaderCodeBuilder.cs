@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -16,6 +17,8 @@ namespace Fusee.Engine.Core
         public bool HasUVs;
         public bool HasColors;
         public bool HasWeightMap;
+        public bool HasTangents;
+        public bool HasBiTangents;
     }
 
     internal struct MaterialProbs
@@ -232,6 +235,7 @@ namespace Fusee.Engine.Core
                 HasBump = mc.HasBump,
                 HasApplyLightString = _materialType == MaterialType.MaterialLightComponent &&
                                       (string.IsNullOrEmpty((mc as MaterialLightComponent)?.ApplyLightString))
+                                    
             };
         }
 
@@ -253,7 +257,9 @@ namespace Fusee.Engine.Core
                 HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
                 HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
                 HasColors = false,
-                HasWeightMap = wc != null
+                HasWeightMap = wc != null,
+                HasTangents = mesh == null || (mesh.Tangents != null && mesh.Tangents.Length > 1),
+                HasBiTangents = mesh == null || (mesh.BiTangents != null && mesh.BiTangents.Length > 1)
             };
         }
 
@@ -284,6 +290,15 @@ namespace Fusee.Engine.Core
 
             if (_meshProbs.HasVertices)
                 _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuVertex"));
+
+            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            {
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, Helper.TangentAttribName));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, Helper.BitangentAttribName));
+
+                _vertexShader.Add(GLSL.CreateOut(Type.Mat3, "vTBN"));
+            }
+              
 
             if (_materialProbs.HasSpecular)
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
@@ -396,7 +411,16 @@ namespace Fusee.Engine.Core
             if (_renderWithShadows)
                 _vertexShader.Add("shadowLight = shadowMVP * viewPos;");
 
-            _vertexShader.Add(_meshProbs.HasWeightMap
+            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            {
+                _vertexShader.Add("//// TBN");
+                _vertexShader.Add($" vec3 T = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4(({Helper.TangentAttribName}).xyz, 0.0)));");
+                _vertexShader.Add($" vec3 B = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4({Helper.BitangentAttribName}, 0.0)));");
+                _vertexShader.Add($" vec3 N = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4(normalize(mat3(FUSEE_ITMV) * fuNormal), 0.0)));");
+                _vertexShader.Add("vTBN = mat3(T, B, N);");
+            }
+
+                _vertexShader.Add(_meshProbs.HasWeightMap
                 ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
                 : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
 
@@ -479,8 +503,11 @@ namespace Fusee.Engine.Core
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vMVNormal"));
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vNormal"));
             }
+            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            {
+                _pixelShader.Add(GLSL.CreateIn(Type.Mat3, "vTBN"));
+            }
 
-          
 
             if (_meshProbs.HasUVs)
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec2, "vUV"));
@@ -508,7 +535,6 @@ namespace Fusee.Engine.Core
 
             // Multipass-Env
             // returnString += "uniform samplerCube envMap;\n";
-
         }
 
         private void AddTextureChannels()
@@ -630,28 +656,22 @@ namespace Fusee.Engine.Core
         {
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
+            
 
-            /*
-               We get are our UP vector normals in RGB (BumpTexture), so we need to decode them from [0,1] to [1,1]
-               normalize it afterwards, just to be sure its length is 1
-
-               Now we neet the Tanget and Bitangent to this normal:
-                    Step 1: Calculate TBN vectors in World coordinates for each triangle
-                    Step 2: Calculate a tangent Space matrix for every single vertex by averaging the triangle-based TBNs which share that vertex: Vertex-based TBN
-               
-                p1 = u1.T + v1.B
-                p2 = u2.T + v2.B
-                p3 = u2.T + v3.B
-
-                => we have 6 equations and 6 unknowns
-
-             */
+            /*  var bumpNormals = new List<string>
+              {
+                  "///////////////// BUMP MAPPING, object space ///////////////////",
+                  $"vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0) * (1.0-{BumpIntensityName});",
+                  "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
+              }; */
 
             var bumpNormals = new List<string>
             {
-                "///////////////// BUMP MAPPING, object space ///////////////////",
-                $"vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0) * (1.0-{BumpIntensityName});",
-                "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
+                "///////////////// BUMP MAPPING, tangent space ///////////////////",
+                "vec3 N = texture(BumpTexture, vUV).rgb;",
+                $"N = normalize((N * 2.0 - 1.0) * {BumpIntensityName});",
+                "N = normalize(mat3(FUSEE_ITMV) * N);",
+                "N = normalize(vTBN * N);"
             };
 
             var normals = new List<string>
@@ -911,7 +931,7 @@ namespace Fusee.Engine.Core
 
         private static string Version()
         {
-            return "#version 300 es\n";
+            return "#version 330\n";
         }
 
         #endregion

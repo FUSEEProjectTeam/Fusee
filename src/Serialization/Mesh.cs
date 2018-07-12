@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Fusee.Math.Core;
 using ProtoBuf;
 
@@ -27,6 +28,10 @@ namespace Fusee.Serialization
         #endregion
 
         private float3[] _vertices;
+
+        private float3[] _biTangents;
+        private float4[] _tangents;
+
         /// <summary>
         /// Gets or sets the vertices.
         /// </summary>
@@ -54,7 +59,23 @@ namespace Fusee.Serialization
         ///   <c>true</c> if vertices are set; otherwise, <c>false</c>.
         /// </value>
         public bool VerticesSet { get { return (_vertices!= null) && _vertices.Length > 0; } }
-        
+
+        /// <summary>
+        /// Gets a value indicating whether tangents are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if tangents are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool TangentsSet { get { return (_tangents != null) && _tangents.Length > 0; } }
+
+        /// <summary>
+        /// Gets a value indicating whether bitangents are set.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if bitangents are set; otherwise, <c>false</c>.
+        /// </value>
+        public bool BiTangentsSet { get { return (_biTangents != null) && _biTangents.Length > 0; } }
+
         private uint[] _colors;
         /// <summary>
         /// Gets or sets the color of a single vertex.
@@ -221,6 +242,7 @@ namespace Fusee.Serialization
                 }
             }
         }
+        
         /// <summary>
         /// Gets a value indicating whether triangles are set.
         /// </summary>
@@ -234,6 +256,43 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(8)]
         public AABBf BoundingBox;
+
+        /// <summary>
+        /// The tangent of each triangle for bump mapping.
+        /// w-component is handedness
+        /// </summary>
+        [ProtoMember(9)]
+        public float4[] Tangents
+        {
+            get { return _tangents; }
+            set
+            {
+                _tangents = value;
+                var del = this.MeshChanged;
+                if (del != null)
+                {
+                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Tangents));
+                }
+            }
+        }
+
+        /// <summary>
+        /// The bitangent of each triangle for bump mapping.
+        /// </summary>
+        [ProtoMember(10)]
+        public float3[] BiTangents
+        {
+            get { return _biTangents; }
+            set
+            {
+                _biTangents = value;
+                var del = this.MeshChanged;
+                if (del != null)
+                {
+                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.BiTangents));
+                }
+            }
+        }
 
         #endregion
 

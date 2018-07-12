@@ -36,6 +36,15 @@
         /// <summary>
         /// The field <see cref="Mesh.BoneIndices"/> changed.
         /// </summary>
-        BoneIndices
+        BoneIndices,
+        /// <summary>
+        /// The field <see cref="Mesh.Tangents"/> changed.
+        /// </summary>
+        Tangents,
+        ///    /// <summary>
+        /// The field <see cref="Mesh.BiTangents"/> changed.
+        /// </summary>
+        BiTangents
+
     }
 }

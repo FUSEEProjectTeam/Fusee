@@ -17,6 +17,9 @@
     <None Remove="Assets\bananaTex.png" />
     <None Remove="Assets\baymax_scene.fus" />
     <None Remove="Assets\bump.jpg" />
+    <None Remove="Assets\bump2.jpg" />
+    <None Remove="Assets\bump3.jpg" />
+    <None Remove="Assets\bump3.png" />
     <None Remove="Assets\diffuse.png" />
     <None Remove="Assets\EyesWhite.jpg" />
     <None Remove="Assets\FUSEERocket.fus" />
@@ -37,6 +40,15 @@
     </Content>
     <Content Include="Assets\bump.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\bump2.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\bump3.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\bump3.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\diffuse.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

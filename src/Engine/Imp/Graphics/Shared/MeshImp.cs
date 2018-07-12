@@ -113,6 +113,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Invalidates the Tangents.
+        /// </summary>
+        public void InvalidateTangents()
+        {
+            TangentBufferObject = 0;
+        }
+
+        /// <summary>
+        /// Invalidates the BiTangents.
+        /// </summary>
+        public void InvalidateBiTangents()
+        {
+            BitangentBufferObject = 0;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether [boneweights set].
         /// </summary>
         /// <value>

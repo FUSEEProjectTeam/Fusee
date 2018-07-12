@@ -336,6 +336,24 @@ namespace Fusee.Engine.Common
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
         /// <summary>
+        /// Binds the tangents onto the GL Rendercontext and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetTangents(IMeshImp mr, float4[] tangents);
+
+        /// <summary>
+        /// Binds the bitangents onto the GL Rendercontext and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The BiTangents.</param>
+        /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        void SetBiTangents(IMeshImp mr, float3[] bitangents);
+
+        /// <summary>
         /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -549,6 +567,18 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
         void RemoveBoneIndices(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveTangents(IMeshImp mesh);
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mesh">The mesh which buffer respectively GPU memory should be deleted.</param>
+        void RemoveBiTangents(IMeshImp mesh);
 
         /// <summary>
         /// Sets the rectangular output region within the output buffer(s).

@@ -1215,10 +1215,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
 
             // mr: Detach Shader & delete
-            GL.DetachShader(program, fragmentObject);
-            GL.DetachShader(program, vertexObject);
-            GL.DeleteShader(fragmentObject);
-            GL.DeleteShader(vertexObject);
+            //GL.DetachShader(program, fragmentObject);
+            //GL.DetachShader(program, vertexObject);
+            //GL.DeleteShader(fragmentObject);
+            //GL.DeleteShader(vertexObject);
 
             return new ShaderProgramImp {Program = program};
         }
@@ -1318,6 +1318,60 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the tangents onto the GL Rendercontext and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The tangents.</param>
+        /// <exception cref="System.ArgumentException">Tangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetTangents(IMeshImp mr, float4[] tangents)
+        {
+            if (tangents == null || tangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
+
+            int vboBytes;
+            int tangentBytes = tangents.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).TangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(tangentBytes), tangents, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != tangentBytes)
+                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
+            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        }
+
+        /// <summary>
+        /// Binds the bitangents onto the GL Rendercontext and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// </summary>
+        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name="tangents">The BiTangents.</param>
+        /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
+        /// <exception cref="System.ApplicationException"></exception>
+        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        {
+            if (bitangents == null || bitangents.Length == 0)
+            {
+                throw new ArgumentException("BiTangents must not be null or empty");
+            }
+
+            int vboBytes;
+            int bitangentBytes = bitangents.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).BitangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
+
+            GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+            GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(bitangentBytes), bitangents, BufferUsageHint.StaticDraw);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            if (vboBytes != bitangentBytes)
+                throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
@@ -1623,6 +1677,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveTangents(IMeshImp mr)
+        {
+            GL.DeleteBuffer(((MeshImp)mr).TangentBufferObject);
+            ((MeshImp)mr).InvalidateTangents();
+        }
+
+        /// <summary>
+        /// Deletes the buffer associated with the mesh implementation.
+        /// </summary>
+        /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
+        public void RemoveBiTangents(IMeshImp mr)
+        {
+            GL.DeleteBuffer(((MeshImp)mr).BitangentBufferObject);
+            ((MeshImp)mr).InvalidateBiTangents();
+        }
+        /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
@@ -1647,12 +1720,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp) mr).UVBufferObject);
                 GL.VertexAttribPointer(Helper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
-
             if (((MeshImp) mr).NormalBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp) mr).NormalBufferObject);
                 GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
+            if (((MeshImp)mr).TangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.TangentAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+                GL.VertexAttribPointer(Helper.TangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+            }
+            if (((MeshImp)mr).BitangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BitangentAttribLocation);
+                GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+                GL.VertexAttribPointer(Helper.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
             if (((MeshImp) mr).BoneIndexBufferObject != 0)
             {
@@ -1672,6 +1756,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.DrawElements(PrimitiveType.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                 //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
             }
+
+
             if (((MeshImp) mr).VertexBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -1691,6 +1777,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(Helper.UvAttribLocation);
+            }
+            if (((MeshImp)mr).TangentBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.TangentAttribLocation);
+            }
+            if (((MeshImp)mr).BitangentBufferObject != 0)
+            {
+                GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+                GL.DisableVertexAttribArray(Helper.TangentAttribLocation);
             }
         }
 
