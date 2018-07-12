@@ -161,16 +161,18 @@ namespace Fusee.Engine.Examples.Picking.Core
                 {
                     if (_currentPick != null)
                     {
-                        _currentPick.Node.GetMaterial().Diffuse.Color = _oldColor;
+                        _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", _oldColor);
                     }
                     if (newPick != null)
                     {
-                        var mat = newPick.Node.GetMaterial();
-                        _oldColor = mat.Diffuse.Color;
-                        mat.Diffuse.Color = ColorUint.LawnGreen.Tofloat3();
+                        var mat = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        _oldColor = (float3) mat.GetEffectParam("DiffuseColor");
+                        mat.SetEffectParam("DiffuseColor", ColorUint.LawnGreen.Tofloat3());
                     }
                     _currentPick = newPick;
                 }
+
+                _pick = false;
             }
 
             // Render the scene loaded in Init()
@@ -239,7 +241,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private SceneContainer CreateScene()
         {
-            return new SceneContainer
+            return new ConvertSceneGraph().Convert(new SceneContainer
             {
                 Header = new SceneHeader
                 {
@@ -256,8 +258,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                         Components = new List<SceneComponentContainer>
                         {
                             new TransformComponent { Scale = float3.One },
-                            new MaterialComponent
-                            {
+                           new MaterialComponent
+                           {
                                 Diffuse = new MatChannelContainer { Color = ColorUint.Red.Tofloat3() },
                                 Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
                             },
@@ -271,7 +273,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                 Components = new List<SceneComponentContainer>
                                 {
                                     new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                    new MaterialComponent
+                                   new MaterialComponent
                                     {
                                         Diffuse = new MatChannelContainer { Color = ColorUint.Green.Tofloat3() },
                                         Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
@@ -338,7 +340,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                         }
                     },
                 }
-            };
+            });
         }
 
 

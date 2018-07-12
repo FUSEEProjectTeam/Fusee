@@ -17,21 +17,22 @@ namespace Fusee.Engine.GUI
     {
         #region Private Fields
 
-        private const string IMGPS = @"
-            #ifdef GL_ES
+        private const string IMGPS = @"#version 300 es
                 precision highp float;
-            #endif    
   
-            varying vec2 vUV;
-            varying vec4 vColor;
+  
+            in vec2 vUV;
+            in vec4 vColor;
+
+            out vec4 fragColor;
 
             uniform sampler2D tex;
 
             void main(void) {
                 if (vUV.x == -1.0)
-                    gl_FragColor = vColor;
+                    fragColor = vColor;
                 else
-                    gl_FragColor = texture2D(tex, vUV);
+                    fragColor = texture(tex, vUV);
             }";
 
         private float4 _borderColor;

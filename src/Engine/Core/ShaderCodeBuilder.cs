@@ -58,14 +58,14 @@ namespace Fusee.Engine.Core
             return $"uniform {DecodeType(type)} {varName};";
         }
 
-        public static string CreateVarying(Type type, string varName)
+        public static string CreateOut(Type type, string varName)
         {
-            return $"varying {DecodeType(type)} {varName};";
+            return $"out {DecodeType(type)} {varName};";
         }
 
-        public static string CreateAttribute(Type type, string varName)
+        public static string CreateIn(Type type, string varName)
         {
-            return $"attribute {DecodeType(type)} {varName};";
+            return $"in  {DecodeType(type)} {varName};";
         }
 
         public static string CreateVar(Type type, string varName)
@@ -193,6 +193,9 @@ namespace Fusee.Engine.Core
             VS = string.Join("\n", _vertexShader);
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
+
+            //Diagnostics.Log(PS);
+            //Diagnostics.Log(VS);
         }
 
         private static void AddTabsToMethods(ref List<string> list)
@@ -279,40 +282,40 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add($"#define BONES {wc.Joints.Count}");
 
             if (_meshProbs.HasVertices)
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec3, "fuVertex"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuVertex"));
 
             if (_materialProbs.HasSpecular)
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vViewDir"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
 
             if (_meshProbs.HasWeightMap)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuBoneIndex"));
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuBoneWeight"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneIndex"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneWeight"));
             }
 
             if (_meshProbs.HasNormals)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec3, "fuNormal"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuNormal"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vNormal"));
             }
 
             if (_meshProbs.HasUVs)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec2, "fuUV"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec2, "fuUV"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec2, "vUV"));
             }
 
             if (_meshProbs.HasColors)
             {
-                _vertexShader.Add(GLSL.CreateAttribute(Type.Vec4, "fuColor"));
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec4, "vColors"));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuColor"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vColors"));
             }
 
-            _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "viewPos"));
-            _vertexShader.Add(GLSL.CreateVarying(Type.Vec3, "vMVNormal"));
+            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "viewPos"));
+            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vMVNormal"));
 
             if (_renderWithShadows)
-                _vertexShader.Add(GLSL.CreateVarying(Type.Vec4, "shadowLight"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "shadowLight"));
 
         }
 
@@ -468,23 +471,25 @@ namespace Fusee.Engine.Core
             _pixelShader.Add($"#define MAX_LIGHTS {numberOfLights}");
             _pixelShader.Add(LightStructDeclaration());
 
-            _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vViewDir"));
+            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewDir"));
 
             if (_meshProbs.HasNormals)
             {
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vMVNormal"));
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "vNormal"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vMVNormal"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vNormal"));
             }
 
           
 
             if (_meshProbs.HasUVs)
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec2, "vUV"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec2, "vUV"));
 
-            _pixelShader.Add(GLSL.CreateVarying(Type.Vec3, "viewPos"));
+            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "viewPos"));
 
             if (_renderWithShadows)
-                _pixelShader.Add(GLSL.CreateVarying(Type.Vec4, "shadowLight"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "shadowLight"));
+
+            _pixelShader.Add(GLSL.CreateOut(Type.Vec4, "fragmentColor"));
 
         }
 
@@ -523,11 +528,11 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasDiffuse)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, DiffuseColorName));
 
-            //if (_materialProbs.HasDiffuseTexture)
-            //{
+            if (_materialProbs.HasDiffuseTexture)
+            {
                 _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, DiffuseTextureName));
                 _pixelShader.Add(GLSL.CreateUniform(Type.Float, DiffuseMixName));
-            //}
+            }
 
             if (_materialProbs.HasEmissive)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, EmissiveColorName));
@@ -561,7 +566,7 @@ namespace Fusee.Engine.Core
 
             if (_materialProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"return texture2D({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
+                    $"return texture({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
             else
                 methodBody.Add($"return ({DiffuseColorName} * intensities * diffuseTerm);");
 
@@ -606,7 +611,7 @@ namespace Fusee.Engine.Core
                 "vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;",
                 "projCoords = projCoords * 0.5 + 0.5; // map to [0,1]",
                 "float currentDepth = projCoords.z;",
-                "float pcfDepth = texture2D(firstPassTex, projCoords.xy).r;",
+                "float pcfDepth = texture(firstPassTex, projCoords.xy).r;",
                 "float shadow = 0.0;",
                 "shadow = currentDepth - 0.01 > pcfDepth ? 1.0 : 0.0;",
                 "if (projCoords.z > 1.0)",
@@ -625,15 +630,27 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
 
+            /*
+               We get are our UP vector normals in RGB (BumpTexture), so we need to decode them from [0,1] to [1,1]
+               normalize it afterwards, just to be sure its length is 1
+
+               Now we neet the Tanget and Bitangent to this normal:
+                    Step 1: Calculate TBN vectors in World coordinates for each triangle
+                    Step 2: Calculate a tangent Space matrix for every single vertex by averaging the triangle-based TBNs which share that vertex: Vertex-based TBN
+               
+                p1 = u1.T + v1.B
+                p2 = u2.T + v2.B
+                p3 = u2.T + v3.B
+
+                => we have 6 equations and 6 unknowns
+
+             */
+
             var bumpNormals = new List<string>
             {
-                "// First implementation ONLY working with object space normals. See",
-                "// http://gamedev.stackexchange.com/a/72806/44105",
-                "// http://docs.cryengine.com/display/SDKDOC4/Tangent+Space+Normal+Mapping",
-                "// http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-13-normal-mapping/",
-                "vec3 bv =  normalize(texture2D(BumpTexture, vUV).xyz * 2.0 - 1.0);",
-                "bv = vec3(bv.x, bv.y, -bv.z);",
-                "vec3 N =  normalize(bv);"
+                "///////////////// BUMP MAPPING, object space ///////////////////",
+                $"vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0) * (1.0-{BumpIntensityName});",
+                "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
             };
 
             var normals = new List<string>
@@ -858,7 +875,7 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
                 "}",
-                $"gl_FragColor = vec4(result, 1.0);"
+                $"fragmentColor = vec4(result, 1.0);"
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
@@ -868,9 +885,10 @@ namespace Fusee.Engine.Core
 
         private static string EsPrecision()
         {
-            return "#ifdef GL_ES\n" +
+            /*return "#ifdef GL_ES\n" +
                    "    precision highp float;\n" +
-                   "#endif\n\n";
+                   "#endif\n\n";*/
+            return "precision highp float; \n";
         }
 
         private static string LightStructDeclaration()
@@ -892,7 +910,7 @@ namespace Fusee.Engine.Core
 
         private static string Version()
         {
-            return "#version 100\n";
+            return "#version 300 es\n";
         }
 
         #endregion
@@ -1075,10 +1093,11 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].lightType",
-                Value = 1.0f
+                Value = 1
             });
 
             // FUSEE_ PARAMS
+            // TODO: Just add the necessary ones!
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "FUSEE_M",
@@ -1099,6 +1118,7 @@ namespace Fusee.Engine.Core
                 Name = "FUSEE_ITMV",
                 Value = float4x4.Identity
             });
+            
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "FUSEE_IMV",
@@ -1116,8 +1136,8 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                    Name = "FUSEE_BONES[BONES]",
-                    Value = float4x4.Identity
+                    Name = "FUSEE_BONES",
+                    Value = new [] { float4x4.Identity }
             });
 
             return effectParameters;

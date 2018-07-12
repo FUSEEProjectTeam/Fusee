@@ -688,6 +688,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>

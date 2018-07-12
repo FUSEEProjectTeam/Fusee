@@ -26,13 +26,58 @@ namespace Fusee.Engine.Core
             c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
         }
 
-        public float3 ModelPos
+        public float3 TriangleCenter
+        {
+            get
+            {
+                float3 a, b, c;
+                GetTriangle(out a, out b, out c);
+                return (a + b + c) / 3;
+            }
+        }
+
+        public float3 TriangleBarycentric
         {
             get
             {
                 float3 a, b, c;
                 GetTriangle(out a, out b, out c);
                 return float3.Barycentric(a, b, c, U, V);
+            }
+        }
+
+        public void GetNormals(out float3 a, out float3 b, out float3 c)
+        {
+            a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
+            c = Mesh.Normals[Mesh.Triangles[Triangle + 2]];
+        }
+
+        public float3 NormalCenter
+        {
+            get
+            {
+                float3 a, b, c;
+                GetNormals(out a, out b, out c);
+                return (a + b + c) / 3;
+            }
+        }
+
+        public float3 NormalBarycentric
+        {
+            get
+            {
+                float3 a, b, c;
+                GetNormals(out a, out b, out c);
+                return float3.Barycentric(a, b, c, U, V);
+            }
+        }
+
+        public float3 ModelPos
+        {
+            get
+            {
+                return TriangleBarycentric;
             }
         }
 

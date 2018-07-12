@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
-using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -23,14 +20,22 @@ namespace Fusee.Engine.Core
         private void ShaderEffectChanged(object sender, ShaderEffectEventArgs args)
         {
             if (args == null || sender == null) return;
+
+            // ReSharper disable once InconsistentNaming
+            var senderSF = sender as ShaderEffect;
+
             switch (args.Changed)
             {
                 case ShaderEffectChangedEnum.DISPOSE:
-                    Remove(sender as ShaderEffect);
+                    Remove(senderSF);
                     break;
                 case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
-                    var senderSF = sender as ShaderEffect;
-                    _rc.CompileAllShaderEffectVariables(ref senderSF);
+                    // ReSharper disable once InconsistentNaming
+                    _rc.HandleAndUpdateChangedButExisistingEffectVariable(senderSF, args.ChangedEffectName, args.ChangedEffectValue);
+                    break;
+                case ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
+                    // We need to recreate everything
+                    _rc.CreateAllShaderEffectVariables(senderSF);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"ShaderEffectChanged event called with unknown arguments: {args}, calling ShaderEffect: {sender as ShaderEffect}");

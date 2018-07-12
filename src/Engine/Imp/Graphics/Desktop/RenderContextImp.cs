@@ -911,7 +911,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
-
                 switch (uType)
                 {
                     case ActiveUniformType.Int:

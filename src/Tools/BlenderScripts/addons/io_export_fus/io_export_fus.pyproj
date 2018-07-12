@@ -33,7 +33,7 @@
   <ItemGroup>
     <InterpreterReference Include="Global|PythonCore|3.5-32" />
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" />
+  <!-- Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /-->
   <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 
 		SEE: https://stackoverflow.com/questions/47061831/how-to-setup-custom-build-steps-in-visual-studio-pyproj-projects
        THE FOLLOWING CODE IS NOW TRIGGERED FROM THE BUILD of fuseeCmdLine.csproj
