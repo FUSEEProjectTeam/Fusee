@@ -937,7 +937,7 @@ namespace Fusee.Engine.Core
 
         private static string Version()
         {
-            return "#version 330\n";
+            return "#version 300 es\n";
         }
 
         #endregion

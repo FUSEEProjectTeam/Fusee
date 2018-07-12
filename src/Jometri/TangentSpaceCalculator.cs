@@ -60,14 +60,8 @@ namespace Fusee.Jometri
                 var t1 = w2.y - w1.y;
                 var t2 = w3.y - w1.y;
 
-                var r = 1.0F / (s1 * t2 - s2 * t1);
 
-                // texture coordinates broken!
-                if (float.IsInfinity(r))
-                {
-                    r = 0.0f;
-                }
-
+                var r = System.Math.Abs((s1 * t2 - s2 * t1)) < float.Epsilon ? 0 : 1.0f / (s1 * t2 - s2 * t1); // texture coordinates broken! isInfinity not possible with JSIL 
 
                 var sdir = new float3((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r,
                     (t2 * z1 - t1 * z2) * r);
