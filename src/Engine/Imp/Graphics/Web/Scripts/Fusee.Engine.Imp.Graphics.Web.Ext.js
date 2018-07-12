@@ -1320,13 +1320,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             }
 
             if (mr.TangentBufferObject != null) {
-                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribName);
+                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribLocation);
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.TangentBufferObject);
                 this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Common.Helper.TangentAttribLocation, 4, this.gl.FLOAT, false, 0, 0);
             }
 
             if (mr.BitangentBufferObject != null) {
-                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribName);
+                this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribLocation);
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.BitangentBufferObject);
                 this.gl.vertexAttribPointer($fuseeCommon.Fusee.Engine.Common.Helper.BitangentAttribLocation, 3, this.gl.FLOAT, false, 0, 0);
             }
