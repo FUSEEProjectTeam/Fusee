@@ -84,10 +84,16 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            // convert scene graph is not called in this project, so we can add a bump texture and convert it afterwards
+            // convert scene graph is not called yet in this project, so we can add a bump texture and convert it afterwards
             _scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
             {
-                Intensity = 1,
+                Intensity = 0.4f,
+                Texture = "bump.png"
+            };
+
+            _scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            {
+                Intensity = 0.8f,
                 Texture = "bump.png"
             };
 

@@ -297,6 +297,8 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add(GLSL.CreateIn(Type.Vec3, Helper.BitangentAttribName));
 
                 _vertexShader.Add(GLSL.CreateOut(Type.Mat3, "vTBN"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vT"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vB"));
             }
               
 
@@ -416,8 +418,11 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add("//// TBN");
                 _vertexShader.Add($" vec3 T = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4(({Helper.TangentAttribName}).xyz, 0.0)));");
                 _vertexShader.Add($" vec3 B = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4({Helper.BitangentAttribName}, 0.0)));");
-                _vertexShader.Add($" vec3 N = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4(normalize(mat3(FUSEE_ITMV) * fuNormal), 0.0)));");
+                _vertexShader.Add($" vec3 N = normalize(vec3(vec4({Helper.VertexAttribName}, 0.0) * vec4(fuNormal, 0.0)));");
                 _vertexShader.Add("vTBN = mat3(T, B, N);");
+
+                _vertexShader.Add($"vT = {Helper.TangentAttribName};");
+                _vertexShader.Add($"vB = {Helper.BitangentAttribName};");
             }
 
                 _vertexShader.Add(_meshProbs.HasWeightMap
@@ -505,7 +510,9 @@ namespace Fusee.Engine.Core
             }
             if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
             {
-                _pixelShader.Add(GLSL.CreateIn(Type.Mat3, "vTBN"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "vT"));
+                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vB"));
+
             }
 
 
@@ -668,10 +675,9 @@ namespace Fusee.Engine.Core
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                "vec3 N = texture(BumpTexture, vUV).rgb;",
-                $"N = normalize((N * 2.0 - 1.0) * {BumpIntensityName});",
-                "N = normalize(mat3(FUSEE_ITMV) * N);",
-                "N = normalize(vTBN * N);"
+                $"vec3 N = ((texture(BumpTexture, vUV).rgb * 2.0) - 1.0f) * vec3({BumpIntensityName}, {BumpIntensityName}, 1.0);",
+                "N = (N.x * vec3(vT)) + (N.y * vB) + (N.z * vMVNormal);",
+                "N = normalize(N);"
             };
 
             var normals = new List<string>
