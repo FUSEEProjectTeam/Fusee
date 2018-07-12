@@ -856,12 +856,46 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         public void SetTangents(IMeshImp mr, float4[] tangents)
         {
-            throw new NotImplementedException();
+            if (tangents == null || tangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
+
+            int vboBytes;
+            int vertsBytes = tangents.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).TangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
+
+            GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+            GL.BufferData(All.ArrayBuffer, (IntPtr)(vertsBytes), tangents, All.StaticDraw);
+            GL.GetBufferParameter(All.ArrayBuffer, All.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes));
+            GL.BindBuffer(All.ArrayBuffer, 0);
         }
 
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
         {
-            throw new NotImplementedException();
+            if (bitangents == null || bitangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
+
+            int vboBytes;
+            int vertsBytes = bitangents.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).BitangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
+
+            GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+            GL.BufferData(All.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, All.StaticDraw);
+            GL.GetBufferParameter(All.ArrayBuffer, All.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes));
+            GL.BindBuffer(All.ArrayBuffer, 0);
         }
 
 
@@ -1317,6 +1351,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, All.Float, false, 0,
                     IntPtr.Zero);
             }
+            if (((MeshImp)mr).TangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.TangentAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+                GL.VertexAttribPointer(Helper.TangentAttribLocation, 4, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).BitangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BitangentAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+                GL.VertexAttribPointer(Helper.BitangentAttribLocation, 3, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+
             if (((MeshImp) mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(All.ElementArrayBuffer, ((MeshImp) mr).ElementBufferObject);
