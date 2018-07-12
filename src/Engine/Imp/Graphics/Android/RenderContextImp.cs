@@ -854,8 +854,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindBuffer(All.ArrayBuffer, 0);
         }
 
+        public void SetTangents(IMeshImp mr, float4[] tangents)
+        {
+            throw new NotImplementedException();
+        }
 
-        
+        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        {
+            throw new NotImplementedException();
+        }
+
+
         /// <summary>
         /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
@@ -1167,6 +1176,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BoneIndexBufferObject);
             ((MeshImp)mr).InvalidateBoneIndices();
+        }
+
+        public void RemoveTangents(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveBiTangents(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>
