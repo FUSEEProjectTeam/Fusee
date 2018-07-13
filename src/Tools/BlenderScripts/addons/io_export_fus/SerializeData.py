@@ -341,7 +341,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                 isEmissive = False
                 isMix = False
 
-                for node in nodes:
+                for node in nodes:                    
                     # find diffuse node
                     if node.type == 'BSDF_DIFFUSE' and isDiffuse == False:
                         print('----found diffuse node')
@@ -420,6 +420,19 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         else:
                             rootMaterialComponent.MaterialComponent.Specular.SpecularChannelContainer.Intensity = 1
 
+                    elif node.type == 'NORMAL_MAP':
+                        print('----found normal map')
+                        normalMap = rootMaterialComponent.MaterialComponent.Bump
+                        # get bump intensity                       
+                        normalMap.Intensity =  node.inputs['Strength'].default_value                         
+                        # get bump texture
+                        links = node.inputs['Color'].links
+                        if len(links) > 0:
+                            if links[0].from_node.type == 'TEX_IMAGE':
+                                fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                                normalMap.Texture = basename
+                                textures.append(fullpath)
+
                     elif node.type == 'BSDF_PRINCIPLED':
                         print('----found bsdf principled node')
                         pbrMaterial = rootMaterialComponent.MaterialComponent.MaterialPBRComponent
@@ -467,7 +480,6 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         #        fullpath, basename = GetPaths(subsurfaceColor.links[0].from_node.image.filepath)
                         #        specular.Texture = basename
                         #        textures.append(fullpath)
-
                         # get material roughness and set the specularity = 1-roughness
                         spec.SpecularChannelContainer.Shininess = (1 - roughness) * 200 # multipy with factor 100 for tight specular light
                         # specularIntensity = 1
