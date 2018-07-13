@@ -8,7 +8,6 @@ varying vec3 vMVNormal;
 varying vec2 vUV;
 
 varying vec4 fragBorders;
-uniform mat4 FUSEE_MV;
 uniform sampler2D DiffuseTexture;
 uniform vec4 DiffuseColor;
 uniform float DiffuseMix;

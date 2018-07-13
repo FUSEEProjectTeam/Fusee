@@ -21,7 +21,9 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private bool _keys;
 
-       //Build a scene graph consisting out of a canvas and three nine sliced textures.
+        private Texture _bltDestinationTex;
+
+       //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
             return new SceneContainer
@@ -30,7 +32,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 {
                     new SceneNodeContainer
                     {
-                        //Rotate canvas and all his children.
+                        //Rotate canvas and all its children.
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
@@ -80,6 +82,28 @@ namespace Fusee.Engine.Examples.UI.Core
                                             new Plane()
                                         }
                                     },
+                                    //Simple Texture Node, contains a Blt"ed" texture.
+                                    GUINodes.TextureNode(
+                                        
+                                        "Blt",
+                                        //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                                        //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                                        new MinMaxRect
+                                        {
+                                            Min = new float2(0,0), //Anchor is in the lower left corner of the parent.
+                                            Max = new float2(0,0) //Anchor is in the lower right corner of the parent
+                                        },
+                                        //Define Offset and therefor the size of the element.
+                                        //Min: distance to this elements Min anchor.
+                                        //Max: distance to this elements Max anchor.
+                                        new MinMaxRect
+                                        {
+                                            Min = new float2(0,0),
+                                            Max = new float2(5,5)
+                                        },
+                                        //Set the diffuse texture you want to use.
+                                        _bltDestinationTex
+                                    ),
                                     //Add nine sliced textures to canvas
                                     GUINodes.NineSliceNode
                                     (
@@ -158,8 +182,11 @@ namespace Fusee.Engine.Examples.UI.Core
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
-            //_scene = CreateAnchorTestScene();
+            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("holz.jpg"));
+            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("SuperMario.png"));
+            _bltDestinationTex.Blt(50, 0, bltScrTex);
+
+            // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
 
             // Wrap a SceneRenderer around the model.
