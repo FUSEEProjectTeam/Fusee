@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.Core.GUI;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Player.Core
 {

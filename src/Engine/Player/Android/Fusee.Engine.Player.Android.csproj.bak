@@ -16,7 +16,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -37,7 +37,7 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;arm64-v8a</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
@@ -115,6 +115,10 @@
       <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
       <Name>Fusee.Serialization</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj">
+      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+      <Name>Fusee.Xene</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj">
       <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
       <Name>Fusee.Engine.Common</Name>
@@ -126,6 +130,10 @@
     <ProjectReference Include="..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+      <Project>{fe8c3118-a8f4-45cc-bf31-e2f38771bf4c}</Project>
+      <Name>Fusee.Engine.Player.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

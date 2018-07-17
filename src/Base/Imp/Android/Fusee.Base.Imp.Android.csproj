@@ -16,7 +16,7 @@
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -60,20 +60,24 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262d.so">
-      <Abi>arm64-8a</Abi>
-      <Link>ARM64\libfreetype262d.so</Link>
+      <Link>lib\arm64\libfreetype.so.6</Link>
+	  <Abi>arm64-v8a</Abi>
+	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM\libfreetype262d.so">
-      <Abi>armeabi-v7a</Abi>
-      <Link>ARM\libfreetype262d.so</Link>
+      <Link>lib\arm\libfreetype.so.6</Link>
+	  <Abi>armeabi-v7a</Abi>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x64\libfreetype262d.so">
-      <Abi>x86_64</Abi>
-      <Link>x64\libfreetype262d.so</Link>
+      <Link>lib\x64\libfreetype.so.6</Link>
+	  <Abi>x86_64</Abi>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x86\libfreetype262d.so">
-      <Abi>x86</Abi>
-      <Link>x86\libfreetype262d.so</Link>
+      <Link>lib\x86\libfreetype.so.6</Link>
+	  <Abi>x86</Abi>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
   </ItemGroup>
   <ItemGroup>
