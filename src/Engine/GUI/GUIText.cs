@@ -1,9 +1,7 @@
-﻿using Fusee.Base.Core;
-using Fusee.Engine.Common;
-using Fusee.Engine.GUI;
+﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core.GUI
+namespace Fusee.Engine.GUI
 {
     /// <summary>
     ///     The <see cref="GUIText" /> class provides all text writing functionality.

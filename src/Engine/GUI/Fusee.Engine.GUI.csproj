@@ -109,9 +109,9 @@
     <Compile Include="GUIElement.cs" />
     <Compile Include="GUIHandler.cs" />
     <Compile Include="GUIImage.cs" />
-    <Compile Include="GUINodes.cs" />
     <Compile Include="GUIPanel.cs" />
     <Compile Include="GUIText.cs" />
+    <Compile Include="TextureNodeContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <FUSEE_Lib_Asset Include="Assets\texture.vert">

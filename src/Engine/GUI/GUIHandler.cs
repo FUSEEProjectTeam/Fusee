@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.Core.GUI;
 using JSIL.Meta;
 
 namespace Fusee.Engine.GUI

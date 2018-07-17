@@ -83,9 +83,12 @@ namespace Fusee.Engine.Examples.UI.Core
                                         }
                                     },
                                     //Simple Texture Node, contains a Blt"ed" texture.
-                                    GUINodes.TextureNode(
-                                        
+                                    new TextureNodeContainer(
                                         "Blt",
+                                        AssetStorage.Get<string>("texture.vert"),
+                                        AssetStorage.Get<string>("texture.frag"),
+                                        //Set the diffuse texture you want to use.
+                                        _bltDestinationTex,
                                         //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                                         //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                                         new MinMaxRect
@@ -99,15 +102,15 @@ namespace Fusee.Engine.Examples.UI.Core
                                         new MinMaxRect
                                         {
                                             Min = new float2(0,0),
-                                            Max = new float2(5,5)
-                                        },
-                                        //Set the diffuse texture you want to use.
-                                        _bltDestinationTex
-                                    ),
+                                            Max = new float2(5,6)
+                                        }),
                                     //Add nine sliced textures to canvas
-                                    GUINodes.NineSliceNode
-                                    (
+                                    new TextureNodeContainer(
                                         "Child1",
+                                        AssetStorage.Get<string>("nineSlice.vert"),
+                                        AssetStorage.Get<string>("nineSliceTile.frag"),
+                                        //Set the diffuse texture you want to use.
+                                        new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
                                         //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                                         //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                                         new MinMaxRect
@@ -123,17 +126,17 @@ namespace Fusee.Engine.Examples.UI.Core
                                             Min = new float2(7.5f,0),
                                             Max = new float2(-7.5f,5)
                                         },
-                                        //Set the diffuse texture you want to use.
-                                        new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
                                         //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                                         new float2(5,5),
                                         //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                                         new float4(0.11f,0.11f,0.06f,0.17f),
                                         5
                                     ),
-                                    GUINodes.NineSliceNode
-                                    (
+                                    new TextureNodeContainer(
                                         "Child2",
+                                        AssetStorage.Get<string>("nineSlice.vert"),
+                                        AssetStorage.Get<string>("nineSliceTile.frag"),
+                                        new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                                         //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                                         new MinMaxRect
                                         {
@@ -145,14 +148,15 @@ namespace Fusee.Engine.Examples.UI.Core
                                             Min = new float2(-8,-4),
                                             Max = new float2(0,0)
                                         },
-                                        new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                                         new float2(2,3),
                                         new float4(0.1f,0.1f,0.1f,0.1f),
                                         2
                                     ),
-                                    GUINodes.NineSliceNode
-                                    (
+                                    new TextureNodeContainer(
                                         "Child3",
+                                        AssetStorage.Get<string>("nineSlice.vert"),
+                                        AssetStorage.Get<string>("nineSliceTile.frag"),
+                                        new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                                         //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                                         new MinMaxRect
                                         {
@@ -164,7 +168,6 @@ namespace Fusee.Engine.Examples.UI.Core
                                             Min = new float2(0,-1),
                                             Max = new float2(6,0)
                                         },
-                                        new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                                         new float2(5,1),
                                         new float4(0.1f,0.1f,0.1f,0.09f)
                                     )
@@ -182,9 +185,9 @@ namespace Fusee.Engine.Examples.UI.Core
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("holz.jpg"));
-            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("SuperMario.png"));
-            _bltDestinationTex.Blt(50, 0, bltScrTex);
+            _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
+            var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
+            _bltDestinationTex.Blt(180, 225, bltScrTex);
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
