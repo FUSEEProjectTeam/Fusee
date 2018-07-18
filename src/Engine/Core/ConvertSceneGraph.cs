@@ -54,13 +54,13 @@ namespace Fusee.Engine.Core
                 if (parent.Children == null)
                     parent.Children = new List<SceneNodeContainer>();
 
-                _currentNode = new SceneNodeContainer { Name = snc.Name + "_copy" };
+                _currentNode = new SceneNodeContainer { Name = snc.Name };
                 parent.Children.Add(_currentNode);
                 _predecessors.Push(_currentNode);
             }
             else //Add first node to SceneContainer
             {
-                _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name + "_copy" });
+                _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name });
                 _currentNode = _predecessors.Peek();
                 _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }

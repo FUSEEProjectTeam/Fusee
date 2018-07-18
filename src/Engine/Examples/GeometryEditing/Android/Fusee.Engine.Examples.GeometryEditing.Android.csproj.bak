@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Player.Android</RootNamespace>
-    <AssemblyName>Fusee.Engine.Player.Android</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
+    <RootNamespace>Fusee.Engine.Examples.GeometryEditing.Android</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.GeometryEditing.Android</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A7B18E33-2677-4441-B5C6-ED85421CBA13}</ProjectGuid>
+    <ProjectGuid>{73A74ADF-6308-42A0-8BA6-2B5D53238546}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -16,14 +16,14 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Android</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\Debug\Examples\GeometryEditing\Android\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -37,8 +37,7 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>
-    </AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
@@ -48,7 +47,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Android</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\Release\Examples\GeometryEditing\Android\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -61,10 +60,10 @@
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />
@@ -76,11 +75,8 @@
     <Compile Include="Resources\Resource.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <!--AndroidAsset Include="Assets\Lato-Black.ttf" />
-    <AndroidAsset Include="Assets\Model.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AndroidAsset>
-    <AndroidAsset Include="Assets\FuseeLogo150.png" /-->
+    <AndroidAsset Include="Assets\Lato-Black.ttf" />
+    <AndroidAsset Include="Assets\RocketModel.fus" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>
@@ -96,56 +92,48 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
+      
       <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+      
       <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Base\Imp\Android\Fusee.Base.Imp.Android.csproj">
-      <Project>{19a46a28-9369-4af2-a8a5-0303d3a0a8c0}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Android.dll">
+      
       <Name>Fusee.Base.Imp.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
+      
       <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Serialization\Fusee.Serialization.csproj">
-      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
+      
       <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj">
-      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
-      <Name>Fusee.Xene</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj">
-      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
+      
       <Name>Fusee.Engine.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228eb3f-8bcc-453f-8a2e-d9246495a118}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
+      
       <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\GUI\Fusee.Engine.GUI.csproj">
-      <Project>{26808b4a-9f15-47f0-b147-e744241b79d2}</Project>
-      <Name>Fusee.Engine.GUI</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
-      <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
+      
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
-      <Project>{fe8c3118-a8f4-45cc-bf31-e2f38771bf4c}</Project>
-      <Name>Fusee.Engine.Player.Core</Name>
+    </Reference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj">
+      
+      <Name>Fusee.Engine.Examples.GeometryEditing.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\AboutAssets.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
-    <!--Content Include="Assets\Model.fus">
+    <!--Content Include="Assets\RocketModel.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\Lato-Black.ttf">
@@ -153,27 +141,18 @@
     </Content-->
   </ItemGroup>
   <ItemGroup>
+    <AndroidAsset Include="Assets\FuseeLogo150.png" />
+  </ItemGroup>
+  <ItemGroup>
     <AndroidResource Include="Resources\drawable\icon.png" />
   </ItemGroup>
-  <!-- Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" / -->
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+  <Import Project="$(FuseeRoot)\src\FuseeBuildActions.target.xml" />
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.>
+       Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
-		<Message Importance="High" Condition="Exists('%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets')" 
-		                                        Text="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets exists." />
-		<Message Importance="High" Text="ßßßß  BEFORE ReferencePath:  @(ReferencePath)  ßßßßß" />
-		<ItemGroup>
-			<MyAndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
-		</ItemGroup>
- 		<Message Importance="High" Text="ßßßß  BEFORE MyAndroidAsset:  %(MyAndroidAsset.FullPath)  ßßßßß" />
   </Target>
   <Target Name="AfterBuild">
-		<Message Importance="High" Text="ßßßß  AFTER ReferencePath:  @(ReferencePath)  ßßßßß" />
-		<ItemGroup>
-			<MyAndroidAsset Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)Assets\*.*"/>
-		</ItemGroup>
- 		<Message Importance="High" Text="ßßßß  AFTER MyAndroidAsset:  %(MyAndroidAsset.FullPath)  ßßßßß" />
-  </Target -->
+  </Target>
+  -->
 </Project>

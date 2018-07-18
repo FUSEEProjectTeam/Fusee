@@ -61,7 +61,7 @@
   </ItemGroup>
   <!--ItemGroup>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262.so">
-      <Abi>arm64-8a</Abi>
+      <Abi>arm64-v8a</Abi>
       <Link>ARM64\libfreetype262.so</Link>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM\libfreetype262.so">
