@@ -62,7 +62,10 @@ namespace Fusee.Engine.Core
             {
                 _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name });
                 _currentNode = _predecessors.Peek();
-                _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
+                if(_convertedScene.Children != null)
+                    _convertedScene.Children.Add(_currentNode);
+                else
+                    _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
         }
 
