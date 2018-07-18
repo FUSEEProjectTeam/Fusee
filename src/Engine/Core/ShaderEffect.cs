@@ -209,7 +209,7 @@ namespace Fusee.Engine.Core
         {
             // Converting the property name to lowercase
             // so that property names become case-insensitive.
-            string name = binder.Name.ToLower();
+            string name = binder.Name;
 
             // If the property name is found in a dictionary,
             // set the result parameter to the property value and return true.
@@ -229,8 +229,9 @@ namespace Fusee.Engine.Core
         public override bool TrySetMember(
             SetMemberBinder binder, object value)
         {
-            // Test if value == EffectParam
-            if (value.GetType() != typeof(EffectParam))
+            object result;
+
+            if (!ParamDecl.TryGetValue(binder.Name, out result))
                 return false;
 
             SetEffectParam(binder.Name, value);   

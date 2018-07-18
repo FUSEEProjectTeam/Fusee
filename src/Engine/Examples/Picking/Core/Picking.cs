@@ -159,15 +159,19 @@ namespace Fusee.Engine.Examples.Picking.Core
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
+                    dynamic shaderEffectComponent; // this needs to be dynamic! & reference Microsoft.CSharp.dll
+
                     if (_currentPick != null)
                     {
-                        _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", _oldColor);
+                        shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        shaderEffectComponent.DiffuseColor = _oldColor;
+
                     }
                     if (newPick != null)
                     {
-                        var mat = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) mat.GetEffectParam("DiffuseColor");
-                        mat.SetEffectParam("DiffuseColor", ColorUint.LawnGreen.Tofloat3());
+                        shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        _oldColor = shaderEffectComponent.DiffuseColor;
+                        shaderEffectComponent.DiffuseColor = ColorUint.LawnGreen.Tofloat3();
                     }
                     _currentPick = newPick;
                 }
