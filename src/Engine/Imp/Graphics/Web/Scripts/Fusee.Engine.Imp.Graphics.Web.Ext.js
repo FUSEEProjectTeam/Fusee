@@ -185,6 +185,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
 
             this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha });
 
+            if (this.gl == undefined)
+                throw Error("Render Canvas not found!.");
+
             this.currWidth = 0;
             this.currHeight = 0;
         }
