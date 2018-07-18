@@ -5,7 +5,7 @@
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
     <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Core\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>    
   </PropertyGroup>
   <!-- as suggested at https://github.com/dotnet/sdk/issues/1518 by dasMulli -->
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -17,6 +17,9 @@
     <None Remove="Assets\FUSEERocket.fus" />
     <None Remove="Assets\FuseeText.png" />
     <None Remove="Assets\RocketModel.fus" />
+    <None Remove="Assets\Seamless brick texture dark 00.jpg" />
+    <None Remove="Assets\seamless_tiled_grass_texture_by_lendrick.jpg" />
+    <None Remove="Assets\testTex.jpg" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +42,7 @@
     <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj" />
     <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="..\..\GUI\Fusee.Engine.GUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>

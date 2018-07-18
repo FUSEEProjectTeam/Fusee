@@ -122,6 +122,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 format, All.UnsignedByte, img.PixelData);
         }
 
+        /* OBSOLETE
         /// <summary>
         /// Creates a new Image with a specified size and color.
         /// </summary>
@@ -162,6 +163,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             return imgData;
         }
+
+       */
 
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
@@ -1878,7 +1881,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>The specified sub-image</returns>
         public IImageData GetPixelColor(int x, int y, int w = 1, int h = 1)
         {
-            ImageData image = CreateImage(w, h, ColorUint.Black);
+            ImageData image = ImageData.CreateImage(w, h, ColorUint.Black);
             GL.ReadPixels(x, y, w, h, All.Rgb, All.UnsignedByte, image.PixelData);
             return image;
             

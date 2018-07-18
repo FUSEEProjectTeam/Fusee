@@ -16,7 +16,7 @@
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <AndroidApplication>true</AndroidApplication>
-    <TargetFrameworkVersion>v7.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -93,39 +93,30 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
-      
       <Name>Fusee.Base.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      
       <Name>Fusee.Base.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Android.dll">
-      
       <Name>Fusee.Base.Imp.Android</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      
       <Name>Fusee.Math.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      
       <Name>Fusee.Serialization</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      
       <Name>Fusee.Engine.Common</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      
       <Name>Fusee.Engine.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
-      
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.GeometryEditing.Core.csproj">
-      
       <Name>Fusee.Engine.Examples.GeometryEditing.Core</Name>
     </ProjectReference>
   </ItemGroup>

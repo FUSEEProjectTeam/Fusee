@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Core")]
-[assembly: AssemblyCopyright("Copyright © 2013-2018 The FUSEE Project Team")]
+[assembly: AssemblyCopyright("Copyright ï¿½ 2013-2018 The FUSEE Project Team")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

@@ -79,21 +79,21 @@ namespace Fusee.Engine.Core
         public void ConvMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
         }
 
         [VisitMethod]
         public void ConvMaterial(MaterialLightComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         [VisitMethod]
         public void ConvMaterial(MaterialPBRComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         [VisitMethod]

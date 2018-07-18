@@ -5,7 +5,7 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Player.Web
 {
-    public class Simple
+    public class Player
     {
         public static void Main()
         {
@@ -31,11 +31,11 @@ namespace Fusee.Engine.Player.Web
                         return Path.GetExtension(id).ToLower().Contains("ttf");
                     }
                 });
-            fap.RegisterTypeHandler( 
+            fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate(string id, object storage)
+                    Decoder = delegate (string id, object storage)
                     {
                         if (Path.GetExtension(id).ToLower().Contains("fus"))
                         {

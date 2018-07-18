@@ -172,8 +172,7 @@ namespace Fusee.Base.Imp.Android
             _face.Glyph.RenderGlyph(RenderMode.Normal);
 
             FTBitmap bmp = _face.Glyph.Bitmap;
-
-            byte[] pixelData = new byte[0]; // empty?? 
+            byte[] pixelData = new byte[0]; // empty??
             if (bmp.Width != 0 && bmp.Rows != 0)
             {
                 pixelData = new byte[bmp.BufferData.Length];

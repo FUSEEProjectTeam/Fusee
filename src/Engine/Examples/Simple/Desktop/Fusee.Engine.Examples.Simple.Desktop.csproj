@@ -81,6 +81,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
+    <Reference Include="Fusee.Xene, Version=0.6.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
@@ -92,7 +96,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
-      
       <Name>Fusee.Engine.Examples.Simple.Core</Name>
     </ProjectReference>
   </ItemGroup>
