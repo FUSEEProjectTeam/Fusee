@@ -1,7 +1,6 @@
 ﻿#define GUI_SIMPLE
 
 using System;
-using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -11,7 +10,7 @@ using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
-using Fusee.Engine.Core.GUI;
+using Fusee.Engine.GUI;
 #endif
 
 namespace Fusee.Engine.Examples.Simple.Core
@@ -21,7 +20,7 @@ namespace Fusee.Engine.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -79,7 +78,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
@@ -126,13 +125,12 @@ namespace Fusee.Engine.Examples.Simple.Core
                 }
             }
 
-
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()

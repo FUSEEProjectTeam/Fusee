@@ -64,6 +64,9 @@
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
     </Reference>
+    <Reference Include="Fusee.Engine.GUI">
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\FuseeText.png">
