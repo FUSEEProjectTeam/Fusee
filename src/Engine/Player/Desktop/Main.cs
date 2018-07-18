@@ -108,7 +108,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
-                        var graph = new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                        var graph = ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
                         return graph;
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")

@@ -17,6 +17,7 @@
     <None Remove="Assets\bananaTex.png" />
     <None Remove="Assets\baymax_scene.fus" />
     <None Remove="Assets\bump.jpg" />
+    <None Remove="Assets\bump.png" />
     <None Remove="Assets\bump2.jpg" />
     <None Remove="Assets\bump3.jpg" />
     <None Remove="Assets\bump3.png" />
@@ -25,6 +26,8 @@
     <None Remove="Assets\FUSEERocket.fus" />
     <None Remove="Assets\FuseeText.png" />
     <None Remove="Assets\houseSF.jpg" />
+    <None Remove="Assets\monkey.fus" />
+    <None Remove="Assets\monkey2.fus" />
     <None Remove="Assets\RoadTwoLanes_1024.png" />
     <None Remove="Assets\RocketModel.fus" />
     <None Remove="Assets\Seamless brick texture dark 00.jpg" />
@@ -41,13 +44,13 @@
     <Content Include="Assets\bump.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Assets\bump.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\bump2.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\bump3.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\bump3.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\diffuse.png">
@@ -67,6 +70,12 @@
     </Content>
     <Content Include="Assets\Lato-Black.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\monkey.fus">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\monkey2.fus">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\RoadTwoLanes_1024.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

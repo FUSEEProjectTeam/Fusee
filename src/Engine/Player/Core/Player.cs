@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -8,6 +9,7 @@ using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.Core.GUI;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -15,7 +17,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "FUSEERocket.fus";
+        public string ModelFile = "monkey2.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
@@ -76,7 +78,7 @@ namespace Fusee.Engine.Player.Core
             _angleRoll = 0;
             _angleRollInit = 0;
             _twoTouchRepeated = false;
-            _offset = float2.Zero;
+            _offset = float2.Zero; 
             _offsetInit = float2.Zero;
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
@@ -84,6 +86,40 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+
+            _scene.Children[0].GetComponent<MaterialComponent>().Specular = new SpecularChannelContainer()
+            {
+                Color = new float3(1.0f, 0.0f, 0.0f),
+                Intensity = 1f,
+                Shininess = 128f
+                
+            };
+
+            _scene.Children[0].GetComponent<MaterialComponent>().Diffuse = new MatChannelContainer()
+            {
+                Color = new float3(0.5f,0.5f,0.5f)
+            };
+
+            _scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            {
+                Intensity = 1.0f,
+                Texture = "bump3.jpg"
+            };
+
+            _scene = new ConvertSceneGraph().Convert(_scene);
+
+
+            var sceneComponentContainers = _scene.Children.FindComponents(x => x.GetType() == typeof(ShaderEffectComponent)).Select(x => (ShaderEffectComponent) x).ToList();
+            foreach (var c in sceneComponentContainers)
+            {
+                c.Effect.SetEffectParam("panoramaTexure", "bump3.jpg");
+                c.Effect.SetEffectParam("Roughness", 0.5f);
+                c.Effect.SetEffectParam("R0", 0.5f);
+                c.Effect.SetEffectParam("numberSamples", 100U);
+                c.Effect.SetEffectParam("M", 4U);
+                c.Effect.SetEffectParam("binaryFractionFactor", 2f);
+            }
+
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)

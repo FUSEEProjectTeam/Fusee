@@ -198,6 +198,10 @@ namespace Fusee.Engine.Core
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
 
+            // Uber Shader
+            VS = AssetStorage.Get<string>("Shader/UberVertex.vert");
+            PS = AssetStorage.Get<string>("Shader/UberFragment.frag");
+            
             //Diagnostics.Log(PS);
             //Diagnostics.Log(VS);
         }
