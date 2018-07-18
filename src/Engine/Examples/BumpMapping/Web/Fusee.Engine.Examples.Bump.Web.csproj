@@ -58,7 +58,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Fusee.Engine.Examples.Bump.Web.Simple</StartupObject>
+    <StartupObject>Fusee.Engine.Examples.Bump.Web.Bump</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
