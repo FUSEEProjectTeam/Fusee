@@ -169,25 +169,13 @@ namespace Fusee.Engine.Examples.Bone.Core
             _scene.Children[0].Children[0].Components[2] = new WeightComponent
             {
                 BindingMatrices = bindingMatrices,
-                WeightMap = WeightMap,
-                Joints = new List<SceneNodeContainer> // here we need the number 2 for the converter 
-                {
-                    new SceneNodeContainer(),
-                    new SceneNodeContainer()
-                }
+                WeightMap = WeightMap
+                // Joints are added automatically during scene conversion (ConvertSceneGraph) 
             };
 
 
             // now we can convert the scene
             _scene = new ConvertSceneGraph().Convert(_scene);
-
-
-            // after CONVERSION we need to add all bones, because he safes them in a dictonary and scenenode
-            // before conversion != after conversion !!
-            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints[0] = _scene.Children[0];
-            _scene.Children[0].Children[0].GetComponent<WeightComponent>().Joints[1] = _scene.Children[0].Children[0];
-
-
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();

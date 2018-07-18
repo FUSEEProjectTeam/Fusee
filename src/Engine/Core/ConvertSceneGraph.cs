@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
-
+        private Stack<SceneNodeContainer> _boneContainers;
 
         protected override void PopState()
         {
@@ -39,6 +39,7 @@ namespace Fusee.Engine.Core
             _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
             _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
+            _boneContainers = new Stack<SceneNodeContainer>();
 
             Traverse(sc.Children);
             return _convertedScene;
@@ -141,11 +142,26 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponentContainer>();
 
             _currentNode.Components.Add(bone);
+
+            // Collect all bones, later, when a WeightComponent is found, we can set all Joints
+            _boneContainers.Push(_currentNode);
         }
 
         [VisitMethod]
         public void ConVWeight(WeightComponent weight)
         {
+            // check if we have bones
+            if (_boneContainers.Count > 1)
+            {
+                
+                if(weight.Joints == null) // initialize joint container
+                    weight.Joints = new List<SceneNodeContainer>();
+
+                // set all bones found until this WeightComponent
+                while (_boneContainers.Count != 0)
+                    weight.Joints.Add(_boneContainers.Pop());
+            }
+           
             _currentNode.Components.Add(weight);
         }
         #endregion
