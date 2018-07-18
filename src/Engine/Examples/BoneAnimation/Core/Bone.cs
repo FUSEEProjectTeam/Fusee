@@ -173,7 +173,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                 // Joints are added automatically during scene conversion (ConvertSceneGraph) 
             };
 
-
+            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
             // now we can convert the scene
             _scene = new ConvertSceneGraph().Convert(_scene);
 

@@ -91,6 +91,9 @@ def add_vertex(vi, face, i, mesh, uv_layer):
         uv.y = 0
     tri = mesh.Triangles.append(i)
 
+def create_bone_payload(bone):
+    print('found bone')
+    return Scene.SceneNodeContainer().SerializePartialToString()
 
 def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
     obj = objects
@@ -135,17 +138,43 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         return serializedData
 
 
-    elif obj.type == 'MESH':
+    elif obj.type == 'MESH' or obj.type == 'ARMATURE':
+                
+        if obj.type == 'ARMATURE':
+            print('-- found BoneAnimation')
+
         serializedData = namedtuple('serializedData', ['obj', 'tex'])
         data = obj.data
 
-        ##Hierarchy 1 (root = obj)
-        # initialize root node with name and empty components
         root = Scene.SceneNodeContainer()
+
+        # add bones
+        if obj.type == 'ARMATURE':
+            # add one children for each bone
+            for bone in obj.pose.bones:
+                rootChildren = root.Children.add()
+                rootChildren.payload = create_bone_payload(bone)
+        
+
+        ##Hierarchy 1 (root = obj)
+        # initialize root node with name and empty components            
+
+        if obj.type == 'ARMATURE':
+            rootChildren = root.Children.add()
+            rootChildren = Scene.SceneNodeContainer()
+            root = rootChildren
+
         root.Name = obj.name
-        rootComponent1 = root.Components.add()
-        rootComponent2 = root.Components.add()
-        rootComponent3 = root.Components.add()
+        if obj.type == 'ARMATURE': # we need 4 components, +1 for bones as children
+            rootComponent1 = root.Components.add()
+            rootComponent2 = root.Components.add()
+            rootComponent3 = root.Components.add()
+            rootComponent4 = root.Components.add()
+        else: # mesh comp only 3
+            rootComponent1 = root.Components.add()
+            rootComponent2 = root.Components.add()
+            rootComponent3 = root.Components.add()            
+
         print('--' + root.Name)
 
         # init
@@ -182,7 +211,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-        # rotation
+            # rotation
         rot_eul = rotation.to_euler()
         transformComponent.Rotation.x = rot_eul.x
         transformComponent.Rotation.y = rot_eul.z
@@ -206,11 +235,17 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
-        damesh = prepare_mesh(bpy.context.scene.objects.active)
+        if obj.type == 'ARMATURE':
+            damesh = prepare_mesh(bpy.context.scene.objects.active.children[0])
+        else:
+            damesh = prepare_mesh(bpy.context.scene.objects.active)
         bm.from_mesh(damesh)
 
         # <CM's Checks>
-        uvActive = data.uv_layers.active
+        if obj.type == 'ARMATURE':
+           uvActive = obj.children[0].data.uv_layers.active
+        else:
+            uvActive = data.uv_layers.active
         uv_layer = None
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
@@ -496,11 +531,20 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
             print('----3' + str(inst))
             rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)
 
+    
+
+
         # SCENE NODE CONTAINER
         # write rootComponents to rootNode
-        rootComponent1.payload = rootTransformComponent.SerializePartialToString()
-        rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
-        rootComponent3.payload = rootmesh.SerializePartialToString()
+        if obj.type == 'ARMATURE':
+            rootComponent1.payload = rootTransformComponent.SerializePartialToString()
+            rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
+            rootComponent3.payload = rootmesh.SerializePartialToString()
+        else:
+            rootComponent1.payload = rootTransformComponent.SerializePartialToString()
+            rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
+            rootComponent3.payload = rootmesh.SerializePartialToString()
+
 
         # if obj has got children, find them recursively,
         # serialize them and write them to root as children
