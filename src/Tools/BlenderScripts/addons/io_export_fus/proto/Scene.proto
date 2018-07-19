@@ -44,6 +44,7 @@ message AnimationTrackContainer {
    optional LerpType LerpType = 5 [default = Lerp];
 }
 message BoneComponent {
+   optional string Name = 1;
 }
 message BumpChannelContainer {
    optional string Texture = 1;
