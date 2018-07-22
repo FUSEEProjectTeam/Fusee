@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -233,14 +235,13 @@ namespace Fusee.Engine.Core
 
             if (!ParamDecl.TryGetValue(binder.Name, out result))
                 return false;
-
-            SetEffectParam(binder.Name, value);   
+            
+            SetEffectParam(binder.Name, value);
 
             return true;
         }
-    }
 
-    internal class ShaderEffectEventArgs : EventArgs
+        internal class ShaderEffectEventArgs : EventArgs
     {
         internal ShaderEffect Effect { get; }
         internal ShaderEffectChangedEnum Changed { get; }
@@ -269,4 +270,5 @@ namespace Fusee.Engine.Core
         // ReSharper restore InconsistentNaming
     }
 
+    }
 }

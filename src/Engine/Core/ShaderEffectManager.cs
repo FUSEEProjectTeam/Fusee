@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
             _rc.RemoveShader(ef);            
         }
 
-        private void ShaderEffectChanged(object sender, ShaderEffectEventArgs args)
+        private void ShaderEffectChanged(object sender, ShaderEffect.ShaderEffectEventArgs args)
         {
             if (args == null || sender == null) return;
 
@@ -26,14 +26,14 @@ namespace Fusee.Engine.Core
 
             switch (args.Changed)
             {
-                case ShaderEffectChangedEnum.DISPOSE:
+                case ShaderEffect.ShaderEffectChangedEnum.DISPOSE:
                     Remove(senderSF);
                     break;
-                case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
+                case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
                     // ReSharper disable once InconsistentNaming
                     _rc.HandleAndUpdateChangedButExisistingEffectVariable(senderSF, args.ChangedEffectName, args.ChangedEffectValue);
                     break;
-                case ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
+                case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
                     // We need to recreate everything
                     _rc.CreateAllShaderEffectVariables(senderSF);
                     break;

@@ -26,6 +26,10 @@ namespace Fusee.Engine.Examples.Picking.Android
 		
 		public static void UpdateIdValues()
 		{
+			global::Fusee.Base.Imp.Android.Resource.String.ApplicationName = global::Fusee.Engine.Examples.Picking.Android.Resource.String.ApplicationName;
+			global::Fusee.Base.Imp.Android.Resource.String.Hello = global::Fusee.Engine.Examples.Picking.Android.Resource.String.Hello;
+			global::Fusee.Engine.Imp.Graphics.Android.Resource.String.ApplicationName = global::Fusee.Engine.Examples.Picking.Android.Resource.String.ApplicationName;
+			global::Fusee.Engine.Imp.Graphics.Android.Resource.String.Hello = global::Fusee.Engine.Examples.Picking.Android.Resource.String.Hello;
 		}
 		
 		public partial class Attribute
@@ -60,11 +64,17 @@ namespace Fusee.Engine.Examples.Picking.Android
 		public partial class String
 		{
 			
-			// aapt resource value: 0x7f030000
-			public const int app_name = 2130903040;
-			
 			// aapt resource value: 0x7f030001
-			public const int unsupported = 2130903041;
+			public const int ApplicationName = 2130903041;
+			
+			// aapt resource value: 0x7f030000
+			public const int Hello = 2130903040;
+			
+			// aapt resource value: 0x7f030002
+			public const int app_name = 2130903042;
+			
+			// aapt resource value: 0x7f030003
+			public const int unsupported = 2130903043;
 			
 			static String()
 			{

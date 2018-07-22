@@ -5,7 +5,7 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Player.Web
 {
-    public class Player
+    public class Simple
     {
         public static void Main()
         {
