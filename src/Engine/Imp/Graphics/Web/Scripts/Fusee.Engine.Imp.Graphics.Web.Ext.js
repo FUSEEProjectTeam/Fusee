@@ -44,24 +44,22 @@ var $ColorUintCtor_S_S_S_S = function () {
 
 
 JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.TheEmptyDummyClass", true, [], function ($) {
-   $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderProgramImp"));
-     $.Field({ Static: false, Public: false }, "test", $.Object, null);
+    $.ImplementInterfaces($fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderProgramImp"));
+    $.Field({ Static: false, Public: false }, "test", $.Object, null);
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp", function ($) {
     $.Field({ Static: false, Public: true }, "Program", $.Object, null);
 
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TextureHandle", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TextureHandle", function ($) {
     // empty constructor
     $.Method({ Static: false, Public: true }, ".ctor",
         new JSIL.MethodSignature(null, [], []),
         function () {
-           
+
         }
     );
 
@@ -83,11 +81,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TextureHandle", function 
     $.Field({ Static: false, Public: true }, "textureWidth", $.Int32, null);
     $.Field({ Static: false, Public: true }, "textureHeight", $.Int32, null);
 
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($) {
     $.Field({ Static: false, Public: false }, "Face", $.Object, null);
 
     /*
@@ -144,15 +141,14 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Font", function ($)
         }
     );
     */
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderParam", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderParam", function ($) {
     $.Method({ Static: false, Public: true }, ".ctor",
-        new JSIL.MethodSignature(null, [],[]),
-        function() {
+        new JSIL.MethodSignature(null, [], []),
+        function () {
             // not implemented
         }
     );
@@ -162,8 +158,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderParam", function ($
 });
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", function ($) {
     $.Field({ Static: false, Public: false }, "gl", $.Object, null);
     $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
     $.Field({ Static: false, Public: false }, "deltaTime", $.Single, null);
@@ -184,6 +179,12 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
                 throw Error("No WebGL2 supported.");
 
             this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha });
+
+            if (this._canvas == undefined)
+                throw Error("Render Canvas not found!.");
+
+            if (this.gl == undefined)
+                throw Error("WebGL2 context not found!.");
 
             this.currWidth = 0;
             this.currHeight = 0;
@@ -318,16 +319,16 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             else
                 cursorVal = cursor;
             switch (cursorVal) {
-            case $fuseeCommon.Fusee.Engine.Common.CursorType.Standard.value:
-                {
-                    document.body.style.cursor = 'auto';
-                }
-                break;
-            case $fuseeCommon.Fusee.Engine.Common.CursorType.Hand.value:
-                {
-                    document.body.style.cursor = 'pointer';
-                }
-                break;
+                case $fuseeCommon.Fusee.Engine.Common.CursorType.Standard.value:
+                    {
+                        document.body.style.cursor = 'auto';
+                    }
+                    break;
+                case $fuseeCommon.Fusee.Engine.Common.CursorType.Hand.value:
+                    {
+                        document.body.style.cursor = 'pointer';
+                    }
+                    break;
             }
         }
     );
@@ -357,7 +358,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this.frameTicker();
         }
     );
-    
+
     /*
     // TODO: This method has some problems with a type error: "Error: Type missing type ID"
     $.Method({ Static: false, Public: true }, "SetWindowSize",
@@ -382,12 +383,11 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
     // $.Property({ Static: false, Public: true }, "Width");
     */
 
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", function ($) {
     $.Field({ Static: false, Public: false }, "gl", $.Object, null);
     $.Field({ Static: false, Public: false }, "_currentTextureUnit", $.Int32, null);
     $.Field({ Static: false, Public: false }, "_shaderParam2TexUnit", $.Object, null);
@@ -417,15 +417,15 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true }, "GetHardwareCapabilities",
-       new JSIL.MethodSignature($.UInt32, [$fuseeCommon.TypeRef("Fusee.Engine.Common.HardwareCapability")]),
-       function GetHardwareCapabilities(capability) {
-           switch(capability) {
-               case 0: // <- this is DEFFERED_POSSIBLE
-                   return 0; // not yet WebGL beta!
-               default:
-                   Error("Hardware capability not found!");
-           }
-       }
+        new JSIL.MethodSignature($.UInt32, [$fuseeCommon.TypeRef("Fusee.Engine.Common.HardwareCapability")]),
+        function GetHardwareCapabilities(capability) {
+            switch (capability) {
+                case 0: // <- this is DEFFERED_POSSIBLE
+                    return 0; // not yet WebGL beta!
+                default:
+                    Error("Hardware capability not found!");
+            }
+        }
     );
 
     $.Method({ Static: false, Public: true }, "SetRenderTarget",
@@ -471,7 +471,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     // Blit framebuffers, no Multisample texture 2d in WebGL 2
                     this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, textureImp.renderToTextureBufferHandle);
                     this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, textureImp.intermediateToTextureBufferHandle);
-             
+
                     this.gl.blitFramebuffer(
                         0, 0, textureImp.textureWidth, textureImp.textureHeight,
                         0, 0, textureImp.textureWidth, textureImp.textureHeight,
@@ -514,7 +514,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             // setup framebuffer with MSAA renderbuffer
             var colorRenderbuffer = this.gl.createRenderbuffer();
             var stencilRenderbuffer = this.gl.createRenderbuffer();
-            
+
             // bind the framebuffer in which the multisampled content will be rendered
             this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebufferRenderBuffer);
 
@@ -537,7 +537,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             // attach the depth texture to the framebuffer
             //this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.TEXTURE_2D, depthTexture, 0);
-            
+
 
             // setup color offscreentexture
             //this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, offscreentexture, 0);
@@ -634,7 +634,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.clearDepth(value);
         }
     );
-    
+
 
 
 
@@ -649,7 +649,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                 tex.handle = glTexOb;
                 this.gl.bindTexture(this.gl.TEXTURE_2D, tex.handle);
                 this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE,
-              new Uint8Array([255, 255, 255, 255]));
+                    new Uint8Array([255, 255, 255, 255]));
             }
 
 
@@ -660,24 +660,24 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     stream._videoElement.src = stream._filename;
                 } else {
                     navigator.getUserMedia = (navigator.getUserMedia ||
-                            navigator.webkitGetUserMedia ||
-                            navigator.mozGetUserMedia ||
-                            navigator.msGetUserMedia);
+                        navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia ||
+                        navigator.msGetUserMedia);
                     if (navigator.getUserMedia) {
                         var callbackClosure = this;
                         navigator.getUserMedia(
-                                {
-                                    video: true,
-                                    audio: stream._useAudio ? true : false //TODO Let user decide to use audio from webcam
-                                },
-                                function (localMediaStream) {
-                                    var url = window.URL || window.webkitURL;
-                                    stream._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-                                },
-                                function (err) {
-                                    console.log("The following error has occured: " + err);
-                                }
-                            );
+                            {
+                                video: true,
+                                audio: stream._useAudio ? true : false //TODO Let user decide to use audio from webcam
+                            },
+                            function (localMediaStream) {
+                                var url = window.URL || window.webkitURL;
+                                stream._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                            },
+                            function (err) {
+                                console.log("The following error has occured: " + err);
+                            }
+                        );
                     }
                 }
             }
@@ -830,7 +830,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             context.drawImage(image, 0, 0);
 
             var myData = context.getImageData(0, 0, image.width, image.height);
-            var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat($WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA) );
+            var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat($WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA));
             //imageData.Width = image.width;
             //imageData.Height = image.height;
             //imageData.PixelFormat.ColorFormat = $WebBaseCommon.Fusee.Base.Common.ImagePixelFormat.RGBA;
@@ -899,7 +899,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
 
-            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, 
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S,
                 (repeat) ? this.gl.REPEAT : this.gl.CLAMP_TO_EDGE);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T,
                 (repeat) ? this.gl.REPEAT : this.gl.CLAMP_TO_EDGE);
@@ -1095,8 +1095,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         function Clear(flags) {
             // ACCUM is ignored in WebGL...
             var wglFlags = ((flags.value & $fuseeCommon.Fusee.Engine.Common.ClearFlags.Depth.value) ? this.gl.DEPTH_BUFFER_BIT : 0)
-                            | ((flags.value & $fuseeCommon.Fusee.Engine.Common.ClearFlags.Stencil.value) ? this.gl.STENCIL_BUFFER_BIT : 0)
-                            | ((flags.value & $fuseeCommon.Fusee.Engine.Common.ClearFlags.Color.value) ? this.gl.COLOR_BUFFER_BIT : 0);
+                | ((flags.value & $fuseeCommon.Fusee.Engine.Common.ClearFlags.Stencil.value) ? this.gl.STENCIL_BUFFER_BIT : 0)
+                | ((flags.value & $fuseeCommon.Fusee.Engine.Common.ClearFlags.Color.value) ? this.gl.COLOR_BUFFER_BIT : 0);
             this.gl.clear(wglFlags);
         }
     );
@@ -1132,6 +1132,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             statusCode = this.gl.getShaderParameter(fragmentObject, this.gl.COMPILE_STATUS);
       
+
 
             if (statusCode != true)
                 throw new Error(info);
@@ -1433,7 +1434,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam1f",
-      new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $.Single]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $.Single]),
         function SetShaderParam1f(param, val) {
             this.gl.uniform1f(param.handle, val);
         }
@@ -1441,7 +1442,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam2f",
-      new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float2")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float2")]),
         function SetShaderParam2f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform2fv(param.handle, flatVector);
@@ -1450,8 +1451,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam3f",
-       new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float3")]),
-          function SetShaderParam3f(param, val) {
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float3")]),
+        function SetShaderParam3f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform3fv(param.handle, flatVector);
         }
@@ -1459,7 +1460,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParam4f",
-      new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float4")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float4")]),
         function SetShaderParam4f(param, val) {
             var flatVector = new Float32Array(val.ToArray());
             this.gl.uniform4fv(param.handle, flatVector);
@@ -1468,7 +1469,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
 
     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamfloat4x4",
-      new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float4x4")]),
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeMath.TypeRef("Fusee.Math.Core.float4x4")]),
         function SetShaderParamfloat4x4(param, val) {
             // Column order notation:
             // Other parameters than "false" for "Transpose" are forbidden...
@@ -1478,10 +1479,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         }
     );
 
-     $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
+    $.Method({ Static: false, Public: true, Virtual: true }, "SetShaderParamI",
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $.Int32]),
         function SetShaderParamI(param, val) {
-        this.gl.uniform1i(param.handle, val);
+            this.gl.uniform1i(param.handle, val);
         }
     );
 
@@ -1505,7 +1506,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
     $.Method({ Static: false, Public: true }, "SetShaderParamTexture",
 
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderParam"), $fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
-        function SetShaderParamTexture(param, texId) {          
+        function SetShaderParamTexture(param, texId) {
             var iParam = param.handle;
             var texUnit = -1;
             var iParamStr = param.id.toString();
@@ -1538,7 +1539,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     return this.gl.FUNC_REVERSE_SUBTRACT;
                 case $fuseeCommon.Fusee.Engine.Common.BlendOperation.Minimum.value:
                     throw new Error("MIN blending mode not supported in WebGL!");
-                    // see http://stackoverflow.com/questions/11823742/need-glblendequationext-support-in-webgl
+                // see http://stackoverflow.com/questions/11823742/need-glblendequationext-support-in-webgl
                 case $fuseeCommon.Fusee.Engine.Common.BlendOperation.Maximum.value:
                     throw new Error("MAX blending mode not supported in WebGL!");
                 default:
@@ -1556,7 +1557,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                     return $fuseeCommon.Fusee.Engine.Common.BlendOperation.Subtract;
                 case this.gl.FUNC_REVERSE_SUBTRACT:
                     return $fuseeCommon.Fusee.Engine.Common.BlendOperation.ReverseSubtract;
-                    // MIN, MAX not supported by WebGL, see above
+                // MIN, MAX not supported by WebGL, see above
                 default:
                     throw new Error("Unknown value for bom: " + bom);
             }
@@ -1648,7 +1649,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             switch (renderStateVal) {
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.FillMode.value:
                     {
-                        if (value !=$fuseeCommon.Fusee.Engine.Common.FillMode.Solid)
+                        if (value != $fuseeCommon.Fusee.Engine.Common.FillMode.Solid)
                             throw new Error("Line or Point fill mode (glPolygonMode) not supported in WebGL!");
                     }
                     break;
@@ -1814,7 +1815,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.Clipping.value:
                     // clipping is always on in OpenGL - This state is simply ignored
                     return 1;
-                    // == true
+                // == true
                 case $fuseeCommon.Fusee.Engine.Common.RenderState.ZFunc.value:
                     {
                         var depFunc = this.gl.getParameter(this.gl.DEPTH_FUNC);
@@ -2175,8 +2176,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 });
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MeshImp", function ($)
-{
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MeshImp", function ($) {
 
     $.Field({ Static: false, Public: true }, "VertexBufferObject", $.Object, null);
     $.Field({ Static: false, Public: true }, "NormalBufferObject", $.Object, null);
@@ -2336,7 +2336,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MeshImp", function ($)
     // $.Property({ Static: false, Public: true }, "BoneWeightsSet");
 
 
-    return function(newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
 
@@ -2345,20 +2345,20 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoManagerImp
 
 
     $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromFile",
-     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), [$.String, $.Boolean, $.Boolean]),
-     function VideoManagerImp_CreateVideoStreamImpFromFile(filename, loopVideo, useAudio) {
-         return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.VideoStreamImp(filename, loopVideo, useAudio);
-     }
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), [$.String, $.Boolean, $.Boolean]),
+        function VideoManagerImp_CreateVideoStreamImpFromFile(filename, loopVideo, useAudio) {
+            return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.VideoStreamImp(filename, loopVideo, useAudio);
+        }
 
- );
+    );
 
-     $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromCamera",
-     new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), [$.Int32, $.Boolean]),
-     function VideoManagerImp_CreateVideoStreamImpFromCamera() {
-         return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.VideoStreamImp("camera",false, false);
-     }
+    $.Method({ Static: false, Public: true }, "CreateVideoStreamImpFromCamera",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoStreamImp"), [$.Int32, $.Boolean]),
+        function VideoManagerImp_CreateVideoStreamImpFromCamera() {
+            return new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.VideoStreamImp("camera", false, false);
+        }
 
- );
+    );
 
     $.ImplementInterfaces(
         $fuseeCommon.TypeRef("Fusee.Engine.Common.IVideoManagerImp")
@@ -2379,96 +2379,96 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     $.Field({ Static: false, Public: true }, "_useAudio", $.Boolean, null);
     $.Field({ Static: false, Public: true }, "_canvas", $.Object, null);
     $.Method({ Static: false, Public: true }, ".ctor",
-       new JSIL.MethodSignature(null, [$.String, $.Boolean, $.Boolean]),
-       function VideoStreamImp__ctor(source, loopVideo, useAudio) {
+        new JSIL.MethodSignature(null, [$.String, $.Boolean, $.Boolean]),
+        function VideoStreamImp__ctor(source, loopVideo, useAudio) {
 
-           this._filename = source;
-           this._isPlaying = false;
-           this._loopVideo = loopVideo;
-           this._useAudio = useAudio;
-           this._canvas = document.createElement("canvas");
-           // (dd) 01.06.2018: obsolete initialization
-           //this._nextFrame = new $WebBaseCore.Fusee.Base.Core.ImageData();
+            this._filename = source;
+            this._isPlaying = false;
+            this._loopVideo = loopVideo;
+            this._useAudio = useAudio;
+            this._canvas = document.createElement("canvas");
+            // (dd) 01.06.2018: obsolete initialization
+            //this._nextFrame = new $WebBaseCore.Fusee.Base.Core.ImageData();
 
 
-       }
-   );
+        }
+    );
 
     $.Method({ Static: false, Public: true }, "StartVideo",
-            new JSIL.MethodSignature(null, []),
-            function VideoStreamImp_StartVideo() {
-                if (!this._useAudio)
-                    this._videoElement.muted = true;
-                if (this._loopVideo)
-                    this._videoElement.loop = true;
-                this._videoElement.play();
-                this._videoElement.addEventListener("timeupdate", this.NextFrame.bind(this));
-            }
-        );
+        new JSIL.MethodSignature(null, []),
+        function VideoStreamImp_StartVideo() {
+            if (!this._useAudio)
+                this._videoElement.muted = true;
+            if (this._loopVideo)
+                this._videoElement.loop = true;
+            this._videoElement.play();
+            this._videoElement.addEventListener("timeupdate", this.NextFrame.bind(this));
+        }
+    );
 
     $.Method({ Static: false, Public: true }, "NextFrame",
-           new JSIL.MethodSignature(null, []),
-           function VideoStreamImp_NextFrame() {
+        new JSIL.MethodSignature(null, []),
+        function VideoStreamImp_NextFrame() {
 
-               //TODO
+            //TODO
 
-               this._canvas.width = this._videoElement.videoWidth;
-               this._canvas.height = this._videoElement.videoHeight;
-               var context = this._canvas.getContext('2d');
-               context.drawImage(this._videoElement, 0, 0);
+            this._canvas.width = this._videoElement.videoWidth;
+            this._canvas.height = this._videoElement.videoHeight;
+            var context = this._canvas.getContext('2d');
+            context.drawImage(this._videoElement, 0, 0);
 
-               var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);
-               this._nextFrame.Width = this._videoElement.videoWidth;
-               this._nextFrame.Height = this._videoElement.videoHeight;
-               this._nextFrame.PixelFormat.ColorFormat = $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA;
-               this._nextFrame.Stride = this._videoElement.width * 4; //TODO: Adjust pixel-size
-               this._nextFrame.PixelData = myData.data;
+            var myData = context.getImageData(0, 0, this._videoElement.videoWidth, this._videoElement.videoHeight);
+            this._nextFrame.Width = this._videoElement.videoWidth;
+            this._nextFrame.Height = this._videoElement.videoHeight;
+            this._nextFrame.PixelFormat.ColorFormat = $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA;
+            this._nextFrame.Stride = this._videoElement.width * 4; //TODO: Adjust pixel-size
+            this._nextFrame.PixelData = myData.data;
 
 
-           }
-       );
+        }
+    );
 
     $.Method({ Static: false, Public: true }, "GetCurrentFrame",
         new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), []),
-     function VideoStreamImp_GetCurrentFrame() {
-         if (this._videoElement == null) {
-             this._canvas = document.createElement('canvas');
-             this._videoElement = document.createElement('video');
-             if (this._filename != "camera") {
-                 this._videoElement.src = this._filename;
-                 if (!this._useAudio)
-                     this._videoElement.muted = true;
-                 if (this._loopVideo)
-                     this._videoElement.loop = true;
-                 this._videoElement.addEventListener("canplay", this.StartVideo.bind(this));
-             }
-             else {
-                 navigator.getUserMedia = (navigator.getUserMedia ||
-                     navigator.webkitGetUserMedia ||
-                     navigator.mozGetUserMedia ||
-                     navigator.msGetUserMedia);
-                 if (navigator.getUserMedia) {
-                     var callbackClosure = this;
-                     navigator.getUserMedia(
-                         {
-                             video: true,
-                             audio: this._useAudio ? true : false
-                         },
-                         function (localMediaStream) {
-                             var url = window.URL || window.webkitURL;
-                             callbackClosure._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
-                             callbackClosure._videoElement.addEventListener("canplay", callbackClosure.StartVideo.bind(callbackClosure));
-                         },
-                         function (err) {
-                             console.log("The following error has occured: " + err);
-                         }
-                     );
-                 }
-             }
-         }
-         return this._nextFrame;
-     }
- );
+        function VideoStreamImp_GetCurrentFrame() {
+            if (this._videoElement == null) {
+                this._canvas = document.createElement('canvas');
+                this._videoElement = document.createElement('video');
+                if (this._filename != "camera") {
+                    this._videoElement.src = this._filename;
+                    if (!this._useAudio)
+                        this._videoElement.muted = true;
+                    if (this._loopVideo)
+                        this._videoElement.loop = true;
+                    this._videoElement.addEventListener("canplay", this.StartVideo.bind(this));
+                }
+                else {
+                    navigator.getUserMedia = (navigator.getUserMedia ||
+                        navigator.webkitGetUserMedia ||
+                        navigator.mozGetUserMedia ||
+                        navigator.msGetUserMedia);
+                    if (navigator.getUserMedia) {
+                        var callbackClosure = this;
+                        navigator.getUserMedia(
+                            {
+                                video: true,
+                                audio: this._useAudio ? true : false
+                            },
+                            function (localMediaStream) {
+                                var url = window.URL || window.webkitURL;
+                                callbackClosure._videoElement.src = url ? window.URL.createObjectURL(localMediaStream) : localMediaStream;
+                                callbackClosure._videoElement.addEventListener("canplay", callbackClosure.StartVideo.bind(callbackClosure));
+                            },
+                            function (err) {
+                                console.log("The following error has occured: " + err);
+                            }
+                        );
+                    }
+                }
+            }
+            return this._nextFrame;
+        }
+    );
 
     $.Method({ Static: false, Public: true }, "Start",
         new JSIL.MethodSignature(null, []),
@@ -2493,10 +2493,10 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
 
 
 
-JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", function($) {
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", function ($) {
 
     $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
-      JSIL.MethodSignature.Void,
+        JSIL.MethodSignature.Void,
         function ConnectCanvasEvents() {
             var callbackClosure = this;
             document.onkeydown = function (event) {
@@ -2506,9 +2506,9 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", funct
                 callbackClosure.OnCanvasKeyUp.call(callbackClosure, event.keyCode);
             };
         }
-      );
+    );
 
-      return function (newThisType) { $thisType = newThisType; };
+    return function (newThisType) { $thisType = newThisType; };
 });
 
 
@@ -2529,8 +2529,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", funct
 
     // detect available wheel event
     support = "onwheel" in document.createElement("div") ? "wheel" : // Modern browsers support "wheel"
-              document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
-              "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
+        document.onmousewheel !== undefined ? "mousewheel" : // Webkit and IE support at least "mousewheel"
+            "DOMMouseScroll"; // let's assume that remaining browsers are older Firefox
 
     window.addWheelListener = function (elem, callback, useCapture) {
         _addWheelListener(elem, support, callback, useCapture);
@@ -2584,7 +2584,7 @@ var FU_is_firefox = !FU_is_edge && navigator.userAgent.toLowerCase().indexOf('fi
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function ($) {
 
     $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
-      JSIL.MethodSignature.Void,
+        JSIL.MethodSignature.Void,
         function ConnectCanvasEvents() {
             var callbackClosure = this;
             this._canvas.onmousedown = function (event) {
@@ -2617,20 +2617,20 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function
             //    callbackClosure.OnCanvasMouseWheel.call(callbackClosure, event.wheelDelta);
             //};
         }
-      );
+    );
 
     $.Method({ Static: false, Public: false }, "GetWindowHeight",
-      JSIL.MethodSignature.Return($.Single),
-      function GetWindowHeight() {
-          return this._canvas.height;
-      }
+        JSIL.MethodSignature.Return($.Single),
+        function GetWindowHeight() {
+            return this._canvas.height;
+        }
     );
 
     $.Method({ Static: false, Public: false }, "GetWindowWidth",
-      JSIL.MethodSignature.Return($.Single),
-      function GetWindowHeight() {
-          return this._canvas.width;
-      }
+        JSIL.MethodSignature.Return($.Single),
+        function GetWindowHeight() {
+            return this._canvas.width;
+        }
     );
 
     return function (newThisType) { $thisType = newThisType; };
@@ -2641,11 +2641,11 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function ($) {
 
     $.Method({ Static: false, Public: false }, "ConnectCanvasEvents",
-      JSIL.MethodSignature.Void,
+        JSIL.MethodSignature.Void,
         function ConnectCanvasEvents() {
             var callbackClosure = this;
 
-            this._canvas.ontouchstart = function(event) {
+            this._canvas.ontouchstart = function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
@@ -2674,27 +2674,27 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function
                 }
             };
         }
-      );
+    );
 
     $.Method({ Static: false, Public: false }, "GetWindowHeight",
-      JSIL.MethodSignature.Return($.Single),
-      function GetWindowHeight() {
-          return this._canvas.height;
-      }
+        JSIL.MethodSignature.Return($.Single),
+        function GetWindowHeight() {
+            return this._canvas.height;
+        }
     );
 
     $.Method({ Static: false, Public: false }, "GetWindowWidth",
-      JSIL.MethodSignature.Return($.Single),
-      function GetWindowHeight() {
-          return this._canvas.width;
-      }
+        JSIL.MethodSignature.Return($.Single),
+        function GetWindowHeight() {
+            return this._canvas.width;
+        }
     );
 
     return function (newThisType) { $thisType = newThisType; };
 });
 
 
-JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function($) {
+JSIL.ImplementExternals("Fusee.Engine.Core.MeshReader", function ($) {
     $.Method({ Static: true, Public: true }, "Double_Parse",
         new JSIL.MethodSignature($.Double, [$.String]),
         function Double_Parse(str) {
@@ -2717,13 +2717,13 @@ JSIL.ImplementExternals("Fusee.Engine.Core.GUI.GUIHandler", function ($) {
 /**
 * Provides requestAnimationFrame in a cross browser way.
 */
-window.requestAnimFrame = (function() {
+window.requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
         window.mozRequestAnimationFrame ||
         window.oRequestAnimationFrame ||
         window.msRequestAnimationFrame ||
-        function(/* function FrameRequestCallback */callback, /* DOMElement Element */element) {
+        function (/* function FrameRequestCallback */callback, /* DOMElement Element */element) {
             return window.setTimeout(callback, 1000 / 60);
         };
 })();
@@ -2732,7 +2732,7 @@ window.requestAnimFrame = (function() {
 /**
 * Provides cancelAnimationFrame in a cross browser way.
 */
-window.cancelAnimFrame = (function() {
+window.cancelAnimFrame = (function () {
     return window.cancelAnimationFrame ||
         window.webkitCancelAnimationFrame ||
         window.mozCancelAnimationFrame ||

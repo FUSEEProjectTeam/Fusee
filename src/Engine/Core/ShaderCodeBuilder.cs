@@ -7,7 +7,6 @@ using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
-
 namespace Fusee.Engine.Core
 {
     internal struct MeshProbs
@@ -716,28 +715,28 @@ namespace Fusee.Engine.Core
             applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
 
 
-            var attenuation = new List<string>()
+            var attenuation = new List<string>
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
                 "float distance = pow(distanceToLight/attenuation,4.0);",
                 "float att = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);"
             };
 
-            var pointLight = new List<string>()
+            var pointLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe) * att;"
                     : "result = Iamb + (Idif + Ispe) * att;"
             };
 
-            var parallelLight = new List<string>()
+            var parallelLight = new List<string>
             {
                 _renderWithShadows
                     ? "result = Iamb + (1.0-shadowFactor) * (Idif + Ispe);"
                     : "result =  Iamb + (Idif + Ispe);"
             };
 
-            var spotLight = new List<string>()
+            var spotLight = new List<string>
             {
                 "float lightToSurfaceAngle = dot(-L, coneDirection);",
                 "if (lightToSurfaceAngle > coneAngle)",
@@ -1262,6 +1261,7 @@ namespace Fusee.Engine.Core
         public static string LightIntensityName { get; } = "LightIntensity";
 
         #endregion
+              
     }
 }
 

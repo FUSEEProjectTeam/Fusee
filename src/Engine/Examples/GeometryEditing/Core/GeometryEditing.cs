@@ -8,9 +8,6 @@ using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Geometry = Fusee.Jometri.Geometry;
@@ -75,6 +72,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
 
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
+
             _renderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
 
@@ -407,7 +405,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
             sceneNodeContainer.Components.Add(translationComponent);
             sceneNodeContainer.Components.Add(materialComponent);
             sceneNodeContainer.Components.Add(meshComponent);
-
+            
             _parentNode.Children.Add(sceneNodeContainer);
             _activeGeometrys.Add(_parentNode.Children.IndexOf(sceneNodeContainer), geometry);
         }

@@ -2,8 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -15,7 +13,7 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
-using Fusee.Engine.Core.GUI;
+using Fusee.Engine.GUI;
 #endif
 
 namespace Fusee.Engine.Examples.Picking.Core

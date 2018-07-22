@@ -1,7 +1,10 @@
-﻿using Fusee.Base.Common;
+﻿using System.IO;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
+using FileMode = Fusee.Base.Common.FileMode;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Engine.Examples.Simple.Web
 {
@@ -40,7 +43,7 @@ namespace Fusee.Engine.Examples.Simple.Web
                         if (Path.GetExtension(id).ToLower().Contains("fus"))
                         {
                             var ser = new Serializer();
-                            return ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+                            return new ConvertSceneGraph().Convert(ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer);
                         }
                         return null;
                     },

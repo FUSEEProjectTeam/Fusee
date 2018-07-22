@@ -31,6 +31,7 @@ namespace Fusee.Engine.Player.Desktop
             string modelFile = null;
             List<string> assetDirs = new List<string>();
             TryAddDir(assetDirs, "Assets");
+
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string Cwd = Directory.GetCurrentDirectory();
             if (Cwd != ExeDir)
@@ -108,8 +109,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
-                        var graph = ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
-                        return graph;
+                        return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

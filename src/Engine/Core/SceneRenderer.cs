@@ -451,8 +451,8 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);                
+                
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
 
@@ -496,6 +496,48 @@ namespace Fusee.Engine.Core
                 boneArray[i] = _boneMap[weight.Joints[i]] * tmp;
             }
             _rc.Bones = boneArray;
+        }
+
+        [VisitMethod]
+        public void RenderCanvasTransform(CanvasTransformComponent ctc)
+        {
+            var newRect = new MinMaxRect
+            {
+                Min = ctc.Size.Min,
+                Max = ctc.Size.Max
+            };
+
+            _state.CanvasXForm = _state.Model;
+            _state.Model = _state.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            _state.UiRect = newRect;
+        }
+
+        [VisitMethod]
+        public void RenderRectTransform(RectTransformComponent rtc)
+        {
+            // The Heart of the UiRect calculation: Set anchor points relative to parent
+            // rectangle and add absolute offsets
+            var newRect = new MinMaxRect
+            {
+                Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+            };
+
+            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+
+            _state.UiRect = newRect;
+            _state.Model = _state.CanvasXForm * transformChild;
+
+        }
+
+        [VisitMethod]
+        public void RenderXForm(XFormComponent xfc)
+        {
+            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+
+            _state.Model *= scale;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
         }
 
         [VisitMethod]

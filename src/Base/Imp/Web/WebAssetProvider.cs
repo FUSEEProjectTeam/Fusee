@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using JSIL.Meta;
