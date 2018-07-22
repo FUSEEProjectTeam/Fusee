@@ -1,5 +1,8 @@
 ﻿#define GUI_SIMPLE
 
+// dynamic magic works @desktopbuild only! 
+#define WEBBUILD
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,7 +48,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private string _text;
         private PickResult _currentPick;
-        private object _oldColor;
+        private float3 _oldColor;
         private bool _pick;
         private float2 _pickPos;
 #endif
@@ -154,6 +157,25 @@ namespace Fusee.Engine.Examples.Picking.Core
                 
                 PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
+#if WEBBUILD
+
+                if (newPick?.Node != _currentPick?.Node)
+                {
+                   
+                    if (_currentPick != null)
+                    {
+                        var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        ef.SetEffectParam("DiffuseColor", _oldColor);
+                    }
+                    if (newPick != null)
+                    {
+                        var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        _oldColor = (float3) ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat3(ColorUint.LawnGreen));
+                    }
+                    _currentPick = newPick;
+                }
+#else
                 if (newPick?.Node != _currentPick?.Node)
                 {
                     dynamic shaderEffectComponent; // this needs to be dynamic! & reference Microsoft.CSharp.dll
@@ -161,17 +183,18 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (_currentPick != null)
                     {
                         shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        shaderEffectComponent.DiffuseColor = (float3) _oldColor;
+                        shaderEffectComponent.DiffuseColor = _oldColor;
 
                     }
                     if (newPick != null)
                     {
                         shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = shaderEffectComponent.DiffuseColor;
+                        _oldColor = (float3) shaderEffectComponent.DiffuseColor;
                         shaderEffectComponent.DiffuseColor = ColorUint.Tofloat3(ColorUint.LawnGreen);
                     }
                     _currentPick = newPick;
-                }
+#endif
+
 
                 _pick = false;
             }
@@ -187,6 +210,12 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
+
+        private static T ParseToType<T>(object value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
+
 
         private InputDevice Creator(IInputDeviceImp device)
         {
