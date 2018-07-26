@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -192,54 +193,45 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-
-<!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
+  <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
 	 This code should be part of the respective .pyproj project file. Unforntunately .pyprojects
 	 don't do anything during "Build". Thus Post-Build steps are non functional. -->
-
   <!-- One of the many many many tries to simply zip the .py files during the build.... -->
-  <!-- Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/ --> <!-- Condition="Exists($(MSBuildCommunityTargets))" /-->
-
+  <!-- Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/ -->
+  <!-- Condition="Exists($(MSBuildCommunityTargets))" /-->
   <!-- Names and directoreies -->
   <PropertyGroup>
-	<BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
-	<BlenderAddonSourcePath>..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
-	<BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
+    <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
+    <BlenderAddonSourcePath>..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+    <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
-
- 
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
-	<!-- Input files part of the Addon -->
-	<ItemGroup>
-	 <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\**\*.py" />
-	 <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
+    <!-- Input files part of the Addon -->
+    <ItemGroup>
+      <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\**\*.py" />
+      <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
-
-	  <!-- Create the protoschema -->
-	<Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <!-- Create the protoschema -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
-   
-	<!-- call the protobuf code generator to build the python code -->
-	<Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <!-- call the protobuf code generator to build the python code -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
     <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
-
-	<!-- Copy the python files to the bin output folder -->
-	<Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-	<Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-	<Message Importance="High" Text="[FUSEE Blender Add-on Protobuf] Copying %(BlenderAddonProtobufPythonFiles.Filename)%(BlenderAddonProtobufPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-	<Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
-
-	
-	
-	<!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
-	<!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
-	<!-- install from https://github.com/loresoft/msbuildtasks/releases -->
-	<!-- Message Importance="High" Text="[FUSEE BlenderAddon] Zipping %(BlenderAddonPythonFiles.Filename) into $(BlenderAddOnProjectName).zip" /^-->  <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
-	<!-- Message Importance="High" Text="[ERROR Creating FUSEE BlenderAddon] $(BlenderAddOnProjectName).zip. Zip Task not installed. Install MSBuildCommunityTasks from https://github.com/loresoft/msbuildtasks/releases!!" Condition="!Exists($(MSBuildCommunityTargets))"/ -->
-    <!-- Zip ZipFileName="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName).zip" WorkingDirectory="$(BlenderAddonSourcePath)\..\" Files="@(BlenderAddonPythonFiles)" /--> <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
+    <!-- Copy the python files to the bin output folder -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on Protobuf] Copying %(BlenderAddonProtobufPythonFiles.Filename)%(BlenderAddonProtobufPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
+    <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
+    <!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
+    <!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
+    <!-- install from https://github.com/loresoft/msbuildtasks/releases -->
+    <!-- Message Importance="High" Text="[FUSEE BlenderAddon] Zipping %(BlenderAddonPythonFiles.Filename) into $(BlenderAddOnProjectName).zip" /^-->
+    <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
+    <!-- Message Importance="High" Text="[ERROR Creating FUSEE BlenderAddon] $(BlenderAddOnProjectName).zip. Zip Task not installed. Install MSBuildCommunityTasks from https://github.com/loresoft/msbuildtasks/releases!!" Condition="!Exists($(MSBuildCommunityTargets))"/ -->
+    <!-- Zip ZipFileName="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName).zip" WorkingDirectory="$(BlenderAddonSourcePath)\..\" Files="@(BlenderAddonPythonFiles)" /-->
+    <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
   </Target>
-<!-- END OF BUILD THE BLENDER ADDON -->
-  
+  <!-- END OF BUILD THE BLENDER ADDON -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
   <Import Project="$(FuseeRoot)ext\AssimpNet.3.3.1\build\AssimpNet.targets" />

@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.GUI</RootNamespace>
+    <AssemblyName>Fusee.Engine.GUI</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{26808B4A-9F15-47F0-B147-E744241B79D2}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>..\..\..\bin\Release\Libraries\Fusee.Engine.GUI.xml</DocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <FUSEE_Lib_Asset Include="Assets\nineSlice.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </FUSEE_Lib_Asset>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="JSIL.Meta">
+      <HintPath>..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Base\Common\Fusee.Base.Common.csproj">
+      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
+      <Name>Fusee.Base.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Jometri\Fusee.Jometri.csproj">
+      <Project>{8ee002c1-e15c-4297-8013-5005d65e33d9}</Project>
+      <Name>Fusee.Jometri</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
+      <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
+      <Name>Fusee.Serialization</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xene\Fusee.Xene.csproj">
+      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+      <Name>Fusee.Xene</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Xirkit\Fusee.Xirkit.csproj">
+      <Project>{f091790c-ed62-44d2-8622-966030a98e0b}</Project>
+      <Name>Fusee.Xirkit</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Fusee.Engine.Common.csproj">
+      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+      <Name>Fusee.Engine.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
+      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
+      <Name>Fusee.Math.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Core.csproj">
+      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+      <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Lib_Asset Include="Assets\nineSliceTile.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </FUSEE_Lib_Asset>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GUIButton.cs" />
+    <Compile Include="GUIElement.cs" />
+    <Compile Include="GUIHandler.cs" />
+    <Compile Include="GUIImage.cs" />
+    <Compile Include="GUIPanel.cs" />
+    <Compile Include="GUIText.cs" />
+    <Compile Include="TextureNodeContainer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Lib_Asset Include="Assets\texture.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </FUSEE_Lib_Asset>
+  </ItemGroup>
+  <ItemGroup>
+    <FUSEE_Lib_Asset Include="Assets\texture.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </FUSEE_Lib_Asset>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+  <!-- Target Name="Clean">
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)Fusee.Engine.Core.*&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'Fusee.Engine.Core.*" />
+    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="del /q &quot;$(OutputPath)JSIL.Meta.*&quot;" />
+    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)'JSIL.Meta.*" />
+  </Target -->
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

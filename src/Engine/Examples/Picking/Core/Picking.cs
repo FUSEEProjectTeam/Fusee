@@ -1,21 +1,21 @@
 ﻿#define GUI_SIMPLE
 
+// dynamic magic works @desktopbuild only! 
+#define WEBBUILD
+
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
 #if GUI_SIMPLE
-using Fusee.Engine.Core.GUI;
+
 #endif
 
 namespace Fusee.Engine.Examples.Picking.Core
@@ -102,38 +102,38 @@ namespace Fusee.Engine.Examples.Picking.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+            if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
             }
 
-            if (Mouse.LeftButton)
+            if (Input.Mouse.LeftButton)
             {
                 _pick = true;
-                _pickPos = Mouse.Position;
+                _pickPos = Input.Mouse.Position;
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz = -RotationSpeed * Input.Mouse.XVel * Time.DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Input.Mouse.YVel * Time.DeltaTime * 0.0005f;
             }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
+            else if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 _pick = true;
-                _pickPos = Touch.GetPosition(TouchPoints.Touchpoint_0);
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _pickPos = Input.Touch.GetPosition(TouchPoints.Touchpoint_0);
+                var touchVel = Input.Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = -RotationSpeed * touchVel.x * Time.DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * Time.DeltaTime * 0.0005f;
             }
             else
             {
                 _pick = false;
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = -RotationSpeed * Input.Keyboard.LeftRightAxis * Time.DeltaTime;
+                    _angleVelVert = -RotationSpeed * Input.Keyboard.UpDownAxis * Time.DeltaTime;
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -157,20 +157,44 @@ namespace Fusee.Engine.Examples.Picking.Core
                 
                 PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
+#if WEBBUILD
+
                 if (newPick?.Node != _currentPick?.Node)
                 {
+                   
                     if (_currentPick != null)
                     {
-                        _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", _oldColor);
+                        var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        ef.SetEffectParam("DiffuseColor", _oldColor);
                     }
                     if (newPick != null)
                     {
-                        var mat = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) mat.GetEffectParam("DiffuseColor");
-                        mat.SetEffectParam("DiffuseColor", ColorUint.LawnGreen.Tofloat3());
+                        var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        _oldColor = (float3) ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat3(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
+#else
+                if (newPick?.Node != _currentPick?.Node)
+                {
+                    dynamic shaderEffectComponent; // this needs to be dynamic! & reference Microsoft.CSharp.dll
+
+                    if (_currentPick != null)
+                    {
+                        shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        shaderEffectComponent.DiffuseColor = _oldColor;
+
+                    }
+                    if (newPick != null)
+                    {
+                        shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
+                        _oldColor = (float3) shaderEffectComponent.DiffuseColor;
+                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat3(ColorUint.LawnGreen);
+                    }
+                    _currentPick = newPick;
+#endif
+
 
                 _pick = false;
             }
@@ -186,6 +210,12 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
+
+        private static T ParseToType<T>(object value)
+        {
+            return (T)Convert.ChangeType(value, typeof(T));
+        }
+
 
         private InputDevice Creator(IInputDeviceImp device)
         {
@@ -260,8 +290,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                             new TransformComponent { Scale = float3.One },
                            new MaterialComponent
                            {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Red.Tofloat3() },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
+                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Red) },
+                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                             },
                             CreateCuboid(new float3(100, 20, 100))
                         },
@@ -275,8 +305,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                                     new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
                                    new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Green.Tofloat3() },
-                                        Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
+                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Green) },
+                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                     },
                                     CreateCuboid(new float3(20, 100, 20))
                                 },
@@ -299,8 +329,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                     new MaterialComponent
                                                     {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Yellow.Tofloat3() },
-                                                        Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
+                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Yellow) },
+                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                     },
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
@@ -323,8 +353,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                                     new MaterialComponent
                                                                     {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Blue.Tofloat3() },
-                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.White.Tofloat3(), Intensity = 1.0f, Shininess = 4.0f}
+                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Blue) },
+                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                                     },
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }

@@ -37,7 +37,8 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>
+    </AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
@@ -126,6 +127,10 @@
     <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj">
       <Project>{1228eb3f-8bcc-453f-8a2e-d9246495a118}</Project>
       <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\GUI\Fusee.Engine.GUI.csproj">
+      <Project>{26808b4a-9f15-47f0-b147-e744241b79d2}</Project>
+      <Name>Fusee.Engine.GUI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>

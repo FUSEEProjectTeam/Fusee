@@ -303,6 +303,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
+        public void RemoveBiTangents(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
         [JSExternal]
         public void Viewport(int x, int y, int width, int height)
         {
@@ -417,6 +422,18 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
+        public void SetTangents(IMeshImp mr, float4[] tangents)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
         public void SetNormals(IMeshImp mr, float3[] normals)
         {
             throw new System.NotImplementedException();
@@ -427,6 +444,8 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
+
+
 
         public void RemoveVertices(IMeshImp mesh)
         {
@@ -459,6 +478,11 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         public void RemoveBoneIndices(IMeshImp mesh)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveTangents(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }

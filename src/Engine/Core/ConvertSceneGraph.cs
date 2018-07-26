@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
 
@@ -17,7 +19,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
-
+        private Stack<SceneNodeContainer> _boneContainers;
 
         protected override void PopState()
         {
@@ -37,6 +39,7 @@ namespace Fusee.Engine.Core
             _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
             _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
+            _boneContainers = new Stack<SceneNodeContainer>();
 
             Traverse(sc.Children);
             return _convertedScene;
@@ -54,15 +57,18 @@ namespace Fusee.Engine.Core
                 if (parent.Children == null)
                     parent.Children = new List<SceneNodeContainer>();
 
-                _currentNode = new SceneNodeContainer { Name = snc.Name + "_copy" };
+                _currentNode = new SceneNodeContainer { Name = snc.Name };
                 parent.Children.Add(_currentNode);
                 _predecessors.Push(_currentNode);
             }
             else //Add first node to SceneContainer
             {
-                _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name + "_copy" });
+                _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name });
                 _currentNode = _predecessors.Peek();
-                _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
+                if(_convertedScene.Children != null)
+                    _convertedScene.Children.Add(_currentNode);
+                else
+                    _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
         }
 
@@ -79,21 +85,21 @@ namespace Fusee.Engine.Core
         public void ConvMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
         }
 
         [VisitMethod]
         public void ConvMaterial(MaterialLightComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         [VisitMethod]
         public void ConvMaterial(MaterialPBRComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent(effect));
+            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         [VisitMethod]
@@ -115,6 +121,14 @@ namespace Fusee.Engine.Core
             if (_currentNode.Components == null)
                 _currentNode.Components = new List<SceneComponentContainer>();
 
+            var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
+
+            if (currentNodeEffect?.Effect.GetEffectParam(ShaderCodeBuilder.BumpTextureName) != null)
+            {
+                mesh.Tangents = mesh.CalculateTangents();
+                mesh.BiTangents = mesh.CalculateBiTangents();
+            }
+
             _currentNode.Components.Add(mesh);
         }
 
@@ -131,11 +145,26 @@ namespace Fusee.Engine.Core
                 _currentNode.Components = new List<SceneComponentContainer>();
 
             _currentNode.Components.Add(bone);
+
+            // Collect all bones, later, when a WeightComponent is found, we can set all Joints
+            _boneContainers.Push(_currentNode);
         }
 
         [VisitMethod]
         public void ConVWeight(WeightComponent weight)
         {
+            // check if we have bones
+            if (_boneContainers.Count > 1)
+            {
+                
+                if(weight.Joints == null) // initialize joint container
+                    weight.Joints = new List<SceneNodeContainer>();
+
+                // set all bones found until this WeightComponent
+                while (_boneContainers.Count != 0)
+                    weight.Joints.Add(_boneContainers.Pop());
+            }
+           
             _currentNode.Components.Add(weight);
         }
         #endregion

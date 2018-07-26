@@ -1,17 +1,15 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
+using System.Reflection;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
-using System.Reflection;
 
 namespace Fusee.Engine.Examples.Bump.Desktop
 {
-    public class Simple
+    public class Bump
     {
         public static void Main()
         {

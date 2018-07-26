@@ -44,6 +44,7 @@ message AnimationTrackContainer {
    optional LerpType LerpType = 5 [default = Lerp];
 }
 message BoneComponent {
+   optional string Name = 1;
 }
 message BumpChannelContainer {
    optional string Texture = 1;
@@ -108,6 +109,8 @@ message Mesh {
    repeated float4 BoneIndices = 6;
    repeated uint32 Triangles = 7;
    optional AABBf BoundingBox = 8;
+   repeated float4 Tangents = 9;
+   repeated float3 BiTangents = 10;
 }
 message RenderPass {
    optional string VS = 1;

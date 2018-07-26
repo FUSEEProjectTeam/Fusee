@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
 using System.Security;
+using System.Windows.Forms;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -204,6 +205,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
         }
 
+        [STAThread]
         static void Main(string[] args)
         {
             var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer, Generate>(args)
@@ -887,7 +889,7 @@ namespace Fusee.Tools.fuseeCmdLine
                                 {
                                     possibleDirs = GetBlenderAddOnDir(opts);
                                     blenderAddOnDstDir = possibleDirs.FirstOrDefault();
-                                    if (!Directory.Exists(blenderAddOnDstDir))
+                                    if (!string.IsNullOrEmpty(blenderAddOnDstDir) && !Directory.Exists(blenderAddOnDstDir))
                                         Directory.CreateDirectory(blenderAddOnDstDir);
                                 }
                                 
@@ -1446,6 +1448,18 @@ namespace Fusee.Tools.fuseeCmdLine
                 {
                     // Do nothing - simply ignore paths we cannot access.
                 }
+            }
+
+            // No Blender Installations found! Let the user pick Blender Path with file dialog!
+            if (!blenderDirs.Any())
+            {
+                Console.WriteLine("WARNING: Blender Installation not found!\nINPUT REQUIRED: Please select Blender installation folder to proceed.");
+                FolderBrowserDialog fbd = new FolderBrowserDialog();
+                if (fbd.ShowDialog() == DialogResult.OK)
+                {
+                    Console.WriteLine($"OK! Selected Blender installation path: {fbd.SelectedPath}");
+                    blenderDirs.Add(fbd.SelectedPath);
+                } // ERROR message will be shown @909 if no blender addon could be installed... 
             }
 
             // Find addon sub-subdirectories

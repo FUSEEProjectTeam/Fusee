@@ -5,7 +5,7 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.Bump.Web
 {
-    public class Simple
+    public class Bump
     {
         public static void Main()
         {

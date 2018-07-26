@@ -92,6 +92,7 @@ def add_vertex(vi, face, i, mesh, uv_layer):
     tri = mesh.Triangles.append(i)
 
 
+
 def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
     obj = objects
     if obj.type == 'LAMP' and lamps:
@@ -139,13 +140,14 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         serializedData = namedtuple('serializedData', ['obj', 'tex'])
         data = obj.data
 
-        ##Hierarchy 1 (root = obj)
-        # initialize root node with name and empty components
-        root = Scene.SceneNodeContainer()
+        root = Scene.SceneNodeContainer()    
+
         root.Name = obj.name
+        
         rootComponent1 = root.Components.add()
         rootComponent2 = root.Components.add()
-        rootComponent3 = root.Components.add()
+        rootComponent3 = root.Components.add()            
+
         print('--' + root.Name)
 
         # init
@@ -182,7 +184,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-        # rotation
+            # rotation
         rot_eul = rotation.to_euler()
         transformComponent.Rotation.x = rot_eul.x
         transformComponent.Rotation.y = rot_eul.z
@@ -205,7 +207,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
 
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
-        # bm.from_mesh(bpy.context.scene.objects.active.data)
+        # bm.from_mesh(bpy.context.scene.objects.active.data)      
         damesh = prepare_mesh(bpy.context.scene.objects.active)
         bm.from_mesh(damesh)
 
@@ -327,6 +329,307 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
+        rootMaterialComponent = GetMaterial(obj, isWeb)       
+
+        rootComponent1.payload = rootTransformComponent.SerializePartialToString()
+        rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
+        rootComponent3.payload = rootmesh.SerializePartialToString()
+
+
+        # if obj has got children, find them recursively,
+        # serialize them and write them to root as children
+        # save textures
+        # return root node
+        if len(obj.children) == 0 or isOnlySelected == True:
+            # write output
+            serializedData.obj = root
+            serializedData.tex = textures
+            return serializedData
+        else:
+            # Hierarchy 2 (children of root)
+            for children in obj.children:
+                child = GetNode(objects=children, isWeb=isWeb,
+                                isOnlySelected=False, smoothing=smoothing,
+                                lamps=lamps, smoothingDist=smoothingDist,
+                                smoothingAngle=smoothingAngle)
+                rootChildren = root.Children.add()
+                rootChildren.payload = child.obj.SerializePartialToString()
+                textures = textures + child.tex
+            serializedData.obj = root
+            serializedData.tex = textures
+            return serializedData
+
+    elif obj.type == 'ARMATURE':
+         return GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle)
+
+# BONES structure not yet valid. One needs to be the parent of the other!
+def create_bone_payload(boneNode, obj, bone):
+    print('found bone')
+     
+    # Create BoneNodeContainer structure
+    # 2 components, Transform & Bone
+    boneNode = Scene.SceneNodeContainer()
+    
+    boneNode.Name = obj.name
+
+    boneNodeComponent1 = boneNode.Components.add()
+    boneNodeComponent2 = boneNode.Components.add()
+
+    # TRANSFORM COMPONENT
+    rootTransformComp = Scene.SceneComponentContainer()
+
+    # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scenegraph
+    if obj.parent is None:
+        obj_mtx_clean = obj.matrix_world.copy()
+    else:
+        obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+
+    obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+
+    location, rotation, scale = obj_mtx.decompose()
+
+    # location
+    transformComponent = rootTransformComp.TransformComponent
+    transformComponent.Translation.x = location.x
+    transformComponent.Translation.y = location.z
+    transformComponent.Translation.z = location.y
+
+    # rotation
+    rot_eul = rotation.to_euler()
+    transformComponent.Rotation.x = rot_eul.x
+    transformComponent.Rotation.y = rot_eul.z
+    transformComponent.Rotation.z = rot_eul.y
+
+    # scale
+    # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
+    transformComponent.Scale.x = scale.x
+    transformComponent.Scale.y = scale.z
+    transformComponent.Scale.z = scale.y
+    
+    # BONE COMPONENT
+    rootBoneComp = Scene.SceneComponentContainer()
+    boneComponent = rootBoneComp.BoneComponent
+    boneComponent.Name = bone.name
+
+    boneNodeComponent1.payload = rootTransformComp.SerializePartialToString()
+    boneNodeComponent2.payload = rootBoneComp.SerializePartialToString()
+
+    return boneNode.SerializePartialToString()
+
+
+def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
+        serializedData = namedtuple('serializedData', ['obj', 'tex'])
+
+        print('-- found BoneAnimation')
+        obj = objects
+        data = obj.data
+
+        root = Scene.SceneNodeContainer()
+
+        # add bones
+        # add one children for each bone
+        if len(obj.pose.bones) > 4:
+            print('-- more than 4 bones per Mesh. This is not yet supported!')
+            return
+
+        for bone in obj.pose.bones:
+            rootChildren = root.Children.add()
+            rootChildren.payload =  create_bone_payload(rootChildren, obj, bone);
+
+
+        ##Hierarchy 1 (root = obj)
+        # initialize root node with name and empty components            
+        rootChildrenMeshPayloadContainer = root.Children.add()
+        rootChildrenMesh = Scene.SceneNodeContainer()
+
+        rootComponent1 = rootChildrenMesh.Components.add() # transform
+        rootComponent2 = rootChildrenMesh.Components.add() # weight
+        rootComponent3 = rootChildrenMesh.Components.add() # material
+        rootComponent4 = rootChildrenMesh.Components.add() # mesh
+
+        #root.Name = obj.name
+
+        print('--' + root.Name)
+
+        # init
+        rootTransformComponent = Scene.SceneComponentContainer()
+        rootmesh = Scene.SceneComponentContainer()
+
+        # set current object as the active one
+        bpy.context.scene.objects.active = obj
+
+        # TRANSFORM COMPONENT
+        # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scenegraph
+        if obj.parent is None:
+            obj_mtx_clean = obj.matrix_world.copy()
+        else:
+            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+
+        location, rotation, scale = obj_mtx_clean.decompose()
+
+        # location
+        transformComponent = rootTransformComponent.TransformComponent
+        transformComponent.Translation.x = location.x
+        transformComponent.Translation.y = location.z
+        transformComponent.Translation.z = location.y
+
+            # rotation
+        rot_eul = rotation.to_euler()
+        transformComponent.Rotation.x = rot_eul.x
+        transformComponent.Rotation.y = rot_eul.z
+        transformComponent.Rotation.z = rot_eul.y
+
+        # scale
+        # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
+        transformComponent.Scale.x = scale.x
+        transformComponent.Scale.y = scale.z
+        transformComponent.Scale.z = scale.y
+
+        # convert the mesh again to a bmesh, after splitting the edges
+        bm = bmesh.new()
+        # bm.from_mesh(bpy.context.scene.objects.active.data)
+        damesh = prepare_mesh(bpy.context.scene.objects.active.children[0])      
+        bm.from_mesh(damesh)
+        
+        uvActive = obj.children[0].data.uv_layers.active
+        uv_layer = None
+        if uvActive is not None:
+            uv_layer = bm.loops.layers.uv.active
+
+        mesh = rootmesh.Mesh
+        i = 0
+        for face in bm.faces: 
+            # TODO: assert that len(face.loops) == 3!
+            add_vertex(0, face, i, mesh, uv_layer)
+            i += 1
+            add_vertex(1, face, i, mesh, uv_layer)
+            i += 1
+            add_vertex(2, face, i, mesh, uv_layer)
+            i += 1
+
+        # BoundingBox
+        bbox = obj.bound_box
+        bboxList = []
+        for bboxVal in bbox:
+            bboxList.append(list(bboxVal))
+
+        # find min and max values of the bounding box and write them to the mesh
+        bboxMin = min(bboxList)
+        bboxMax = max(bboxList)
+        # the coordinate system of Blender is different to that one used by Fusee,
+        # therefore the axis need to be changed:
+        mesh.BoundingBox.max.x = bboxMax[0]
+        mesh.BoundingBox.max.y = bboxMax[2]
+        mesh.BoundingBox.max.z = bboxMax[1]
+        mesh.BoundingBox.min.x = bboxMin[0]
+        mesh.BoundingBox.min.y = bboxMin[2]
+        mesh.BoundingBox.min.z = bboxMin[1]
+
+        # MATERIAL COMPONENT
+        # check, if a material is set, otherwise use default material
+        # also check if the material uses nodes -> cycles rendering, otherwise use default material
+        textures = []
+        rootMaterialComponent = GetMaterial(obj.children[0], isWeb)
+         
+        # WEIGHT COMPONENT
+        rootWeightComponent = Scene.SceneComponentContainer()
+        weightComponent = rootWeightComponent.WeightComponent
+
+        # get binding matrices (init of bones)
+        bindingMatricesList = []
+
+        for bone in obj.pose.bones:       
+            if obj.parent is None:
+                obj_mtx_clean = obj.matrix_world.copy()
+            else:
+                obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+
+            obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+
+            # convert obj_mxt to float4x4 
+            tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
+
+            # add matrix to binding matrices:
+            bindingMatricesList.append(tmpMat)
+
+        # get weight map, where???
+        print(obj)
+        vertexWeightList = [] # consits of: VertexWeight    
+       
+        weightComponent.WeightMap.extend(vertexWeightList)
+
+        # append all found bindingMatrices
+        weightComponent.BindingMatrices.extend(bindingMatricesList)
+
+
+        # SCENE NODE CONTAINER
+        # write rootComponents to rootNode        
+        rootComponent1.payload = rootTransformComponent.SerializePartialToString()
+        rootComponent2.payload = rootWeightComponent.SerializePartialToString()
+        rootComponent3.payload = rootMaterialComponent.SerializePartialToString()
+        rootComponent4.payload = rootmesh.SerializePartialToString()
+
+        rootChildrenMeshPayloadContainer.payload = rootChildrenMesh.SerializePartialToString()
+
+        # disabled for simplicity
+        '''# if obj has got children, find them recursively,
+        # serialize them and write them to root as children
+        # save textures
+        # return root node
+        if len(obj.children) == 0 or isOnlySelected == True:
+            # write output
+            serializedData.obj = root
+            serializedData.tex = textures
+            return serializedData
+        else:
+            # Hierarchy 2 (children of root)
+            for children in obj.children:
+                child = GetNode(objects=children, isWeb=isWeb,
+                                isOnlySelected=False, smoothing=smoothing,
+                                lamps=lamps, smoothingDist=smoothingDist,
+                                smoothingAngle=smoothingAngle)
+                rootChildren = root.Children.add()
+                rootChildren.payload = child.obj.SerializePartialToString()
+                textures = textures + child.tex'''
+        serializedData.obj = root
+        serializedData.tex = []
+        return serializedData
+
+def ConvertMatrixToFloat4x4(mat):
+
+    tmpMat = Scene.float4x4()
+    row0 = mat.row[0]
+    row1 = mat.row[1]
+    row2 = mat.row[2]
+    row3 = mat.row[3]
+
+    tmpMat.Row0.x = row0.x
+    tmpMat.Row0.y = row0.y
+    tmpMat.Row0.z = row0.z
+    tmpMat.Row0.w = row0.w
+
+    tmpMat.Row1.x = row1.x
+    tmpMat.Row1.y = row1.y
+    tmpMat.Row1.z = row1.z
+    tmpMat.Row1.w = row1.w
+
+    tmpMat.Row2.x = row2.x
+    tmpMat.Row2.y = row2.y
+    tmpMat.Row2.z = row2.z
+    tmpMat.Row2.w = row2.w
+
+    tmpMat.Row3.x = row3.x
+    tmpMat.Row3.y = row3.y
+    tmpMat.Row3.z = row3.z
+    tmpMat.Row3.w = row3.w
+
+    return tmpMat
+
+def GetMaterial(obj, isWeb):
+        # MATERIAL COMPONENT
+        # check, if a material is set, otherwise use default material
+        # also check if the material uses nodes -> cycles rendering, otherwise use default material
+        textures = []
         try:
             if len(obj.material_slots) > 0 and obj.material_slots[0].material.use_nodes:
                 # use first material in the material_slots
@@ -341,7 +644,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                 isEmissive = False
                 isMix = False
 
-                for node in nodes:
+                for node in nodes:                    
                     # find diffuse node
                     if node.type == 'BSDF_DIFFUSE' and isDiffuse == False:
                         print('----found diffuse node')
@@ -420,6 +723,19 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         else:
                             rootMaterialComponent.MaterialComponent.Specular.SpecularChannelContainer.Intensity = 1
 
+                    elif node.type == 'NORMAL_MAP':
+                        print('----found normal map')
+                        normalMap = rootMaterialComponent.MaterialComponent.Bump
+                        # get bump intensity                       
+                        normalMap.Intensity =  node.inputs['Strength'].default_value                         
+                        # get bump texture
+                        links = node.inputs['Color'].links
+                        if len(links) > 0:
+                            if links[0].from_node.type == 'TEX_IMAGE':
+                                fullpath, basename = GetPaths(node.inputs['Color'].links[0].from_node.image.filepath)
+                                normalMap.Texture = basename
+                                textures.append(fullpath)
+
                     elif node.type == 'BSDF_PRINCIPLED':
                         print('----found bsdf principled node')
                         pbrMaterial = rootMaterialComponent.MaterialComponent.MaterialPBRComponent
@@ -467,7 +783,6 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         #        fullpath, basename = GetPaths(subsurfaceColor.links[0].from_node.image.filepath)
                         #        specular.Texture = basename
                         #        textures.append(fullpath)
-
                         # get material roughness and set the specularity = 1-roughness
                         spec.SpecularChannelContainer.Shininess = (1 - roughness) * 200 # multipy with factor 100 for tight specular light
                         # specularIntensity = 1
@@ -476,43 +791,17 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
                         pbrMaterial.RoughnessValue = roughness
                         pbrMaterial.FresnelReflectance = specular
                         pbrMaterial.DiffuseFraction = metallic
+
+                        return rootMaterialComponent
             else:
                 # use default material
                 rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)
+                return rootMaterialComponent
         except Exception as inst:
             # use default material
             print('----3' + str(inst))
             rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)
-
-        # SCENE NODE CONTAINER
-        # write rootComponents to rootNode
-        rootComponent1.payload = rootTransformComponent.SerializePartialToString()
-        rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
-        rootComponent3.payload = rootmesh.SerializePartialToString()
-
-        # if obj has got children, find them recursively,
-        # serialize them and write them to root as children
-        # save textures
-        # return root node
-        if len(obj.children) == 0 or isOnlySelected == True:
-            # write output
-            serializedData.obj = root
-            serializedData.tex = textures
-            return serializedData
-        else:
-            # Hierarchy 2 (children of root)
-            for children in obj.children:
-                child = GetNode(objects=children, isWeb=isWeb,
-                                isOnlySelected=False, smoothing=smoothing,
-                                lamps=lamps, smoothingDist=smoothingDist,
-                                smoothingAngle=smoothingAngle)
-                rootChildren = root.Children.add()
-                rootChildren.payload = child.obj.SerializePartialToString()
-                textures = textures + child.tex
-            serializedData.obj = root
-            serializedData.tex = textures
-            return serializedData
-
+            return rootMaterialComponent
 
 def SetDefaultMaterial(isWeb):
     print('Default Material is used')

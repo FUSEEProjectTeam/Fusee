@@ -50,6 +50,10 @@
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Serialization\Fusee.Serialization.csproj">
+      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+      <Name>Fusee.Serialization</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BinarySearchTree.cs" />
@@ -61,6 +65,7 @@
     <Compile Include="GeomEditing.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="SubdivisionSurface.cs" />
+    <Compile Include="TangentSpaceCalculator.cs" />
     <Compile Include="TriStatusEdge.cs" />
     <Compile Include="TriSweepLineStatus.cs" />
     <Compile Include="Triangulation.cs" />
@@ -70,6 +75,7 @@
     <Compile Include="GeometricOperations.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

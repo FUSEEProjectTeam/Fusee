@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -7,7 +8,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.Core.GUI;
+using Fusee.Engine.GUI;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -76,7 +77,7 @@ namespace Fusee.Engine.Player.Core
             _angleRoll = 0;
             _angleRollInit = 0;
             _twoTouchRepeated = false;
-            _offset = float2.Zero;
+            _offset = float2.Zero; 
             _offsetInit = float2.Zero;
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
