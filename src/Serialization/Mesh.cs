@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Fusee.Math.Core;
 using ProtoBuf;
 
@@ -8,7 +7,7 @@ namespace Fusee.Serialization
     /// <summary>
     /// Provides the abillity to create or interact directly with the point data.
     /// </summary>
-     
+
     [ProtoContract]
     public class Mesh : SceneComponentContainer, IDisposable
     {
