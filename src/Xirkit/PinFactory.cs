@@ -403,14 +403,10 @@ namespace Fusee.Xirkit
             AddConverter<double4x4, float3>(v => new float3((float)v.M11, (float)v.M12, (float)v.M13));
             AddConverter<double4x4, float4>(v => new float4((float)v.M11, (float)v.M12, (float)v.M13, (float)v.M14));
             AddConverter<double4x4, float4x4>(v => new float4x4((float)v.M11, (float)v.M12, (float)v.M13, (float)v.M14, (float)v.M21, (float)v.M22, (float)v.M23, (float)v.M24, (float)v.M31, (float)v.M32, (float)v.M33, (float)v.M34, (float)v.M41, (float)v.M42, (float)v.M43, (float)v.M44));
-
-
-
-
         }
 
        [JSIgnore]
-        private static void AddConverter<TParm, TRet>(Converter<TParm, TRet> c)
+        private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
 
