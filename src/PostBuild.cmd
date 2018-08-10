@@ -12,6 +12,8 @@ set TargetDir=%3
 IF exist %ProjectDir%Scripts\ GOTO CopyScripts
 :Back1
 
+IF exist %ProjectDir%Assets\ GOTO CopyAssets
+:Back2
 
 
 GOTO :end
@@ -20,6 +22,11 @@ GOTO :end
 echo Copying scripts for %ProjectName%
 xcopy %ProjectDir%Scripts %TargetDir%%ProjectName%.Scripts\ /S /Y
 goto Back1
+
+:CopyAssets
+echo Copying assets for %ProjectName%
+xcopy %ProjectDir%Assets %TargetDir%%ProjectName%.Assets\ /S /Y
+goto Back2
 
 :ErrorNotEnoughArgs
 echo Error: Not enought arguments given
