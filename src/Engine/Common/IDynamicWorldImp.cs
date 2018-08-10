@@ -1,7 +1,4 @@
-﻿using System;
-using Fusee.Math.Core;
-using Fusee.Engine;
-
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
 {

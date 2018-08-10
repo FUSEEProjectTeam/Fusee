@@ -1,12 +1,10 @@
-﻿﻿using System;
-
-namespace Fusee.Engine.Common
- {
-     /// <summary>
-     /// This Object is used by the OpenTK Graphics implementation in order to handle parameter passing between Fusee and OpenTK. 
-     /// Do not modify this object.
-     /// </summary>
-     public class Helper
+﻿namespace Fusee.Engine.Common
+{
+    /// <summary>
+    /// This Object is used by the OpenTK Graphics implementation in order to handle parameter passing between Fusee and OpenTK. 
+    /// Do not modify this object.
+    /// </summary>
+    public class Helper
      {
          #region Fields
 
