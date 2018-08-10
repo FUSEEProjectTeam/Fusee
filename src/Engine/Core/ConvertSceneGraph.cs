@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;

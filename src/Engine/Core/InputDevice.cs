@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
