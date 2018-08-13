@@ -8,8 +8,6 @@ using OpenTK.Platform;
 using Fusee.Engine.Common;
 using System.Windows.Forms;
 
-
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     /// <summary>
