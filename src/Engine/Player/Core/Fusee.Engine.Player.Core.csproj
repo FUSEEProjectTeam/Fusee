@@ -1,70 +1,48 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project>
-  <!-- Project Sdk="Microsoft.NET.Sdk" -->
   <PropertyGroup>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Core\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>    
-  </PropertyGroup>
-  <!-- as suggested at https://github.com/dotnet/sdk/issues/1518 by dasMulli -->
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Player.Core</RootNamespace>
     <TargetFramework>netstandard2.0</TargetFramework>
-	<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Core\</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <PackageId>Fusee.Engine.Player.Core</PackageId>
+    <Authors>FuseeProjectTeam</Authors>
+    <Company>Furtwangen University</Company>
+    <Version>0.6.1.0</Version>
+    <AssemblyVersion>0.6.1.0</AssemblyVersion>
+    <FileVersion>0.6.1.0</FileVersion>
+    <Product>FUSEE</Product>
+    <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
   </PropertyGroup>
-  <ItemGroup>
-    <None Remove="Assets\bananaTex.png" />
-    <None Remove="Assets\baymax_scene.fus" />
-    <None Remove="Assets\bump.jpg" />
-    <None Remove="Assets\bump3.png" />
-    <None Remove="Assets\diffuse.png" />
-    <None Remove="Assets\EyesWhite.jpg" />
-    <None Remove="Assets\FUSEERocket.fus" />
-    <None Remove="Assets\FuseeText.png" />
-    <None Remove="Assets\houseSF.jpg" />
-    <None Remove="Assets\RoadTwoLanes_1024.png" />
-    <None Remove="Assets\FUSEERocket.fus" />
-    <None Remove="Assets\FuseeText.png" />
-    <None Remove="Assets\RocketModel.fus" />
-    <None Remove="Assets\Seamless brick texture dark 00.jpg" />
-    <None Remove="Assets\seamless_tiled_grass_texture_by_lendrick.jpg" />
-    <None Remove="Assets\testTex.jpg" />
-  </ItemGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 
   <ItemGroup>
-    <Content Include="Assets\FUSEERocket.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="..\..\..\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="..\..\..\Serialization\Fusee.Serialization.csproj" />
-    <ProjectReference Include="..\..\..\Xene\Fusee.Xene.csproj" />
-    <ProjectReference Include="..\..\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="..\..\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="..\..\GUI\Fusee.Engine.GUI.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="Assets\FUSEERocket.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Assets\RocketFus.fus">
+    <None Update="Assets\FuseeText.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Lato-Black.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />  
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 </Project>
