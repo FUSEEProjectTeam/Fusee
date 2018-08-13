@@ -1,88 +1,36 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Physics.Desktop</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A44DA267-B8B9-4724-9218-2DDBF995FC2A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <FileAlignment>512</FileAlignment>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
+    <TargetFramework>net462</TargetFramework>
     <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;PLATFORM_DESKTOP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-    <PlatformTarget>x86</PlatformTarget>
+    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(RootNamespace).xml</DocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
+    <PackageId>Fusee.Engine.Imp.Physics.Desktop</PackageId>
+    <Authors>FuseeProjectTeam</Authors>
+    <Company>Furtwangen University</Company>
+    <Version>0.6.1.0</Version>
+    <AssemblyVersion>0.6.1.0</AssemblyVersion>
+    <FileVersion>0.6.1.0</FileVersion>
+    <Product>FUSEE</Product>
+    <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-    <PlatformTarget>x86</PlatformTarget>
-  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+  
   <ItemGroup>
     <Reference Include="BulletSharp">
-      <HintPath>..\..\..\..\..\ext\BulletSharp.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\BulletSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoxShapeImp.cs" />
-    <Compile Include="CapsuleShapeImp.cs" />
-    <Compile Include="CollisonShapeImp.cs" />
-    <Compile Include="CompoundShapeImp.cs" />
-    <Compile Include="ConeShapeImp.cs" />
-    <Compile Include="ConeTwistConstraintImp.cs" />
-    <Compile Include="ConvexHullShapeImp.cs" />
-    <Compile Include="CylinderShapeImp.cs" />
-    <Compile Include="DynamicWorldImp.cs" />
-    <Compile Include="EmptyShapeImp.cs" />
-    <Compile Include="GearConstraintImp.cs" />
-    <Compile Include="Generic6DofConstraintImp.cs" />
-    <Compile Include="GImpactMeshShapeImp.cs" />
-    <Compile Include="HingeConstraintImp.cs" />
-    <Compile Include="MultiSphereShapeImp.cs" />
-    <Compile Include="PhysicsImplementor.cs" />
-    <Compile Include="Point2PointConstraintImp.cs" />
-    <Compile Include="RigidBodyImp.cs" />
-    <Compile Include="SliderConstraintImp.cs" />
-    <Compile Include="SphereShapeImp.cs" />
-    <Compile Include="StaticPlaneShapeImp.cs" />
-    <Compile Include="Translator.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Fusee.Math.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
-      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
-      <Name>Fusee.Engine.Common</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 </Project>
