@@ -3,32 +3,32 @@
   "ProxyWarnings": false,
   "Assemblies": {
     "Stubbed": [
+      "^Microsoft\\.(.+),",
       "^mscorlib,",
       "^System,",
       "^System\\.(.+),",
-      "^Microsoft\\.(.+),",
       "FSharp.Core,"
     ],
     "Ignored": [
-      "Microsoft\\.VisualC,",
       "Accessibility,",
-      "SMDiagnostics,",
-      "System\\.EnterpriseServices,",
-      "System\\.Security,",
-      "System\\.Runtime\\.Serialization\\.Formatters\\.Soap,",
-      "System\\.Runtime\\.DurableInstancing,",
-      "System\\.Data\\.SqlXml,",
       "JSIL\\.Meta,",
       "Microsoft\\.Build,",
+      "Microsoft\\.VisualC,",
+      "SMDiagnostics,",
       "System\\.Data,",
+      "System\\.Data\\.SqlXml,",
       "System\\.Deployment,",
       "System\\.Design,",
       "System\\.DirectoryServices,",
       "System\\.Drawing,",
+      "System\\.EnterpriseServices,",
       "System\\.Net\\.Http,",
       "System\\.Numerics,",
       "System\\.Runtime\\.Caching,",
+      "System\\.Runtime\\.DurableInstancing,",
       "System\\.Runtime\\.Serialization,",
+      "System\\.Runtime\\.Serialization\\.Formatters\\.Soap,",
+      "System\\.Security,",
       "System\\.ServiceModel\\.Internals,",
       "System\\.Transactions,",
       "System\\.Web,",
@@ -47,13 +47,15 @@
 			"DeadCodeElimination": true,
 			"NonAggressiveVirtualMethodElimination": true,
         "WhiteList": [
-          "System\\.IO\\.Compression\\.ZLibNative",
-          "System\\.IO\\.Compression\\.DeflateStream",
+          "Fusee",
           "System\\.Collections\\.Generic\\.IDictionary",
+          "System\\.Collections\\.Generic\\.Queue",
+          "System\\.Collections\\.Generic\\.Stack",
           "System\\.ComponentModel\\.Composition\\.Hosting",
-          "System\\.Math",
-
-          "Fusee"
+          "System\\.Dynamic\\.DynamicObject",
+          "System\\.IO\\.Compression\\.DeflateStream",
+          "System\\.IO\\.Compression\\.ZLibNative",
+          "System\\.Math"
         ]
 		  }
 	  }
