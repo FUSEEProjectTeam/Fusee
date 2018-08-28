@@ -3,7 +3,7 @@
   <PropertyGroup>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
     <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Desktop\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
@@ -17,9 +17,9 @@
     <FileVersion>0.6.1.0</FileVersion>
     <Product>FUSEE</Product>
     <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
-    <ApplicationIcon />
+
     <OutputType>WinExe</OutputType>
-    <StartupObject />
+    <RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
