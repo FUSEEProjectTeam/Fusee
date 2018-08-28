@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.Drawing;
 using OpenTK;
@@ -6,7 +6,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using Fusee.Engine.Common;
-using System.Windows.Forms;
+using System.Drawing;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -244,8 +244,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             Width = width;
             Height = height;
 
-            Left = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width / 2 - width / 2 : posx;
-            Top = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height / 2 - height / 2 : posy;
+            Left = (posx == -1) ? DisplayDevice.Default.Bounds.Width / 2 - width / 2 : posx;
+            Top = (posy == -1) ? DisplayDevice.Default.Bounds.Height / 2 - height / 2 : posy;
             // TODO: border settings
         }
 
@@ -491,7 +491,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public RenderCanvasImp(Icon appIcon)
         {
             const int width = 1280;
-            var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
+            var height = System.Math.Min(DisplayDevice.Default.Bounds.Height - 100, 720);
 
             try
             {
@@ -504,8 +504,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (appIcon != null)
                 _gameWindow.Icon = appIcon;
 
-            _gameWindow.X = (Screen.PrimaryScreen.Bounds.Width - width) / 2;
-            _gameWindow.Y = (Screen.PrimaryScreen.Bounds.Height - height) / 2;
+            _gameWindow.X = (DisplayDevice.Default.Bounds.Width - width) / 2;
+            _gameWindow.Y = (DisplayDevice.Default.Bounds.Height - height) / 2;
         }
 
 
@@ -530,8 +530,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             else
             {
-                var oneScreenWidth = Screen.PrimaryScreen.Bounds.Width + 16; // TODO: Fix this. This +16 is strance behavior. Border should not make an impact to the width.
-                var oneScreenHeight = Screen.PrimaryScreen.Bounds.Height;
+                var oneScreenWidth = DisplayDevice.Default.Bounds.Width + 16; // TODO: Fix this. This +16 is strance behavior. Border should not make an impact to the width.
+                var oneScreenHeight = DisplayDevice.Default.Bounds.Height;
 
                 var width = oneScreenWidth*_videoWallMonitorsHor;
                 var height = oneScreenHeight*_videoWallMonitorsVert;
@@ -573,8 +573,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             BaseWidth = width;
             BaseHeight = height;
 
-            BaseLeft = (posx == -1) ? Screen.PrimaryScreen.Bounds.Width/2 - width/2 : posx;
-            BaseTop = (posy == -1) ? Screen.PrimaryScreen.Bounds.Height/2 - height/2 : posy;
+            BaseLeft = (posx == -1) ? DisplayDevice.Default.Bounds.Width/2 - width/2 : posx;
+            BaseTop = (posy == -1) ? DisplayDevice.Default.Bounds.Height /2 - height/2 : posy;
 
             _windowBorderHidden = borderHidden;
 
