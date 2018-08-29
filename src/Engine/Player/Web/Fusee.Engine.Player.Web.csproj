@@ -1,34 +1,19 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project>
   <PropertyGroup>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
     <RootNamespace>Fusee.Engine.Player.Web</RootNamespace>
     <TargetFramework>net462</TargetFramework>
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Web\</FuseeWebOutputPath>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Player\Web\</FuseeWebOutputPath>
 
     <PackageId>Fusee.Engine.Player.Web</PackageId>
-    <Authors>FuseeProjectTeam</Authors>
-    <Company>Furtwangen University</Company>
-    <Version>0.6.1.0</Version>
-    <AssemblyVersion>0.6.1.0</AssemblyVersion>
-    <FileVersion>0.6.1.0</FileVersion>
-    <Product>FUSEE</Product>
-    <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
 
     <OutputType>WinExe</OutputType>
-    <StartAction>Program</StartAction>
-    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
-    <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(RootNamespace).html"</StartArguments>
-    <Prefer32Bit>false</Prefer32Bit>
+    <AutoGenerateBindingRedirects>False</AutoGenerateBindingRedirects>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
@@ -44,7 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
