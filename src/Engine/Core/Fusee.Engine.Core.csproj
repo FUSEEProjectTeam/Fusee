@@ -52,10 +52,10 @@
     <Compile Include="ConvexHullShape.cs" />
     <Compile Include="Cube.cs" />
     <Compile Include="CylinderShape.cs" />
-    <Compile Include="DeferredShaderHelper.cs" />
     <Compile Include="DynamicWorld.cs" />
     <Compile Include="EmptyShape.cs" />
     <Compile Include="FontMap.cs" />
+    <Compile Include="MeshManager.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ShaderCodeBuilder.cs" />
     <Compile Include="GearConstraint.cs" />
@@ -74,7 +74,6 @@
     <Compile Include="InputDevice.cs" />
     <Compile Include="JometriMesh.cs" />
     <Compile Include="KeyboardDevice.cs" />
-    <Compile Include="Mesh.cs" />
     <Compile Include="MeshReader.cs" />
     <Compile Include="MouseDevice.cs" />
     <Compile Include="MultiSphereShape.cs" />
@@ -86,6 +85,7 @@
     <Compile Include="ScreenS3D.cs" />
     <Compile Include="LegacyShaderCodeBuilder.cs" />
     <Compile Include="ShaderEffectComponent.cs" />
+    <Compile Include="ShaderEffectManager.cs" />
     <Compile Include="ShaderMaterial.cs" />
     <Compile Include="ShaderProgram.cs" />
     <Compile Include="Shaders.cs" />
@@ -156,10 +156,6 @@
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\Imp\Graphics\Web\Fusee.Engine.Imp.Graphics.Web.csproj">
-      <Project>{82A2D997-B7AC-41D9-A166-65FCFED2114D}</Project>
-      <Name>Fusee.Engine.Imp.Graphics.Web</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

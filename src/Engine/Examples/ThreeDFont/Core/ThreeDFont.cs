@@ -77,7 +77,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             //Vladimir
             var sceneNodeCVlad = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshCVlad = new MeshComponent
+            var meshCVlad = new Mesh
             {
                 Vertices = _textMeshVlad.Vertices,
                 Triangles = _textMeshVlad.Triangles,
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             //Lato
             var sceneNodeCLato = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshCLato = new MeshComponent
+            var meshCLato = new Mesh
             {
                 Vertices = _textMeshLato.Vertices,
                 Triangles = _textMeshLato.Triangles,
@@ -116,7 +116,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             //GNU
             var sceneNodeCGnu = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-            var meshCGnu = new MeshComponent
+            var meshCGnu = new Mesh
             {
                 Vertices = _textMeshGnu.Vertices,
                 Triangles = _textMeshGnu.Triangles,

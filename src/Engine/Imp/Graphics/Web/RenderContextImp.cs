@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using JSIL.Meta;
@@ -22,6 +23,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
             throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            throw new NotImplementedException();
         }
 
         [JSExternal]
@@ -98,7 +105,54 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         public ITexture CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
         {
-            throw new NotImplementedException("CreateWritableTexture not implmented!");
+            Texture returnTexture = null;
+
+            try
+            {
+                switch (textureFormat)
+                {
+                    case WritableTextureFormat.Depth:
+                        returnTexture = CreateDepthFramebuffer(width, height);
+                        break;
+                    case WritableTextureFormat.CubeMap:
+                        returnTexture = CreateCubeMapFramebuffer(width, height);
+                        break;
+                    case WritableTextureFormat.RenderTargetTexture:
+                        returnTexture = CreateRenderTargetTextureFramebuffer(width, height);
+                        break;
+                    case WritableTextureFormat.GBuffer:
+                        returnTexture = CreateGBufferFramebuffer(width, height);
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+            catch (Exception e)
+            {
+                Diagnostics.Log($"Error creating writable Texture: "+e);
+            }
+            return returnTexture;
+        }
+
+        private Texture CreateGBufferFramebuffer(int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
+        private Texture CreateRenderTargetTextureFramebuffer(int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Texture CreateCubeMapFramebuffer(int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
+        private Texture CreateDepthFramebuffer(int width, int height)
+        {
+            throw new NotImplementedException();
         }
 
         // This should not be extern for the moment
@@ -291,10 +345,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
             throw new System.NotImplementedException();
         }
 
-        public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
-        {
-            throw new NotImplementedException();
-        }
+        //public void SetRenderTarget(ITexture texture, bool deferredNormalPass = false)
+        //{
+        //    throw new NotImplementedException();
+        //}
 
         /// <summary>
         /// Not needed for Web because EXT_FRAMEBUFFER is not possible with WebGL (2016)

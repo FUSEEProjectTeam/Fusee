@@ -1,4 +1,5 @@
 ﻿using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {

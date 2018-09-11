@@ -1,6 +1,7 @@
 ﻿using System;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
+using Fusee.Serialization;
 
 
 namespace Fusee.Engine.Core
@@ -160,7 +161,7 @@ namespace Fusee.Engine.Core
 
         private void InitializeShader()
         {
-            _stereo3DShaderProgram = _rc.CreateShader(VsS3dDepth, PsS3dDepth);
+          //  _stereo3DShaderProgram = _rc.CreateShader(VsS3dDepth, PsS3dDepth);
             _colorTextureShaderParam = _stereo3DShaderProgram.GetShaderParam("vTexture");
             _depthTextureShaderParam = _stereo3DShaderProgram.GetShaderParam("textureDepth");
             _depthShaderParamScale = _stereo3DShaderProgram.GetShaderParam("scale");
@@ -243,7 +244,7 @@ namespace Fusee.Engine.Core
 
             if (textureColor != null && textureDepth != null)
             {
-                _rc.SetShader(_stereo3DShaderProgram);
+             //   _rc.SetShader(_stereo3DShaderProgram);
                 _rc.SetShaderParamTexture(_colorTextureShaderParam, textureColor);
                 _rc.SetShaderParamTexture(_depthTextureShaderParam, textureDepth);
                 _rc.SetShaderParam(_depthShaderParamScale, Config.ScaleDepth);

@@ -342,9 +342,9 @@ namespace Fusee.Engine.Examples.Picking.Core
         }
 
 
-        public static MeshComponent CreateCuboid(float3 size)
+        public static Mesh CreateCuboid(float3 size)
         {
-            return new MeshComponent
+            return new Mesh
             {
                 Vertices = new[]
                 {

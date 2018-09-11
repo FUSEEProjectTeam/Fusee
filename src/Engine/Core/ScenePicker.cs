@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core
     {
         // Data
         public SceneNodeContainer Node;
-        public MeshComponent Mesh;
+        public Mesh Mesh;
         public int Triangle;
         public float U, V;
         public float4x4 Model;
@@ -26,13 +26,58 @@ namespace Fusee.Engine.Core
             c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
         }
 
-        public float3 ModelPos
+        public float3 TriangleCenter
+        {
+            get
+            {
+                float3 a, b, c;
+                GetTriangle(out a, out b, out c);
+                return (a + b + c) / 3;
+            }
+        }
+
+        public float3 TriangleBarycentric
         {
             get
             {
                 float3 a, b, c;
                 GetTriangle(out a, out b, out c);
                 return float3.Barycentric(a, b, c, U, V);
+            }
+        }
+
+        public void GetNormals(out float3 a, out float3 b, out float3 c)
+        {
+            a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
+            b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
+            c = Mesh.Normals[Mesh.Triangles[Triangle + 2]];
+        }
+
+        public float3 NormalCenter
+        {
+            get
+            {
+                float3 a, b, c;
+                GetNormals(out a, out b, out c);
+                return (a + b + c) / 3;
+            }
+        }
+
+        public float3 NormalBarycentric
+        {
+            get
+            {
+                float3 a, b, c;
+                GetNormals(out a, out b, out c);
+                return float3.Barycentric(a, b, c, U, V);
+            }
+        }
+
+        public float3 ModelPos
+        {
+            get
+            {
+                return TriangleBarycentric;
             }
         }
 
@@ -113,15 +158,15 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void PickMesh(MeshComponent meshComponent)
+        public void PickMesh(Mesh mesh)
         {
             float4x4 mvp = Projection * View * State.Model;
-            for (int i = 0; i < meshComponent.Triangles.Length; i += 3)
+            for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates
-                float4 a = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 0]], 1).TransformPerspective(mvp);
-                float4 b = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 1]], 1).TransformPerspective(mvp);
-                float4 c = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 2]], 1).TransformPerspective(mvp);
+                float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
+                float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
+                float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
 
                 float u, v;
                 // Point-in-Triangle-Test
@@ -130,7 +175,7 @@ namespace Fusee.Engine.Core
 
                     YieldItem(new PickResult
                     {
-                        Mesh = meshComponent,
+                        Mesh = mesh,
                         Node = CurrentNode,
                         Triangle = i,
                         Model = State.Model,
@@ -194,15 +239,15 @@ namespace Fusee.Engine.Core
     //    }
 
     //    [VisitMethod]
-    //    public void PickMesh(MeshComponent meshComponent)
+    //    public void PickMesh(MeshComponent mesh)
     //    {
     //        float4x4 mvp = State.Projection * State.View * State.Model;
-    //        for (int i = 0; i < meshComponent.Triangles.Length; i += 3)
+    //        for (int i = 0; i < mesh.Triangles.Length; i += 3)
     //        {
     //            // a, b c: current triangle's vertices in clip coordinates
-    //            float4 a = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 0]], 1).TransformPerspective(mvp);
-    //            float4 b = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 1]], 1).TransformPerspective(mvp);
-    //            float4 c = new float4(meshComponent.Vertices[meshComponent.Triangles[i + 2]], 1).TransformPerspective(mvp);
+    //            float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
+    //            float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
+    //            float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
 
     //            float u, v;
     //            // Point-in-Triangle-Test
@@ -210,7 +255,7 @@ namespace Fusee.Engine.Core
     //            {
     //                YieldItem(new PickResult
     //                     {
-    //                         Mesh = meshComponent,
+    //                         Mesh = mesh,
     //                         Node = CurrentNode,
     //                         Triangle = i,
     //                         Model = State.Model,

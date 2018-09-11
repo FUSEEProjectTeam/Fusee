@@ -6,6 +6,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using JSIL.Meta;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
@@ -27,12 +28,13 @@ namespace Fusee.Engine.Core
 
         private ShaderProgram _currentShader;
         private readonly MatrixParamNames _currentShaderParams;
+        private ShaderEffect _currentShaderEffect;
 
-        /* Removed Light support
-        private readonly Light[] _lightParams;
-        private readonly LightParamNames[] _lightShaderParams;
-        */
+        // Mesh Management
+        private readonly MeshManager _meshManager;
 
+        // ShaderEffect Management
+        private readonly ShaderEffectManager _shaderEffectManager;
 
         private bool _updatedShaderParams;
 
@@ -130,20 +132,6 @@ namespace Fusee.Engine.Core
             // ReSharper restore InconsistentNaming
         };
 
-        internal struct LightParamNames
-        {
-            /*
-            // ReSharper disable InconsistentNaming
-            public IShaderParam AMBIENT;
-            public IShaderParam DIFFUSE;
-            public IShaderParam SPECULAR;
-            public IShaderParam POSITION;
-            public IShaderParam DIRECTION;
-            public IShaderParam SPOTANGLE;
-            public IShaderParam ACTIVE;
-            // ReSharper restore InconsistentNaming
-            */
-        }
 
         #endregion
 
@@ -736,19 +724,20 @@ namespace Fusee.Engine.Core
             Model = float4x4.Identity;
             Projection = float4x4.Identity;
 
+            // mesh management
+            _meshManager = new MeshManager(_rci);
+
+            _shaderEffectManager = new ShaderEffectManager(_rci);
+
             // Make JSIL run through this one time. 
             _col = ColorUint.White.Tofloat3();
 
-            /* Removed Light support
-            // Todo: Remove multiple Lights per shader !!!
-            _lightParams = new Light[8];
-            _lightShaderParams = new LightParamNames[8];
-            */
+       
             _currentShaderParams = new MatrixParamNames();
             _updatedShaderParams = false;
 
-            _debugShader = Shaders.GetColorShader(this);
-            _debugColor = _debugShader.GetShaderParam("color");
+            //_debugShader = Shaders.GetColorShader(this);
+            //_debugColor = _debugShader.GetShaderParam("color");
         }
 
         #endregion
@@ -759,8 +748,6 @@ namespace Fusee.Engine.Core
 
         private void UpdateCurrentShader()
         {
-            // Todo: Check if the respective matrix was changed since last accessed by the currently updated shader
-            // Todo: and set only if matrix was changed.
 
             if (_currentShader == null)
                 return;
@@ -770,84 +757,56 @@ namespace Fusee.Engine.Core
 
             // Normal versions of MV and P
             if (_currentShaderParams.FUSEE_M != null)
-               SetShaderParam(_currentShaderParams.FUSEE_M, Model);
+               _currentShaderEffect.SetEffectParam("FUSEE_M", Model);
 
             if (_currentShaderParams.FUSEE_V != null)
-               SetShaderParam(_currentShaderParams.FUSEE_V, View);
+                _currentShaderEffect.SetEffectParam("FUSEE_V", View);
 
             if (_currentShaderParams.FUSEE_MV != null)
-                SetShaderParam(_currentShaderParams.FUSEE_MV, ModelView);
+                _currentShaderEffect.SetEffectParam("FUSEE_MV", ModelView);
 
             if (_currentShaderParams.FUSEE_P != null)
-                SetShaderParam(_currentShaderParams.FUSEE_P, Projection);
+                _currentShaderEffect.SetEffectParam("FUSEE_P", Projection);
 
             if (_currentShaderParams.FUSEE_MVP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_MVP", ModelViewProjection);
 
             // Inverted versions
             // Todo: Add inverted versions for M and V
             if (_currentShaderParams.FUSEE_IMV != null)
-                SetShaderParam(_currentShaderParams.FUSEE_IMV, InvModelView);
+                _currentShaderEffect.SetEffectParam("FUSEE_IMV", InvModelView);
 
             if (_currentShaderParams.FUSEE_IP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_IP, InvProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_IP", InvProjection);
 
             if (_currentShaderParams.FUSEE_IMVP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_IMVP, InvModelViewProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_IMVP", InvModelViewProjection);
 
             // Transposed versions
             // Todo: Add transposed versions for M and V
             if (_currentShaderParams.FUSEE_TMV != null)
-                SetShaderParam(_currentShaderParams.FUSEE_TMV, TransModelView);
+                _currentShaderEffect.SetEffectParam("FUSEE_TMV", TransModelView);
 
             if (_currentShaderParams.FUSEE_TP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_TP, TransProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_TP", TransProjection);
 
             if (_currentShaderParams.FUSEE_TMVP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_TMVP, TransModelViewProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_TMVP", TransModelViewProjection);
 
             // Inverted and transposed versions
             // Todo: Add inverted & transposed versions for M and V
             if (_currentShaderParams.FUSEE_ITMV != null)
-                SetShaderParam(_currentShaderParams.FUSEE_ITMV, InvTransModelView);
+                _currentShaderEffect.SetEffectParam("FUSEE_ITMV", InvTransModelView);
 
             if (_currentShaderParams.FUSEE_ITP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_ITP, InvTransProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_ITP", InvTransProjection);
 
             if (_currentShaderParams.FUSEE_ITMVP != null)
-                SetShaderParam(_currentShaderParams.FUSEE_ITMVP, InvTransModelViewProjection);
+                _currentShaderEffect.SetEffectParam("FUSEE_ITMVP", InvTransModelViewProjection);
 
             // Bones (if any)
             if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
-                SetShaderParam(_currentShaderParams.FUSEE_BONES, Bones);
-
-
-            /* Removed light support
-            // Todo: Remove multiple Lights per shader !!!
-            for (var i = 0; i < 8; i++)
-            {
-                if (_lightShaderParams[i].AMBIENT != null)
-                    SetShaderParam(_lightShaderParams[i].AMBIENT, _lightParams[i].AmbientColor);
-
-                if (_lightShaderParams[i].DIFFUSE != null)
-                    SetShaderParam(_lightShaderParams[i].DIFFUSE, _lightParams[i].DiffuseColor);
-
-                if (_lightShaderParams[i].SPECULAR != null)
-                    SetShaderParam(_lightShaderParams[i].SPECULAR, _lightParams[i].SpecularColor);
-
-                if (_lightShaderParams[i].POSITION != null)
-                    SetShaderParam(_lightShaderParams[i].POSITION, _lightParams[i].Position);
-
-                if (_lightShaderParams[i].DIRECTION != null)
-                    SetShaderParam(_lightShaderParams[i].DIRECTION, _lightParams[i].Direction);
-
-                if (_lightShaderParams[i].ACTIVE != null)
-                    SetShaderParam(_lightShaderParams[i].ACTIVE, _lightParams[i].Active);
-
-                if (_lightShaderParams[i].SPOTANGLE != null)
-                    SetShaderParam(_lightShaderParams[i].SPOTANGLE, _lightParams[i].Angle);
-            }
-            */
+                _currentShaderEffect.SetEffectParam("FUSEE_BONES", Bones);
 
         }
 
@@ -884,18 +843,7 @@ namespace Fusee.Engine.Core
             // Bones
             _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
 
-            /* Removed Light support
-            for (int i = 0; i < 8; i++)
-            {
-                _lightShaderParams[i].AMBIENT = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].ambient");
-                _lightShaderParams[i].DIFFUSE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].diffuse");
-                _lightShaderParams[i].SPECULAR = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].specular");
-                _lightShaderParams[i].POSITION = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].position");
-                _lightShaderParams[i].DIRECTION = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].direction");
-                _lightShaderParams[i].SPOTANGLE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].spotAngle");
-                _lightShaderParams[i].ACTIVE = _currentShader.GetShaderParam("FUSEE_LIGHTS[" + i + "].active");
-            }
-            */
+            //
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1043,57 +991,6 @@ namespace Fusee.Engine.Core
         #region Light related Members
 
         /// <summary>
-        /// Sets the directional or point lights information.
-        /// </summary>
-        /// <param name="v3">The lights direction or position. This depends on the light type.</param>
-        /// <param name="diffuse">The diffuse light color.</param>
-        /// <param name="ambient">The ambient light color.</param>
-        /// <param name="specular">The specular light color.</param>
-        /// <param name="type">The type of the light. 0=directional, 1=point.</param>
-        /// <param name="id">The identifier. A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 v3, float4 diffuse, float4 ambient, float4 specular, int type, int id)
-        {
-            switch (type)
-            {
-                case 1:
-                    SetLightActive(id, type);
-                    SetLightAmbient(id, ambient);
-                    SetLightDiffuse(id, diffuse);
-                    SetLightSpecular(id, specular);
-                    SetLightDirection(id, v3);
-                    break;
-                case 2:
-                    SetLightActive(id, type);
-                    SetLightAmbient(id, ambient);
-                    SetLightDiffuse(id, diffuse);
-                    SetLightSpecular(id, specular);
-                    SetLightPosition(id, v3);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Sets the spotlights information.
-        /// </summary>
-        /// <param name="position">The light position.</param>
-        /// <param name="direction">The light direction.</param>
-        /// <param name="diffuse">The diffuse light color.</param>
-        /// <param name="ambient">The ambient light color.</param>
-        /// <param name="specular">The specular light color.</param>
-        /// <param name="type">The light type.</param>
-        /// <param name="id">The identifier.A maximum of 8 lights is recommended due to portability.</param>
-        public void SetLight(float3 position, float3 direction, float4 diffuse, float4 ambient, float4 specular,
-            int type, int id)
-        {
-            SetLightActive(id, type);
-            SetLightAmbient(id, ambient);
-            SetLightDiffuse(id, diffuse);
-            SetLightSpecular(id, specular);
-            SetLightPosition(id, position);
-            SetLightDirection(id, direction);
-        }
-
-        /// <summary>
         /// The color to use when clearing the color buffer.
         /// </summary>
         /// <value>
@@ -1125,148 +1022,6 @@ namespace Fusee.Engine.Core
             get { return _rci.ClearDepth; }
         }
 
-        /// <summary>
-        /// Activates the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to activate. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="active">1 - activate the light. 0 - deactiv</param>
-        public void SetLightActive(int lightInx, float active)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].Active = active;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_ACTIVE";
-
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].Active);
-           */
-        }
-
-        /// <summary>
-        /// Sets the ambient color component on the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the ambient color on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="ambientColor">
-        /// The ambient color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
-        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
-        /// </param>
-        /// <remarks>
-        /// An ambient light component represents a fixed-intensity and fixed-color light that affects all parts of all objects in the scene equally.
-        /// </remarks>
-        public void SetLightAmbient(int lightInx, float4 ambientColor)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].AmbientColor = ambientColor;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_AMBIENT";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].AmbientColor);
-            */
-        }
-
-        /// <summary>
-        /// Sets the diffuse color component on the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the diffuse color on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="diffuseColor">
-        /// The diffuse color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
-        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
-        /// </param>
-        /// <remarks>
-        /// A diffuse light component results in different parts of objects shaded with different intensites based on the angle of the incoming
-        /// light ray at each given spot on the object surface. This component is what makes objects look "3D" - e.g. coloring the different faces of a cube with
-        /// different intensities or creating brightness gradients on curved surfaces like a sphere.
-        /// </remarks>
-        public void SetLightDiffuse(int lightInx, float4 diffuseColor)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].DiffuseColor = diffuseColor;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_DIFFUSE";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].DiffuseColor);
-            */
-        }
-
-        /// <summary>
-        /// Sets the specular color component on the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the specular color on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="specularColor">
-        /// The specular color to be emitted by the given light. The value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
-        /// component values ranging from 0.0f to 1.0f. The Alpha component will be ignored.
-        /// </param>
-        /// <remarks>
-        /// A specular light component results in highlights created on the lit surfaces where the light source is mirrored into the viewers' eye.
-        /// Bright highlights with small radii make objects' materials look glossy. The specular light component adds realism to 3D scenes in
-        /// walk-through animations because the specualar light's intensity at a given point on an object's surface depends not only on the
-        /// incoming light ray angle but also on the positon of the viewer. With a moving camera, also the specular highlights move on the
-        /// objects' surfaces.
-        /// </remarks>
-        public void SetLightSpecular(int lightInx, float4 specularColor)
-        {
-            /*
-            _lightParams[lightInx].SpecularColor = specularColor;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_SPECULAR";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].SpecularColor);
-           */
-        }
-
-        /// <summary>
-        /// Sets the position of the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the position on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="position">The position of the light in 3D space.</param>
-        public void SetLightPosition(int lightInx, float3 position)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].Position = position;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_POSITION";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].Position);
-            */
-        }
-
-        /// <summary>
-        /// Sets the direction of the light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="direction">The direction vector into which the light emits rays.</param>
-        public void SetLightDirection(int lightInx, float3 direction)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].Direction = direction;
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_DIRECTION";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].Direction);
-            */
-        }
-
-        /// <summary>
-        /// Sets the opening angle of the spot light with the given index.
-        /// </summary>
-        /// <param name="lightInx">The light to set the direction on. Can range from 0 to 7. Up to eight lights are supported.</param>
-        /// <param name="angle">The opening angle of the spotlight in degree.</param>
-        public void SetLightSpotAngle(int lightInx, float angle)
-        {
-            throw new NotImplementedException("Removed Single Pass Light Support");
-            /*
-            _lightParams[lightInx].Angle = -(float)System.Math.Cos(angle);
-            IShaderParam sp;
-            string paramName = "FUSEE_L" + lightInx + "_SPOTANGLE";
-            if ((sp = _currentShader.GetShaderParam(paramName)) != null)
-                SetShaderParam(sp, _lightParams[lightInx].Angle);
-            */
-        }
 
         #endregion
 
@@ -1294,7 +1049,7 @@ namespace Fusee.Engine.Core
         /// The result is already compiled to code executable on the GPU. <see cref="RenderContext.SetShader(ShaderProgram)"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        public ShaderProgram CreateShader(string vs, string ps)
+        private ShaderProgram CreateShader(string vs, string ps)
         {
             var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
 
@@ -1310,12 +1065,24 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Removes given shaderprogramm from GPU
+        /// </summary>
+        /// <param name="ef">The ShaderEffect</param>
+        private void RemoveShader(ShaderEffect ef)
+        {
+            foreach (var program in ef.CompiledShaders)
+            {
+                _rci.RemoveShader(program._spi);
+            }
+        }
+
+        /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
         /// <seealso cref="RenderContext.CreateShader"/>
         /// <seealso cref="RenderContext.Render(Mesh)"/>
-        public void SetShader(ShaderProgram program)
+        private void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
 
@@ -1324,7 +1091,118 @@ namespace Fusee.Engine.Core
                 _currentShader = program;
                 _rci.SetShader(program._spi);
             }
-            UpdateShaderParams();
+            UpdateShaderParams(); // initial set
+        }
+
+        /// <summary>
+        /// Activates the passed shader effect as the current shader for geometry rendering.
+        /// </summary>
+        /// <param name="ef">The shader effect to compile and use.</param>
+        /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
+        /// task performed in this method is compiling the provided shader source code and uploading the shaders to
+        /// the gpu.</remarks>
+        public void SetShaderEffect(ShaderEffect ef)
+        {
+            if (_rci == null)
+               throw new ArgumentNullException("rc", "must pass a valid render context.");
+
+            if (ef == null)
+                return;
+
+            // Is this shadereffect already built?
+            if (_shaderEffectManager.GetShaderEffect(ef) != null)
+            {
+                _currentShaderEffect = ef;
+                return;
+            }
+               
+
+            int i = 0, nPasses = ef.VertexShaderSrc.Length;
+
+            try // to compile all the shaders
+            {
+                for (i = 0; i < nPasses; i++)
+                {
+                    ef.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
+                }
+            }
+            catch (Exception ex)
+            {
+                //Diagnostics.Log(ef.PixelShaderSrc[0]);
+                throw new Exception("Error while compiling shader for pass " + i, ex);
+            }
+
+            // Enumerate all shader parameters of all passes and enlist them in lookup tables
+            ef.Parameters = new Dictionary<string, object>();
+            ef.ParamsPerPass = new List<List<EffectParam>>();
+            for (i = 0; i < nPasses; i++)
+            {
+                IEnumerable<ShaderParamInfo> paramList = GetShaderParamList(ef.CompiledShaders[i]);
+                ef.ParamsPerPass.Add(new List<EffectParam>());
+                foreach (var paramNew in paramList)
+                {
+                    Object initValue;
+                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
+                    {
+                        // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
+                        // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
+                        // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
+
+                        // ReSharper disable UseMethodIsInstanceOfType
+                        // ReSharper disable OperatorIsCanBeUsed
+                        var initValType = initValue.GetType();
+                        if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
+                                  &&
+                                  (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
+                                )
+                                ||
+                                (paramNew.Type.IsAssignableFrom(initValType))
+                              )
+                           )
+                        {
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
+                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
+                        }
+                        // ReSharper restore OperatorIsCanBeUsed
+                        // ReSharper restore UseMethodIsInstanceOfType
+
+                        // Parameter was declared by user and type is correct in shader - carry on.
+                        object paramEx;
+                        if (ef.Parameters.TryGetValue(paramNew.Name, out paramEx))
+                        {
+                            var paramExisting = (EffectParam) paramEx;
+                            // The parameter is already there from a previous pass.
+                            if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                            {
+                                // This should never happen due to the previous error check. Check it anyway...
+                                throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
+                                                    paramNew.Name +
+                                                    " already defined with a different type in effect pass " +
+                                                    paramExisting.ShaderInxs[0]);
+                            }
+                            // List the current pass to use this shader parameter
+                            paramExisting.ShaderInxs.Add(i);
+                        }
+                        else
+                        {
+                            paramEx = new EffectParam()
+                            {
+                                Info = paramNew,
+                                ShaderInxs = new List<int>(new int[] { i }),
+                                Value = initValue
+                            };
+                            ef.Parameters.Add(paramNew.Name, paramEx);
+                        }
+                        ef.ParamsPerPass[i].Add((EffectParam) paramEx);
+                    }
+                }
+
+                // Register built shadereffect
+                _shaderEffectManager.RegisterShaderEffect(ef);
+
+                // register this shader effect as current shader
+                _currentShaderEffect = ef;
+            }
         }
 
         /// <summary>
@@ -1557,9 +1435,7 @@ namespace Fusee.Engine.Core
         {
             _rci.SetCubeMapRenderTarget(texture, position);
         }
-
-
-
+        
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1570,45 +1446,76 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Render(Mesh m)
         {
-            if (m._meshImp == null)
-                m._meshImp = _rci.CreateMeshImp();
+            if (_currentShaderEffect == null) return;
 
-            if (m.Colors != null && m.Colors.Length != 0 && !m.ColorsSet)
-                _rci.SetColors(m._meshImp, m.Colors);
-
-            /*
-             * Not using tangent space normals right now
-             * 
-             * if (NeedTangents
-                && (m.Vertices != null && m.UVs != null && m.Normals != null)
-                && (m.Vertices.Length != 0 && m.UVs.Length != 0 && m.Normals.Length != 0)
-                && !(m.VerticesSet && m.UVsSet && m.NormalsSet))
+            int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
+            try
             {
-                // This will set vertices, uvs and normals and also calculate tangents and bitangents
-                _rci.SetVertexData(m._meshImp, m.Vertices, m.UVs, m.Normals);
+                for (i = 0; i < nPasses; i++)
+                {
+                    // TODO: Use shared uniform paramters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
+                    SetShader(_currentShaderEffect.CompiledShaders[i]);
+                    foreach (var param in _currentShaderEffect.ParamsPerPass[i])
+                    {
+                        SetShaderParamT(param);
+                    }
+                    SetRenderState(_currentShaderEffect.States[i]);
+                    // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
+                    var meshImp = _meshManager.GetMeshImpFromMesh(m);
+                    _rci.Render(meshImp);
+
+                    // After rendering always cleanup pending meshes
+                    _meshManager.Cleanup();
+                }
+
+                // After rendering all passes cleanup shadereffect
+               _shaderEffectManager.Cleanup();
             }
-            else*/
+            catch (Exception ex)
             {
-                if (m.Vertices != null && m.Vertices.Length != 0 && !m.VerticesSet)
-                    _rci.SetVertices(m._meshImp, m.Vertices);
-
-                if (m.UVs != null && m.UVs.Length != 0 && !m.UVsSet)
-                    _rci.SetUVs(m._meshImp, m.UVs);
-
-                if (m.Normals != null && m.Normals.Length != 0 && !m.NormalsSet)
-                    _rci.SetNormals(m._meshImp, m.Normals);
+                throw new Exception("Error while rendering pass " + i, ex);
             }
+        }
 
-            if (m.BoneIndices != null && m.BoneIndices.Length != 0 && !m.BoneIndicesSet)
-                _rci.SetBoneIndices(m._meshImp, m.BoneIndices);
-
-            if (m.BoneWeights != null && m.BoneWeights.Length != 0 && !m.BoneWeightsSet)
-                _rci.SetBoneWeights(m._meshImp, m.BoneWeights);
-
-            if (m.Triangles != null && m.Triangles.Length != 0 && !m.TrianglesSet)
-                _rci.SetTriangles(m._meshImp, m.Triangles);
-
-            _rci.Render(m._meshImp);
+        /// <summary>
+        /// Sets the shaderParam, works with every type.
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="value"></param>
+        public void SetShaderParamT(EffectParam param)
+        {
+            if (param.Info.Type == typeof(int))
+            {
+                SetShaderParam(param.Info.Handle, (int)param.Value);
+            }
+            else if (param.Info.Type == typeof(float))
+            {
+                SetShaderParam(param.Info.Handle, (float)param.Value);
+            }
+            else if (param.Info.Type == typeof(float2))
+            {
+                SetShaderParam(param.Info.Handle, (float2)param.Value);
+            }
+            else if (param.Info.Type == typeof(float3))
+            {
+                SetShaderParam(param.Info.Handle, (float3)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4))
+            {
+                SetShaderParam(param.Info.Handle, (float4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4))
+            {
+                SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+            }
+            else if (param.Info.Type == typeof(float4x4[]))
+            {
+                SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+            }
+            else if (param.Info.Type == typeof(ITexture))
+            {
+                SetShaderParamTexture(param.Info.Handle, (ITexture)param.Value);
+            }
         }
       
         public uint GetHardwareCapabilities(HardwareCapability capability)
@@ -1619,26 +1526,6 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Other Members
-        /// <summary>
-        /// Call this function in order to deallocate the memory on the gpu managed by buffers.
-        /// Adds the meshes to a list which is then later taken on by <see cref="Render(Mesh)"/> in order 
-        /// to delete the memory managed by their buffers. This is due to multithreading, that memory can not deleted
-        /// at any time.
-        /// </summary>
-        /// <param name="m">The mesh of which buffers should be deallocated from the memory.</param>
-        public void Remove(Mesh m)
-        {
-            if (m._meshImp == null)
-                return;
-
-            _rci.RemoveVertices(m._meshImp);
-            _rci.RemoveNormals(m._meshImp);
-            _rci.RemoveColors(m._meshImp);
-            _rci.RemoveUVs(m._meshImp);
-            _rci.RemoveTriangles(m._meshImp);
-            _rci.RemoveBoneWeights(m._meshImp);
-            _rci.RemoveBoneIndices(m._meshImp);
-        }
 
         /// <summary>
         /// This method returns the color of one or more pixels from the backbuffer.

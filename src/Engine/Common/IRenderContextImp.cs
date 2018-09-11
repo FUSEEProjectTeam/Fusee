@@ -50,6 +50,12 @@ namespace Fusee.Engine.Common
         IShaderProgramImp CreateShader(string vs, string ps);
 
         /// <summary>
+        /// Removes given shaderprogramm from GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        void RemoveShader(IShaderProgramImp sp);
+
+        /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>
         /// <param name="shaderProgram">The shader program to query for parameters.</param>
@@ -372,6 +378,123 @@ namespace Fusee.Engine.Common
         /// <seealso cref="IRenderContextImp.CreateShader"/>
         /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
         void SetShader(IShaderProgramImp shaderProgramImp);
+
+        /* #region Atomic Buffer Operations
+
+         #region Atomic Buffer Create Operations
+
+         /// <summary>
+         /// Binds the vertices onto the GL Rendercontext and returns an VertexBuffer index.
+         /// </summary>
+         /// <param name="vertices">The vertices.</param>
+         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
+         /// <returns>A valid VertexBuffer Handle, otherwise 0.</returns>
+         int CreateVertexBuffer(float3[] vertices);
+
+         /// <summary>
+         /// Binds the normals onto the GL Rendercontext and returns an NormalBuffer index.
+         /// </summary>
+         /// <param name="normals">The normals.</param>
+         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
+         /// <returns>A valid NormalBuffer Handle, otherwise 0.</returns>
+         int CreateNormalBuffer(float3[] normals);
+
+         /// <summary>
+         /// Binds the UV coordinates onto the GL Rendercontext and returns an UVBuffer index.
+         /// </summary>
+         /// <param name="uvs">The UV's.</param>
+         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
+         /// <returns>A valid UVBuffer Handle, otherwise 0.</returns>
+         int CreateUvBuffer(float2[] uvs);
+
+         /// <summary>
+         /// Binds the colors onto the GL Rendercontext and returns an ColorBuffer index.
+         /// </summary>
+         /// <param name="colors">The colors.</param>
+         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
+         /// <returns>A valid ColorBuffer Handle, otherwise 0.</returns>
+         int CreateColorBuffer(uint[] colors);
+
+         /// <summary>
+         /// Binds the triangles onto the GL Rendercontext and returns an ElementBuffer index.
+         /// </summary>
+         /// <param name="triangleIndices">The triangle indices.</param>
+         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
+         /// <returns>A valid TriangleBuffer Handle, otherwise 0.</returns>
+         int CreateTriangleBuffer(ushort[] triangleIndices);
+
+         /// <summary>
+         /// Binds the boneindices onto the GL Rendercontext and returns an ElementBuffer index.
+         /// </summary>
+         /// <param name="boneIndices">The boneindices.</param>
+         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
+         /// <returns>A valid BoneIndexBuffer Handle, otherwise 0.</returns>
+         int CreateBoneIndexBuffer(float4[] boneIndices);
+
+         /// <summary>
+         /// Binds the boneweights onto the GL Rendercontext and returns an ElementBuffer index.
+         /// </summary>
+         /// <param name="boneWeights">The boneweights.</param>
+         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
+         /// <returns>A valid BoneWeightsBuffer Handle, otherwise 0.</returns>
+         int CreateBoneWeightsBuffer(float4[] boneWeights);
+
+         #endregion
+
+
+         #region Atomic Buffer Delete Operations
+         /// <summary>
+         /// Deletes the vertex buffer associated with the handle.
+         /// </summary>
+         /// <param name="vertexBufferHandle">The vertexBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteVertices(int vertexBufferHandle);
+
+         /// <summary>
+         /// Deletes the normals buffer associated with the handle.
+         /// </summary>
+         /// <param name="normalsBufferHandle">The normalsBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteNormals(int normalsBufferHandle);
+
+         /// <summary>
+         /// Deletes the colors buffer associated with the handle.
+         /// </summary>
+         /// <param name="colorsBufferHandle">The colorsBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteColors(int colorsBufferHandle);
+
+         /// <summary>
+         /// Deletes the UVs buffer associated with the handle.
+         /// </summary>
+         /// <param name="uvsBufferHandle">The uvsBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteUVs(int uvsBufferHandle);
+
+         /// <summary>
+         /// Deletes the triangles buffer associated with the handle.
+         /// </summary>
+         /// <param name="trianglesBufferHandle">The trianglesBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteTriangles(int trianglesBufferHandle);
+
+         /// <summary>
+         /// Deletes the bone weights buffer associated with the handle.
+         /// </summary>
+         /// <param name="boneWeightsBufferHandle">The boneWeightsBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteBoneWeights(int boneWeightsBufferHandle);
+
+         /// <summary>
+         /// Deletes the bone indices buffer associated with the handle.
+         /// </summary>
+         /// <param name="boneIndicesBufferHandle">The boneIndicesBufferHandle in GPU memory should be deleted.</param>
+         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
+         bool DeleteBoneIndices(int boneIndicesBufferHandle);
+
+         #endregion
+
+         #endregion*/
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.

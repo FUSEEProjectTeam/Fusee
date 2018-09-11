@@ -15,6 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="Assets\FuseeText.png" />
+    <None Remove="Assets\RocketModel.fus" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,7 +25,7 @@
     <Content Include="Assets\Lato-Black.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Model.fus">
+    <Content Include="Assets\RocketModel.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -58,6 +58,22 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp", functi
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.Texture", function ($)
 {
     $.Field({ Static: false, Public: true }, "handle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "fboHandle", $.Object, null);
+
+    $.Field({ Static: false, Public: true }, "gBufferHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "gBufferPositionTextureHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "gBufferNormalTextureHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "gBufferAlbedoSpecTextureHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "gBufferDepthTextureHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "gDepthRenderbufferHandle", $.Object, null);
+
+    // RenderTexture
+    $.Field({ Static: false, Public: true }, "renderToTextureBufferHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "intermediateToTextureBufferHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "toggle", $.Boolean, false);
+    $.Field({ Static: false, Public: true }, "depthHandle", $.Object, null);
+    $.Field({ Static: false, Public: true }, "textureWidth", $.Int32, null);
+    $.Field({ Static: false, Public: true }, "textureHeight", $.Int32, null);
 
     return function(newThisType) { $thisType = newThisType; };
 });
@@ -153,7 +169,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
             this._canvas = document.getElementById("canvas");
 
             var premAlpha = jsilConfig.premultipliedAlpha;
-            this.gl = this._canvas.getContext("webgl", { premultipliedAlpha: premAlpha }) ||
+            this.gl = this._canvas.getContext("webgl2", { premultipliedAlpha: premAlpha }) ||
 						this._canvas.getContext("experimental-webgl", { premultipliedAlpha: premAlpha });
 
             this.currWidth = 0;
@@ -399,7 +415,149 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
        }
     );
 
+    $.Method({ Static: false, Public: true }, "SetRenderTarget",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture")]),
+        function SetRenderTarget(texture) {
+            var textureImp = texture;
 
+            // If texture is null bind frambuffer 0, this is the main screen
+            if (textureImp == null) {
+                // this.gl.CullFace(CullFaceMode.Back);
+                // Enable writes to the color buffer
+                this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+            }
+            // FBO Handle is set -> ShadowMap
+            else if (textureImp.fboHandle != null) {
+                // To prevent Peter Panning
+                // this.gl.CullFace(CullFaceMode.Front); //TODO: Move this to SceneRender
+
+                // Bind buffer - now we are rendering to this buffer!
+                this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, textureImp.fboHandle);
+
+                // Clear 
+                this.gl.clear(this.gl.DEPTH_BUFFER_BIT);
+            }
+            // GBufferHandle is set -> Bind GBuffer
+            else if (textureImp.gBufferHandle != null) {
+                // Bind buffer - now we are rendering to this buffer!
+                // Framebuffer or DrawFrameBuffer as Target?
+                this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, textureImp.gBufferHandle);
+
+                // Clear Depth & Color for GBuffer!
+                this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+            }
+            // RenderToTexture Handle is set -> OffScreen FrameBuffer with Color and Depth attachment
+            else if (textureImp.renderToTextureBufferHandle != null) {
+                if (!textureImp.toggle) {
+                    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, textureImp.renderToTextureBufferHandle);
+                    this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+                    this.gl.enable(this.gl.DEPTH_TEST);
+                    textureImp.toggle = true;
+                } else {
+                    // Blit framebuffers, no Multisample texture 2d in WebGL 2
+                    this.gl.bindFramebuffer(this.gl.READ_FRAMEBUFFER, textureImp.renderToTextureBufferHandle);
+                    this.gl.bindFramebuffer(this.gl.DRAW_FRAMEBUFFER, textureImp.intermediateToTextureBufferHandle);
+             
+                    this.gl.blitFramebuffer(
+                        0, 0, textureImp.textureWidth, textureImp.textureHeight,
+                        0, 0, textureImp.textureWidth, textureImp.textureHeight,
+                        this.gl.COLOR_BUFFER_BIT, this.gl.NEAREST
+                    );
+
+                    this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+                    textureImp.toggle = false;
+                }
+            }
+        }
+    );
+
+    $.Method({ Static: false, Public: false }, "CreateRenderTargetTextureFramebuffer",
+        new JSIL.MethodSignature($fuseeCommon.TypeRef("Fusee.Engine.Common.ITexture"), [$.Int32, $.Int32]),
+        function CreateRenderTargetTextureFramebuffer(width, height) {
+            // configure 4x MSAA framebuffer
+            var msaaLevel = 4;
+            // --------------------------
+
+            var texture = this.gl.createTexture();
+            this.gl.bindTexture(this.gl.TEXTURE_2D, texture);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+            this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+
+            //var offscreentexture = this.gl.createTexture();
+            //this.gl.bindTexture(this.gl.TEXTURE_2D, offscreentexture);
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+            //this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, width, height, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, null);
+            //this.gl.bindTexture(this.gl.TEXTURE_2D, null);
+
+            var framebufferRenderBuffer = this.gl.createFramebuffer();
+            var framebufferColorBuffer = this.gl.createFramebuffer();
+
+            // setup framebuffer with MSAA renderbuffer
+            var colorRenderbuffer = this.gl.createRenderbuffer();
+            var stencilRenderbuffer = this.gl.createRenderbuffer();
+            
+            // bind the framebuffer in which the multisampled content will be rendered
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebufferRenderBuffer);
+
+            // setup depth renderbuffer
+            // create a depth texture
+            //var depthTexture = this.gl.createTexture();
+            //this.gl.bindTexture(this.gl.TEXTURE_2D, depthTexture);
+            //
+            //// make a depth buffer and the same size as the targetTexture
+            //// define size and format of level 0
+            //this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.DEPTH_COMPONENT24,
+            //    width, height, 0,
+            //    this.gl.DEPTH_COMPONENT, this.gl.UNSIGNED_INT, null);
+            //
+            //// set the filtering so we don't need mips
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, this.gl.CLAMP_TO_EDGE);
+            //this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, this.gl.CLAMP_TO_EDGE);
+
+            // attach the depth texture to the framebuffer
+            //this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.DEPTH_ATTACHMENT, this.gl.TEXTURE_2D, depthTexture, 0);
+            
+
+            // setup color offscreentexture
+            //this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, offscreentexture, 0);
+
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, colorRenderbuffer);
+            this.gl.renderbufferStorageMultisample(this.gl.RENDERBUFFER, msaaLevel, this.gl.RGBA8, width, height);
+            this.gl.framebufferRenderbuffer(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.RENDERBUFFER, colorRenderbuffer);
+
+            this.gl.bindRenderbuffer(this.gl.RENDERBUFFER, stencilRenderbuffer);
+            this.gl.renderbufferStorageMultisample(this.gl.RENDERBUFFER, msaaLevel, this.gl.DEPTH24_STENCIL8, width, height);
+            this.gl.framebufferRenderbuffer(
+                this.gl.FRAMEBUFFER, this.gl.DEPTH_STENCIL_ATTACHMENT, this.gl.RENDERBUFFER, stencilRenderbuffer);
+
+            // reset
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+            // setup colorbuffer with final texture
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, framebufferColorBuffer);
+            this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, texture, 0);
+            this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+
+            // handle = the blitted texture that will be used as shaderparam sampler2D...
+            var resultTex = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.Texture();
+            resultTex.handle = texture;
+            resultTex.renderToTextureBufferHandle = framebufferRenderBuffer;
+            resultTex.intermediateToTextureBufferHandle = framebufferColorBuffer;
+
+            resultTex.textureWidth = width;
+            resultTex.textureHeight = height;
+
+            return resultTex;
+        }
+    );
 
     $.Method({ Static: false, Public: true }, "get_ModelView",
         new JSIL.MethodSignature($fuseeMath.TypeRef("Fusee.Math.Core.float4x4"), []),
@@ -965,7 +1123,27 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             var ret = new $WebGLImp.Fusee.Engine.Imp.Graphics.Web.ShaderProgramImp();
             ret.Program = program;
+
+            // mr: Detach Shader & delete
+            this.gl.detachShader(program, fragmentObject);
+            this.gl.detachShader(program, vertexObject);
+            this.gl.deleteShader(fragmentObject);
+            this.gl.deleteShader(vertexObject);
+
             return ret;
+        }
+    );
+
+    $.Method({ Static: false, Public: true }, "RemoveShader",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IShaderProgramImp")]),
+        function RemoveShader(shader) {
+
+            if (this.context == null) return;
+
+            this.gl.finish();
+            this.gl.flush();
+            this.gl.deleteShader(shader);
+            this.gl.deleteProgram(shader);
         }
     );
 

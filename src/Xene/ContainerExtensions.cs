@@ -61,14 +61,14 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Shortcut for <code>GetComponent&lt;MeshComponent&gt;(sncThis, inx);</code>. See <see cref="GetComponent{TComp}"/>.
+        /// Shortcut for <code>GetComponent&lt;Mesh&gt;(sncThis, inx);</code>. See <see cref="GetComponent{TComp}"/>.
         /// </summary>
         /// <param name="sncThis">This scene node container.</param>
         /// <param name="inx">specifies the n'th component if more than component of the given type exists.</param>
         /// <returns>A mesh if contained within this container.</returns>
-        public static MeshComponent GetMesh(this SceneNodeContainer sncThis, int inx = 0)
+        public static Mesh GetMesh(this SceneNodeContainer sncThis, int inx = 0)
         {
-            return GetComponent<MeshComponent>(sncThis, inx);
+            return GetComponent<Mesh>(sncThis, inx);
         }
 
         /// <summary>

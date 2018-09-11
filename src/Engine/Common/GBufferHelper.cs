@@ -41,6 +41,10 @@
         /// <summary>
         /// 
         /// </summary>
-        GBuffer
+        GBuffer,
+        /// <summary>
+        /// 
+        /// </summary>
+        RenderTargetTexture,
     }
 }
