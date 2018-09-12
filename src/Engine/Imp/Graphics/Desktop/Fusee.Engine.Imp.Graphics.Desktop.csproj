@@ -1,18 +1,18 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Engine.Imp.Graphics.Desktop</PackageId>
-
+    <TargetFramework>net462</TargetFramework>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="OpenTK">
@@ -31,4 +31,6 @@
   </ItemGroup>
 
   <Import Project="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

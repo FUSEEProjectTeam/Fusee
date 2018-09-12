@@ -1,16 +1,17 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Engine.Imp.Physics.Desktop</PackageId>
+    <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="BulletSharp">
       <HintPath>$(FuseeBuildRoot)\ext\BulletSharp.dll</HintPath>
@@ -20,4 +21,6 @@
     <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

@@ -1,17 +1,17 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-
     <PackageId>Fusee.Engine.Player.Desktop</PackageId>
-
+    <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Player\Desktop\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
@@ -33,10 +33,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

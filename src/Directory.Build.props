@@ -1,6 +1,7 @@
 <Project>
   <PropertyGroup>
-    <FuseeBuildRoot>$(SolutionDir)\..\</FuseeBuildRoot>
+    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
+    <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
     <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>

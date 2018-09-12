@@ -1,16 +1,17 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Network.Web</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Engine.Imp.Network.Web</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="JSIL.Meta">
       <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
@@ -23,4 +24,6 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

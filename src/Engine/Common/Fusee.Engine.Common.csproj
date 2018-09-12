@@ -1,15 +1,16 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Common</RootNamespace>
+    <PackageId>Fusee.Engine.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
     <OutputPath>$(OutputPath)\Libraries\</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
-    <PackageId>Fusee.Engine.Common</PackageId>
   </PropertyGroup>
-  
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
   
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
@@ -25,4 +26,6 @@
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

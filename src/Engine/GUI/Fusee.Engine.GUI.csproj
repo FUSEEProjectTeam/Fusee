@@ -1,16 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.GUI</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Engine.GUI</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="JSIL.Meta">
@@ -35,4 +35,6 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

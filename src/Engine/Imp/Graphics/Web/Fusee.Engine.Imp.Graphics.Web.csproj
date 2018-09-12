@@ -1,15 +1,16 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.Web</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Engine.Imp.Graphics.Web</PackageId>
+    <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
@@ -26,4 +27,6 @@
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
   </Target>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

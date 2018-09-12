@@ -1,18 +1,18 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Web</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Base.Imp.Web</PackageId>
-
+    <TargetFramework>net462</TargetFramework>
     <DefineConstants>PLATFORM_WEB</DefineConstants>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="JSIL.Meta">
       <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
@@ -29,4 +29,6 @@
   </Target>
 
   <Import Project="..\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

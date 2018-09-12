@@ -1,14 +1,15 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Core</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-
     <PackageId>Fusee.Engine.Player.Core</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Player\Core\</OutputPath>
+  </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
@@ -32,4 +33,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

@@ -1,18 +1,18 @@
 ﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
-    <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
-    
+    <TargetFramework>net462</TargetFramework>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="freetype262d.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -30,4 +30,6 @@
   </ItemGroup>
   
   <Import Project="$(FuseeBuildRoot)\src\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
