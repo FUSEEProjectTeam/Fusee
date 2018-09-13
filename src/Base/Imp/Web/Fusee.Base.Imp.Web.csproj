@@ -23,10 +23,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
-  </Target>
 
   <Import Project="..\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
 

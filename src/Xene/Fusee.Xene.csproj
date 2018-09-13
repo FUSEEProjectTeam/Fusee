@@ -24,10 +24,6 @@
   <ItemGroup>
     <Folder Include="Properties\" />
   </ItemGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
-  </Target>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

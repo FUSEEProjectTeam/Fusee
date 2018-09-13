@@ -12,13 +12,12 @@
       FuseeReferenceCompileVertexShaders;
       $(BuildDependsOn);
 
-      FuseeCollectAndCopyExternalAssets;
+      FuseeCollectAndCopyAssets;
       FuseeResolveAssetDependencies;
 
       FuseeJSILCompile;
       FuseeCopyJSILJavaScript;
       FuseeCopyExternalJavaScript;
-      FuseeCopyFrameworkJavaScript;
       FuseeResolveJavaScriptDependencies;
       FuseeCopyWebAssetsStylesNHtml;
       FuseeWebTools;
@@ -150,12 +149,12 @@
   </Target>
 
   <!--LIBRARIES: Collect and copy Assets from this dll into the AssetDestinationFolder-->
-  <Target Name="FuseeCollectAndCopyExternalAssets"
-          Condition="'$(OutputType)' == 'Library' and '$(FuseeWebOutputPath)' == ''"
-          Inputs="@(FUSEE_Lib_Asset)"
-          Outputs="@(FUSEE_Lib_Asset -> '$(AssetDestinationFolder)%(Filename)%(Extension)')">
-    <Message Importance="High" Text="[copied external lib asset] @(FUSEE_Lib_Asset) -> $(AssetDestinationFolder)%(Filename)%(Extension)" />
-    <Copy SourceFiles="@(FUSEE_Lib_Asset)" DestinationFolder="$(AssetDestinationFolder)" />
+  <Target Name="FuseeCollectAndCopyAssets" Condition="'$(OutputType)' == 'Library' and '$(FuseeWebOutputPath)' == ''">
+    <ItemGroup>
+      <_CopyAssetsItems Include="$(ProjectDir)Assets\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CopyAssetsItems)" DestinationFolder="$(AssetDestinationFolder)" />
+    <Message Importance="High" Text="[copied asset] @(_CopyAssetsItems) -> $(AssetDestinationFolder)%(Filename)%(Extension)" />
   </Target>
 
   <!--ALL Projects: Collect and copy Assets from referenced dlls into the AssetDestinationFolder-->
@@ -191,19 +190,14 @@
   </Target>
 
   <!-- ================================================================================================================
-	FuseeCopyExternalJavaScript: copies itmes marked with the "FUSEE_External_JavaScript" item name (or "build action" as
-	represented in Visual Studio's property sheet) to the Scripts output (bin) folder. 
-	BEHOLD the '->' !!!! In the Outputs parameter this is a list transformation (google 'msbuild list transformation'). 
-	In the Text parameter its just OUTPUT TEXT, NOTHING ELSE!!!!!!
-	The Batching of the Message task (google 'msbuild task batching') is due to the % signs, NOT due to the '->' text.
+	FuseeCopyExternalJavaScript: copies items in the "Script"-Folder of an project, if a webbuild is defined.
 	-->
-  <Target Name="FuseeCopyExternalJavaScript"
-			    DependsOnTargets="FuseeSetScriptDestination"
-			    Condition=" '$(FuseeWebOutputPath)' == '' "
-			    Inputs="@(FUSEE_External_JavaScript)"
-			    Outputs="@(FUSEE_External_JavaScript -> '$(FuseeScriptDestination)%(Filename)%(Extension)')">
-    <Message Importance="High" Text="[external javascript] @(FUSEE_External_JavaScript) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
-    <Copy SourceFiles="@(FUSEE_External_JavaScript)" DestinationFolder="$(FuseeScriptDestination)" />
+  <Target Name="FuseeCopyExternalJavaScript" DependsOnTargets="FuseeSetScriptDestination" Condition=" '$(FuseeWebOutputPath)' == '' ">
+    <ItemGroup>
+      <_CopyScriptsItems Include="$(ProjectDir)Scripts\*.*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CopyScriptsItems)" DestinationFolder="$(FuseeScriptDestination)" />
+    <Message Importance="High" Text="[copied external javascript] @(_CopyScriptsItems) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
   </Target>
 
   <!-- Helper Task to define the destination directory of script copying tasks. 
@@ -217,19 +211,6 @@
       <FuseeScriptDestination Condition=" '$(FuseeWebOutputPath)' != '' ">$(FuseeWebOutputPath)Assets\Scripts\</FuseeScriptDestination>
     </PropertyGroup>
     <Message Text="FuseeScriptDestination = $(FuseeScriptDestination)" />
-  </Target>
-
-  <!-- ================================================================================================================
-	FuseeCopyFrameworkJavaScript: Exactly the same as FuseeCopyExternalJavaScript. Just without Inputs/Outputs definintions
-	and thus Always copying all scripts. Only performed in Web builds after JSILc. This way necessary .js files implementing
-	.NET Framework funtionality can be copied over either existing machine generated and thus bigger versions or copied
-	because JSILc did not create them due to awkward non-existing .NET framework references in portable libraries.
-	-->
-  <Target Name="FuseeCopyFrameworkJavaScript"
-			    DependsOnTargets="FuseeSetScriptDestination"
-			    Condition=" '$(FuseeWebOutputPath)' != '' ">
-    <Message Importance="High" Text="[external framework javascript] @(FUSEE_External_JavaScript) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
-    <Copy SourceFiles="@(FUSEE_External_JavaScript)" DestinationFolder="$(FuseeScriptDestination)" />
   </Target>
 
   <!-- ================================================================================================================
@@ -311,7 +292,6 @@
 			    DependsOnTargets="FuseeGetReferencedAssemblies">
     <ItemGroup>
       <FuseeScriptAddToManifest Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
-      <FuseeScriptAddToManifest Include="@(FUSEE_External_JavaScript)"/>
     </ItemGroup>
     <!-- Message Importance="High" Text="     FuseeScriptAddToManifest: @(FuseeScriptAddToManifest)" /-->
     <ItemGroup>

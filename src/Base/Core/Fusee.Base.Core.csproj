@@ -28,10 +28,6 @@
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
-  
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
-  </Target>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

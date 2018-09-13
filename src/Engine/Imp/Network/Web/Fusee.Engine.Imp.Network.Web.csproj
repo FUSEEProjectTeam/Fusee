@@ -21,9 +21,5 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 
-  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="$(FuseeBuildRoot)\src\PostBuild.cmd $(ProjectDir) $(ProjectName) $(TargetDir)" />
-  </Target>
-
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
