@@ -20,7 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpFont">
-      <HintPath>$(FuseeBuildRoot)\ext\Freetype\bin\SharpFont\$(Configuration)\SharpFont.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
