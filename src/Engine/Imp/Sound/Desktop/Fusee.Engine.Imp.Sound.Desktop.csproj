@@ -1,14 +1,14 @@
 ﻿<Project>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
+    <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
+    <PackageId>Fusee.Engine.Imp.Sound.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
 
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
   <PropertyGroup>
-    <OutputPath>$(OutputPath)\Libraries\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
