@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Android</RootNamespace>
@@ -60,12 +60,6 @@
   <ItemGroup>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM64\libfreetype262d.so">
       <Link>lib\arm64\libfreetype.so.6</Link>
-      <Abi>arm64-v8a</Abi>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedNativeLibrary>
-    <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\ARM\libfreetype262d.so">
-      <Link>lib\arm\libfreetype.so.6</Link>
-      <Abi>armeabi-v7a</Abi>
       <Abi>arm64-v8a</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
