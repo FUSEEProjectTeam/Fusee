@@ -24,7 +24,7 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
 
-  <Import Project="..\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
+  <Import Project="$(FuseeBuildRoot)\src\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
