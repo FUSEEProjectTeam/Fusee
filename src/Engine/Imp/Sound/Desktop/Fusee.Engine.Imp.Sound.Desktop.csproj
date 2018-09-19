@@ -1,29 +1,17 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project>
   <PropertyGroup>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
+    <RootNamespace>Fusee.Engine.Imp.Sound.Desktop</RootNamespace>
+    <PackageId>Fusee.Engine.Imp.Sound.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(RootNamespace).xml</DocumentationFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
-    <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
-    <Authors>FuseeProjectTeam</Authors>
-    <Company>Furtwangen University</Company>
-    <Version>0.6.1.0</Version>
-    <AssemblyVersion>0.6.1.0</AssemblyVersion>
-    <FileVersion>0.6.1.0</FileVersion>
-    <Product>FUSEE</Product>
-    <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="sfmlnet-audio-2">
       <HintPath>$(FuseeBuildRoot)\ext\SFML\sfmlnet-audio-2.dll</HintPath>
@@ -59,4 +47,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

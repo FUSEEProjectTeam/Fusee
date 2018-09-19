@@ -1,28 +1,16 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
+﻿<Project>
   <PropertyGroup>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..</FuseeBuildRoot>
     <RootNamespace>Fusee.Serialization</RootNamespace>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(Configuration)\$(RootNamespace)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(RootNamespace).xml</DocumentationFile>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
     <PackageId>Fusee.Serialization</PackageId>
-    <Authors>FuseeProjectTeam</Authors>
-    <Company>Furtwangen University</Company>
-    <Version>0.6.1.0</Version>
-    <AssemblyVersion>0.6.1.0</AssemblyVersion>
-    <FileVersion>0.6.1.0</FileVersion>
-    <Product>FUSEE</Product>
-    <Copyright>Copyright © 2013-2018 The FUSEE Project Team</Copyright>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
+  </PropertyGroup>
 
   <ItemGroup>
     <Reference Include="protobuf-net">
@@ -34,12 +22,15 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
 
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
   <PropertyGroup>
     <BuildDependsOn>
       $(BuildDependsOn);
       SerializationCompileSerializer
     </BuildDependsOn>
   </PropertyGroup>
+
   <!-- This target calls the protobuf precompiler. Note that the filename is hardwired and no item list is taken -->
   <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll">
     <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" />
