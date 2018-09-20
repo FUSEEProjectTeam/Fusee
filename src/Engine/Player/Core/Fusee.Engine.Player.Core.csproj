@@ -16,6 +16,18 @@
   <ItemGroup>
     <None Remove="Assets\FUSEERocket.fus" />
     <None Remove="Assets\FuseeText.png" />
+    <None Remove="Assets\bananaTex.png" />
+    <None Remove="Assets\baymax_scene.fus" />
+    <None Remove="Assets\bump.jpg" />
+    <None Remove="Assets\bump3.png" />
+    <None Remove="Assets\diffuse.png" />
+    <None Remove="Assets\EyesWhite.jpg" />
+    <None Remove="Assets\FUSEERocket.fus" />
+    <None Remove="Assets\FuseeText.png" />
+    <None Remove="Assets\houseSF.jpg" />
+    <None Remove="Assets\RoadTwoLanes_1024.png" />
+    <None Remove="Assets\FUSEERocket.fus" />
+    <None Remove="Assets\FuseeText.png" />
     <None Remove="Assets\RocketModel.fus" />
     <None Remove="Assets\Seamless brick texture dark 00.jpg" />
     <None Remove="Assets\seamless_tiled_grass_texture_by_lendrick.jpg" />

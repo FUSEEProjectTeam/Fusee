@@ -14,7 +14,7 @@ namespace Fusee.Engine.Examples.Bump.Core
     [FuseeApplication(Name = "FUSEE Bump Mapping Example", Description = "Quick bump example")]
     public class Bump : RenderCanvas
     {
-        public string ModelFile = "banana.fus";
+        public string ModelFile = "FUSEERocket.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
@@ -84,11 +84,17 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            // convert scene graph is not called in this project, so we can add a bump texture and convert it afterwards
+            // convert scene graph is not called yet in this project, so we can add a bump texture and convert it afterwards
             _scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
             {
-                Intensity = 1,
-                Texture = "bump.jpg"
+                Intensity = 0.5f,
+                Texture = "bump.png"
+            };
+
+            _scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            {
+                Intensity = 1.0f,
+                Texture = "bump.png"
             };
 
 

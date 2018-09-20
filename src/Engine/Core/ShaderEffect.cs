@@ -157,10 +157,10 @@ namespace Fusee.Engine.Core
                         // do nothing if new value = old value
                         if (param.Equals(value)) return; // TODO: Write a better compare method! 
 
-                        // else set it and invoke shaderEffectChanged so the RenderContext re-parses allShaderVars
                         ParamDecl[name] = value;
                         ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED, name, value));
-                    }
+
+                }
                     else
                     {
                         // not in Parameters yet, add it and call uniform_var_changed!
@@ -170,7 +170,6 @@ namespace Fusee.Engine.Core
                 }
         }
 
-
         /// <summary>
         /// Returns the value of a given shadereffect variable
         /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>
@@ -178,15 +177,15 @@ namespace Fusee.Engine.Core
         /// <param name="name">Name of the uniform variable</param>
         /// <returns></returns>
         public object GetEffectParam(string name)
-            {
+        {
                 object pa;
                 if (ParamDecl.TryGetValue(name, out pa))
                 {
                     return pa;
                 }
-                return null;
-            }
-
+                return new object();
+        }
+     
         // This property returns the number of elements
         // in the inner dictionary.
         /// <summary>
@@ -209,11 +208,12 @@ namespace Fusee.Engine.Core
         {
             // Converting the property name to lowercase
             // so that property names become case-insensitive.
-            string name = binder.Name.ToLower();
+            string name = binder.Name;
 
             // If the property name is found in a dictionary,
             // set the result parameter to the property value and return true.
             // Otherwise, return false.
+
             return ParamDecl.TryGetValue(name, out result);
         }
 
@@ -229,17 +229,17 @@ namespace Fusee.Engine.Core
         public override bool TrySetMember(
             SetMemberBinder binder, object value)
         {
-            // Test if value == EffectParam
-            if (value.GetType() != typeof(EffectParam))
-                return false;
+            object result;
 
-            SetEffectParam(binder.Name, value);   
+            if (!ParamDecl.TryGetValue(binder.Name, out result))
+                return false;
+            
+            SetEffectParam(binder.Name, value);
 
             return true;
         }
-    }
 
-    internal class ShaderEffectEventArgs : EventArgs
+        internal class ShaderEffectEventArgs : EventArgs
     {
         internal ShaderEffect Effect { get; }
         internal ShaderEffectChangedEnum Changed { get; }
@@ -268,4 +268,5 @@ namespace Fusee.Engine.Core
         // ReSharper restore InconsistentNaming
     }
 
+    }
 }

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Examples.Simple.Web</RootNamespace>
     <AssemblyName>Fusee.Engine.Examples.Simple.Web</AssemblyName>
@@ -13,6 +13,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <FileAlignment>512</FileAlignment>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,6 +36,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
     <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
     <DebugType>pdbonly</DebugType>
@@ -53,6 +56,7 @@
     <StartAction>Program</StartAction>
     <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
     <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
@@ -91,6 +95,7 @@
     <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\JSIL\FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js">
       <Link>FrameworkScripts\mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js</Link>
     </FUSEE_External_JavaScript-->
+    <None Include="app.config" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
@@ -125,6 +130,10 @@
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene, Version=0.6.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>

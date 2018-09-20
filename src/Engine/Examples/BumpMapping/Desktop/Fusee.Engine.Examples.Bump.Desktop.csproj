@@ -43,7 +43,7 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>Fusee.Engine.Examples.Bump.Desktop.Simple</StartupObject>
+    <StartupObject>Fusee.Engine.Examples.Bump.Desktop.Bump</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />

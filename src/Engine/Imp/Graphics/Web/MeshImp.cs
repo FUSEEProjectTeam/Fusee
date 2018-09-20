@@ -23,6 +23,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
 
         [JSExternal]
         public bool VerticesSet { get; }
+
+        [JSExternal]
+        public bool TangentsSet { get; }
+
+        [JSExternal]
+        public bool BiTangentsSet { get; }
+
         [JSExternal]
         public void InvalidateNormals()
         {
@@ -60,6 +67,20 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
+
+        [JSExternal]
+        public void InvalidateTangents()
+        {
+            throw new System.NotImplementedException();
+        }
+
+
+        [JSExternal]
+        public void InvalidateBiTangents()
+        {
+            throw new System.NotImplementedException();
+        }
+
 
         [JSExternal]
         public bool BoneWeightsSet { get; }

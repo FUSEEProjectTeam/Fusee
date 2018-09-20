@@ -67,6 +67,9 @@
     <Reference Include="Fusee.Engine.GUI">
       <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.0\Microsoft.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\FuseeText.png">

@@ -857,8 +857,51 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindBuffer(All.ArrayBuffer, 0);
         }
 
+        public void SetTangents(IMeshImp mr, float4[] tangents)
+        {
+            if (tangents == null || tangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
 
-        
+            int vboBytes;
+            int vertsBytes = tangents.Length * 4 * sizeof(float);
+            if (((MeshImp)mr).TangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).TangentBufferObject);
+
+            GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+            GL.BufferData(All.ArrayBuffer, (IntPtr)(vertsBytes), tangents, All.StaticDraw);
+            GL.GetBufferParameter(All.ArrayBuffer, All.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes));
+            GL.BindBuffer(All.ArrayBuffer, 0);
+        }
+
+        public void SetBiTangents(IMeshImp mr, float3[] bitangents)
+        {
+            if (bitangents == null || bitangents.Length == 0)
+            {
+                throw new ArgumentException("Tangents must not be null or empty");
+            }
+
+            int vboBytes;
+            int vertsBytes = bitangents.Length * 3 * sizeof(float);
+            if (((MeshImp)mr).BitangentBufferObject == 0)
+                GL.GenBuffers(1, out ((MeshImp)mr).BitangentBufferObject);
+
+            GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+            GL.BufferData(All.ArrayBuffer, (IntPtr)(vertsBytes), bitangents, All.StaticDraw);
+            GL.GetBufferParameter(All.ArrayBuffer, All.BufferSize, out vboBytes);
+            if (vboBytes != vertsBytes)
+                throw new ApplicationException(String.Format(
+                    "Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
+                    vertsBytes, vboBytes));
+            GL.BindBuffer(All.ArrayBuffer, 0);
+        }
+
+
         /// <summary>
         /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
@@ -1172,6 +1215,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
             ((MeshImp)mr).InvalidateBoneIndices();
         }
 
+        public void RemoveTangents(IMeshImp mr)
+        {
+             GL.DeleteBuffers(1, ref ((MeshImp)mr).TangentBufferObject);
+            ((MeshImp)mr).InvalidateTangents();
+        }
+
+        public void RemoveBiTangents(IMeshImp mr)
+        {
+            GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
+            ((MeshImp)mr).InvalidateBiTangents();
+        }
+
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
         /// </summary>
@@ -1299,6 +1354,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, All.Float, false, 0,
                     IntPtr.Zero);
             }
+            if (((MeshImp)mr).TangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.TangentAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
+                GL.VertexAttribPointer(Helper.TangentAttribLocation, 4, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+
+            if (((MeshImp)mr).BitangentBufferObject != 0)
+            {
+                GL.EnableVertexAttribArray(Helper.BitangentAttribLocation);
+                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
+                GL.VertexAttribPointer(Helper.BitangentAttribLocation, 3, All.Float, false, 0,
+                    IntPtr.Zero);
+            }
+
             if (((MeshImp) mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(All.ElementArrayBuffer, ((MeshImp) mr).ElementBufferObject);

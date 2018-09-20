@@ -110,5 +110,9 @@ namespace Fusee.Engine.Common
         ///   <c>true</c> if BoneIndicesBufferObject is not 0; otherwise, <c>false</c>.
         /// </value>
         bool BoneIndicesSet { get; }
+
+        bool TangentsSet { get; }
+
+        bool BiTangentsSet { get; }
     }
 }

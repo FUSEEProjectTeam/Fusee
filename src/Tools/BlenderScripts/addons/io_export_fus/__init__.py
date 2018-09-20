@@ -179,6 +179,8 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
             for o in obj:
                 if o.type == 'MESH':
                     geoObj = True
+                elif o.type == 'ARMATURE':
+                    geoObj = True
                 elif o.type == 'CAMERA':
                     falseObj.append(o)
                 elif o.type == 'LAMP' and self.isLamps==False:

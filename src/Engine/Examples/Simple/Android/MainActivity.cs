@@ -8,6 +8,7 @@ using Android.Widget;
 using Fusee.Base.Core;
 using Fusee.Base.Common;
 using Fusee.Base.Imp.Android;
+using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
 using Font = Fusee.Base.Core.Font;
@@ -60,7 +61,7 @@ namespace Fusee.Engine.Examples.Simple.Android
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
                                 var ser = new Serializer();
-                                return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
+                                return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
                             }
                             return null;
                         },

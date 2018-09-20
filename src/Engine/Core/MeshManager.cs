@@ -34,6 +34,12 @@ namespace Fusee.Engine.Core
 
             if (meshImp.BoneIndicesSet)
                 _renderContextImp.RemoveBoneIndices(meshImp);
+
+            if(meshImp.TangentsSet)
+                _renderContextImp.RemoveTangents(meshImp);
+
+            if (meshImp.BiTangentsSet)
+                _renderContextImp.RemoveBiTangents(meshImp);
         }
 
         private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
@@ -78,6 +84,13 @@ namespace Fusee.Engine.Core
                 case MeshChangedEnum.BoneWeights:
                     _renderContextImp.SetBoneWeights(toBeUpdatedMeshImp, mesh.BoneWeights);
                     break;
+                case MeshChangedEnum.Tangents:
+                    _renderContextImp.SetTangents(toBeUpdatedMeshImp, mesh.Tangents);
+                    break;
+                case MeshChangedEnum.BiTangents:
+                    _renderContextImp.SetBiTangents(toBeUpdatedMeshImp, mesh.BiTangents);
+                    break;
+
             }
         }
 
@@ -107,6 +120,12 @@ namespace Fusee.Engine.Core
 
             if (mesh.TrianglesSet)
                 _renderContextImp.SetTriangles(meshImp, mesh.Triangles);
+
+            if (mesh.TangentsSet)
+                _renderContextImp.SetTangents(meshImp, mesh.Tangents);
+
+            if (mesh.BiTangentsSet)
+                _renderContextImp.SetBiTangents(meshImp, mesh.BiTangents);
 
             // End Setup GPU Buffers
 
