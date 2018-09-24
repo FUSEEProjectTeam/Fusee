@@ -38,7 +38,7 @@ namespace Fusee.Engine.Player.Core
 
         private GUIHandler _guiHandler;
 
-        private GUIButton _guiFuseeLink;
+        private GUIButton_Legacy _guiFuseeLink;
         private GUIImage _guiFuseeLogo;
         private FontMap _guiLatoBlack;
         private GUIText _guiSubText;
@@ -52,7 +52,7 @@ namespace Fusee.Engine.Player.Core
             _guiHandler = new GUIHandler();
             _guiHandler.AttachToContext(RC);
 
-            _guiFuseeLink = new GUIButton(6, 6, 182, 58);
+            _guiFuseeLink = new GUIButton_Legacy(6, 6, 182, 58);
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
             _guiFuseeLink.BorderColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiFuseeLink.BorderWidth = 0;
@@ -259,21 +259,21 @@ namespace Fusee.Engine.Player.Core
             _guiHandler.Refresh();
         }
 
-        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
+        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton_Legacy sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
             _guiFuseeLink.BorderWidth = 0;
             SetCursor(CursorType.Standard);
         }
 
-        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
+        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton_Legacy sender, GUIButtonEventArgs mea)
         {
             _guiFuseeLink.ButtonColor = new float4(0.533f, 0.69f, 0.3f, 0.4f);
             _guiFuseeLink.BorderWidth = 1;
             SetCursor(CursorType.Hand);
         }
 
-        void _guiFuseeLink_OnGUIButtonDown(GUIButton sender, GUIButtonEventArgs mea)
+        void _guiFuseeLink_OnGUIButtonDown(GUIButton_Legacy sender, GUIButtonEventArgs mea)
         {
             OpenLink("http://fusee3d.org");
         }

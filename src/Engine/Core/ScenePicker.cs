@@ -112,17 +112,35 @@ namespace Fusee.Engine.Core
         #region State
         public class PickerState : VisitorState
         {
-
+            private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+
             public float4x4 Model
             {
                 set { _model.Tos = value; }
                 get { return _model.Tos; }
             }
 
+
+            public MinMaxRect UiRect
+            {
+                set { _uiRect.Tos = value; }
+                get { return _uiRect.Tos; }
+            }
+
+            public float4x4 CanvasXForm
+            {
+                get => _canvasXForm.Tos;
+                set => _canvasXForm.Tos = value;
+            }
+
+
             public PickerState()
             {
                 RegisterState(_model);
+                RegisterState(_uiRect);
+                RegisterState(_canvasXForm);
             }
         };
 
@@ -155,6 +173,39 @@ namespace Fusee.Engine.Core
         public void PickTransform(TransformComponent transform)
         {
             State.Model *= transform.Matrix();
+        }
+
+        [VisitMethod]
+        public void PickCanvasTransform(CanvasTransformComponent ctc)
+        {
+            var newRect = new MinMaxRect
+            {
+                Min = ctc.Size.Min,
+                Max = ctc.Size.Max
+            };
+
+            State.CanvasXForm = State.Model;
+            State.Model = State.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 0);
+            State.UiRect = newRect;
+        }
+
+        [VisitMethod]
+        public void PickCanvasTransform(RectTransformComponent rtc)
+        {
+
+            // The Heart of the UiRect calculation: Set anchor points relative to parent
+            // rectangle and add absolute offsets
+            var newRect = new MinMaxRect
+            {
+                Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+            };
+
+            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            var scaleChild = float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 0);
+
+            State.UiRect = newRect;
+            State.Model = State.CanvasXForm * transformChild * scaleChild;
         }
 
         [VisitMethod]
@@ -197,79 +248,79 @@ namespace Fusee.Engine.Core
 
 
 
-    //public class ScenePicker : Viserator<PickResult, ScenePicker.PickingState>
-    //{
-    //    public class PickingState : VisitorState
-    //    {
-    //        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-    //        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
-    //        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
+//public class ScenePicker : Viserator<PickResult, ScenePicker.PickingState>
+//{
+//    public class PickingState : VisitorState
+//    {
+//        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+//        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
+//        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
 
-    //        public float4x4 Model
-    //        {
-    //            set { _model.Tos = value; }
-    //            get { return _model.Tos; }
-    //        }
-    //        public float4x4 View
-    //        {
-    //            set { _view.Tos = value; }
-    //            get { return _view.Tos; }
-    //        }
+//        public float4x4 Model
+//        {
+//            set { _model.Tos = value; }
+//            get { return _model.Tos; }
+//        }
+//        public float4x4 View
+//        {
+//            set { _view.Tos = value; }
+//            get { return _view.Tos; }
+//        }
 
-    //        public float4x4 Projection
-    //        {
-    //            set { _projection.Tos =  value; }
-    //            get { return _projection.Tos; }
-    //        }
+//        public float4x4 Projection
+//        {
+//            set { _projection.Tos =  value; }
+//            get { return _projection.Tos; }
+//        }
 
-    //        public PickingState()
-    //        {
-    //            RegisterState(_model);
-    //            RegisterState(_view);
-    //            RegisterState(_projection);
-    //        }
-    //    }
+//        public PickingState()
+//        {
+//            RegisterState(_model);
+//            RegisterState(_view);
+//            RegisterState(_projection);
+//        }
+//    }
 
 
-    //    #region Visitors
-    //    [VisitMethod]
-    //    public void PickTransform(TransformComponent transform)
-    //    {
-    //        State.Model *= transform.Matrix();
-    //    }
+//    #region Visitors
+//    [VisitMethod]
+//    public void PickTransform(TransformComponent transform)
+//    {
+//        State.Model *= transform.Matrix();
+//    }
 
-    //    [VisitMethod]
-    //    public void PickMesh(MeshComponent mesh)
-    //    {
-    //        float4x4 mvp = State.Projection * State.View * State.Model;
-    //        for (int i = 0; i < mesh.Triangles.Length; i += 3)
-    //        {
-    //            // a, b c: current triangle's vertices in clip coordinates
-    //            float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
-    //            float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
-    //            float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
+//    [VisitMethod]
+//    public void PickMesh(MeshComponent mesh)
+//    {
+//        float4x4 mvp = State.Projection * State.View * State.Model;
+//        for (int i = 0; i < mesh.Triangles.Length; i += 3)
+//        {
+//            // a, b c: current triangle's vertices in clip coordinates
+//            float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
+//            float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
+//            float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
 
-    //            float u, v;
-    //            // Point-in-Triangle-Test
-    //            if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
-    //            {
-    //                YieldItem(new PickResult
-    //                     {
-    //                         Mesh = mesh,
-    //                         Node = CurrentNode,
-    //                         Triangle = i,
-    //                         Model = State.Model,
-    //                         View = State.View,
-    //                         Projection = State.Projection,
-    //                         U = u,
-    //                         V = v
-    //                     });
-    //            }
-    //        }
-    //    }
+//            float u, v;
+//            // Point-in-Triangle-Test
+//            if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
+//            {
+//                YieldItem(new PickResult
+//                     {
+//                         Mesh = mesh,
+//                         Node = CurrentNode,
+//                         Triangle = i,
+//                         Model = State.Model,
+//                         View = State.View,
+//                         Projection = State.Projection,
+//                         U = u,
+//                         V = v
+//                     });
+//            }
+//        }
+//    }
 
-    //    public float2 PickPosClip { get; set; }
+//    public float2 PickPosClip { get; set; }
 
-    //    #endregion
+//    #endregion
 
-    //}
+//}
