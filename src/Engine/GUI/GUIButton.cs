@@ -1,35 +1,37 @@
-﻿using System;
+﻿using System.Diagnostics;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.GUI
 {
     public class GUIButton : CodeComponent
     {
-        public event OnClick OnClick;
+        public event OnMouseOver OnMouseOver;
         public event OnMouseEnter OnMouseEnter;
         public event OnMouseLeave OnMouseLeave;
-
-        /*private SceneInteractionHandler _interactionHandler;
-
-        public GUIButton(SceneInteractionHandler interactionHandler)
-        {
-            _interactionHandler = interactionHandler;
-            _interactionHandler.Register(this);
-        }*/
-
+        public event OnMouseDown OnMouseDown;
+        public event OnMouseUp OnMouseUp;
 
         public void InvokeEvent()
         {
-            if (Input.Mouse.LeftButton)
-            {
-                OnClick?.Invoke();
-            }
-            //else if() ...
+            OnMouseOver?.Invoke();
+            Input.Mouse.ButtonValueChanged += OnMouse;
+            Input.Touch.ButtonValueChanged += OnMouse; //ToDo: Define OnTouch()
+
+            Input.Mouse.AxisValueChanged += OnAxisChanged;
         }
 
+        private void OnMouse(object sender, ButtonValueChangedArgs bvca)
+        {
+                if (bvca.Pressed)
+                    OnMouseDown?.Invoke();
+                else
+                    OnMouseUp?.Invoke();
+        }
+
+        private void OnAxisChanged(object sender, AxisValueChangedArgs avca)
+        {
+            //tbd
+        }
     }
-
-
 }

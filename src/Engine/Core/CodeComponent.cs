@@ -16,6 +16,12 @@ namespace Fusee.Engine.Core
         public delegate void OnMouseEnter();
 
         public delegate void OnMouseLeave();
-        
+
+        public delegate void OnMouseOver();
+
+        public delegate void OnMouseDown();
+
+        public delegate void OnMouseUp();
+
     }
 }

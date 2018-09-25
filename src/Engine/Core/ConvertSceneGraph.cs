@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -20,6 +22,16 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
+
+        private IEnumerable<System.Type> _codeComponentSubClasses;
+
+        public ConvertSceneGraph()
+        {
+            _codeComponentSubClasses = 
+                Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
+        }
 
         protected override void PopState()
         {
@@ -48,7 +60,7 @@ namespace Fusee.Engine.Core
         #region Visitors
 
         [VisitMethod]
-        public void ConvScneNodeContainer(SceneNodeContainer snc)
+        public void ConvSceneNodeContainer(SceneNodeContainer snc)
         {
             if (_predecessors.Count != 0)
             {
@@ -70,6 +82,22 @@ namespace Fusee.Engine.Core
                 else
                     _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
+
+            //WIP!
+            //If the SceneNodeContainers' name contains the name of some CodeComponent subclass,
+            //create CodeComponent of this type and add it to the currentNode
+            foreach (var type in _codeComponentSubClasses)
+            {
+                if (!snc.Name.Contains(type.ToString())) continue;
+                
+                var codeComp = Activator.CreateInstance(type);
+                //_currentNode.AddComponent(codeComp);
+            }
+        }
+
+        static T GetInstance<T>()
+        {
+            return Activator.CreateInstance<T>();
         }
 
         [VisitMethod]

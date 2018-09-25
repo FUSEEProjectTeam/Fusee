@@ -28,223 +28,6 @@ namespace Fusee.Engine.Examples.UI.Core
         private SceneInteractionHandler _sih;
         private GUIButton _btn;
 
-        public static Mesh CreateCuboid(float3 size)
-        {
-            return new Mesh
-            {
-                Vertices = new[]
-                {
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = +0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z},
-                    new float3 {x = +0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = +0.5f * size.z},
-                    new float3 {x = -0.5f * size.x, y = -0.5f * size.y, z = -0.5f * size.z}
-                },
-
-                Triangles = new ushort[]
-                {
-                    // front face
-                    0, 2, 1, 0, 3, 2,
-
-                    // right face
-                    4, 6, 5, 4, 7, 6,
-
-                    // back face
-                    8, 10, 9, 8, 11, 10,
-
-                    // left face
-                    12, 14, 13, 12, 15, 14,
-
-                    // top face
-                    16, 18, 17, 16, 19, 18,
-
-                    // bottom face
-                    20, 22, 21, 20, 23, 22
-
-                },
-
-                Normals = new[]
-                {
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(0, 0, 1),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(1, 0, 0),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(0, 0, -1),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(-1, 0, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, 1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0),
-                    new float3(0, -1, 0)
-                },
-
-                UVs = new[]
-                {
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0),
-                    new float2(1, 0),
-                    new float2(1, 1),
-                    new float2(0, 1),
-                    new float2(0, 0)
-                },
-                //BoundingBox = new AABBf(-0.5f * size, 0.5f * size)
-            };
-        }
-
-        private SceneContainer CreateScene()
-        {
-            return new ConvertSceneGraph().Convert(new SceneContainer
-            {
-                Header = new SceneHeader
-                {
-                    CreationDate = "April 2017",
-                    CreatedBy = "mch@hs-furtwangen.de",
-                    Generator = "Handcoded with pride",
-                    Version = 42,
-                },
-                Children = new List<SceneNodeContainer>
-                {
-                    new SceneNodeContainer
-                    {
-                        Name = "Base",
-                        Components = new List<SceneComponentContainer>
-                        {
-                            new TransformComponent { Scale = float3.One },
-                           new MaterialComponent
-                           {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Red) },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                            },
-                            CreateCuboid(new float3(100, 20, 100))
-                        },
-                        Children = new List<SceneNodeContainer>
-                        {
-                            new SceneNodeContainer
-                            {
-                                Name = "Arm01",
-                                Components = new List<SceneComponentContainer>
-                                {
-                                    new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
-                                   new MaterialComponent
-                                    {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Green) },
-                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                    },
-                                    CreateCuboid(new float3(20, 100, 20))
-                                },
-                                Children = new List<SceneNodeContainer>
-                                {
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Arm02Rot",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
-                                        },
-                                        Children = new List<SceneNodeContainer>
-                                        {
-                                            new SceneNodeContainer
-                                            {
-                                                Name = "Arm02",
-                                                Components = new List<SceneComponentContainer>
-                                                {
-                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                    new MaterialComponent
-                                                    {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Yellow) },
-                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                    },
-                                                    CreateCuboid(new float3(20, 100, 20))
-                                                },
-                                                Children = new List<SceneNodeContainer>
-                                                {
-                                                    new SceneNodeContainer
-                                                    {
-                                                        Name = "Arm03Rot",
-                                                        Components = new List<SceneComponentContainer>
-                                                        {
-                                                            new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
-                                                        },
-                                                        Children = new List<SceneNodeContainer>
-                                                        {
-                                                            new SceneNodeContainer
-                                                            {
-                                                                Name = "Arm03",
-                                                                Components = new List<SceneComponentContainer>
-                                                                {
-                                                                    new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
-                                                                    new MaterialComponent
-                                                                    {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Blue) },
-                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
-                                                                    },
-                                                                    CreateCuboid(new float3(20, 100, 20))
-                                                                }
-                                                            },
-                                                        }
-                                                    }
-                                                }
-                                            },
-                                        }
-                                    }
-                                }
-                            },
-                        }
-                    },
-                }
-            });
-        }
-
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
@@ -409,9 +192,14 @@ namespace Fusee.Engine.Examples.UI.Core
             };
         }
 
-        public void OnBtnClick()
+        public void OnBtnDown()
         {
-            Debug.WriteLine("Btn was clicked!");
+            Debug.WriteLine("Btn down!");
+        }
+
+        public void OnBtnUp()
+        {
+            Debug.WriteLine("Btn up!");
         }
 
         // Init is called on startup. 
@@ -426,14 +214,15 @@ namespace Fusee.Engine.Examples.UI.Core
 
 
             _btn = new GUIButton();
-            _btn.OnClick += OnBtnClick;
+            _btn.OnMouseUp += OnBtnUp;
+            _btn.OnMouseDown += OnBtnDown;
+            //_btn.OnMouseOver += delegate { Debug.WriteLine("Mouse over"); };
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
 
+            // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);
-
-            
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -490,11 +279,11 @@ namespace Fusee.Engine.Examples.UI.Core
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
-            //Debug.WriteLine(Input.Mouse.Position);
-            var pickPosClip = Input.Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-            //Debug.WriteLine(pickPosClip);
+            //Set the view matrix for the interaction handler.
             _sih.View = RC.ModelView;
-            _sih.CheckForInteractableObjects(pickPosClip);
+
+            // Constantly check for interactive objects.
+            _sih.CheckForInteractiveObjects(Input.Mouse.Position,Width,Height);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
