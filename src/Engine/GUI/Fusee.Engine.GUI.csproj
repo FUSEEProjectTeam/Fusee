@@ -111,6 +111,7 @@
     <Compile Include="GUIImage.cs" />
     <Compile Include="GUIPanel.cs" />
     <Compile Include="GUIText.cs" />
+    <Compile Include="NamespaceDoc.cs" />
     <Compile Include="TextureNodeContainer.cs" />
   </ItemGroup>
   <ItemGroup>
