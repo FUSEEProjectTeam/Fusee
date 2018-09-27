@@ -71,12 +71,10 @@
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x64\libfreetype262d.so">
       <Link>lib\x64\libfreetype.so.6</Link>
       <Abi>x86_64</Abi>
-      <Abi>x86_64</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x86\libfreetype262d.so">
       <Link>lib\x86\libfreetype.so.6</Link>
-      <Abi>x86</Abi>
       <Abi>x86</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>

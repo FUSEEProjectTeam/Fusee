@@ -329,6 +329,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
+        rootMaterialComponent = None;
         rootMaterialComponent = GetMaterial(obj, isWeb)       
 
         rootComponent1.payload = rootTransformComponent.SerializePartialToString()
@@ -792,7 +793,7 @@ def GetMaterial(obj, isWeb):
                         pbrMaterial.FresnelReflectance = specular
                         pbrMaterial.DiffuseFraction = metallic
 
-                        return rootMaterialComponent
+                return rootMaterialComponent
             else:
                 # use default material
                 rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)

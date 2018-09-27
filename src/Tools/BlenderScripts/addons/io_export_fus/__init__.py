@@ -14,8 +14,8 @@ In order to make this Add-On work, you have to do the following:
 #Register as Add-on
 bl_info = {
     "name": ".fus format",
-    "author": "Christoph Mueller, Jonas Conrad, Patrick Foerster",
-    "version": (0, 6, 1),
+    "author": "Christoph Mueller, Moritz Roetner, Jonas Conrad, Patrick Foerster",
+    "version": (0, 7, 0),
     "blender": (2, 79, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
@@ -52,15 +52,23 @@ from bpy_extras.io_utils import (
         ExportHelper,
         )
 
-#Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
-#Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote
-#Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret because secret=None!)
+# Taken from https://github.com/Microsoft/PTVS/wiki/Cross-Platform-Remote-Debugging
+# Now moved to https://docs.microsoft.com/en-us/visualstudio/python/debugging-cross-platform-remote
+# Project repository at https://github.com/Microsoft/ptvsd
+# Install latest version from pypi at https://pypi.org/project/ptvsd/
+#
+# Attach to PTSV Python Remote debuggee using "tcp://localhost:5678" (NO Secret!)
 try:
     import ptvsd
-    ptvsd.enable_attach(secret=None)
-    print('PTSV Debugging enabled')
 except Exception:
-    print('PTSV Debugging disabled')
+    print('PTSV Debugging disabled: import ptvsd failed')
+try:
+#    ptvsd.enable_attach(secret=None) With ptvsd version 4 and upwards secret is no longer a named parameter
+    ptvsd.enable_attach()
+    print('PTSV Debugging enabled')
+except Exception as e:
+    print('PTSV Debugging disabled: ptvsd.enable_attach failed:')
+    print(e)
 
 class ExportFUS(bpy.types.Operator, ExportHelper):
     #class attributes
