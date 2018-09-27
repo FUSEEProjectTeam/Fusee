@@ -90,7 +90,7 @@
           Inputs="@(FuseePixelShaderSource)"
           Outputs="$(TargetPath)">
     <Message Importance="High" Text="[pixel shader validation] %(FuseePixelShaderSource.FullPath)" />
-    <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseePixelShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
+    <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeBuildRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseePixelShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
       <Output TaskParameter="ConsoleOutput" PropertyName="ValidationResultString" />
       <Output TaskParameter="ExitCode" PropertyName="ErrCode"/>
     </Exec>
@@ -115,7 +115,7 @@
 			    Inputs="@(FuseeVertexShaderSource)"
 			    Outputs="$(TargetPath)">
     <Message Importance="High" Text="[vertex shader validation] %(FuseeVertexShaderSource.FullPath)" />
-    <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseeVertexShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
+    <Exec ContinueOnError="false" Timeout="120000" Command='"$(FuseeBuildRoot)ext\glslangValidator\glslangValidator.exe" "%(FuseeVertexShaderSource.FullPath)" '  ConsoleToMSBuild="true" IgnoreExitCode='true'>
       <Output TaskParameter="ConsoleOutput" PropertyName="ValidationResultString" />
       <Output TaskParameter="ExitCode" PropertyName="ErrCode"/>
     </Exec>
@@ -175,7 +175,7 @@
 	-->
   <Target Name="FuseeJSILCompile" Condition=" '$(FuseeWebOutputPath)' != '' ">
     <Message Importance="High" Text="[JSILc x-compile] $(TargetPath)" />
-    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)ext\JSIL\Compiler\JSILc.exe" -o "$(FuseeWebOutputPath)Assets\Scripts" "$(TargetPath)"' />
+    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeBuildRoot)ext\JSIL\Compiler\JSILc.exe" -o "$(FuseeWebOutputPath)Assets\Scripts" "$(TargetPath)"' />
   </Target>
 
   <!-- ================================================================================================================
@@ -183,7 +183,7 @@
 	-->
   <Target Name="FuseeCopyJSILJavaScript" Condition=" '$(FuseeWebOutputPath)' != '' ">
     <ItemGroup>
-      <FuseeJsilScript Include="$(FuseeRoot)ext\JSIL\Scripts\**\*.js" />
+      <FuseeJsilScript Include="$(FuseeBuildRoot)ext\JSIL\Scripts\**\*.js" />
     </ItemGroup>
     <Copy SourceFiles="%(FuseeJsilScript.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)" ContinueOnError="true"/>
     <Message Condition="Exists('%(FuseeJsilScript.FullPath)')" Importance="High" Text="[JSIL built-in script] %(FuseeJsilScript.FullPath) -> $(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)%(Filename)%(Extension)" />
@@ -291,7 +291,7 @@
 			    Condition=" '$(FuseeWebOutputPath)' != '' "
 			    DependsOnTargets="FuseeGetReferencedAssemblies">
     <ItemGroup>
-      <FuseeScriptAddToManifest Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
+      <FuseeScriptAddToManifest Include="$(FuseeBuildRoot)bin\$(Configuration)\Libraries\%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
     </ItemGroup>
     <!-- Message Importance="High" Text="     FuseeScriptAddToManifest: @(FuseeScriptAddToManifest)" /-->
     <ItemGroup>
@@ -310,11 +310,11 @@
     </PropertyGroup>
 
     <Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
-    <Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; generate &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
+    <Message Importance="High" Text="                 command line: &quot;$(FuseeBuildRoot)bin\$(Configuration)\Tools\fusee.exe&quot; generate &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
 
     <!-- Message Importance="High" Text="     External Scripts to add: @(FuseeScriptAddToManifest->'%(filename)%(extension)')" /-->
     <!-- Message Importance="High" Text="     External Scripts to add: %(FuseeScriptAddToManifest.directory)%(FuseeScriptAddToManifest.filename)%(FuseeScriptAddToManifest.extension)" /-->
-    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe" generate "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
+    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeBuildRoot)bin\$(Configuration)\Tools\fusee.exe" generate "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
   </Target>
 
   <!-- ================================================================================================================
@@ -411,9 +411,9 @@
 	               TASKS TO PERFORM AT CLEAN 
 	     ################################################################ 	-->
   <Target Name="FuseeCleanNativeDependencies">
-    <Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives')" Text="Removing native dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
+    <Message Condition="Exists('$(FuseeBuildRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives')" Text="Removing native dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
     <ItemGroup>
-      <FuseeUnmanagedDependency Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives\*.*"/>
+      <FuseeUnmanagedDependency Include="$(FuseeBuildRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Natives\*.*"/>
     </ItemGroup>
     <Message Condition="Exists('%(FuseeUnmanagedDependency.FullPath)')" Importance="High" Text="[native dependency] removed $(OutputPath)%(FuseeUnmanagedDependency.Filename)%(FuseeUnmanagedDependency.Extension)" />
     <Delete Files="$(OutputPath)%(FuseeUnmanagedDependency.Filename)%(FuseeUnmanagedDependency.Extension)"/>
@@ -438,9 +438,9 @@
   </Target>
 
   <Target Name="FuseeCleanDependingJavaScript"  Condition=" '$(FuseeWebOutputPath)' != '' ">
-    <Message Condition="Exists('$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')" Text="Removing external javascript dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
+    <Message Condition="Exists('$(FuseeBuildRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts')" Text="Removing external javascript dependencies for %(ProjectReference.Filename)%(ProjectReference.Extension)." />
     <ItemGroup>
-      <FuseeExternalScript Include="$(FuseeRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts\*.*"/>
+      <FuseeExternalScript Include="$(FuseeBuildRoot)bin\$(Configuration)\Libraries\%(ProjectReference.Filename).Scripts\*.*"/>
     </ItemGroup>
     <Message Condition="Exists('%(FuseeExternalScript.FullPath)')" Importance="High" Text="[external javascript dependency] removed $(FuseeWebOutputPath)Assets\Scripts\%(FuseeExternalScript.Filename)%(FuseeExternalScript.Extension)" />
     <Delete Files="$(FuseeWebOutputPath)Assets\Scripts\%(FuseeExternalScript.Filename)%(FuseeExternalScript.Extension)" />
