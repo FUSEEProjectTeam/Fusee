@@ -324,11 +324,11 @@
 	-->
   <Target Name="FuseeCopyNativeLibrary"  DependsOnTargets="FuseeSetNativeDestination">
     <ItemGroup>
-      <_CopyNativeItems Include="$(ProjectDir)Natives\*.*" Condition="! $([System.Text.RegularExpressions.Regex]::IsMatch('%(Extension)', 'gitignore'))" />
+      <_CopyNativeItems Include="$(ProjectDir)Natives\*.*" />
       <!-- Getting all files that have no Build Action and are linked to the project -->
       <_AllNoneItemsWithLinks Include="@(None->HasMetadata('Link'))" />
       <!-- Going through all those files and checking if the path they are linked to starts with Natives -->
-      <_AllNoneItemsWithLinksAndNativesAsPath Include="@(_AllNoneItemsWithLinks)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Link)', 'Natives'))" />
+      <_AllNoneItemsWithLinksAndNativesAsPath Include="@(_AllNoneItemsWithLinks)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Link)', '^Natives\\.+'))" />
       <!-- Merge the linked natives with the files in the folder -->
       <_CopyNativeItems Include="@(_AllNoneItemsWithLinksAndNativesAsPath)" />
     </ItemGroup>
