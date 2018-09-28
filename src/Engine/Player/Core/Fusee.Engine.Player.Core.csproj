@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Core</RootNamespace>
     <PackageId>Fusee.Engine.Player.Core</PackageId>

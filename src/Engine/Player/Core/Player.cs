@@ -16,7 +16,7 @@ namespace Fusee.Engine.Player.Core
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
-        public string ModelFile = "FUSEERocket.fus";
+        public string ModelFile = "Model.fus";
 
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,

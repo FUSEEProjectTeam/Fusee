@@ -36,6 +36,8 @@
     <DocumentationSources>
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Engine.Core.dll" />
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Engine.Core.xml" />
+      <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll" />
+      <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Engine.GUI.xml" />
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Base.Common.dll" />
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Base.Common.xml" />
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Base.Core.dll" />
@@ -53,7 +55,7 @@
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Xirkit.dll" />
       <DocumentationSource sourceFile="..\..\bin\Debug\Libraries\Fusee.Xirkit.xml" />
     </DocumentationSources>
-    <HelpFileVersion>0.6.1.0</HelpFileVersion>
+    <HelpFileVersion>0.7.0.0</HelpFileVersion>
     <MaximumGroupParts>2</MaximumGroupParts>
     <NamespaceGrouping>False</NamespaceGrouping>
     <SyntaxFilters>C#</SyntaxFilters>

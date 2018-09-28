@@ -5,8 +5,8 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Creates a plane geomentry straight from the code that is devided in 9 tiles.
-    /// This geometry is intendet for displaying GUI Textures.
+    /// Creates a plane geometry straight from the code that is devided in 9 tiles.
+    /// This geometry is intended for displaying GUI Textures.
     /// </summary>
     public class NineSlicePlane : Mesh
     {

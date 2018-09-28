@@ -7,7 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.Core.GUI;
+using Fusee.Engine.GUI;
 
 namespace FuseeApp
 {
@@ -92,7 +92,7 @@ namespace FuseeApp
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0.2f, -6, 0, 1.5f, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()
@@ -117,9 +117,9 @@ namespace FuseeApp
             var aspectRatio = Width/(float) Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            // Front clipping happens at 0.01 (Objects nearer than 1 world unit get clipped)
+            // Back clipping happens at 200 (Anything further away from the camera than 200 world units gets clipped, polygons will be cut)
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.01f, 200.0f);
             RC.Projection = projection;
         }
     }
