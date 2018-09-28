@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
@@ -14,9 +14,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="freetype262d.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpFont">

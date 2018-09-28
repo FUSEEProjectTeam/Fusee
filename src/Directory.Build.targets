@@ -318,16 +318,22 @@
   </Target>
 
   <!-- ================================================================================================================
-	FuseeCopyNativeLibrary: copies items marked with the "FUSEE_Native_Library" item name (or "build action" as
-	represented in Visual Studio's property sheet) to a subfolder below the Libraries output (bin) folder. The subfolder
+	FuseeCopyNativeLibrary: Copies files in the Natives folder to a subfolder below the Libraries output (bin) folder. The subfolder
 	is named after the Assembly Name of the generated dll/exe file. This way the FuseeResolveNativeDependencies can 
 	handle unmanaged dependencies on a per-managed-assembly-level. Similar to FuseeCopyExternalJavaScript.
 	-->
-  <Target Name="FuseeCopyNativeLibrary"
-			Inputs="@(FUSEE_Native_Library)"
-			Outputs="@(FUSEE_Native_Library -> '$(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)')">
-    <Message Importance="High" Text="[native library] @(FUSEE_Native_Library) -> $(OutputPath)$(AssemblyName).Natives\%(Filename)%(Extension)" />
-    <Copy SourceFiles="@(FUSEE_Native_Library)" DestinationFolder="$(OutputPath)$(AssemblyName).Natives\" />
+  <Target Name="FuseeCopyNativeLibrary"  DependsOnTargets="FuseeSetNativeDestination">
+    <ItemGroup>
+      <_CopyNativeItems Include="$(ProjectDir)Natives\*.*" Condition="! $([System.Text.RegularExpressions.Regex]::IsMatch('%(Extension)', 'gitignore'))" />
+      <!-- Getting all files that have no Build Action and are linked to the project -->
+      <_AllNoneItemsWithLinks Include="@(None->HasMetadata('Link'))" />
+      <!-- Going through all those files and checking if the path they are linked to starts with Natives -->
+      <_AllNoneItemsWithLinksAndNativesAsPath Include="@(_AllNoneItemsWithLinks)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Link)', 'Natives'))" />
+      <!-- Merge the linked natives with the files in the folder -->
+      <_CopyNativeItems Include="@(_AllNoneItemsWithLinksAndNativesAsPath)" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CopyNativeItems)" DestinationFolder="$(FuseeNativeDestination)" />
+    <Message Importance="High" Text="[native library] @(_CopyNativeItems) -> $(FuseeNativeDestination)%(Filename)%(Extension)" />
   </Target>
 
   <!-- ================================================================================================================
