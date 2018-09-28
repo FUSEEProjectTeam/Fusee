@@ -6,7 +6,6 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Fusee.Base.Common;
 
 namespace Fusee.Engine.Examples.UI.Core
 {
@@ -26,11 +25,103 @@ namespace Fusee.Engine.Examples.UI.Core
         private Texture _bltDestinationTex;
 
         private SceneInteractionHandler _sih;
-        private GUIButton _btn;
+        private GUIButton _btnCanvas;
+        private GUIButton _btnCat;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
+            var catTextureNode = new TextureNodeContainer(
+                "Child1",
+                AssetStorage.Get<string>("nineSlice.vert"),
+                AssetStorage.Get<string>("nineSliceTile.frag"),
+                //Set the diffuse texture you want to use.
+                new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
+                    Max = new float2(1, 0) //Anchor is in the lower right corner of the parent
+                },
+                //Define Offset and therefor the size of the element.
+                //Min: distance to this elements Min anchor.
+                //Max: distance to this elements Max anchor.
+                new MinMaxRect
+                {
+                    Min = new float2(7.5f, 0),
+                    Max = new float2(-7.5f, 5)
+                },
+                //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
+                new float2(5, 5),
+                //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
+                new float4(0.11f, 0.11f, 0.06f, 0.17f),
+                5
+            );
+            catTextureNode.AddCodeComponent(_btnCat);
+
+            var bltTextureNode = new TextureNodeContainer(
+                "Blt",
+                AssetStorage.Get<string>("texture.vert"),
+                AssetStorage.Get<string>("texture.frag"),
+                //Set the diffuse texture you want to use.
+                _bltDestinationTex,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
+                    Max = new float2(0, 0) //Anchor is in the lower right corner of the parent
+                },
+                //Define Offset and therefor the size of the element.
+                //Min: distance to this elements Min anchor.
+                //Max: distance to this elements Max anchor.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(5, 6)
+                });
+
+            var nineSliceTextureNode = new TextureNodeContainer(
+                "Child2",
+                AssetStorage.Get<string>("nineSlice.vert"),
+                AssetStorage.Get<string>("nineSliceTile.frag"),
+                new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
+                //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
+                new MinMaxRect
+                {
+                    Min = new float2(1, 1), //Anchor is in the upper right corner.
+                    Max = new float2(1, 1) //Anchor is in the upper right corner.
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(-8, -4),
+                    Max = new float2(0, 0)
+                },
+                new float2(2, 3),
+                new float4(0.1f, 0.1f, 0.1f, 0.1f),
+                2
+            );
+            var quagganTextureNode = new TextureNodeContainer(
+                "Child3",
+                AssetStorage.Get<string>("nineSlice.vert"),
+                AssetStorage.Get<string>("nineSliceTile.frag"),
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 1), //Anchor is in the upper left corner.
+                    Max = new float2(0, 1) //Anchor is in the upper left corner.
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(0, -1),
+                    Max = new float2(6, 0)
+                },
+                new float2(5, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f)
+            );
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -92,98 +183,16 @@ namespace Fusee.Engine.Examples.UI.Core
                                                 })
                                             },
                                             new Plane(),
-                                            _btn
+                                            _btnCanvas
                                         }
                                     },
                                     //Simple Texture Node, contains a Blt"ed" texture.
-                                    new TextureNodeContainer(
-                                        "Blt",
-                                        AssetStorage.Get<string>("texture.vert"),
-                                        AssetStorage.Get<string>("texture.frag"),
-                                        //Set the diffuse texture you want to use.
-                                        _bltDestinationTex,
-                                        //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                                        //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(0,0), //Anchor is in the lower left corner of the parent.
-                                            Max = new float2(0,0) //Anchor is in the lower right corner of the parent
-                                        },
-                                        //Define Offset and therefor the size of the element.
-                                        //Min: distance to this elements Min anchor.
-                                        //Max: distance to this elements Max anchor.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(0,0),
-                                            Max = new float2(5,6)
-                                        }),
+                                    bltTextureNode,
                                     //Add nine sliced textures to canvas
-                                    new TextureNodeContainer(
-                                        "Child1",
-                                        AssetStorage.Get<string>("nineSlice.vert"),
-                                        AssetStorage.Get<string>("nineSliceTile.frag"),
-                                        //Set the diffuse texture you want to use.
-                                        new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
-                                        //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                                        //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(0,0), //Anchor is in the lower left corner of the parent.
-                                            Max = new float2(1,0) //Anchor is in the lower right corner of the parent
-                                        },
-                                        //Define Offset and therefor the size of the element.
-                                        //Min: distance to this elements Min anchor.
-                                        //Max: distance to this elements Max anchor.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(7.5f,0),
-                                            Max = new float2(-7.5f,5)
-                                        },
-                                        //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
-                                        new float2(5,5),
-                                        //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
-                                        new float4(0.11f,0.11f,0.06f,0.17f),
-                                        5
-                                    ),
-                                    new TextureNodeContainer(
-                                        "Child2",
-                                        AssetStorage.Get<string>("nineSlice.vert"),
-                                        AssetStorage.Get<string>("nineSliceTile.frag"),
-                                        new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
-                                        //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(1,1), //Anchor is in the upper right corner.
-                                            Max = new float2(1,1) //Anchor is in the upper right corner.
-                                        },
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(-8,-4),
-                                            Max = new float2(0,0)
-                                        },
-                                        new float2(2,3),
-                                        new float4(0.1f,0.1f,0.1f,0.1f),
-                                        2
-                                    ),
-                                    new TextureNodeContainer(
-                                        "Child3",
-                                        AssetStorage.Get<string>("nineSlice.vert"),
-                                        AssetStorage.Get<string>("nineSliceTile.frag"),
-                                        new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
-                                        //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(0,1), //Anchor is in the upper left corner.
-                                            Max = new float2(0,1) //Anchor is in the upper left corner.
-                                        },
-                                        new MinMaxRect
-                                        {
-                                            Min = new float2(0,-1),
-                                            Max = new float2(6,0)
-                                        },
-                                        new float2(5,1),
-                                        new float4(0.1f,0.1f,0.1f,0.09f)
-                                    )
+                                    catTextureNode,
+                                    nineSliceTextureNode,
+                                    quagganTextureNode
+                                    
                                 }
                             }
                         }
@@ -192,14 +201,56 @@ namespace Fusee.Engine.Examples.UI.Core
             };
         }
 
-        public void OnBtnDown()
+        public void OnBtnCanvasDown(CodeComponent sender)
         {
-            Debug.WriteLine("Btn down!");
+            Debug.WriteLine("Canvas: Btn down!");
         }
 
-        public void OnBtnUp()
+        public void OnBtnCanvasUp(CodeComponent sender)
         {
-            Debug.WriteLine("Btn up!");
+            Debug.WriteLine("Canvas: Btn up!");
+        }
+
+        public void OnBtnCanvasEnter(CodeComponent sender)
+        {
+            Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
+           
+        }
+
+        public void OnBtnCanvasExit(CodeComponent sender)
+        {
+            Debug.WriteLine("Canvas: Exit Btn!");
+        }
+
+        public void OnBtnCatDown(CodeComponent sender)
+        {
+            Debug.WriteLine("Cat: Btn down!");
+        }
+
+        public void OnBtnCatUp(CodeComponent sender)
+        {
+            Debug.WriteLine("Cat: Btn up!");
+        }
+
+        public void OnBtnCatEnter(CodeComponent sender)
+        {
+            Debug.WriteLine("Cat: Btn entered!" + Time.Frames);
+
+        }
+
+        public void OnBtnCatExit(CodeComponent sender)
+        {
+            Debug.WriteLine("Cat: Exit Btn!");
+        }
+
+        public void OnMouseOverBtnCat(CodeComponent sender)
+        {
+            Debug.WriteLine("Cat: Mouse over!");
+        }
+
+        public void OnMouseOverBtnCanvas(CodeComponent sender)
+        {
+            Debug.WriteLine("Canvas: Mouse over!");
         }
 
         // Init is called on startup. 
@@ -213,10 +264,25 @@ namespace Fusee.Engine.Examples.UI.Core
             _bltDestinationTex.Blt(180, 225, bltScrTex);
 
 
-            _btn = new GUIButton();
-            _btn.OnMouseUp += OnBtnUp;
-            _btn.OnMouseDown += OnBtnDown;
-            //_btn.OnMouseOver += delegate { Debug.WriteLine("Mouse over"); };
+            _btnCanvas = new GUIButton
+            {
+                Name = "Canvas_Button"
+            };
+            _btnCanvas.OnMouseUp += OnBtnCanvasUp;
+            _btnCanvas.OnMouseDown += OnBtnCanvasDown;
+            _btnCanvas.OnMouseEnter += OnBtnCanvasEnter;
+            _btnCanvas.OnMouseExit += OnBtnCanvasExit;
+            _btnCanvas.OnMouseOver += OnMouseOverBtnCanvas;
+
+            _btnCat = new GUIButton
+            {
+                Name = "Cat_Button"
+            };
+            _btnCat.OnMouseUp += OnBtnCatUp;
+            _btnCat.OnMouseDown += OnBtnCatDown;
+            _btnCat.OnMouseEnter += OnBtnCatEnter;
+            _btnCat.OnMouseExit += OnBtnCatExit;
+            _btnCat.OnMouseOver += OnMouseOverBtnCat;
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
@@ -226,14 +292,12 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
-
-            
         }
 
+        
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 
 namespace Fusee.Engine.GUI
 {
@@ -11,18 +13,26 @@ namespace Fusee.Engine.GUI
     /// </summary>
     public class TextureNodeContainer : SceneNodeContainer
     {
-
         /// <summary>
-        /// Creates a SceneNodeContainer with the propper components and children for rendering a nine sliced texture.
+        /// Adds a CodeComponent to the TextureNodeContainer. 
+        /// </summary>
+        /// <param name="comp">The CodeComponent.</param>
+        public void AddCodeComponent(CodeComponent comp)
+        {
+            Children.First().AddComponent(comp);
+        }
+        
+        /// <summary>
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
-        /// <param name="anchors">Anchors for the mesh. Influences the scaleing of the object if the enclosing canvas is resized.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing canvas.</param>
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
-        /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is messured in percent from the respective edge of texture.</param>
+        /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
         /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors, MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1)
@@ -96,13 +106,13 @@ namespace Fusee.Engine.GUI
         }
 
         /// <summary>
-        /// Creates a SceneNodeContainer with the propper components and children for rendering a nine sliced texture.
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
-        /// <param name="anchors">Anchors for the mesh. Influences the scaleing of the object if the enclosing canvas is resized.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing canvas.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,

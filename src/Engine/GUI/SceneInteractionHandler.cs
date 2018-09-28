@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -25,6 +24,10 @@ namespace Fusee.Engine.GUI
         /// </summary>
         public float4x4 Projection;
 
+        public SceneNodeContainer PickRes { get; private set; }
+
+        private SceneNodeContainer _pickResCache;
+
         public SceneInteractionHandler(SceneContainer scene)
         {
            _scenePicker = new ScenePicker(scene);
@@ -42,16 +45,30 @@ namespace Fusee.Engine.GUI
             _scenePicker.View = View;
             _scenePicker.Projection = Projection;
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
-            var pickRes = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+            PickRes = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault()?.Node;
 
-            if (pickRes != null)
-                Traverse(pickRes.Node);
+            if (PickRes != _pickResCache)
+                Traverse(_pickResCache);
+            
+            _pickResCache = PickRes;
+
+            if (PickRes != null)
+                Traverse(PickRes);
         }
 
         [VisitMethod]
         public void InvokeInteraction(GUIButton btn)
         {
-            btn.InvokeEvent();
+            if (CurrentNode == _pickResCache && _pickResCache != PickRes)
+            {
+                btn.IsMouseOver = false;
+                btn.DetachEvents();
+            }
+            if (CurrentNode == PickRes)
+            {
+                btn.IsMouseOver = true;
+                btn.InvokeEvents();
+            }
         }
     }
 }
