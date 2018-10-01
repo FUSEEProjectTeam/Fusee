@@ -13,28 +13,28 @@
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Base.Core">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.GUI">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Xene">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
   </ItemGroup>
 

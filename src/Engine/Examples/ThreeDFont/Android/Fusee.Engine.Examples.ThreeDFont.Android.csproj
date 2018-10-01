@@ -22,7 +22,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Debug\Examples\ThreeDFont\Android\</OutputPath>
+    <OutputPath>..\..\..\..\..\bin\$(Configuration)\Examples\ThreeDFont\Android\</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -59,7 +59,7 @@
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
@@ -89,28 +89,28 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll">
       <Name>Fusee.Base.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Android.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
       <Name>Fusee.Base.Imp.Android</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll">
       <Name>Fusee.Math.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll">
       <Name>Fusee.Serialization</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll">
       <Name>Fusee.Engine.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.ThreeDFont.Core.csproj">
