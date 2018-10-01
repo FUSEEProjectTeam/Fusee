@@ -55,6 +55,7 @@
           "System\\.Dynamic\\.DynamicObject",
           "System\\.IO\\.Compression\\.DeflateStream",
           "System\\.IO\\.Compression\\.ZLibNative",
+          "System\\.Linq",
           "System\\.Math"
         ]
 		  }
