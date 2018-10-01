@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Bone.Desktop", "Desktop\Fusee.Engine.Examples.Bone.Desktop.csproj", "{72CA32ED-EB17-48FC-956A-CA8DB4743F84}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bone.Android", "Android\Fusee.Engine.Examples.Bone.Android.csproj", "{92F6C1B2-636A-4031-BDAB-29F12A45730E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Bone.Core", "Core\Fusee.Engine.Examples.Bone.Core.csproj", "{B2967779-27B5-4E42-B680-F093F44329B3}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Bone.Desktop", "Desktop\Fusee.Engine.Examples.Bone.Desktop.csproj", "{72CA32ED-EB17-48FC-956A-CA8DB4743F84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bone.Web", "Web\Fusee.Engine.Examples.Bone.Web.csproj", "{B607076F-4CCC-41A4-A644-FD734EE56AC6}"
 EndProject
