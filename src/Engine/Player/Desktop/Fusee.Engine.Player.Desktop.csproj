@@ -4,6 +4,7 @@
     <PackageId>Fusee.Engine.Player.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
@@ -23,13 +24,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="FuseeLogo.ico" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">

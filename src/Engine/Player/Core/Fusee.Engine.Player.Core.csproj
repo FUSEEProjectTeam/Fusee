@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Core</RootNamespace>
     <PackageId>Fusee.Engine.Player.Core</PackageId>
@@ -20,18 +20,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Assets\FUSEERocket.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
