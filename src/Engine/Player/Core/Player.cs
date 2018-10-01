@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
