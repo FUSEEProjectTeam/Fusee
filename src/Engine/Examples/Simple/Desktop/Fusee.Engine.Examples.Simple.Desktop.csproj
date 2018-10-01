@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Example.Simple.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Example.Simple.Desktop</PackageId>
+    <RootNamespace>Fusee.Engine.Examples.Simple.Desktop</RootNamespace>
+    <PackageId>Fusee.Engine.Examples.Simple.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
