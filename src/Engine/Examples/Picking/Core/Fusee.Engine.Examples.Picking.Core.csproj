@@ -1,99 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Examples.Picking.Core</RootNamespace>
-    <AssemblyName>Fusee.Engine.Examples.Picking.Core</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{C4157BCB-D3A0-45C6-A84B-735FBD8C7AA8}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Examples.Picking.Core</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Debug\Examples\Picking\Core\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\Picking\Core\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Release\Examples\Picking\Core\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="Picking.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
-      <Name>Fusee.Base.Common</Name>
+    <Reference Include="Fusee.Base.Common">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      <Name>Fusee.Base.Core</Name>
+    <Reference Include="Fusee.Base.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      <Name>Fusee.Math.Core</Name>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      <Name>Fusee.Serialization</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll">
-      <Name>Fusee.Xene</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      <Name>Fusee.Engine.Common</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      <Name>Fusee.Engine.Core</Name>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.GUI">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CSharp">
-      <HintPath>..\..\..\..\..\..\..\..\..\..\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETPortable\v4.0\Microsoft.CSharp.dll</HintPath>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <!-- ItemGroup>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
-    </Reference>
-  </ItemGroup -->
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
