@@ -1,136 +1,76 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Examples.Bone.Web</RootNamespace>
-    <AssemblyName>Fusee.Engine.Examples.Bone.Web</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">x64</Platform>
-    <ProductVersion>8.0.30703</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{B607076F-4CCC-41A4-A644-FD734EE56AC6}</ProjectGuid>
+    <PackageId>Fusee.Engine.Examples.Bone.Web</PackageId>
+    <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <FileAlignment>512</FileAlignment>
-    <UseVSHostingProcess>false</UseVSHostingProcess>
+    <DefineConstants>PLATFORM_WEB</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bump\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bone\Web\</FuseeWebOutputPath>
-    <OutputPath>..\..\..\..\..\tmp\Obj\Fusee.Engine.Examples.Bone.Web\bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x64</PlatformTarget>
-  </PropertyGroup>
-  <!-- Debug settings normally in .csproj.user -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <StartAction>Program</StartAction>
-    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
-    <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bump\Web</OutputPath -->
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bone\Web\</FuseeWebOutputPath>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;PLATFORM_WEB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <PlatformTarget>x64</PlatformTarget>
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bone\Web\</FuseeWebOutputPath>
   </PropertyGroup>
-  <!-- Debug settings normally in .csproj.user -->
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <StartAction>Program</StartAction>
-    <StartProgram>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeBuildRoot)'))\bin\$(Configuration)\Tools\fusee.exe</StartProgram>
-    <StartArguments>server "$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)$(FuseeWebOutputPath)'))$(AssemblyName).html"</StartArguments>
-  </PropertyGroup>
-  <PropertyGroup>
-    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-  </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>Fusee.Engine.Examples.Bone.Web.Bone</StartupObject>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="Main.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.Bone.Core.csproj">
+      <Name>Fusee.Engine.Examples.Simple.Core</Name>
+    </ProjectReference>
   </ItemGroup>
+
   <ItemGroup>
-    <Content Include="Assets\Styles\browser.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\FuseeAnim.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\FuseeSpinning.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
-      <Name>Fusee.Base.Common</Name>
+    <Reference Include="Fusee.Base.Common">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      <Name>Fusee.Base.Core</Name>
+    <Reference Include="Fusee.Base.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Web.dll">
-      <Name>Fusee.Base.Imp.Web</Name>
+    <Reference Include="Fusee.Base.Imp.Web">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Imp.Web.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      <Name>Fusee.Serialization</Name>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      <Name>Fusee.Engine.Common</Name>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      <Name>Fusee.Engine.Core</Name>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      <Name>Fusee.Math.Core</Name>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Web.dll">
-      <Name>Fusee.Engine.Imp.Graphics.Web</Name>
+    <Reference Include="Fusee.Engine.Imp.Graphics.Web">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Web.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Fusee.SerializationSerializer">
       <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Engine.Examples.Bone.Core.csproj">
-      <Project>{b2967779-27b5-4e42-b680-f093f44329b3}</Project>
-      <Name>Fusee.Engine.Examples.Bone.Core</Name>
-    </ProjectReference>
+    <None Update="Assets\FuseeAnim.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\FuseeSpinning.gif">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\FuseeText.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Styles\browser.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)/Microsoft.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <!--PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup -->
-  <!--Target Name="Clean">
-    <Exec Condition=" '$(OS)' == 'Windows_NT' And Exists('$(OutputPath)') " Command="rd /s /q &quot;$(OutputPath)&quot;" />
-    <Exec Condition=" '$(OS)' != 'Windows_NT' And Exists('$(OutputPath)') " Command="rm '$(OutputPath)' -r -f" />
-  </Target>
-  <Import Project="$(SolutionDir)Fusee_Windows.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' == 'Windows_NT' " />
-  <Import Project="$(SolutionDir)Fusee_Unix.targets" Condition="'$(PostBuildEvent)' == '' And '$(OS)' != 'Windows_NT' " / -->
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
