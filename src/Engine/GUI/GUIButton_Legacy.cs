@@ -28,7 +28,7 @@ namespace Fusee.Engine.GUI
     ///     A <see cref="GUIButton" /> doesn't need to have a text on it. It can be modified to be a rectangle with
     ///     an event listener by making its background color transparent and setting a border width of 1 or greater.
     /// </remarks>
-    public sealed class GUIButton_Legacy : GUIElement
+    public sealed class GUIButton_Legacy : GUIElement_Legacy
     {
         #region Private Fields
 
@@ -136,7 +136,7 @@ namespace Fusee.Engine.GUI
         /// <param name="height">The height.</param>
         /// <remarks>
         ///     The z-index: lower values means further away. If two elements have the same z-index
-        ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
+        ///     then they are rendered according to their order in the <see cref="GUIHandler_Legacy" />.
         /// </remarks>
         public GUIButton_Legacy(int x, int y, int z, int width, int height)
             : base(String.Empty, null, x, y, z, width, height)
@@ -171,7 +171,7 @@ namespace Fusee.Engine.GUI
         /// <param name="height">The height.</param>
         /// <remarks>
         /// The z-index: lower values means further away. If two elements have the same z-index
-        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
+        /// then they are rendered according to their order in the <see cref="GUIHandler_Legacy" />.
         /// </remarks>
         public GUIButton_Legacy(string text, FontMap fontMap, int x, int y, int z, int width, int height)
             : base(text, fontMap, x, y, z, width, height)
@@ -230,10 +230,10 @@ namespace Fusee.Engine.GUI
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
 
-            var maxW = GUIText.GetTextWidth(Text, FontMap);
+            var maxW = GUIText_Legacy.GetTextWidth(Text, FontMap);
             x = (int)System.Math.Round(x + (Width - maxW) / 2);
 
-            var maxH = GUIText.GetTextHeight(Text, FontMap);
+            var maxH = GUIText_Legacy.GetTextHeight(Text, FontMap);
             y = (int)System.Math.Round(y + maxH + (Height - maxH) / 2);
 
             SetTextMesh(x, y);

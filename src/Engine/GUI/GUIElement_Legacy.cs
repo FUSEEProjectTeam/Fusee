@@ -8,9 +8,9 @@ using Fusee.Serialization;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
-    /// This abstact class allows for creating custom <see cref="GUIElement"/>s.
+    /// This abstact class allows for creating custom <see cref="GUIElement_Legacy"/>s.
     /// </summary>
-    public abstract class GUIElement
+    public abstract class GUIElement_Legacy
     {
         #region Fields
 
@@ -269,7 +269,7 @@ namespace Fusee.Engine.GUI
 
         protected abstract void CreateMesh();
 
-        protected GUIElement(string text, FontMap fontMap, int x, int y, int z, int width, int height, float zRot = 0, int xPivot = 0, int yPivot = 0)
+        protected GUIElement_Legacy(string text, FontMap fontMap, int x, int y, int z, int width, int height, float zRot = 0, int xPivot = 0, int yPivot = 0)
         {
             Dirty = false;
 
@@ -553,7 +553,7 @@ namespace Fusee.Engine.GUI
         /// </summary>
         /// <remarks>
         ///     This should be called after the viewport / the windows has been resized. It's also possible to call the Refresh
-        ///     method of a <see cref="GUIHandler" /> object."
+        ///     method of a <see cref="GUIHandler_Legacy" /> object."
         /// </remarks>
         public virtual void Refresh()
         {

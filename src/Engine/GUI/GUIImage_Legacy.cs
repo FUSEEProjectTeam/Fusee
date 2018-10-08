@@ -7,12 +7,12 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
-    ///     The <see cref="GUIImage" /> class provides functionality for loading and displaying 2D images.
+    ///     The <see cref="GUIImage_Legacy" /> class provides functionality for loading and displaying 2D images.
     /// </summary>
     /// <remarks>
     ///     Images can be transparent *.png files, too.
     /// </remarks>
-    public sealed class GUIImage : GUIElement
+    public sealed class GUIImage_Legacy : GUIElement_Legacy
     {
         #region Private Fields
 
@@ -76,7 +76,7 @@ namespace Fusee.Engine.GUI
         #endregion
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIImage" /> class.
+        ///     Initializes a new instance of the <see cref="GUIImage_Legacy" /> class.
         /// </summary>
         /// <param name="image">The image data containting the pixels.</param>
         /// <param name="x">The x-coordinate.</param>
@@ -86,9 +86,9 @@ namespace Fusee.Engine.GUI
         /// <param name="height">The height.</param>
         /// <remarks>
         ///     The z-index: lower values means further away. If two elements have the same z-index
-        ///     then they are rendered according to their order in the <see cref="GUIHandler" />.
+        ///     then they are rendered according to their order in the <see cref="GUIHandler_Legacy" />.
         /// </remarks>
-        public GUIImage(IImageData image, int x, int y, int z, int width, int height)
+        public GUIImage_Legacy(IImageData image, int x, int y, int z, int width, int height)
             : base(String.Empty, null, x, y, z, width, height)
         {
             // settings
@@ -97,14 +97,14 @@ namespace Fusee.Engine.GUI
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIImage" /> class.
+        ///     Initializes a new instance of the <see cref="GUIImage_Legacy" /> class.
         /// </summary>
         /// <param name="image">The image data containting the pixels.</param>
         /// <param name="x">The x-coordinate.</param>
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIImage(IImageData image, int x, int y, int width, int height)
+        public GUIImage_Legacy(IImageData image, int x, int y, int width, int height)
             : base(String.Empty, null, x, y, 0, width, height)
         {
             // settings

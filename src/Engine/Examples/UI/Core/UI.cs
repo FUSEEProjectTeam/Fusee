@@ -6,6 +6,9 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
+using Fusee.Base.Common;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.UI.Core
 {
@@ -28,9 +31,68 @@ namespace Fusee.Engine.Examples.UI.Core
         private GUIButton _btnCanvas;
         private GUIButton _btnCat;
 
+        private FontMap _fontMap;
+        private uint _fontSize;
+
+        
+
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+            var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
+            var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
+
+            var text = new SceneNodeContainer()
+            {
+                Name = "Text_Test",
+                Components = new List<SceneComponentContainer>
+                {
+                    new GUITextTransform()
+                    {
+                        FontSize = _fontSize,
+                        Translation = new float3(-0.7f,0,0)
+                    },
+                    new ShaderEffectComponent
+                    {
+                        Effect = new ShaderEffect(new[]
+                            {
+                                new EffectPassDeclaration
+                                {
+                                    VS = AssetStorage.Get<string>("texture.vert"),
+                                    PS = AssetStorage.Get<string>("texture.frag"),
+                                    StateSet = new RenderStateSet
+                                    {
+                                        AlphaBlendEnable = true,
+                                        SourceBlend = Blend.SourceAlpha,
+                                        DestinationBlend = Blend.InverseSourceAlpha,
+                                        BlendOperation = BlendOperation.Add,
+                                        ZEnable = false
+                                    }
+                                }
+                            },
+                            new[]
+                            {
+                                new EffectParameterDeclaration
+                                {
+                                    Name = "DiffuseTexture",
+                                    Value = new Texture(_fontMap.Image)
+                                },
+                                new EffectParameterDeclaration {Name = "DiffuseColor", Value = ColorUint.Tofloat4(ColorUint.Greenery)},
+                                new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
+                                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                            })
+                    },
+                    new GUIText(_fontMap, "Hallo!")
+                    {
+                        Name = "Text_Test_mesh"
+                    },
+
+                }
+            };
+
             var catTextureNode = new TextureNodeContainer(
                 "Child1",
                 AssetStorage.Get<string>("nineSlice.vert"),
@@ -62,8 +124,8 @@ namespace Fusee.Engine.Examples.UI.Core
 
             var bltTextureNode = new TextureNodeContainer(
                 "Blt",
-                AssetStorage.Get<string>("texture.vert"),
-                AssetStorage.Get<string>("texture.frag"),
+                vsTex,
+                psTex,
                 //Set the diffuse texture you want to use.
                 _bltDestinationTex,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
@@ -84,8 +146,8 @@ namespace Fusee.Engine.Examples.UI.Core
 
             var nineSliceTextureNode = new TextureNodeContainer(
                 "Child2",
-                AssetStorage.Get<string>("nineSlice.vert"),
-                AssetStorage.Get<string>("nineSliceTile.frag"),
+                vsNineSlice,
+                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
                 new MinMaxRect
@@ -102,10 +164,12 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
                 2
             );
+            nineSliceTextureNode.Children.Add(text);
+
             var quagganTextureNode = new TextureNodeContainer(
                 "Child3",
-                AssetStorage.Get<string>("nineSlice.vert"),
-                AssetStorage.Get<string>("nineSliceTile.frag"),
+                vsNineSlice,
+                psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 new MinMaxRect
@@ -138,7 +202,6 @@ namespace Fusee.Engine.Examples.UI.Core
                                 Rotation = new float3(0,45,0),
                                 Scale = new float3(1,1,1)
                             },
-                            new Plane()
                         },
                         Children = new List<SceneNodeContainer>
                         {
@@ -150,8 +213,6 @@ namespace Fusee.Engine.Examples.UI.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(0,0,-2),
-                                        
                                         Scale = new float3(1,1,1)
                                     },
                                     new CanvasTransformComponent
@@ -184,8 +245,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                             },
                                             new Plane(),
                                             _btnCanvas
-                                        }
+                                        },
+
+
                                     },
+                                    
                                     //Simple Texture Node, contains a Blt"ed" texture.
                                     bltTextureNode,
                                     //Add nine sliced textures to canvas
@@ -201,6 +265,7 @@ namespace Fusee.Engine.Examples.UI.Core
             };
         }
 
+        #region Interactions
         public void OnBtnCanvasDown(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn down!");
@@ -214,12 +279,24 @@ namespace Fusee.Engine.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-           
+            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer { Color = new float3(1, 0.4f, 0.1f) },
+            });
+            _scene.Children.FindNodes(node => node.Name == "Canvas_XForm").First().GetComponent<ShaderEffectComponent>()
+                .Effect = color;
+
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
+            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer { Color = new float3(1, 0, 0) },
+            });
+            _scene.Children.FindNodes(node => node.Name == "Canvas_XForm").First().GetComponent<ShaderEffectComponent>()
+                .Effect = color;
         }
 
         public void OnBtnCatDown(CodeComponent sender)
@@ -250,12 +327,17 @@ namespace Fusee.Engine.Examples.UI.Core
 
         public void OnMouseOverBtnCanvas(CodeComponent sender)
         {
-            Debug.WriteLine("Canvas: Mouse over!");
+            //Debug.WriteLine("Canvas: Mouse over!");
         }
+        #endregion
 
         // Init is called on startup. 
         public override void Init()
         {
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            _fontSize = 24;
+            _fontMap = new FontMap(fontLato,_fontSize);
+            
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 

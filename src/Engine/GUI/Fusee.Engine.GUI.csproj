@@ -107,11 +107,12 @@
   <ItemGroup>
     <Compile Include="GUIButton.cs" />
     <Compile Include="GUIButton_Legacy.cs" />
-    <Compile Include="GUIElement.cs" />
-    <Compile Include="GUIHandler.cs" />
-    <Compile Include="GUIImage.cs" />
-    <Compile Include="GUIPanel.cs" />
+    <Compile Include="GUIElement_Legacy.cs" />
+    <Compile Include="GUIHandler_Legacy.cs" />
+    <Compile Include="GUIImage_Legacy.cs" />
+    <Compile Include="GUIPanel_Legacy.cs" />
     <Compile Include="GUIText.cs" />
+    <Compile Include="GUIText_Legacy.cs" />
     <Compile Include="SceneInteractionHandler.cs" />
     <Compile Include="TextureNodeContainer.cs" />
   </ItemGroup>

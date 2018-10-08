@@ -6,11 +6,11 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
-    ///     A delegation for the event listeners of a <see cref="GUIPanel" />.
+    ///     A delegation for the event listeners of a <see cref="GUIPanel_Legacy" />.
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="mea">The <see cref="MouseEventArgs" /> instance containing the event data.</param>
-    public delegate void GUIPanelHandler(GUIPanel sender, GUIPanelEventArgs mea);
+    public delegate void GUIPanelHandler(GUIPanel_Legacy sender, GUIPanelEventArgs mea);
 
     /// <summary>
     /// Better than nothing.
@@ -29,12 +29,12 @@ namespace Fusee.Engine.GUI
     /// </summary>
     /// <remarks>
     ///     This is a hierarchical structure which means that the position of the children
-    ///     of a <see cref="GUIPanel" /> depends on the position of the GUIPanel itself.
+    ///     of a <see cref="GUIPanel_Legacy" /> depends on the position of the GUIPanel itself.
     ///     One could for example add some buttons to such a panel and then position the
     ///     panel in the middle of the screen. In this case, just the coordinates of the
     ///     panel have to be set, the buttons inside the panel will move accordingly!
     /// </remarks>
-    public sealed class GUIPanel : GUIElement
+    public sealed class GUIPanel_Legacy : GUIElement_Legacy
     {
         #region Private Fields
 
@@ -102,10 +102,10 @@ namespace Fusee.Engine.GUI
         /// </summary>
         /// <remarks>
         ///     This is a hierarchical structure which means that the position of the children depends on
-        ///     the position of the panel. This can be used to group <see cref="GUIElement" />s
+        ///     the position of the panel. This can be used to group <see cref="GUIElement_Legacy" />s
         ///     together and move them (e.g. to the center of the screen) just by moving the panel.
         /// </remarks>
-        public Collection<GUIElement> ChildElements;
+        public Collection<GUIElement_Legacy> ChildElements;
 
         /// <summary>
         ///     Occurs when mouse button is pressed on this panel.
@@ -130,7 +130,7 @@ namespace Fusee.Engine.GUI
         #endregion
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GUIPanel" /> class.
+        /// Initializes a new instance of the <see cref="GUIPanel_Legacy" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <param name="fontMap">The font map.</param>
@@ -141,16 +141,16 @@ namespace Fusee.Engine.GUI
         /// <param name="height">The height.</param>
         /// <remarks>
         /// The z-index: lower values means further away. If two elements have the same z-index
-        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
+        /// then they are rendered according to their order in the <see cref="GUIHandler_Legacy" />.
         /// </remarks>
-        public GUIPanel(string text, FontMap fontMap, int x, int y, int z, int width, int height)
+        public GUIPanel_Legacy(string text, FontMap fontMap, int x, int y, int z, int width, int height)
             : base(text, fontMap, x, y, z, width, height)
         {
             SetupPanel();
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GUIPanel" /> class.
+        /// Initializes a new instance of the <see cref="GUIPanel_Legacy" /> class.
         /// </summary>
         /// <param name="text">The text.</param>
         /// <param name="fontMap">The font map.</param>
@@ -158,7 +158,7 @@ namespace Fusee.Engine.GUI
         /// <param name="y">The y-coordinate.</param>
         /// <param name="width">The width.</param>
         /// <param name="height">The height.</param>
-        public GUIPanel(string text, FontMap fontMap, int x, int y, int width, int height)
+        public GUIPanel_Legacy(string text, FontMap fontMap, int x, int y, int width, int height)
             : base(text, fontMap, x, y, 0, width, height)
         {
             SetupPanel();
@@ -166,7 +166,7 @@ namespace Fusee.Engine.GUI
 
         private void SetupPanel()
         {
-            ChildElements = new Collection<GUIElement>();
+            ChildElements = new Collection<GUIElement_Legacy>();
 
             // settings
             PanelColor = new float4(0.1f, 0.1f, 0.1f, 0.5f);
@@ -192,7 +192,7 @@ namespace Fusee.Engine.GUI
             var x = PosX + OffsetX;
             var y = PosY + OffsetY;
 
-            var maxW = GUIText.GetTextWidth(Text, FontMap);
+            var maxW = GUIText_Legacy.GetTextWidth(Text, FontMap);
             x = (int) System.Math.Round(x + (Width - maxW)/2);
 
             SetTextMesh(x, y + 20);
@@ -203,7 +203,7 @@ namespace Fusee.Engine.GUI
         /// </summary>
         /// <remarks>
         ///     This should be called after the viewport / the windows has been resized.
-        ///     It's also possible to call the Refresh method of a <see cref="GUIHandler" /> object."
+        ///     It's also possible to call the Refresh method of a <see cref="GUIHandler_Legacy" /> object."
         /// </remarks>
         public override void Refresh()
         {

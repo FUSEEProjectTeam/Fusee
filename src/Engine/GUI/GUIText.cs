@@ -1,127 +1,102 @@
-﻿using Fusee.Engine.Core;
+﻿using System;
+using Fusee.Base.Common;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
 {
-    /// <summary>
-    ///     The <see cref="GUIText" /> class provides all text writing functionality.
-    /// </summary>
-    public sealed class GUIText : GUIElement
+    public class GUIText: Mesh
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GUIText" /> class.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontMap">The font map.</param>
-        /// <param name="x">The x-coordinate.</param>
-        /// <param name="y">The y-coordinate.</param>
-        /// <param name="zRot">The rotation about Z axis as radian.</param>
-        /// <param name="xPivot">The x-coordinate of the pivot point</param>
-        /// <param name="yPivot">The y-coordinate of the pivot point</param>
-        public GUIText(string text, FontMap fontMap, int x, int y, float zRot = 0, int xPivot = 0, int yPivot = 0)
-            : base(text, fontMap, x, y, 0, 0, 0, zRot, xPivot, yPivot)
+        private readonly FontMap _fontMap;
+        private readonly string _text;
+
+        public GUIText(FontMap fontMap, string text)
         {
-            TextColor = new float4(0, 0, 0, 1);
+            _fontMap = fontMap;
+            _text = text;
+
+            CreateTextMesh();
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GUIText" /> class.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontMap">The font map.</param>
-        /// <param name="x">The x-coordinate.</param>
-        /// <param name="y">The y-coordinate.</param>
-        /// <param name="z">The z-index.</param>
-        /// <param name="zRot">The rotation about Z axis as radian.</param>
-        /// <param name="xPivot">The x-coordinate of the pivot point</param>
-        /// <param name="yPivot">The y-coordinate of the pivot point</param>
-        /// <remarks>
-        /// The z-index: lower values means further away. If two elements have the same z-index
-        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
-        /// </remarks>
-        public GUIText(string text, FontMap fontMap, int x, int y, int z, float zRot = 0, int xPivot = 0, int yPivot = 0)
-            : base(text, fontMap, x, y, z, 0, 0, zRot, xPivot, yPivot)
+        private void CreateTextMesh()
         {
-            TextColor = new float4(0, 0, 0, 1);
+            
+            if (_fontMap == null)
+                throw new ArgumentException("Can not create Text Mesh - FontMap not found!");
+
+            Vertices = new float3[4 * _text.Length];
+            UVs = new float2[4 * _text.Length];
+            Triangles = new ushort[6 * _text.Length];
+            Normals = new float3[4 * _text.Length];
+            
+
+            // build complete structure
+
+            // var charInfo = Font.CharInfo;
+            var atlasWidth = _fontMap.Image.Width;
+            var atlasHeight = _fontMap.Image.Height;
+
+            var index = 0;
+            ushort vertex = 0;
+            var posX = 0f;
+            var posY = 0f;
+
+            // now build the mesh
+            foreach (var letter in _text)
+            {
+                GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(letter);
+                GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(letter);
+
+                var x2 = posX + glyphOnMap.BitmapL;
+                var y2 = posY - glyphOnMap.BitmapT;
+                var w = glyphOnMap.BitmapW;
+                var h = glyphOnMap.BitmapH ;
+
+                posX += glyphInfo.AdvanceX;
+                posY += glyphInfo.AdvanceY;
+
+                // skip glyphs that have no pixels
+                if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
+                    continue;
+
+                var bitmapW = glyphOnMap.BitmapW;
+                var bitmapH = glyphOnMap.BitmapH;
+                var texOffsetX = glyphOnMap.TexOffX;
+                var texOffsetY = glyphOnMap.TexOffY;
+
+                // vertices
+                Vertices[vertex] = new float3(x2, -y2 - h, 0);
+                Vertices[vertex + 1] = new float3(x2, -y2, 0);
+                Vertices[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
+                Vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
+
+                Normals[vertex] = -float3.UnitZ;
+                Normals[vertex + 1] = -float3.UnitZ;
+                Normals[vertex + 2] = -float3.UnitZ;
+                Normals[vertex + 3] = -float3.UnitZ;
+
+                // uvs
+                UVs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
+                UVs[vertex + 1] = new float2(texOffsetX, texOffsetY);
+                UVs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
+                UVs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
+
+                // indices
+                Triangles[index++] = (ushort)(vertex + 1);
+                Triangles[index++] = vertex;
+                Triangles[index++] = (ushort)(vertex + 2);
+
+                Triangles[index++] = (ushort)(vertex + 1);
+                Triangles[index++] = (ushort)(vertex + 2);
+                Triangles[index++] = (ushort)(vertex + 3);
+
+                vertex += 4;
+            }
+
+            Vertices = _fontMap.FixTextKerning(Vertices, _text, 1); //ToDo: scale??
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GUIText" /> class.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontMap">The font map.</param>
-        /// <param name="x">The x-coordinate.</param>
-        /// <param name="y">The y-coordinate.</param>
-        /// <param name="z">The z-index.</param>
-        /// <param name="color">The color.</param>    
-        /// <param name="zRot">The rotation about Z axis as radian.</param>
-        /// <param name="xPivot">The x-coordinate of the pivot point</param>
-        /// <param name="yPivot">The y-coordinate of the pivot point</param>
-        /// <remarks>
-        /// The z-index: lower values means further away. If two elements have the same z-index
-        /// then they are rendered according to their order in the <see cref="GUIHandler" />.
-        /// </remarks>
-        public GUIText(string text, FontMap fontMap, int x, int y, int z, float4 color, float zRot = 0, int xPivot = 0, int yPivot = 0)
-            : base(text, fontMap, x, y, z, 0, 0, zRot, xPivot, yPivot)
-        {
-            TextColor = color;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GUIText" /> class.
-        /// </summary>
-        /// <param name="text">The text.</param>
-        /// <param name="fontMap">The font map.</param>
-        /// <param name="x">The x-coordinate.</param>
-        /// <param name="y">The y-coordinate.</param>
-        /// <param name="color">The color.</param>
-        public GUIText(string text, FontMap fontMap, int x, int y, float4 color)
-            : base(text, fontMap, x, y, 0, 0, 0)
-        {
-            TextColor = color;
-        }
-
-        protected override void CreateMesh()
-        {
-            SetTextMesh(PosX + OffsetX, PosY + OffsetY);
-        }
-
-        /// <summary>
-        /// Gets the height of a text written in a specific font.
-        /// </summary>
-        /// <param name="text">The text's string.</param>
-        /// <param name="fontMap">The text's font map.</param>
-        /// <returns>
-        /// The height of the text.
-        /// </returns>
-        public static float GetTextHeight(string text, FontMap fontMap)
-        {
-            var maxH = 0.0f;
-
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var letter in text)
-                maxH = System.Math.Max(maxH, fontMap.GetGlyphOnMap(letter).BitmapH);
-
-            return maxH;
-        }
-
-        /// <summary>
-        /// Gets the width of a text written in a specific font.
-        /// </summary>
-        /// <param name="text">The text's string.</param>
-        /// <param name="fontMap">The text's font map.</param>
-        /// <returns>
-        /// The width of the text.
-        /// </returns>
-        public static float GetTextWidth(string text, FontMap fontMap)
-        {
-            var maxW = 0.0f;
-
-            // ReSharper disable once LoopCanBeConvertedToQuery
-            foreach (var letter in text)
-                maxW += fontMap.Font.GetGlyphInfo(letter).AdvanceX;
-
-            return maxW;
-        }
     }
+
 }

@@ -541,6 +541,18 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
+        public void RenderTextTransform(GUITextTransform ttc)
+        {
+            var scaleFactor = 0.001f;
+            var scale = float4x4.CreateScale(ttc.FontSize* scaleFactor, ttc.FontSize * scaleFactor, ttc.FontSize * scaleFactor);
+            var translation = float4x4.CreateTranslation(ttc.Translation);
+
+            _state.Model *= translation * scale;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+        }
+
+        [VisitMethod]
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();

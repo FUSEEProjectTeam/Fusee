@@ -36,12 +36,12 @@ namespace Fusee.Engine.Player.Core
 
         private bool _keys;
 
-        private GUIHandler _guiHandler;
+        private GUIHandler_Legacy _guiHandler;
 
         private GUIButton_Legacy _guiFuseeLink;
-        private GUIImage _guiFuseeLogo;
+        private GUIImage_Legacy _guiFuseeLogo;
         private FontMap _guiLatoBlack;
-        private GUIText _guiSubText;
+        private GUIText_Legacy _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
         private float _maxPinchSpeed;
@@ -49,7 +49,7 @@ namespace Fusee.Engine.Player.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _guiHandler = new GUIHandler();
+            _guiHandler = new GUIHandler_Legacy();
             _guiHandler.AttachToContext(RC);
 
             _guiFuseeLink = new GUIButton_Legacy(6, 6, 182, 58);
@@ -60,16 +60,16 @@ namespace Fusee.Engine.Player.Core
             _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
             _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
             _guiHandler.Add(_guiFuseeLink);
-            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
+            _guiFuseeLogo = new GUIImage_Legacy(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
             _guiHandler.Add(_guiFuseeLogo);
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
-            _guiSubText = new GUIText("FUSEE Player", _guiLatoBlack, 100, 100);
+            _guiSubText = new GUIText_Legacy("FUSEE Player", _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiHandler.Add(_guiSubText);
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+            _subtextWidth = GUIText_Legacy.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText_Legacy.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -126,8 +126,8 @@ namespace Fusee.Engine.Player.Core
                     _guiSubText.Text += " on " + _scene.Header.CreationDate;
             }
             // _guiSubText.Text = "dT: xxx ms, W: xxxx, H: xxxx, PS: xxxxxxxx";
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+            _subtextWidth = GUIText_Legacy.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText_Legacy.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
         }
 
         // RenderAFrame is called once a frame

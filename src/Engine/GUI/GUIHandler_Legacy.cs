@@ -7,31 +7,31 @@ using JSIL.Meta;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
-    ///     A <see cref="GUIHandler"/> is a <see cref="T:System.Collections.Generic.List`1" /> of different
-    ///     <see cref="GUIElement"/>s to be drawn onto a screen.
+    ///     A <see cref="GUIHandler_Legacy"/> is a <see cref="T:System.Collections.Generic.List`1" /> of different
+    ///     <see cref="GUIElement_Legacy"/>s to be drawn onto a screen.
     /// </summary>
     /// <remarks>
-    ///     A <see cref="GUIHandler"/> is necessary to make a GUI in FUSEE. However, one can have more than
-    ///     one <see cref="GUIHandler"/> (e.g. one for the main menu GUI and one for the ingame GUI) and attach
+    ///     A <see cref="GUIHandler_Legacy"/> is necessary to make a GUI in FUSEE. However, one can have more than
+    ///     one <see cref="GUIHandler_Legacy"/> (e.g. one for the main menu GUI and one for the ingame GUI) and attach
     ///     and detach them from an <see cref="RenderContext"/> whenever needed.
     /// </remarks>
-    public class GUIHandler : List<GUIElement>
+    public class GUIHandler_Legacy : List<GUIElement_Legacy>
     {
         private RenderContext _renderContext;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIHandler" /> class.
+        ///     Initializes a new instance of the <see cref="GUIHandler_Legacy" /> class.
         /// </summary>
-        public GUIHandler()
+        public GUIHandler_Legacy()
         {
             // nothing to do
         }
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="GUIHandler" /> class.
+        ///     Initializes a new instance of the <see cref="GUIHandler_Legacy" /> class.
         /// </summary>
         /// <param name="rc">The rc.</param>
-        public GUIHandler(RenderContext rc)
+        public GUIHandler_Legacy(RenderContext rc)
         {
             _renderContext = rc;
         }
@@ -50,7 +50,7 @@ namespace Fusee.Engine.GUI
         /// </summary>
         public void DetachFromContext()
         {
-            foreach (GUIElement element in this)
+            foreach (GUIElement_Legacy element in this)
             {
                 element.DetachFromContext();
             }
@@ -59,10 +59,10 @@ namespace Fusee.Engine.GUI
         }
 
         /// <summary>
-        ///     Adds a new <see cref="GUIElement" /> to this GUIHandler.
+        ///     Adds a new <see cref="GUIElement_Legacy" /> to this GUIHandler.
         /// </summary>
-        /// <param name="item">The <see cref="GUIElement" />.</param>
-        public new void Add(GUIElement item)
+        /// <param name="item">The <see cref="GUIElement_Legacy" />.</param>
+        public new void Add(GUIElement_Legacy item)
         {
             base.Add(item);
 
@@ -70,7 +70,7 @@ namespace Fusee.Engine.GUI
         }
 
         /// <summary>
-        ///     Refreshes all <see cref="GUIElement" />s of this GUIHandler.
+        ///     Refreshes all <see cref="GUIElement_Legacy" />s of this GUIHandler.
         /// </summary>
         public void Refresh()
         {
@@ -79,7 +79,7 @@ namespace Fusee.Engine.GUI
         }
 
         [JSExternal]
-        private void SortArray(ref GUIElement[] elements)
+        private void SortArray(ref GUIElement_Legacy[] elements)
         {
             Array.Sort(elements, (x, y) => x.ZIndex.CompareTo(y.ZIndex));
         }
@@ -88,7 +88,7 @@ namespace Fusee.Engine.GUI
         ///     Renders the GUI onto the attached <see cref="RenderContext" />.
         /// </summary>
         /// <remarks>
-        ///     The <see cref="GUIElement" />s are rendered according to their ZIndex. If two <see cref="GUIElement" />s have the
+        ///     The <see cref="GUIElement_Legacy" />s are rendered according to their ZIndex. If two <see cref="GUIElement_Legacy" />s have the
         ///     same ZIndex, then they are rendered in the order they were added to this GUIHandler (from back to front).
         /// </remarks>
         public void RenderGUI()
