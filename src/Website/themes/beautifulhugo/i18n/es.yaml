@@ -1,35 +1,35 @@
 # Content
 - id: dateFormat
-  translation: "January 2, 2006"
+  translation: "2 de enero, 2006"
 - id: shortdateFormat
-  translation: "Jan 2, 2006 15:04:05"
+  translation: "2 Jan, 2006 15:04:05"
 - id: postedOnDate
-  translation: "Posted on {{ .Count }}"
+  translation: "Publicado el {{ .Count }}"
 - id: lastModified
-  translation: "(Last modified on {{ .Count }})"
+  translation: "(Última modificación en {{ .Count }})"
 - id: translationsLabel
-  translation: "Other languages: "
+  translation: "Otros idiomas: "
 - id: translationsSeparator
   translation: ", "
 - id: readMore
-  translation: "Read More"
+  translation: "Leer más"
 - id: olderPosts
-  translation: "Older Posts"
+  translation: "Artículos anteriores"
 - id: newerPosts
-  translation: "Newer Posts"
+  translation: "Artículos siguientes"
 - id: previousPost
-  translation: "Previous Post"
+  translation: "Artículo anterior"
 - id: nextPost
-  translation: "Next Post"
+  translation: "Artículo siguiente"
 - id: readTime
-  translation: "minutes"
+  translation: "minutos"
 - id: words
-  translation: "words"
+  translation: "palabras"
 
 
 # 404 page
 - id: pageNotFound
-  translation: "Whoops, this page doesn't exist. Move along. (404 error)"
+  translation: "¡Vaya! Esta página no existe (error 404)"
 
 # Footer
 - id: poweredBy # Accepts HTML
@@ -37,15 +37,15 @@
 
 # Navigation
 - id: toggleNavigation
-  translation: "Toggle navigation"
+  translation: "Conmuta navegación"
 - id: languageSwitcherLabel
-  translation: "Language"
+  translation: "Idioma"
 - id: gcseLabelShort
-  translation: "Search"
+  translation: "Buscar"
 - id: gcseLabelLong
-  translation: "Search {{ .Site.Title }}"
+  translation: "Buscar en {{ .Site.Title }}"
 - id: gcseClose
-  translation: "Close"
+  translation: "Cerrar"
 
 # Staticman
 - id: noComment
@@ -62,5 +62,6 @@
   translation: "Your email address"
 - id: yourWebsite
   translation: "You website"
+
 
 
