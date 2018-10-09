@@ -1,65 +1,33 @@
 {{ define "main" }}
-  <div role="main" class="container">
-    <div class="row">
-      <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
-        {{ with .Content }}
-          <div class="well">
-            {{.}}
+<div class="container" role="main">
+  <div class="row">
+    <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+      <article role="main" class="blog-post">
+        {{ .Content }}
+      </article>
+
+      <ul class="pager blog-pager">
+        {{ if .PrevInSection }}
+          <li class="previous">
+            <a href="{{ .PrevInSection.Permalink }}" data-toggle="tooltip" data-placement="top" title="{{ .PrevInSection.Title }}">&larr; {{ i18n "previousPost" }}</a>
+          </li>
+        {{ end }}
+        {{ if .NextInSection }}
+          <li class="next">
+            <a href="{{ .NextInSection.Permalink }}" data-toggle="tooltip" data-placement="top" title="{{ .NextInSection.Title }}">{{ i18n "nextPost" }} &rarr;</a>
+          </li>
+        {{ end }}
+      </ul>
+
+      {{ if (.Params.comments) | or (and (or (not (isset .Params "comments")) (eq .Params.comments nil)) (.Site.Params.comments)) }}
+        {{ if .Site.DisqusShortname }}
+          <div class="disqus-comments">
+            {{ template "_internal/disqus.html" . }}
           </div>
         {{ end }}
+      {{ end }}
 
-        <div class="posts-list">
-          {{ $pag := .Paginate (where .Data.Pages "Type" "post") }}
-          {{ range $pag.Pages }}
-            <article class="post-preview">
-              <a href="{{ .Permalink }}">
-                <h2 class="post-title">{{ .Title }}</h2>
-                {{ if .Params.subtitle }}
-                  <h3 class="post-subtitle">
-                  {{ .Params.subtitle }}
-                  </h3>
-                {{ end }}
-                {{ if .Params.image }}
-                <img src="{{ .Params.image }}" class="img-title" />
-                {{ end }}
-              </a>
-
-              {{ partial "post_meta.html" . }}
-              <div class="post-entry">
-                {{ if .Truncated }}
-                  {{ if .Params.summary }}{{ .Params.summary }}{{ else }}{{ .Summary }}{{ end }}
-                  <a href="{{ .Permalink }}" class="post-read-more">[{{ i18n "readMore" }}]</a>
-                {{ else }}
-                  {{ .Content }}
-                {{ end }}
-              </div>
-
-              {{ if .Params.tags }}
-                <div class="blog-tags">
-                  {{ range .Params.tags }}
-                    <a href="{{ $.Site.LanguagePrefix | absURL }}/tags/{{ . | urlize }}/">{{ . }}</a>&nbsp;
-                  {{ end }}
-                </div>
-              {{ end }}
-            </article>
-          {{ end }}
-        </div>
-
-        {{ if or (.Paginator.HasPrev) (.Paginator.HasNext) }}
-          <ul class="pager main-pager">
-            {{ if .Paginator.HasPrev }}
-              <li class="previous">
-                <a href="{{ .Paginator.Prev.URL | absURL }}">&larr; {{ i18n "newerPosts" }}</a>
-              </li>
-            {{ end }}
-            {{ if .Paginator.HasNext }}
-              <li class="next">
-                <a href="{{ .Paginator.Next.URL | absURL }}">{{ i18n "olderPosts" }} &rarr;</a>
-              </li>
-            {{ end }}
-          </ul>
-        {{ end }}
-      </div>
     </div>
   </div>
+</div>
 {{ end }}
