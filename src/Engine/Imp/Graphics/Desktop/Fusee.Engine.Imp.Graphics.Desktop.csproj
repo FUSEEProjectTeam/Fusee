@@ -16,10 +16,10 @@
 
   <ItemGroup>
     <Reference Include="OpenTK">
-      <HintPath>$(FuseeBuildRoot)\ext\OpenTK.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\OpenTK\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl">
-      <HintPath>$(FuseeBuildRoot)\ext\OpenTK.GLControl.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\OpenTK\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>  

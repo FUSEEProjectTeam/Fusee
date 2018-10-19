@@ -85,3 +85,7 @@ ServiceFabricBackup/
 
 # GhostDoc plugin setting file
 *.GhostDoc.xml
+
+# FUSEE Custom
+# do not exclude pdb files in ext/
+!ext/**/*.pdb
