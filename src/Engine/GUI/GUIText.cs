@@ -1,8 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using ProtoBuf;
+
 
 namespace Fusee.Engine.GUI
 {
@@ -18,19 +21,18 @@ namespace Fusee.Engine.GUI
 
             CreateTextMesh();
         }
-
+         
         private void CreateTextMesh()
         {
-            
             if (_fontMap == null)
                 throw new ArgumentException("Can not create Text Mesh - FontMap not found!");
 
-            Vertices = new float3[4 * _text.Length];
-            UVs = new float2[4 * _text.Length];
-            Triangles = new ushort[6 * _text.Length];
-            Normals = new float3[4 * _text.Length];
-            
 
+            var verts = new List<float3>();
+            var uvs = new List<float2>();
+            var tris = new List<ushort>();
+            var normals = new List<float3>();
+            
             // build complete structure
 
             // var charInfo = Font.CharInfo;
@@ -39,22 +41,22 @@ namespace Fusee.Engine.GUI
 
             var index = 0;
             ushort vertex = 0;
-            var posX = 0f;
-            var posY = 0f;
+            var advanceX = 0f;
+            var advanceY = 0f;
 
             // now build the mesh
             foreach (var letter in _text)
             {
                 GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(letter);
                 GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(letter);
-
-                var x2 = posX + glyphOnMap.BitmapL;
-                var y2 = posY - glyphOnMap.BitmapT;
+                
+                var x = advanceX + glyphOnMap.BitmapL;
+                var y = advanceY - glyphOnMap.BitmapT;
                 var w = glyphOnMap.BitmapW;
                 var h = glyphOnMap.BitmapH ;
 
-                posX += glyphInfo.AdvanceX;
-                posY += glyphInfo.AdvanceY;
+                advanceX += glyphInfo.AdvanceX;
+                advanceY += glyphInfo.AdvanceY;
 
                 // skip glyphs that have no pixels
                 if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
@@ -66,35 +68,48 @@ namespace Fusee.Engine.GUI
                 var texOffsetY = glyphOnMap.TexOffY;
 
                 // vertices
-                Vertices[vertex] = new float3(x2, -y2 - h, 0);
-                Vertices[vertex + 1] = new float3(x2, -y2, 0);
-                Vertices[vertex + 2] = new float3(x2 + w, -y2 - h, 0);
-                Vertices[vertex + 3] = new float3(x2 + w, -y2, 0);
+                verts.Add(new float3(x, -y - h, 0));
+                verts.Add(new float3(x, -y, 0));
+                verts.Add(new float3(x + w, -y - h, 0));
+                verts.Add(new float3(x + w, -y, 0));
 
-                Normals[vertex] = -float3.UnitZ;
-                Normals[vertex + 1] = -float3.UnitZ;
-                Normals[vertex + 2] = -float3.UnitZ;
-                Normals[vertex + 3] = -float3.UnitZ;
+                normals.Add(-float3.UnitZ);
+                normals.Add(-float3.UnitZ);
+                normals.Add(-float3.UnitZ);
+                normals.Add(-float3.UnitZ);
 
                 // uvs
-                UVs[vertex] = new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight);
-                UVs[vertex + 1] = new float2(texOffsetX, texOffsetY);
-                UVs[vertex + 2] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight);
-                UVs[vertex + 3] = new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY);
+                uvs.Add(new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight));
+                uvs.Add(new float2(texOffsetX, texOffsetY));
+                uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight));
+                uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY));
 
                 // indices
-                Triangles[index++] = (ushort)(vertex + 1);
-                Triangles[index++] = vertex;
-                Triangles[index++] = (ushort)(vertex + 2);
+                tris.Add((ushort)(vertex + 1));
+                tris.Add(vertex);
+                tris.Add((ushort)(vertex + 2));
 
-                Triangles[index++] = (ushort)(vertex + 1);
-                Triangles[index++] = (ushort)(vertex + 2);
-                Triangles[index++] = (ushort)(vertex + 3);
+                tris.Add((ushort)(vertex + 1));
+                tris.Add((ushort)(vertex + 2));
+                tris.Add((ushort)(vertex + 3));
 
                 vertex += 4;
             }
 
-            Vertices = _fontMap.FixTextKerning(Vertices, _text, 1); //ToDo: scale??
+            Vertices = verts.ToArray();
+            Triangles = tris.ToArray();
+            UVs = uvs.ToArray();
+            Normals = normals.ToArray();
+
+            Vertices = _fontMap.FixTextKerning(Vertices, _text, 1);
+
+            var meshWidthNHeight = Vertices[Vertices.Length - 1].x - Vertices[0].x;
+            
+            for (var i = 0; i < Vertices.Length; i++)
+            {
+                var scaledVert = Vertices[i] / meshWidthNHeight;
+                Vertices[i] = scaledVert;
+            }
         }
 
     }

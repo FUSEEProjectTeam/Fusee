@@ -32,8 +32,7 @@ namespace Fusee.Engine.Examples.UI.Core
         private GUIButton _btnCat;
 
         private FontMap _fontMap;
-        private uint _fontSize;
-
+        private FontMap _fontMap1;
         
 
         //Build a scene graph consisting out of a canvas and other UI elements.
@@ -49,10 +48,10 @@ namespace Fusee.Engine.Examples.UI.Core
                 Name = "Text_Test",
                 Components = new List<SceneComponentContainer>
                 {
-                    new GUITextTransform()
+                    new TransformComponent()
                     {
-                        FontSize = _fontSize,
-                        Translation = new float3(-0.7f,0,0)
+                        Translation = new float3(-0.7f,0,0),
+                        Scale = new float3(1,1,1)
                     },
                     new ShaderEffectComponent
                     {
@@ -85,12 +84,61 @@ namespace Fusee.Engine.Examples.UI.Core
                                 new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                             })
                     },
-                    new GUIText(_fontMap, "Hallo!")
+
+                   new GUIText(_fontMap, " Hallo !")
                     {
-                        Name = "Text_Test_mesh"
+                    Name = "Text_Test_mesh"
+                }
+        }
+            };
+
+            var text1 = new SceneNodeContainer()
+            {
+                Name = "Text_Test",
+                Components = new List<SceneComponentContainer>
+                {
+                    new TransformComponent()
+                    {
+                        Translation = new float3(-0.7f,1,0),
+                        Scale = new float3(1,1,1)
+                    },
+                    new ShaderEffectComponent
+                    {
+                        Effect = new ShaderEffect(new[]
+                            {
+                                new EffectPassDeclaration
+                                {
+                                    VS = AssetStorage.Get<string>("texture.vert"),
+                                    PS = AssetStorage.Get<string>("texture.frag"),
+                                    StateSet = new RenderStateSet
+                                    {
+                                        AlphaBlendEnable = true,
+                                        SourceBlend = Blend.SourceAlpha,
+                                        DestinationBlend = Blend.InverseSourceAlpha,
+                                        BlendOperation = BlendOperation.Add,
+                                        ZEnable = false
+                                    }
+                                }
+                            },
+                            new[]
+                            {
+                                new EffectParameterDeclaration
+                                {
+                                    Name = "DiffuseTexture",
+                                    Value = new Texture(_fontMap1.Image)
+                                },
+                                new EffectParameterDeclaration {Name = "DiffuseColor", Value = ColorUint.Tofloat4(ColorUint.Greenery)},
+                                new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
+                                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                            })
                     },
 
-                }
+                   new GUIText(_fontMap1, "Hallo !")
+                    {
+                        Name = "Text_Test_mesh"
+                    }
+        }
             };
 
             var catTextureNode = new TextureNodeContainer(
@@ -165,6 +213,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 2
             );
             nineSliceTextureNode.Children.Add(text);
+            nineSliceTextureNode.Children.Add(text1);
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Child3",
@@ -256,7 +305,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                     catTextureNode,
                                     nineSliceTextureNode,
                                     quagganTextureNode
-                                    
+
                                 }
                             }
                         }
@@ -335,9 +384,11 @@ namespace Fusee.Engine.Examples.UI.Core
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            _fontSize = 24;
-            _fontMap = new FontMap(fontLato,_fontSize);
+            var openSans = AssetStorage.Get<Font>("Lato-Black.ttf");
             
+            _fontMap = new FontMap(fontLato, 36);
+            _fontMap1 = new FontMap(openSans, 12);
+
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
@@ -376,7 +427,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _sceneRenderer = new SceneRenderer(_scene);
         }
 
-        
+
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
@@ -429,7 +480,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _sih.View = RC.ModelView;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position,Width,Height);
+            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);

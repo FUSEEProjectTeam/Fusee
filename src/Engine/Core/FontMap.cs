@@ -56,7 +56,7 @@ namespace Fusee.Engine.Core
     public class FontMap
     {
         private Font _font;
-        private ImageData _image;
+        private Texture _image;
         private uint _pixelHeight;
         private string _alphabet;
         private bool _uptodate;
@@ -79,6 +79,8 @@ namespace Fusee.Engine.Core
             _pixelHeight = pixelHeight;
             _glyphOnMapCache = new Dictionary<uint, GlyphOnMap>();
             Alphabet = alphabet; // will invalidate _uptodate
+            _uptodate = false;
+            _image = null;
         }
 
         private void Invalidate()
@@ -96,12 +98,12 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The font image.
         /// </value>
-        public ImageData Image
+        public Texture Image
         {
             get
             {
-                if (_uptodate)
-                    return _image;
+                //if (_uptodate)
+                //    return _image;
 
                 _font.PixelHeight = _pixelHeight;
 
@@ -109,13 +111,13 @@ namespace Fusee.Engine.Core
                 var rowH = 0;
                 var h = 0;
 
-                const int maxWidth = 512;
+                const int maxWidth = 2048;
                 
                 foreach (char c in _alphabet)
                 {
                     uint i = (uint) c;
                     GlyphInfo gi = _font.GetGlyphInfo(i);
-
+                    
                     if (rowW + ((int)gi.AdvanceX) + 1 >= maxWidth)
                     {
                         h += rowH;
@@ -140,7 +142,8 @@ namespace Fusee.Engine.Core
                 int texMapHeight = ++potH;
 
                 // Create the font atlas (the texture containting ALL glyphs)
-                _image = new ImageData(new byte[texMapWidth * texMapHeight], texMapWidth, texMapHeight, new ImagePixelFormat(ColorFormat.Intensity));
+                _image = new Texture(new byte[texMapWidth * texMapHeight], texMapWidth, texMapHeight, new ImagePixelFormat(ColorFormat.Intensity));
+               
                 //_image = new ImageData
                 //{
                 //    PixelData = new byte[texMapWidth * texMapHeight],
@@ -355,7 +358,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///   <c>true</c> if uptodate; otherwise, <c>false</c>.
         /// </value>
-        public bool Uptodate => _uptodate;
+        //public bool Uptodate => _uptodate;
 
         /// <summary>
         /// Gets the glyph on map information for the given character/glyph. This information can be used to create geometry textured with on single 
