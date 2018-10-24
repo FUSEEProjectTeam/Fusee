@@ -330,7 +330,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
         rootMaterialComponent = None;
-        rootMaterialComponent = GetMaterial(obj, isWeb)       
+        rootMaterialComponent, textures = GetMaterial(obj, isWeb)       
 
         rootComponent1.payload = rootTransformComponent.SerializePartialToString()
         rootComponent2.payload = rootMaterialComponent.SerializePartialToString()
@@ -530,7 +530,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
-        rootMaterialComponent = GetMaterial(obj.children[0], isWeb)
+        rootMaterialComponent, textures = GetMaterial(obj.children[0], isWeb)
          
         # WEIGHT COMPONENT
         rootWeightComponent = Scene.SceneComponentContainer()
@@ -793,16 +793,16 @@ def GetMaterial(obj, isWeb):
                         pbrMaterial.FresnelReflectance = specular
                         pbrMaterial.DiffuseFraction = metallic
 
-                return rootMaterialComponent
+                return rootMaterialComponent, textures
             else:
                 # use default material
                 rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)
-                return rootMaterialComponent
+                return rootMaterialComponent, textures
         except Exception as inst:
             # use default material
             print('----3' + str(inst))
             rootMaterialComponent = SetDefaultMaterial(isWeb=isWeb)
-            return rootMaterialComponent
+            return rootMaterialComponent, textures
 
 def SetDefaultMaterial(isWeb):
     print('Default Material is used')
