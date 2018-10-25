@@ -394,7 +394,6 @@ namespace Fusee.Engine.Examples.UI.Core
             var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
             _bltDestinationTex.Blt(180, 225, bltScrTex);
 
-
             _btnCanvas = new GUIButton
             {
                 Name = "Canvas_Button"

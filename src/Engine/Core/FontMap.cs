@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -108,13 +109,33 @@ namespace Fusee.Engine.Core
 
                 const int maxWidth = 4096;
 
-                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * _pixelHeight;
+                //Assumption: there is no char whose width is greater than its height, therefor use _pixelHeight as multiplier.
+                //Possibly more correct: iterate over alphabet, calculate average width and average advance.
+                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * _pixelHeight;  
                 var width = (int)System.Math.Pow(2,(int)System.Math.Ceiling(System.Math.Log(widthOld,2)));
+
+                var averageWidth = 0f;
+                var averageAdvance = 0f;
+                var charCount = 0f;
+
+                foreach (var c in _alphabet)
+                {
+                    uint i = (uint) c;
+                        GlyphInfo gi = _font.GetGlyphInfo(c);
+                        averageWidth += gi.Width;
+                        averageAdvance += gi.AdvanceX;
+                        charCount++;
+                   
+                }
+
+                averageAdvance = averageAdvance / charCount;
+                averageWidth = averageWidth / charCount;
+
 
                 if (width > maxWidth)
                 {
                     width = maxWidth;
-                    Debug.WriteLine("Font texture resolution automatically to 4096 - consider to choose a lower font size");
+                    Debug.WriteLine("Font texture resolution automatically set to 4096 - consider to choose a lower font size");
                 }
 
                 //Scale FontSize for better 
