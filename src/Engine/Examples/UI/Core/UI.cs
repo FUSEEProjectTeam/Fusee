@@ -174,7 +174,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 vsTex,
                 psTex,
                 //Set the diffuse texture you want to use.
-                _bltDestinationTex,
+                //_bltDestinationTex,
+                _fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 new MinMaxRect
@@ -188,7 +189,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
-                    Max = new float2(5, 6)
+                    Max = new float2(5, 5)
                 });
 
             var nineSliceTextureNode = new TextureNodeContainer(
@@ -384,8 +385,8 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
-            _fontMap = new FontMap(fontLato, 36);
             _fontMap1 = new FontMap(fontLato, 8, false);
+            _fontMap = new FontMap(fontLato, 36);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);

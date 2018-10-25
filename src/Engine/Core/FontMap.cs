@@ -107,30 +107,28 @@ namespace Fusee.Engine.Core
                 if (_uptodate)
                     return _image;
 
+                _font.PixelHeight = _pixelHeight;
+
                 const int maxWidth = 4096;
 
-                //Assumption: there is no char whose width is greater than its height, therefor use _pixelHeight as multiplier.
-                //Possibly more correct: iterate over alphabet, calculate average width and average advance.
-                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * _pixelHeight;  
-                var width = (int)System.Math.Pow(2,(int)System.Math.Ceiling(System.Math.Log(widthOld,2)));
-
-                var averageWidth = 0f;
                 var averageAdvance = 0f;
                 var charCount = 0f;
 
-                foreach (var c in _alphabet)
+                //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
+                foreach (char c in _alphabet)
                 {
-                    uint i = (uint) c;
-                        GlyphInfo gi = _font.GetGlyphInfo(c);
-                        averageWidth += gi.Width;
-                        averageAdvance += gi.AdvanceX;
-                        charCount++;
-                   
+                    GlyphInfo gi = _font.GetGlyphInfo(c);
+                    averageAdvance += gi.AdvanceX;
+                    charCount++;
                 }
 
                 averageAdvance = averageAdvance / charCount;
-                averageWidth = averageWidth / charCount;
 
+                //Assumption: there is no char whose width is greater than its height, therefor use _pixelHeight as multiplier.
+                //Possibly more correct: iterate over alphabet, calculate average width and average advance.
+                //var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * _pixelHeight;
+                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * averageAdvance;
+                var width = (int)System.Math.Pow(2, (int)System.Math.Ceiling(System.Math.Log(widthOld, 2)));
 
                 if (width > maxWidth)
                 {
@@ -142,11 +140,9 @@ namespace Fusee.Engine.Core
                 if (_optimizeFontTexRes)
                 {
                     var mult = width / widthOld;
-                    _font.PixelHeight = (uint) (_pixelHeight * mult);
+                    _font.PixelHeight = (uint)(_pixelHeight * mult);
                 }
-                else
-                    _font.PixelHeight = _pixelHeight;
-
+                
                 // Create the font atlas (the texture containing ALL glyphs)
                 _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity));
                
