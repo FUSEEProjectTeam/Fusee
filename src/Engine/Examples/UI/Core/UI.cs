@@ -85,13 +85,12 @@ namespace Fusee.Engine.Examples.UI.Core
                             })
                     },
 
-                   new GUIText(_fontMap, " Hallo !")
+                   new GUIText(_fontMap, "Hallo !")
                     {
                     Name = "Text_Test_mesh"
                 }
         }
             };
-
             var text1 = new SceneNodeContainer()
             {
                 Name = "Text_Test",
@@ -384,10 +383,9 @@ namespace Fusee.Engine.Examples.UI.Core
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var openSans = AssetStorage.Get<Font>("Lato-Black.ttf");
-            
+
             _fontMap = new FontMap(fontLato, 36);
-            _fontMap1 = new FontMap(openSans, 12);
+            _fontMap1 = new FontMap(fontLato, 8, false);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);

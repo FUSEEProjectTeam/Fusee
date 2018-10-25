@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using System.Reflection;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Math.Core;
 using Fusee.Serialization;
 using Path = Fusee.Base.Common.Path;
 
