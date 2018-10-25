@@ -1,92 +1,42 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project>
-  <!-- Project Sdk="Microsoft.NET.Sdk" -->
+﻿<Project>
   <PropertyGroup>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Core\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-  </PropertyGroup>
-  <!-- as suggested at https://github.com/dotnet/sdk/issues/1518 by dasMulli -->
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Examples.Simple.Core</RootNamespace>
+    <PackageId>Fusee.Examples.Simple.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Simple.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Common.dll">
-      <Name>Fusee.Base.Common</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
-      <Name>Fusee.Base.Core</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Math.Core.dll">
-      <Name>Fusee.Math.Core</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Serialization.dll">
-      <Name>Fusee.Serialization</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Xene.dll">
-      <Name>Fusee.Xene</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Common.dll">
-      <Name>Fusee.Engine.Common</Name>
-    </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\Debug\Libraries\Fusee.Engine.Core.dll">
-      <Name>Fusee.Engine.Core</Name>
-    </Reference>
-    <Reference Include="Fusee.Engine.GUI">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
-    </Reference>
-    <None Remove="Assets\FUSEERocket.fus" />
-    <None Remove="Assets\FuseeText.png" />
-    <None Remove="Assets\Lato-Black.ttf" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\FUSEERocket.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Lato-Black.ttf">
-    <Content Include="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Assets\FUSEERocket.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\Simple\Core\</OutputPath>
+  </PropertyGroup>
+
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Base.Common.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Base.Core">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Base.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Common">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.Common.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Core">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.GUI">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Engine.GUI.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Serialization">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Serialization.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Xene">
-      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.Xene.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

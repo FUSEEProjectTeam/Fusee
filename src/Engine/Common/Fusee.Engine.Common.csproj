@@ -1,154 +1,31 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Common</RootNamespace>
-    <AssemblyName>Fusee.Engine.Common</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Engine.Common</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug+Web|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\..\bin\Debug\</OutputPath>
-    <BaseIntermediateOutputPath>..\..\..\tmp\Obj\Fusee.Common\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <DebugType>full</DebugType>
-    <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>..\..\..\bin\Debug\Fusee.Engine.Common.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
-    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
-    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
-    <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-    <DocumentationFile>..\..\..\bin\Debug\Fusee.Engine.Common.XML</DocumentationFile>
-    <NoWarn>1591</NoWarn>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Compile Include="Attributes.cs" />
-    <Compile Include="GBufferHelper.cs" />
-    <Compile Include="IAudioStreamImp.cs" />
-    <Compile Include="IInputDeviceImp.cs" />
-    <Compile Include="IInputDriverImp.cs" />
-    <Compile Include="IFont.cs" />
-    <Compile Include="IBoxShapeImp.cs" />
-    <Compile Include="ICapsuleShapeImp.cs" />
-    <Compile Include="ICollisionShapeImp.cs" />
-    <Compile Include="ICompoundShapeImp.cs" />
-    <Compile Include="IConeShapeImp.cs" />
-    <Compile Include="IConeTwistConstraintImp.cs" />
-    <Compile Include="IConstraintImp.cs" />
-    <Compile Include="IConvexHullShapeImp.cs" />
-    <Compile Include="ICylinderShapeImp.cs" />
-    <Compile Include="IDynamicWorldImp.cs" />
-    <Compile Include="IEmptyShapeImp.cs" />
-    <Compile Include="IGearConstraintImp.cs" />
-    <Compile Include="IGeneric6DofConstraintImp.cs" />
-    <Compile Include="IGImpactMeshShapeImp.cs" />
-    <Compile Include="IHingeConstraintImp.cs" />
-    <Compile Include="IMeshImp.cs" />
-    <Compile Include="IMultiSphereShapeImp.cs" />
-    <Compile Include="INetworkConnection.cs" />
-    <Compile Include="INetworkImp.cs" />
-    <Compile Include="INetworkMsg.cs" />
-    <Compile Include="InitEventArgs.cs" />
-    <Compile Include="IPoint2PointConstraintImp.cs" />
-    <Compile Include="IRenderCanvasImp.cs" />
-    <Compile Include="IRenderContextImp.cs" />
-    <Compile Include="IRigidBodyImp.cs" />
-    <Compile Include="IShaderParam.cs" />
-    <Compile Include="IShaderProgramImp.cs" />
-    <Compile Include="IAudioImp.cs" />
-    <Compile Include="ISliderConstraintImp.cs" />
-    <Compile Include="ISphereShapeImp.cs" />
-    <Compile Include="IStaticPlaneShapeImp.cs" />
-    <Compile Include="ITexture.cs" />
-    <Compile Include="ITextureHandle.cs" />
-    <Compile Include="IVideoManagerImp.cs" />
-    <Compile Include="IVideoStreamImp.cs" />
-    <Compile Include="KeyEventArgs.cs" />
-    <Compile Include="Light.cs" />
-    <Compile Include="MouseEventArgs.cs" />
-    <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="Point.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RCEnums.cs" />
-    <Compile Include="Helper.cs" />
-    <Compile Include="Rectangle.cs" />
-    <Compile Include="RenderEventArgs.cs" />
-    <Compile Include="ResizeEventArgs.cs" />
-    <Compile Include="ShaderParamInfo.cs" />
-    <Compile Include="TextureComponent.cs" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Serialization\Fusee.Serialization.csproj" />
   </ItemGroup>
+  
   <ItemGroup>
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
-      <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
-      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
-      <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

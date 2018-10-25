@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2005
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bump.Desktop", "Desktop\Fusee.Engine.Examples.Bump.Desktop.csproj", "{72CA32ED-EB17-48FC-956A-CA8DB4743F84}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bump.Android", "Android\Fusee.Engine.Examples.Bump.Android.csproj", "{92F6C1B2-636A-4031-BDAB-29F12A45730E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bump.Core", "Core\Fusee.Engine.Examples.Bump.Core.csproj", "{B2967779-27B5-4E42-B680-F093F44329B3}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bump.Desktop", "Desktop\Fusee.Engine.Examples.Bump.Desktop.csproj", "{72CA32ED-EB17-48FC-956A-CA8DB4743F84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Bump.Web", "Web\Fusee.Engine.Examples.Bump.Web.csproj", "{B607076F-4CCC-41A4-A644-FD734EE56AC6}"
 EndProject
@@ -39,20 +39,22 @@ Global
 		{B2967779-27B5-4E42-B680-F093F44329B3}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B2967779-27B5-4E42-B680-F093F44329B3}.Release|x64.ActiveCfg = Release|Any CPU
 		{B2967779-27B5-4E42-B680-F093F44329B3}.Release|x64.Build.0 = Release|Any CPU
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|Any CPU.Build.0 = Debug|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|x64.ActiveCfg = Debug|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|x64.Build.0 = Debug|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|Any CPU.ActiveCfg = Release|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|x64.ActiveCfg = Release|x64
-		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|x64.Build.0 = Release|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|Any CPU.ActiveCfg = Debug|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|Any CPU.Build.0 = Debug|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|x64.ActiveCfg = Debug|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|x64.Build.0 = Debug|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|Any CPU.ActiveCfg = Release|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|x64.ActiveCfg = Release|x64
-		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|x64.Build.0 = Release|x64
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Debug|x64.Build.0 = Debug|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|Any CPU.Build.0 = Release|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|x64.ActiveCfg = Release|Any CPU
+		{72CA32ED-EB17-48FC-956A-CA8DB4743F84}.Release|x64.Build.0 = Release|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Debug|x64.Build.0 = Debug|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|x64.ActiveCfg = Release|Any CPU
+		{B607076F-4CCC-41A4-A644-FD734EE56AC6}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

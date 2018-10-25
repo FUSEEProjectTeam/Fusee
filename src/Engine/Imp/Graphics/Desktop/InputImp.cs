@@ -5,7 +5,6 @@ using Fusee.Engine.Common;
 using System.Collections.Generic;
 using System.Linq;
 
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     /// <summary>

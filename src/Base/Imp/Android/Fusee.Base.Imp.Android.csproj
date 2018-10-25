@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Android</RootNamespace>
@@ -15,7 +15,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
-    <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -43,7 +43,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="SharpFont, Version=3.1.0.200, Culture=neutral, PublicKeyToken=48add4c483071cdf, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -71,12 +71,10 @@
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x64\libfreetype262d.so">
       <Link>lib\x64\libfreetype.so.6</Link>
       <Abi>x86_64</Abi>
-      <Abi>x86_64</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
     <EmbeddedNativeLibrary Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Android\x86\libfreetype262d.so">
       <Link>lib\x86\libfreetype.so.6</Link>
-      <Abi>x86</Abi>
       <Abi>x86</Abi>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedNativeLibrary>
@@ -88,26 +86,18 @@
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Math\Core\Fusee.Math.Core.csproj">
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
       <Name>Fusee.Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Common\Fusee.Base.Common.csproj">
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj">
       <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
       <Name>Fusee.Base.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Fusee.Base.Core.csproj">
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj">
       <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
       <Name>Fusee.Base.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

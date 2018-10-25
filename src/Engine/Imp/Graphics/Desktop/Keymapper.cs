@@ -2,7 +2,6 @@
 using OpenTK.Input;
 using Fusee.Engine.Common;
 
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     internal class Keymapper : Dictionary<OpenTK.Input.Key, ButtonDescription>

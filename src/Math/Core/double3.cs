@@ -2,6 +2,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+
 namespace Fusee.Math.Core
 {
     /// <summary>
