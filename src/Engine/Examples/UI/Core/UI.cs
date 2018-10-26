@@ -33,7 +33,8 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private FontMap _fontMap;
         private FontMap _fontMap1;
-        
+
+        private TransformComponent _canvasTransform;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -138,6 +139,13 @@ namespace Fusee.Engine.Examples.UI.Core
                         Name = "Text_Test_mesh"
                     }
         }
+            };
+
+            _canvasTransform = new TransformComponent
+            {
+                Translation = new float3(0, 0, 0),
+                Rotation = new float3(0, 0, 0),
+                Scale = new float3(1, 1, 1)
             };
 
             var catTextureNode = new TextureNodeContainer(
@@ -245,12 +253,7 @@ namespace Fusee.Engine.Examples.UI.Core
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
-                            new TransformComponent
-                            {
-                                Translation = new float3(0,0,0),
-                                Rotation = new float3(0,45,0),
-                                Scale = new float3(1,1,1)
-                            },
+                            _canvasTransform
                         },
                         Children = new List<SceneNodeContainer>
                         {
@@ -385,8 +388,8 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
-            _fontMap1 = new FontMap(fontLato, 8, false);
-            _fontMap = new FontMap(fontLato, 36);
+            _fontMap1 = new FontMap(fontLato, 8);
+            _fontMap = new FontMap(fontLato, 700);
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -464,6 +467,15 @@ namespace Fusee.Engine.Examples.UI.Core
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
+            }
+
+            if (Input.Keyboard.GetKey(KeyCodes.W))
+            {
+                _canvasTransform.Translation.z = _canvasTransform.Translation.z + 0.1f;
+            }
+            if (Input.Keyboard.GetKey(KeyCodes.S))
+            {
+                _canvasTransform.Translation.z = _canvasTransform.Translation.z - 0.1f;
             }
 
             _angleHorz += _angleVelHorz;

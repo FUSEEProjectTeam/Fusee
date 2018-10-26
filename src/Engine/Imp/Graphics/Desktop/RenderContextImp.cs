@@ -125,96 +125,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 format, PixelType.UnsignedByte, bytes);
         }
 
-
-        /* OBSOLETE
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="color">The color of the image. Value must be JS compatible.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage(int width, int height, ColorUint color)
-        {
-            var bmp = new Bitmap(width, height);
-            System.Drawing.Graphics gfx = System.Drawing.Graphics.FromImage(bmp);
-            Color col = Color.FromArgb(color.A, color.R, color.G, color.B);
-            gfx.Clear(col);
-
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, ColorFormat.Format32bppArgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = (strideAbs)*bmp.Height;
-
-            var ret = new ImageData
-            {
-                PixelData = new byte[bytes],
-                Height = bmpData.Height,
-                Width = bmpData.Width,
-                ColorFormat = ImagePixelFormat.RGBA,
-                Stride = bmpData.Stride
-            };
-
-            Marshal.Copy(bmpData.Scan0, ret.PixelData, 0, bytes);
-
-            bmp.UnlockBits(bmpData);
-            return ret;
-        }
-
-
-        /// <summary>
-        /// Maps a specified text with on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
-            float startPosX, float startPosY)
-        {
-            var imgDataNew = imgData;
-
-            GCHandle arrayHandle = GCHandle.Alloc(imgDataNew.PixelData,
-                GCHandleType.Pinned);
-            var bmp = new Bitmap(imgDataNew.Width, imgDataNew.Height, imgDataNew.Stride, ColorFormat.Format32bppArgb,
-                arrayHandle.AddrOfPinnedObject());
-
-            // Flip before writing text on bmp
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            Color color = Color.FromName(textColor);
-            var font = new System.Drawing.Font(fontName, fontSize, FontStyle.Regular, GraphicsUnit.World);
-
-            System.Drawing.Graphics gfx = System.Drawing.Graphics.FromImage(bmp);
-            gfx.TextRenderingHint = TextRenderingHint.AntiAlias;
-            gfx.DrawString(text, font, new SolidBrush(color), startPosX, startPosY);
-
-            // Flip after writing text on bmp
-            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            BitmapData bmpData = bmp.LockBits(new System.Drawing.Rectangle(0, 0, bmp.Width, bmp.Height),
-                ImageLockMode.ReadWrite, ColorFormat.Format32bppArgb);
-            int strideAbs = (bmpData.Stride < 0) ? -bmpData.Stride : bmpData.Stride;
-            int bytes = (strideAbs)*bmp.Height;
-
-            imgDataNew.PixelData = new byte[bytes];
-            imgDataNew.Height = bmpData.Height;
-            imgDataNew.Width = bmpData.Width;
-            imgDataNew.Stride = bmpData.Stride;
-
-            Marshal.Copy(bmpData.Scan0, imgDataNew.PixelData, 0, bytes);
-
-            bmp.UnlockBits(bmpData);
-            return imgDataNew;
-        }
-        */
-
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
@@ -245,14 +155,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             int id = GL.GenTexture();
+
             GL.BindTexture(TextureTarget.Texture2D, id);
             GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0,
                 format, PixelType.UnsignedByte, img.PixelData);
 
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int) TextureMinFilter.Linear);
+                (int)TextureMinFilter.LinearMipmapLinear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                (int) TextureMinFilter.Linear);
+                (int)TextureMagFilter.Linear);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
                 (repeat) ? (int) TextureWrapMode.Repeat : (int) TextureWrapMode.ClampToEdge);

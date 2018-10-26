@@ -113,21 +113,20 @@ namespace Fusee.Engine.Core
 
                 var averageAdvance = 0f;
                 var charCount = 0f;
-
+                
                 //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
                 foreach (char c in _alphabet)
                 {
                     GlyphInfo gi = _font.GetGlyphInfo(c);
-                    averageAdvance += gi.AdvanceX;
+                    averageAdvance += gi.AdvanceX+1;
                     charCount++;
                 }
 
                 averageAdvance = averageAdvance / charCount;
 
-                //Assumption: there is no char whose width is greater than its height, therefor use _pixelHeight as multiplier.
-                //Possibly more correct: iterate over alphabet, calculate average width and average advance.
-                //var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * _pixelHeight;
-                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length) * averageAdvance;
+                //_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight is the area of ​​the rectangle with the width equal to the number of letters * averageAdvance and the height equals pixelHeight.
+                // Since this rectangle has the same area as the desired square (texture atlas), the square root of the rectangle is the width of that square.
+                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight);
                 var width = (int)System.Math.Pow(2, (int)System.Math.Ceiling(System.Math.Log(widthOld, 2)));
 
                 if (width > maxWidth)
@@ -140,7 +139,7 @@ namespace Fusee.Engine.Core
                 if (_optimizeFontTexRes)
                 {
                     var mult = width / widthOld;
-                    _font.PixelHeight = (uint)(_pixelHeight * mult);
+                    _font.PixelHeight = (uint)(_pixelHeight * (mult));
                 }
                 
                 // Create the font atlas (the texture containing ALL glyphs)
