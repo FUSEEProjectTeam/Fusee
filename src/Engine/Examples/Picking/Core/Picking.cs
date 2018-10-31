@@ -21,7 +21,7 @@ using Fusee.Xene;
 namespace Fusee.Engine.Examples.Picking.Core
 {
 
-    [FuseeApplication(Name = "Picking Example", Description = "How to use the Scene Picker.")]
+    [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class Picking : RenderCanvas
     {
         // angle variables
@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
 
-            _text = "Picking FUSEE Example";
+            _text = "FUSEE Picking Example";
 
             _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
