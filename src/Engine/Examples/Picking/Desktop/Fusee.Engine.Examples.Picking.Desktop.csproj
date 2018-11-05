@@ -52,7 +52,7 @@
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
 

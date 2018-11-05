@@ -87,5 +87,7 @@ ServiceFabricBackup/
 *.GhostDoc.xml
 
 # FUSEE Custom
-# do not exclude pdb files in ext/
-!ext/**/*.pdb
+# do not exclude any files in ext except some very specific ones
+!ext/**/*
+ext/protobuf/Debug/protobuf-net.dll.mdb
+ext/protobuf/Release/protobuf-net.dll.mdb
