@@ -37,12 +37,12 @@ namespace Fusee.Engine.Examples.Picking.Core
         private bool _keys;
 
 #if GUI_SIMPLE
-        private GUIHandler _guiHandler;
+        private GUIHandler_Legacy _guiHandler;
 
         private GUIButton_Legacy _guiFuseeLink;
-        private GUIImage _guiFuseeLogo;
+        private GUIImage_Legacy _guiFuseeLogo;
         private FontMap _guiLatoBlack;
-        private GUIText _guiSubText;
+        private GUIText_Legacy _guiSubText;
         private float _subtextHeight;
         private float _subtextWidth;
 
@@ -57,7 +57,7 @@ namespace Fusee.Engine.Examples.Picking.Core
         public override void Init()
         {
 #if GUI_SIMPLE
-            _guiHandler = new GUIHandler();
+            _guiHandler = new GUIHandler_Legacy();
             _guiHandler.AttachToContext(RC);
 
             _guiFuseeLink = new GUIButton_Legacy(6, 6, 182, 58);
@@ -68,7 +68,7 @@ namespace Fusee.Engine.Examples.Picking.Core
             _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
             _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
             _guiHandler.Add(_guiFuseeLink);
-            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
+            _guiFuseeLogo = new GUIImage_Legacy(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
             _guiHandler.Add(_guiFuseeLogo);
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             fontLato.UseKerning = true;
@@ -76,11 +76,11 @@ namespace Fusee.Engine.Examples.Picking.Core
 
             _text = "Picking FUSEE Example";
 
-            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
+            _guiSubText = new GUIText_Legacy(_text, _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
             _guiHandler.Add(_guiSubText);
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
+            _subtextWidth = GUIText_Legacy.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
+            _subtextHeight = GUIText_Legacy.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
 #endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).

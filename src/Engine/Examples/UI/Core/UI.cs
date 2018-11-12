@@ -35,6 +35,7 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap1;
 
         private TransformComponent _canvasTransform;
+        private CanvasTransformComponent _canvasTransformComp;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -43,6 +44,17 @@ namespace Fusee.Engine.Examples.UI.Core
             var psTex = AssetStorage.Get<string>("texture.frag");
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
+
+            _canvasTransformComp = new CanvasTransformComponent
+            {
+                Name = "Canvas_CanvasTransform",
+                CanvasRenderMode = CanvasRenderMode.SCREEN,
+                //Size = new MinMaxRect
+                //{
+                //    Min = new float2(-10, -5),
+                //    Max = new float2(10, 5)
+                //}
+            };
 
             var text = new SceneNodeContainer()
             {
@@ -88,9 +100,9 @@ namespace Fusee.Engine.Examples.UI.Core
 
                    new GUIText(_fontMap, "Hallo !")
                     {
-                    Name = "Text_Test_mesh"
+                        Name = "Text_Test_mesh"
+                    }
                 }
-        }
             };
             var text1 = new SceneNodeContainer()
             {
@@ -213,12 +225,12 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4),
+                    Min = new float2(-1, -0.5f),
                     Max = new float2(0, 0)
                 },
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
-                2
+                0.25f
             );
             nineSliceTextureNode.Children.Add(text);
             nineSliceTextureNode.Children.Add(text1);
@@ -267,15 +279,7 @@ namespace Fusee.Engine.Examples.UI.Core
                                     {
                                         Scale = new float3(1,1,1)
                                     },
-                                    new CanvasTransformComponent
-                                    {
-                                        Name = "Canvas_CanvasTransform",
-                                        Size = new MinMaxRect
-                                        {
-                                            Min = new float2(-10,-5),
-                                            Max = new float2(10,5)
-                                        }
-                                    }
+                                    _canvasTransformComp
                                 },
                                 Children = new List<SceneNodeContainer>
                                 {
@@ -303,11 +307,11 @@ namespace Fusee.Engine.Examples.UI.Core
                                     },
                                     
                                     //Simple Texture Node, contains a Blt"ed" texture.
-                                    bltTextureNode,
+                                    //bltTextureNode,
                                     //Add nine sliced textures to canvas
-                                    catTextureNode,
+                                    //catTextureNode,
                                     nineSliceTextureNode,
-                                    quagganTextureNode
+                                    //quagganTextureNode
 
                                 }
                             }
@@ -482,18 +486,25 @@ namespace Fusee.Engine.Examples.UI.Core
             _angleVert += _angleVelVert;
 
 
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
+            var mtxRot = float4x4.Identity;
+            if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
+                mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+
+            var mtxCam = float4x4.LookAt(5, 1, -15, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
-
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
-
-            // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
+
+            //Set the view matrix for the interaction handler.
+            
+            if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
+                _sih.View = RC.ModelView;
+            else if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.SCREEN)
+                _sih.View = RC.ModelView;
+
+            // Constantly check for interactive objects.
+            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();

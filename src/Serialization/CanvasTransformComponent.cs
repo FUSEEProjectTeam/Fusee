@@ -14,7 +14,7 @@ namespace Fusee.Serialization
         public CanvasRenderMode CanvasRenderMode;
 
         /// <summary>
-        /// Absolute size of the Canvas. First element in the interface hierarchy .
+        /// Absolute size of the Canvas. First element in the interface hierarchy.
         /// </summary>
         [ProtoMember(2)]
         public MinMaxRect Size;
