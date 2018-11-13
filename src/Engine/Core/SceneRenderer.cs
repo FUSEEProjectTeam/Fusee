@@ -260,6 +260,7 @@ namespace Fusee.Engine.Core
             public RendererState()
             {
                 RegisterState(_model);
+                RegisterState(_canvasXForm);
                 RegisterState(_effect);
                 RegisterState(_uiRect);
             }
@@ -509,10 +510,8 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                var model = _rc.Model;
-                var view = _rc.View;
-                _state.CanvasXForm = _state.Model;
-                _state.Model = _state.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                _state.CanvasXForm  *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                _state.Model = _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
 
@@ -524,9 +523,6 @@ namespace Fusee.Engine.Core
                 var fov = 2f * System.Math.Atan(1f / projection.M22);
                 var aspect = projection.M22 / projection.M11;
 
-
-                var model = _rc.Model;
-                var view = _rc.View;
                 var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
@@ -544,13 +540,8 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                var rot = _rc.InvView;
-                rot.M14 = 0;
-                rot.M24 = 0;
-                rot.M34 = 0;
-
-                //_state.CanvasXForm = ( _state.Model) * rot * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, canvasPos.z);
-                _state.CanvasXForm = _rc.InvView * float4x4.CreateTranslation(0, 0, 3);
+                //_state.CanvasXForm = _state.Model * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, canvasPos.z);
+                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear+0.00001f); ;
                 _state.Model = _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
@@ -559,9 +550,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
-            var zNear = System.Math.Abs(_rc.Projection.M34 / (_rc.Projection.M33 + 1));
-            var canvasPosZ =  _rc.InvView.M43 + zNear;
-
             // The Heart of the UiRect calculation: Set anchor points relative to parent
             // rectangle and add absolute offsets
             var newRect = new MinMaxRect
@@ -570,7 +558,8 @@ namespace Fusee.Engine.Core
                 Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
             };
 
-            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+            var canvasTranslation = newRect.Center - _state.UiRect.Center;
+            var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
 
             _state.UiRect = newRect;
             _state.Model = _state.CanvasXForm * transformChild;
@@ -729,6 +718,7 @@ namespace Fusee.Engine.Core
         {
             _state.Clear();
             _state.Model = float4x4.Identity;
+            _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _defaultEffect;
 

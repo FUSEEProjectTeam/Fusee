@@ -490,7 +490,7 @@ namespace Fusee.Engine.Examples.UI.Core
             if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
-            var mtxCam = float4x4.LookAt(5, 1, -15, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(2, 6, -15, 1, 4, 8, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()
@@ -501,7 +501,7 @@ namespace Fusee.Engine.Examples.UI.Core
             if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
                 _sih.View = RC.ModelView;
             else if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.SCREEN)
-                _sih.View = RC.ModelView;
+                _sih.View = RC.InvView;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
