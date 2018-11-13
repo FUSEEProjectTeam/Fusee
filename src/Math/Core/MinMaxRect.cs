@@ -10,7 +10,7 @@ namespace Fusee.Math.Core
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
-    public class MinMaxRect
+    public struct MinMaxRect
     {
         [ProtoMember(1)]
         public float2 Min;

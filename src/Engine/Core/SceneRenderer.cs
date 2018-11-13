@@ -214,8 +214,7 @@ namespace Fusee.Engine.Core
         private readonly SceneContainer _sc;
 
         private RenderContext _rc;
-
-
+        
         private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
 
         private string _scenePathDirectory;
@@ -501,7 +500,6 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
-
             if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
             {
                 var newRect = new MinMaxRect
@@ -511,7 +509,7 @@ namespace Fusee.Engine.Core
                 };
 
                 _state.CanvasXForm  *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-                _state.Model = _state.CanvasXForm;
+                _state.Model *= _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
 
@@ -540,9 +538,8 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                //_state.CanvasXForm = _state.Model * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, canvasPos.z);
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear+0.00001f); ;
-                _state.Model = _state.CanvasXForm;
+                _state.CanvasXForm = _rc.InvView * float4x4.CreateTranslation(0, 0, zNear+0.00001f); ;
+                _state.Model *= _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
         }
@@ -562,7 +559,7 @@ namespace Fusee.Engine.Core
             var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
 
             _state.UiRect = newRect;
-            _state.Model = _state.CanvasXForm * transformChild;
+            _state.Model *= transformChild;
 
         }
 
@@ -570,6 +567,16 @@ namespace Fusee.Engine.Core
         public void RenderXForm(XFormComponent xfc)
         {
             var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+
+            _state.Model *= scale;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+        }
+
+        [VisitMethod]
+        public void RenderXForm(XFormTextComponent xfc)
+        {
+            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.x, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;

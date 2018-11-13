@@ -45,10 +45,9 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
-            _canvasTransformComp = new CanvasTransformComponent
+            _canvasTransformComp = new CanvasTransformComponent(CanvasRenderMode.SCREEN)
             {
                 Name = "Canvas_CanvasTransform",
-                CanvasRenderMode = CanvasRenderMode.SCREEN,
                 //Size = new MinMaxRect
                 //{
                 //    Min = new float2(-10, -5),
@@ -308,10 +307,10 @@ namespace Fusee.Engine.Examples.UI.Core
                                     
                                     //Simple Texture Node, contains a Blt"ed" texture.
                                     //bltTextureNode,
-                                    //Add nine sliced textures to canvas
+                                    ////Add nine sliced textures to canvas
                                     //catTextureNode,
-                                    nineSliceTextureNode,
-                                    //quagganTextureNode
+                                    //quagganTextureNode,
+                                    nineSliceTextureNode
 
                                 }
                             }
@@ -497,11 +496,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
-            
-            if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
-                _sih.View = RC.ModelView;
-            else if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.SCREEN)
-                _sih.View = RC.InvView;
+            _sih.View = RC.ModelView;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
