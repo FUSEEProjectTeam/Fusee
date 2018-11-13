@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -21,7 +22,7 @@ namespace Fusee.Engine.GUI
         {
             Children.First().AddComponent(comp);
         }
-        
+
         /// <summary>
         /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
@@ -174,6 +175,75 @@ namespace Fusee.Engine.GUI
                         new Plane()
                     }
                 }
+            };
+        }
+    }
+
+    public class TextNodeContainer : SceneNodeContainer
+    {
+        public TextNodeContainer(string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets, FontMap fontMap, float4 color)
+        {
+
+            Name = name;
+            Components = new List<SceneComponentContainer>
+            {
+                new RectTransformComponent
+                {
+                    Name = name + "_RectTransform",
+                    Anchors = anchors,
+                    Offsets = offsets
+
+                }
+            };
+            Children = new List<SceneNodeContainer>
+                {
+                    new SceneNodeContainer
+                    {
+                        Name = name + "_XForm",
+                        Components = new List<SceneComponentContainer>
+                        {
+                            new XFormTextComponent
+                            {
+                                Name = name + "_XForm",
+                            },
+                            new ShaderEffectComponent
+                            {
+                                Effect = new ShaderEffect(new[]
+                                    {
+                                        new EffectPassDeclaration
+                                        {
+                                            VS = vs,
+                                            PS = ps,
+                                            StateSet = new RenderStateSet
+                                            {
+                                                AlphaBlendEnable = true,
+                                                SourceBlend = Blend.SourceAlpha,
+                                                DestinationBlend = Blend.InverseSourceAlpha,
+                                                BlendOperation = BlendOperation.Add,
+                                                ZEnable = false
+                                            }
+                                        }
+                                    },
+                                    new[]
+                                    {
+                                        new EffectParameterDeclaration
+                                        {
+                                            Name = "DiffuseTexture",
+                                            Value = new Texture(fontMap.Image)
+                                        },
+                                        new EffectParameterDeclaration
+                                            {Name = "DiffuseColor", Value = color},
+                                        new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
+                                        new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                        new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                                    })
+                            },
+                            new GUIText(fontMap, "Hallo !")
+                            {
+                                Name = name + "textMesh"
+                            }
+                        }
+                    }
             };
         }
     }

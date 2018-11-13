@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Xene;
+using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Engine.Examples.UI.Core
 {
@@ -34,7 +35,6 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private TransformComponent _canvasTransform;
         private CanvasTransformComponent _canvasTransformComp;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
@@ -55,109 +55,22 @@ namespace Fusee.Engine.Examples.UI.Core
                 //}
             };
 
-            var text = new SceneNodeContainer()
-            {
-                Name = "Text_Test",
-                Components = new List<SceneComponentContainer>
+            var text = new TextNodeContainer(
+                "ButtonText",
+                vsTex, 
+                psTex, 
+                new MinMaxRect
                 {
-                    new TransformComponent()
-                    {
-                        Translation = new float3(-0.7f,0,0),
-                        Scale = new float3(1,1,1)
-                    },
-                    new ShaderEffectComponent
-                    {
-                        Effect = new ShaderEffect(new[]
-                            {
-                                new EffectPassDeclaration
-                                {
-                                    VS = AssetStorage.Get<string>("texture.vert"),
-                                    PS = AssetStorage.Get<string>("texture.frag"),
-                                    StateSet = new RenderStateSet
-                                    {
-                                        AlphaBlendEnable = true,
-                                        SourceBlend = Blend.SourceAlpha,
-                                        DestinationBlend = Blend.InverseSourceAlpha,
-                                        BlendOperation = BlendOperation.Add,
-                                        ZEnable = false
-                                    }
-                                }
-                            },
-                            new[]
-                            {
-                                new EffectParameterDeclaration
-                                {
-                                    Name = "DiffuseTexture",
-                                    Value = new Texture(_fontMap.Image)
-                                },
-                                new EffectParameterDeclaration {Name = "DiffuseColor", Value = ColorUint.Tofloat4(ColorUint.Greenery)},
-                                new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                            })
-                    },
-
-                   new GUIText(_fontMap, "Hallo !")
-                    {
-                        Name = "Text_Test_mesh"
-                    }
-                }
-            };
-            var text1 = new SceneNodeContainer()
-            {
-                Name = "Text_Test",
-                Components = new List<SceneComponentContainer>
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 1)
+                },
+                new MinMaxRect
                 {
-                    new TransformComponent()
-                    {
-                        Translation = new float3(-0.7f,1,0),
-                        Scale = new float3(1,1,1)
-                    },
-                    new ShaderEffectComponent
-                    {
-                        Effect = new ShaderEffect(new[]
-                            {
-                                new EffectPassDeclaration
-                                {
-                                    VS = AssetStorage.Get<string>("texture.vert"),
-                                    PS = AssetStorage.Get<string>("texture.frag"),
-                                    StateSet = new RenderStateSet
-                                    {
-                                        AlphaBlendEnable = true,
-                                        SourceBlend = Blend.SourceAlpha,
-                                        DestinationBlend = Blend.InverseSourceAlpha,
-                                        BlendOperation = BlendOperation.Add,
-                                        ZEnable = false
-                                    }
-                                }
-                            },
-                            new[]
-                            {
-                                new EffectParameterDeclaration
-                                {
-                                    Name = "DiffuseTexture",
-                                    Value = new Texture(_fontMap1.Image)
-                                },
-                                new EffectParameterDeclaration {Name = "DiffuseColor", Value = ColorUint.Tofloat4(ColorUint.Greenery)},
-                                new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                            })
-                    },
-
-                   new GUIText(_fontMap1, "Hallo !")
-                    {
-                        Name = "Text_Test_mesh"
-                    }
-        }
-            };
-
-            _canvasTransform = new TransformComponent
-            {
-                Translation = new float3(0, 0, 0),
-                Rotation = new float3(0, 0, 0),
-                Scale = new float3(1, 1, 1)
-            };
+                    Min = new float2(0.4f, 0.125f),
+                    Max = new float2(-0.4f, -0.125f)
+                },
+                _fontMap,
+                ColorUint.Tofloat4(ColorUint.Greenery));
 
             var catTextureNode = new TextureNodeContainer(
                 "Child1",
@@ -232,8 +145,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 0.25f
             );
             nineSliceTextureNode.Children.Add(text);
-            nineSliceTextureNode.Children.Add(text1);
-
+            
             var quagganTextureNode = new TextureNodeContainer(
                 "Child3",
                 vsNineSlice,
@@ -264,7 +176,7 @@ namespace Fusee.Engine.Examples.UI.Core
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
-                            _canvasTransform
+                            
                         },
                         Children = new List<SceneNodeContainer>
                         {
@@ -472,24 +384,14 @@ namespace Fusee.Engine.Examples.UI.Core
                 }
             }
 
-            if (Input.Keyboard.GetKey(KeyCodes.W))
-            {
-                _canvasTransform.Translation.z = _canvasTransform.Translation.z + 0.1f;
-            }
-            if (Input.Keyboard.GetKey(KeyCodes.S))
-            {
-                _canvasTransform.Translation.z = _canvasTransform.Translation.z - 0.1f;
-            }
-
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-
 
             var mtxRot = float4x4.Identity;
             if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
-            var mtxCam = float4x4.LookAt(2, 6, -15, 1, 4, 8, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()

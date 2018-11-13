@@ -44,6 +44,8 @@ namespace Fusee.Engine.GUI
             var advanceX = 0f;
             var advanceY = 0f;
 
+            var textMeshHeight = 0f;
+
             // now build the mesh
             foreach (var letter in _text)
             {
@@ -54,6 +56,9 @@ namespace Fusee.Engine.GUI
                 var y = advanceY - glyphOnMap.BitmapT;
                 var w = glyphOnMap.BitmapW;
                 var h = glyphOnMap.BitmapH ;
+
+                if (-y > textMeshHeight)
+                    textMeshHeight = -y;
 
                 advanceX += glyphInfo.AdvanceX;
                 advanceY += glyphInfo.AdvanceY;
@@ -103,11 +108,13 @@ namespace Fusee.Engine.GUI
 
             Vertices = _fontMap.FixTextKerning(Vertices, _text, 1);
 
-            var meshWidthNHeight = Vertices[Vertices.Length - 1].x - Vertices[0].x;
-            
+            var meshWidth = Vertices[Vertices.Length - 1].x - Vertices[0].x;
+            var translateToZero = Vertices[0].x;
+
             for (var i = 0; i < Vertices.Length; i++)
             {
-                var scaledVert = Vertices[i] / meshWidthNHeight;
+                var translateVert = new float3(Vertices[i].x - translateToZero - meshWidth/2, Vertices[i].y - textMeshHeight/2, Vertices[i].z);
+                var scaledVert = translateVert / meshWidth;
                 Vertices[i] = scaledVert;
             }
         }

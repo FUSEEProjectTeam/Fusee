@@ -18,6 +18,17 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(2)]
         public MinMaxRect Size;
+
+        /// <summary>
+        /// Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.
+        /// By default Scale in SCREEN mode is set, so that 1 fusee unit equals 100px.
+        /// </summary>
+        [ProtoMember(3)] public float Scale;
+
+        public CanvasTransformComponent(CanvasRenderMode canvasRenderMode)
+        {
+            CanvasRenderMode = canvasRenderMode;
+        }
     }
 
     [ProtoContract]
