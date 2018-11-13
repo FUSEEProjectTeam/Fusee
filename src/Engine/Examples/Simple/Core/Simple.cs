@@ -16,7 +16,8 @@ using Fusee.Engine.GUI;
 namespace Fusee.Engine.Examples.Simple.Core
 {
 
-    [FuseeApplication(Name = "Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    
     public class Simple : RenderCanvas
     {
         // angle variables
@@ -64,7 +65,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             fontLato.UseKerning = true;
             _guiLatoBlack = new FontMap(fontLato, 18);
 
-            _text = "Simple FUSEE Example";
+            _text = "FUSEE Simple Example";
 
             _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
             _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);

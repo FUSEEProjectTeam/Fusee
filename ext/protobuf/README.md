@@ -3,7 +3,7 @@
 This directory contains the necessary dependencies for FUSEE's .fus file serialization functionality, based on Google Protocol Buffers and
 its .NET adaption: protobuf-net.
 
-## protobuf-net.dll 
+## Debug and Release - protobuf-net.dll 
 
 Needed by C# projects defining classes that are meant to be serialized. Contains the protobuf-net C# attributes such as [ProtoContract].
 This DLL results from a Fork of the original protobuf-net project maintained by the FuseeProjectTeam.

@@ -131,7 +131,7 @@ namespace Fusee.Engine.Examples.Bump.Core
             _sceneRenderer = new SceneRenderer(_scene);
 
             // Initialize the information text line.
-            _guiSubText.Text = "FUSEE 3D Scene";
+            _guiSubText.Text = "FUSEE Bump Mapping Example";
             if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
             {
                 _guiSubText.Text += " created";

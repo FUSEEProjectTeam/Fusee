@@ -10,7 +10,7 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
 
-    [FuseeApplication(Name = "ThreeDFont Example", Description = "Create meshes from Font-Files.")]
+    [FuseeApplication(Name = "FUSEE ThreeDFont Example", Description = "Create meshes from Font-Files.")]
     public class ThreeDFont : RenderCanvas
     {
         private SceneRenderer _renderer;
@@ -32,7 +32,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var vladimir = AssetStorage.Get<Font>("VLADIMIR.TTF");
             var gnuSerif = AssetStorage.Get<Font>("GNU-FreeSerif.ttf");
 
-            _text = "Hello World!";
+            _text = "FUSEE ThreeDFont Example";
 
             _threeDFontHelper = new ThreeDFontHelper(_text, fontLato);
             var outlinesLato = _threeDFontHelper.GetTextOutlinesWAngle(20);

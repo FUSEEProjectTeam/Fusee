@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Picki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Picking.Web", "Web\Fusee.Engine.Examples.Picking.Web.csproj", "{DB21584F-4EA6-486A-9BDB-77D372CF1D64}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Picking.Android", "Android\Fusee.Engine.Examples.Picking.Android.csproj", "{73A74ADF-6308-42A0-8BA6-2B5D53238546}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.Picking.Android", "Android\Fusee.Engine.Examples.Picking.Android.csproj", "{590B5312-546F-4C51-AEE4-0C4DAE925764}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,12 +29,12 @@ Global
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Debug|x64.Build.0 = Debug|Any CPU
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x64.ActiveCfg = Release|Any CPU
 		{DB21584F-4EA6-486A-9BDB-77D372CF1D64}.Release|x64.Build.0 = Release|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Debug|x64.Build.0 = Debug|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Debug|x64.Deploy.0 = Debug|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Release|x64.ActiveCfg = Release|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Release|x64.Build.0 = Release|Any CPU
-		{73A74ADF-6308-42A0-8BA6-2B5D53238546}.Release|x64.Deploy.0 = Release|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Debug|x64.Build.0 = Debug|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Debug|x64.Deploy.0 = Debug|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Release|x64.ActiveCfg = Release|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Release|x64.Build.0 = Release|Any CPU
+		{590B5312-546F-4C51-AEE4-0C4DAE925764}.Release|x64.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
