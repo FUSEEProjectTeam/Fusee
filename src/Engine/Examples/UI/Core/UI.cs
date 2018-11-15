@@ -13,6 +13,7 @@ using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Engine.Examples.UI.Core
 {
+    [FuseeApplication(Name = "FUSEE UI Example", Description = "A very ui example.")]
     public class UI : RenderCanvas
     {
         // angle variables

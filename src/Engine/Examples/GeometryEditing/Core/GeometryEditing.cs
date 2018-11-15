@@ -16,7 +16,7 @@ using Geometry = Fusee.Jometri.Geometry;
 namespace Fusee.Engine.Examples.GeometryEditing.Core
 {
 
-    [FuseeApplication(Name = "Geometry Editing", Description = "Example App to show basic geometry editing in FUSEE")]
+    [FuseeApplication(Name = "FUSEE Geometry Editing Example", Description = "Example App to show basic geometry editing in FUSEE")]
     public class GeometryEditing : RenderCanvas
     {
         private readonly float3 _selectedColor = new float3(0.7f, 0.3f, 0);

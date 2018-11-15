@@ -63,7 +63,7 @@
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>$(FuseeBuildRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Android" />
     <Reference Include="System" />

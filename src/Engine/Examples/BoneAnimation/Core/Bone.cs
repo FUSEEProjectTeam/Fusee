@@ -207,7 +207,7 @@ namespace Fusee.Engine.Examples.Bone.Core
             _sceneRenderer = new SceneRenderer(_scene);
 
             // Initialize the information text line.
-            _guiSubText.Text = "FUSEE 3D Scene";
+            _guiSubText.Text = "FUSEE Bone Animation Example";
             if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
             {
                 _guiSubText.Text += " created";

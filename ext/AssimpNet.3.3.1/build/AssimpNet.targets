@@ -8,7 +8,7 @@
   </PropertyGroup>
   <Target Name="BeforeBuild">
     <ItemGroup>
-        <NativeAssimpLibs Include="$(FuseeRoot)ext\AssimpNet.*\lib\Assimp*.dll"/>
+        <NativeAssimpLibs Include="$(FuseeRoot)\ext\AssimpNet.*\lib\Assimp*.dll"/>
     </ItemGroup>
     <Message Importance="High" Text="[native assimp lib] @(NativeAssimpLibs)" />
     <Copy SourceFiles="@(NativeAssimpLibs)"

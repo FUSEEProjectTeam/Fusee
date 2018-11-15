@@ -12,7 +12,7 @@ using Geometry = Fusee.Jometri.Geometry;
 namespace Fusee.Engine.Examples.MeshingAround.Core
 {
 
-    [FuseeApplication(Name = "Meshing Example", Description = "Meshing around...")]
+    [FuseeApplication(Name = "FUSEE Meshing Example", Description = "Meshing around...")]
     public class MeshingAround : RenderCanvas
     {
         private float _alpha;

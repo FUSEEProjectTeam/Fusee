@@ -1,6 +1,8 @@
 <Project>
   <PropertyGroup>
+    <!-- Use FuseeRoot to overwrite the seach path for dependencies. -->
     <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
+    
     <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
     <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)</BaseIntermediateOutputPath>
