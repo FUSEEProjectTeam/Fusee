@@ -1,16 +1,44 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
 
 namespace Fusee.Engine.GUI
 {
+
+    public class CanvasNodeContainer : SceneNodeContainer
+    {
+        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size, float scale = 0.1f)
+        {
+            Name = name;
+            Components = new List<SceneComponentContainer>
+            {
+                new CanvasTransformComponent(canvasRenderMode, scale)
+                {
+                    Name = name + "_CanvasTransform",
+                    Size = size
+                },
+                new XFormComponent
+                {
+                    Name =  name + "_Canvas_XForm"
+                },
+                new ShaderEffectComponent
+                {
+                    Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                    {
+                        Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                    })
+                },
+                new Plane()
+            };
+        }
+
+    }
+    
+    
     /// <summary>
-    /// Building block to create suitable hierarchies for using textures.
+    /// Building block to create suitable hierarchies for using textures in the UI.
     /// </summary>
     public class TextureNodeContainer : SceneNodeContainer
     {
@@ -20,7 +48,7 @@ namespace Fusee.Engine.GUI
         /// <param name="comp">The CodeComponent.</param>
         public void AddCodeComponent(CodeComponent comp)
         {
-            Children.First().AddComponent(comp);
+            Components.Add(comp);
         }
 
         /// <summary>
@@ -36,7 +64,8 @@ namespace Fusee.Engine.GUI
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
         /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
         /// <returns></returns>
-        public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors, MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1)
+        public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
+            MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
@@ -46,63 +75,52 @@ namespace Fusee.Engine.GUI
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
-
-                }
-            };
-            Children = new List<SceneNodeContainer>
-            {
-                new SceneNodeContainer
+                },
+                new XFormComponent
                 {
                     Name = name + "_XForm",
-                    Components = new List<SceneComponentContainer>
-                    {
-                        new XFormComponent
+                },
+                new ShaderEffectComponent
+                {
+                    Effect = new ShaderEffect(new[]
                         {
-                            Name = name + "_XForm",
+                            new EffectPassDeclaration
+                            {
+                                VS = vs,
+                                PS = ps,
+                                StateSet = new RenderStateSet
+                                {
+                                    AlphaBlendEnable = true,
+                                    SourceBlend = Blend.SourceAlpha,
+                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                    BlendOperation = BlendOperation.Add,
+                                    ZEnable = false
+                                }
+                            }
                         },
-                        new ShaderEffectComponent
+                        new[]
                         {
-                            Effect = new ShaderEffect(new[]
-                                {
-                                    new EffectPassDeclaration
-                                    {
-                                        VS = vs,
-                                        PS = ps,
-                                        StateSet = new RenderStateSet
-                                        {
-                                            AlphaBlendEnable = true,
-                                            SourceBlend = Blend.SourceAlpha,
-                                            DestinationBlend = Blend.InverseSourceAlpha,
-                                            BlendOperation = BlendOperation.Add,
-                                            ZEnable = false
-                                        }
-                                    }
-                                },
-                                new[]
-                                {
-                                    new EffectParameterDeclaration
-                                    {
-                                        Name = "DiffuseTexture",
-                                        Value = tex
-                                    },
-                                    new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                    new EffectParameterDeclaration {Name = "Tile", Value = tiles},
-                                    new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                    new EffectParameterDeclaration
-                                    {
-                                        Name = "borders",
-                                        Value = borders
-                                    },
-                                    new EffectParameterDeclaration {Name = "borderThickness", Value = borderthickness},
-                                    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
-                                })
-                        },
-                        new NineSlicePlane()
-                    }
-                }
+                            new EffectParameterDeclaration
+                            {
+                                Name = "DiffuseTexture",
+                                Value = tex
+                            },
+                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                            new EffectParameterDeclaration {Name = "Tile", Value = tiles},
+                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                            new EffectParameterDeclaration
+                            {
+                                Name = "borders",
+                                Value = borders
+                            },
+                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderthickness},
+                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                            new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                            new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
+                            new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity}
+                        })
+                },
+                new NineSlicePlane()
             };
         }
 
@@ -127,63 +145,55 @@ namespace Fusee.Engine.GUI
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
-
-                }
-            };
-            Children = new List<SceneNodeContainer>
-            {
-                new SceneNodeContainer
+                },
+                new XFormComponent
                 {
                     Name = name + "_XForm",
-                    Components = new List<SceneComponentContainer>
-                    {
-                        new XFormComponent
+                },
+                new ShaderEffectComponent
+                {
+                    Effect = new ShaderEffect(new[]
                         {
-                            Name = name + "_XForm",
+                            new EffectPassDeclaration
+                            {
+                                VS = vs,
+                                PS = ps,
+                                StateSet = new RenderStateSet
+                                {
+                                    AlphaBlendEnable = true,
+                                    SourceBlend = Blend.SourceAlpha,
+                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                    BlendOperation = BlendOperation.Add,
+                                    ZEnable = false
+                                }
+                            }
                         },
-                        new ShaderEffectComponent
+                        new[]
                         {
-                            Effect = new ShaderEffect(new[]
-                                {
-                                    new EffectPassDeclaration
-                                    {
-                                        VS = vs,
-                                        PS = ps,
-                                        StateSet = new RenderStateSet
-                                        {
-                                            AlphaBlendEnable = true,
-                                            SourceBlend = Blend.SourceAlpha,
-                                            DestinationBlend = Blend.InverseSourceAlpha,
-                                            BlendOperation = BlendOperation.Add,
-                                            ZEnable = false
-                                        }
-                                    }
-                                },
-                                new[]
-                                {
-                                    new EffectParameterDeclaration
-                                    {
-                                        Name = "DiffuseTexture",
-                                        Value = tex
-                                    },
-                                    new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
-                                    new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
-                                    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                                })
-                        },
-                        new Plane()
-                    }
-                }
+                            new EffectParameterDeclaration
+                            {
+                                Name = "DiffuseTexture",
+                                Value = tex
+                            },
+                            new EffectParameterDeclaration {Name = "DiffuseColor", Value = float4.One},
+                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 1f},
+                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                        })
+                },
+                new Plane()
             };
         }
     }
 
+    /// <summary>
+    /// Building block to create suitable hierarchies for using texts in the UI.
+    /// </summary>
     public class TextNodeContainer : SceneNodeContainer
     {
-        public TextNodeContainer(string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets, FontMap fontMap, float4 color)
+        public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
+            FontMap fontMap, float4 color)
         {
-
             Name = name;
             Components = new List<SceneComponentContainer>
             {
@@ -192,58 +202,47 @@ namespace Fusee.Engine.GUI
                     Name = name + "_RectTransform",
                     Anchors = anchors,
                     Offsets = offsets
-
-                }
-            };
-            Children = new List<SceneNodeContainer>
+                },
+                new XFormTextComponent
                 {
-                    new SceneNodeContainer
-                    {
-                        Name = name + "_XForm",
-                        Components = new List<SceneComponentContainer>
+                    Name = name + "_XForm",
+                },
+                new ShaderEffectComponent
+                {
+                    Effect = new ShaderEffect(new[]
                         {
-                            new XFormTextComponent
+                            new EffectPassDeclaration
                             {
-                                Name = name + "_XForm",
-                            },
-                            new ShaderEffectComponent
-                            {
-                                Effect = new ShaderEffect(new[]
-                                    {
-                                        new EffectPassDeclaration
-                                        {
-                                            VS = vs,
-                                            PS = ps,
-                                            StateSet = new RenderStateSet
-                                            {
-                                                AlphaBlendEnable = true,
-                                                SourceBlend = Blend.SourceAlpha,
-                                                DestinationBlend = Blend.InverseSourceAlpha,
-                                                BlendOperation = BlendOperation.Add,
-                                                ZEnable = false
-                                            }
-                                        }
-                                    },
-                                    new[]
-                                    {
-                                        new EffectParameterDeclaration
-                                        {
-                                            Name = "DiffuseTexture",
-                                            Value = new Texture(fontMap.Image)
-                                        },
-                                        new EffectParameterDeclaration
-                                            {Name = "DiffuseColor", Value = color},
-                                        new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                                        new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                                        new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                                    })
-                            },
-                            new GUIText(fontMap, "Hallo !")
-                            {
-                                Name = name + "textMesh"
+                                VS = vs,
+                                PS = ps,
+                                StateSet = new RenderStateSet
+                                {
+                                    AlphaBlendEnable = true,
+                                    SourceBlend = Blend.SourceAlpha,
+                                    DestinationBlend = Blend.InverseSourceAlpha,
+                                    BlendOperation = BlendOperation.Add,
+                                    ZEnable = false
+                                }
                             }
-                        }
-                    }
+                        },
+                        new[]
+                        {
+                            new EffectParameterDeclaration
+                            {
+                                Name = "DiffuseTexture",
+                                Value = new Texture(fontMap.Image)
+                            },
+                            new EffectParameterDeclaration
+                                {Name = "DiffuseColor", Value = color},
+                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
+                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                        })
+                },
+                new GUIText(fontMap, text)
+                {
+                    Name = name + "textMesh"
+                }
             };
         }
     }

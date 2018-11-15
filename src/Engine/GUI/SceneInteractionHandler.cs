@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -34,6 +35,29 @@ namespace Fusee.Engine.GUI
             _scenePicker = new ScenePicker(scene);
         }
 
+        private static SceneNodeContainer FindLeafNodeInPickRes(SceneNodeContainer firstPickRes, IList<SceneNodeContainer> pickResults)
+        {
+            if (pickResults.Count == 1)
+                return pickResults[0];
+
+            if (firstPickRes.Children == null)
+                return firstPickRes;
+
+            foreach (var child in firstPickRes.Children)
+            {
+                if (pickResults.Contains(child))
+                    return child;
+                if (child.Children != null)
+                {
+                    var found = FindLeafNodeInPickRes(child, pickResults);
+                    if (found != null)
+                        return found;
+                }
+            }
+
+            return null; 
+        }
+
         /// <summary>
         /// Picks at the mouse position and traverses the picked objects components.
         /// If a corresponding component is found the suitable visit method is called which invokes the event.
@@ -46,11 +70,19 @@ namespace Fusee.Engine.GUI
             _scenePicker.View = View;
             _scenePicker.Projection = Projection;
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
-            PickRes = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault()?.Node;
+
+            var pickResults = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResNodes = pickResults.Select(x => x.Node).ToList();
+            var firstPickRes = pickResults.FirstOrDefault();
+
+            PickRes = null;
+
+            if (firstPickRes != null)
+                PickRes = FindLeafNodeInPickRes(firstPickRes?.Node, pickResNodes);
 
             if (PickRes != _pickResCache)
                 Traverse(_pickResCache);
-            
+
             _pickResCache = PickRes;
 
             if (PickRes != null)
@@ -73,4 +105,3 @@ namespace Fusee.Engine.GUI
         }
     }
 }
- 

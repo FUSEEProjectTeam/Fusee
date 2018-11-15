@@ -36,7 +36,7 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasTransformComponent _canvasTransformComp;
+        private CanvasNodeContainer _canvas;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -46,20 +46,11 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
-            _canvasTransformComp = new CanvasTransformComponent(CanvasRenderMode.WORLD)
-            {
-                Name = "Canvas_CanvasTransform",
-                Size = new MinMaxRect
-                {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }
-            };
-
             var text = new TextNodeContainer(
+                "Hallo !",
                 "ButtonText",
-                vsTex, 
-                psTex, 
+                vsTex,
+                psTex,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
@@ -136,17 +127,12 @@ namespace Fusee.Engine.Examples.UI.Core
                     Min = new float2(1, 1), //Anchor is in the upper right corner.
                     Max = new float2(1, 1) //Anchor is in the upper right corner.
                 },
-                new MinMaxRect
-                {
-                    Min = new float2(-6, -3f),
-                    Max = new float2(0, 0)
-                },
+                new MinMaxRect {Min = new float2(-6, -3f), Max = new float2(0, 0)},
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
                 0.25f
-            );
-            nineSliceTextureNode.Children.Add(text);
-            
+            ) {Children = new List<SceneNodeContainer> {text}};
+
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
                 vsNineSlice,
@@ -168,6 +154,27 @@ namespace Fusee.Engine.Examples.UI.Core
                 0.1f
             );
 
+            _canvas = new CanvasNodeContainer(
+                "Canvas",
+                CanvasRenderMode.WORLD,
+                new MinMaxRect
+                {
+                    Min = new float2(-8, -4.5f),
+                    Max = new float2(8, 4.5f)
+                })
+                {
+                    Children = new List<SceneNodeContainer>()
+                    {
+                        //Simple Texture Node, contains a Blt"ed" texture.
+                        bltTextureNode,
+                        //Add nine sliced textures to canvas
+                        catTextureNode,
+                        quagganTextureNode,
+                        nineSliceTextureNode
+                    }
+                };
+            _canvas.AddComponent(_btnCanvas);
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -178,56 +185,11 @@ namespace Fusee.Engine.Examples.UI.Core
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
-                            
                         },
                         Children = new List<SceneNodeContainer>
                         {
                             //Add canvas.
-                            new SceneNodeContainer
-                            {
-                                Name = "Canvas",
-                                Components = new List<SceneComponentContainer>
-                                {
-                                    new TransformComponent
-                                    {
-                                        Scale = new float3(1,1,1)
-                                    },
-                                    _canvasTransformComp
-                                },
-                                Children = new List<SceneNodeContainer>
-                                {
-                                    new SceneNodeContainer
-                                    {
-                                        Name = "Canvas_XForm",
-                                        Components = new List<SceneComponentContainer>
-                                        {
-                                            new XFormComponent
-                                            {
-                                                Name = "Canvas_XForm"
-                                            },
-                                            new ShaderEffectComponent
-                                            {
-                                                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                                                {
-                                                    Diffuse = new MatChannelContainer {Color = new float3(1,0,0)},
-                                                })
-                                            },
-                                            new Plane(),
-                                            _btnCanvas
-                                        },
-
-
-                                    },
-                                    
-                                    //Simple Texture Node, contains a Blt"ed" texture.
-                                    bltTextureNode,
-                                    //Add nine sliced textures to canvas
-                                    catTextureNode,
-                                    quagganTextureNode,
-                                    nineSliceTextureNode
-
-                                }
-                            }
+                            _canvas
                         }
                     }
                 }
@@ -235,6 +197,7 @@ namespace Fusee.Engine.Examples.UI.Core
         }
 
         #region Interactions
+
         public void OnBtnCanvasDown(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn down!");
@@ -250,11 +213,10 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float3(1, 0.4f, 0.1f) },
+                Diffuse = new MatChannelContainer {Color = new float3(1, 0.4f, 0.1f)},
             });
-            _scene.Children.FindNodes(node => node.Name == "Canvas_XForm").First().GetComponent<ShaderEffectComponent>()
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
-
         }
 
         public void OnBtnCanvasExit(CodeComponent sender)
@@ -262,9 +224,9 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float3(1, 0, 0) },
+                Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
             });
-            _scene.Children.FindNodes(node => node.Name == "Canvas_XForm").First().GetComponent<ShaderEffectComponent>()
+            _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
         }
 
@@ -281,7 +243,6 @@ namespace Fusee.Engine.Examples.UI.Core
         public void OnBtnCatEnter(CodeComponent sender)
         {
             Debug.WriteLine("Cat: Btn entered!" + Time.Frames);
-
         }
 
         public void OnBtnCatExit(CodeComponent sender)
@@ -298,6 +259,7 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             //Debug.WriteLine("Canvas: Mouse over!");
         }
+
         #endregion
 
         // Init is called on startup. 
@@ -380,7 +342,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 }
                 else
                 {
-                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float) System.Math.Exp(-Damping * Time.DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -390,7 +352,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.Identity;
-            if (_canvasTransformComp.CanvasRenderMode == CanvasRenderMode.WORLD)
+            if (_canvas.GetComponent<CanvasTransformComponent>().CanvasRenderMode == CanvasRenderMode.WORLD)
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
@@ -417,7 +379,7 @@ namespace Fusee.Engine.Examples.UI.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
+            var aspectRatio = Width / (float) Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)

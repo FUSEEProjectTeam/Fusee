@@ -503,6 +503,7 @@ namespace Fusee.Engine.Core
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
             _ctc = ctc;
+            _rc.View = _view;
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
             {
@@ -546,12 +547,12 @@ namespace Fusee.Engine.Core
                 _state.Model *= _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
+
         }
 
         [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
-
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
@@ -576,14 +577,22 @@ namespace Fusee.Engine.Core
             var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
 
             _state.UiRect = newRect;
-            _state.Model *= transformChild;
+            _state.Model = transformChild * _state.Model;
 
         }
 
         [VisitMethod]
         public void RenderXForm(XFormComponent xfc)
         {
-            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            float4x4 scale;
+            if (_state.UiRect.Size != _ctc.Size.Size)
+            {
+                var scaleX = _state.UiRect.Size.x / _ctc.Size.Size.x;
+                var scaleY = _state.UiRect.Size.y / _ctc.Size.Size.y;
+                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+            }
+            else
+                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
@@ -593,7 +602,15 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormTextComponent xfc)
         {
-            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.x, 1);
+            float4x4 scale;
+            if (_state.UiRect.Size != _ctc.Size.Size)
+            {
+                var scaleX = _state.UiRect.Size.x / _ctc.Size.Size.x;
+                var scaleY = _state.UiRect.Size.y / _ctc.Size.Size.y;
+                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+            }
+            else
+                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.x, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
