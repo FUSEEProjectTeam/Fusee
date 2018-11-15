@@ -175,6 +175,8 @@ namespace Fusee.Engine.Core
         private readonly bool _wantToRenderEnvMap;
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
+        private CanvasTransformComponent _ctc;
+
         /// <summary>
         /// Try to render with Shadows. If not possible, fallback to false.
         /// </summary>
@@ -214,7 +216,7 @@ namespace Fusee.Engine.Core
         private readonly SceneContainer _sc;
 
         private RenderContext _rc;
-        
+
         private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
 
         private string _scenePathDirectory;
@@ -500,6 +502,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
+            _ctc = ctc;
+
             if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
             {
                 var newRect = new MinMaxRect
@@ -508,7 +512,7 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm  *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 _state.Model *= _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
@@ -538,7 +542,7 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm = _rc.InvView * float4x4.CreateTranslation(0, 0, zNear+0.00001f); ;
+                _state.CanvasXForm = _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f); ;
                 _state.Model *= _state.CanvasXForm;
                 _state.UiRect = newRect;
             }
@@ -547,13 +551,26 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
-            // The Heart of the UiRect calculation: Set anchor points relative to parent
-            // rectangle and add absolute offsets
-            var newRect = new MinMaxRect
+
+            MinMaxRect newRect;
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
-                Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
-            };
+                newRect = new MinMaxRect
+                {
+                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min * _ctc.Scale,
+                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max * _ctc.Scale
+                };
+            }
+            else
+            {
+                // The Heart of the UiRect calculation: Set anchor points relative to parent
+                // rectangle and add absolute offsets
+                newRect = new MinMaxRect
+                {
+                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+                };
+            }
 
             var canvasTranslation = newRect.Center - _state.UiRect.Center;
             var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
@@ -574,7 +591,7 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
-        public void RenderXForm(XFormTextComponent xfc)
+        public void RenderXFormText(XFormTextComponent xfc)
         {
             var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.x, 1);
 

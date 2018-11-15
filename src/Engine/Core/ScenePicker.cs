@@ -16,7 +16,6 @@ namespace Fusee.Engine.Core
         public float4x4 View;
         public float4x4 Projection;
 
-
         // Convenience
         public void GetTriangle(out float3 a, out float3 b, out float3 c)
         {
@@ -108,6 +107,8 @@ namespace Fusee.Engine.Core
 
     public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
     {
+        private CanvasTransformComponent _ctc;
+
         #region State
         public class PickerState : VisitorState
         {
@@ -178,6 +179,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickCanvasTransform(CanvasTransformComponent ctc)
         {
+            _ctc = ctc;
+
             if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
             {
                 var newRect = new MinMaxRect
@@ -186,7 +189,7 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 0);
+                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
                 State.Model = State.CanvasXForm;
                 State.UiRect = newRect;
             }
@@ -217,7 +220,7 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 0);
+                State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
                 State.Model = State.CanvasXForm;
                 State.UiRect = newRect;
             }
@@ -226,18 +229,34 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickRectTransform(RectTransformComponent rtc)
         {
-            var newRect = new MinMaxRect
+            MinMaxRect newRect;
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
-                Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
-            };
+                newRect = new MinMaxRect
+                {
+                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min * _ctc.Scale,
+                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max * _ctc.Scale
+                };
+            }
+            else
+            {
+                // The Heart of the UiRect calculation: Set anchor points relative to parent
+                // rectangle and add absolute offsets
+                newRect = new MinMaxRect
+                {
+                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+                };
+            }
 
             var canvasTranslation = newRect.Center - State.UiRect.Center;
             var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
-            var scaleChild = float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 0);
+            var scaleX = newRect.Size.x / State.UiRect.Size.x;
+            var scaleY = newRect.Size.y / State.UiRect.Size.y;
 
             State.UiRect = newRect;
-            State.Model *= State.CanvasXForm * transformChild * scaleChild;
+            State.Model = transformChild * State.Model;
+            State.Model = State.Model * float4x4.CreateScale(scaleX, scaleY, 1) ;
         }
 
         [VisitMethod]

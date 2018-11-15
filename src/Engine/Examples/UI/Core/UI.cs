@@ -46,14 +46,14 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
-            _canvasTransformComp = new CanvasTransformComponent(CanvasRenderMode.SCREEN)
+            _canvasTransformComp = new CanvasTransformComponent(CanvasRenderMode.WORLD)
             {
                 Name = "Canvas_CanvasTransform",
-                //Size = new MinMaxRect
-                //{
-                //    Min = new float2(-10, -5),
-                //    Max = new float2(10, 5)
-                //}
+                Size = new MinMaxRect
+                {
+                    Min = new float2(-8, -4.5f),
+                    Max = new float2(8, 4.5f)
+                }
             };
 
             var text = new TextNodeContainer(
@@ -67,14 +67,14 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new MinMaxRect
                 {
-                    Min = new float2(0.4f, 0.125f),
-                    Max = new float2(-0.4f, -0.125f)
+                    Min = new float2(1f, 0.5f),
+                    Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
                 ColorUint.Tofloat4(ColorUint.Greenery));
 
             var catTextureNode = new TextureNodeContainer(
-                "Child1",
+                "Cat",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the diffuse texture you want to use.
@@ -91,14 +91,14 @@ namespace Fusee.Engine.Examples.UI.Core
                 //Max: distance to this elements Max anchor.
                 new MinMaxRect
                 {
-                    Min = new float2(7.5f, 0),
-                    Max = new float2(-7.5f, 5)
+                    Min = new float2(5.5f, 0),
+                    Max = new float2(-5.5f, 4f)
                 },
                 //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                5
+                0.4f
             );
             catTextureNode.AddCodeComponent(_btnCat);
 
@@ -107,8 +107,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 vsTex,
                 psTex,
                 //Set the diffuse texture you want to use.
-                //_bltDestinationTex,
-                _fontMap.Image,
+                _bltDestinationTex,
+                //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 new MinMaxRect
@@ -122,11 +122,11 @@ namespace Fusee.Engine.Examples.UI.Core
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
-                    Max = new float2(5, 5)
+                    Max = new float2(4, 4)
                 });
 
             var nineSliceTextureNode = new TextureNodeContainer(
-                "Child2",
+                "testImage",
                 vsNineSlice,
                 psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
@@ -138,7 +138,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new MinMaxRect
                 {
-                    Min = new float2(-1, -0.5f),
+                    Min = new float2(-6, -3f),
                     Max = new float2(0, 0)
                 },
                 new float2(2, 3),
@@ -148,7 +148,7 @@ namespace Fusee.Engine.Examples.UI.Core
             nineSliceTextureNode.Children.Add(text);
             
             var quagganTextureNode = new TextureNodeContainer(
-                "Child3",
+                "Quaggan",
                 vsNineSlice,
                 psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
@@ -164,7 +164,8 @@ namespace Fusee.Engine.Examples.UI.Core
                     Max = new float2(6, 0)
                 },
                 new float2(5, 1),
-                new float4(0.1f, 0.1f, 0.1f, 0.09f)
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                0.1f
             );
 
             return new SceneContainer
@@ -219,10 +220,10 @@ namespace Fusee.Engine.Examples.UI.Core
                                     },
                                     
                                     //Simple Texture Node, contains a Blt"ed" texture.
-                                    //bltTextureNode,
-                                    ////Add nine sliced textures to canvas
-                                    //catTextureNode,
-                                    //quagganTextureNode,
+                                    bltTextureNode,
+                                    //Add nine sliced textures to canvas
+                                    catTextureNode,
+                                    quagganTextureNode,
                                     nineSliceTextureNode
 
                                 }

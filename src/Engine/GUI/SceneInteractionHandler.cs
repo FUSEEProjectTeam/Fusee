@@ -19,6 +19,7 @@ namespace Fusee.Engine.GUI
         /// The View matrix for calculating the correct pick position.
         /// </summary>
         public float4x4 View;
+
         /// <summary>
         /// The projection matrix for calculating the correct pick position.
         /// </summary>
@@ -30,7 +31,7 @@ namespace Fusee.Engine.GUI
 
         public SceneInteractionHandler(SceneContainer scene)
         {
-           _scenePicker = new ScenePicker(scene);
+            _scenePicker = new ScenePicker(scene);
         }
 
         /// <summary>
