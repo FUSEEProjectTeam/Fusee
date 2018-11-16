@@ -6,9 +6,19 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
 {
-
+    /// <summary>
+    /// Building block to create suitable hierarchies for creating a UI canvas.
+    /// </summary>
     public class CanvasNodeContainer : SceneNodeContainer
     {
+        /// <summary>
+        /// Creates a SceneNodeContainer with the proper components and children for rendering a canvas.
+        /// </summary>
+        /// <param name="name">The name of the canvas.</param>
+        /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
+        /// <param name="size">The size of the canvas.</param>
+        /// <param name="scale">Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.
+        /// By default Scale in SCREEN mode is set to 0.1.</param>
         public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size, float scale = 0.1f)
         {
             Name = name;
@@ -33,7 +43,6 @@ namespace Fusee.Engine.GUI
                 new Plane()
             };
         }
-
     }
     
     
@@ -43,15 +52,6 @@ namespace Fusee.Engine.GUI
     public class TextureNodeContainer : SceneNodeContainer
     {
         /// <summary>
-        /// Adds a CodeComponent to the TextureNodeContainer. 
-        /// </summary>
-        /// <param name="comp">The CodeComponent.</param>
-        public void AddCodeComponent(CodeComponent comp)
-        {
-            Components.Add(comp);
-        }
-
-        /// <summary>
         /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
@@ -59,7 +59,7 @@ namespace Fusee.Engine.GUI
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
-        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing canvas.</param>
+        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
         /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
@@ -132,7 +132,7 @@ namespace Fusee.Engine.GUI
         /// <param name="ps">The pixel shader you want to use.</param>
         /// /<param name="tex">Diffuse texture.</param>
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
-        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing canvas.</param>
+        /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets)
@@ -187,10 +187,21 @@ namespace Fusee.Engine.GUI
     }
 
     /// <summary>
-    /// Building block to create suitable hierarchies for using texts in the UI.
+    /// Creates a SceneNodeContainer with the proper components and children for rendering text in the UI.
     /// </summary>
     public class TextNodeContainer : SceneNodeContainer
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextNodeContainer"/> class.
+        /// </summary>
+        /// <param name="text">The text you want to disply.</param>
+        /// <param name="name">The name of the SceneNodeContainer.</param>
+        /// <param name="vs">The vertex shader you want to use..</param>
+        /// <param name="ps">The pixel shader you want to use.</param>
+        /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
+        /// <param name="offsets">The offsets.</param>
+        /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
+        /// <param name="color">The color.</param>
         public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
             FontMap fontMap, float4 color)
         {

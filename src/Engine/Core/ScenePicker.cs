@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core
                 };
 
                 State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
-                State.Model = State.CanvasXForm;
+                State.Model *= State.CanvasXForm;
                 State.UiRect = newRect;
             }
 
@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
                 };
 
                 State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
-                State.Model = State.CanvasXForm;
+                State.Model *= State.CanvasXForm;
                 State.UiRect = newRect;
             }
         }
@@ -249,14 +249,14 @@ namespace Fusee.Engine.Core
                 };
             }
 
-            var canvasTranslation = newRect.Center - State.UiRect.Center;
-            var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
+            var translationDelta = newRect.Center - State.UiRect.Center;
+            var translationX = translationDelta.x / State.UiRect.Size.x;
+            var translationY = translationDelta.y / State.UiRect.Size.y;
             var scaleX = newRect.Size.x / State.UiRect.Size.x;
             var scaleY = newRect.Size.y / State.UiRect.Size.y;
 
             State.UiRect = newRect;
-            State.Model = transformChild * State.Model;
-            State.Model = State.Model * float4x4.CreateScale(scaleX, scaleY, 1) ;
+            State.Model *= float4x4.CreateTranslation(translationX, translationY, 0) * float4x4.CreateScale(scaleX, scaleY, 1);
         }
 
         [VisitMethod]

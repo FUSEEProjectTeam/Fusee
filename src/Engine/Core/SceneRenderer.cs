@@ -176,6 +176,7 @@ namespace Fusee.Engine.Core
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
         private CanvasTransformComponent _ctc;
+        private MinMaxRect _parentRect;
 
         /// <summary>
         /// Try to render with Shadows. If not possible, fallback to false.
@@ -515,7 +516,9 @@ namespace Fusee.Engine.Core
 
                 _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 _state.Model *= _state.CanvasXForm;
-                _state.UiRect = newRect;
+
+                _parentRect = newRect;
+                _state.UiRect = newRect;                
             }
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -543,11 +546,12 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm = _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f); ;
+                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f);
                 _state.Model *= _state.CanvasXForm;
+
+                _parentRect = newRect;
                 _state.UiRect = newRect;
             }
-
         }
 
         [VisitMethod]
@@ -573,22 +577,25 @@ namespace Fusee.Engine.Core
                 };
             }
 
-            var canvasTranslation = newRect.Center - _state.UiRect.Center;
-            var transformChild = float4x4.CreateTranslation(canvasTranslation.x, canvasTranslation.y, 0);
-
+            var translationDelta = newRect.Center - _state.UiRect.Center;
+            var translationX = translationDelta.x / _state.UiRect.Size.x;
+            var translationY = translationDelta.y / _state.UiRect.Size.y;
+            
+            _parentRect = _state.UiRect;
             _state.UiRect = newRect;
-            _state.Model = transformChild * _state.Model;
 
+            _state.Model *= float4x4.CreateTranslation(translationX, translationY, 0); 
         }
 
         [VisitMethod]
         public void RenderXForm(XFormComponent xfc)
         {
             float4x4 scale;
-            if (_state.UiRect.Size != _ctc.Size.Size)
+
+            if (_state.UiRect.Size != _parentRect.Size)
             {
-                var scaleX = _state.UiRect.Size.x / _ctc.Size.Size.x;
-                var scaleY = _state.UiRect.Size.y / _ctc.Size.Size.y;
+                var scaleX = _state.UiRect.Size.x / _parentRect.Size.x;
+                var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
             else
@@ -603,14 +610,15 @@ namespace Fusee.Engine.Core
         public void RenderXFormText(XFormTextComponent xfc)
         {
             float4x4 scale;
-            if (_state.UiRect.Size != _ctc.Size.Size)
+
+            if (_state.UiRect.Size != _parentRect.Size)
             {
-                var scaleX = _state.UiRect.Size.x / _ctc.Size.Size.x;
-                var scaleY = _state.UiRect.Size.y / _ctc.Size.Size.y;
+                var scaleX = _state.UiRect.Size.x / _parentRect.Size.x;
+                var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
             else
-                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.x, 1);
+                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;

@@ -91,7 +91,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
                 0.4f
             );
-            catTextureNode.AddCodeComponent(_btnCat);
+            catTextureNode.Components.Add(_btnCat);
 
             var bltTextureNode = new TextureNodeContainer(
                 "Blt",
@@ -116,6 +116,27 @@ namespace Fusee.Engine.Examples.UI.Core
                     Max = new float2(4, 4)
                 });
 
+            var quagganTextureNode1 = new TextureNodeContainer(
+                "Quaggan1",
+                vsNineSlice,
+                psNineSlice,
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0), //Anchor is in the upper left corner.
+                    Max = new float2(1, 0) //Anchor is in the upper left corner.
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(2.5f, 0),
+                    Max = new float2(-2.5f, 1)
+                },
+                new float2(1, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                0.1f
+            );
+
             var nineSliceTextureNode = new TextureNodeContainer(
                 "testImage",
                 vsNineSlice,
@@ -131,7 +152,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
                 0.25f
-            ) {Children = new List<SceneNodeContainer> {text}};
+            ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -185,6 +206,12 @@ namespace Fusee.Engine.Examples.UI.Core
                         Name = "Null_Transform",
                         Components = new List<SceneComponentContainer>
                         {
+                            //new TransformComponent()
+                            //{
+                            //    Translation = new float3(3,0,1),
+                            //    Scale = new float3(1,1,1),
+                            //    Rotation = new float3(0,45,0)
+                            //}
                         },
                         Children = new List<SceneNodeContainer>
                         {

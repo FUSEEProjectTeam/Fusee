@@ -26,10 +26,13 @@ namespace Fusee.Engine.GUI
         /// </summary>
         public float4x4 Projection;
 
-        public SceneNodeContainer PickRes { get; private set; }
-
+        private SceneNodeContainer _pickRes;
         private SceneNodeContainer _pickResCache;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="SceneInteractionHandler"/> class.
+        /// </summary>
+        /// <param name="scene">The scene the interaction handler belongs to.</param>
         public SceneInteractionHandler(SceneContainer scene)
         {
             _scenePicker = new ScenePicker(scene);
@@ -75,29 +78,29 @@ namespace Fusee.Engine.GUI
             var pickResNodes = pickResults.Select(x => x.Node).ToList();
             var firstPickRes = pickResults.FirstOrDefault();
 
-            PickRes = null;
+            _pickRes = null;
 
             if (firstPickRes != null)
-                PickRes = FindLeafNodeInPickRes(firstPickRes?.Node, pickResNodes);
+                _pickRes = FindLeafNodeInPickRes(firstPickRes?.Node, pickResNodes);
 
-            if (PickRes != _pickResCache)
+            if (_pickRes != _pickResCache)
                 Traverse(_pickResCache);
 
-            _pickResCache = PickRes;
+            _pickResCache = _pickRes;
 
-            if (PickRes != null)
-                Traverse(PickRes);
+            if (_pickRes != null)
+                Traverse(_pickRes);
         }
 
         [VisitMethod]
         public void InvokeInteraction(GUIButton btn)
         {
-            if (CurrentNode == _pickResCache && _pickResCache != PickRes)
+            if (CurrentNode == _pickResCache && _pickResCache != _pickRes)
             {
                 btn.IsMouseOver = false;
                 btn.DetachEvents();
             }
-            if (CurrentNode == PickRes)
+            if (CurrentNode == _pickRes)
             {
                 btn.IsMouseOver = true;
                 btn.InvokeEvents();
