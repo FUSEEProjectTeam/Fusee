@@ -940,6 +940,33 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect 
 
+        /// <summary>
+        ///     Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffect MakeShaderEffect(float3 diffuseColor, float3 specularColor, float shininess)
+        {
+            MaterialComponent temp = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = diffuseColor
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = specularColor,
+                    Shininess = shininess
+                }
+            };
+
+            return MakeShaderEffectFromMatComp(temp);
+        }
+
+
+
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
