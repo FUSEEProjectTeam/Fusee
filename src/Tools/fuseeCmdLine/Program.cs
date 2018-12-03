@@ -183,8 +183,8 @@ namespace Fusee.Tools.fuseeCmdLine
             try
             {
                 fuseeCmdLineRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-                fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%bin/[Debug|Release]/Tools.
-                fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%bin/[Debug|Release]/Tools down to the root.
+                fuseeBuildRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, ".."));        // one hop down to remove "Tools" from %FuseeRoot%/bin/[Debug|Release]/Tools.
+                fuseeRoot = Path.GetFullPath(Path.Combine(fuseeCmdLineRoot, "..", "..", "..")); // three hops from %FuseeRoot%/bin/[Debug|Release]/Tools down to the root.
                 fuseeCmdLineRoot = FileTools.PathAddTrailingSeperator(fuseeCmdLineRoot);
                 fuseeRoot = FileTools.PathAddTrailingSeperator(fuseeRoot);
                 fuseeBuildRoot = FileTools.PathAddTrailingSeperator(fuseeBuildRoot);
@@ -505,7 +505,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         {
                             // Steps taken for Web publishing
                             // 1.Copy Original Compiled Web Player to Pub/Web
-                            // 2.cd %FuseeRoot%bin/Debug/Player/Desktop   // to have reference assemblies at hand in JSILc
+                            // 2.cd %FuseeRoot%/bin/Debug/Player/Desktop   // to have reference assemblies at hand in JSILc
                             // 3. > PathToExt\JSILc.exe --nd
                             //        "CoreLibraryRoot>\bin\Debug\netstandard2.0\MyFuseeApp.dll"
                             //        - o "<Assembled>Assets/Scripts"
@@ -527,7 +527,7 @@ namespace Fusee.Tools.fuseeCmdLine
                             //8.Copy MyFuseeApp's assets to the Pub/Web and insert entries for each of them into.contentproj file (similar to fuConv...)
                             //9.Rename the Player's main .html file to MyFuseeApp.html
 
-                            // Call JSILc on the App DLL with cwd set to %FuseeRoot%bin/Debug/Player/Desktop to have reference assemblies at hand in JS
+                            // Call JSILc on the App DLL with cwd set to %FuseeRoot%/bin/Debug/Player/Desktop to have reference assemblies at hand in JS
 
                             string jsilRoot = Path.GetFullPath(Path.Combine(fuseeRoot, "ext", "JSIL"));
                             // Special JSIL configuration switching off Dead Code Elimination (optimizes too much away when combined with --nodeps)

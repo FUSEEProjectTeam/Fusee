@@ -44,7 +44,7 @@ project and directly use them out of Blender to enable debugging see "Developmen
 		* C:\ .. \Python\PythonXx\Scripts\
 		
 ### How to generate new .proto files
-1. Make sure a working fusee.exe exists at  %FuseeRoot%bin\Debug\Tools\.
+1. Make sure a working fusee.exe exists at  %FuseeRoot%\bin\Debug\Tools\.
 2. open the CMD-Window and either change to the the directory where the fusee.exe is located or simply drag the fusee.exe file into the CMD-Window.     
 In both cases you have to add the following command: `protoschema -o $OUTPUT_PATH`. This will create a .proto-file in your `$OUTPUT_PATH`.     
 **Note**: when your Fusee directory is not in your primary partition, you have to first change to the correct partition by simply typing it's letter, e.g. `D:` and then `cd path\to\tool`

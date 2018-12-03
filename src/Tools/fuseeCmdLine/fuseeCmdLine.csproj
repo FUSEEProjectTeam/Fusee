@@ -211,11 +211,11 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
