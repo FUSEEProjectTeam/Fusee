@@ -46,6 +46,8 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
+            var borderScaleFactor = 0.1f;
+
             var text = new TextNodeContainer(
                 "Hallo !",
                 "ButtonText",
@@ -89,7 +91,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                0.4f
+                0.4f,
+                borderScaleFactor
             );
             catTextureNode.Components.Add(_btnCat);
 
@@ -134,7 +137,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                0.1f
+                0.1f,
+                borderScaleFactor
             );
 
             var nineSliceTextureNode = new TextureNodeContainer(
@@ -151,7 +155,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 new MinMaxRect {Min = new float2(-6, -3f), Max = new float2(0, 0)},
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
-                0.25f
+                0.25f,
+                borderScaleFactor
             ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
 
             var quagganTextureNode = new TextureNodeContainer(
@@ -172,17 +177,18 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                0.1f
+                0.1f,
+                borderScaleFactor
             );
 
             _canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.WORLD,
+                CanvasRenderMode.SCREEN,
                 new MinMaxRect
                 {
                     Min = new float2(-8, -4.5f),
                     Max = new float2(8, 4.5f)
-                })
+                }, 0.01f)
                 {
                     Children = new List<SceneNodeContainer>()
                     {
@@ -297,7 +303,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _fontMap1 = new FontMap(fontLato, 8);
             _fontMap = new FontMap(fontLato, 700);
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
@@ -394,7 +400,7 @@ namespace Fusee.Engine.Examples.UI.Core
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -411,7 +417,7 @@ namespace Fusee.Engine.Examples.UI.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 20000);
             RC.Projection = projection;
             _sih.Projection = projection;
         }

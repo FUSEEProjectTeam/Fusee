@@ -63,9 +63,10 @@ namespace Fusee.Engine.GUI
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
         /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
+        /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1)
+            MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1, float borderScaleFactor = 1)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
@@ -113,7 +114,7 @@ namespace Fusee.Engine.GUI
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderthickness},
+                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderthickness * borderScaleFactor},
                             new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
