@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using ProtoBuf;
+﻿using ProtoBuf;
 namespace Fusee.Serialization
 {
     /// <summary>
@@ -9,6 +7,11 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class XFormTextComponent : SceneComponentContainer
     {
-        
+        public float TextScaleFactor;
+
+        public XFormTextComponent(float textScaleFactor = 1f)
+        {
+            TextScaleFactor = textScaleFactor;
+        }
     }
 }

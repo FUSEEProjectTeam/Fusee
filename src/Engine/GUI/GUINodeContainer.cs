@@ -32,15 +32,7 @@ namespace Fusee.Engine.GUI
                 new XFormComponent
                 {
                     Name =  name + "_Canvas_XForm"
-                },
-                new ShaderEffectComponent
-                {
-                    Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
-                    {
-                        Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
-                    })
-                },
-                new Plane()
+                }
             };
         }
     }
@@ -203,8 +195,9 @@ namespace Fusee.Engine.GUI
         /// <param name="offsets">The offsets.</param>
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="color">The color.</param>
+        /// <param name="textScaleFactor">By default a text has the with of 1 fusee unit. Set this to adapt the text size.</param>
         public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
-            FontMap fontMap, float4 color)
+            FontMap fontMap, float4 color, float textScaleFactor = 1)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
@@ -215,7 +208,7 @@ namespace Fusee.Engine.GUI
                     Anchors = anchors,
                     Offsets = offsets
                 },
-                new XFormTextComponent
+                new XFormComponent
                 {
                     Name = name + "_XForm",
                 },
@@ -251,11 +244,55 @@ namespace Fusee.Engine.GUI
                             new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                         })
                 },
-                new GUIText(fontMap, text)
+            };
+
+            Children = new List<SceneNodeContainer>()
+            {
+                new SceneNodeContainer()
                 {
-                    Name = name + "textMesh"
+                    Components = new List<SceneComponentContainer>()
+                    {
+                        new XFormTextComponent(textScaleFactor),
+                        new ShaderEffectComponent
+                        {
+                            Effect = new ShaderEffect(new[]
+                                {
+                                    new EffectPassDeclaration
+                                    {
+                                        VS = vs,
+                                        PS = ps,
+                                        StateSet = new RenderStateSet
+                                        {
+                                            AlphaBlendEnable = true,
+                                            SourceBlend = Blend.SourceAlpha,
+                                            DestinationBlend = Blend.InverseSourceAlpha,
+                                            BlendOperation = BlendOperation.Add,
+                                            ZEnable = false
+                                        }
+                                    }
+                                },
+                                new[]
+                                {
+                                    new EffectParameterDeclaration
+                                    {
+                                        Name = "DiffuseTexture",
+                                        Value = new Texture(fontMap.Image)
+                                    },
+                                    new EffectParameterDeclaration
+                                        {Name = "DiffuseColor", Value = color},
+                                    new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
+                                    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                                    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                                })
+                        },
+                        new GUIText(fontMap, text)
+                        {
+                            Name = name + "textMesh"
+                        }
+                    }
                 }
             };
+
         }
     }
 }

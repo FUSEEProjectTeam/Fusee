@@ -609,16 +609,9 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormTextComponent xfc)
         {
-            float4x4 scale;
-
-            if (_state.UiRect.Size != _parentRect.Size)
-            {
-                var scaleX = _state.UiRect.Size.x / _parentRect.Size.x;
-                var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
-                scale = float4x4.CreateScale(scaleX, scaleY, 1);
-            }
-            else
-                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            var scaleX = 1 / _state.UiRect.Size.x * xfc.TextScaleFactor;
+            var scaleY = 1/ _state.UiRect.Size.y * xfc.TextScaleFactor;
+            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;

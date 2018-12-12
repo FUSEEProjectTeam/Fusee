@@ -4,8 +4,6 @@ using Fusee.Base.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using ProtoBuf;
-
 
 namespace Fusee.Engine.GUI
 {
@@ -39,7 +37,6 @@ namespace Fusee.Engine.GUI
             var atlasWidth = _fontMap.Image.Width;
             var atlasHeight = _fontMap.Image.Height;
 
-            var index = 0;
             ushort vertex = 0;
             var advanceX = 0f;
             var advanceY = 0f;

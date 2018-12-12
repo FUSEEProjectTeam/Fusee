@@ -36,7 +36,7 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasNodeContainer _canvas;
+        private CanvasRenderMode _canvasRenderMode;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -46,7 +46,16 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
-            var borderScaleFactor = 0.1f;
+            _canvasRenderMode = CanvasRenderMode.SCREEN;
+            
+            var canvasScaleFactor = 0.01f;
+            float textSize = 2;
+            float borderScaleFactor = 1;
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                textSize *= canvasScaleFactor;
+                borderScaleFactor = 0.01f;
+            }
 
             var text = new TextNodeContainer(
                 "Hallo !",
@@ -64,7 +73,7 @@ namespace Fusee.Engine.Examples.UI.Core
                     Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery));
+                ColorUint.Tofloat4(ColorUint.Greenery), textSize);
 
             var catTextureNode = new TextureNodeContainer(
                 "Cat",
@@ -91,8 +100,9 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                0.4f,
+                4,
                 borderScaleFactor
+                
             );
             catTextureNode.Components.Add(_btnCat);
 
@@ -137,7 +147,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                0.1f,
+                1f,
                 borderScaleFactor
             );
 
@@ -155,7 +165,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new MinMaxRect {Min = new float2(-6, -3f), Max = new float2(0, 0)},
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
-                0.25f,
+                2.5f,
                 borderScaleFactor
             ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
 
@@ -177,18 +187,18 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                0.1f,
+                1f,
                 borderScaleFactor
             );
 
-            _canvas = new CanvasNodeContainer(
+            var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
                     Min = new float2(-8, -4.5f),
                     Max = new float2(8, 4.5f)
-                }, 0.01f)
+                }, canvasScaleFactor)
                 {
                     Children = new List<SceneNodeContainer>()
                     {
@@ -200,31 +210,24 @@ namespace Fusee.Engine.Examples.UI.Core
                         nineSliceTextureNode
                     }
                 };
-            _canvas.AddComponent(_btnCanvas);
+            
+            var canvasMat = new ShaderEffectComponent
+            {
+                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                {
+                    Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                })
+            };
+            canvas.AddComponent(canvasMat);
+            canvas.AddComponent(new Plane());
+            canvas.AddComponent(_btnCanvas);
 
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
                 {
-                    new SceneNodeContainer
-                    {
-                        //Rotate canvas and all its children.
-                        Name = "Null_Transform",
-                        Components = new List<SceneComponentContainer>
-                        {
-                            //new TransformComponent()
-                            //{
-                            //    Translation = new float3(3,0,1),
-                            //    Scale = new float3(1,1,1),
-                            //    Rotation = new float3(0,45,0)
-                            //}
-                        },
-                        Children = new List<SceneNodeContainer>
-                        {
-                            //Add canvas.
-                            _canvas
-                        }
-                    }
+                    //Add canvas.
+                    canvas
                 }
             };
         }
@@ -301,7 +304,7 @@ namespace Fusee.Engine.Examples.UI.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
-            _fontMap = new FontMap(fontLato, 700);
+            _fontMap = new FontMap(fontLato, 72);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -385,7 +388,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _angleVert += _angleVelVert;
 
             var mtxRot = float4x4.Identity;
-            if (_canvas.GetComponent<CanvasTransformComponent>().CanvasRenderMode == CanvasRenderMode.WORLD)
+            if (_canvasRenderMode == CanvasRenderMode.WORLD)
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
