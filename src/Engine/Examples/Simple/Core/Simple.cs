@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -21,108 +22,19 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-
-        private SceneContainer _gui;
-        private SceneRenderer _guiRenderer;
+        
         private SceneContainer _rocketScene;
         private SceneRenderer _sceneRenderer;
 
+        private SceneRenderer _guiRenderer;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
 
         private bool _keys;
 
-        private SceneContainer CreateGui()
-        {
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var btnFuseeLogo = new GUIButton
-            {
-                Name = "Canvas_Button"
-            };
-            btnFuseeLogo.OnMouseEnter += OnBtnLogoEnter;
-            btnFuseeLogo.OnMouseExit += OnBtnLogoExit;
-            btnFuseeLogo.OnMouseDown += OnBtnLogoDown;
-
-            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
-            var fuseeLogo = new TextureNodeContainer(
-                "fuseeLogo",
-                vsTex,
-                psTex,
-                //Set the diffuse texture you want to use.
-                guiFuseeLogo,
-                //_fontMap.Image,
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
-                },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, -0.5f),
-                    Max = new float2(1.75f, 0)
-                });
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var latoFontMap = new FontMap(fontLato, 36);
-            var text = new TextNodeContainer(
-                "FUSEE Simple Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
-                latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery),0.25f);
-
-
-            var canvas = new CanvasNodeContainer(
-                "Canvas",
-                CanvasRenderMode.SCREEN,
-                new MinMaxRect
-                {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }
-            )
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
-            
-
-            return new SceneContainer
-            {
-                Children = new List<SceneNodeContainer>
-                {
-                    //Add canvas.
-                    canvas
-                }
-            };
-        }
-
-        // Init is called on startup. 
+       // Init is called on startup. 
         public override void Init()
         {
-
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -192,7 +104,12 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
-            
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -219,17 +136,105 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sih.Projection = projection;
         }
 
-        public void OnBtnLogoEnter(CodeComponent sender)
+        private SceneContainer CreateGui()
+        {
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var btnFuseeLogo = new GUIButton
+            {
+                Name = "Canvas_Button"
+            };
+            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
+            btnFuseeLogo.OnMouseExit += BtnLogoExit;
+            btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var fuseeLogo = new TextureNodeContainer(
+                "fuseeLogo",
+                vsTex,
+                psTex,
+                //Set the diffuse texture you want to use.
+                guiFuseeLogo,
+                //_fontMap.Image,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
+                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
+                },
+                //Define Offset and therefor the size of the element.
+                //Min: distance to this elements Min anchor.
+                //Max: distance to this elements Max anchor.
+                new MinMaxRect
+                {
+                    Min = new float2(0, -0.5f),
+                    Max = new float2(1.75f, 0)
+                });
+            fuseeLogo.AddComponent(btnFuseeLogo);
+
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var latoFontMap = new FontMap(fontLato, 36);
+            var text = new TextNodeContainer(
+                "FUSEE Simple Example",
+                "ButtonText",
+                vsTex,
+                psTex,
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 0)
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(4f, 0f),
+                    Max = new float2(-4, 0.5f)
+                },
+                latoFontMap,
+                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+
+
+            var canvas = new CanvasNodeContainer(
+                "Canvas",
+                CanvasRenderMode.SCREEN,
+                new MinMaxRect
+                {
+                    Min = new float2(-8, -4.5f),
+                    Max = new float2(8, 4.5f)
+                }
+            )
+            {
+                Children = new List<SceneNodeContainer>()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
+            };
+
+
+            return new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>
+                {
+                    //Add canvas.
+                    canvas
+                }
+            };
+        }
+
+        public void BtnLogoEnter(CodeComponent sender)
         {
             _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
-        public void OnBtnLogoExit(CodeComponent sender)
+        public void BtnLogoExit(CodeComponent sender)
         {
             _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
         }
 
-        public void OnBtnLogoDown(CodeComponent sender)
+        public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
         }
