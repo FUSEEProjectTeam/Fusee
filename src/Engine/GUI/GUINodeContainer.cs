@@ -211,39 +211,7 @@ namespace Fusee.Engine.GUI
                 new XFormComponent
                 {
                     Name = name + "_XForm",
-                },
-                new ShaderEffectComponent
-                {
-                    Effect = new ShaderEffect(new[]
-                        {
-                            new EffectPassDeclaration
-                            {
-                                VS = vs,
-                                PS = ps,
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    SourceBlend = Blend.SourceAlpha,
-                                    DestinationBlend = Blend.InverseSourceAlpha,
-                                    BlendOperation = BlendOperation.Add,
-                                    ZEnable = false
-                                }
-                            }
-                        },
-                        new[]
-                        {
-                            new EffectParameterDeclaration
-                            {
-                                Name = "DiffuseTexture",
-                                Value = new Texture(fontMap.Image)
-                            },
-                            new EffectParameterDeclaration
-                                {Name = "DiffuseColor", Value = color},
-                            new EffectParameterDeclaration {Name = "DiffuseMix", Value = 0.0f},
-                            new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                        })
-                },
+                }
             };
 
             Children = new List<SceneNodeContainer>()

@@ -103,7 +103,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 4,
                 borderScaleFactor
                 
-            );
+            ){ Children = new List<SceneNodeContainer> { text} };
             catTextureNode.Components.Add(_btnCat);
 
             var bltTextureNode = new TextureNodeContainer(
