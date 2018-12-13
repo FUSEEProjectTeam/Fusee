@@ -546,7 +546,7 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f);
+                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear*0.01f));
                 _state.Model *= _state.CanvasXForm;
 
                 _parentRect = newRect;
