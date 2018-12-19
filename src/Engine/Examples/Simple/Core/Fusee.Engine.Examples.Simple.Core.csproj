@@ -10,7 +10,7 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Simple\Core\</OutputPath>
   </PropertyGroup>
-  
+
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>

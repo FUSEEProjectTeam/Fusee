@@ -43,7 +43,11 @@ namespace Fusee.Base.Core
         public uint PixelHeight
         {
             get { return _fontImp.PixelHeight; }
-            set { _fontImp.PixelHeight = value; }
+            set
+            {
+                _fontImp.PixelHeight = value;
+                _glyphInfoCache.Clear();
+            }
         }
 
         /// <summary>
