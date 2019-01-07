@@ -175,6 +175,9 @@ namespace Fusee.Engine.Core
         private readonly bool _wantToRenderEnvMap;
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
+        private CanvasTransformComponent _ctc;
+        private MinMaxRect _parentRect;
+
         /// <summary>
         /// Try to render with Shadows. If not possible, fallback to false.
         /// </summary>
@@ -214,7 +217,6 @@ namespace Fusee.Engine.Core
         private readonly SceneContainer _sc;
 
         private RenderContext _rc;
-
 
         private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
 
@@ -260,6 +262,7 @@ namespace Fusee.Engine.Core
             public RendererState()
             {
                 RegisterState(_model);
+                RegisterState(_canvasXForm);
                 RegisterState(_effect);
                 RegisterState(_uiRect);
             }
@@ -310,7 +313,7 @@ namespace Fusee.Engine.Core
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
-                    Type = (int) LightType.Legacy
+                    Type = (int)LightType.Legacy
                 });
             }
 
@@ -450,8 +453,8 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);                
-                
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
+
                 //_defaultEffect.AttachToContext(_rc);
                 _rc.SetShaderEffect(_defaultEffect);
 
@@ -480,7 +483,7 @@ namespace Fusee.Engine.Core
             SceneNodeContainer boneContainer = CurrentNode;
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform))
-                _boneMap.Add(boneContainer, _rc.Model); 
+                _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;
         }
@@ -500,39 +503,115 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
-            var newRect = new MinMaxRect
-            {
-                Min = ctc.Size.Min,
-                Max = ctc.Size.Max
-            };
+            _ctc = ctc;
+            _rc.View = _view;
 
-            _state.CanvasXForm = _state.Model;
-            _state.Model = _state.CanvasXForm * float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-            _state.UiRect = newRect;
+            if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
+            {
+                var newRect = new MinMaxRect
+                {
+                    Min = ctc.Size.Min,
+                    Max = ctc.Size.Max
+                };
+
+                _state.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
+                _state.Model *= _state.CanvasXForm;
+
+                _parentRect = newRect;
+                _state.UiRect = newRect;                
+            }
+
+            if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                var projection = _rc.Projection;
+                var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
+
+                var fov = 2f * System.Math.Atan(1f / projection.M22);
+                var aspect = projection.M22 / projection.M11;
+
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
+
+                var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
+                var width = height * aspect;
+
+                ctc.Size = new MinMaxRect
+                {
+                    Min = new float2(canvasPos.x - width / 2, canvasPos.y - height / 2),
+                    Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
+                };
+
+                var newRect = new MinMaxRect
+                {
+                    Min = ctc.Size.Min,
+                    Max = ctc.Size.Max
+                };
+
+                _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear*0.01f));
+                _state.Model *= _state.CanvasXForm;
+
+                _parentRect = newRect;
+                _state.UiRect = newRect;
+            }
         }
 
         [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
-            // The Heart of the UiRect calculation: Set anchor points relative to parent
-            // rectangle and add absolute offsets
-            var newRect = new MinMaxRect
+            MinMaxRect newRect;
+            if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
-                Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
-            };
+                newRect = new MinMaxRect
+                {
+                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min * _ctc.Scale,
+                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max * _ctc.Scale
+                };
+            }
+            else
+            {
+                // The Heart of the UiRect calculation: Set anchor points relative to parent
+                // rectangle and add absolute offsets
+                newRect = new MinMaxRect
+                {
+                    Min = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min,
+                    Max = _state.UiRect.Min + _state.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max
+                };
+            }
 
-            var transformChild = float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
-
+            var translationDelta = newRect.Center - _state.UiRect.Center;
+            var translationX = translationDelta.x / _state.UiRect.Size.x;
+            var translationY = translationDelta.y / _state.UiRect.Size.y;
+            
+            _parentRect = _state.UiRect;
             _state.UiRect = newRect;
-            _state.Model = _state.CanvasXForm * transformChild;
 
+            _state.Model *= float4x4.CreateTranslation(translationX, translationY, 0); 
         }
 
         [VisitMethod]
         public void RenderXForm(XFormComponent xfc)
         {
-            var scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            float4x4 scale;
+
+            if (_state.UiRect.Size != _parentRect.Size)
+            {
+                var scaleX = _state.UiRect.Size.x / _parentRect.Size.x;
+                var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
+                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+            }
+            else
+                scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+
+            _state.Model *= scale;
+            _rc.Model = _state.Model;
+            _rc.View = _view;
+        }
+
+        [VisitMethod]
+        public void RenderXFormText(XFormTextComponent xfc)
+        {
+            var scaleX = 1 / _state.UiRect.Size.x * xfc.TextScaleFactor;
+            var scaleY = 1/ _state.UiRect.Size.y * xfc.TextScaleFactor;
+            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
@@ -681,6 +760,7 @@ namespace Fusee.Engine.Core
         {
             _state.Clear();
             _state.Model = float4x4.Identity;
+            _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _defaultEffect;
 
@@ -742,7 +822,7 @@ namespace Fusee.Engine.Core
             return shaderEffect;
         }
 
-     
+
         // Creates Shader from given shaderComponent
         private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
@@ -960,7 +1040,7 @@ namespace Fusee.Engine.Core
         {
             var lightResult = new LightResult
             {
-                Type = (int) lightComponent.Type,
+                Type = (int)lightComponent.Type,
                 Color = lightComponent.Color,
                 ConeAngle = lightComponent.ConeAngle,
                 ConeDirection = lightComponent.ConeDirection,
