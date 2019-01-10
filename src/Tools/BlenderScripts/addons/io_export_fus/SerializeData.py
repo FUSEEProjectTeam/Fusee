@@ -155,7 +155,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         rootmesh = Scene.SceneComponentContainer()
 
         # set current object as the active one
-        bpy.context.scene.objects.active = obj
+        bpy.context.view_layer.objects.active = obj
         '''
         #set to edit mode, in order to make all needed modifications
         bpy.ops.object.mode_set(mode='EDIT')
@@ -208,7 +208,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)      
-        damesh = prepare_mesh(bpy.context.scene.objects.active)
+        damesh = prepare_mesh(bpy.context.active_object)
         bm.from_mesh(damesh)
 
         # <CM's Checks>
@@ -457,7 +457,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         rootmesh = Scene.SceneComponentContainer()
 
         # set current object as the active one
-        bpy.context.scene.objects.active = obj
+        bpy.context.view_layer.objects.active = obj
 
         # TRANSFORM COMPONENT
         # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scenegraph
@@ -489,7 +489,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
-        damesh = prepare_mesh(bpy.context.scene.objects.active.children[0])      
+        damesh = prepare_mesh(bpy.context.active_object.children[0])      
         bm.from_mesh(damesh)
         
         uvActive = obj.children[0].data.uv_layers.active
@@ -847,8 +847,7 @@ def GetParents(obj):
 
 def prepare_mesh(obj):
     # This applies all the modifiers (without altering the scene)
-    mesh = obj.to_mesh(bpy.context.scene, apply_modifiers=True, settings='RENDER', calc_tessface=True,
-                       calc_undeformed=False)
+    mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
 
     # Triangulate for web export
     bm = bmesh.new()
@@ -859,7 +858,6 @@ def prepare_mesh(obj):
     del bm
 
     mesh.calc_normals()
-    mesh.calc_tessface()
+    mesh.calc_loop_triangles()
 
     return mesh
-
