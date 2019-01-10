@@ -174,7 +174,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         if obj.parent is None:
             obj_mtx_clean = obj.matrix_world.copy()
         else:
-            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
         location, rotation, scale = obj_mtx_clean.decompose()
 
@@ -383,9 +383,9 @@ def create_bone_payload(boneNode, obj, bone):
     if obj.parent is None:
         obj_mtx_clean = obj.matrix_world.copy()
     else:
-        obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+        obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
-    obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+    obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
 
     location, rotation, scale = obj_mtx.decompose()
 
@@ -464,7 +464,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         if obj.parent is None:
             obj_mtx_clean = obj.matrix_world.copy()
         else:
-            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
         location, rotation, scale = obj_mtx_clean.decompose()
 
@@ -543,9 +543,9 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
             if obj.parent is None:
                 obj_mtx_clean = obj.matrix_world.copy()
             else:
-                obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
-            obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+            obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
 
             # convert obj_mxt to float4x4 
             tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
