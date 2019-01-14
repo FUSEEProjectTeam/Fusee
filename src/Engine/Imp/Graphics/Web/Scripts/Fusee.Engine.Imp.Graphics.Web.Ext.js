@@ -2646,34 +2646,34 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function
         function ConnectCanvasEvents() {
             var callbackClosure = this;
 
-            this._canvas.ontouchstart = function (event) {
+            this._canvas.addEventListener("touchstart", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchStart.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchmove = function (event) {
+            });
+            this._canvas.addEventListener("touchmove", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchMove.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchend = function (event) {
+            });
+            this._canvas.addEventListener("touchend", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchEnd.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchcancel = function (event) {
+            });
+            this._canvas.addEventListener("touchcancel", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchCancel.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
+            });
         }
     );
 
