@@ -565,6 +565,21 @@ namespace Fusee.Math.Core
             return 0.5f + (Sin((2 * t - 1) * (Pi / 2)) / 2);
         }
 
+        /// <summary>
+        /// Returns a new float value that is the linear blend of the 2 given floats
+        /// </summary>
+        /// <param name="a">First input float</param>
+        /// <param name="b">Second input float</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
+        /// <returns>
+        /// a when blend=0, b when blend=1, and a linear combination otherwise
+        /// </returns>
+        public static float Lerp(float a, float b, float blend)
+        {
+            blend = Clamp(blend, 0, 1);
+            return (a * (1f - blend)) + (b * blend);
+        }
+
         #endregion
 
         #region Equals
