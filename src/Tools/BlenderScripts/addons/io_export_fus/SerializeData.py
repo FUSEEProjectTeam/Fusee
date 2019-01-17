@@ -184,11 +184,11 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-            # rotation
-        rot_eul = rotation.to_euler()
-        transformComponent.Rotation.x = rot_eul.x
-        transformComponent.Rotation.y = rot_eul.z
-        transformComponent.Rotation.z = rot_eul.y
+        # rotation
+        rot_eul = rotation.to_euler('YXZ')
+        transformComponent.Rotation.x = -rot_eul.x
+        transformComponent.Rotation.y = -rot_eul.z
+        transformComponent.Rotation.z = -rot_eul.y
 
         # scale
         # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
@@ -396,10 +396,10 @@ def create_bone_payload(boneNode, obj, bone):
     transformComponent.Translation.z = location.y
 
     # rotation
-    rot_eul = rotation.to_euler()
-    transformComponent.Rotation.x = rot_eul.x
-    transformComponent.Rotation.y = rot_eul.z
-    transformComponent.Rotation.z = rot_eul.y
+    rot_eul = rotation.to_euler('YXZ')
+    transformComponent.Rotation.x = -rot_eul.x
+    transformComponent.Rotation.y = -rot_eul.z
+    transformComponent.Rotation.z = -rot_eul.y
 
     # scale
     # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
@@ -474,11 +474,11 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-            # rotation
-        rot_eul = rotation.to_euler()
-        transformComponent.Rotation.x = rot_eul.x
-        transformComponent.Rotation.y = rot_eul.z
-        transformComponent.Rotation.z = rot_eul.y
+        # rotation
+        rot_eul = rotation.to_euler('YXZ')
+        transformComponent.Rotation.x = -rot_eul.x
+        transformComponent.Rotation.y = -rot_eul.z
+        transformComponent.Rotation.z = -rot_eul.y
 
         # scale
         # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
