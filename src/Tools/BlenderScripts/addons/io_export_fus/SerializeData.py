@@ -829,10 +829,13 @@ def SetDefaultMaterial(isWeb):
 
 
 def GetPaths(filepath):
-    # relative filepath -> absolute filepath (when file is in the same folder)
+    # relative filepath -> absolute filepath
     basename = os.path.basename(filepath)
     if os.path.dirname(filepath) == '//':
-        filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)        
+    else:
+        filepath = filepath.replace("//", "")
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), filepath)        
     fullpath = filepath
     return fullpath, basename
 
