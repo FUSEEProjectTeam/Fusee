@@ -535,10 +535,11 @@ namespace Fusee.Tools.fuseeCmdLine
                             string jsilc = Path.Combine(jsilRoot, "Compiler", "JSILc.exe");
                             string temp = Path.Combine(outPath, "tmp");
                             Directory.CreateDirectory(temp);
+
                             using (Process cmd = Process.Start(new ProcessStartInfo
                             {
                                 FileName = jsilc,
-                                Arguments = $"--nodeps {distroWebbuildConfigFilePath} {dllFilePath} -o {temp}",
+                                Arguments = $"--nodeps \"{distroWebbuildConfigFilePath}\" \"{dllFilePath}\" -o \"{temp}\"",
                                 UseShellExecute = false,
                                 WorkingDirectory = desktopPlayerDir,
                             }))
