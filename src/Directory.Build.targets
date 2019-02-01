@@ -308,7 +308,12 @@
     <PropertyGroup>
       <FuseeScriptListToAdd>@(FuseeScriptAddToManifestNameFiltered)</FuseeScriptListToAdd>
     </PropertyGroup>
-
+    
+    <ItemGroup>
+      <_CopyPreparedAssemblyHtmlFile Include="$(ProjectDir)$(AssemblyName).html" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CopyPreparedAssemblyHtmlFile)" DestinationFolder="$(FuseeWebOutputPath)" />
+    
     <Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
     <Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; generate &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
 
