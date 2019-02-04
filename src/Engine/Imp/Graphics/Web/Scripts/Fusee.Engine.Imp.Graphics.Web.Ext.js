@@ -2597,7 +2597,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function
                 event.preventDefault();
             };
             this._canvas.onmousemove = function (event) {
-                var pt = new $fuseeMath.Fusee.Math.Core.float2().__Initialize__({ x: event.clientX, y: event.clientY });
+                var pt = new $fuseeMath.Fusee.Math.Core.float2().__Initialize__({ x: event.offsetX, y: event.offsetY });
                 callbackClosure.OnCanvasMouseMove.call(callbackClosure, pt);
                 event.preventDefault();
             };
