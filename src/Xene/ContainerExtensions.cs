@@ -131,5 +131,42 @@ namespace Fusee.Xene
             }
             sncThis.Components.Add(scc);
         }
+
+        /// <summary>
+        /// Converts the SceneContainer to a SceneNodeContainer with a seperate TransformComponent
+        /// </summary>
+        /// <param name="sc">this node.</param>
+        public static SceneNodeContainer ToSceneNodeContainer(this SceneContainer sc)
+        {
+            SceneNodeContainer snc = new SceneNodeContainer();
+            snc.Children = new List<SceneNodeContainer>();
+            snc.Components = new List<SceneComponentContainer>();
+
+            snc.AddComponent(new TransformComponent());
+
+            foreach (var scc in sc.Children)
+            {
+                snc.Children.Add(scc);
+            }
+
+            return snc;
+        }
+
+        /// <summary>
+        /// Converts the SceneNodeContainer to a SceneContainer
+        /// </summary>
+        /// <param name="snc">this node.</param>
+        public static SceneContainer ToSceneContainer(this SceneNodeContainer snc)
+        {
+            SceneContainer sc = new SceneContainer();
+            sc.Children = new List<SceneNodeContainer>();
+
+            foreach (var sncc in snc.Children)
+            {
+                sc.Children.Add(sncc);
+            }
+
+            return sc;
+        }
     }
 }
