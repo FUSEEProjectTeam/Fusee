@@ -139,9 +139,6 @@ namespace Fusee.Xene
         public static SceneNodeContainer ToSceneNodeContainer(this SceneContainer sc)
         {
             SceneNodeContainer snc = new SceneNodeContainer();
-            snc.Children = new List<SceneNodeContainer>();
-            snc.Components = new List<SceneComponentContainer>();
-
             snc.AddComponent(new TransformComponent());
 
             foreach (var scc in sc.Children)
@@ -159,7 +156,6 @@ namespace Fusee.Xene
         public static SceneContainer ToSceneContainer(this SceneNodeContainer snc)
         {
             SceneContainer sc = new SceneContainer();
-            sc.Children = new List<SceneNodeContainer>();
 
             foreach (var sncc in snc.Children)
             {
