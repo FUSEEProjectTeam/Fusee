@@ -20,7 +20,6 @@ namespace Fusee.Engine.Player.Desktop
                 dirList.Add(dir);
         }
 
-
         public static void Main(string[] args)
         {
             // Inject Fusee.Engine.Base InjectMe dependencies
@@ -97,7 +96,7 @@ namespace Fusee.Engine.Player.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                 });
@@ -125,10 +124,10 @@ namespace Fusee.Engine.Player.Desktop
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas) ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
 
                 if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
-                    ((Fusee.Engine.Player.Core.Player) app).ModelFile = modelFile;
+                    ((Fusee.Engine.Player.Core.Player)app).ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
