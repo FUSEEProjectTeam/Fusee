@@ -14,15 +14,13 @@ using Fusee.Xene;
 
 namespace Fusee.Engine.Player.Core
 {
-
     [FuseeApplication(Name = "FUSEE Player", Description = "Watch any FUSEE scene.")]
     public class Player : RenderCanvas
     {
         public string ModelFile = "Model.fus";
 
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
-                             _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -54,10 +52,10 @@ namespace Fusee.Engine.Player.Core
             _angleRoll = 0;
             _angleRollInit = 0;
             _twoTouchRepeated = false;
-            _offset = float2.Zero; 
+            _offset = float2.Zero;
             _offsetInit = float2.Zero;
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
@@ -208,7 +206,7 @@ namespace Fusee.Engine.Player.Core
 
             _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -303,7 +301,6 @@ namespace Fusee.Engine.Player.Core
                 _guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
 
-
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 CanvasRenderMode.SCREEN,
@@ -321,7 +318,6 @@ namespace Fusee.Engine.Player.Core
                     text
                 }
             };
-
 
             return new SceneContainer
             {
