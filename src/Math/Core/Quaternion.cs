@@ -596,7 +596,7 @@ namespace Fusee.Math.Core
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            e.y = M.TwoPi - e.y;
+            //e.y = M.TwoPi - e.y;
 
             // Calculating the Sine and Cosine for each half angle.
             // YAW/HEADING
@@ -620,6 +620,54 @@ namespace Fusee.Math.Core
             return new Quaternion(x, y, z, w);
         }
 
+        public static float3 FromQuatToEuler(Quaternion q1)
+        {
+            float sqw = q1.w * q1.w;
+            float sqx = q1.x * q1.x;
+            float sqy = q1.y * q1.y;
+            float sqz = q1.z * q1.z;
+            float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
+            float test = q1.x * q1.w - q1.y * q1.z;
+            float3 v = new float3();
+
+            if (test > 0.4995f * unit)
+            { // singularity at north pole
+                v.y = M.RadiansToDegrees((float) (2f * System.Math.Atan2(q1.y, q1.x)));
+                v.x = M.RadiansToDegrees((float) (System.Math.PI / 2f));
+                v.z = 0;
+                return NormalizeAngles(v);
+            }
+            if (test < -0.4995f * unit)
+            { // singularity at south pole
+                v.y = M.RadiansToDegrees((float) (-2f * System.Math.Atan2(q1.y, q1.x)));
+                v.x = M.RadiansToDegrees((float) (-System.Math.PI / 2));
+                v.z = 0;
+                return NormalizeAngles(v);
+            }
+            Quaternion q = new Quaternion(q1.w, q1.z, q1.x, q1.y);
+            v.y = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.w + 2f * q.y * q.z, 1 - 2f * (q.z * q.z + q.w * q.w)));     // Yaw
+            v.x = M.RadiansToDegrees((float)System.Math.Asin(2f * (q.x * q.z - q.w * q.y)));                             // Pitch
+            v.z = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.y + 2f * q.z * q.w, 1 - 2f * (q.y * q.y + q.z * q.z)));      // Roll
+            return NormalizeAngles(v);
+        }
+
+        static float3 NormalizeAngles(float3 angles)
+        {
+            angles.x = NormalizeAngle(angles.x);
+            angles.y = NormalizeAngle(angles.y);
+            angles.z = NormalizeAngle(angles.z);
+            return angles;
+        }
+
+        static float NormalizeAngle(float angle)
+        {
+            while (angle > 360)
+                angle -= 360;
+            while (angle < 0)
+                angle += 360;
+            return angle;
+        }
+
 
         /// <summary>
         ///     Convert Quaternion rotation to Euler Angles.
@@ -630,7 +678,7 @@ namespace Fusee.Math.Core
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
         /// 
-        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
+        /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
         /// </remarks>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
@@ -667,9 +715,9 @@ namespace Fusee.Math.Core
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            y = M.TwoPi - y;
+            //y = M.TwoPi - y;
 
-            // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
+            // Clamp angles to ranges around 0 (e.g. [-PI, PI] for yaw)
             while (y >= M.TwoPi)
                 y -= M.TwoPi;
             while (y <= -M.TwoPi)
@@ -682,7 +730,7 @@ namespace Fusee.Math.Core
                 z = M.RadiansToDegrees(z);
             }
 
-            return new float3(x, y, z);
+            return new float3(z, y, x);
         }
 
         /// <summary>

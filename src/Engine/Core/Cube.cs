@@ -4,7 +4,7 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Creates a simple cube geomentry straight from the code.
+    /// Creates a simple cube geometry straight from the code.
     /// </summary>
     public class Cube : Mesh
     {
