@@ -79,8 +79,9 @@ namespace Fusee.Engine.Core
             for (var lon = 0; lon < segments; lon++)
             {
                 triangles[i++] = (ushort) (lon + 2);
-                triangles[i++] = (ushort) (lon + 1);
                 triangles[i++] = 0;
+                triangles[i++] = (ushort) (lon + 1);
+                
             }
 
             //Middle
@@ -92,12 +93,14 @@ namespace Fusee.Engine.Core
                     var next = (ushort) (current + segments + 1);
 
                     triangles[i++] =  current;
+                    triangles[i++] = (ushort)(next + 1);
                     triangles[i++] = (ushort) ( current + 1);
-                    triangles[i++] = (ushort) (next + 1);
+                    
 
                     triangles[i++] =  current;
-                    triangles[i++] = (ushort) (next + 1);
                     triangles[i++] = next;
+                    triangles[i++] = (ushort) (next + 1);
+                   
                 }
             }
 
@@ -105,8 +108,9 @@ namespace Fusee.Engine.Core
             for (var lon = 0; lon < segments; lon++)
             {
                 triangles[i++] = (ushort) (vertices.Length - 1);
+                triangles[i++] = (ushort)(vertices.Length - (lon + 1) - 1);
                 triangles[i++] = (ushort) (vertices.Length - (lon + 2) - 1);
-                triangles[i++] = (ushort) (vertices.Length - (lon + 1) - 1);
+                
             }
             #endregion
 

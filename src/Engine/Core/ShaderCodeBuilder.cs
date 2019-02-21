@@ -946,8 +946,9 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float3 diffuseColor, float3 specularColor, float shininess)
+        public static ShaderEffect MakeShaderEffect(float3 diffuseColor, float3 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -958,14 +959,46 @@ namespace Fusee.Engine.Core
                 Specular = new SpecularChannelContainer
                 {
                     Color = specularColor,
-                    Shininess = shininess
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
+                }
+            };
+            
+            return MakeShaderEffectFromMatComp(temp);
+        }
+
+        /// <summary>
+        ///     Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="texName">Name of the texture you want to use.</param>
+        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the thexture are mixed.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffect MakeShaderEffect(float3 diffuseColor, float3 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        {
+            MaterialComponent temp = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = diffuseColor,
+                    Texture = texName,
+                    Mix = diffuseMix
+
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = specularColor,
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
                 }
             };
 
             return MakeShaderEffectFromMatComp(temp);
         }
-
-
+        
 
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
