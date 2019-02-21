@@ -100,7 +100,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                4,
+                4,4,4,4,
                 borderScaleFactor
                 
             ){ Children = new List<SceneNodeContainer> { text} };
@@ -147,7 +147,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                1f,
+                1,1,1,1,
                 borderScaleFactor
             );
 
@@ -165,7 +165,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 new MinMaxRect {Min = new float2(-6, -3f), Max = new float2(0, 0)},
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
-                2.5f,
+                2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
             ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
 
@@ -187,7 +187,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 },
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                1f,
+                1, 1, 1, 1,
                 borderScaleFactor
             );
 

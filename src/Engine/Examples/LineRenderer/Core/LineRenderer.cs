@@ -30,103 +30,103 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         private bool _keys;
 
-        private SceneContainer BuildScene()
-        {
-            var sphere = new Sphere(24,16);
+        //private SceneContainer BuildScene()
+        //{
+        //    var sphere = new Sphere(24,16);
 
-            var line = new NineSlicePlane();
-            var start = new float3(0, 0, 0);
-            var end = new float3(2, 2, 2);
-            var middle = (start + end) / 2; //translate to
-            var scaleX = (start - end).Length;
-            var width = 0.2f;
+        //    //var line = new NineSlicePlane();
+        //    //var start = new float3(0, 0, 0);
+        //    //var end = new float3(2, 2, 2);
+        //    //var middle = (start + end) / 2; //translate to
+        //    //var scaleX = (start - end).Length;
+        //    //var width = 0.2f;
 
-            var dirVec = (end - start);
-            dirVec.Normalize();
-            var rotAxis = float3.Cross(float3.UnitX, dirVec);
-            var dot = float3.Dot(float3.UnitX, dirVec);
+        //    //var dirVec = (end - start);
+        //    //dirVec.Normalize();
+        //    //var rotAxis = float3.Cross(float3.UnitX, dirVec);
+        //    //var dot = float3.Dot(float3.UnitX, dirVec);
 
-            var rot = Quaternion.FromToRotation(float3.UnitX, dirVec);
-            var eulerRot = Quaternion.QuaternionToEuler(rot,true);
+        //    //var rot = Quaternion.FromToRotation(float3.UnitX, dirVec);
+        //    //var eulerRot = Quaternion.QuaternionToEuler(rot,true);
 
-            var quat = Quaternion.EulerToQuaternion(new float3(45,0,45),true);
-            var e = Quaternion.QuaternionToEuler(quat);
+        //    //var quat = Quaternion.EulerToQuaternion(new float3(45,0,45),true);
+        //    //var e = Quaternion.QuaternionToEuler(quat);
 
-            //float3 a = float3.Cross(dirVec, float3.UnitX);
-            //a.Normalize();
-            //var w = 1 + float3.Dot(dirVec,float3.UnitX);
-            //Quaternion q = new Quaternion()
-            //{
-            //    xyz = a,
-            //    w = w
-            //};
-            //q.Normalize();
-            //var eulerRot = Quaternion.QuaternionToEuler(q);
+        //    //float3 a = float3.Cross(dirVec, float3.UnitX);
+        //    //a.Normalize();
+        //    //var w = 1 + float3.Dot(dirVec,float3.UnitX);
+        //    //Quaternion q = new Quaternion()
+        //    //{
+        //    //    xyz = a,
+        //    //    w = w
+        //    //};
+        //    //q.Normalize();
+        //    //var eulerRot = Quaternion.QuaternionToEuler(q);
 
-            return new SceneContainer()
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent()
-                            {
-                                Name = "SphereTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = start,
-                                Scale = new float3(0.25f,0.25f,0.25f)
+        //    return new SceneContainer()
+        //    {
+        //        Children = new List<SceneNodeContainer>()
+        //        {
+        //            new SceneNodeContainer()
+        //            {
+        //                Components = new List<SceneComponentContainer>()
+        //                {
+        //                    new TransformComponent()
+        //                    {
+        //                        Name = "SphereTransform",
+        //                        Rotation = new float3(0,0,0),
+        //                        Translation = start,
+        //                        Scale = new float3(0.25f,0.25f,0.25f)
                                 
-                            },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,0,1), new float3(1,1,1), 20)
-                            },
-                            new Cube()
-                        }
-                    },
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent()
-                            {
-                                Name = "SphereTransform",
-                                Rotation = new float3(0,0,0),
-                                Translation = end,
-                                Scale = new float3(0.25f,0.25f,0.25f)
+        //                    },
+        //                    new ShaderEffectComponent()
+        //                    {
+        //                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,0,1), new float3(1,1,1), 20)
+        //                    },
+        //                    new Cube()
+        //                }
+        //            },
+        //            new SceneNodeContainer()
+        //            {
+        //                Components = new List<SceneComponentContainer>()
+        //                {
+        //                    new TransformComponent()
+        //                    {
+        //                        Name = "SphereTransform",
+        //                        Rotation = new float3(0,0,0),
+        //                        Translation = end,
+        //                        Scale = new float3(0.25f,0.25f,0.25f)
 
-                            },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,0,1), new float3(1,1,1), 20)
-                            },
-                            new Cube()
-                        }
-                    },
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent()
-                            {
-                                Name = "SphereTransform",
-                                Rotation = eulerRot,
-                                Translation = middle,
-                                Scale = new float3(scaleX, width, 1)
+        //                    },
+        //                    new ShaderEffectComponent()
+        //                    {
+        //                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,0,1), new float3(1,1,1), 20)
+        //                    },
+        //                    new Cube()
+        //                }
+        //            },
+        //            new SceneNodeContainer()
+        //            {
+        //                Components = new List<SceneComponentContainer>()
+        //                {
+        //                    new TransformComponent()
+        //                    {
+        //                        Name = "SphereTransform",
+        //                        Rotation = eulerRot,
+        //                        Translation = middle,
+        //                        Scale = new float3(scaleX, width, 1)
 
-                            },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,1,1), new float3(1,1,1), 20)
-                            },
-                            line
-                        }
-                    }
-                }
-            };
-        }
+        //                    },
+        //                    new ShaderEffectComponent()
+        //                    {
+        //                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,1,1), new float3(1,1,1), 20)
+        //                    },
+        //                    line
+        //                }
+        //            }
+        //        }
+        //    };
+        //}
 
         
 
@@ -139,11 +139,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
 
             // Load the rocket model
-            _scene = BuildScene();
-            //_scene = AssetStorage.Get<SceneContainer>("Blase_Final2_mod_inv3.fus");
+            _scene = AssetStorage.Get<SceneContainer>("Blase_Final2_mod_inv3.fus");
             
 
             // Wrap a SceneRenderer around the model.
@@ -239,6 +238,21 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         private SceneContainer CreateGui()
         {
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var latoFontMap = new FontMap(fontLato, 12);
+            var canvasRenderMode = CanvasRenderMode.SCREEN;
+            var canvasWidth = 16;
+            var canvasHeight = 9;
+            
+            var canvasScaleFactor = 0.1f;
+            float textSize = 2;
+            float borderScaleFactor = 1;
+            if (canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                textSize *= canvasScaleFactor;
+                borderScaleFactor = 0.01f;
+            }
+
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
 
@@ -249,6 +263,85 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            var textAnnotationGreen = new TextNodeContainer(
+                "#1 Karzinom, 0.978",
+                "annotation text",
+                vsTex,
+                psTex,
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 1)
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(1f, 0.5f),
+                    Max = new float2(-0.2f, -0.5f)
+                },
+                latoFontMap,
+                ColorUint.Tofloat4(ColorUint.Black), textSize);            
+
+            var annotationGreen = new TextureNodeContainer(
+                "AnnotationGreen",
+                AssetStorage.Get<string>("nineSlice.vert"),
+                AssetStorage.Get<string>("nineSliceTile.frag"),
+                //Set the diffuse texture you want to use.
+                new Texture(AssetStorage.Get<ImageData>("frame_green.png")),
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
+                    Max = new float2(1, 0) //Anchor is in the lower right corner of the parent
+                },
+                //Define Offset and therefor the size of the element.
+                //Min: distance to this elements Min anchor.
+                //Max: distance to this elements Max anchor.
+                new MinMaxRect
+                {
+                    Min = new float2(5.5f, 0),
+                    Max = new float2(-5.5f, 0.55f)
+                },
+                //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
+                new float2(1, 1),
+                //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
+                new float4(0.09f, 0.09f, 0.09f, 0.09f),
+                100,8,8,8,
+                borderScaleFactor
+
+            ){ Children = new List<SceneNodeContainer> { textAnnotationGreen } };
+                        
+
+            var circleNodeContainer = new SceneNodeContainer
+            {
+                Components = new List<SceneComponentContainer>
+                {
+                    new RectTransformComponent
+                    {
+                        Name = "circle" + "_RectTransform",
+                        Anchors = new MinMaxRect
+                        {
+                            Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
+                            Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
+                        },
+                        Offsets = new MinMaxRect
+                        {
+                            Min = new float2(2, -1.5f),
+                            Max = new float2(2.5f, -1)
+                        }
+                    },
+                    new XFormComponent
+                    {
+                        Name = "circle" + "_XForm",
+                    },
+                    new ShaderEffectComponent()
+                    {
+                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0,0,1), new float3(1,1,1), 20)
+                    },
+                    new Circle(false, 30,100,0.04f)
+                }
+            };
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNodeContainer(
@@ -273,44 +366,24 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, -0.5f),
                     Max = new float2(1.75f, 0)
                 });
-            fuseeLogo.AddComponent(btnFuseeLogo);
-
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var latoFontMap = new FontMap(fontLato, 36);
-            var text = new TextNodeContainer(
-                "FUSEE Simple Example",
-                "ButtonText",
-                vsTex,
-                psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
-                latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
-
+            fuseeLogo.AddComponent(btnFuseeLogo); 
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 CanvasRenderMode.SCREEN,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }
+                    Min = new float2(-canvasWidth/2, -canvasHeight/2),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2)
+                }, canvasScaleFactor
             )
             {
                 Children = new List<SceneNodeContainer>()
                 {
                     //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
+                    fuseeLogo,                    
+                    circleNodeContainer,
+                    annotationGreen
                 }
             };
 
