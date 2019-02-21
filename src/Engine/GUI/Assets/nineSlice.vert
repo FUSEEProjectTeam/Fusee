@@ -1,12 +1,12 @@
-#version 150    
+#version 100    
 
-in vec3 fuVertex;
-in vec3 fuNormal;
-in vec2 fuUV;
+attribute vec3 fuVertex;
+attribute vec3 fuNormal;
+attribute vec2 fuUV;
 
-out vec2 vUV;
-out vec3 vMVNormal;
-out vec4 fragBorders;
+varying vec2 vUV;
+varying vec3 vMVNormal;
+varying vec4 fragBorders;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_ITMV;
