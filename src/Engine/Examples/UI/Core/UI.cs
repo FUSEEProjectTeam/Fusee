@@ -47,14 +47,13 @@ namespace Fusee.Engine.Examples.UI.Core
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
             _canvasRenderMode = CanvasRenderMode.SCREEN;
-            
-            var canvasScaleFactor = 0.01f;
+                       
             float textSize = 2;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
-                borderScaleFactor = 0.01f;
+                textSize *= 0.1f;
+                borderScaleFactor = 0.1f;
             }
 
             var text = new TextNodeContainer(
@@ -137,8 +136,8 @@ namespace Fusee.Engine.Examples.UI.Core
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 new MinMaxRect
                 {
-                    Min = new float2(0, 0), //Anchor is in the upper left corner.
-                    Max = new float2(1, 0) //Anchor is in the upper left corner.
+                    Min = new float2(0, 0), //Anchor is in the lower right corner.
+                    Max = new float2(1, 0) //Anchor is in the lower left corner.
                 },
                 new MinMaxRect
                 {
@@ -198,18 +197,18 @@ namespace Fusee.Engine.Examples.UI.Core
                 {
                     Min = new float2(-8, -4.5f),
                     Max = new float2(8, 4.5f)
-                }, canvasScaleFactor)
+                })
+            {
+                Children = new List<SceneNodeContainer>()
                 {
-                    Children = new List<SceneNodeContainer>()
-                    {
-                        //Simple Texture Node, contains a Blt"ed" texture.
-                        bltTextureNode,
-                        //Add nine sliced textures to canvas
-                        catTextureNode,
-                        quagganTextureNode,
-                        nineSliceTextureNode
-                    }
-                };
+                    //Simple Texture Node, contains a Blt"ed" texture.
+                    bltTextureNode,
+                    //Add nine sliced textures to canvas
+                    catTextureNode,
+                    quagganTextureNode,
+                    nineSliceTextureNode
+                }
+            };            
             
             var canvasMat = new ShaderEffectComponent
             {
@@ -420,7 +419,7 @@ namespace Fusee.Engine.Examples.UI.Core
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
             _sih.Projection = projection;
         }

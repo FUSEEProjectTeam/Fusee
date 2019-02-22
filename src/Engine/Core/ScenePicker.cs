@@ -208,18 +208,21 @@ namespace Fusee.Engine.Core
                 var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
                 var width = height * aspect;
 
-                ctc.Size = new MinMaxRect
+                ctc.ScreenSpaceSize = new MinMaxRect
                 {
                     Min = new float2(canvasPos.x - width / 2, canvasPos.y - height / 2),
                     Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
                 };
 
+                ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x, ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
+
                 var newRect = new MinMaxRect
                 {
-                    Min = ctc.Size.Min,
-                    Max = ctc.Size.Max
+                    Min = ctc.ScreenSpaceSize.Min,
+                    Max = ctc.ScreenSpaceSize.Max
                 };
 
+                _ctc = ctc;
                 State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
                 State.Model *= State.CanvasXForm;
                 State.UiRect = newRect;
@@ -234,8 +237,8 @@ namespace Fusee.Engine.Core
             {
                 newRect = new MinMaxRect
                 {
-                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min * _ctc.Scale,
-                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max * _ctc.Scale
+                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + (rtc.Offsets.Min / _ctc.Scale.x),
+                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + (rtc.Offsets.Max / _ctc.Scale.y)
                 };
             }
             else

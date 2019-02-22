@@ -19,12 +19,12 @@ namespace Fusee.Engine.GUI
         /// <param name="size">The size of the canvas.</param>
         /// <param name="scale">Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.
         /// By default Scale in SCREEN mode is set to 0.1.</param>
-        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size, float scale = 0.1f)
+        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
             {
-                new CanvasTransformComponent(canvasRenderMode, scale)
+                new CanvasTransformComponent(canvasRenderMode)
                 {
                     Name = name + "_CanvasTransform",
                     Size = size
@@ -54,14 +54,14 @@ namespace Fusee.Engine.GUI
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
-        /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
+        /// <param name="borderThickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
         /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets, float2 tiles, float4 borders, float borderthicknessLeft = 1, float borderthicknessRight = 1, float borderthicknessTop = 1, float borderthicknessBottom = 1, float borderScaleFactor = 1)
+            MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
         {
-            var borderthickness = new float4(borderthicknessLeft, borderthicknessRight, borderthicknessTop,
-                borderthicknessBottom);
+            var borderThickness = new float4(borderThicknessLeft, borderThicknessRight, borderThicknessTop,
+                borderThicknessBottom);
             Name = name;
             Components = new List<SceneComponentContainer>
             {
@@ -108,7 +108,7 @@ namespace Fusee.Engine.GUI
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness},
+                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
                             new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},

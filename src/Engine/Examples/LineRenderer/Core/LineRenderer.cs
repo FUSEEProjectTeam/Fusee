@@ -139,7 +139,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(0.2f, 0.2f, 0.2f, 1);
+            RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Load the rocket model
             _scene = AssetStorage.Get<SceneContainer>("Blase_Final2_mod_inv3.fus");
@@ -236,25 +236,57 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _sih.Projection = projection;
         }
 
+        private enum AnchorPos
+        {
+            TOP_TOP_LEFT, //Min = Max = 0,1
+            STRETCH_ALL //Min 0, 0 and Max 1, 1
+        }
+
+        private MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 pos, float canvasHeight, float canvasWidth, float2 guiElementDim)
+        {
+            switch (anchorPos)
+            {
+                default:
+                case AnchorPos.STRETCH_ALL:
+                    return new MinMaxRect
+                    {
+                        //only for the anchors Min 0,0 and Max 1,1!!!
+                        Min = new float2(pos.x, (canvasHeight - pos.y) - guiElementDim.y),
+                        Max = new float2(-(canvasWidth - pos.x - guiElementDim.x), -pos.y)
+                    };
+                case AnchorPos.TOP_TOP_LEFT:
+                    return new MinMaxRect
+                    {
+                        //only for the anchors Min 0,1 and Max 0,1!!!
+                        Min = new float2(pos.x, -(pos.y + guiElementDim.y)),
+                        Max = new float2(pos.x + guiElementDim.x, -pos.y)
+                    };
+            }
+        }
+
         private SceneContainer CreateGui()
         {
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+            var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
+            var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
+
+            var canvasRenderMode = CanvasRenderMode.SCREEN;
+
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var latoFontMap = new FontMap(fontLato, 12);
-            var canvasRenderMode = CanvasRenderMode.SCREEN;
+            
             var canvasWidth = 16;
             var canvasHeight = 9;
-            
+
             var canvasScaleFactor = 0.1f;
             float textSize = 2;
             float borderScaleFactor = 1;
             if (canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 textSize *= canvasScaleFactor;
-                borderScaleFactor = 0.01f;
+                borderScaleFactor = 0.1f;
             }
-
-            var vsTex = AssetStorage.Get<string>("texture.vert");
-            var psTex = AssetStorage.Get<string>("texture.frag");
 
             var btnFuseeLogo = new GUIButton
             {
@@ -263,6 +295,22 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            //upper left corner of the annotation
+            var pos = new float2(1, 2);
+            var annotationDim = new float2(4, 0.5f);
+            var iconCheckCircle = new TextureNodeContainer(
+                "iconCheck",
+                vsTex,
+                psTex,
+                new Texture(AssetStorage.Get<ImageData>("check-circle.png")),
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 1)
+                },
+                CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.07f, 0.07f), annotationDim.y, annotationDim.x, new float2(0.35f, 0.35f))
+            );
 
             var textAnnotationGreen = new TextNodeContainer(
                 "#1 Karzinom, 0.978",
@@ -280,38 +328,32 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Max = new float2(-0.2f, -0.5f)
                 },
                 latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize);            
+                ColorUint.Tofloat4(ColorUint.Black), textSize);
 
+            //is left --> Anchor TOP_TOP_LEFT
             var annotationGreen = new TextureNodeContainer(
                 "AnnotationGreen",
                 AssetStorage.Get<string>("nineSlice.vert"),
                 AssetStorage.Get<string>("nineSliceTile.frag"),
-                //Set the diffuse texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("frame_green.png")),
-                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 new MinMaxRect
                 {
-                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(1, 0) //Anchor is in the lower right corner of the parent
+                    Min = new float2(0, 1),
+                    Max = new float2(0, 1)
                 },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(5.5f, 0),
-                    Max = new float2(-5.5f, 0.55f)
-                },
-                //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
+                CalcOffsets(AnchorPos.TOP_TOP_LEFT, pos,canvasHeight,canvasWidth,annotationDim),
                 new float2(1, 1),
-                //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
-                100,8,8,8,
+                8, 0.8f, 0.8f, 0.8f,
                 borderScaleFactor
 
-            ){ Children = new List<SceneNodeContainer> { textAnnotationGreen } };
-                        
+            ){
+                Children = new List<SceneNodeContainer>
+                {
+                    textAnnotationGreen,
+                    iconCheckCircle
+                }
+            };
 
             var circleNodeContainer = new SceneNodeContainer
             {
@@ -325,11 +367,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                             Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
                             Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
                         },
-                        Offsets = new MinMaxRect
-                        {
-                            Min = new float2(2, -1.5f),
-                            Max = new float2(2.5f, -1)
-                        }
+                        Offsets = CalcOffsets(AnchorPos.TOP_TOP_LEFT,new float2(6,4), canvasHeight, canvasWidth, new float2(1,1)),
                     },
                     new XFormComponent
                     {
@@ -366,27 +404,24 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, -0.5f),
                     Max = new float2(1.75f, 0)
                 });
-            fuseeLogo.AddComponent(btnFuseeLogo); 
+            fuseeLogo.AddComponent(btnFuseeLogo);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-canvasWidth/2, -canvasHeight/2),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2)
-                }, canvasScaleFactor
-            )
-            {
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+                {
                 Children = new List<SceneNodeContainer>()
                 {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,                    
-                    circleNodeContainer,
-                    annotationGreen
+                    fuseeLogo,
+                    annotationGreen,
+                    circleNodeContainer
                 }
-            };
-
+            };            
 
             return new SceneContainer
             {
@@ -397,6 +432,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             };
         }
+
+        
 
         public void BtnLogoEnter(CodeComponent sender)
         {
