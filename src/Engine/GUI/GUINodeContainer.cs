@@ -58,9 +58,10 @@ namespace Fusee.Engine.GUI
         /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
+            MinMaxRect offsets, float2 tiles, float4 borders, float borderthicknessLeft = 1, float borderthicknessRight = 1, float borderthicknessTop = 1, float borderthicknessBottom = 1, float borderScaleFactor = 1)
         {
-            var borderThickness = new float4(borderThicknessLeft , borderThicknessRight, borderThicknessTop, borderThicknessBottom) * borderScaleFactor;
+            var borderthickness = new float4(borderthicknessLeft, borderthicknessRight, borderthicknessTop,
+                borderthicknessBottom);
             Name = name;
             Components = new List<SceneComponentContainer>
             {

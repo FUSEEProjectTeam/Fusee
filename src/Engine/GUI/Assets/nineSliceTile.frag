@@ -6,8 +6,8 @@ precision highp float;
          
 varying vec3 vMVNormal;
 varying vec2 vUV;
-
 varying vec4 fragBorders;
+
 uniform sampler2D DiffuseTexture;
 uniform vec4 DiffuseColor;
 uniform float DiffuseMix;
