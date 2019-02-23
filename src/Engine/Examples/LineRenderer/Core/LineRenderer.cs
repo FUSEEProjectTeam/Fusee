@@ -51,7 +51,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.90980f, 0.35686f, 0.35686f), new float3(1,1,1), 20)
+                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.90980f, 0.35686f, 0.35686f), new float3(1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
                             },
                             sphere
                         }
@@ -183,7 +183,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             MIDDLE              //Min = Max = 0.5, 0.5
         }
 
-        private MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 pos, float parentHeight, float parentWidth, float2 guiElementDim)
+        private MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
         {
             switch (anchorPos)
             {
@@ -193,44 +193,44 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0.5,0.5 and Max 0.5,0.5!!!
-                        Min = pos - middle,
-                        Max = pos - middle + guiElementDim
+                        Min = posOnParent - middle,
+                        Max = posOnParent - middle + guiElementDim
                     };
 
                 case AnchorPos.STRETCH_ALL:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 1,1!!!
-                        Min = new float2(pos.x, pos.y),
-                        Max = new float2(-(parentWidth - pos.x - guiElementDim.x), -(parentHeight - pos.y - guiElementDim.y))
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
                     };
                 case AnchorPos.DOWN_DOWN_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 0,0!!!
-                        Min = new float2(pos.x, pos.y),
-                        Max = new float2(pos.x + guiElementDim.x, pos.y + guiElementDim.y)
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
                     };
                 case AnchorPos.DOWN_DOWN_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,0 and Max 1,0!!!
-                        Min = new float2(-(pos.x + guiElementDim.x), pos.y + guiElementDim.y),
-                        Max = new float2(-pos.x, pos.y)
+                        Min = new float2(-(parentWidth-posOnParent.x), posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y+guiElementDim.y)
                     };
                 case AnchorPos.TOP_TOP_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,1 and Max 0,1!!!
-                        Min = new float2(pos.x, -(pos.y + guiElementDim.y)),
-                        Max = new float2((pos.x + guiElementDim.x), -(pos.y))
+                        Min = new float2(posOnParent.x, -(parentHeight-posOnParent.y)),
+                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
                 case AnchorPos.TOP_TOP_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,1 and Max 1,1!!!
-                        Min = new float2(-(pos.x + guiElementDim.x), -(pos.y + guiElementDim.y)),
-                        Max = new float2(-pos.x, -pos.y)
+                        Min = new float2(-(parentWidth-posOnParent.x), -(parentHeight-posOnParent.y)),
+                        Max = new float2(-(parentWidth - guiElementDim.x - posOnParent.x), -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
             }
         }
@@ -270,7 +270,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var annotationDim = new float2(3f, 0.5f);
             var annotationBorderScale = new float4(6, 0.8f, 0.8f, 0.8f);
 
-            //pos = min offset = lower left corner of the rect transform
+            //posOnParent = min offset = lower left corner of the rect transform
             var posGreen = new float2(1, 2);
             var posYellow = new float2(1, 3);
             var posGray = new float2(1, 4);
@@ -619,7 +619,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 1), 
                     Max = new float2(0, 1)
                 },
-                CalcOffsets(AnchorPos.TOP_TOP_LEFT,new float2(0,0),canvasHeight,canvasWidth,new float2(1.75f,0.5f) ));
+                CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0,7),canvasHeight,canvasWidth,new float2(1.75f,0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var canvas = new CanvasNodeContainer(
@@ -634,14 +634,14 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 Children = new List<SceneNodeContainer>()
                 {
                     fuseeLogo,
-                    annotationGreen,
-                    annotationGreenFilled,
-                    annotationYellow,
-                    annotationGray,
-                    circleGreen,
-                    circleYellow,
-                    circleGreenFilled,
-                    circleGray
+                    //annotationGreen,
+                    //annotationGreenFilled,
+                    //annotationYellow,
+                    //annotationGray,
+                    //circleGreen,
+                    //circleYellow,
+                    //circleGreenFilled,
+                    //circleGray
                 }
             };            
 
