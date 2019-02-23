@@ -45,6 +45,7 @@ namespace Fusee.Engine.GUI
     {
         /// <summary>
         /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
@@ -54,8 +55,11 @@ namespace Fusee.Engine.GUI
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
-        /// <param name="borderThickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
+        /// <param name="borderThicknessBottom">Border thickness for the bottom border.</param>
         /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
+        /// <param name="borderThicknessLeft">Border thickness for the left border.</param>
+        /// <param name="borderThicknessRight">Border thickness for the right border.</param>
+        /// <param name="borderThicknessTop">Border thickness for the top border.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
             MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)

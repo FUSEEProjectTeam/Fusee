@@ -176,6 +176,7 @@ namespace Fusee.Engine.Core
             State.Model *= transform.Matrix();
         }
 
+        private bool isCtcInitialized = false;
         [VisitMethod]
         public void PickCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -214,15 +215,21 @@ namespace Fusee.Engine.Core
                     Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
                 };
 
-                ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x, ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
-
                 var newRect = new MinMaxRect
                 {
                     Min = ctc.ScreenSpaceSize.Min,
                     Max = ctc.ScreenSpaceSize.Max
                 };
 
-                _ctc = ctc;
+                if (!isCtcInitialized)
+                {
+                    ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x,
+                        ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
+
+                    _ctc = ctc;
+                    isCtcInitialized = true;
+
+                }
                 State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
                 State.Model *= State.CanvasXForm;
                 State.UiRect = newRect;

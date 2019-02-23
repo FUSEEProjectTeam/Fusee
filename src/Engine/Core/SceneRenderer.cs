@@ -500,6 +500,8 @@ namespace Fusee.Engine.Core
             _rc.Bones = boneArray;
         }
 
+        private bool isCtcInitialized = false;
+
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -540,15 +542,21 @@ namespace Fusee.Engine.Core
                     Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
                 };
 
-                ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x, ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);                
-
                 var newRect = new MinMaxRect
                 {
                     Min = ctc.ScreenSpaceSize.Min,
                     Max = ctc.ScreenSpaceSize.Max
                 };
 
-                _ctc = ctc;
+                if (!isCtcInitialized)
+                {
+                    ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x,
+                        ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
+
+                    _ctc = ctc;
+                    isCtcInitialized = true;
+
+                }
                 _state.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear*0.01f));
                 _state.Model *= _state.CanvasXForm;
 
