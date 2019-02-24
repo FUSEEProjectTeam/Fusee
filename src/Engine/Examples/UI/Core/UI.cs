@@ -23,7 +23,7 @@ namespace Fusee.Engine.Examples.UI.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRenderer _guiRenderer;
+        private SceneRenderer _sceneRenderer;
 
         private bool _keys;
 
@@ -52,8 +52,8 @@ namespace Fusee.Engine.Examples.UI.Core
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= 100f;
-                borderScaleFactor = 100f;
+                textSize *= 0.1f;
+                borderScaleFactor = 0.1f;
             }
 
             var text = new TextNodeContainer(
@@ -307,7 +307,6 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-            RCGui.ClearColor = new float4(0, 0, 0, 0);
 
             _bltDestinationTex = new Texture(AssetStorage.Get<ImageData>("townmusicians.jpg"));
             var bltScrTex = new Texture(AssetStorage.Get<ImageData>("censored_79_16.png"));
@@ -340,7 +339,7 @@ namespace Fusee.Engine.Examples.UI.Core
             _sih = new SceneInteractionHandler(_scene);
 
             // Wrap a SceneRenderer around the model.
-            _guiRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRenderer(_scene);
         }
 
 
@@ -349,7 +348,6 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            //RCGui.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
@@ -396,7 +394,7 @@ namespace Fusee.Engine.Examples.UI.Core
             RC.ModelView = mtxCam * mtxRot;
 
             // Render the scene loaded in Init()
-            _guiRenderer.Render(RCGui);
+            _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
             _sih.View = RC.ModelView;
@@ -414,28 +412,15 @@ namespace Fusee.Engine.Examples.UI.Core
         {
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
-            RCGui.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             var aspectRatio = Width / (float) Height;
 
-            var distToNearClippingPlane = 1;
-            var distToFarClippingPlane = 20000;
-
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            float4x4 projection;
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
-            {
-                projection = float4x4.CreateOrthographic(Width, Height, distToNearClippingPlane, distToFarClippingPlane);
-            }
-            else
-            {
-                projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, distToNearClippingPlane,
-                    distToFarClippingPlane);
-            }
-            RCGui.Projection = projection;
+            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            RC.Projection = projection;
             _sih.Projection = projection;
         }
     }

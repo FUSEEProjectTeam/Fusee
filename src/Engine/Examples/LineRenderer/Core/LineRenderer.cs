@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -19,20 +20,35 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-        
+
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private float _initWidth;
+        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+
+        private float _aspectRatio;
+        private float _fovy = M.PiOver4;
 
         private bool _keys;
+
+        private List<float3> _dummyPositions;
 
         private SceneContainer BuildScene()
         {
             var sphere = new Sphere(32, 24);
 
+            var rnd = new Random();
+
+            for (var i = 0; i < 4; i++)
+            {
+                var vertIndex = rnd.Next(sphere.Vertices.Length);
+                _dummyPositions.Add(sphere.Vertices[vertIndex]);
+            }
+            
             return new SceneContainer()
             {
                 Children = new List<SceneNodeContainer>()
@@ -63,6 +79,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // Init is called on startup. 
         public override void Init()
         {
+            _dummyPositions = new List<float3>();
+
+            _initWidth = Width;
+            _aspectRatio = Width / (float)Height;
 
             _gui = CreateGui();
             // Create the interaction handler
@@ -71,16 +91,13 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
-            // Load the rocket model
             _scene = BuildScene();
-
-
+            
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
         }
-
-
+        
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
@@ -115,7 +132,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
                 else
                 {
-                    var curDamp = (float) System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -147,9 +164,25 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             //----------------------------------------
 
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-            _guiRenderer.Render(RC);
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, 1, 20000);
+                RC.Projection = projection;
+
+                // Render the scene loaded in Init()
+                _sceneRenderer.Render(RC);
+
+                projection = float4x4.CreateOrthographic(Width, Height, 1, 20000);
+                RC.Projection = projection;
+                _sih.Projection = projection;
+
+                _guiRenderer.Render(RC);
+            }
+            else
+            {
+                _sceneRenderer.Render(RC);
+                _guiRenderer.Render(RC);
+            }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -162,14 +195,13 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float) Height;
+            _aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, 1, 20000);
             RC.Projection = projection;
-
             _sih.Projection = projection;
         }
 
@@ -215,21 +247,21 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,0 and Max 1,0!!!
-                        Min = new float2(-(parentWidth-posOnParent.x), posOnParent.y),
-                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y+guiElementDim.y)
+                        Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
                     };
                 case AnchorPos.TOP_TOP_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,1 and Max 0,1!!!
-                        Min = new float2(posOnParent.x, -(parentHeight-posOnParent.y)),
+                        Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
                         Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
                 case AnchorPos.TOP_TOP_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,1 and Max 1,1!!!
-                        Min = new float2(-(parentWidth-posOnParent.x), -(parentHeight-posOnParent.y)),
+                        Min = new float2(-(parentWidth - posOnParent.x), -(parentHeight - posOnParent.y)),
                         Max = new float2(-(parentWidth - guiElementDim.x - posOnParent.x), -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
             }
@@ -241,22 +273,20 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var psTex = AssetStorage.Get<string>("texture.frag");
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
-
-            var canvasRenderMode = CanvasRenderMode.SCREEN;
-
+            
             var fontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
             var ralewayFontMap = new FontMap(fontRaleway, 12);
 
             const int canvasWidth = 16;
             const int canvasHeight = 9;
 
-            const float canvasScaleFactor = 0.1f;
+            var canvasScaleFactor = canvasWidth / _initWidth;
             float textSize = 2;
             float borderScaleFactor = 1;
-            if (canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
-                borderScaleFactor = 0.1f;
+                textSize /= canvasScaleFactor;
+                borderScaleFactor = canvasScaleFactor;
             }
 
             var btnFuseeLogo = new GUIButton
@@ -301,11 +331,11 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), annotationDim.y, annotationDim.x, new float2(2.5f,0.35f)),
+                CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), annotationDim.y, annotationDim.x, new float2(2.5f, 0.35f)),
                 ralewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black), textSize);
 
-            
+
             var annotationGreen = new TextureNodeContainer(
                 "AnnotationGreen",
                 vsNineSlice,
@@ -316,13 +346,14 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posGreen, canvasHeight, canvasWidth,annotationDim),
+                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posGreen, canvasHeight, canvasWidth, annotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 annotationBorderScale.x, annotationBorderScale.y, annotationBorderScale.z, annotationBorderScale.w,
                 borderScaleFactor
 
-            ){
+            )
+            {
                 Children = new List<SceneNodeContainer>
                 {
                     textAnnotationGreen,
@@ -358,7 +389,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 },
                 CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), annotationDim.y, annotationDim.x, new float2(2.5f, 0.35f)),
                 ralewayFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize*0.65f);
+                ColorUint.Tofloat4(ColorUint.Black), textSize * 0.65f);
 
 
             var annotationGreenFilled = new TextureNodeContainer(
@@ -414,9 +445,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 },
                 CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), annotationDim.y, annotationDim.x, new float2(2.5f, 0.35f)),
                 ralewayFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize*0.85f);
+                ColorUint.Tofloat4(ColorUint.Black), textSize * 0.85f);
 
-            
+
             var annotationYellow = new TextureNodeContainer(
                 "AnnotationYellow",
                 vsNineSlice,
@@ -425,7 +456,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
-                    Max = new float2(0,0)
+                    Max = new float2(0, 0)
                 },
                 CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posYellow, canvasHeight, canvasWidth, annotationDim),
                 new float2(1, 1),
@@ -472,7 +503,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 ralewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black), textSize);
 
-            
+
             var annotationGray = new TextureNodeContainer(
                 "AnnotationGray",
                 vsNineSlice,
@@ -510,8 +541,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         Name = "circle" + "_RectTransform",
                         Anchors = new MinMaxRect
                         {
-                            Min = new float2(0.5f, 0.5f), 
-                            Max = new float2(0.5f, 0.5f) 
+                            Min = new float2(0.5f, 0.5f),
+                            Max = new float2(0.5f, 0.5f)
                         },
                         Offsets = CalcOffsets(AnchorPos.MIDDLE, new float2(9,4), canvasHeight, canvasWidth, new float2(0.65f,0.65f)),
                     },
@@ -616,34 +647,34 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 guiFuseeLogo,
                 new MinMaxRect
                 {
-                    Min = new float2(0, 1), 
+                    Min = new float2(0, 1),
                     Max = new float2(0, 1)
                 },
-                CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0,7),canvasHeight,canvasWidth,new float2(1.75f,0.5f)));
+                CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight-0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                canvasRenderMode,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
                     Min = new float2(-canvasWidth / 2f, -canvasHeight / 2f),
                     Max = new float2(canvasWidth / 2f, canvasHeight / 2f)
                 })
-                {
+            {
                 Children = new List<SceneNodeContainer>()
                 {
                     fuseeLogo,
-                    //annotationGreen,
-                    //annotationGreenFilled,
-                    //annotationYellow,
-                    //annotationGray,
-                    //circleGreen,
-                    //circleYellow,
-                    //circleGreenFilled,
-                    //circleGray
+                    annotationGreen,
+                    annotationGreenFilled,
+                    annotationYellow,
+                    annotationGray,
+                    circleGreen,
+                    circleYellow,
+                    circleGreenFilled,
+                    circleGray
                 }
-            };            
+            };
 
             return new SceneContainer
             {
@@ -654,9 +685,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             };
         }
-
         
-
         public void BtnLogoEnter(CodeComponent sender)
         {
             _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));

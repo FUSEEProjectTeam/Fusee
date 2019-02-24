@@ -1,7 +1,6 @@
 ﻿using System;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -77,14 +76,6 @@ namespace Fusee.Engine.Core
         ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with 3d contents.
         /// </value>
         protected RenderContext RC { get; private set; }
-
-        /// <summary>
-        ///     Returns a render context object for rendering the GUI.
-        /// </summary>
-        /// <value>
-        ///     Use the render context (<see cref="RenderContext" />) to fill the render canvas with the UI elements.
-        /// </value>
-        protected RenderContext RCGui { get; private set; }
 
         #endregion
 
@@ -193,10 +184,6 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
-
-            RCGui = new RenderContext(ContextImplementor);
-            RCGui.Viewport(0,0,Width,Height);
-            RCGui.ClearColor = new float4(0,0,0,0); //transparent!
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;

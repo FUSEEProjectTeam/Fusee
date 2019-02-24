@@ -41,7 +41,6 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-            
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
@@ -113,9 +112,9 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-            _guiRenderer.Render(RCGui);
+            _guiRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -134,10 +133,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
 
-            var guiProjection = float4x4.CreateOrthographic(Width, Height, 1, 20000);
-            RCGui.Projection = guiProjection;
-
-            _sih.Projection = guiProjection;
+            _sih.Projection = projection;
         }
 
         private SceneContainer CreateGui()
@@ -196,7 +192,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                     Max = new float2(-4, 0.5f)
                 },
                 latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
+                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
 
 
             var canvas = new CanvasNodeContainer(

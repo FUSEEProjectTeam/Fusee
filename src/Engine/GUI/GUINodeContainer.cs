@@ -36,8 +36,8 @@ namespace Fusee.Engine.GUI
             };
         }
     }
-    
-    
+
+
     /// <summary>
     /// Building block to create suitable hierarchies for using textures in the UI.
     /// </summary>
@@ -112,7 +112,7 @@ namespace Fusee.Engine.GUI
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
+                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness / borderScaleFactor},
                             new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
