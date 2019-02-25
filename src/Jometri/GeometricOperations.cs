@@ -302,9 +302,12 @@ namespace Fusee.Jometri
         /// <param name="p2">Second control point of the first line.</param>
         /// <param name="p3">First point of the second line.</param>
         /// <param name="p4">Second point of the secornd line.</param>
+        /// <param name="intersectionPoint">The intersection point, if the lines do not intersect this will be float3 Infinity.</param>
         /// <returns></returns>
-        public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4)
+        public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4, out float3 intersectionPoint)
         {
+            intersectionPoint = new float3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+
             var a = p2 - p1;
             var b = p3 - p4;
             var c = p1 - p3;
@@ -336,6 +339,7 @@ namespace Fusee.Jometri
                     return false;
             }
 
+            intersectionPoint = p1 + tNumerator*(p2-p1);
             return true;
         }
 

@@ -46,122 +46,214 @@ namespace Fusee.Engine.Core
         }
 
        
-        public JoinType LineJoins = JoinType.Bevel;    
+        public JoinType LineJoins = JoinType.Bevel;
 
-
-        
+        private float3[] segmentCache;
 
         public Line(float enclosingRectWidth, float enclosingRectHeight, float3[]Points, float lineThickness)
         {
+            segmentCache = new float3[4];
+
             _lineThickness = lineThickness;
 
             var verts = new List<float3>();
             var normals = new List<float3>();
             var tris = new List<ushort>();
-            
-            if (Points == null)
-                return;
-            
-            // scale based on the size of the rect or use absolute, this is switchable
-            var sizeX = enclosingRectWidth;
-            var sizeY = enclosingRectHeight;
-            var offsetX = 0;
-            var offsetY = 0;           
 
-            // Generate the quads that make up the wide line
-            var segments = new List<float3[]>();
+            var segmentCount = Points.Length - 1;
 
             ushort lastVertIndex;
 
-            for (var i = 1; i < Points.Length; i++)
+            for (var i = 0; i <= segmentCount-1; i++)
             {
-                var start = Points[i - 1];
-                var end = Points[i];
-                start = new float3(start.x * sizeX + offsetX, start.y * sizeY + offsetY,0);
-                end = new float3(end.x * sizeX + offsetX, end.y * sizeY + offsetY,0);
+                var start = Points[i];
+                var end = Points[i+1];
 
-                if (lineCaps && i == 1)
+                //if (lineCaps && i == 0)
+                //{
+                //    segments.Add(CreateLineCap(start, end, SegmentType.Start));
+                //}
+
+                var dirVec = end - start;
+                dirVec.Normalize();
+                var angleToXAxis = System.Math.Atan2(end.y-start.y,end.x-start.x);
+
+                var perendicularVec = RotateVectorInXYPlane(float3.UnitY, angleToXAxis);
+                perendicularVec.Normalize();
+
+                var v0 = start + -perendicularVec * lineThickness / 2;
+                var v1 = start + perendicularVec * lineThickness / 2;
+                var v2 = end + perendicularVec * lineThickness / 2;
+                var v3 = end + -perendicularVec * lineThickness / 2;
+
+                if (i > 0 && i < segmentCount-1)
                 {
-                    segments.Add(CreateLineCap(start, end, SegmentType.Start));
+                    var vec1 = segmentCache[3] - segmentCache[0];
+                    var vec1Length = vec1.Length;
+                    vec1.Normalize();
+
+                    var vec2 = v0 - v3;
+                    var vec2Length = vec1.Length;
+                    vec2.Normalize();
+
+
+                    var vec3 = segmentCache[2] - segmentCache[1];
+                    var vec3Length = vec1.Length;
+                    vec3.Normalize();
+
+                    var vec4 = v0 - v2;
+                    var vec4Length = vec1.Length;
+                    vec4.Normalize();
+
+                    //calculate inter-segment vertices
+                    Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0], segmentCache[3] + (vec1Length * vec1), v3 + (vec2Length * vec2), v0, out float3 intersectionPoint1);
+
+                    Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1], segmentCache[2] + (vec3Length * vec3), v2 + (vec4Length * vec4), v1, out float3 intersectionPoint2);
+
+                    verts.Add(intersectionPoint2);
+                    verts.Add(intersectionPoint1);
+
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+
+                }
+                else if(i == 0)
+                {
+                    verts.Add(v0);
+                    verts.Add(v1);
+
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+
+                }
+                else if (i == segmentCount - 1)
+                {
+                    var vec1 = segmentCache[3] - segmentCache[0];
+                    var vec1Length = vec1.Length;
+                    vec1.Normalize();
+
+                    var vec2 = v0 - v3;
+                    var vec2Length = vec2.Length;
+                    vec2.Normalize();
+                    
+                    var vec3 = segmentCache[2] - segmentCache[1];
+                    var vec3Length = vec3.Length;
+                    vec3.Normalize();
+
+                    var vec4 = v1 - v2;
+                    var vec4Length = vec4.Length;
+                    vec4.Normalize();
+
+                    //calculate inter-segment vertices
+                    var testVec = (segmentCache[3] + (vec1Length * vec1)) - segmentCache[0];
+                    var testVec1 = v0 - (v3 + (vec2Length * vec2));
+
+                    Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0], segmentCache[3]+(2* vec1Length * vec1), v3 + (2 * vec2Length * vec2), v0, out float3 intersectionPoint1);
+
+                    Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1], segmentCache[2]+(2 * vec3Length * vec3), v2 + (2 * vec4Length * vec4), v1, out float3 intersectionPoint2);
+
+                    verts.Add(intersectionPoint2);
+                    verts.Add(intersectionPoint1);
+                    verts.Add(v2);
+                    verts.Add(v3);
+
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
                 }
 
-                segments.Add(CreateLineSegment(start, end, SegmentType.Middle));
-                //segments.Add(CreateLineSegment(start, end, SegmentType.Full));
+                segmentCache[0] = v0;
+                segmentCache[1] = v1;
+                segmentCache[2] = v2;
+                segmentCache[3] = v3;
 
-                if (lineCaps && i == Points.Length - 1)
+                var lastVertexIndex = (verts.Count - 1);
+
+                if (i > 0 && i % 2 == 0)
                 {
-                    segments.Add(CreateLineCap(start, end, SegmentType.End));
+                    tris.Add((ushort)(lastVertexIndex - 4)); //0
+                    tris.Add((ushort)(lastVertexIndex - 2)); //2
+                    tris.Add((ushort)(lastVertexIndex - 3)); //1
+                    tris.Add((ushort)(lastVertexIndex - 4)); //0
+                    tris.Add((ushort)(lastVertexIndex)); //3
+                    tris.Add((ushort)(lastVertexIndex - 2));
                 }
+
+                //if (lineCaps && i == segmentCount-1)
+                //{
+                //    segments.Add(CreateLineCap(start, end, SegmentType.End));
+                //}
             }
 
             // Add the line segments to the vertex helper, creating any joins as needed
-            for (var i = 0; i < segments.Count; i++)
-            {
-                if (i < segments.Count - 1)
-                {
-                    var vec1 = segments[i][1] - segments[i][2];
-                    var vec2 = segments[i + 1][2] - segments[i + 1][1];
-                    var angle = Angle(new float2(vec1.x,vec1.y), new float2(vec2.x, vec2.y));
-                    vec1.Normalize();
-                    vec2.Normalize();
+            //for (var i = 0; i < segments.Count; i++)
+            //{
+            //    if (i < segments.Count - 1)
+            //    {
+            //        var vec1 = segments[i][1] - segments[i][2];
+            //        var vec2 = segments[i + 1][2] - segments[i + 1][1];
+            //        var angle = Angle(new float2(vec1.x,vec1.y), new float2(vec2.x, vec2.y));
+            //        vec1.Normalize();
+            //        vec2.Normalize();
 
-                    // Positive sign means the line is turning in a 'clockwise' direction
-                    var sign = System.Math.Sign(float3.Cross(vec1, vec2).z);
+            //        // Positive sign means the line is turning in a 'clockwise' direction
+            //        var sign = System.Math.Sign(float3.Cross(vec1, vec2).z);
 
-                    // Calculate the miter point
-                    var miterDistance = (float)(_lineThickness / (2f * System.Math.Tan(angle / 2f)));
-                    var miterPointA = segments[i][2] - vec1 * miterDistance * sign;
-                    var miterPointB = segments[i][3] + vec1 * miterDistance * sign;
+            //        // Calculate the miter point
+            //        var miterDistance = (float)(_lineThickness / (2f * System.Math.Tan(angle / 2f)));
+            //        var miterPointA = segments[i][2] - vec1 * miterDistance * sign;
+            //        var miterPointB = segments[i][3] + vec1 * miterDistance * sign;
 
-                    var joinType = LineJoins;
-                    if (joinType == JoinType.Miter)
-                    {
-                        // Make sure we can make a miter join without too many artifacts.
-                        if (miterDistance < vec1.Length / 2 && miterDistance < vec2.Length / 2 && angle > MIN_MITER_JOIN)
-                        {
-                            segments[i][2] = miterPointA;
-                            segments[i][3] = miterPointB;
-                            segments[i + 1][0] = miterPointB;
-                            segments[i + 1][1] = miterPointA;
-                        }
-                        else
-                        {
-                            joinType = JoinType.Bevel;
-                        }
-                    }
+            //        var joinType = LineJoins;
+            //        if (joinType == JoinType.Miter)
+            //        {
+            //            // Make sure we can make a miter join without too many artifacts.
+            //            if (miterDistance < vec1.Length / 2 && miterDistance < vec2.Length / 2 && angle > MIN_MITER_JOIN)
+            //            {
+            //                segments[i][2] = miterPointA;
+            //                segments[i][3] = miterPointB;
+            //                segments[i + 1][0] = miterPointB;
+            //                segments[i + 1][1] = miterPointA;
+            //            }
+            //            else
+            //            {
+            //                joinType = JoinType.Bevel;
+            //            }
+            //        }
 
-                    if (joinType == JoinType.Bevel)
-                    {
-                        if (miterDistance < vec1.Length / 2 && miterDistance < vec2.Length / 2 && angle > MIN_BEVEL_NICE_JOIN)
-                        {
-                            if (sign < 0)
-                            {
-                                segments[i][2] = miterPointA;
-                                segments[i + 1][1] = miterPointA;
-                            }
-                            else
-                            {
-                                segments[i][3] = miterPointB;
-                                segments[i + 1][0] = miterPointB;
-                            }
-                        }
+            //        if (joinType == JoinType.Bevel)
+            //        {
+            //            if (miterDistance < vec1.Length / 2 && miterDistance < vec2.Length / 2 && angle > MIN_BEVEL_NICE_JOIN)
+            //            {
+            //                if (sign < 0)
+            //                {
+            //                    segments[i][2] = miterPointA;
+            //                    segments[i + 1][1] = miterPointA;
+            //                }
+            //                else
+            //                {
+            //                    segments[i][3] = miterPointB;
+            //                    segments[i + 1][0] = miterPointB;
+            //                }
+            //            }
 
-                        lastVertIndex = (ushort)(verts.Count - 1);
-                        var quat = new float3[] { segments[i][2], segments[i][3], segments[i + 1][0], segments[i + 1][1] };
-                        var quatNormals = new float3[] { -float3.UnitZ, -float3.UnitZ, -float3.UnitZ, -float3.UnitZ };
+            //            lastVertIndex = (ushort)(verts.Count - 1);
+            //            var quat = new float3[] { segments[i][2], segments[i][3], segments[i + 1][0], segments[i + 1][1] };
+            //            var quatNormals = new float3[] { -float3.UnitZ, -float3.UnitZ, -float3.UnitZ, -float3.UnitZ };
                         
-                        verts.AddRange(quat);
-                        normals.AddRange(quatNormals);
+            //            verts.AddRange(quat);
+            //            normals.AddRange(quatNormals);
 
-                    }
-                }
-                lastVertIndex = (ushort)(verts.Count - 1);
-                verts.AddRange(segments[i]);
-                normals.AddRange(new float3[] { -float3.UnitZ, -float3.UnitZ, -float3.UnitZ, -float3.UnitZ });
-                tris.AddRange(new ushort[] { (ushort)(lastVertIndex + 1), (ushort)(lastVertIndex + 3), (ushort)(lastVertIndex + 2),
-                                        (ushort)(lastVertIndex + 1), (ushort)(lastVertIndex + 4), (ushort)(lastVertIndex + 3)});
+            //        }
+            //    }
+            //    lastVertIndex = (ushort)(verts.Count - 1);
+            //    verts.AddRange(segments[i]);
+            //    normals.AddRange(new float3[] { -float3.UnitZ, -float3.UnitZ, -float3.UnitZ, -float3.UnitZ });
+            //    tris.AddRange(new ushort[] { (ushort)(lastVertIndex + 1), (ushort)(lastVertIndex + 3), (ushort)(lastVertIndex + 2),
+            //                            (ushort)(lastVertIndex + 1), (ushort)(lastVertIndex + 4), (ushort)(lastVertIndex + 3)});
                 
-            }
+            //}
 
             Vertices = verts.ToArray();
             Normals = normals.ToArray();
@@ -243,5 +335,16 @@ namespace Fusee.Engine.Core
         {
             return A.x * B.y - A.x * B.y;
         }
+
+        private float3 RotateVectorInXYPlane(float3 vec, double angle)
+        {            
+            var x = (float)(vec.x * System.Math.Cos(angle) - vec.y * System.Math.Sin(angle));
+            var y = (float)(vec.x * System.Math.Sin(angle) + vec.y * System.Math.Cos(angle));
+            var z = 0;
+
+            return new float3(x,y,z);
+        }
+
+        
     }
 }
