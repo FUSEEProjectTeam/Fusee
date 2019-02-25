@@ -312,7 +312,7 @@ namespace Fusee.Jometri
             var b = p3 - p4;
             var c = p1 - p3;
 
-            var tNumerator = b.y * b.x - b.x * c.y;
+            var tNumerator = b.y * c.x - b.x * c.y;
             var iNumerator = a.x * c.y - a.y * c.x;
 
             var denominator = a.y * b.x - a.x * b.y;
@@ -339,7 +339,9 @@ namespace Fusee.Jometri
                     return false;
             }
 
-            intersectionPoint = p1 + tNumerator*(p2-p1);
+            var alpha = tNumerator / denominator;
+
+            intersectionPoint = p1 + alpha*(p2-p1);
             return true;
         }
 
