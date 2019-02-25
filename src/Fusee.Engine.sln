@@ -97,6 +97,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{BA542BBF-9BDD-4B41-9550-BE7570280F3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Math.Core.Test", "Tests\Math\Fusee.Math.Core.Test\Fusee.Math.Core.Test.csproj", "{61892547-20E6-4FE6-AA22-1CD0C82BB361}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -486,6 +492,22 @@ Global
 		{26808B4A-9F15-47F0-B147-E744241B79D2}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{26808B4A-9F15-47F0-B147-E744241B79D2}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
 		{26808B4A-9F15-47F0-B147-E744241B79D2}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Web|Any CPU.Build.0 = Debug|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release|Any CPU.Build.0 = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Web|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -525,6 +547,8 @@ Global
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
 		{548BA459-616B-4D04-B0A1-2E19388C4B55} = {F613A45C-7F81-4A40-8BD3-355C7D1564D1}
 		{26808B4A-9F15-47F0-B147-E744241B79D2} = {15338FBD-C26A-45E2-ACF8-202DA51448CB}
+		{BA542BBF-9BDD-4B41-9550-BE7570280F3A} = {F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}
+		{61892547-20E6-4FE6-AA22-1CD0C82BB361} = {BA542BBF-9BDD-4B41-9550-BE7570280F3A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
