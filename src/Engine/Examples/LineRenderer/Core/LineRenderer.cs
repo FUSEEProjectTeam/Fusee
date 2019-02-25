@@ -16,7 +16,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
     public class LineRenderer : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -30,6 +30,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private float _initWidth;
         private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
+        public int numberOfAnnotations = 4;
         private const int _canvasWidth = 16;
         private const int _canvasHeight = 9;
 
@@ -37,9 +38,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private float _fovy = M.PiOver4;
 
         private bool _keys;
-
-        private List<float3> _dummyPositions;
-        private List<float2> _canvasPositions;
+        
+        private float3[] _dummyPositions;
+        private float2[] _circleCanvasPositions;
+        private float2[] _annotationCanvasPositions;
 
         private SceneContainer BuildScene()
         {
@@ -47,17 +49,17 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             var lineControlPoints = new float3[]
             {
-                new float3(-0.5f,0,0),new float3(0,0,0),new float3(.5f,.5f,0)
+                new float3(-3f,0,0) , new float3(-1.5f,-1.5f,0), new float3(1f,1.5f,0)
             };
-            var line = new Line(1, 1, lineControlPoints, 0.2f);
+            var line = new Line(lineControlPoints, 0.2f);
 
             var rnd = new Random();
 
-            for (var i = 0; i < 4; i++)
+            for (var i = 0; i < numberOfAnnotations; i++)
             {
                 var vertIndex = rnd.Next(sphere.Vertices.Length);
-                _dummyPositions.Add(sphere.Vertices[vertIndex]);
-                _canvasPositions.Add(new float2(sphere.Vertices[vertIndex].x, sphere.Vertices[vertIndex].y));
+                _dummyPositions[i] = (sphere.Vertices[vertIndex]);
+                _circleCanvasPositions[i] = (new float2(sphere.Vertices[vertIndex].x, sphere.Vertices[vertIndex].y));
             }
             
             return new SceneContainer()
@@ -109,23 +111,31 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _dummyPositions = new List<float3>();
-            _canvasPositions = new List<float2>();
+            _dummyPositions = new float3[numberOfAnnotations];
+            _circleCanvasPositions = new float2[numberOfAnnotations];
+            _annotationCanvasPositions = new []
+            {
+                //posOnParent = min offset = lower left corner of the rect transform
+                new float2(1, 2),
+                new float2(1,3),
+                new float2(1,4),
+                new float2(1,5)
+            };
 
             _initWidth = Width;
             _aspectRatio = Width / (float)Height;
 
-            _scene = BuildScene();
-            //_scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
-            //var monkey = _scene.Children[0].GetComponent<Mesh>();
-            //var rnd = new Random();
+            //_scene = BuildScene();
+            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
+            var monkey = _scene.Children[0].GetComponent<Mesh>();
+            var rnd = new Random();
 
-            //for (var i = 0; i < 4; i++)
-            //{
-            //    var vertIndex = rnd.Next(monkey.Vertices.Length);
-            //    _dummyPositions.Add(monkey.Vertices[vertIndex]);
-            //    _canvasPositions.Add(new float2(monkey.Vertices[vertIndex].x, monkey.Vertices[vertIndex].y));
-            //}
+            for (var i = 0; i < numberOfAnnotations; i++)
+            {
+                var vertIndex = rnd.Next(monkey.Vertices.Length);
+                _dummyPositions[i] = (monkey.Vertices[vertIndex]);
+                _circleCanvasPositions[i] = (new float2(monkey.Vertices[vertIndex].x, monkey.Vertices[vertIndex].y));
+            }
 
             _gui = CreateGui();
             // Create the interaction handler
@@ -203,30 +213,48 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             //UPDATE POS
             //-----------------------------------------
+            //TODO: broken when window is resized
             var circleDim = new float2(0.65f, 0.65f);
 
-            for (int i = 0; i < _dummyPositions.Count; i++)
+            for (var i = 0; i < _dummyPositions.Length; i++)
             {
-                var clipPos = (_dummyPositions[i] * RC.ModelViewProjection);
+                var clipPos = _dummyPositions[i].TransformPerspective(RC.ModelViewProjection); //divide by w
 
                 var pos = new float2(clipPos.x, clipPos.y)*0.5f + 0.5f;
+
                 pos.x *= _canvasWidth;
                 pos.y *= _canvasHeight;
-                _canvasPositions[i] = pos;
+                _circleCanvasPositions[i] = pos;
             }
 
             var canvas = _gui.Children[0];
             var circleCount = 0;
-            for (int i = 0; i < canvas.Children.Count; i++)
+            foreach (var child in canvas.Children)
             {
-                SceneNodeContainer child = canvas.Children[i];
                 if (child.Name.Contains("Circle"))
                 {
-                    var pos = new float2(_canvasPositions[circleCount].x - (circleDim.x / 2), _canvasPositions[circleCount].y - (circleDim.y / 2)); //we want the lower left point of the rect that encloses the
+                    var pos = new float2(_circleCanvasPositions[circleCount].x - (circleDim.x / 2), _circleCanvasPositions[circleCount].y - (circleDim.y / 2)); //we want the lower left point of the rect that encloses the
                     child.GetComponent<RectTransformComponent>().Offsets = CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, circleDim);
                     circleCount++;
                 }
-            }                      
+
+                if (child.Name.Contains("line"))
+                {
+                    //TODO: insert new line (mesh component) to SceneNodeContainer
+
+                    //var lineGreenPoints = new List<float3>()
+                    //{
+                    //    new float3(_circleCanvasPositions[0]),
+                    //    new float3(_annotationCanvasPositions[0])
+                    //};
+                }
+            }
+
+            //ToDo: Is vert visible:
+            //var depthBufferValue = RC.GetPixelDepth(pixelPos);
+            //var clipZValue = clipos.z;
+            //if(depthBufferValue == clipZValue)
+            //    visible
 
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {           
@@ -358,12 +386,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var annotationDim = new float2(3f, 0.5f);
             var annotationBorderScale = new float4(6, 0.8f, 0.8f, 0.8f);
 
-            //posOnParent = min offset = lower left corner of the rect transform
-            var posGreen = new float2(1, 2);
-            var posYellow = new float2(1, 3);
-            var posGray = new float2(1, 4);
-            var posFilled = new float2(1, 5);
-
             #region green annotation
 
             var iconCheckCircle = new TextureNodeContainer(
@@ -404,7 +426,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posGreen, _canvasHeight, _canvasWidth, annotationDim),
+                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[0], _canvasHeight, _canvasWidth, annotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 annotationBorderScale.x, annotationBorderScale.y, annotationBorderScale.z, annotationBorderScale.w,
@@ -447,7 +469,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 },
                 CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), annotationDim.y, annotationDim.x, new float2(2.5f, 0.35f)),
                 ralewayFontMap,
-                ColorUint.Tofloat4(ColorUint.Black), textSize * 0.65f);
+                ColorUint.Tofloat4(ColorUint.Black), textSize * 0.7f);
 
 
             var annotationGreenFilled = new TextureNodeContainer(
@@ -460,7 +482,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posFilled, _canvasHeight, _canvasWidth, annotationDim),
+                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[2], _canvasHeight, _canvasWidth, annotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 annotationBorderScale.x, annotationBorderScale.y, annotationBorderScale.z, annotationBorderScale.w,
@@ -516,7 +538,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posYellow, _canvasHeight, _canvasWidth, annotationDim),
+                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[1], _canvasHeight, _canvasWidth, annotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 annotationBorderScale.x, annotationBorderScale.y, annotationBorderScale.z, annotationBorderScale.w,
@@ -572,7 +594,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, posGray, _canvasHeight, _canvasWidth, annotationDim),
+                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[3], _canvasHeight, _canvasWidth, annotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 annotationBorderScale.x, annotationBorderScale.y, annotationBorderScale.z, annotationBorderScale.w,
@@ -700,6 +722,56 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             #endregion
 
+            #region lines without actual meshes
+
+            //TODO: predefine Materials, write methods for creating anotations, lines, circles...
+            var lineGreenPoints = new List<float3>()
+            {
+                //new float3(_circleCanvasPositions[0]),
+                //new float3(_annotationCanvasPositions[0])
+                new float3((-0.5f/16),0,0),
+                new float3(0.5f/16,0,0)
+            };
+
+            var lineThickness = 0f;
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                lineThickness = (0.02f / 9) * canvasScaleFactor;
+            }
+            else
+            {
+                lineThickness = (0.02f / 9);
+            }
+
+            var lineGreen = new SceneNodeContainer()
+            {
+                Name = "lineGreen",
+                Components = new List<SceneComponentContainer>
+                {
+                    new RectTransformComponent
+                    {
+                        Name = "lineGreen" + "_RectTransform",
+                        Anchors = new MinMaxRect
+                        {
+                            Min = new float2(0.5f, 0.5f),
+                            Max = new float2(0.5f, 0.5f)
+                        },
+                        Offsets = CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), _canvasHeight, _canvasWidth, new float2(_canvasWidth,_canvasHeight)),
+                    },
+                    new XFormComponent
+                    {
+                        Name = "lineGreen" + "_XForm",
+                    },
+                    new ShaderEffectComponent()
+                    {
+                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.14117f, 0.76078f, 0.48627f), new float3(1,1,1), 20, 0)
+                    },
+                    //new Line(lineGreenPoints,lineThickness) //TODO: test line
+                    //insert mesh...later!
+                }
+            };
+
+            #endregion
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNodeContainer(
@@ -714,7 +786,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 },
                 CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight-0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
-
+            
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
@@ -734,7 +806,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     circleGreen,
                     circleYellow,
                     circleGreenFilled,
-                    circleGray
+                    circleGray,
+                    lineGreen
                 }
             };
 
