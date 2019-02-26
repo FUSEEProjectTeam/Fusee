@@ -17,9 +17,14 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
-
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
+        private bool _keys;
+
+        public int NumberOfAnnotations = 4;
+
+        private const float ZNear = 1f;
+        private const float ZFar = 1000;
 
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
@@ -28,16 +33,17 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private float _initWidth;
+        private float _initHeight;
+        private float2 _resizeScaleFactor;
         private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        public int numberOfAnnotations = 4;
-        private const int _canvasWidth = 16;
-        private const int _canvasHeight = 9;
+        private const float CanvasWidthInit = 16;
+        private const float CanvasHeightInit = 9;
+        private float _canvasWidth;
+        private float _canvasHeight;
 
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
-
-        private bool _keys;
         
         private float3[] _dummyPositions;
         private float2[] _circleCanvasPositions;
@@ -55,7 +61,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             var rnd = new Random();
 
-            for (var i = 0; i < numberOfAnnotations; i++)
+            for (var i = 0; i < NumberOfAnnotations; i++)
             {
                 var vertIndex = rnd.Next(sphere.Vertices.Length);
                 _dummyPositions[i] = (sphere.Vertices[vertIndex]);
@@ -111,8 +117,11 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _dummyPositions = new float3[numberOfAnnotations];
-            _circleCanvasPositions = new float2[numberOfAnnotations];
+            _canvasHeight = CanvasHeightInit;
+            _canvasWidth = CanvasWidthInit;
+
+            _dummyPositions = new float3[NumberOfAnnotations];
+            _circleCanvasPositions = new float2[NumberOfAnnotations];
             _annotationCanvasPositions = new []
             {
                 //posOnParent = min offset = lower left corner of the rect transform
@@ -123,6 +132,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             };
 
             _initWidth = Width;
+            _initHeight = Height;
             _aspectRatio = Width / (float)Height;
 
             //_scene = BuildScene();
@@ -130,7 +140,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
 
-            for (var i = 0; i < numberOfAnnotations; i++)
+            for (var i = 0; i < NumberOfAnnotations; i++)
             {
                 var vertIndex = rnd.Next(monkey.Vertices.Length);
                 _dummyPositions[i] = (monkey.Vertices[vertIndex]);
@@ -152,9 +162,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -208,18 +215,17 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
 
             //UPDATE POS
             //-----------------------------------------
-            //TODO: broken when window is resized
+            
             var circleDim = new float2(0.65f, 0.65f);
 
             for (var i = 0; i < _dummyPositions.Length; i++)
             {
-                var clipPos = _dummyPositions[i].TransformPerspective(RC.ModelViewProjection); //divide by w
-
+                var clipPos = _dummyPositions[i].TransformPerspective(RC.ModelViewProjection); //divides by w
                 var pos = new float2(clipPos.x, clipPos.y)*0.5f + 0.5f;
 
                 pos.x *= _canvasWidth;
@@ -250,18 +256,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             }
 
-            //ToDo: Is vert visible:
-            //var depthBufferValue = RC.GetPixelDepth(pixelPos);
-            //var clipZValue = clipos.z;
-            //if(depthBufferValue == clipZValue)
-            //    visible
+            // Clear the backbuffer
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {           
                 // Render the scene loaded in Init()
                 _sceneRenderer.Render(RC);
 
-                projection = float4x4.CreateOrthographic(Width, Height, 1, 20000);
+                projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
                 RC.Projection = projection;
                 _sih.Projection = projection;
 
@@ -283,15 +286,34 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
 
+            _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
+            _canvasHeight = CanvasHeightInit* _resizeScaleFactor.y;
+            _canvasWidth = CanvasWidthInit*_resizeScaleFactor.x;
+
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             _aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
             _sih.Projection = projection;
+        }
+
+        //TODO: not working - depth value is always 0
+        private bool IsVertVisible(float3 clipPos)
+        {
+            var pixelPosX = (int)System.Math.Floor((clipPos.x + 1) / (2.0f / Width));
+            var pixelPosY = (int)System.Math.Floor((clipPos.y - 1) / (-2.0f / Height));
+            var depthBufferValue = RC.GetPixelDepth(pixelPosX,pixelPosY);
+            //var depthBufferValue1 = RC.GetPixelDepth((int)System.Math.Floor(Width/2f), (int)System.Math.Floor(Height / 2f));
+            //var depthBufferValue2 = RC.GetPixelDepth((int)System.Math.Floor(Width / 2f)-1, (int)System.Math.Floor(Height / 2f)-1);
+            //var colValue1 = RC.GetPixelColor((int)System.Math.Floor(Width / 2f), (int)System.Math.Floor(Height / 2f),5,5);
+
+            var clipZValue = clipPos.z;
+
+            return System.Math.Abs(depthBufferValue - clipZValue) < 0.001f;
         }
 
         private enum AnchorPos
