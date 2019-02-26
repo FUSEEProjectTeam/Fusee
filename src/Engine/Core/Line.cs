@@ -1,17 +1,12 @@
-﻿/// Credit jack.sydorenko, firagon
-/// Sourced from - http://forum.unity3d.com/threads/new-ui-and-line-drawing.253772/
-/// Updated/Refactored from - http://forum.unity3d.com/threads/new-ui-and-line-drawing.253772/#post-2528050
-
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.Serialization;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
     public class Line : Mesh
     {
-        public Line(IReadOnlyList<float3> points, float lineThickness)
+        public Line(IReadOnlyList<float3> points, float lineThickness, float rectWidth = 1, float rectHeight = 1)
         {
             var segmentCache = new float3[4];
 

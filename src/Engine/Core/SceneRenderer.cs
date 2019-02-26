@@ -609,8 +609,10 @@ namespace Fusee.Engine.Core
                 var scaleY = _state.UiRect.Size.y / _parentRect.Size.y;
                 scale = float4x4.CreateScale(scaleX, scaleY, 1);
             }
-            else
+            else if (_state.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
                 scale = float4x4.CreateScale(_state.UiRect.Size.x, _state.UiRect.Size.y, 1);
+            else
+                scale = float4x4.CreateScale(1, 1, 1);
 
             _state.Model *= scale;
             _rc.Model = _state.Model;
