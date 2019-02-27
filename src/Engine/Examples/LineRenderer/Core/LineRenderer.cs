@@ -11,7 +11,7 @@ using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE UI Example", Description = " ")]
     public class LineRenderer : RenderCanvas
     {
         // angle variables
@@ -112,6 +112,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             };
         }
+
+        
 
         // Init is called on startup. 
         public override void Init()
@@ -231,48 +233,101 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
                 pos.x *= _canvasWidth;
                 pos.y *= _canvasHeight;
-                _circleCanvasPositions[i] = pos;
+                _circleCanvasPositions[i] = pos;                
             }
 
             var canvas = _gui.Children[0];
+
             var circleCount = 0;
+            var lineCount = 0;
+            var annotationCount = 0;
+
             foreach (var child in canvas.Children)
             {
-                if (child.Name.Contains("Circle"))
+                if (child.Name.Contains("Annotation"))
+                {
+                    _annotationCanvasPositions[annotationCount].y = _circleCanvasPositions[annotationCount].y;
+
+                    if (_circleCanvasPositions[annotationCount].x <= _canvasWidth / 2)
+                    {
+                        //LEFT
+                        _annotationCanvasPositions[annotationCount].x = GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                        
+                        child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                        {
+                            Min = new float2(0, 0),
+                            Max = new float2(0, 0)
+                        };
+                        child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[annotationCount], GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+
+                    }
+                    else
+                    {
+                        //RIGHT
+                        _annotationCanvasPositions[annotationCount].x = GuiHelper.CanvasWidthInit - GuiHelper.AnnotationDim.x - GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                        child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                        {
+                            Min = new float2(1, 0),
+                            Max = new float2(1, 0)
+                        };
+                        child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.DOWN_DOWN_RIGHT, _annotationCanvasPositions[annotationCount], GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                    }                   
+                    
+                    annotationCount++;
+                }
+
+                else if (child.Name.Contains("Circle"))
                 {
                     var pos = new float2(_circleCanvasPositions[circleCount].x - (circleDim.x / 2), _circleCanvasPositions[circleCount].y - (circleDim.y / 2)); //we want the lower left point of the rect that encloses the
                     child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, circleDim);
-
                     circleCount++;
-                }
 
-                if (child.Name.Contains("line"))
+                }
+                else if (child.Name.Contains("line"))
                 {
-                    //TODO: insert new line (mesh component) to SceneNodeContainer
+                    var linePoints = new List<float3>();
+                    var annotationPos = _annotationCanvasPositions[lineCount];
+                    var circlePos = _circleCanvasPositions[lineCount];
+
+                    if (_circleCanvasPositions[lineCount].x <= _canvasWidth / 2)
+                    {
+                        //LEFT
+                        linePoints = new List<float3>()
+                        {
+                            new float3(annotationPos.x + GuiHelper.AnnotationDim.x, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
+                            new float3(circlePos.x - (circleDim.x/2), circlePos.y,0)
+                        };
+                    }
+                    else
+                    {
+                        //RIGHT
+                        var posX = _canvasWidth - GuiHelper.AnnotationDim.x - GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                        linePoints = new List<float3>()
+                        {
+                            new float3(posX, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
+                            new float3(circlePos.x + (circleDim.x/2), circlePos.y,0)
+                        };
+                    }
 
                     child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
-                    var annotationPos = _annotationCanvasPositions[0];
-                    var circlePos = _circleCanvasPositions[0];
-                                       
-
-                    var lineGreenPoints = new List<float3>()
+                    //TODO: Does not work in web build - memoize value error
+                    var line = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                    var mesh = child.GetComponent<Line>();
+                    if (mesh == null)
+                        child.AddComponent(line);
+                    else
                     {
-                        new float3(annotationPos.x + GuiHelper.AnnotationDim.x, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
-                        new float3(circlePos.x - (circleDim.x/2), circlePos.y,0)
-                    };
-                    //var line = new Line(lineGreenPoints, 0.0025f/_resizeScaleFactor.y,_canvasWidth,_canvasHeight);
-                    //var mesh = child.GetComponent<Line>();
-                    //if (mesh == null)
-                    //    child.AddComponent(line);
-                    //else
-                    //{
-                    //    mesh.Vertices = line.Vertices;
-                    //    mesh.Normals = line.Normals;
-                    //    mesh.Triangles = line.Triangles;
-                    //    //mesh.UVs = line.UVs;
-                    //}
-                }
+                        mesh.Vertices = line.Vertices;
+                        mesh.Normals = line.Normals;
+                        mesh.Triangles = line.Triangles;
+                        //mesh.UVs = line.UVs;
+                    }
+                    lineCount++;
+                }                
             }
 
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
@@ -372,42 +427,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             #region lines without actual meshes
 
-            //TODO: write method for creating lines.
-            var lineGreenPoints = new List<float3>()
-            {
-               new float3(-0.5f,0,0),
-                new float3(0.5f,0,0)
-            };
-
-            var lineThickness = 0.02f;
-
-            var lineGreen = new SceneNodeContainer()
-            {
-                Name = "lineGreen",
-                Components = new List<SceneComponentContainer>
-                {
-                    new RectTransformComponent
-                    {
-                        Name = "lineGreen" + "_RectTransform",
-                        Anchors = new MinMaxRect
-                        {
-                            Min = new float2(0.5f, 0.5f),
-                            Max = new float2(0.5f, 0.5f)
-                        },
-                        Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, new float2(0,0), _canvasHeight, _canvasWidth, new float2(_canvasWidth,_canvasHeight)),
-                    },
-                    new XFormComponent
-                    {
-                        Name = "lineGreen" + "_XForm",
-                    },
-                    new ShaderEffectComponent()
-                    {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.14117f, 0.76078f, 0.48627f), new float3(1,1,1), 20, 0)
-                    },
-                    //new Line(lineGreenPoints,lineThickness),
-                    //insert mesh...later!
-                } //TODO: Line does not scale when resizing - add plane to observe behavoiur. Maybe use "stretch" anchors.
-            };
+            var lineGreen = GuiHelper.CreateLine(GuiHelper.MatColor.GREEN);
+            var lineGreenFilled = GuiHelper.CreateLine(GuiHelper.MatColor.GREEN);
+            var lineYellow = GuiHelper.CreateLine(GuiHelper.MatColor.YELLOW);
+            var lineGray = GuiHelper.CreateLine(GuiHelper.MatColor.GRAY);           
 
             #endregion
 
@@ -446,14 +469,17 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 {
                     fuseeLogo,
                     annotationGreen,
-                    annotationGreenFilled,
                     annotationYellow,
                     annotationGray,
-                    circleGreen,
-                    circleYellow,
-                    circleGreenFilled,
+                    annotationGreenFilled,
+                    circleGreen,                    
+                    circleYellow,                    
                     circleGray,
-                    lineGreen
+                    circleGreenFilled,
+                    lineGreen,
+                    lineYellow,                    
+                    lineGray,
+                    lineGreenFilled,
                 }
             };
 

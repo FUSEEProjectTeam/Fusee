@@ -31,6 +31,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
 
         private static float _circleThickness = 0.04f;
+        public static float LineThickness = 0.02f;
+
+        public static float AnnotationDistToLeftOrRightEdge = 1;
 
         internal enum MatColor
         {
@@ -39,6 +42,11 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             GRAY
         }
 
+        internal enum AnnotationPos
+        {
+            LEFT,
+            RIGHT
+        }
 
         public enum AnchorPos
         {
@@ -48,7 +56,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             TOP_TOP_RIGHT,      //Min = Max = 1,1
             STRETCH_ALL,        //Min 0, 0 and Max 1, 1
             MIDDLE              //Min = Max = 0.5, 0.5
-        }
+        }        
 
         public static MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
         {
@@ -176,7 +184,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     break;
             }
 
-           return new SceneNodeContainer
+            return new SceneNodeContainer
             {
                 Name = "Circle",
                 Components = new List<SceneComponentContainer>
@@ -204,28 +212,50 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             };
         }
 
-        //TODO: scale points from rect range to -0.5 0.5 in Line constructor
-        //internal static float3 CalcLinePoint(CanvasRenderMode crm, float2 canvasPos, float canvasWidth, float canvasHeight, float canvasScaleFactor, float2 resizeScaleFactor)
-        //{
-        //    var scaledPos = canvasPos;
-        //    var pos = new float3(scaledPos.x / canvasWidth, scaledPos.y / canvasHeight, 0); //range 0,1
-        //    pos.x = (pos.x * 2 - 1) / 2; //range -1,1
-        //    pos.y = (pos.y * 2 - 1) / 2; //range -1,1
+        internal static SceneNodeContainer CreateLine(MatColor color)
+        {
+            float3 col;
 
-        //    if (crm == CanvasRenderMode.SCREEN)
-        //    {
-        //        //negate scaling in scene renderer
-        //        pos.x /= canvasWidth / canvasScaleFactor;
-        //        pos.y /= canvasHeight / canvasScaleFactor;
-        //    }
-        //    else
-        //    {
-        //        //negate scaling in scene renderer
-        //        pos.x /= canvasWidth;
-        //        pos.y /= canvasHeight;
-        //    }
+            switch (color)
+            {
+                default:
+                case MatColor.GREEN:
+                    col = Green;
+                    break;
+                case MatColor.YELLOW:
+                    col = Yellow;
+                    break;
+                case MatColor.GRAY:
+                    col = Gray;
+                    break;
+            }
 
-        //    return pos;
-        //}
+
+            return new SceneNodeContainer()
+            {
+                Name = "line",
+                Components = new List<SceneComponentContainer>
+                {
+                    new RectTransformComponent
+                    {
+                        Name = "line" + "_RectTransform",
+                        Anchors = new MinMaxRect
+                        {
+                            Min = new float2(0.5f, 0.5f),
+                            Max = new float2(0.5f, 0.5f)
+                        },
+                        Offsets = CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
+                    },
+                    new XFormComponent
+                    {
+                        Name = "line" + "_XForm",
+                    },
+                    new ShaderEffectComponent()
+                    {
+                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float3(1, 1, 1), 20, 0)
+                    }
+                }
+            };
+        }
     }
 }
