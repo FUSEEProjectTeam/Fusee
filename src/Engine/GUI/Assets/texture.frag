@@ -1,11 +1,11 @@
-﻿#version 100
+﻿#version 300 es
 
 #ifdef GL_ES
 precision highp float;
 #endif
 
-varying vec2 vUV;
-varying vec3 vMVNormal;
+in vec2 vUV;
+in vec3 vMVNormal;
 
 uniform sampler2D DiffuseTexture;
 uniform vec4 DiffuseColor;
