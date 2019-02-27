@@ -11,16 +11,18 @@ uniform sampler2D DiffuseTexture;
 uniform vec4 DiffuseColor;
 uniform float DiffuseMix;
 
+out vec4 outColor;
+
 void main()
 {
 	vec3 N = normalize(vMVNormal);
 	vec3 L = vec3(0.0,0.0,-1.0);
-	vec4 color = vec4(texture2D(DiffuseTexture,vUV) * DiffuseMix);
+	vec4 color = vec4(texture(DiffuseTexture,vUV) * DiffuseMix);
 
 	if(DiffuseMix == 0.0)
-		color = vec4(1.0, 1.0, 1.0, texture2D(DiffuseTexture, vUV).a);	
+		color = vec4(1.0, 1.0, 1.0, texture(DiffuseTexture, vUV).a);	
 
-	gl_FragColor = color * DiffuseColor *  max(dot(N, L), 0.0);
+	outColor = color * DiffuseColor *  max(dot(N, L), 0.0);
 }
 
 
