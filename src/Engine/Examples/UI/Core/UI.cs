@@ -37,6 +37,13 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap1;
 
         private CanvasRenderMode _canvasRenderMode;
+        private float _initWidth;
+        private float _initHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
+        
+        private float zNear = 1f;
+        private float zFar = 1000;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -48,12 +55,13 @@ namespace Fusee.Engine.Examples.UI.Core
 
             _canvasRenderMode = CanvasRenderMode.SCREEN;
                        
+            var canvasScaleFactor = _initWidth / _canvasWidth;
             float textSize = 2;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= 0.1f;
-                borderScaleFactor = 0.1f;
+                textSize *= canvasScaleFactor;
+                borderScaleFactor = canvasScaleFactor;
             }
 
             var text = new TextNodeContainer(
@@ -190,13 +198,57 @@ namespace Fusee.Engine.Examples.UI.Core
                 borderScaleFactor
             );
 
+            var quagganTextureNode2 = new TextureNodeContainer(
+                "Quaggan",
+                vsNineSlice,
+                psNineSlice,
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 1), //Anchor is in the upper left corner.
+                    Max = new float2(0, 1) //Anchor is in the upper left corner.
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(0, -3),
+                    Max = new float2(6, -2)
+                },
+                new float2(5, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                1, 1, 1, 1,
+                borderScaleFactor
+            );
+
+            var quagganTextureNode3 = new TextureNodeContainer(
+                "Quaggan",
+                vsNineSlice,
+                psNineSlice,
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 1), //Anchor is in the upper left corner.
+                    Max = new float2(0, 1) //Anchor is in the upper left corner.
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(0, -5),
+                    Max = new float2(6, -4)
+                },
+                new float2(5, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                1, 1, 1, 1,
+                borderScaleFactor
+            );
+
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
+                    Min = new float2(-_canvasWidth/2, -_canvasHeight/2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 })
             {
                 Children = new List<SceneNodeContainer>()
@@ -206,7 +258,9 @@ namespace Fusee.Engine.Examples.UI.Core
                     //Add nine sliced textures to canvas
                     catTextureNode,
                     quagganTextureNode,
-                    nineSliceTextureNode
+                    nineSliceTextureNode,
+                    quagganTextureNode2,
+                    quagganTextureNode3
                 }
             };            
             
@@ -300,6 +354,9 @@ namespace Fusee.Engine.Examples.UI.Core
         // Init is called on startup. 
         public override void Init()
         {
+            _initWidth = Width;
+            _initHeight = Height;
+
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
@@ -391,9 +448,9 @@ namespace Fusee.Engine.Examples.UI.Core
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
+
             RC.ModelView = mtxCam * mtxRot;
 
-            // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
@@ -413,13 +470,28 @@ namespace Fusee.Engine.Examples.UI.Core
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
 
+            var resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
+            _canvasHeight = _initWidth * resizeScaleFactor.y;
+            _canvasWidth = _initWidth * resizeScaleFactor.x;
+
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             var aspectRatio = Width / (float) Height;
+
+            float4x4 projection;
+
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                projection = float4x4.CreateOrthographic(Width, Height, zNear, zFar);            
+                   
+            }
+            else
+            {                
+                projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, zNear, zFar);                
+            }
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
             RC.Projection = projection;
             _sih.Projection = projection;
         }

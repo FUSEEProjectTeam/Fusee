@@ -16,7 +16,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         internal const float CanvasHeightInit = 9;
 
         internal static float2 AnnotationDim = new float2(3f, 0.5f);
-        internal static float4 AnnotationBorderScale = new float4(6, 0.8f, 0.8f, 0.8f);
+        internal static float4 AnnotationBorderThickness = new float4(6, 0.5f, 0.5f, 0.5f);
 
         internal static string VsTex = AssetStorage.Get<string>("texture.vert");
         internal static string PsTex = AssetStorage.Get<string>("texture.frag");
@@ -145,7 +145,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit, AnnotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
-                AnnotationBorderScale.x, AnnotationBorderScale.y, AnnotationBorderScale.z, AnnotationBorderScale.w,
+                AnnotationBorderThickness.x, AnnotationBorderThickness.y, AnnotationBorderThickness.z, AnnotationBorderThickness.w,
                 borderScaleFactor
 
             )

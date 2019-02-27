@@ -242,29 +242,28 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 {
                     var pos = new float2(_circleCanvasPositions[circleCount].x - (circleDim.x / 2), _circleCanvasPositions[circleCount].y - (circleDim.y / 2)); //we want the lower left point of the rect that encloses the
                     child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, circleDim);
+
                     circleCount++;
                 }
 
                 if (child.Name.Contains("line"))
                 {
-                    ////TODO: insert new line (mesh component) to SceneNodeContainer
-                    
-                    //var annotationPos = GuiHelper.CalcLinePoint(_canvasRenderMode, _annotationCanvasPositions[0],
-                    //    _canvasWidth, _canvasHeight, _canvasScaleFactor, _resizeScaleFactor);
-                   
-                    //var circlePos = GuiHelper.CalcLinePoint(_canvasRenderMode, _circleCanvasPositions[0],
-                    //    _canvasWidth, _canvasHeight, _canvasScaleFactor,_resizeScaleFactor);
+                    //TODO: insert new line (mesh component) to SceneNodeContainer
 
-                    //var lineGreenPoints = new List<float3>()
-                    //{
-                    //    //new float3((-0.4f/(16/_canvasScaleFactor)),-0.4f/(9/_canvasScaleFactor),0),
-                    //    //new float3((0.4f/(16/_canvasScaleFactor)),0.4f/(9/_canvasScaleFactor),0),
-                    //    annotationPos,
-                    //    circlePos
-                    //};
-                    //var line = new Line(lineGreenPoints, (0.0025f / (_canvasHeight/ _canvasScaleFactor)));
+                    child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+
+                    var annotationPos = _annotationCanvasPositions[0];
+                    var circlePos = _circleCanvasPositions[0];
+                                       
+
+                    var lineGreenPoints = new List<float3>()
+                    {
+                        new float3(annotationPos.x + GuiHelper.AnnotationDim.x, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
+                        new float3(circlePos.x - (circleDim.x/2), circlePos.y,0)
+                    };
+                    //var line = new Line(lineGreenPoints, 0.0025f/_resizeScaleFactor.y,_canvasWidth,_canvasHeight);
                     //var mesh = child.GetComponent<Line>();
-                    //if(mesh == null)
+                    //if (mesh == null)
                     //    child.AddComponent(line);
                     //else
                     //{
@@ -335,15 +334,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         private SceneContainer CreateGui()
         {
-            _canvasScaleFactor = _canvasWidth / _initWidth;
+            var canvasScaleFactor = _initWidth / _canvasWidth;
             float textSize = 2;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize /= _canvasScaleFactor;
-                borderScaleFactor = _canvasScaleFactor;
+                textSize *= canvasScaleFactor;
+                borderScaleFactor = canvasScaleFactor;
             }
-            
+
             #region annotations
 
             var annotationGreen = GuiHelper.CreateAnnotation(_annotationCanvasPositions[0], textSize, borderScaleFactor,
@@ -405,7 +404,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     {
                         Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.14117f, 0.76078f, 0.48627f), new float3(1,1,1), 20, 0)
                     },
-                    new Line(lineGreenPoints,lineThickness),
+                    //new Line(lineGreenPoints,lineThickness),
                     //insert mesh...later!
                 } //TODO: Line does not scale when resizing - add plane to observe behavoiur. Maybe use "stretch" anchors.
             };

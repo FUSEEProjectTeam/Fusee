@@ -21,6 +21,18 @@ namespace Fusee.Engine.Core
                 var start = points[i];
                 var end = points[i + 1];
 
+                //range [-0.5, 0.5]
+                if (rectHeight != 1)
+                {
+                    start.y = ((start.y / rectHeight) * 2 - 1) / 2;
+                    end.y = ((end.y / rectHeight) * 2 - 1) / 2;
+                }
+                if (rectWidth != 1)
+                {
+                    start.x = ((start.x / rectWidth) * 2 - 1) / 2;
+                    end.x = ((end.x / rectWidth) * 2 - 1) / 2;
+                }              
+
                 var dirVec = end - start;
                 dirVec.Normalize();
                 var angleToXAxis = System.Math.Atan2(end.y - start.y, end.x - start.x);
