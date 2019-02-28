@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
@@ -26,9 +28,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 12);
 
-        private static readonly float3 Green = new float3(0.14117f, 0.76078f, 0.48627f);
-        private static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
-        private static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
+        public static readonly float3 Green = new float3(0.14117f, 0.76078f, 0.48627f);
+        public static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
+        public static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
 
         private static float _circleThickness = 0.04f;
         public static float LineThickness = 0.02f;
@@ -164,29 +166,34 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     icon
                 }
             };
-        }
+        }        
 
         internal static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
         {
             float3 col;
+
+            string nameSuffix;
 
             switch (color)
             {
                 default:
                 case MatColor.GREEN:
                     col = Green;
+                    nameSuffix = "green";
                     break;
                 case MatColor.YELLOW:
                     col = Yellow;
+                    nameSuffix = "yellow";
                     break;
                 case MatColor.GRAY:
                     col = Gray;
+                    nameSuffix = "gray";
                     break;
             }
 
             return new SceneNodeContainer
             {
-                Name = "Circle",
+                Name = "Circle_" + nameSuffix,
                 Components = new List<SceneComponentContainer>
                 {
                     new RectTransformComponent
