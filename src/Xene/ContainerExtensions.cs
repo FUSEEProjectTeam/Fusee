@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -8,7 +9,7 @@ namespace Fusee.Xene
     /// <summary>
     /// Static quick-hack helpers to access components within nodes.
     /// </summary>
-    static public class ContainerExtensions
+    public static class ContainerExtensions
     {
         /// <summary>
         /// Calculates a transformation matrix from this transform component.
@@ -20,6 +21,42 @@ namespace Fusee.Xene
             return float4x4.CreateTranslation(tcThis.Translation) * float4x4.CreateRotationY(tcThis.Rotation.y) *
                    float4x4.CreateRotationX(tcThis.Rotation.x) * float4x4.CreateRotationZ(tcThis.Rotation.z) *
                    float4x4.CreateScale(tcThis.Scale);
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type in the children of this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="type">The type of the components to look for.</param>
+        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        public static IEnumerable<SceneComponentContainer> GetComponentsInChildren(this SceneNodeContainer sncThis, Type type)
+        {
+            if (sncThis == null || sncThis.Components == null || type == null)
+                throw new ArgumentException("SceneNodeContainer has no Components or is null!");
+
+            foreach (var child in sncThis.Children)
+            {
+                foreach (var comp in child.Components)
+                {
+                    if (comp.GetType().IsAssignableFrom(type) || comp.GetType().IsSubclassOf(type))
+                        yield return comp;
+                }
+
+                foreach (var gChild in GetComponentsInChildren(child, type))
+                    yield return gChild;
+            }
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type in the children of this scene node container.
+        /// </summary>
+        /// <typeparam name="TComp">The type of the components to look for.</typeparam>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        public static IEnumerable<TComp> GetComponentsInChildren<TComp>(this SceneNodeContainer sncThis)
+            where TComp : SceneComponentContainer
+        {
+            return GetComponentsInChildren(sncThis, typeof(TComp)).Cast<TComp>();
         }
 
         /// <summary>
