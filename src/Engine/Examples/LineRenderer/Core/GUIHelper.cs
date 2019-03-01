@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
@@ -28,12 +24,19 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 12);
 
-        public static readonly float3 Green = new float3(0.14117f, 0.76078f, 0.48627f);
-        public static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
-        public static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
+        internal static readonly float3 Green = new float3(0.14117f, 0.76078f, 0.48627f);
+        internal static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
+        internal static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
+        internal static readonly float3 White = new float3(1, 1, 1);
 
+        internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float3(1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float3(1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float3(1, 1, 1), 20, 0);
+
+        internal static readonly ShaderEffect OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float3(1, 1, 1), new float3(1, 1, 1), 20, 0);
+        
         private static float _circleThickness = 0.04f;
-        public static float LineThickness = 0.02f;
+        internal static float LineThickness = 0.02f;
 
         public static float AnnotationDistToLeftOrRightEdge = 1;
 
@@ -41,7 +44,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         {
             GREEN,
             YELLOW,
-            GRAY
+            GRAY,
+            WHITE
         }
 
         internal enum AnnotationPos
@@ -263,6 +267,26 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     }
                 }
             };
+        }
+
+        public static ShaderEffect GetShaderEffectFromMatColor(MatColor col)
+        {
+            switch (col)
+            {
+                default:
+                case MatColor.GREEN:
+                    return GreenEffect;
+                    
+                case MatColor.YELLOW:
+                    return YellowEffect;
+                    
+                case MatColor.GRAY:
+                    return GrayEffect;
+
+                case MatColor.WHITE:
+                    return OccludedDummyEffect;
+
+            }
         }
     }
 }

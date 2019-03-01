@@ -48,6 +48,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private int[] _dummyPosTriangleIndex;
         private bool[] _isCircleVisible;
         private float2[] _circleCanvasPositions;
+        private float2[] _circleCanvasPositionsCache;
+
         private float2[] _annotationCanvasPositions;
 
         private ScenePicker _scenePicker;
@@ -127,10 +129,13 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _dummyPositions = new float3[NumberOfAnnotations];
             _dummyPosTriangleIndex = new int[NumberOfAnnotations];
             _circleCanvasPositions = new float2[NumberOfAnnotations];
+            _circleCanvasPositionsCache = new float2[NumberOfAnnotations];
 
             _annotationCanvasPositions = new[]
             {
-                //posOnParent = min offset = lower left corner of the rect transform
+                // Input position for GUIHelper.CreateAnnotation = min offset = lower left corner of the rect transform. 
+                // Range: [GUIHelper.CanvasWidthInit, GUIHelper.CanvasHeightInit]
+                // Will be updated in RenderAFrame
                 new float2(1, 2),
                 new float2(1, 3),
                 new float2(1, 4),
@@ -146,6 +151,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
 
+            //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
             {
                 var numberOfTriangles = monkey.Triangles.Length / 3;
@@ -161,16 +167,16 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 var middle = (triVert0 + triVert1 + triVert2) / 3;
 
                 _dummyPositions[i] = middle;
-                _circleCanvasPositions[i] = (new float2(middle.x, middle.y));
-
-                //var vertIndex = rnd.Next(monkey.Vertices.Length);
-                //_dummyPositions[i] = (monkey.Vertices[vertIndex]);
-                //_circleCanvasPositions[i] = (new float2(monkey.Vertices[vertIndex].x, monkey.Vertices[vertIndex].y));
+                _circleCanvasPositions[i] = new float2(middle.x, middle.y);
+                _circleCanvasPositionsCache[i] = new float2(middle.x, middle.y);
             }
 
             _gui = CreateGui();
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
+
+            //Create a scene picker for performing visibility tests
             _scenePicker = new ScenePicker(_scene);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
@@ -184,13 +190,14 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            //TODO: set screenspace UI projection to orthographic in SceneRenderer
             var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
 
+            #region Controls
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -244,19 +251,20 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
+            #endregion
 
+            #region Update UI elements
+            //Annotations will be unpdated according to circle positions.
+            //Lines will be updated according to circle and annotation positions.
 
             var circleDim = new float2(0.65f, 0.65f);
-
             var canvas = _gui.Children[0];
-
             var circleCount = 0;
             var lineCount = 0;
             var annotationCount = 0;
 
-            for (int k = 0; k < canvas.Children.Count; k++)
+            foreach (var child in canvas.Children)
             {
-                SceneNodeContainer child = canvas.Children[k];
                 if (child.Name.Contains("Circle"))
                 {
                     //1. Update Circle pos
@@ -273,84 +281,77 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     //2. Check if circle is visible
                     var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
-                    float3 circleColor = new float3(0, 0, 0);
+                    var col = GuiHelper.MatColor.WHITE;
 
                     if (_dummyPosTriangleIndex[circleCount] == newPick.Triangle) //VISIBLE
                     {
                         _isCircleVisible[circleCount] = true;
-                        if (child.Name.Contains("green"))
-                        {
-                            //circleColor = new float4(GuiHelper.Green.xyz, 1f);
-                            circleColor = GuiHelper.Green;
-                        }
-                        else if (child.Name.Contains("yellow"))
-                        {
-                            //circleColor = new float4(GuiHelper.Yellow.xyz, 1f);
-                            circleColor = GuiHelper.Yellow;
-                        }
-                        if (child.Name.Contains("gray"))
-                        {
-                            //circleColor = new float4(GuiHelper.Gray.xyz, 1f);
-                            circleColor = GuiHelper.Gray;
-                        }
-                        child.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(circleColor, new float3(1, 1, 1), 20, 0);
 
+                        if (child.Name.Contains("green"))
+                            col = GuiHelper.MatColor.GREEN;
+
+                        else if (child.Name.Contains("yellow"))
+                            col = GuiHelper.MatColor.YELLOW;
+
+                        if (child.Name.Contains("gray"))
+                            col = GuiHelper.MatColor.GRAY;
+
+                        child.GetComponent<ShaderEffectComponent>().Effect = GuiHelper.GetShaderEffectFromMatColor(col);
                     }
                     else
                     {
                         _isCircleVisible[circleCount] = false;
-                        //if(child.Name.Contains("green"))
-                        //{
-                        //    circleColor = new float4(GuiHelper.Green.xyz, 0.5f);                            
-                        //}
-                        //else if (child.Name.Contains("yellow"))
-                        //{
-                        //    circleColor = new float4(GuiHelper.Yellow.xyz, 0.5f);
-                        //}
-                        //if (child.Name.Contains("gray"))
-                        //{
-                        //    circleColor = new float4(GuiHelper.Gray.xyz, 0.5f);
-                        //}   
-
-                        circleColor = float3.One;
-
-                        child.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(circleColor, new float3(1, 1, 1), 20, 0);
+                        col = GuiHelper.MatColor.WHITE;
+                        child.GetComponent<ShaderEffectComponent>().Effect = GuiHelper.GetShaderEffectFromMatColor(col);
                     }
-                    
                     circleCount++;
-
                 }
                 else if (child.Name.Contains("Annotation"))
                 {
-                    _annotationCanvasPositions[annotationCount].y = _circleCanvasPositions[annotationCount].y;
-
-                    if (_circleCanvasPositions[annotationCount].x <= _canvasWidth / 2)
+                    if (_isCircleVisible[annotationCount])
                     {
-                        //LEFT
-                        _annotationCanvasPositions[annotationCount].x = GuiHelper.AnnotationDistToLeftOrRightEdge;
+                        child.GetComponent<NineSlicePlane>().Active = true;
+                        foreach (var comp in child.GetComponentsInChildren<Mesh>())
+                            comp.Active = true;
 
-
-                        child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                        _annotationCanvasPositions[annotationCount].y = _circleCanvasPositions[annotationCount].y;
+                        if (_circleCanvasPositions[annotationCount].x <= _canvasWidth / 2)
                         {
-                            Min = new float2(0, 0),
-                            Max = new float2(0, 0)
-                        };
-                        child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[annotationCount], GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                            //LEFT
+                            _annotationCanvasPositions[annotationCount].x = GuiHelper.AnnotationDistToLeftOrRightEdge;
 
+                            child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                            {
+                                Min = new float2(0, 0),
+                                Max = new float2(0, 0)
+                            };
+                            child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
+                                GuiHelper.AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[annotationCount],
+                                GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                        }
+                        else
+                        {
+                            //RIGHT
+                            _annotationCanvasPositions[annotationCount].x =
+                                GuiHelper.CanvasWidthInit - GuiHelper.AnnotationDim.x -
+                                GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                            child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                            {
+                                Min = new float2(1, 0),
+                                Max = new float2(1, 0)
+                            };
+                            child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
+                                GuiHelper.AnchorPos.DOWN_DOWN_RIGHT, _annotationCanvasPositions[annotationCount],
+                                GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                        }
                     }
                     else
                     {
-                        //RIGHT
-                        _annotationCanvasPositions[annotationCount].x = GuiHelper.CanvasWidthInit - GuiHelper.AnnotationDim.x - GuiHelper.AnnotationDistToLeftOrRightEdge;
-
-                        child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
-                        {
-                            Min = new float2(1, 0),
-                            Max = new float2(1, 0)
-                        };
-                        child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.DOWN_DOWN_RIGHT, _annotationCanvasPositions[annotationCount], GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                        child.GetComponent<NineSlicePlane>().Active = false;
+                        foreach (var comp in child.GetComponentsInChildren<Mesh>())
+                            comp.Active = false;
                     }
-
 
                     annotationCount++;
                 }
@@ -358,49 +359,54 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 {
                     if (_isCircleVisible[lineCount])
                     {
-                        var linePoints = new List<float3>();
+                        List<float3> linePoints;
                         var annotationPos = _annotationCanvasPositions[lineCount];
                         var circlePos = _circleCanvasPositions[lineCount];
 
                         if (_circleCanvasPositions[lineCount].x <= _canvasWidth / 2)
                         {
                             //LEFT
-                            linePoints = new List<float3>()
-                        {
-                            new float3(annotationPos.x + GuiHelper.AnnotationDim.x, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
-                            new float3(circlePos.x - (circleDim.x/2), circlePos.y,0)
-                        };
+                            linePoints = new List<float3>
+                            {
+                                new float3(annotationPos.x + GuiHelper.AnnotationDim.x, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
+                                new float3(circlePos.x - (circleDim.x/2), circlePos.y,0)
+                            };
                         }
                         else
                         {
                             //RIGHT
                             var posX = _canvasWidth - GuiHelper.AnnotationDim.x - GuiHelper.AnnotationDistToLeftOrRightEdge;
 
-                            linePoints = new List<float3>()
+                            linePoints = new List<float3>
                             {
-                            new float3(posX, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
-                            new float3(circlePos.x + (circleDim.x/2), circlePos.y,0)
+                                new float3(posX, annotationPos.y + GuiHelper.AnnotationDim.y/2,0),
+                                new float3(circlePos.x + (circleDim.x/2), circlePos.y,0)
                             };
                         }
 
                         child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(GuiHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
-                        //TODO: Does not work in web build - memoize value error AND only create line if chirclepos has changed
-                        var line = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                        //TODO: Does not work in web build - memoize value error
                         var mesh = child.GetComponent<Line>();
-                        if (mesh == null)
-                            child.AddComponent(line);
-                        else
+
+                        if (mesh != null && _circleCanvasPositions[lineCount] != _circleCanvasPositionsCache[lineCount])
                         {
+                            var line = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
                             mesh.Vertices = line.Vertices;
                             mesh.Normals = line.Normals;
                             mesh.Triangles = line.Triangles;
                             //mesh.UVs = line.UVs;
                         }
+
+                        if (mesh == null)
+                        {
+                            var line = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                            child.AddComponent(line);
+                        }
                     }
                     else
                     {
-                        Line line = child.GetComponent<Line>();
+                        var line = child.GetComponent<Line>();
                         if (line != null)
                             child.Components.Remove(line);
                     }
@@ -408,6 +414,11 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             }
 
+            Array.Copy(_circleCanvasPositions, _circleCanvasPositionsCache, NumberOfAnnotations);
+
+            #endregion
+
+            //TODO: set screenspace UI projection to orthographic in SceneRenderer
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 // Render the scene loaded in Init()
@@ -425,10 +436,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 _guiRenderer.Render(RC);
             }
 
-            // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
-
-            IsVertVisible(new float3(0, 0, 0));
         }
 
         // Is called when the window was resized
@@ -451,21 +459,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             RC.Projection = projection;
             _sih.Projection = projection;
             _scenePicker.Projection = projection;
-        }
-
-        //TODO: not working - depth value is always 0
-        private bool IsVertVisible(float3 clipPos)
-        {
-            var pixelPosX = (int)System.Math.Floor((clipPos.x + 1) / (2.0f / Width));
-            var pixelPosY = (int)System.Math.Floor((clipPos.y - 1) / (-2.0f / Height));
-            var depthBufferValue = RC.GetPixelDepth(pixelPosX, pixelPosY);
-            //var depthBufferValue1 = RC.GetPixelDepth((int)System.Math.Floor(Width/2f), (int)System.Math.Floor(Height / 2f));
-            //var depthBufferValue2 = RC.GetPixelDepth((int)System.Math.Floor(Width / 2f)-1, (int)System.Math.Floor(Height / 2f)-1);
-            //var colValue1 = RC.GetPixelColor((int)System.Math.Floor(Width / 2f), (int)System.Math.Floor(Height / 2f),5,5);
-
-            var clipZValue = clipPos.z;
-
-            return System.Math.Abs(depthBufferValue - clipZValue) < 0.001f;
         }
 
         private SceneContainer CreateGui()
@@ -551,15 +544,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 {
                     fuseeLogo,
 
-                    annotationGreen,
-                    annotationYellow,
-                    annotationGray,
-                    annotationGreenFilled,
-
                     circleGreen,
                     circleYellow,
                     circleGray,
                     circleGreenFilled,
+
+                    annotationGreen,
+                    annotationYellow,
+                    annotationGray,
+                    annotationGreenFilled,
 
                     lineGreen,
                     lineYellow,
@@ -592,8 +585,5 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         {
             OpenLink("http://fusee3d.org");
         }
-
-
-
     }
 }
