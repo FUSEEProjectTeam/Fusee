@@ -269,7 +269,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             };
         }
 
-        public static ShaderEffect GetShaderEffectFromMatColor(MatColor col)
+        internal static ShaderEffect GetShaderEffectFromMatColor(MatColor col)
         {
             switch (col)
             {
@@ -287,6 +287,29 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     return OccludedDummyEffect;
 
             }
+        }
+
+        internal static bool DoesAnnotationIntersectWithAnnotation(float2 thisAnnotationCanvasPos, float2 annotationCanvasPos)
+        {
+            //AnnotationCanvasPos equals lower left corner.
+
+            var thisMin = thisAnnotationCanvasPos.y;
+            var thisMax = thisAnnotationCanvasPos.y + AnnotationDim.y;
+
+            var min = annotationCanvasPos.y;
+            var max = annotationCanvasPos.y + AnnotationDim.y;
+
+            if (((thisMax>min && thisMax < max) && annotationCanvasPos.x == thisAnnotationCanvasPos.x) ||
+                ((thisMin < max && thisMin > min) && annotationCanvasPos.x == thisAnnotationCanvasPos.x))
+                return true;
+            return false;
+
+            //if ((thisAnnotationCanvasPos.y + AnnotationDim.y > annotationCanvasPos.y ||
+            //    thisAnnotationCanvasPos.y < annotationCanvasPos.y + AnnotationDim.y) &&
+            //    annotationCanvasPos.x >= thisAnnotationCanvasPos.x &&
+            //    annotationCanvasPos.x <= thisAnnotationCanvasPos.x + AnnotationDim.x)
+            //    return true;
+            //return false;
         }
     }
 }

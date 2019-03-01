@@ -193,7 +193,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //TODO: set screenspace UI projection to orthographic in SceneRenderer
+            //TODO: set screen space UI projection to orthographic in SceneRenderer
             var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
 
@@ -304,6 +304,12 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         col = GuiHelper.MatColor.WHITE;
                         child.GetComponent<ShaderEffectComponent>().Effect = GuiHelper.GetShaderEffectFromMatColor(col);
                     }
+
+                    
+                    var yPosScale = _circleCanvasPositions[circleCount].y / _canvasHeight;
+                    yPosScale = (yPosScale - 0.5f) * 2f;
+                    _annotationCanvasPositions[circleCount].y = _circleCanvasPositions[circleCount].y - (GuiHelper.AnnotationDim.y / 2)+(2*GuiHelper.AnnotationDim.y*yPosScale);
+                   
                     circleCount++;
                 }
                 else if (child.Name.Contains("Annotation"))
@@ -314,37 +320,27 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         foreach (var comp in child.GetComponentsInChildren<Mesh>())
                             comp.Active = true;
 
-                        _annotationCanvasPositions[annotationCount].y = _circleCanvasPositions[annotationCount].y;
-                        if (_circleCanvasPositions[annotationCount].x <= _canvasWidth / 2)
-                        {
-                            //LEFT
-                            _annotationCanvasPositions[annotationCount].x = GuiHelper.AnnotationDistToLeftOrRightEdge;
 
-                            child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
-                            {
-                                Min = new float2(0, 0),
-                                Max = new float2(0, 0)
-                            };
-                            child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
-                                GuiHelper.AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[annotationCount],
-                                GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
-                        }
-                        else
+                        //Calculate y position, taking intersection into account
+                        for (var i = 0; i < _annotationCanvasPositions.Length; i++)
                         {
-                            //RIGHT
-                            _annotationCanvasPositions[annotationCount].x =
-                                GuiHelper.CanvasWidthInit - GuiHelper.AnnotationDim.x -
-                                GuiHelper.AnnotationDistToLeftOrRightEdge;
+                            if (i == annotationCount || !_isCircleVisible[i] || !_isCircleVisible[annotationCount])
+                                continue;
 
-                            child.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
-                            {
-                                Min = new float2(1, 0),
-                                Max = new float2(1, 0)
-                            };
-                            child.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
-                                GuiHelper.AnchorPos.DOWN_DOWN_RIGHT, _annotationCanvasPositions[annotationCount],
-                                GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+                            var intersect = GuiHelper.DoesAnnotationIntersectWithAnnotation(
+                                _annotationCanvasPositions[annotationCount], _annotationCanvasPositions[i]);
+
+                            if (!intersect) continue;
+
+                            if (_annotationCanvasPositions[annotationCount].y > _annotationCanvasPositions[i].y)
+                                _annotationCanvasPositions[annotationCount].y = (_circleCanvasPositions[annotationCount].y - (GuiHelper.AnnotationDim.y / 2)) + GuiHelper.AnnotationDim.y;
+
+                            else
+                                _annotationCanvasPositions[annotationCount].y = (_circleCanvasPositions[annotationCount].y - (GuiHelper.AnnotationDim.y / 2)) - (GuiHelper.AnnotationDim.y);
+
                         }
+
+                        UpdateAnnotationOffsets(child,annotationCount);
                     }
                     else
                     {
@@ -418,7 +414,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
             #endregion
 
-            //TODO: set screenspace UI projection to orthographic in SceneRenderer
+            //TODO: set screen space UI projection to orthographic in SceneRenderer
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 // Render the scene loaded in Init()
@@ -584,6 +580,42 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
+        }
+
+        private void UpdateAnnotationOffsets(SceneNodeContainer sncAnnotation, int annotationCount)
+        {
+            if (_circleCanvasPositions[annotationCount].x <= _canvasWidth / 2)
+            {
+                //LEFT
+                _annotationCanvasPositions[annotationCount].x = GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(0, 0)
+                };
+
+                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
+                    GuiHelper.AnchorPos.DOWN_DOWN_LEFT, _annotationCanvasPositions[annotationCount],
+                    GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+            }
+            else
+            {
+                //RIGHT
+                _annotationCanvasPositions[annotationCount].x =
+                    GuiHelper.CanvasWidthInit - GuiHelper.AnnotationDim.x -
+                    GuiHelper.AnnotationDistToLeftOrRightEdge;
+
+                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
+                {
+                    Min = new float2(1, 0),
+                    Max = new float2(1, 0)
+                };
+
+                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = GuiHelper.CalcOffsets(
+                    GuiHelper.AnchorPos.DOWN_DOWN_RIGHT, _annotationCanvasPositions[annotationCount],
+                    GuiHelper.CanvasHeightInit, GuiHelper.CanvasWidthInit, GuiHelper.AnnotationDim);
+            }
         }
     }
 }
