@@ -272,7 +272,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            float4x4 mvp = Projection * View * State.Model;
+            if (!mesh.Active) return;
+            var mvp = Projection * View * State.Model;
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates

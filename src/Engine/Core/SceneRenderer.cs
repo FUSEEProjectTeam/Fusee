@@ -663,7 +663,8 @@ namespace Fusee.Engine.Core
             if (wc != null)
                 AddWeightComponentToMesh(mesh, wc);
 
-            RenderCurrentPass(rm, _state.Effect);
+            if(mesh.Active)
+                RenderCurrentPass(rm, _state.Effect);
         }
 
         [VisitMethod]
