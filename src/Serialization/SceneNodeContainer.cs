@@ -21,12 +21,12 @@ namespace Fusee.Serialization
         /// The components this node is made of.
         /// </summary>
         [ProtoMember(2, AsReference = true)]
-        public List<SceneComponentContainer> Components;
+        public List<SceneComponentContainer> Components = new List<SceneComponentContainer>();
 
         /// <summary>
         /// Possible children. 
         /// </summary>
         [ProtoMember(3, AsReference = true)]
-        public List<SceneNodeContainer> Children;
+        public List<SceneNodeContainer> Children = new List<SceneNodeContainer>();
      }
 }

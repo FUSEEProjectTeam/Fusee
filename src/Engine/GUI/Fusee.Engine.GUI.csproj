@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.GUI</RootNamespace>
     <PackageId>Fusee.Engine.GUI</PackageId>

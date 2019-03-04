@@ -155,7 +155,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         rootmesh = Scene.SceneComponentContainer()
 
         # set current object as the active one
-        bpy.context.scene.objects.active = obj
+        bpy.context.view_layer.objects.active = obj
         '''
         #set to edit mode, in order to make all needed modifications
         bpy.ops.object.mode_set(mode='EDIT')
@@ -174,7 +174,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         if obj.parent is None:
             obj_mtx_clean = obj.matrix_world.copy()
         else:
-            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
         location, rotation, scale = obj_mtx_clean.decompose()
 
@@ -184,11 +184,11 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-            # rotation
-        rot_eul = rotation.to_euler()
-        transformComponent.Rotation.x = rot_eul.x
-        transformComponent.Rotation.y = rot_eul.z
-        transformComponent.Rotation.z = rot_eul.y
+        # rotation
+        rot_eul = rotation.to_euler('YXZ')
+        transformComponent.Rotation.x = -rot_eul.x
+        transformComponent.Rotation.y = -rot_eul.z
+        transformComponent.Rotation.z = -rot_eul.y
 
         # scale
         # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
@@ -208,7 +208,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)      
-        damesh = prepare_mesh(bpy.context.scene.objects.active)
+        damesh = prepare_mesh(bpy.context.active_object)
         bm.from_mesh(damesh)
 
         # <CM's Checks>
@@ -383,9 +383,9 @@ def create_bone_payload(boneNode, obj, bone):
     if obj.parent is None:
         obj_mtx_clean = obj.matrix_world.copy()
     else:
-        obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+        obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
-    obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+    obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
 
     location, rotation, scale = obj_mtx.decompose()
 
@@ -396,10 +396,10 @@ def create_bone_payload(boneNode, obj, bone):
     transformComponent.Translation.z = location.y
 
     # rotation
-    rot_eul = rotation.to_euler()
-    transformComponent.Rotation.x = rot_eul.x
-    transformComponent.Rotation.y = rot_eul.z
-    transformComponent.Rotation.z = rot_eul.y
+    rot_eul = rotation.to_euler('YXZ')
+    transformComponent.Rotation.x = -rot_eul.x
+    transformComponent.Rotation.y = -rot_eul.z
+    transformComponent.Rotation.z = -rot_eul.y
 
     # scale
     # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
@@ -457,14 +457,14 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         rootmesh = Scene.SceneComponentContainer()
 
         # set current object as the active one
-        bpy.context.scene.objects.active = obj
+        bpy.context.view_layer.objects.active = obj
 
         # TRANSFORM COMPONENT
         # Neutralize the blender-specific awkward parent inverse as it is not supported by FUSEE's scenegraph
         if obj.parent is None:
             obj_mtx_clean = obj.matrix_world.copy()
         else:
-            obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+            obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
         location, rotation, scale = obj_mtx_clean.decompose()
 
@@ -474,11 +474,11 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         transformComponent.Translation.y = location.z
         transformComponent.Translation.z = location.y
 
-            # rotation
-        rot_eul = rotation.to_euler()
-        transformComponent.Rotation.x = rot_eul.x
-        transformComponent.Rotation.y = rot_eul.z
-        transformComponent.Rotation.z = rot_eul.y
+        # rotation
+        rot_eul = rotation.to_euler('YXZ')
+        transformComponent.Rotation.x = -rot_eul.x
+        transformComponent.Rotation.y = -rot_eul.z
+        transformComponent.Rotation.z = -rot_eul.y
 
         # scale
         # TODO: Check if it's better to apply scale to geometry (maybe based on a user preference)
@@ -489,7 +489,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
-        damesh = prepare_mesh(bpy.context.scene.objects.active.children[0])      
+        damesh = prepare_mesh(bpy.context.active_object.children[0])      
         bm.from_mesh(damesh)
         
         uvActive = obj.children[0].data.uv_layers.active
@@ -543,9 +543,9 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
             if obj.parent is None:
                 obj_mtx_clean = obj.matrix_world.copy()
             else:
-                obj_mtx_clean = obj.parent.matrix_world.inverted() * obj.matrix_world
+                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
 
-            obj_mtx = obj_mtx_clean.inverted() * bone.matrix
+            obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
 
             # convert obj_mxt to float4x4 
             tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
@@ -829,10 +829,13 @@ def SetDefaultMaterial(isWeb):
 
 
 def GetPaths(filepath):
-    # relative filepath -> absolute filepath (when file is in the same folder)
+    # relative filepath -> absolute filepath
     basename = os.path.basename(filepath)
     if os.path.dirname(filepath) == '//':
-        filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), basename)        
+    else:
+        filepath = filepath.replace("//", "")
+        filepath = os.path.join(os.path.dirname(bpy.data.filepath), filepath)        
     fullpath = filepath
     return fullpath, basename
 
@@ -847,8 +850,7 @@ def GetParents(obj):
 
 def prepare_mesh(obj):
     # This applies all the modifiers (without altering the scene)
-    mesh = obj.to_mesh(bpy.context.scene, apply_modifiers=True, settings='RENDER', calc_tessface=True,
-                       calc_undeformed=False)
+    mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
 
     # Triangulate for web export
     bm = bmesh.new()
@@ -859,7 +861,6 @@ def prepare_mesh(obj):
     del bm
 
     mesh.calc_normals()
-    mesh.calc_tessface()
+    mesh.calc_loop_triangles()
 
     return mesh
-

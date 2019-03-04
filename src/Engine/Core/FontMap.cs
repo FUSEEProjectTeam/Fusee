@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
+using System.Runtime.Serialization;
 using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -8,7 +10,7 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Used in conjunction with a <see cref="FontMap"/> containting information about
+    /// Used in conjunction with a <see cref="FontMap"/> containing information about
     /// a rendered character (glyph) on a font map texture.
     /// </summary>
     public struct GlyphOnMap
@@ -53,24 +55,29 @@ namespace Fusee.Engine.Core
     public class FontMap
     {
         private Font _font;
-        private ImageData _image;
+        private Texture _image;
         private uint _pixelHeight;
         private string _alphabet;
         private bool _uptodate;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
 
+        private readonly bool _optimizeFontTexRes;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="FontMap"/> class.
         /// </summary>
         /// <param name="font">The font to be used. See <see cref="Font"/>.</param>
-        /// <param name="pixelHeight">Height in pixesl of a character. See <see cref="PixelHeight"/>.</param>
+        /// <param name="pixelHeight">Height in pixels of a character. See <see cref="PixelHeight"/>.</param>
+        /// <param name="optimizeFontTexRes">Toggles the optimization for the texture atlas resolution. </param>
         /// <param name="alphabet">The alphabet. See <see cref="Alphabet"/>.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public FontMap(Font font, uint pixelHeight, string alphabet = null)
+        public FontMap(Font font, uint pixelHeight, bool optimizeFontTexRes = true, string alphabet = null)
         {
             if (font == null) throw new ArgumentNullException(nameof(font));
             if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));
+
+            _optimizeFontTexRes = optimizeFontTexRes;
 
             _font = font;
             _pixelHeight = pixelHeight;
@@ -93,7 +100,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The font image.
         /// </value>
-        public ImageData Image
+        public Texture Image
         {
             get
             {
@@ -102,61 +109,52 @@ namespace Fusee.Engine.Core
 
                 _font.PixelHeight = _pixelHeight;
 
-                var rowW = 0;
-                var rowH = 0;
-                var h = 0;
+                const int maxWidth = 4096;
 
-                const int maxWidth = 512;
+                var averageAdvance = 0f;
+                var charCount = 0f;
                 
+                //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
                 foreach (char c in _alphabet)
                 {
-                    uint i = (uint) c;
-                    GlyphInfo gi = _font.GetGlyphInfo(i);
-
-                    if (rowW + ((int)gi.AdvanceX) + 1 >= maxWidth)
-                    {
-                        h += rowH;
-                        rowW = 0;
-                        rowH = 0;
-                    }
-
-                    rowW += ((int)gi.AdvanceX) + 1;
-                    rowH = System.Math.Max((int)gi.Height, rowH);
+                    GlyphInfo gi = _font.GetGlyphInfo(c);
+                    averageAdvance += gi.AdvanceX+1;
+                    charCount++;
                 }
 
-                // for resizing to non-power-of-two
-                var potH = (h + rowH) - 1;
+                averageAdvance = averageAdvance / charCount;
 
-                potH |= potH >> 1;
-                potH |= potH >> 2;
-                potH |= potH >> 4;
-                potH |= potH >> 8;
-                potH |= potH >> 16;
+                //_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight is the area of ​​the rectangle with the width equal to the number of letters * averageAdvance and the height equals pixelHeight.
+                // Since this rectangle has the same area as the desired square (texture atlas), the square root of the rectangle is the width of that square.
+                var widthOld = System.Math.Sqrt(_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight);
+                var width = (int)System.Math.Pow(2, (int)System.Math.Ceiling(System.Math.Log(widthOld, 2)));
 
-                int texMapWidth = maxWidth;
-                int texMapHeight = ++potH;
+                if (width > maxWidth)
+                {
+                    width = maxWidth;
+                    Debug.WriteLine("Font texture resolution automatically set to 4096 - consider to choose a lower font size");
+                }
 
-                // Create the font atlas (the texture containting ALL glyphs)
-                _image = new ImageData(new byte[texMapWidth * texMapHeight], texMapWidth, texMapHeight, new ImagePixelFormat(ColorFormat.Intensity));
-                //_image = new ImageData
-                //{
-                //    PixelData = new byte[texMapWidth * texMapHeight],
-                //    Width = texMapWidth,
-                //    Height = texMapHeight,
-                //    ColorFormat = ImagePixelFormat.Intensity,
-                //    
-                //};
-
+                //Scale FontSize for better 
+                if (_optimizeFontTexRes)
+                {
+                    var mult = width / widthOld;
+                    _font.PixelHeight = (uint)(_pixelHeight * (mult));
+                }
+                
+                // Create the font atlas (the texture containing ALL glyphs)
+                _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity));
+               
                 var offX = 0;
                 var offY = 0;
-                rowH = 0;
+                var rowH = 0;
 
                 // Copy each character in the alphabet to the font atlas
                 foreach (char c in _alphabet)
                 {
                     int bitmapLeft, bitmapTop;
                     IImageData glyphImg = _font.RenderGlyph((uint) c, out bitmapLeft, out bitmapTop);
-                    if (offX + glyphImg.Width + 1 >= maxWidth)
+                    if (offX + glyphImg.Width + 1 >= width)
                     {
                         offY += rowH;
                         rowH = 0;
@@ -175,8 +173,8 @@ namespace Fusee.Engine.Core
                         BitmapH = glyphImg.Height,
                         BitmapL = bitmapLeft,
                         BitmapT = bitmapTop,
-                        TexOffX = offX/(float) maxWidth,
-                        TexOffY = offY/(float) potH,
+                        TexOffX = offX/(float) width,
+                        TexOffY = offY/(float) width,
                     };
 
                     _glyphOnMapCache[c] = glyphOnMap;
@@ -185,76 +183,8 @@ namespace Fusee.Engine.Core
                     offX += glyphImg.Width + 1;
                 }
 
-
                 _uptodate = true;
                 return _image;
-
-                /*
-                // atlas texture
-                var tex = GL.GenTexture();
-
-                GL.ActiveTexture(TextureUnit.Texture0);
-                GL.BindTexture(TextureTarget.Texture2D, tex);
-
-                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Alpha, maxWidth, potH, 0,
-                    OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, IntPtr.Zero);
-
-                // texture settings
-                GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS,
-                    (int)TextureWrapMode.ClampToEdge);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT,
-                    (int)TextureWrapMode.ClampToEdge);
-
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                    (int)TextureMinFilter.Linear);
-                GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
-                    (int)TextureMagFilter.Linear);
-
-                texAtlas.TexAtlas = new Texture { handle = tex };
-
-                // paste the glyph images into the texture atlas
-                texAtlas.CharInfo = new CharInfoStruct[256];
-
-                var offX = 0;
-                var offY = 0;
-                rowH = 0;
-
-                for (uint i = 32; i < 256; i++)
-                {
-                    face.LoadChar(i, LoadFlags.Default, LoadTarget.Normal);
-                    face.Glyph.RenderGlyph(RenderMode.Normal);
-
-                    if (offX + face.Glyph.Bitmap.Width + 1 >= maxWidth)
-                    {
-                        offY += rowH;
-                        rowH = 0;
-                        offX = 0;
-                    }
-
-                    GL.TexSubImage2D(TextureTarget.Texture2D, 0, offX, offY, face.Glyph.Bitmap.Width, face.Glyph.Bitmap.Rows,
-                        OpenTK.Graphics.OpenGL.ColorFormat.Alpha, PixelType.UnsignedByte, face.Glyph.Bitmap.Buffer);
-
-                    // char informations
-                    texAtlas.CharInfo[i].AdvanceX = (int)face.Glyph.Advance.X;
-                    texAtlas.CharInfo[i].AdvanceY = (int)face.Glyph.Advance.Y;
-
-                    texAtlas.CharInfo[i].BitmapW = face.Glyph.Bitmap.Width;
-                    texAtlas.CharInfo[i].BitmapH = face.Glyph.Bitmap.Rows;
-
-                    texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
-                    texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
-
-                    texAtlas.CharInfo[i].TexOffX = offX / (float)maxWidth;
-                    texAtlas.CharInfo[i].TexOffY = offY / (float)potH;
-
-                    rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
-                    offX += face.Glyph.Bitmap.Width + 1;
-                }
-
-                return texAtlas;
-                */
 
             }
         }

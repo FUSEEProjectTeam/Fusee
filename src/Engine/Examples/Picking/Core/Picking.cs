@@ -37,51 +37,19 @@ namespace Fusee.Engine.Examples.Picking.Core
         private bool _keys;
 
 #if GUI_SIMPLE
-        private GUIHandler _guiHandler;
 
-        private GUIButton _guiFuseeLink;
-        private GUIImage _guiFuseeLogo;
-        private FontMap _guiLatoBlack;
-        private GUIText _guiSubText;
-        private float _subtextHeight;
-        private float _subtextWidth;
-
-        private string _text;
+        private SceneRenderer _guiRenderer;
+        private SceneContainer _gui;
+        private SceneInteractionHandler _sih;
+#endif
         private PickResult _currentPick;
         private float3 _oldColor;
         private bool _pick;
         private float2 _pickPos;
-#endif
 
         // Init is called on startup. 
         public override void Init()
         {
-#if GUI_SIMPLE
-            _guiHandler = new GUIHandler();
-            _guiHandler.AttachToContext(RC);
-
-            _guiFuseeLink = new GUIButton(6, 6, 182, 58);
-            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
-            _guiFuseeLink.BorderColor = ColorUint.Tofloat4(ColorUint.Greenery);
-            _guiFuseeLink.BorderWidth = 0;
-            _guiFuseeLink.OnGUIButtonDown += _guiFuseeLink_OnGUIButtonDown;
-            _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
-            _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
-            _guiHandler.Add(_guiFuseeLink);
-            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
-            _guiHandler.Add(_guiFuseeLogo);
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            fontLato.UseKerning = true;
-            _guiLatoBlack = new FontMap(fontLato, 18);
-
-            _text = "FUSEE Picking Example";
-
-            _guiSubText = new GUIText(_text, _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
-            _guiHandler.Add(_guiSubText);
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-#endif
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -92,6 +60,13 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
+
+#if GUI_SIMPLE
+            _gui = CreateGui();
+            // Create the interaction handler
+            _sih = new SceneInteractionHandler(_gui);
+            _guiRenderer = new SceneRenderer(_gui);
+#endif
         }
 
         // RenderAFrame is called once a frame
@@ -138,7 +113,6 @@ namespace Fusee.Engine.Examples.Picking.Core
                     _angleVelVert *= curDamp;
                 }
             }
-
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
@@ -199,13 +173,25 @@ namespace Fusee.Engine.Examples.Picking.Core
                 _pick = false;
             }
 
-            // Render the scene loaded in Init()
             RC.ModelView = mtxCam * mtxRot;
-            _sceneRenderer.Render(RC);
 
 #if GUI_SIMPLE
-            _guiHandler.RenderGUI();
+
+            //Set the view matrix for the interaction handler.
+            _sih.View = RC.ModelView;
+
+            // Constantly check for interactive objects.
+            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+            _guiRenderer.Render(RC);
 #endif
+
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -239,35 +225,116 @@ namespace Fusee.Engine.Examples.Picking.Core
             _scenePicker.Projection = projection;
 
 #if GUI_SIMPLE
-            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
-            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
-
-            _guiHandler.Refresh();
+            _sih.Projection = projection;
 #endif
 
         }
 
 #if GUI_SIMPLE
-        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
+        private SceneContainer CreateGui()
         {
-            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
-            _guiFuseeLink.BorderWidth = 0;
-            SetCursor(CursorType.Standard);
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var btnFuseeLogo = new GUIButton
+            {
+                Name = "Canvas_Button"
+            };
+            btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
+            btnFuseeLogo.OnMouseExit += BtnLogoExit;
+            btnFuseeLogo.OnMouseDown += BtnLogoDown;
+
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
+            var fuseeLogo = new TextureNodeContainer(
+                "fuseeLogo",
+                vsTex,
+                psTex,
+                //Set the diffuse texture you want to use.
+                guiFuseeLogo,
+                //_fontMap.Image,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                new MinMaxRect
+                {
+                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
+                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
+                },
+                //Define Offset and therefor the size of the element.
+                //Min: distance to this elements Min anchor.
+                //Max: distance to this elements Max anchor.
+                new MinMaxRect
+                {
+                    Min = new float2(0, -0.5f),
+                    Max = new float2(1.75f, 0)
+                });
+            fuseeLogo.AddComponent(btnFuseeLogo);
+
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
+            var guiLatoBlack = new FontMap(fontLato, 18);
+
+            var text = new TextNodeContainer(
+                "FUSEE Picking Example",
+                "ButtonText",
+                vsTex,
+                psTex,
+                new MinMaxRect
+                {
+                    Min = new float2(0, 0),
+                    Max = new float2(1, 0)
+                },
+                new MinMaxRect
+                {
+                    Min = new float2(4f, 0f),
+                    Max = new float2(-4, 0.5f)
+                },
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+
+
+            var canvas = new CanvasNodeContainer(
+                "Canvas",
+                CanvasRenderMode.SCREEN,
+                new MinMaxRect
+                {
+                    Min = new float2(-8, -4.5f),
+                    Max = new float2(8, 4.5f)
+                }
+            )
+            {
+                Children = new List<SceneNodeContainer>()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
+            };
+
+
+            return new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>
+                {
+                    //Add canvas.
+                    canvas
+                }
+            };
         }
 
-        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
+        public void BtnLogoEnter(CodeComponent sender)
         {
-            _guiFuseeLink.ButtonColor = new float4(0.533f, 0.69f, 0.3f, 0.4f);
-            _guiFuseeLink.BorderWidth = 1;
-            SetCursor(CursorType.Hand);
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
         }
 
-        void _guiFuseeLink_OnGUIButtonDown(GUIButton sender, GUIButtonEventArgs mea)
+        public void BtnLogoExit(CodeComponent sender)
+        {
+            _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", float4.One);
+        }
+
+        public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
         }
 #endif
-
 
         private SceneContainer CreateScene()
         {

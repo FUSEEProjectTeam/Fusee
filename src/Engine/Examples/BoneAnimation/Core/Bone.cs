@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -34,41 +32,11 @@ namespace Fusee.Engine.Examples.Bone.Core
 
         private bool _keys;
 
-        private GUIHandler _guiHandler;
-
-        private GUIButton _guiFuseeLink;
-        private GUIImage _guiFuseeLogo;
-        private FontMap _guiLatoBlack;
-        private GUIText _guiSubText;
-        private float _subtextHeight;
-        private float _subtextWidth;
         private float _maxPinchSpeed;
 
         // Init is called on startup. 
         public override void Init()
         {
-            _guiHandler = new GUIHandler();
-            _guiHandler.AttachToContext(RC);
-
-            _guiFuseeLink = new GUIButton(6, 6, 182, 58);
-            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
-            _guiFuseeLink.BorderColor = ColorUint.Tofloat4(ColorUint.Greenery);
-            _guiFuseeLink.BorderWidth = 0;
-            _guiFuseeLink.OnGUIButtonDown += _guiFuseeLink_OnGUIButtonDown;
-            _guiFuseeLink.OnGUIButtonEnter += _guiFuseeLink_OnGUIButtonEnter;
-            _guiFuseeLink.OnGUIButtonLeave += _guiFuseeLink_OnGUIButtonLeave;
-            _guiHandler.Add(_guiFuseeLink);
-            _guiFuseeLogo = new GUIImage(AssetStorage.Get<ImageData>("FuseeText.png"), 10, 10, -5, 174, 50);
-            _guiHandler.Add(_guiFuseeLogo);
-            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            fontLato.UseKerning = true;
-            _guiLatoBlack = new FontMap(fontLato, 18);
-            _guiSubText = new GUIText("FUSEE Player", _guiLatoBlack, 100, 100);
-            _guiSubText.TextColor = ColorUint.Tofloat4(ColorUint.Greenery);
-            _guiHandler.Add(_guiSubText);
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
 
@@ -205,23 +173,6 @@ namespace Fusee.Engine.Examples.Bone.Core
             }
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
-
-            // Initialize the information text line.
-            _guiSubText.Text = "FUSEE Bone Animation Example";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                _guiSubText.Text += " created";
-                if (_scene.Header.CreatedBy != null)
-                    _guiSubText.Text += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    _guiSubText.Text += " on " + _scene.Header.CreationDate;
-            }
-            // _guiSubText.Text = "dT: xxx ms, W: xxxx, H: xxxx, PS: xxxxxxxx";
-            _subtextWidth = GUIText.GetTextWidth(_guiSubText.Text, _guiLatoBlack);
-            _subtextHeight = GUIText.GetTextHeight(_guiSubText.Text, _guiLatoBlack);
-
-
         }
 
         // RenderAFrame is called once a frame
@@ -330,8 +281,6 @@ namespace Fusee.Engine.Examples.Bone.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
-            _guiHandler.RenderGUI();
-
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
@@ -354,30 +303,6 @@ namespace Fusee.Engine.Examples.Bone.Core
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
             _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
-
-            _guiSubText.PosX = (int)((Width - _subtextWidth) / 2);
-            _guiSubText.PosY = (int)(Height - _subtextHeight - 3);
-
-            _guiHandler.Refresh();
-        }
-
-        private void _guiFuseeLink_OnGUIButtonLeave(GUIButton sender, GUIButtonEventArgs mea)
-        {
-            _guiFuseeLink.ButtonColor = new float4(0, 0, 0, 0);
-            _guiFuseeLink.BorderWidth = 0;
-            SetCursor(CursorType.Standard);
-        }
-
-        private void _guiFuseeLink_OnGUIButtonEnter(GUIButton sender, GUIButtonEventArgs mea)
-        {
-            _guiFuseeLink.ButtonColor = new float4(0.533f, 0.69f, 0.3f, 0.4f);
-            _guiFuseeLink.BorderWidth = 1;
-            SetCursor(CursorType.Hand);
-        }
-
-        void _guiFuseeLink_OnGUIButtonDown(GUIButton sender, GUIButtonEventArgs mea)
-        {
-            OpenLink("http://fusee3d.org");
         }
 
         public static Mesh CreateCuboid(float3 size)

@@ -20,6 +20,16 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
+        //private IEnumerable<System.Type> _codeComponentSubClasses;
+
+        //public ConvertSceneGraph()
+        //{
+        //  _codeComponentSubClasses = 
+        //    Assembly.GetExecutingAssembly()
+        //    .GetTypes()
+        //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
+        //}
+
         protected override void PopState()
         {
             _predecessors.Pop();
@@ -47,7 +57,7 @@ namespace Fusee.Engine.Core
         #region Visitors
 
         [VisitMethod]
-        public void ConvScneNodeContainer(SceneNodeContainer snc)
+        public void ConvSceneNodeContainer(SceneNodeContainer snc)
         {
             if (_predecessors.Count != 0)
             {
@@ -69,6 +79,17 @@ namespace Fusee.Engine.Core
                 else
                     _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
+
+            ////WIP!
+            ////If the SceneNodeContainers' name contains the name of some CodeComponent subclass,
+            ////create CodeComponent of this type and add it to the currentNode
+            //foreach (var type in _codeComponentSubClasses)
+            //{
+            //    if (!snc.Name.Contains(type.ToString())) continue;
+                
+            //    var codeComp = Activator.CreateInstance(type);
+            //    //_currentNode.AddComponent(codeComp);
+            //}
         }
 
         [VisitMethod]
