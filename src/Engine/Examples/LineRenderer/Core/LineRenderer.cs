@@ -58,14 +58,13 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         {
             var sphere = new Sphere(32, 24);
 
-            var lineControlPoints = new float3[]
+            var lineControlPoints = new List<float3>
             {
                 new float3(-3f,0,0) , new float3(-1.5f,-1.5f,0), new float3(1f,1.5f,0)
             };
             var line = new Line(lineControlPoints, 0.2f);
 
             var rnd = new Random();
-
             for (var i = 0; i < NumberOfAnnotations; i++)
             {
                 var vertIndex = rnd.Next(sphere.Vertices.Length);
@@ -150,13 +149,13 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
-
+            var numberOfTriangles = monkey.Triangles.Length / 3;
+            var triangleNumber = rnd.Next(1, numberOfTriangles);
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
             {
-                var numberOfTriangles = monkey.Triangles.Length / 3;
+                
 
-                var triangleNumber = rnd.Next(1, numberOfTriangles);
                 var triIndex = (triangleNumber - 1) * 3;
 
                 _dummyPosTriangleIndex[i] = triIndex;
@@ -186,6 +185,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
         }
+
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -305,42 +305,34 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         child.GetComponent<ShaderEffectComponent>().Effect = GuiHelper.GetShaderEffectFromMatColor(col);
                     }
 
-                    
-                    var yPosScale = _circleCanvasPositions[circleCount].y / _canvasHeight;
-                    yPosScale = (yPosScale - 0.5f) * 2f;
-                    _annotationCanvasPositions[circleCount].y = _circleCanvasPositions[circleCount].y - (GuiHelper.AnnotationDim.y / 2)+(2*GuiHelper.AnnotationDim.y*yPosScale);
-                   
+                    if(_circleCanvasPositions[circleCount] != _circleCanvasPositionsCache[circleCount])
+                    {
+                        var yPosScale = _circleCanvasPositions[circleCount].y / _canvasHeight;
+                        yPosScale = (yPosScale - 0.5f) * 2f;
+                        _annotationCanvasPositions[circleCount].y = _circleCanvasPositions[circleCount].y - (GuiHelper.AnnotationDim.y / 2) + (2 * GuiHelper.AnnotationDim.y * yPosScale);
+                    }
+
                     circleCount++;
                 }
-                else if (child.Name.Contains("Annotation"))
+            }            
+
+            foreach (var child in canvas.Children)
+            {
+                if (child.Name.Contains("Annotation"))
                 {
                     if (_isCircleVisible[annotationCount])
                     {
-                        child.GetComponent<NineSlicePlane>().Active = true;
-                        foreach (var comp in child.GetComponentsInChildren<Mesh>())
-                            comp.Active = true;
-
-
-                        //Calculate y position, taking intersection into account
-                        for (var i = 0; i < _annotationCanvasPositions.Length; i++)
+                        if (_circleCanvasPositions[annotationCount] != _circleCanvasPositionsCache[annotationCount])
                         {
-                            if (i == annotationCount || !_isCircleVisible[i] || !_isCircleVisible[annotationCount])
-                                continue;
-
-                            var intersect = GuiHelper.DoesAnnotationIntersectWithAnnotation(
-                                _annotationCanvasPositions[annotationCount], _annotationCanvasPositions[i]);
-
-                            if (!intersect) continue;
-
-                            if (_annotationCanvasPositions[annotationCount].y > _annotationCanvasPositions[i].y)
-                                _annotationCanvasPositions[annotationCount].y = (_circleCanvasPositions[annotationCount].y - (GuiHelper.AnnotationDim.y / 2)) + GuiHelper.AnnotationDim.y;
-
-                            else
-                                _annotationCanvasPositions[annotationCount].y = (_circleCanvasPositions[annotationCount].y - (GuiHelper.AnnotationDim.y / 2)) - (GuiHelper.AnnotationDim.y);
-
+                            var intersectedAnnotations = new Dictionary<int, float2>();
+                            CalculateAnnotationPositions(annotationCount, intersectedAnnotations);
                         }
 
-                        UpdateAnnotationOffsets(child,annotationCount);
+                        child.GetComponent<NineSlicePlane>().Active = true;
+                        foreach (var comp in child.GetComponentsInChildren<Mesh>())
+                            comp.Active = true;                       
+
+                        UpdateAnnotationOffsets(child, annotationCount);
                     }
                     else
                     {
@@ -351,7 +343,11 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
                     annotationCount++;
                 }
-                else if (child.Name.Contains("line"))
+            }
+
+            foreach (var child in canvas.Children)
+            {
+                if (child.Name.Contains("line"))
                 {
                     if (_isCircleVisible[lineCount])
                     {
@@ -391,7 +387,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                             mesh.Vertices = line.Vertices;
                             mesh.Normals = line.Normals;
                             mesh.Triangles = line.Triangles;
-                            //mesh.UVs = line.UVs;
+                            mesh.UVs = line.UVs;
                         }
 
                         if (mesh == null)
@@ -433,6 +429,85 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             }
 
             Present();
+        }
+
+        //Calculate y position, taking intersection into account
+        private void CalculateAnnotationPositions(int annotationIndex, Dictionary<int, float2> intersectedAnnotations)
+        {
+            if (_isCircleVisible[annotationIndex])
+            {
+                var intersectionCount = 0;                
+                for (var i = 0; i < _annotationCanvasPositions.Length; i++)
+                {
+                    if (i == annotationIndex || !_isCircleVisible[i])
+                        continue;
+
+                    var intersect = GuiHelper.DoesAnnotationIntersectWithAnnotation(
+                        _annotationCanvasPositions[annotationIndex], _annotationCanvasPositions[i]);
+
+                    if (!intersect) continue;
+                    if(!intersectedAnnotations.ContainsKey(i))
+                        intersectedAnnotations.Add(i, _annotationCanvasPositions[i]);
+                    intersectionCount++;
+                }
+
+                if (intersectionCount == 0)
+                    return;
+
+                if (intersectedAnnotations.Count >= 1)
+                {
+                    if (!intersectedAnnotations.ContainsKey(annotationIndex))
+                        intersectedAnnotations.Add(annotationIndex, _annotationCanvasPositions[annotationIndex]); //add pos that is just being checked
+
+                    intersectedAnnotations = intersectedAnnotations.OrderByDescending(item => item.Value.y).ToDictionary(item => item.Key, item => item.Value);                     
+
+                    var middleIndex = (intersectedAnnotations.Count) / 2;
+                    var averagePos = new float2();
+
+                    for (int i = 0; i < intersectedAnnotations.Count; i++)                    
+                        averagePos += intersectedAnnotations.ElementAt(middleIndex).Value;               
+
+                    averagePos /= intersectedAnnotations.Count;
+
+                    for (int i = 0; i < intersectedAnnotations.Count; i++)
+                    {
+                        var annotCount = intersectedAnnotations.ElementAt(i).Key;
+                        _annotationCanvasPositions[annotCount] = averagePos;
+
+                        var multiplier = System.Math.Abs(i - middleIndex);
+
+                        if (intersectedAnnotations.Count % 2 == 0) //even
+                        {
+                            if (i == middleIndex - 1)                            
+                                _annotationCanvasPositions[annotCount] += 0.25f * GuiHelper.AnnotationDim.y + (GuiHelper.AnnotationDim.y * multiplier);
+                            
+                            else if (i == middleIndex)                            
+                                _annotationCanvasPositions[annotCount] -= 0.25f * GuiHelper.AnnotationDim.y + (GuiHelper.AnnotationDim.y * multiplier);
+                            
+                            else if (i > middleIndex)                            
+                                _annotationCanvasPositions[annotCount] -= 0.75f * GuiHelper.AnnotationDim.y + (GuiHelper.AnnotationDim.y * multiplier);
+                            
+                            else if (i < middleIndex)
+                                _annotationCanvasPositions[annotCount] += 0.75f * GuiHelper.AnnotationDim.y + (GuiHelper.AnnotationDim.y * multiplier);
+                            
+                        }
+                        else //odd
+                        {                            
+                            if (i > middleIndex)                            
+                                _annotationCanvasPositions[annotCount] -= 0.5f * GuiHelper.AnnotationDim.y+ (GuiHelper.AnnotationDim.y * multiplier);
+                            
+                            else if (i < middleIndex)                            
+                                _annotationCanvasPositions[annotCount] += 0.5f * GuiHelper.AnnotationDim.y + (GuiHelper.AnnotationDim.y * multiplier);                            
+                        }
+                    }
+                }
+            }
+
+            //Recursively check all annotations that where involved in this intersection
+            for (int i = 0; i < intersectedAnnotations.Count; i++)
+            {
+                  CalculateAnnotationPositions(intersectedAnnotations.ElementAt(i).Key, intersectedAnnotations);
+            }
         }
 
         // Is called when the window was resized

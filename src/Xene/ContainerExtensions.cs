@@ -31,8 +31,8 @@ namespace Fusee.Xene
         /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
         public static IEnumerable<SceneComponentContainer> GetComponentsInChildren(this SceneNodeContainer sncThis, Type type)
         {
-            if (sncThis == null || sncThis.Components == null || type == null)
-                throw new ArgumentException("SceneNodeContainer has no Components or is null!");
+            if (sncThis == null || type == null)
+                throw new ArgumentException("SceneNodeContainer or type is null!");
 
             foreach (var child in sncThis.Children)
             {
