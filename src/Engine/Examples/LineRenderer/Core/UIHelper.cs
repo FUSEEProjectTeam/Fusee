@@ -8,8 +8,22 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
-    internal static class GuiHelper
+    internal static class UIHelper
     {
+        internal static List<string> DummySegmentationClasses = new List<string>()
+        {
+            "powder",
+            "snap",
+            "stock",
+            "cater",
+            "variety",
+            "reward",
+            "sharp",
+            "bottle",
+            "hotdog",
+            "refuse"
+        };
+
         internal const float CanvasWidthInit = 16;
         internal const float CanvasHeightInit = 9;
 
@@ -28,6 +42,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         internal static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
         internal static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
         internal static readonly float3 White = new float3(1, 1, 1);
+
+        private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"));
+        private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"));
+        private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"));
+       
+        private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"));
+        private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"));
+        private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
+        private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
         internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float3(1, 1, 1), 20, 0);
         internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float3(1, 1, 1), 20, 0);
@@ -54,6 +77,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             RIGHT
         }
 
+        internal enum AnnotationKind
+        {
+            TO_CHECK,
+            DISCARDED,
+            RECOGNIZED_ML,
+            CONFIRMED
+        }
+
+
         public enum AnchorPos
         {
             DOWN_DOWN_LEFT,     //Min = Max = 0,0
@@ -69,7 +101,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             switch (anchorPos)
             {
                 default:
-                case GuiHelper.AnchorPos.MIDDLE:
+                case UIHelper.AnchorPos.MIDDLE:
                     var middle = new float2(parentWidth / 2f, parentHeight / 2f);
                     return new MinMaxRect
                     {
@@ -78,35 +110,35 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         Max = posOnParent - middle + guiElementDim
                     };
 
-                case GuiHelper.AnchorPos.STRETCH_ALL:
+                case UIHelper.AnchorPos.STRETCH_ALL:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 1,1!!!
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
                     };
-                case GuiHelper.AnchorPos.DOWN_DOWN_LEFT:
+                case UIHelper.AnchorPos.DOWN_DOWN_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 0,0!!!
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
                     };
-                case GuiHelper.AnchorPos.DOWN_DOWN_RIGHT:
+                case UIHelper.AnchorPos.DOWN_DOWN_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,0 and Max 1,0!!!
                         Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
                     };
-                case GuiHelper.AnchorPos.TOP_TOP_LEFT:
+                case UIHelper.AnchorPos.TOP_TOP_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,1 and Max 0,1!!!
                         Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
                         Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
-                case GuiHelper.AnchorPos.TOP_TOP_RIGHT:
+                case UIHelper.AnchorPos.TOP_TOP_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,1 and Max 1,1!!!
@@ -116,13 +148,49 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             }
         }
 
-        internal static SceneNodeContainer CreateAnnotation(float2 pos, float textSize, float borderScaleFactor, string text, string iconFileName, string frameFileName, float textSizeAdaptor = 1)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer canvas, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        {
+
+            var textLength = text.Length;
+            var maxLenght = 16;
+            var textscaler = 1f;
+            if (textLength < maxLenght)
+                textscaler = ((100.0f/maxLenght * textLength)/100.0f);
+
+            switch (annotationKind)
+            {
+                case AnnotationKind.TO_CHECK:
+                    canvas.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
+                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textscaler));
+                    canvas.Children.Add(CreateLine(MatColor.YELLOW));
+                    break;
+                case AnnotationKind.DISCARDED:
+                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
+                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textscaler));
+                    canvas.Children.Add(CreateLine(MatColor.GRAY));
+                    break;
+                case AnnotationKind.RECOGNIZED_ML:
+                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textscaler));
+                    canvas.Children.Add(CreateLine(MatColor.GREEN));
+                    break;
+                case AnnotationKind.CONFIRMED:
+                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textscaler));
+                    canvas.Children.Add(CreateLine(MatColor.GREEN));
+                    break; 
+                default:
+                    break;
+            }            
+        }
+
+        private static SceneNodeContainer CreateAnnotation(float2 pos, float textSize, float borderScaleFactor, string text, Texture iconTex, Texture frameTex, float textSizeAdaptor = 1)
         {
             var icon = new TextureNodeContainer(
                 "icon",
                 VsTex,
                 PsTex,
-                new Texture(AssetStorage.Get<ImageData>(iconFileName)),
+                iconTex,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
@@ -150,7 +218,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 "Annotation",
                 VsNineSlice,
                 PsNineSlice,
-                new Texture(AssetStorage.Get<ImageData>(frameFileName)),
+                frameTex,
                 new MinMaxRect
                 {
                     Min = new float2(0, 0),
@@ -172,7 +240,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             };
         }        
 
-        internal static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
+        private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
         {
             float3 col;
 
@@ -223,7 +291,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             };
         }
 
-        internal static SceneNodeContainer CreateLine(MatColor color)
+        private static SceneNodeContainer CreateLine(MatColor color)
         {
             float3 col;
 
