@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private const float Damping = 0.0f;
         private bool _keys;
 
-        public int NumberOfAnnotations = 20;
+        public int NumberOfAnnotations = 7;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -121,7 +121,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
-
+            
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
             {
@@ -169,7 +169,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
         }
-
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -237,136 +236,129 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             }
             #endregion
 
-            #region Update UI elements
+           
             //Annotations will be unpdated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
             var canvas = _gui.Children[0];
 
-            for (int i = 0; i < canvas.Children.Count; i++)
+            foreach (var child in canvas.Children)
             {
-                SceneNodeContainer child = canvas.Children[i];
-                if (child.Name.Contains("MarkModelContainer"))
+                if (!child.Name.Contains("MarkModelContainer")) continue;
+
+                //1.    Calculate the circles canvas position.
+                for (var k = 0; k < child.Children.Count; k++)
                 {
-                    for (int k = 0; k < child.Children.Count; k++)
+                    var container = child.Children[k];
+
+                    var circle = container.Children[0];
+                    var uiInput = _uiInput[k];
+
+                    var clipPos = uiInput.Position.TransformPerspective(RC.ModelViewProjection); //divides by w
+                    var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
+
+                    canvasPosCircle.x *= _canvasWidth;
+                    canvasPosCircle.y *= _canvasHeight;
+                    uiInput.CircleCanvasPos = canvasPosCircle;
+
+                    var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
+                    circle.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+
+                    //1.1   Check if circle is visible
+                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+
+                    var col = UIHelper.MatColor.WHITE;
+
+                    if (uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
-                        var container = child.Children[k];
+                        uiInput.IsVisible = true;
 
-                        var circle = container.Children[0];
-                        var annotation = container.Children[1];                        
-                        var uiInput = _uiInput[k];
+                        if (circle.Name.Contains("green"))
+                            col = UIHelper.MatColor.GREEN;
 
-                        #region Circle
-                        //1. Update Circle pos
-                        var clipPos = uiInput.Position.TransformPerspective(RC.ModelViewProjection); //divides by w
-                        var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
+                        else if (circle.Name.Contains("yellow"))
+                            col = UIHelper.MatColor.YELLOW;
 
-                        canvasPosCircle.x *= _canvasWidth;
-                        canvasPosCircle.y *= _canvasHeight;
-                        uiInput.CircleCanvasPos = canvasPosCircle;
+                        if (circle.Name.Contains("gray"))
+                            col = UIHelper.MatColor.GRAY;
 
-                        var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
-                        circle.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+                        circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
+                    }
+                    else
+                    {
+                        uiInput.IsVisible = false;
 
-                        //2. Check if circle is visible
-                        var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                        col = UIHelper.MatColor.WHITE;
+                        circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
+                    }
 
-                        var col = UIHelper.MatColor.WHITE;
+                    //1.2   Calculate annotation positions without intersections.
+                    if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
+                    {
+                        var yPosScale = uiInput.CircleCanvasPos.y / _canvasHeight;
+                        yPosScale = (yPosScale - 0.5f) * 2f;
+                        uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UIHelper.AnnotationDim.y / 2) + (2 * UIHelper.AnnotationDim.y * yPosScale);
 
-                        if (uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
-                        {
-                            uiInput.IsVisible = true;
-
-                            if (circle.Name.Contains("green"))
-                                col = UIHelper.MatColor.GREEN;
-
-                            else if (circle.Name.Contains("yellow"))
-                                col = UIHelper.MatColor.YELLOW;
-
-                            if (circle.Name.Contains("gray"))
-                                col = UIHelper.MatColor.GRAY;
-
-                            circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
-                        }
+                        if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT                        
+                            uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
                         else
-                        {
-                            uiInput.IsVisible = false;
+                            uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;                            
+                    }
+                    _uiInput[k] = uiInput;
+                }
 
-                            col = UIHelper.MatColor.WHITE;
-                            circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
-                        }
-
-                        //Annotation Positions without intersections
+                // 2.   Find intersecting annotations and correct their position in _uiInput.
+                //      Disable rendering of annotation if its corresponding circle is not visible.
+                for (var k = 0; k < child.Children.Count; k++)
+                {
+                    var container = child.Children[k];
+                    var annotation = container.Children[1];
+                    var uiInput = _uiInput[k];
+                    
+                    if (uiInput.IsVisible)
+                    {
                         if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
                         {
-                            var yPosScale = uiInput.CircleCanvasPos.y / _canvasHeight;
-                            yPosScale = (yPosScale - 0.5f) * 2f;
-                            uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UIHelper.AnnotationDim.y / 2) + (2 * UIHelper.AnnotationDim.y * yPosScale);
-
-                            if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT                        
-                                uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
-                            else
-                                uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;                            
-                        }
-                        #endregion
-
-                        #region Annotation
-
-                        if (uiInput.IsVisible)
-                        {
-                            if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
-                            {
-                                var intersectedAnnotations = new Dictionary<int, float2>();
-                                var iterations = 0;
-                                CalculateAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
-                                //var text = child.Children[0].Children[0].GetComponent<GUIText>();
-                                //child.Children[0].Children[0].Components.Remove(text);
-                                //var newText = new GUIText(UIHelper.RalewayFontMap, uiInput.AnnotationCanvasPos.ToString());
-                                //child.Children[0].Children[0].AddComponent(newText);                         
-                                
-                            }
-
-                            annotation.GetComponent<NineSlicePlane>().Active = true;
-                            foreach (var comp in annotation.GetComponentsInChildren<Mesh>())
-                                comp.Active = true;
-                        }
-                        else
-                        {
-                            annotation.GetComponent<NineSlicePlane>().Active = false;
-                            foreach (var comp in annotation.GetComponentsInChildren<Mesh>())
-                                comp.Active = false;
+                            var intersectedAnnotations = new Dictionary<int, float2>();
+                            var iterations = 0;
+                            CalculateNonIntersectingAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
                         }
 
-                        _uiInput[k] = uiInput;
-
-                        #endregion
+                        annotation.GetComponent<NineSlicePlane>().Active = true;
+                        foreach (var comp in annotation.GetComponentsInChildren<Mesh>())
+                            comp.Active = true;
                     }
-
-                    for (int k = 0; k < child.Children.Count; k++)
+                    else
                     {
-                        var container = child.Children[k];
-
-                        var line = container.Children[2];
-                        var uiInput = _uiInput[k];
-
-                        if (uiInput.IsVisible)
-                        {
-                            if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
-                            {
-                                 UpdateAnnotationOffsets(child.Children[uiInput.Identifier].Children[1], uiInput);
-                                 DrawLine(child.Children[uiInput.Identifier].Children[2], uiInput);                                
-                            }
-                        }
-                                    
-                        DrawLine(line, uiInput);                        
-
-                        uiInput.CircleCanvasPosCache = uiInput.CircleCanvasPos;
-
+                        annotation.GetComponent<NineSlicePlane>().Active = false;
+                        foreach (var comp in annotation.GetComponentsInChildren<Mesh>())
+                            comp.Active = false;
                     }
                 }
-            }
+                
+                // 3.   Update annotation positions on canvas and draw line
+                for (var k = 0; k < child.Children.Count; k++)
+                {
+                    var container = child.Children[k];
 
-            #endregion
+                    var line = container.Children[2];
+                    var uiInput = _uiInput[k];
+
+                    if (uiInput.IsVisible)
+                    {
+                        if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
+                        {
+                            UpdateAnnotationOffsets(child.Children[uiInput.Identifier].Children[1], uiInput);
+                            DrawLine(child.Children[uiInput.Identifier].Children[2], uiInput);                                
+                        }
+                    }
+                                    
+                    DrawLine(line, uiInput);                        
+
+                    uiInput.CircleCanvasPosCache = uiInput.CircleCanvasPos;
+                    _uiInput[k] = uiInput;
+                }
+            }
 
             //TODO: set screen space UI projection to orthographic in SceneRenderer
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
@@ -389,169 +381,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             Present();
         }
 
-
-        private void DrawLine(SceneNodeContainer sncLine, UIInput uiInput)
-        {
-            if (uiInput.IsVisible)
-            {
-                if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
-                {
-                    List<float3> linePoints;
-
-                    if (uiInput.CircleCanvasPos.x <= _canvasWidth / 2)
-                    {
-                        //LEFT
-                        linePoints = new List<float3>
-                        {
-                            new float3(uiInput.AnnotationCanvasPos.x + UIHelper.AnnotationDim.x, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
-                            new float3(uiInput.CircleCanvasPos.x - (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
-                        };
-                    }
-                    else
-                    {
-                        //RIGHT
-                        var posX = _canvasWidth - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
-
-                        linePoints = new List<float3>
-                        {
-                            new float3(posX, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
-                            new float3(uiInput.CircleCanvasPos.x + (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
-                        };
-                    }
-
-                    sncLine.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
-
-                    var mesh = sncLine.GetComponent<Line>();
-
-                    if (mesh != null)
-                    {
-                        var newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
-                        mesh.Vertices = newLine.Vertices;
-                        mesh.Normals = newLine.Normals;
-                        mesh.Triangles = newLine.Triangles;
-                        mesh.UVs = newLine.UVs;
-                    }
-
-                    else if (mesh == null)
-                    {
-                        var newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
-                        sncLine.AddComponent(newLine);
-                    }
-                }
-            }
-            else
-            {
-                var newLine = sncLine.GetComponent<Line>();
-                if (newLine != null)
-                    sncLine.Components.Remove(newLine);
-            }
-        }
-
-        //Calculate y position, taking intersection into account
-        private void CalculateAnnotationPositions(ref UIInput input, ref Dictionary<int, float2> intersectedAnnotations, ref int iterations)
-        {
-            if (input.IsVisible)
-            {
-                var intersectionCount = 0;
-                for (var i = 0; i < _uiInput.Count; i++)
-                {
-                    var counterpart = _uiInput[i];
-
-                    if (counterpart.Identifier == input.Identifier || !counterpart.IsVisible || intersectedAnnotations.ContainsKey(counterpart.Identifier))
-                        continue;
-
-                    var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos);
-
-                    if (!intersect) continue;
-                    if (!intersectedAnnotations.ContainsKey(counterpart.Identifier))
-                    {
-                        intersectedAnnotations.Add(counterpart.Identifier, _uiInput[i].AnnotationCanvasPos);
-                        intersectionCount++;
-                    }
-                }
-
-                if (intersectionCount == 0)
-                    return;
-
-                if (intersectedAnnotations.Count >= 1)
-                {
-                    if (!intersectedAnnotations.ContainsKey(input.Identifier))
-                        intersectedAnnotations.Add(input.Identifier, input.AnnotationCanvasPos); //add pos that is just being checked
-
-                    var orderdBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList(); //JSIL not implemented exception: OrderdByDecending and Reverse
-                    var orderdByDescending = new List<KeyValuePair<int, float2>>();
-                    for (int i = 0; i < orderdBy.Count; i++) //Reverse
-                    {
-                        orderdByDescending.Add(orderdBy[orderdBy.Count - 1 - i]);
-                    }
-
-                    intersectedAnnotations = new Dictionary<int, float2>();
-                    foreach (var keyValue in orderdByDescending) //JSIL not implemented exception: ToDictionary
-                    {
-                        intersectedAnnotations.Add(keyValue.Key, keyValue.Value);
-                    }
-
-                    var middleIndex = (intersectedAnnotations.Count) / 2;
-                    var averagePos = new float2();
-
-                    for (int i = 0; i < intersectedAnnotations.Count; i++)
-                        averagePos += intersectedAnnotations.ElementAt(middleIndex).Value;
-
-                    averagePos /= intersectedAnnotations.Count;
-
-                    for (int i = 0; i < intersectedAnnotations.Count; i++)
-                    {
-                        var identifier = intersectedAnnotations.ElementAt(i).Key;
-                        var thisInput = _uiInput[identifier];
-                        thisInput.AnnotationCanvasPos = averagePos;
-
-                        var multiplier = System.Math.Abs(i - middleIndex);
-
-                        //Distance between annotations is 0.5* AnnotationDim.y
-                        if (intersectedAnnotations.Count % 2 == 0) //even
-                        {
-                            if (i == middleIndex - 1)
-                                thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
-
-                            else if (i == middleIndex)
-                                thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
-
-                            else if (i > middleIndex)
-                                thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
-                            else if (i < middleIndex)
-                                thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
-                        }
-                        else //odd
-                        {
-                            if (i > middleIndex)
-                                thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
-
-                            else if (i < middleIndex)
-                                thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
-                        }
-
-                        _uiInput[identifier] = thisInput;
-                    }
-                }
-
-                //Recursively check all annotations that where involved in this intersection
-                for (var i = 0; i < intersectedAnnotations.Count; i++)
-                {
-                    if (i == 0 || i == intersectedAnnotations.Count - 1)
-                    {
-                        iterations++;
-                        var identifier = intersectedAnnotations.ElementAt(i).Key;
-                        var uiInput = _uiInput[identifier];
-
-                        CalculateAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
-                    }
-                }
-            }
-        }
-
-        // Is called when the window was resized
+       // Is called when the window was resized
         public override void Resize()
         {
             // Set the new rendering area to the entire new windows size
@@ -628,13 +458,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
             };
 
-
-            //Should possibly come from external data
-            var circleDim = new float2(0.65f, 0.65f);
-
-            for (int i = 0; i < _uiInput.Count; i++)
+            for (var i = 0; i < _uiInput.Count; i++)
             {
-                UIInput item = _uiInput[i];
+                var item = _uiInput[i];
                 if (item.AnnotationKind != UIHelper.AnnotationKind.CONFIRMED)
                 {
                     UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
@@ -699,6 +525,159 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(
                     UIHelper.AnchorPos.DOWN_DOWN_RIGHT, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
+            }
+        }
+
+        private void DrawLine(SceneNodeContainer sncLine, UIInput uiInput)
+        {
+            if (uiInput.IsVisible)
+            {
+                if (uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache)) return;
+                List<float3> linePoints;
+
+                if (uiInput.CircleCanvasPos.x <= _canvasWidth / 2)
+                {
+                    //LEFT
+                    linePoints = new List<float3>
+                    {
+                        new float3(uiInput.AnnotationCanvasPos.x + UIHelper.AnnotationDim.x, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
+                        new float3(uiInput.CircleCanvasPos.x - (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
+                    };
+                }
+                else
+                {
+                    //RIGHT
+                    var posX = _canvasWidth - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
+
+                    linePoints = new List<float3>
+                    {
+                        new float3(posX, uiInput.AnnotationCanvasPos.y + UIHelper.AnnotationDim.y/2,0),
+                        new float3(uiInput.CircleCanvasPos.x + (uiInput.Size.x/2), uiInput.CircleCanvasPos.y,0)
+                    };
+                }
+
+                sncLine.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+
+                var mesh = sncLine.GetComponent<Line>();
+
+                if (mesh != null)
+                {
+                    var newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                    mesh.Vertices = newLine.Vertices;
+                    mesh.Normals = newLine.Normals;
+                    mesh.Triangles = newLine.Triangles;
+                    mesh.UVs = newLine.UVs;
+                }
+                else
+                {
+                    var newLine = new Line(linePoints, 0.0025f / _resizeScaleFactor.y, _canvasWidth, _canvasHeight);
+                    sncLine.AddComponent(newLine);
+                }
+            }
+            else
+            {
+                var newLine = sncLine.GetComponent<Line>();
+                if (newLine != null)
+                    sncLine.Components.Remove(newLine);
+            }
+        }
+
+        private void CalculateNonIntersectingAnnotationPositions(ref UIInput input, ref Dictionary<int, float2> intersectedAnnotations, ref int iterations)
+        {
+            if (!input.IsVisible) return;
+
+            var intersectionCount = 0;
+            for (var i = 0; i < _uiInput.Count; i++)
+            {
+                var counterpart = _uiInput[i];
+
+                if (counterpart.Identifier == input.Identifier || !counterpart.IsVisible || intersectedAnnotations.ContainsKey(counterpart.Identifier))
+                    continue;
+
+                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos);
+
+                if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
+
+                intersectedAnnotations.Add(counterpart.Identifier, _uiInput[i].AnnotationCanvasPos);
+                intersectionCount++;
+            }
+
+            if (intersectionCount == 0)
+                return;
+
+            if (intersectedAnnotations.Count >= 1)
+            {
+                if (!intersectedAnnotations.ContainsKey(input.Identifier))
+                    intersectedAnnotations.Add(input.Identifier, input.AnnotationCanvasPos); //add pos that is just being checked
+
+                var orderdBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList(); //JSIL not implemented exception: OrderdByDecending and Reverse
+                var orderdByDescending = new List<KeyValuePair<int, float2>>();
+                for (var i = 0; i < orderdBy.Count; i++) //Reverse
+                {
+                    orderdByDescending.Add(orderdBy[orderdBy.Count - 1 - i]);
+                }
+
+                intersectedAnnotations = new Dictionary<int, float2>();
+                foreach (var keyValue in orderdByDescending) //JSIL not implemented exception: ToDictionary
+                {
+                    intersectedAnnotations.Add(keyValue.Key, keyValue.Value);
+                }
+
+                var middleIndex = (intersectedAnnotations.Count) / 2;
+                var averagePos = new float2();
+
+                for (var i = 0; i < intersectedAnnotations.Count; i++)
+                    averagePos += intersectedAnnotations.ElementAt(i).Value;
+
+                averagePos /= intersectedAnnotations.Count;
+
+                for (var i = 0; i < intersectedAnnotations.Count; i++)
+                {
+                    var identifier = intersectedAnnotations.ElementAt(i).Key;
+                    var thisInput = _uiInput[identifier];
+                    thisInput.AnnotationCanvasPos = averagePos;
+
+                    var multiplier = System.Math.Abs(i - middleIndex);
+
+                    //Distance between annotations is 0.5* AnnotationDim.y
+                    if (intersectedAnnotations.Count % 2 == 0) //even
+                    {
+                        if (i == middleIndex - 1)
+                            thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
+
+                        else if (i == middleIndex)
+                            thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
+
+                        else if (i > middleIndex)
+                            thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+
+                        else if (i < middleIndex)
+                            thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+
+                    }
+                    else //odd
+                    {
+                        if (i > middleIndex)
+                            thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+
+                        else if (i < middleIndex)
+                            thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+                    }
+
+                    _uiInput[identifier] = thisInput;
+                }
+
+            }
+
+            //Recursively check all annotations that where involved in this intersection
+            for (var i = 0; i < intersectedAnnotations.Count; i++)
+            {
+                if (i != 0 && i != intersectedAnnotations.Count - 1) continue;
+                iterations++;
+                var identifier = intersectedAnnotations.ElementAt(i).Key;
+                var uiInput = _uiInput[identifier];
+
+                CalculateNonIntersectingAnnotationPositions(ref uiInput, ref intersectedAnnotations, ref iterations);
             }
         }
     }

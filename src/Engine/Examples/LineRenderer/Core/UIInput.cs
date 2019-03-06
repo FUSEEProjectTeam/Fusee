@@ -3,7 +3,6 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
-
     internal struct UIInput
     {
         //"Position" and "Size" determine a rectangle - with "Position" as its center - that encloses the object we want to mark with UI elements.

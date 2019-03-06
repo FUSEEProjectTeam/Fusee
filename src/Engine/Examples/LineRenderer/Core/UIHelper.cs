@@ -101,7 +101,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             switch (anchorPos)
             {
                 default:
-                case UIHelper.AnchorPos.MIDDLE:
+                case AnchorPos.MIDDLE:
                     var middle = new float2(parentWidth / 2f, parentHeight / 2f);
                     return new MinMaxRect
                     {
@@ -110,35 +110,35 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                         Max = posOnParent - middle + guiElementDim
                     };
 
-                case UIHelper.AnchorPos.STRETCH_ALL:
+                case AnchorPos.STRETCH_ALL:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 1,1!!!
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
                     };
-                case UIHelper.AnchorPos.DOWN_DOWN_LEFT:
+                case AnchorPos.DOWN_DOWN_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,0 and Max 0,0!!!
                         Min = new float2(posOnParent.x, posOnParent.y),
                         Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
                     };
-                case UIHelper.AnchorPos.DOWN_DOWN_RIGHT:
+                case AnchorPos.DOWN_DOWN_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,0 and Max 1,0!!!
                         Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
                         Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
                     };
-                case UIHelper.AnchorPos.TOP_TOP_LEFT:
+                case AnchorPos.TOP_TOP_LEFT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 0,1 and Max 0,1!!!
                         Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
                         Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
                     };
-                case UIHelper.AnchorPos.TOP_TOP_RIGHT:
+                case AnchorPos.TOP_TOP_RIGHT:
                     return new MinMaxRect
                     {
                         //only for the anchors Min 1,1 and Max 1,1!!!
@@ -150,7 +150,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
-
+            //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
             var textLength = text.Length;
             var maxLenght = 16;
             var textscaler = 1f;
@@ -185,8 +185,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textscaler));
                     container.Children.Add(CreateLine(MatColor.GREEN));
-                    break; 
-                default:
                     break;
             }
             parentUiElement.Children.Add(container);
@@ -257,6 +255,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             switch (color)
             {
                 default:
+                case MatColor.WHITE:
+                    col = White;
+                    nameSuffix = "white";
+                    break;
                 case MatColor.GREEN:
                     col = Green;
                     nameSuffix = "green";
@@ -306,6 +308,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             switch (color)
             {
                 default:
+                case MatColor.WHITE:
+                    col = White;
+                    break;
                 case MatColor.GREEN:
                     col = Green;
                     break;
@@ -350,6 +355,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             switch (col)
             {
                 default:
+                case MatColor.WHITE:
+                    return OccludedDummyEffect;
+
                 case MatColor.GREEN:
                     return GreenEffect;
                     
@@ -358,27 +366,18 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     
                 case MatColor.GRAY:
                     return GrayEffect;
-
-                case MatColor.WHITE:
-                    return OccludedDummyEffect;
-
             }
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation)
         {
-            //AnnotationCanvasPos equals lower left corner.           
-
             var halfDim = AnnotationDim / 2;
-            var buffer = 0;
+            var buffer = halfDim.y - (halfDim.y /100f * 10);
 
-            if (firstAnnotation.x + AnnotationDim.x > secondAnnotation.x &&
-                firstAnnotation.x  < secondAnnotation.x + AnnotationDim.x &&
-                firstAnnotation.y + buffer + AnnotationDim.y > secondAnnotation.y - buffer &&
-                firstAnnotation.y - buffer < secondAnnotation.y + AnnotationDim.y + buffer)
-                return true;
-            return false;   
-
+            return firstAnnotation.x + AnnotationDim.x > secondAnnotation.x &&
+                   firstAnnotation.x  < secondAnnotation.x + AnnotationDim.x &&
+                   firstAnnotation.y + buffer + AnnotationDim.y > secondAnnotation.y - buffer &&
+                   firstAnnotation.y - buffer < secondAnnotation.y + AnnotationDim.y + buffer;
         }
     }
 }
