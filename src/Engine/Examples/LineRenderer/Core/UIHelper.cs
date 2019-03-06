@@ -155,7 +155,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var maxLenght = 16;
             var textscaler = 1f;
             if (textLength < maxLenght)
-                textscaler = ((100.0f/maxLenght * textLength)/100.0f);
+                textscaler = (100.0f/maxLenght * textLength/100.0f)+0.018f;
 
             switch (annotationKind)
             {
@@ -361,14 +361,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         {
             //AnnotationCanvasPos equals lower left corner.           
 
+            var halfDim = AnnotationDim / 2;
+            var buffer = halfDim.y - 0.15;
+
             if (firstAnnotation.x + AnnotationDim.x > secondAnnotation.x &&
                 firstAnnotation.x  < secondAnnotation.x + AnnotationDim.x &&
-                firstAnnotation.y + AnnotationDim.y > secondAnnotation.y  &&
-                firstAnnotation.y  < secondAnnotation.y + AnnotationDim.y)
+                firstAnnotation.y + buffer + AnnotationDim.y > secondAnnotation.y - buffer &&
+                firstAnnotation.y - buffer < secondAnnotation.y + AnnotationDim.y + buffer)
                 return true;
-            return false;
-        
-
+            return false;   
 
         }
     }
