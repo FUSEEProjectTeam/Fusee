@@ -148,7 +148,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             }
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer canvas, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
 
             var textLength = text.Length;
@@ -156,32 +156,40 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             var textscaler = 1f;
             if (textLength < maxLenght)
                 textscaler = (100.0f/maxLenght * textLength/100.0f)+0.018f;
+                        
+
+            var container = new SceneNodeContainer
+            {
+                Name = "Container"
+            };           
+            
 
             switch (annotationKind)
             {
                 case AnnotationKind.TO_CHECK:
-                    canvas.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
-                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textscaler));
-                    canvas.Children.Add(CreateLine(MatColor.YELLOW));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textscaler));
+                    container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
                 case AnnotationKind.DISCARDED:
-                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
-                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textscaler));
-                    canvas.Children.Add(CreateLine(MatColor.GRAY));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textscaler));
+                    container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
                 case AnnotationKind.RECOGNIZED_ML:
-                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textscaler));
-                    canvas.Children.Add(CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textscaler));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
                 case AnnotationKind.CONFIRMED:
-                    canvas.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    canvas.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textscaler));
-                    canvas.Children.Add(CreateLine(MatColor.GREEN));
+                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textscaler));
+                    container.Children.Add(CreateLine(MatColor.GREEN));
                     break; 
                 default:
                     break;
-            }            
+            }
+            parentUiElement.Children.Add(container);
         }
 
         private static SceneNodeContainer CreateAnnotation(float2 pos, float textSize, float borderScaleFactor, string text, Texture iconTex, Texture frameTex, float textSizeAdaptor = 1)
@@ -362,7 +370,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             //AnnotationCanvasPos equals lower left corner.           
 
             var halfDim = AnnotationDim / 2;
-            var buffer = halfDim.y - 0.15;
+            var buffer = 0;
 
             if (firstAnnotation.x + AnnotationDim.x > secondAnnotation.x &&
                 firstAnnotation.x  < secondAnnotation.x + AnnotationDim.x &&

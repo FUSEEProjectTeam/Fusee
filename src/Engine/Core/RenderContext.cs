@@ -1643,7 +1643,7 @@ namespace Fusee.Engine.Core
                     _rci.Render(meshImp);
 
                     // After rendering always cleanup pending meshes
-                    _meshManager.Cleanup();
+                    //_meshManager.Cleanup();
                     _textureManager.Cleanup();
                 }
 
