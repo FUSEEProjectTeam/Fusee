@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private const float Damping = 0.0f;
         private bool _keys;
 
-        public int NumberOfAnnotations = 7;
+        public int NumberOfAnnotations = 10;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -39,8 +39,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
 
         private float _canvasWidth;
         private float _canvasHeight;
-        private float _canvasScaleFactor;
-
+        
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
@@ -107,6 +106,17 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // Init is called on startup. 
         public override void Init()
         {
+            if(_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                UIHelper.CanvasWidthInit = Width / 100f;
+                UIHelper.CanvasHeightInit = Height / 100f;
+            }
+            else
+            {
+                UIHelper.CanvasHeightInit = 16;
+                UIHelper.CanvasWidthInit = 9;
+            }
+
             _canvasHeight = UIHelper.CanvasHeightInit;
             _canvasWidth = UIHelper.CanvasWidthInit;
 
@@ -387,13 +397,15 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
 
-            _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
-            _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
-            _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
-
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             _aspectRatio = Width / (float)Height;
 
+            _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
+            
+            _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
+            _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
+
+            
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)

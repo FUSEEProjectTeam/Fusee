@@ -12,20 +12,20 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
     {
         internal static List<string> DummySegmentationClasses = new List<string>()
         {
-            "powder",
-            "snap",
-            "stock",
-            "cater",
-            "variety",
-            "reward",
-            "sharp",
-            "bottle",
-            "hotdog",
-            "refuse"
+            "orangutan",
+            "banana",
+            "monkey",
+            "jungle",
+            "coconut",
+            "chimp",
+            "gorilla",
+            "lemur",
+            "liana",
+            "gibbon"
         };
 
-        internal const float CanvasWidthInit = 16;
-        internal const float CanvasHeightInit = 9;
+        internal static float CanvasWidthInit;
+        internal static float CanvasHeightInit;
 
         internal static float2 AnnotationDim = new float2(3f, 0.5f);
         internal static float4 AnnotationBorderThickness = new float4(6, 0.5f, 0.5f, 0.5f);
@@ -152,11 +152,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         {
             //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
             var textLength = text.Length;
-            var maxLenght = 16;
-            var textscaler = 1f;
-            if (textLength < maxLenght)
-                textscaler = (100.0f/maxLenght * textLength/100.0f)+0.018f;
-                        
+            var maxLenght = 19;
+            var textSizeModifier = ((100.0f / maxLenght * textLength) / 100.0f);
 
             var container = new SceneNodeContainer
             {
@@ -168,22 +165,22 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             {
                 case AnnotationKind.TO_CHECK:
                     container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textscaler));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
                 case AnnotationKind.DISCARDED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textscaler));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
                 case AnnotationKind.RECOGNIZED_ML:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textscaler));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
                 case AnnotationKind.CONFIRMED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
-                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textscaler));
+                    container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
             }
