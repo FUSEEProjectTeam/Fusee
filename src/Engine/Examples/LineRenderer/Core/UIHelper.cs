@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Engine.GUI;
 
 namespace Fusee.Engine.Examples.LineRenderer.Core
 {
@@ -85,69 +86,6 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             CONFIRMED
         }
 
-
-        public enum AnchorPos
-        {
-            DOWN_DOWN_LEFT,     //Min = Max = 0,0
-            DOWN_DOWN_RIGHT,    //Min = Max = 0,1
-            TOP_TOP_LEFT,       //Min = Max = 0,1
-            TOP_TOP_RIGHT,      //Min = Max = 1,1
-            STRETCH_ALL,        //Min 0, 0 and Max 1, 1
-            MIDDLE              //Min = Max = 0.5, 0.5
-        }        
-
-        public static MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
-        {
-            switch (anchorPos)
-            {
-                default:
-                case AnchorPos.MIDDLE:
-                    var middle = new float2(parentWidth / 2f, parentHeight / 2f);
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 0.5,0.5 and Max 0.5,0.5!!!
-                        Min = posOnParent - middle,
-                        Max = posOnParent - middle + guiElementDim
-                    };
-
-                case AnchorPos.STRETCH_ALL:
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 0,0 and Max 1,1!!!
-                        Min = new float2(posOnParent.x, posOnParent.y),
-                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
-                    };
-                case AnchorPos.DOWN_DOWN_LEFT:
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 0,0 and Max 0,0!!!
-                        Min = new float2(posOnParent.x, posOnParent.y),
-                        Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
-                    };
-                case AnchorPos.DOWN_DOWN_RIGHT:
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 1,0 and Max 1,0!!!
-                        Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
-                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
-                    };
-                case AnchorPos.TOP_TOP_LEFT:
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 0,1 and Max 0,1!!!
-                        Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
-                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
-                    };
-                case AnchorPos.TOP_TOP_RIGHT:
-                    return new MinMaxRect
-                    {
-                        //only for the anchors Min 1,1 and Max 1,1!!!
-                        Min = new float2(-(parentWidth - posOnParent.x), -(parentHeight - posOnParent.y)),
-                        Max = new float2(-(parentWidth - guiElementDim.x - posOnParent.x), -(parentHeight - guiElementDim.y - posOnParent.y))
-                    };
-            }
-        }
-
         internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
             //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
@@ -199,7 +137,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f))
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.07f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.35f, 0.35f))
             );
 
             var annotationText = new TextNodeContainer(
@@ -212,7 +150,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
                 RalewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black), textSize * textSizeAdaptor);
 
@@ -227,7 +165,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit, AnnotationDim),
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit, AnnotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
                 AnnotationBorderThickness.x, AnnotationBorderThickness.y, AnnotationBorderThickness.z, AnnotationBorderThickness.w,
@@ -283,7 +221,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
+                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, circleDim),
                     },
                     new XFormComponent
                     {
@@ -333,7 +271,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                             Min = new float2(0.5f, 0.5f),
                             Max = new float2(0.5f, 0.5f)
                         },
-                        Offsets = CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
+                        Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0,0), CanvasHeightInit, CanvasWidthInit, new float2(CanvasWidthInit,CanvasHeightInit)),
                     },
                     new XFormComponent
                     {

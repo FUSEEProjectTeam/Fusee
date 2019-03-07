@@ -7,6 +7,141 @@ using Fusee.Serialization;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
+    /// Used when positioning UI elements. Each entry corresponds to a commonly used anchor point setup.
+    /// </summary>
+    public enum AnchorPos
+    {
+        DOWN_DOWN_LEFT,     //Min = Max = 0,0
+        DOWN_DOWN_RIGHT,    //Min = Max = 1,0
+        TOP_TOP_LEFT,       //Min = Max = 0,1
+        TOP_TOP_RIGHT,      //Min = Max = 1,1
+        STRETCH_ALL,        //Min = 0, 0 and Max = 1, 1
+        STRETCH_HORIZONTAL, //Min = 0,0 and Max = 1,0
+        STRETCH_VERTICAL,   //Min = 0,0 and Max = 0,1
+        MIDDLE              //Min = Max = 0.5, 0.5
+    }
+
+    /// <summary>
+    /// Contains convenience functions to position a UI element on its parent element.
+    /// </summary>
+    public static class UIElementPosition
+    {
+        public static MinMaxRect GetAnchors(AnchorPos anchorPos)
+        {
+            switch (anchorPos)
+            {
+                case AnchorPos.DOWN_DOWN_LEFT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(0, 0)
+                    };
+                case AnchorPos.DOWN_DOWN_RIGHT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(1, 0),
+                        Max = new float2(1, 0)
+                    };
+                case AnchorPos.TOP_TOP_LEFT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 1),
+                        Max = new float2(0, 1)
+                    };
+                case AnchorPos.TOP_TOP_RIGHT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(1, 1),
+                        Max = new float2(1, 1)
+                    };
+                case AnchorPos.STRETCH_ALL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(1, 1)
+                    };
+                case AnchorPos.STRETCH_HORIZONTAL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(1, 0)
+                    };
+                case AnchorPos.STRETCH_VERTICAL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(0, 1)
+                    };
+                default:
+                case AnchorPos.MIDDLE:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0.5f, 0.5f),
+                        Max = new float2(0.5f, 0.5f)
+                    };
+            }
+        }
+
+        public static MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
+        {
+            switch (anchorPos)
+            {
+                default:
+                case AnchorPos.MIDDLE:
+                    var middle = new float2(parentWidth / 2f, parentHeight / 2f);
+                    return new MinMaxRect
+                    {
+                        Min = posOnParent - middle,
+                        Max = posOnParent - middle + guiElementDim
+                    };
+
+                case AnchorPos.STRETCH_ALL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
+                    };
+                case AnchorPos.STRETCH_HORIZONTAL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(-(parentWidth - (posOnParent.x + guiElementDim.x)), posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.STRETCH_VERTICAL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - (posOnParent.y + guiElementDim.y)))
+                    };
+                case AnchorPos.DOWN_DOWN_LEFT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.DOWN_DOWN_RIGHT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.TOP_TOP_LEFT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
+                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
+                    };
+                case AnchorPos.TOP_TOP_RIGHT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(-(parentWidth - posOnParent.x), -(parentHeight - posOnParent.y)),
+                        Max = new float2(-(parentWidth - guiElementDim.x - posOnParent.x), -(parentHeight - guiElementDim.y - posOnParent.y))
+                    };
+            }
+        }
+    }
+
+    /// <summary>
     /// Building block to create suitable hierarchies for creating a UI canvas.
     /// </summary>
     public class CanvasNodeContainer : SceneNodeContainer
@@ -17,7 +152,6 @@ namespace Fusee.Engine.GUI
         /// <param name="name">The name of the canvas.</param>
         /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
         /// <param name="size">The size of the canvas.</param>
-        /// <param name="scale">Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.
         /// By default Scale in SCREEN mode is set to 0.1.</param>
         public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
         {

@@ -21,7 +21,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         private const float Damping = 0.0f;
         private bool _keys;
 
-        public int NumberOfAnnotations = 10;
+        public int NumberOfAnnotations = 8;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -272,7 +272,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     uiInput.CircleCanvasPos = canvasPosCircle;
 
                     var pos = new float2(uiInput.CircleCanvasPos.x - (uiInput.Size.x / 2), uiInput.CircleCanvasPos.y - (uiInput.Size.y / 2)); //we want the lower left point of the rect that encloses the
-                    circle.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
+                    circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
                     var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
@@ -440,12 +440,8 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 UIHelper.VsTex,
                 UIHelper.PsTex,
                 guiFuseeLogo,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1),
-                    Max = new float2(0, 1)
-                },
-                UIHelper.CalcOffsets(UIHelper.AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _canvasHeight - 0.5f), _canvasHeight, _canvasWidth, new float2(1.75f, 0.5f)));
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var markModelContainer = new SceneNodeContainer
@@ -515,27 +511,19 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             if (input.CircleCanvasPos.x <= _canvasWidth / 2)
             {
                 //LEFT
-                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(0, 0)
-                };
+                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT);
 
-                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(
-                    UIHelper.AnchorPos.DOWN_DOWN_LEFT, input.AnnotationCanvasPos,
+                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(
+                    AnchorPos.DOWN_DOWN_LEFT, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
             else
             {
                 //RIGHT
-                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = new MinMaxRect
-                {
-                    Min = new float2(1, 0),
-                    Max = new float2(1, 0)
-                };
+                sncAnnotation.GetComponent<RectTransformComponent>().Anchors = UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT);
 
-                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(
-                    UIHelper.AnchorPos.DOWN_DOWN_RIGHT, input.AnnotationCanvasPos,
+                sncAnnotation.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(
+                    AnchorPos.DOWN_DOWN_RIGHT, input.AnnotationCanvasPos,
                     UIHelper.CanvasHeightInit, UIHelper.CanvasWidthInit, UIHelper.AnnotationDim);
             }
         }
@@ -568,7 +556,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                     };
                 }
 
-                sncLine.GetComponent<RectTransformComponent>().Offsets = UIHelper.CalcOffsets(UIHelper.AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
+                sncLine.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, new float2(0, 0), _canvasHeight, _canvasWidth, new float2(_canvasWidth, _canvasHeight));
 
                 var mesh = sncLine.GetComponent<Line>();
 
