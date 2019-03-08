@@ -36,11 +36,24 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private bool _keys;
 
+        private const float ZNear = 1f;
+        private const float ZFar = 1000;
+        private float _aspectRatio;
+        private float _fovy = M.PiOver4;
+
 #if GUI_SIMPLE
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private float _initWindowWidth;
+        private float _initWindowHeight;
+        private float _initCanvasWidth;
+        private float _initCanvasHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
+
 #endif
         private PickResult _currentPick;
         private float3 _oldColor;
@@ -50,6 +63,16 @@ namespace Fusee.Engine.Examples.Picking.Core
         // Init is called on startup. 
         public override void Init()
         {
+            _initWindowWidth = Width;
+            _initWindowHeight = Height;
+
+            _initCanvasWidth = Width / 100f;
+            _initCanvasHeight = Height / 100f;
+
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
+            _aspectRatio = Width / (float)Height;
 
             // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -128,14 +151,14 @@ namespace Fusee.Engine.Examples.Picking.Core
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
-                
+
                 PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
 #if WEBBUILD
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-                   
+
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
@@ -144,7 +167,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        _oldColor = (float3)ef.GetEffectParam("DiffuseColor"); // cast needed 
                         ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat3(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
@@ -187,12 +210,19 @@ namespace Fusee.Engine.Examples.Picking.Core
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            _guiRenderer.Render(RC);
-#endif
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
+            var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            RC.Projection = projection;
+            _sih.Projection = projection;
+
+            _guiRenderer.Render(RC);
+
+            projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
+            RC.Projection = projection;
+#endif           
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
@@ -214,13 +244,17 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
 
+            var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
+            _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
+            _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
+
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
+            _aspectRatio = Width / (float)Height;
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
+            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
             _scenePicker.Projection = projection;
 
@@ -251,22 +285,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                 psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
-                //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
-                },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, -0.5f),
-                    Max = new float2(1.75f, 0)
-                });
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
@@ -277,27 +301,19 @@ namespace Fusee.Engine.Examples.Picking.Core
                 "ButtonText",
                 vsTex,
                 psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 }
             )
             {

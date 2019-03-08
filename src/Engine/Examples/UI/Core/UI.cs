@@ -37,13 +37,13 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap1;
 
         private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWidth;
-        private float _initHeight;
+        private float _initWindowWidth;
+        private float _initWindowHeight;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
-        
+
         private float zNear = 1f;
         private float zFar = 1000;
 
@@ -54,8 +54,8 @@ namespace Fusee.Engine.Examples.UI.Core
             var psTex = AssetStorage.Get<string>("texture.frag");
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
-                                  
-            var canvasScaleFactor = _initWidth / _canvasWidth;
+
+            var canvasScaleFactor = _initWindowWidth / _canvasWidth;
             float textSize = 2;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
@@ -92,15 +92,16 @@ namespace Fusee.Engine.Examples.UI.Core
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(5.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
                 //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                4,4,4,4,
+                4, 4, 4, 4,
                 borderScaleFactor
-                
-            ){ Children = new List<SceneNodeContainer> { text} };
+
+            )
+            { Children = new List<SceneNodeContainer> { text } };
             catTextureNode.Components.Add(_btnCat);
 
             var bltTextureNode = new TextureNodeContainer(
@@ -117,7 +118,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT,new float2(0,0),_initCanvasHeight,_initCanvasWidth,new float2(4,4)));
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
 
             var quagganTextureNode1 = new TextureNodeContainer(
                 "Quaggan1",
@@ -126,11 +127,11 @@ namespace Fusee.Engine.Examples.UI.Core
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f , 0), 3, 6, new float2(1, 1)),
-                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
+
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                1,1,1,1,
+                1, 1, 1, 1,
                 borderScaleFactor
             );
 
@@ -143,12 +144,13 @@ namespace Fusee.Engine.Examples.UI.Core
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_RIGHT),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
 
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_RIGHT, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
-                
+
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
                 2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
-            ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
+            )
+            { Children = new List<SceneNodeContainer> { text, quagganTextureNode1 } };
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -197,7 +199,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth/2, -_canvasHeight/2f),
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 })
             {
@@ -212,13 +214,13 @@ namespace Fusee.Engine.Examples.UI.Core
                     quagganTextureNode2,
                     quagganTextureNode3
                 }
-            };            
-            
+            };
+
             var canvasMat = new ShaderEffectComponent
             {
                 Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
                 {
-                    Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                    Diffuse = new MatChannelContainer { Color = new float3(1, 0, 0) },
                 })
             };
             canvas.AddComponent(canvasMat);
@@ -252,7 +254,7 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer {Color = new float3(1, 0.4f, 0.1f)},
+                Diffuse = new MatChannelContainer { Color = new float3(1, 0.4f, 0.1f) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -263,7 +265,7 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                Diffuse = new MatChannelContainer { Color = new float3(1, 0, 0) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -304,20 +306,18 @@ namespace Fusee.Engine.Examples.UI.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _initWidth = Width;
-            _initHeight = Height;
+            _initWindowWidth = Width;
+            _initWindowHeight = Height;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 _initCanvasWidth = Width / 100f;
-                _initCanvasHeight = Height / 100f; ;
-                
+                _initCanvasHeight = Height / 100f;
             }
             else
             {
                 _initCanvasWidth = 16;
                 _initCanvasHeight = 9;
             }
-
             _canvasHeight = _initCanvasHeight;
             _canvasWidth = _initCanvasWidth;
 
@@ -398,7 +398,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 }
                 else
                 {
-                    var curDamp = (float) System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -432,23 +432,23 @@ namespace Fusee.Engine.Examples.UI.Core
         public override void Resize()
         {
             // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);            
+            RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float) Height;
+            var aspectRatio = Width / (float)Height;
 
             float4x4 projection;
 
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
+                var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
                 _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
                 _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
                 projection = float4x4.CreateOrthographic(Width, Height, zNear, zFar);
             }
             else
-            {                
-                projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, zNear, zFar);                
+            {
+                projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, zNear, zFar);
             }
 
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio

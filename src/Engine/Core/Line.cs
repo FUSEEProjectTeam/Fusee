@@ -32,7 +32,7 @@ namespace Fusee.Engine.Core
                 {
                     start.x = ((start.x / rectWidth) * 2 - 1) / 2;
                     end.x = ((end.x / rectWidth) * 2 - 1) / 2;
-                }              
+                }
 
                 var dirVec = end - start;
                 dirVec.Normalize();
@@ -70,7 +70,7 @@ namespace Fusee.Engine.Core
                     tris.Add((ushort)(lastVertexIndex - 2));
                     tris.Add((ushort)(lastVertexIndex - 3));
                     tris.Add((ushort)(lastVertexIndex - 1));
-                    tris.Add((ushort)(lastVertexIndex));                    
+                    tris.Add((ushort)(lastVertexIndex));
                 }
                 else
                 {
@@ -142,15 +142,13 @@ namespace Fusee.Engine.Core
                         vec21.Normalize();
 
                         //calculate inter-segment vertices
-                        float3 intersectionPoint1;
-                        float3 intersectionPoint2;
                         Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[0],
                             segmentCache[3] + (vec03CacheLength * vec03Cache), v0 + (vec30Length * vec30), v3,
-                            out intersectionPoint1);
+                            out float3 intersectionPoint1);
 
                         Jometri.GeometricOperations.IsLineIntersectingLine(segmentCache[1],
                             segmentCache[2] + (vec12CacheLength * vec12Cache), v1 + (vec21Length * vec21), v2,
-                            out intersectionPoint2);
+                            out float3 intersectionPoint2);
 
                         verts.Add(intersectionPoint1);
                         verts.Add(intersectionPoint2);
@@ -160,7 +158,7 @@ namespace Fusee.Engine.Core
 
                         uvs.Add(new float2(i, 0));
                         uvs.Add(new float2(i, 1));
-                        uvs.Add(new float2(i+1, 1));
+                        uvs.Add(new float2(i + 1, 1));
                         uvs.Add(new float2(i + 1, 0));
 
                         normals.Add(-float3.UnitZ);
@@ -181,26 +179,26 @@ namespace Fusee.Engine.Core
                         if (i == segmentCount - 1)
                         {
                             //segment befor the last
-                            tris.Add((ushort) (lastVertexIndex - 5));
-                            tris.Add((ushort) (lastVertexIndex - 2));
-                            tris.Add((ushort) (lastVertexIndex - 4));
-                            tris.Add((ushort) (lastVertexIndex - 5));
-                            tris.Add((ushort) (lastVertexIndex - 3));
-                            tris.Add((ushort) (lastVertexIndex - 2));
+                            tris.Add((ushort)(lastVertexIndex - 5));
+                            tris.Add((ushort)(lastVertexIndex - 2));
+                            tris.Add((ushort)(lastVertexIndex - 4));
+                            tris.Add((ushort)(lastVertexIndex - 5));
+                            tris.Add((ushort)(lastVertexIndex - 3));
+                            tris.Add((ushort)(lastVertexIndex - 2));
 
                             uvs.Add(new float2(0, 0));
-                            uvs.Add(new float2(0, 1*i));
+                            uvs.Add(new float2(0, 1 * i));
                             uvs.Add(new float2(1 * i, 1 * i));
                             uvs.Add(new float2(0, 1 * i));
                         }
 
-                        tris.Add((ushort) (lastVertexIndex - 3));
-                        tris.Add((ushort) (lastVertexIndex));
-                        tris.Add((ushort) (lastVertexIndex - 2));
-                        tris.Add((ushort) (lastVertexIndex - 3));
-                        tris.Add((ushort) (lastVertexIndex - 1));
-                        tris.Add((ushort) (lastVertexIndex));
-                        
+                        tris.Add((ushort)(lastVertexIndex - 3));
+                        tris.Add((ushort)(lastVertexIndex));
+                        tris.Add((ushort)(lastVertexIndex - 2));
+                        tris.Add((ushort)(lastVertexIndex - 3));
+                        tris.Add((ushort)(lastVertexIndex - 1));
+                        tris.Add((ushort)(lastVertexIndex));
+
                     }
                 }
 
@@ -211,7 +209,7 @@ namespace Fusee.Engine.Core
             Triangles = tris.ToArray();
             UVs = uvs.ToArray();
         }
-       
+
         private float3 RotateVectorInXYPlane(float3 vec, float angle)
         {
             var x = (float)(vec.x * System.Math.Cos(angle) - vec.y * System.Math.Sin(angle));

@@ -490,7 +490,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="appIcon">The icon for the render window.</param>
         public RenderCanvasImp(Icon appIcon)
         {
-            const int width = 1280;
+            const int width = 500;
             var height = System.Math.Min(Screen.PrimaryScreen.Bounds.Height - 100, 720);
 
             try
