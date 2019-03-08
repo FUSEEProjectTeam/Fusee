@@ -304,15 +304,12 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             }
         }
 
-        internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation)
+        internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)
         {
-            var halfDim = AnnotationDim / 2;
-            var buffer = halfDim.y - (halfDim.y /100f * 10);
-
-            return firstAnnotation.x + AnnotationDim.x > secondAnnotation.x &&
-                   firstAnnotation.x  < secondAnnotation.x + AnnotationDim.x &&
-                   firstAnnotation.y + buffer + AnnotationDim.y > secondAnnotation.y - buffer &&
-                   firstAnnotation.y - buffer < secondAnnotation.y + AnnotationDim.y + buffer;
+            return firstAnnotation.x + intersectionBuffer.x + AnnotationDim.x > secondAnnotation.x - intersectionBuffer.x &&
+                   firstAnnotation.x - intersectionBuffer.x < secondAnnotation.x + intersectionBuffer.x + AnnotationDim.x &&
+                   firstAnnotation.y + intersectionBuffer.y + AnnotationDim.y > secondAnnotation.y - intersectionBuffer.y &&
+                   firstAnnotation.y - intersectionBuffer.y < secondAnnotation.y + AnnotationDim.y + intersectionBuffer.y;
         }
     }
 }

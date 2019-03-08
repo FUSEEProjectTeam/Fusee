@@ -18,7 +18,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
         private const float RotationSpeed = 7;
-        private const float Damping = 0.0f;
+        private const float Damping = 0.8f;
         private bool _keys;
 
         public int NumberOfAnnotations = 8;
@@ -219,9 +219,9 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 }
                 else
                 {
-                    //var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
-                    //_angleVelHorz *= curDamp;
-                    //_angleVelVert *= curDamp;
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
+                    _angleVelHorz *= curDamp;
+                    _angleVelVert *= curDamp;
                 }
             }
 
@@ -594,7 +594,10 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
                 if (counterpart.Identifier == input.Identifier || !counterpart.IsVisible || intersectedAnnotations.ContainsKey(counterpart.Identifier))
                     continue;
 
-                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos);
+                var halfAnnotationHeight = (UIHelper.AnnotationDim.y / 2f);
+                var buffer = halfAnnotationHeight - (halfAnnotationHeight / 100f * 10f);
+                //If we do not multiply by the resize scale factor the intersction test will return wrong results because AnnotationCanvasPos is in the range of the size of the initial canvas.
+                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos*_resizeScaleFactor, _uiInput[i].AnnotationCanvasPos* _resizeScaleFactor, new float2(0,buffer));
 
                 if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
 
