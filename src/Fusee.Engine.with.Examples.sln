@@ -365,13 +365,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Three
 		{82A2D997-B7AC-41D9-A166-65FCFED2114D} = {82A2D997-B7AC-41D9-A166-65FCFED2114D}
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LineRenderer", "LineRenderer", "{04619300-A6D0-4595-999E-0025C500D52B}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "AdvancedUI", "AdvancedUI", "{04619300-A6D0-4595-999E-0025C500D52B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.LineRenderer.Core", "Engine\Examples\LineRenderer\Core\Fusee.Engine.Examples.LineRenderer.Core.csproj", "{9D7E6AB9-FE6C-44C5-9258-AAD28C40B877}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Core", "Engine\Examples\LineRenderer\Core\Fusee.Engine.Examples.AdvancedUI.Core.csproj", "{9D7E6AB9-FE6C-44C5-9258-AAD28C40B877}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.LineRenderer.Desktop", "Engine\Examples\LineRenderer\Desktop\Fusee.Engine.Examples.LineRenderer.Desktop.csproj", "{77236218-17FB-4D00-AF9C-1E415C65D44B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Desktop", "Engine\Examples\LineRenderer\Desktop\Fusee.Engine.Examples.AdvancedUI.Desktop.csproj", "{77236218-17FB-4D00-AF9C-1E415C65D44B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.LineRenderer.Web", "Engine\Examples\LineRenderer\Web\Fusee.Engine.Examples.LineRenderer.Web.csproj", "{0538A354-C50C-483F-8594-E6391748E969}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Web", "Engine\Examples\LineRenderer\Web\Fusee.Engine.Examples.AdvancedUI.Web.csproj", "{0538A354-C50C-483F-8594-E6391748E969}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

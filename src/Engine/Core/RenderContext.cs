@@ -1643,7 +1643,7 @@ namespace Fusee.Engine.Core
                     _rci.Render(meshImp);
 
                     // After rendering always cleanup pending meshes
-                    //_meshManager.Cleanup(); //TODO: uncomment - only commented out for test purposes. Causes errors when updating and creating meshes in RenderAFrame (LineRenderer Example)!
+                    //_meshManager.Cleanup(); //TODO: uncomment - only commented out for test purposes. Causes errors when updating and creating meshes in RenderAFrame (AdvancedUI Example)!
                     _textureManager.Cleanup();
                 }
 

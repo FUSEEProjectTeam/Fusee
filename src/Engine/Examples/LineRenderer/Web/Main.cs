@@ -1,14 +1,13 @@
-﻿using System.IO;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Engine.Examples.LineRenderer.Web
+namespace Fusee.Engine.Examples.AdvancedUI.Web
 {
-    public class Simple
+    public class AdvancedUI
     {
         public static void Main()
         {
@@ -54,7 +53,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Web
                 });
             AssetStorage.RegisterProvider(fap);
 
-            var app = new LineRenderer.Core.LineRenderer();
+            var app = new Examples.AdvancedUI.Core.AdvancedUI();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp();

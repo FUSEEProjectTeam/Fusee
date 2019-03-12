@@ -1,24 +1,23 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Examples.LineRenderer.Web</RootNamespace>
-    <PackageId>Fusee.Engine.Examples.LineRenderer.Web</PackageId>
+    <RootNamespace>Fusee.Engine.Examples.AdvancedUI.Desktop</RootNamespace>
+    <PackageId>Fusee.Engine.Examples.AdvancedUI.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
-    <DefineConstants>PLATFORM_WEB</DefineConstants>
+    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
-    <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\LineRenderer\Web\</FuseeWebOutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Desktop\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Engine.Examples.LineRenderer.Core.csproj" />
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.AdvancedUI.Core.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
@@ -26,8 +25,8 @@
     <Reference Include="Fusee.Base.Core">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Base.Imp.Web">
-      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Web.dll</HintPath>
+    <Reference Include="Fusee.Base.Imp.Desktop">
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Serialization">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
@@ -41,8 +40,8 @@
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Engine.Imp.Graphics.Web">
-      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Web.dll</HintPath>
+    <Reference Include="Fusee.Engine.Imp.Graphics.Desktop">
+      <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationSerializer">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
@@ -53,21 +52,6 @@
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <None Update="Assets\FuseeAnim.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\FuseeSpinning.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Styles\browser.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

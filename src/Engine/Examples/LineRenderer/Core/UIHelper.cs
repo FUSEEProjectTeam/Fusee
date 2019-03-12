@@ -7,7 +7,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Engine.GUI;
 
-namespace Fusee.Engine.Examples.LineRenderer.Core
+namespace Fusee.Engine.Examples.AdvancedUI.Core
 {
     internal static class UIHelper
     {

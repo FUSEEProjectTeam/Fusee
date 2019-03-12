@@ -10,10 +10,10 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 
-namespace Fusee.Engine.Examples.LineRenderer.Core
+namespace Fusee.Engine.Examples.AdvancedUI.Core
 {
     [FuseeApplication(Name = "FUSEE UI Example", Description = " ")]
-    public class LineRenderer : RenderCanvas
+    public class AdvancedUI : RenderCanvas
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
@@ -405,7 +405,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Core
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
 
-            
+                        
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)

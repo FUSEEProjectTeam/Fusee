@@ -1,17 +1,15 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
 
-namespace Fusee.Engine.Examples.LineRenderer.Desktop
+namespace Fusee.Engine.Examples.AdvancedUI.Desktop
 {
-    public class Simple
+    public class AdvancedUI
     {
         public static void Main()
         {
@@ -45,7 +43,7 @@ namespace Fusee.Engine.Examples.LineRenderer.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new LineRenderer.Core.LineRenderer();
+            var app = new Core.AdvancedUI();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

@@ -1,7 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Engine.Examples.LineRenderer.Core
+namespace Fusee.Engine.Examples.AdvancedUI.Core
 {
     internal struct UIInput
     {

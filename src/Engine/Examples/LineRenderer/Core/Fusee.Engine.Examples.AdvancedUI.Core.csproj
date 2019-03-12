@@ -1,14 +1,14 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Examples.LineRenderer.Core</RootNamespace>
-    <PackageId>Fusee.Examples.LineRenderer.Core</PackageId>
+    <RootNamespace>Fusee.Engine.Examples.AdvancedUI.Core</RootNamespace>
+    <PackageId>Fusee.Examples.AdvancedUI.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\LineRenderer\Core\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
