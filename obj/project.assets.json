@@ -47,7 +47,6 @@
       "type": "package",
       "path": "netstandard.library/2.0.3",
       "files": [
-        ".nupkg.metadata",
         "LICENSE.TXT",
         "THIRD-PARTY-NOTICES.TXT",
         "build/netstandard2.0/NETStandard.Library.targets",
@@ -183,11 +182,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\hallerjo\\Downloads\\Test\\Test.csproj",
-      "projectName": "Test",
-      "projectPath": "C:\\Users\\hallerjo\\Downloads\\Test\\Test.csproj",
+      "projectUniqueName": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\RobotArm_Inverse_Kinematics.csproj",
+      "projectName": "RobotArm_Inverse_Kinematics",
+      "projectPath": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\RobotArm_Inverse_Kinematics.csproj",
       "packagesPath": "C:\\Users\\hallerjo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\hallerjo\\Downloads\\Test\\obj\\",
+      "outputPath": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
