@@ -60,6 +60,7 @@ namespace FuseeApp
             _lowerAxleTransform = _scene.Children.FindNodes(node => node.Name == "LowerAxle")?.FirstOrDefault()?.GetTransform();
             _middleAxleTransform = _scene.Children.FindNodes(node => node.Name == "MiddleAxle")?.FirstOrDefault()?.GetTransform();
             _upperAxleTransform = _scene.Children.FindNodes(node => node.Name == "UpperAxle")?.FirstOrDefault()?.GetTransform();
+            
             _footTransform = _scene.Children.FindNodes(node => node.Name == "Foot")?.FirstOrDefault()?.GetTransform();
 
             _rightPincerTransform = _scene.Children.FindNodes(node => node.Name == "RightLowerAxle")?.FirstOrDefault()?.GetTransform();
@@ -117,55 +118,6 @@ namespace FuseeApp
             var mtxCam = float4x4.LookAt(0, 2, -20 + _distance, 0, 1, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
 
-            //Pick Parts
-            if (Mouse.LeftButton)
-            {
-                float2 pickPosClip = Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-                _scenePicker.View = RC.View;
-                _scenePicker.Projection = RC.Projection;
-
-                List<PickResult> pickResults = _scenePicker.Pick(pickPosClip).ToList();
-                PickResult newPick = null;
-                if (pickResults.Count > 0)
-                {
-                    pickResults.Sort((a, b) => Sign(a.ClipPos.z - b.ClipPos.z));
-                    newPick = pickResults[0];
-                }
-
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    if (_currentPick != null)
-                    {
-                        ShaderEffectComponent shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>();
-                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", _oldColor);
-                    }
-                    if (newPick != null)
-                    {
-                        ShaderEffectComponent shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>();
-                        _oldColor = (float3)shaderEffectComponent.Effect.GetEffectParam("DiffuseColor");
-                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", new float3(1, 0.4f, 0.4f));
-                    }
-                    _currentPick = newPick;
-                }
-            }
-
-
-            //Rotate Picked Part
-            if (_currentPick != null)
-            {
-                TransformComponent transformComponent = _currentPick.Node.GetTransform();
-
-                transformComponent.Rotation.x = transformComponent.Rotation.x + Keyboard.UpDownAxis * Time.DeltaTime;
-                transformComponent.Rotation.y = transformComponent.Rotation.y + Keyboard.LeftRightAxis * Time.DeltaTime;
-                transformComponent.Rotation.z = transformComponent.Rotation.z + Keyboard.WSAxis * Time.DeltaTime;
-
-                if (Keyboard.GetButton(96))
-                {
-                    transformComponent.Rotation = new float3(0, 0, 0);
-                }
-                Diagnostics.Log(transformComponent.Rotation);
-            }
-
             //Inverse Kinematics
             if (_currentPick == null)
             {
@@ -214,13 +166,13 @@ namespace FuseeApp
                 _upperAxleTransform.Rotation = new float3(0, 0, delta);
                 _footTransform.Rotation = new float3(0, epsilon, 0);
 
-                Diagnostics.Log("Coordinates: " + _virtualPos);
+                /*Diagnostics.Log("Coordinates: " + _virtualPos);
                 Diagnostics.Log("Distance: " + dist);
                 Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
                 Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
                 Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
                 Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
+                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
             }
 
             //Open/Close Pincer
@@ -255,6 +207,55 @@ namespace FuseeApp
                     _open = true;
                 }
             }
+
+            /*//Pick Parts
+            if (Mouse.LeftButton)
+            {
+                float2 pickPosClip = Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
+                _scenePicker.View = RC.View;
+                _scenePicker.Projection = RC.Projection;
+
+                List<PickResult> pickResults = _scenePicker.Pick(pickPosClip).ToList();
+                PickResult newPick = null;
+                if (pickResults.Count > 0)
+                {
+                    pickResults.Sort((a, b) => Sign(a.ClipPos.z - b.ClipPos.z));
+                    newPick = pickResults[0];
+                }
+
+                if (newPick?.Node != _currentPick?.Node)
+                {
+                    if (_currentPick != null)
+                    {
+                        ShaderEffectComponent shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>();
+                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", _oldColor);
+                    }
+                    if (newPick != null)
+                    {
+                        ShaderEffectComponent shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>();
+                        _oldColor = (float3)shaderEffectComponent.Effect.GetEffectParam("DiffuseColor");
+                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", new float3(1, 0.4f, 0.4f));
+                    }
+                    _currentPick = newPick;
+                }
+            }
+
+
+            //Rotate Picked Part
+            if (_currentPick != null)
+            {
+                TransformComponent transformComponent = _currentPick.Node.GetTransform();
+
+                transformComponent.Rotation.x = transformComponent.Rotation.x + Keyboard.UpDownAxis * Time.DeltaTime;
+                transformComponent.Rotation.y = transformComponent.Rotation.y + Keyboard.LeftRightAxis * Time.DeltaTime;
+                transformComponent.Rotation.z = transformComponent.Rotation.z + Keyboard.WSAxis * Time.DeltaTime;
+
+                if (Keyboard.GetButton(96))
+                {
+                    transformComponent.Rotation = new float3(0, 0, 0);
+                }
+                Diagnostics.Log(transformComponent.Rotation);
+            }*/
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
