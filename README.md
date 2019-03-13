@@ -1,6 +1,6 @@
 # RobotArm_Inverse_Kinematics
 
-##Controls:
+## Controls:
 
 * Arm: The arm follows the movements of a pointer (which is initally hidden within it's upmost joint). 
 * Use the arrow keys to move the pointer along the x- and z- axis, and 'w' and 's' to move the pointer along the y-axis.
