@@ -60,7 +60,7 @@ namespace FuseeApp
             _lowerAxleTransform = _scene.Children.FindNodes(node => node.Name == "LowerAxle")?.FirstOrDefault()?.GetTransform();
             _middleAxleTransform = _scene.Children.FindNodes(node => node.Name == "MiddleAxle")?.FirstOrDefault()?.GetTransform();
             _upperAxleTransform = _scene.Children.FindNodes(node => node.Name == "UpperAxle")?.FirstOrDefault()?.GetTransform();
-            
+
             _footTransform = _scene.Children.FindNodes(node => node.Name == "Foot")?.FirstOrDefault()?.GetTransform();
 
             _rightPincerTransform = _scene.Children.FindNodes(node => node.Name == "RightLowerAxle")?.FirstOrDefault()?.GetTransform();
@@ -129,6 +129,12 @@ namespace FuseeApp
                 double dist = Math.Sqrt(Math.Pow((double)tempDist, 2.0d) + Math.Pow((double)_virtualPos.y - 1, 2.0d));
                 float alpha = (float)Math.Acos(Math.Pow(dist, 2) / (4 * dist));
                 float beta = (float)Math.Acos((Math.Pow(dist, 2.0d) - 8.0d) / -8.0d);
+
+                if (beta < M.DegreesToRadians(71))
+                {
+                    beta = M.DegreesToRadians(71);
+                }
+
                 float gamma = (float)Math.Atan((_virtualPos.y - 1) / tempDist);
                 float epsilon = 0;
 
@@ -151,15 +157,29 @@ namespace FuseeApp
                 {
                     finalAlpha = -(M.DegreesToRadians(90) - alpha - gamma);
                     finalBeta = -(M.DegreesToRadians(180) - beta);
-                    delta = (M.DegreesToRadians(90) - finalAlpha - beta);
                 }
                 else
                 {
                     finalAlpha = -(M.DegreesToRadians(90) - gamma);
-                    delta = (M.DegreesToRadians(-90) - finalAlpha);
                 }
 
+                if (finalAlpha < M.DegreesToRadians(-90))
+                {
+                    finalAlpha = M.DegreesToRadians(-90);
+                }
+                else if (finalAlpha > M.DegreesToRadians(90))
+                {
+                    finalAlpha = M.DegreesToRadians(90);
+                }
 
+                if (!float.IsNaN(alpha))
+                {
+                    delta = (M.DegreesToRadians(90) - finalAlpha - beta);
+                }
+                else
+                {
+                    delta = (M.DegreesToRadians(-90) - finalAlpha);
+                }
 
                 _lowerAxleTransform.Rotation = new float3(0, 0, finalAlpha);
                 _middleAxleTransform.Rotation = new float3(0, 0, finalBeta);

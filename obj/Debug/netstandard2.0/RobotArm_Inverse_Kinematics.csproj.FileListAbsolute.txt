@@ -1,5 +1,4 @@
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\roboter_arm.fus
-C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\RocketModel.fus
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.deps.json
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
