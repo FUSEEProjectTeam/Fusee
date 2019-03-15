@@ -227,7 +227,7 @@ namespace FuseeApp
                     _open = true;
                 }
             }
-
+            
             /*//Pick Parts
             if (Mouse.LeftButton)
             {
