@@ -70,13 +70,7 @@ namespace FuseeApp
             _rightPincerTransformUp = _scene.Children.FindNodes(node => node.Name == "RightHigherAxle")?.FirstOrDefault()?.GetTransform();
             _leftPincerTransformUp = _scene.Children.FindNodes(node => node.Name == "LeftHigherAxle")?.FirstOrDefault()?.GetTransform();
 
-
             _pointer = _scene.Children.FindNodes(node => node.Name == "Pointer")?.FirstOrDefault()?.GetTransform();
-
-            //Set Rotations to 0
-            _lowerAxleTransform.Rotation = new float3(0, 0, M.DegreesToRadians(45));
-            _middleAxleTransform.Rotation = new float3(0, 0, -M.PiOver4);
-            _upperAxleTransform.Rotation = new float3(0, 0, 0);
 
             _virtualPos = new float3(0, 5, 0); //at the position of the upper axle
 
@@ -127,23 +121,26 @@ namespace FuseeApp
             //Inverse Kinematics
             if (_currentPick == null)
             {
+                //Map virtual position to the keybinds and set the pointer sphere to it's location (Note: pointer and virtual position are kept seperate so the pointer can easily be removed)
                 _virtualPos += new float3(Keyboard.LeftRightAxis * Time.DeltaTime, Keyboard.WSAxis * Time.DeltaTime, Keyboard.UpDownAxis * Time.DeltaTime);
-
                 _pointer.Translation = _virtualPos;
 
-                double tempDist = Math.Sqrt(Math.Pow((double)_virtualPos.x, 2.0d) + Math.Pow((double)_virtualPos.z, 2.0d));
-                double dist = Math.Sqrt(Math.Pow((double)tempDist, 2.0d) + Math.Pow((double)_virtualPos.y - 1, 2.0d));
+                //Calculating distance from (0,1,0) to the virtual position (first in the x-z plane, then 3d). Then calculates inner angles alpha, beta, and gamma, as well as epsilon. (which dictates the rotation of the foot).
+                double xzDist = Math.Sqrt(Math.Pow((double)_virtualPos.x, 2.0d) + Math.Pow((double)_virtualPos.z, 2.0d));
+                double dist = Math.Sqrt(Math.Pow((double)xzDist, 2.0d) + Math.Pow((double)_virtualPos.y - 1, 2.0d));
                 float alpha = (float)Math.Acos(Math.Pow(dist, 2) / (4 * dist));
                 float beta = (float)Math.Acos((Math.Pow(dist, 2.0d) - 8.0d) / -8.0d);
-
+                
+                //locks angle to prevent clipping
                 if (beta < M.DegreesToRadians(71))
                 {
                     beta = M.DegreesToRadians(71);
                 }
 
-                float gamma = (float)Math.Atan2((_virtualPos.y - 1), tempDist);
+                float gamma = (float)Math.Atan2((_virtualPos.y - 1), xzDist);
                 float epsilon = -(float)Math.Atan2(_virtualPos.z,  _virtualPos.x);
 
+                //Actual angles the arms have from their original position (finalAlpha, finalBeta), as well as the angle of the pincer (delta).
                 float delta = 0;
                 float finalAlpha = 0;
                 float finalBeta = 0;
@@ -182,13 +179,13 @@ namespace FuseeApp
                 _upperAxleTransform.Rotation = new float3(0, 0, delta);
                 _footTransform.Rotation = new float3(0, epsilon, 0);
 
-                Diagnostics.Log("Coordinates: " + _virtualPos);
+                /*Diagnostics.Log("Coordinates: " + _virtualPos);
                 Diagnostics.Log("Distance: " + dist);
                 Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
                 Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
                 Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
                 Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
+                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
             }
 
             //Open/Close Pincer
@@ -228,56 +225,6 @@ namespace FuseeApp
                     _move = false;
                     _open = true;
                 }
-            }
-            
-            //Pick Parts
-            if (Mouse.LeftButton)
-            {
-                float2 pickPosClip = Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-                _scenePicker.View = RC.View;
-                _scenePicker.Projection = RC.Projection;
-
-                List<PickResult> pickResults = _scenePicker.Pick(pickPosClip).ToList();
-                PickResult newPick = null;
-                if (pickResults.Count > 0)
-                {
-                    pickResults.Sort((a, b) => Sign(a.ClipPos.z - b.ClipPos.z));
-                    newPick = pickResults[0];
-                }
-
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    if (_currentPick != null)
-                    {
-                        ShaderEffectComponent shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>();
-                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", _oldColor);
-                    }
-                    if (newPick != null)
-                    {
-                        ShaderEffectComponent shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>();
-                        _oldColor = (float3)shaderEffectComponent.Effect.GetEffectParam("DiffuseColor");
-                        shaderEffectComponent.Effect.SetEffectParam("DiffuseColor", new float3(1, 0.4f, 0.4f));
-                    }
-                    _currentPick = newPick;
-                }
-            }
-
-
-            //Rotate Picked Part
-            if (_currentPick != null)
-            {
-                TransformComponent transformComponent = _currentPick.Node.GetTransform();
-
-                transformComponent.Rotation.x = transformComponent.Rotation.x + Keyboard.UpDownAxis * Time.DeltaTime;
-                transformComponent.Rotation.y = transformComponent.Rotation.y + Keyboard.LeftRightAxis * Time.DeltaTime;
-                transformComponent.Rotation.z = transformComponent.Rotation.z + Keyboard.WSAxis * Time.DeltaTime;
-
-                if (Keyboard.GetButton(96))
-                {
-                    transformComponent.Rotation = new float3(0, 0, 0);
-                }
-                Diagnostics.Log(_currentPick.Node.Name);
-                Diagnostics.Log(transformComponent.Rotation);
             }
 
             // Render the scene loaded in Init()
