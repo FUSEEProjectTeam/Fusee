@@ -13,6 +13,28 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
+    <None Remove="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
+    <None Remove="Assets\Shader\Blinn\PixelShader.frag" />
+    <None Remove="Assets\Shader\Blinn\VertexShader.vert" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Shader\PixelShader.frag">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\Shader\VertexShader.vert">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="JSIL.Meta">
       <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
@@ -29,6 +51,9 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Assets\Shader\PBR\" />
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

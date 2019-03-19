@@ -8,8 +8,8 @@
   <PropertyGroup>
     <BuildDependsOn>
       FuseeBeforeBuild;
-      FuseeReferenceCompilePixelShaders;
-      FuseeReferenceCompileVertexShaders;
+      <!--FuseeReferenceCompilePixelShaders;-->
+      <!--FuseeReferenceCompileVertexShaders;-->
       $(BuildDependsOn);
 
       FuseeCollectAndCopyAssets;
