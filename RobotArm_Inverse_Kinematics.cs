@@ -74,8 +74,8 @@ namespace FuseeApp
             _pointer = _scene.Children.FindNodes(node => node.Name == "Pointer")?.FirstOrDefault()?.GetTransform();
 
             //Set Rotations to 0
-            _lowerAxleTransform.Rotation = new float3(0, 0, 0);
-            _middleAxleTransform.Rotation = new float3(0, 0, 0);
+            _lowerAxleTransform.Rotation = new float3(0, 0, M.DegreesToRadians(45));
+            _middleAxleTransform.Rotation = new float3(0, 0, -M.PiOver4);
             _upperAxleTransform.Rotation = new float3(0, 0, 0);
 
             _virtualPos = new float3(0, 5, 0); //at the position of the upper axle
@@ -122,6 +122,8 @@ namespace FuseeApp
             var mtxCam = float4x4.LookAt(0, 2, -20 + _distance, 0, 1, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
 
+
+
             //Inverse Kinematics
             if (_currentPick == null)
             {
@@ -139,24 +141,14 @@ namespace FuseeApp
                     beta = M.DegreesToRadians(71);
                 }
 
-                float gamma = (float)Math.Atan((_virtualPos.y - 1) / tempDist);
-                float epsilon = 0;
-
-                if (_virtualPos.x > 0)
-                {
-                    epsilon = -(float)Math.Atan(_virtualPos.z / _virtualPos.x);
-                }
-                else if (_virtualPos.x == 0) { }
-                else
-                {
-                    epsilon = -(M.DegreesToRadians(180) + (float)Math.Atan(_virtualPos.z / _virtualPos.x));
-                }
+                float gamma = (float)Math.Atan2((_virtualPos.y - 1), tempDist);
+                float epsilon = -(float)Math.Atan2(_virtualPos.z,  _virtualPos.x);
 
                 float delta = 0;
-
                 float finalAlpha = 0;
                 float finalBeta = 0;
 
+                //Next part is needed so angles calculate properly even when "distance" is to long to form a triangle
                 if (!float.IsNaN(alpha))
                 {
                     finalAlpha = -(M.DegreesToRadians(90) - alpha - gamma);
@@ -190,13 +182,13 @@ namespace FuseeApp
                 _upperAxleTransform.Rotation = new float3(0, 0, delta);
                 _footTransform.Rotation = new float3(0, epsilon, 0);
 
-                /*Diagnostics.Log("Coordinates: " + _virtualPos);
+                Diagnostics.Log("Coordinates: " + _virtualPos);
                 Diagnostics.Log("Distance: " + dist);
                 Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
                 Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
                 Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
                 Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
+                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
             }
 
             //Open/Close Pincer
