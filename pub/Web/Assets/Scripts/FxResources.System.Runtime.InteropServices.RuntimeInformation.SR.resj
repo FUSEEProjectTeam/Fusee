@@ -1,0 +1,4 @@
+{
+    "Argument_EmptyValue": "Value cannot be empty.",
+    "PlatformNotSupported_RuntimeInformation": "RuntimeInformation is not supported for Portable Class Libraries."
+}

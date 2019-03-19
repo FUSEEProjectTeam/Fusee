@@ -1,0 +1,4 @@
+{
+    "ArgumentException_ValueTupleIncorrectType": "The parameter should be a ValueTuple type of appropriate arity.",
+    "ArgumentException_ValueTupleLastArgumentNotAValueTuple": "The TRest type argument of ValueTuple`8 must be a ValueTuple."
+}

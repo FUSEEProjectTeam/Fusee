@@ -1,0 +1,3 @@
+{
+    "OrderCannotBeNegative": "Property 'Order' in DataMemberAttribute attribute cannot be a negative number."
+}
