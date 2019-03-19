@@ -43,6 +43,8 @@ namespace FuseeApp
         private TransformComponent _pointer;
         private TransformComponent _rightPincerTransform;
         private TransformComponent _leftPincerTransform;
+        private TransformComponent _rightPincerTransformUp;
+        private TransformComponent _leftPincerTransformUp;
         private float3 _virtualPos;
         private bool _open;
         private bool _move;
@@ -65,6 +67,8 @@ namespace FuseeApp
 
             _rightPincerTransform = _scene.Children.FindNodes(node => node.Name == "RightLowerAxle")?.FirstOrDefault()?.GetTransform();
             _leftPincerTransform = _scene.Children.FindNodes(node => node.Name == "LeftLowerAxle")?.FirstOrDefault()?.GetTransform();
+            _rightPincerTransformUp = _scene.Children.FindNodes(node => node.Name == "RightHigherAxle")?.FirstOrDefault()?.GetTransform();
+            _leftPincerTransformUp = _scene.Children.FindNodes(node => node.Name == "LeftHigherAxle")?.FirstOrDefault()?.GetTransform();
 
 
             _pointer = _scene.Children.FindNodes(node => node.Name == "Pointer")?.FirstOrDefault()?.GetTransform();
@@ -207,6 +211,9 @@ namespace FuseeApp
                 {
                     _leftPincerTransform.Rotation -= new float3(1 * Time.DeltaTime, 0, 0);
                     _rightPincerTransform.Rotation += new float3(1 * Time.DeltaTime, 0, 0);
+
+                    _leftPincerTransformUp.Rotation -= new float3(1 * Time.DeltaTime, 0, 0);
+                    _rightPincerTransformUp.Rotation += new float3(1 * Time.DeltaTime, 0, 0);
                 }
                 else if (_rightPincerTransform.Rotation.x >= M.DegreesToRadians(0))
                 {
@@ -220,6 +227,9 @@ namespace FuseeApp
                 {
                     _leftPincerTransform.Rotation += new float3(1 * Time.DeltaTime, 0, 0);
                     _rightPincerTransform.Rotation -= new float3(1 * Time.DeltaTime, 0, 0);
+
+                    _leftPincerTransformUp.Rotation += new float3(1 * Time.DeltaTime, 0, 0);
+                    _rightPincerTransformUp.Rotation -= new float3(1 * Time.DeltaTime, 0, 0);
                 }
                 else if (_rightPincerTransform.Rotation.x <= M.DegreesToRadians(-45))
                 {
@@ -228,7 +238,7 @@ namespace FuseeApp
                 }
             }
             
-            /*//Pick Parts
+            //Pick Parts
             if (Mouse.LeftButton)
             {
                 float2 pickPosClip = Mouse.Position * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
@@ -274,8 +284,9 @@ namespace FuseeApp
                 {
                     transformComponent.Rotation = new float3(0, 0, 0);
                 }
+                Diagnostics.Log(_currentPick.Node.Name);
                 Diagnostics.Log(transformComponent.Rotation);
-            }*/
+            }
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
