@@ -85,7 +85,7 @@ namespace FuseeApp
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
-            if (Mouse.MiddleButton)
+            if (Mouse.LeftButton)
             {
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
