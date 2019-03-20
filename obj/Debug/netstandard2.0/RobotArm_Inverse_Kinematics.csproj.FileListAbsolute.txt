@@ -8,3 +8,6 @@ C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\obj\Debug\netstandard2.0
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.AssemblyInfo.cs
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
+C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\xy-plane.png
+C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\xz-plane.png
+C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\pincer.png

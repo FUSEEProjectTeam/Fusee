@@ -92,13 +92,7 @@ JSIL.DeclareNamespace("FuseeApp");
     return ($T1B = JSIL.Memoize($asm0A.Fusee.Math.Core.M)) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm01.Fusee.Base.Core.Diagnostics)) ();
-  };
-  var $T1D = function () {
-    return ($T1D = JSIL.Memoize($asm0F.System.String)) ();
-  };
-  var $T1E = function () {
-    return ($T1E = JSIL.Memoize($asm04.Fusee.Engine.Core.InputDevice)) ();
+    return ($T1C = JSIL.Memoize($asm04.Fusee.Engine.Core.InputDevice)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0F.System.NotImplementedException, null))) ();
@@ -319,8 +313,8 @@ JSIL.DeclareNamespace("FuseeApp");
 
   function Test_RenderAFrame () {
     (this.RenderCanvas$RC$value).Clear($T11().$Flags("Color", "Depth"));
-    var middleButton = $T14().get_Mouse().get_MiddleButton();
-    if (middleButton) {
+    var leftButton = $T14().get_Mouse().get_LeftButton();
+    if (leftButton) {
       $thisType._angleVelHorz = ((-7 * +$T14().get_Mouse().get_XVel()) * +$T15().get_DeltaTime()) * 0.0005;
       $thisType._angleVelVert = ((-7 * +$T14().get_Mouse().get_YVel()) * +$T15().get_DeltaTime()) * 0.0005;
     } else {
@@ -355,52 +349,43 @@ JSIL.DeclareNamespace("FuseeApp");
     (this.RenderCanvas$RC$value.View = $S0F().CallStatic($T18(), "op_Multiply", null, left.MemberwiseClone(), right.MemberwiseClone()).MemberwiseClone());
     this._virtualPos = $T0F().op_Addition(this._virtualPos.MemberwiseClone(), $S0D().Construct((+$T14().get_Keyboard().get_LeftRightAxis() * +$T15().get_DeltaTime()), (+$T14().get_Keyboard().get_WSAxis() * +$T15().get_DeltaTime()), (+$T14().get_Keyboard().get_UpDownAxis() * +$T15().get_DeltaTime()))).MemberwiseClone();
     this._pointer.Translation = this._virtualPos.MemberwiseClone();
-    var num4 = Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))));
     var num5 = Math.fround(Math.acos(+((((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) - 8) / -8))));
     var flag2 = num5 < +$T1B().DegreesToRadians(71);
     if (flag2) {
       num5 = +$T1B().DegreesToRadians(71);
     }
     var num6 = Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
-    var num7 = -Math.fround(Math.atan2(this._virtualPos.z, this._virtualPos.x));
     if ((Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))) >= 4) {
-      var num8 = -(+$T1B().DegreesToRadians(90) - num6);
-      var flag4 = num8 < +$T1B().DegreesToRadians(-90);
+      var num7 = -(+$T1B().DegreesToRadians(90) - num6);
+      var flag4 = num7 < +$T1B().DegreesToRadians(-90);
       if (flag4) {
-        num8 = +$T1B().DegreesToRadians(-90);
+        num7 = +$T1B().DegreesToRadians(-90);
       } else {
-        var flag5 = num8 > +$T1B().DegreesToRadians(90);
+        var flag5 = num7 > +$T1B().DegreesToRadians(90);
         if (flag5) {
-          num8 = +$T1B().DegreesToRadians(90);
+          num7 = +$T1B().DegreesToRadians(90);
         }
       }
       var z = 0;
-      var num9 = +$T1B().DegreesToRadians(-90) - num8;
+      var num8 = +$T1B().DegreesToRadians(-90) - num7;
     } else {
-      num8 = -((+$T1B().DegreesToRadians(90) - num4) - num6);
-      var flag6 = num8 < +$T1B().DegreesToRadians(-90);
+      num7 = -((+$T1B().DegreesToRadians(90) - Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))))) - num6);
+      var flag6 = num7 < +$T1B().DegreesToRadians(-90);
       if (flag6) {
-        num8 = +$T1B().DegreesToRadians(-90);
+        num7 = +$T1B().DegreesToRadians(-90);
       } else {
-        var flag7 = num8 > +$T1B().DegreesToRadians(90);
+        var flag7 = num7 > +$T1B().DegreesToRadians(90);
         if (flag7) {
-          num8 = +$T1B().DegreesToRadians(90);
+          num7 = +$T1B().DegreesToRadians(90);
         }
       }
       z = -(+$T1B().DegreesToRadians(180) - num5);
-      num9 = (+$T1B().DegreesToRadians(90) - num8) - num5;
+      num8 = (+$T1B().DegreesToRadians(90) - num7) - num5;
     }
-    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, num8);
+    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, num7);
     this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, z);
-    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, num9);
-    this._footTransform.Rotation = $S0D().Construct(0, num7, 0);
-    $T1C().Log(JSIL.ConcatString("Coordinates: ", this._virtualPos));
-    $T1C().Log(JSIL.ConcatString("Distance: ", $T1A().$Box(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))))));
-    $T1C().Log(JSIL.ConcatString("Alpha: ", $T16().$Box($T1B().RadiansToDegrees(num4))));
-    $T1C().Log(JSIL.ConcatString("Beta: ", $T16().$Box($T1B().RadiansToDegrees(num5))));
-    $T1C().Log(JSIL.ConcatString("Gamma: ", $T16().$Box($T1B().RadiansToDegrees(num6))));
-    $T1C().Log(JSIL.ConcatString("Epsilon: ", $T16().$Box($T1B().RadiansToDegrees(num7))));
-    $T1C().Log(JSIL.ConcatString("Delta: ", $T16().$Box($T1B().RadiansToDegrees(num9))));
+    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, num6);
+    this._footTransform.Rotation = $S0D().Construct(0, -Math.fround(Math.atan2(this._virtualPos.z, this._virtualPos.x)), 0);
     var button = $T14().get_Keyboard().GetButton(79);
     if (button) {
       this._move = true;

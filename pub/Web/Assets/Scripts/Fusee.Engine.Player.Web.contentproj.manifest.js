@@ -25,5 +25,7 @@ contentManifest["Fusee.Engine.Player.Web.contentproj"] = [
     ["File",	"Assets/nineSliceTile.frag",	{  "sizeBytes": 2961 }],
     ["File",	"Assets/texture.frag",	{  "sizeBytes": 414 }],
     ["File",	"Assets/texture.vert",	{  "sizeBytes": 392 }],    ["File",    "Assets/roboter_arm.fus", {  "sizeBytes": 3588774 }],
+    ["Image",    "Assets/xy-plane.png", {  "sizeBytes": 17479 }],
+    ["Image",    "Assets/xz-plane.png", {  "sizeBytes": 10293 }],
 
     ];

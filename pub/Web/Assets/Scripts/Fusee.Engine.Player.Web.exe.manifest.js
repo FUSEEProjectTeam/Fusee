@@ -41,7 +41,7 @@ var $asm24 = JSIL.GetAssembly("System.Xml, Version=4.0.0.0, Culture=neutral, Pub
 var $asm25 = JSIL.GetAssembly("RobotArm_Inverse_Kinematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null");
 
 if (typeof (contentManifest) !== "object") { JSIL.GlobalNamespace.contentManifest = {}; };
-contentManifest["Fusee.Engine.Player.Web.exe"] = [    ["Script", "RobotArm_Inverse_Kinematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 31135 }],
+contentManifest["Fusee.Engine.Player.Web.exe"] = [    ["Script", "RobotArm_Inverse_Kinematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 30139 }],
 
     ["Script", "Fusee.Engine.Player.Web, Version=0.7.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 10124 }],
     ["Script", "mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089.js", { "sizeBytes": 4348458 }],

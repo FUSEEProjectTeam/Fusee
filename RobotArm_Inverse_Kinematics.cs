@@ -179,13 +179,13 @@ namespace FuseeApp
             _upperAxleTransform.Rotation = new float3(0, 0, delta);
             _footTransform.Rotation = new float3(0, epsilon, 0);
 
-            Diagnostics.Log("Coordinates: " + _virtualPos);
+            /*Diagnostics.Log("Coordinates: " + _virtualPos);
             Diagnostics.Log("Distance: " + dist);
             Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
             Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
             Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
             Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
+            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
 
             //Open/Close Pincer
             if (Keyboard.GetButton(79))
