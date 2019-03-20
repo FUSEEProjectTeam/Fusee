@@ -13,5 +13,5 @@ var $asm15 = JSIL.GetAssembly("System.Core, Version=4.0.0.0, Culture=neutral, Pu
 
 if (typeof (contentManifest) !== "object") { JSIL.GlobalNamespace.contentManifest = {}; };
 contentManifest["RobotArm_Inverse_Kinematics.dll"] = [
-    ["Script", "RobotArm_Inverse_Kinematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 37007 }],
+    ["Script", "RobotArm_Inverse_Kinematics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null.js", { "sizeBytes": 31135 }],
 ];

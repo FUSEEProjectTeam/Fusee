@@ -56,70 +56,49 @@ JSIL.DeclareNamespace("FuseeApp");
     return ($T0F = JSIL.Memoize($asm0A.Fusee.Math.Core.float3)) ();
   };
   var $T10 = function () {
-    return ($T10 = JSIL.Memoize($asm0A.Fusee.Math.Core.M)) ();
+    return ($T10 = JSIL.Memoize($asm04.Fusee.Engine.Core.SceneRenderer)) ();
   };
   var $T11 = function () {
-    return ($T11 = JSIL.Memoize($asm04.Fusee.Engine.Core.SceneRenderer)) ();
+    return ($T11 = JSIL.Memoize($asm03.Fusee.Engine.Common.ClearFlags)) ();
   };
   var $T12 = function () {
-    return ($T12 = JSIL.Memoize($asm04.Fusee.Engine.Core.ScenePicker)) ();
+    return ($T12 = JSIL.Memoize($asm0F.System.Boolean)) ();
   };
   var $T13 = function () {
-    return ($T13 = JSIL.Memoize($asm0F.System.Comparison$b1.Of($asm04.Fusee.Engine.Core.PickResult))) ();
+    return ($T13 = JSIL.Memoize($asm04.Fusee.Engine.Core.MouseDevice)) ();
   };
   var $T14 = function () {
-    return ($T14 = JSIL.Memoize($asm03.Fusee.Engine.Common.ClearFlags)) ();
+    return ($T14 = JSIL.Memoize($asm04.Fusee.Engine.Core.Input)) ();
   };
   var $T15 = function () {
-    return ($T15 = JSIL.Memoize($asm0F.System.Boolean)) ();
+    return ($T15 = JSIL.Memoize($asm04.Fusee.Engine.Core.Time)) ();
   };
   var $T16 = function () {
-    return ($T16 = JSIL.Memoize($asm04.Fusee.Engine.Core.MouseDevice)) ();
+    return ($T16 = JSIL.Memoize($asm0F.System.Single)) ();
   };
   var $T17 = function () {
-    return ($T17 = JSIL.Memoize($asm04.Fusee.Engine.Core.Input)) ();
+    return ($T17 = JSIL.Memoize($asm0F.System.Math)) ();
   };
   var $T18 = function () {
-    return ($T18 = JSIL.Memoize($asm04.Fusee.Engine.Core.Time)) ();
+    return ($T18 = JSIL.Memoize($asm0A.Fusee.Math.Core.float4x4)) ();
   };
   var $T19 = function () {
-    return ($T19 = JSIL.Memoize($asm0F.System.Single)) ();
+    return ($T19 = JSIL.Memoize($asm04.Fusee.Engine.Core.KeyboardDevice)) ();
   };
   var $T1A = function () {
-    return ($T1A = JSIL.Memoize($asm0F.System.Math)) ();
+    return ($T1A = JSIL.Memoize($asm0F.System.Double)) ();
   };
   var $T1B = function () {
-    return ($T1B = JSIL.Memoize($asm0A.Fusee.Math.Core.float4x4)) ();
+    return ($T1B = JSIL.Memoize($asm0A.Fusee.Math.Core.M)) ();
   };
   var $T1C = function () {
-    return ($T1C = JSIL.Memoize($asm04.Fusee.Engine.Core.KeyboardDevice)) ();
+    return ($T1C = JSIL.Memoize($asm01.Fusee.Base.Core.Diagnostics)) ();
   };
   var $T1D = function () {
-    return ($T1D = JSIL.Memoize($asm0F.System.Double)) ();
+    return ($T1D = JSIL.Memoize($asm0F.System.String)) ();
   };
   var $T1E = function () {
-    return ($T1E = JSIL.Memoize($asm01.Fusee.Base.Core.Diagnostics)) ();
-  };
-  var $T1F = function () {
-    return ($T1F = JSIL.Memoize($asm0F.System.String)) ();
-  };
-  var $T20 = function () {
-    return ($T20 = JSIL.Memoize($asm04.Fusee.Engine.Core.InputDevice)) ();
-  };
-  var $T21 = function () {
-    return ($T21 = JSIL.Memoize($asm0A.Fusee.Math.Core.float2)) ();
-  };
-  var $T22 = function () {
-    return ($T22 = JSIL.Memoize($asm0F.System.Collections.Generic.List$b1.Of($asm04.Fusee.Engine.Core.PickResult))) ();
-  };
-  var $T23 = function () {
-    return ($T23 = JSIL.Memoize($asm04.Fusee.Engine.Core.PickResult)) ();
-  };
-  var $T24 = function () {
-    return ($T24 = JSIL.Memoize($asm04.Fusee.Engine.Core.ShaderEffectComponent)) ();
-  };
-  var $T25 = function () {
-    return ($T25 = JSIL.Memoize($asm04.Fusee.Engine.Core.ShaderEffect)) ();
+    return ($T1E = JSIL.Memoize($asm04.Fusee.Engine.Core.InputDevice)) ();
   };
   var $S00 = function () {
     return ($S00 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0F.System.NotImplementedException, null))) ();
@@ -175,18 +154,6 @@ JSIL.DeclareNamespace("FuseeApp");
   var $S0F = function () {
     return ($S0F = JSIL.Memoize(new JSIL.MethodSignature($asm0A.Fusee.Math.Core.float4x4, [$asm0A.Fusee.Math.Core.float4x4, $asm0A.Fusee.Math.Core.float4x4]))) ();
   };
-  var $S10 = function () {
-    return ($S10 = JSIL.Memoize(new JSIL.MethodSignature($asm0A.Fusee.Math.Core.float2, [$asm0A.Fusee.Math.Core.float2, $asm0A.Fusee.Math.Core.float2]))) ();
-  };
-  var $S11 = function () {
-    return ($S11 = JSIL.Memoize(new JSIL.ConstructorSignature($asm0A.Fusee.Math.Core.float2, [$asm0F.System.Single, $asm0F.System.Single]))) ();
-  };
-  var $S12 = function () {
-    return ($S12 = JSIL.Memoize(new JSIL.MethodSignature($asm0F.System.Int32, [$asm04.Fusee.Engine.Core.PickResult, $asm04.Fusee.Engine.Core.PickResult]))) ();
-  };
-  var $S13 = function () {
-    return ($S13 = JSIL.Memoize(new JSIL.MethodSignature(null, [$asm0F.TypeRef("System.Comparison`1", [$asm04.TypeRef("Fusee.Engine.Core.PickResult")])]))) ();
-  };
 
 
   function Test__ctor () {
@@ -202,8 +169,8 @@ JSIL.DeclareNamespace("FuseeApp");
     (this.RenderCanvas$RC$value.ClearColor = $S01().Construct(1, 1, 1, 1));
     this._scene = $T07().Get$b1($T06())("roboter_arm.fus");
     var arg_61_0 = this._scene.Children;
-    if ((arg_61_1 = $T09().$l$g9__25_0) === null) {
-      arg_61_1 = $T09().$l$g9__25_0 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_0", $S02(), false, false));
+    if ((arg_61_1 = $T09().$l$g9__22_0) === null) {
+      arg_61_1 = $T09().$l$g9__22_0 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_0", $S02(), false, false));
     }
     var expr_66 = $S03().CallStatic($T0A(), "FindNodes", null, arg_61_0, arg_61_1);
     if (expr_66 === null) {
@@ -218,8 +185,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._lowerAxleTransform = arg_7F_1;
     var arg_AF_0 = this._scene.Children;
-    if ((arg_AF_1 = $T09().$l$g9__25_1) === null) {
-      arg_AF_1 = $T09().$l$g9__25_1 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_1", $S05(), false, false));
+    if ((arg_AF_1 = $T09().$l$g9__22_1) === null) {
+      arg_AF_1 = $T09().$l$g9__22_1 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_1", $S05(), false, false));
     }
     var expr_B4 = $S03().CallStatic($T0A(), "FindNodes", null, arg_AF_0, arg_AF_1);
     if (expr_B4 === null) {
@@ -234,8 +201,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._middleAxleTransform = arg_CD_1;
     var arg_FD_0 = this._scene.Children;
-    if ((arg_FD_1 = $T09().$l$g9__25_2) === null) {
-      arg_FD_1 = $T09().$l$g9__25_2 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_2", $S06(), false, false));
+    if ((arg_FD_1 = $T09().$l$g9__22_2) === null) {
+      arg_FD_1 = $T09().$l$g9__22_2 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_2", $S06(), false, false));
     }
     var expr_102 = $S03().CallStatic($T0A(), "FindNodes", null, arg_FD_0, arg_FD_1);
     if (expr_102 === null) {
@@ -250,8 +217,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._upperAxleTransform = arg_11B_1;
     var arg_14B_0 = this._scene.Children;
-    if ((arg_14B_1 = $T09().$l$g9__25_3) === null) {
-      arg_14B_1 = $T09().$l$g9__25_3 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_3", $S07(), false, false));
+    if ((arg_14B_1 = $T09().$l$g9__22_3) === null) {
+      arg_14B_1 = $T09().$l$g9__22_3 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_3", $S07(), false, false));
     }
     var expr_150 = $S03().CallStatic($T0A(), "FindNodes", null, arg_14B_0, arg_14B_1);
     if (expr_150 === null) {
@@ -266,8 +233,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._footTransform = arg_169_1;
     var arg_199_0 = this._scene.Children;
-    if ((arg_199_1 = $T09().$l$g9__25_4) === null) {
-      arg_199_1 = $T09().$l$g9__25_4 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_4", $S08(), false, false));
+    if ((arg_199_1 = $T09().$l$g9__22_4) === null) {
+      arg_199_1 = $T09().$l$g9__22_4 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_4", $S08(), false, false));
     }
     var expr_19E = $S03().CallStatic($T0A(), "FindNodes", null, arg_199_0, arg_199_1);
     if (expr_19E === null) {
@@ -282,8 +249,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._rightPincerTransform = arg_1B7_1;
     var arg_1E7_0 = this._scene.Children;
-    if ((arg_1E7_1 = $T09().$l$g9__25_5) === null) {
-      arg_1E7_1 = $T09().$l$g9__25_5 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_5", $S09(), false, false));
+    if ((arg_1E7_1 = $T09().$l$g9__22_5) === null) {
+      arg_1E7_1 = $T09().$l$g9__22_5 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_5", $S09(), false, false));
     }
     var expr_1EC = $S03().CallStatic($T0A(), "FindNodes", null, arg_1E7_0, arg_1E7_1);
     if (expr_1EC === null) {
@@ -298,8 +265,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._leftPincerTransform = arg_205_1;
     var arg_235_0 = this._scene.Children;
-    if ((arg_235_1 = $T09().$l$g9__25_6) === null) {
-      arg_235_1 = $T09().$l$g9__25_6 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_6", $S0A(), false, false));
+    if ((arg_235_1 = $T09().$l$g9__22_6) === null) {
+      arg_235_1 = $T09().$l$g9__22_6 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_6", $S0A(), false, false));
     }
     var expr_23A = $S03().CallStatic($T0A(), "FindNodes", null, arg_235_0, arg_235_1);
     if (expr_23A === null) {
@@ -314,8 +281,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._rightPincerTransformUp = arg_253_1;
     var arg_283_0 = this._scene.Children;
-    if ((arg_283_1 = $T09().$l$g9__25_7) === null) {
-      arg_283_1 = $T09().$l$g9__25_7 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_7", $S0B(), false, false));
+    if ((arg_283_1 = $T09().$l$g9__22_7) === null) {
+      arg_283_1 = $T09().$l$g9__22_7 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_7", $S0B(), false, false));
     }
     var expr_288 = $S03().CallStatic($T0A(), "FindNodes", null, arg_283_0, arg_283_1);
     if (expr_288 === null) {
@@ -330,8 +297,8 @@ JSIL.DeclareNamespace("FuseeApp");
     }
     this._leftPincerTransformUp = arg_2A1_1;
     var arg_2D1_0 = this._scene.Children;
-    if ((arg_2D1_1 = $T09().$l$g9__25_8) === null) {
-      arg_2D1_1 = $T09().$l$g9__25_8 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__25_8", $S0C(), false, false));
+    if ((arg_2D1_1 = $T09().$l$g9__22_8) === null) {
+      arg_2D1_1 = $T09().$l$g9__22_8 = $T03().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lInit$gb__22_8", $S0C(), false, false));
     }
     var expr_2D6 = $S03().CallStatic($T0A(), "FindNodes", null, arg_2D1_0, arg_2D1_1);
     if (expr_2D6 === null) {
@@ -345,28 +312,23 @@ JSIL.DeclareNamespace("FuseeApp");
       ;
     }
     this._pointer = arg_2EF_1;
-    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, $T10().DegreesToRadians(45));
-    this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, -0.7853982);
-    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, 0);
     this._virtualPos = $S0D().Construct(0, 5, 0);
     this._open = false;
     this._sceneRenderer = $S0E().Construct(this._scene);
-    this._scenePicker = new ($T12())(this._scene);
   }; 
 
   function Test_RenderAFrame () {
-    var arg_880_1 = null;
-    (this.RenderCanvas$RC$value).Clear($T14().$Flags("Color", "Depth"));
-    var middleButton = $T17().get_Mouse().get_MiddleButton();
+    (this.RenderCanvas$RC$value).Clear($T11().$Flags("Color", "Depth"));
+    var middleButton = $T14().get_Mouse().get_MiddleButton();
     if (middleButton) {
-      $thisType._angleVelHorz = ((-7 * +$T17().get_Mouse().get_XVel()) * +$T18().get_DeltaTime()) * 0.0005;
-      $thisType._angleVelVert = ((-7 * +$T17().get_Mouse().get_YVel()) * +$T18().get_DeltaTime()) * 0.0005;
+      $thisType._angleVelHorz = ((-7 * +$T14().get_Mouse().get_XVel()) * +$T15().get_DeltaTime()) * 0.0005;
+      $thisType._angleVelVert = ((-7 * +$T14().get_Mouse().get_YVel()) * +$T15().get_DeltaTime()) * 0.0005;
     } else {
-      var flag = +$T17().get_Mouse().get_WheelVel() !== 0;
+      var flag = +$T14().get_Mouse().get_WheelVel() !== 0;
       if (flag) {
-        $thisType._distanceVel = +$thisType._distanceVel + (((7 * +$T17().get_Mouse().get_WheelVel()) * +$T18().get_DeltaTime()) * 0.0005);
+        $thisType._distanceVel = +$thisType._distanceVel + (((7 * +$T14().get_Mouse().get_WheelVel()) * +$T15().get_DeltaTime()) * 0.0005);
       } else {
-        var num = Math.fround($T1A().Exp(-0.8 * +$T18().get_DeltaTime()));
+        var num = Math.fround($T17().Exp(-0.8 * +$T15().get_DeltaTime()));
         $thisType._angleVelHorz = +$thisType._angleVelHorz * num;
         $thisType._angleVelVert = +$thisType._angleVelVert * num;
         $thisType._distanceVel = +$thisType._distanceVel * num;
@@ -375,11 +337,11 @@ JSIL.DeclareNamespace("FuseeApp");
     $thisType._angleHorz = +$thisType._angleHorz + +$thisType._angleVelHorz;
     $thisType._angleVert = +$thisType._angleVert + +$thisType._angleVelVert;
     $thisType._distance = +$thisType._distance + +$thisType._distanceVel;
-    var right = $S0F().CallStatic($T1B(), "op_Multiply", null, 
-      $T1B().CreateRotationX($thisType._angleVert).MemberwiseClone(), 
-      $T1B().CreateRotationY($thisType._angleHorz).MemberwiseClone()
+    var right = $S0F().CallStatic($T18(), "op_Multiply", null, 
+      $T18().CreateRotationX($thisType._angleVert).MemberwiseClone(), 
+      $T18().CreateRotationY($thisType._angleHorz).MemberwiseClone()
     ).MemberwiseClone();
-    var left = $T1B().LookAt(
+    var left = $T18().LookAt(
       0, 
       2, 
       -20 + +$thisType._distance, 
@@ -390,66 +352,68 @@ JSIL.DeclareNamespace("FuseeApp");
       1, 
       0
     ).MemberwiseClone();
-    (this.RenderCanvas$RC$value.View = $S0F().CallStatic($T1B(), "op_Multiply", null, left.MemberwiseClone(), right.MemberwiseClone()).MemberwiseClone());
-    if (this._currentPick === null) {
-      this._virtualPos = $T0F().op_Addition(this._virtualPos.MemberwiseClone(), $S0D().Construct((+$T17().get_Keyboard().get_LeftRightAxis() * +$T18().get_DeltaTime()), (+$T17().get_Keyboard().get_WSAxis() * +$T18().get_DeltaTime()), (+$T17().get_Keyboard().get_UpDownAxis() * +$T18().get_DeltaTime()))).MemberwiseClone();
-      this._pointer.Translation = this._virtualPos.MemberwiseClone();
-      var num4 = Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))));
-      var num5 = Math.fround(Math.acos(+((((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) - 8) / -8))));
-      var flag3 = num5 < +$T10().DegreesToRadians(71);
-      if (flag3) {
-        num5 = +$T10().DegreesToRadians(71);
-      }
-      var num6 = Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
-      var num7 = -Math.fround(Math.atan2(this._virtualPos.z, this._virtualPos.x));
-      var z = 0;
-      var flag4 = !(isNaN(num4));
+    (this.RenderCanvas$RC$value.View = $S0F().CallStatic($T18(), "op_Multiply", null, left.MemberwiseClone(), right.MemberwiseClone()).MemberwiseClone());
+    this._virtualPos = $T0F().op_Addition(this._virtualPos.MemberwiseClone(), $S0D().Construct((+$T14().get_Keyboard().get_LeftRightAxis() * +$T15().get_DeltaTime()), (+$T14().get_Keyboard().get_WSAxis() * +$T15().get_DeltaTime()), (+$T14().get_Keyboard().get_UpDownAxis() * +$T15().get_DeltaTime()))).MemberwiseClone();
+    this._pointer.Translation = this._virtualPos.MemberwiseClone();
+    var num4 = Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))));
+    var num5 = Math.fround(Math.acos(+((((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) - 8) / -8))));
+    var flag2 = num5 < +$T1B().DegreesToRadians(71);
+    if (flag2) {
+      num5 = +$T1B().DegreesToRadians(71);
+    }
+    var num6 = Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
+    var num7 = -Math.fround(Math.atan2(this._virtualPos.z, this._virtualPos.x));
+    if ((Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))) >= 4) {
+      var num8 = -(+$T1B().DegreesToRadians(90) - num6);
+      var flag4 = num8 < +$T1B().DegreesToRadians(-90);
       if (flag4) {
-        var num8 = -((+$T10().DegreesToRadians(90) - num4) - num6);
-        z = -(+$T10().DegreesToRadians(180) - num5);
+        num8 = +$T1B().DegreesToRadians(-90);
       } else {
-        num8 = -(+$T10().DegreesToRadians(90) - num6);
-      }
-      var flag5 = num8 < +$T10().DegreesToRadians(-90);
-      if (flag5) {
-        num8 = +$T10().DegreesToRadians(-90);
-      } else {
-        var flag6 = num8 > +$T10().DegreesToRadians(90);
-        if (flag6) {
-          num8 = +$T10().DegreesToRadians(90);
+        var flag5 = num8 > +$T1B().DegreesToRadians(90);
+        if (flag5) {
+          num8 = +$T1B().DegreesToRadians(90);
         }
       }
-      var flag7 = !(isNaN(num4));
-      if (flag7) {
-        var num9 = (+$T10().DegreesToRadians(90) - num8) - num5;
+      var z = 0;
+      var num9 = +$T1B().DegreesToRadians(-90) - num8;
+    } else {
+      num8 = -((+$T1B().DegreesToRadians(90) - num4) - num6);
+      var flag6 = num8 < +$T1B().DegreesToRadians(-90);
+      if (flag6) {
+        num8 = +$T1B().DegreesToRadians(-90);
       } else {
-        num9 = +$T10().DegreesToRadians(-90) - num8;
+        var flag7 = num8 > +$T1B().DegreesToRadians(90);
+        if (flag7) {
+          num8 = +$T1B().DegreesToRadians(90);
+        }
       }
-      this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, num8);
-      this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, z);
-      this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, num9);
-      this._footTransform.Rotation = $S0D().Construct(0, num7, 0);
-      $T1E().Log(JSIL.ConcatString("Coordinates: ", this._virtualPos));
-      $T1E().Log(JSIL.ConcatString("Distance: ", $T1D().$Box(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))))));
-      $T1E().Log(JSIL.ConcatString("Alpha: ", $T19().$Box($T10().RadiansToDegrees(num4))));
-      $T1E().Log(JSIL.ConcatString("Beta: ", $T19().$Box($T10().RadiansToDegrees(num5))));
-      $T1E().Log(JSIL.ConcatString("Gamma: ", $T19().$Box($T10().RadiansToDegrees(num6))));
-      $T1E().Log(JSIL.ConcatString("Epsilon: ", $T19().$Box($T10().RadiansToDegrees(num7))));
-      $T1E().Log(JSIL.ConcatString("Delta: ", $T19().$Box($T10().RadiansToDegrees(num9))));
+      z = -(+$T1B().DegreesToRadians(180) - num5);
+      num9 = (+$T1B().DegreesToRadians(90) - num8) - num5;
     }
-    var button = $T17().get_Keyboard().GetButton(79);
+    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, num8);
+    this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, z);
+    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, num9);
+    this._footTransform.Rotation = $S0D().Construct(0, num7, 0);
+    $T1C().Log(JSIL.ConcatString("Coordinates: ", this._virtualPos));
+    $T1C().Log(JSIL.ConcatString("Distance: ", $T1A().$Box(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))))));
+    $T1C().Log(JSIL.ConcatString("Alpha: ", $T16().$Box($T1B().RadiansToDegrees(num4))));
+    $T1C().Log(JSIL.ConcatString("Beta: ", $T16().$Box($T1B().RadiansToDegrees(num5))));
+    $T1C().Log(JSIL.ConcatString("Gamma: ", $T16().$Box($T1B().RadiansToDegrees(num6))));
+    $T1C().Log(JSIL.ConcatString("Epsilon: ", $T16().$Box($T1B().RadiansToDegrees(num7))));
+    $T1C().Log(JSIL.ConcatString("Delta: ", $T16().$Box($T1B().RadiansToDegrees(num9))));
+    var button = $T14().get_Keyboard().GetButton(79);
     if (button) {
       this._move = true;
     }
     if (this._move && this._open) {
-      var flag9 = +this._rightPincerTransform.Rotation.x < +$T10().DegreesToRadians(0);
+      var flag9 = +this._rightPincerTransform.Rotation.x < +$T1B().DegreesToRadians(0);
       if (flag9) {
-        this._leftPincerTransform.Rotation = $T0F().op_Subtraction(this._leftPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-        this._rightPincerTransform.Rotation = $T0F().op_Addition(this._rightPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-        this._leftPincerTransformUp.Rotation = $T0F().op_Subtraction(this._leftPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-        this._rightPincerTransformUp.Rotation = $T0F().op_Addition(this._rightPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
+        this._leftPincerTransform.Rotation = $T0F().op_Subtraction(this._leftPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+        this._rightPincerTransform.Rotation = $T0F().op_Addition(this._rightPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+        this._leftPincerTransformUp.Rotation = $T0F().op_Subtraction(this._leftPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+        this._rightPincerTransformUp.Rotation = $T0F().op_Addition(this._rightPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
       } else {
-        var flag10 = +this._rightPincerTransform.Rotation.x >= +$T10().DegreesToRadians(0);
+        var flag10 = +this._rightPincerTransform.Rotation.x >= +$T1B().DegreesToRadians(0);
         if (flag10) {
           this._move = false;
           this._open = false;
@@ -457,75 +421,20 @@ JSIL.DeclareNamespace("FuseeApp");
       }
     } else {
       if (this._move && !this._open) {
-        var flag12 = +this._rightPincerTransform.Rotation.x > +$T10().DegreesToRadians(-45);
+        var flag12 = +this._rightPincerTransform.Rotation.x > +$T1B().DegreesToRadians(-45);
         if (flag12) {
-          this._leftPincerTransform.Rotation = $T0F().op_Addition(this._leftPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-          this._rightPincerTransform.Rotation = $T0F().op_Subtraction(this._rightPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-          this._leftPincerTransformUp.Rotation = $T0F().op_Addition(this._leftPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
-          this._rightPincerTransformUp.Rotation = $T0F().op_Subtraction(this._rightPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T18().get_DeltaTime()), 0, 0)).MemberwiseClone();
+          this._leftPincerTransform.Rotation = $T0F().op_Addition(this._leftPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+          this._rightPincerTransform.Rotation = $T0F().op_Subtraction(this._rightPincerTransform.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+          this._leftPincerTransformUp.Rotation = $T0F().op_Addition(this._leftPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
+          this._rightPincerTransformUp.Rotation = $T0F().op_Subtraction(this._rightPincerTransformUp.Rotation.MemberwiseClone(), $S0D().Construct((1 * +$T15().get_DeltaTime()), 0, 0)).MemberwiseClone();
         } else {
-          var flag13 = +this._rightPincerTransform.Rotation.x <= +$T10().DegreesToRadians(-45);
+          var flag13 = +this._rightPincerTransform.Rotation.x <= +$T1B().DegreesToRadians(-45);
           if (flag13) {
             this._move = false;
             this._open = true;
           }
         }
       }
-    }
-    var leftButton = $T17().get_Mouse().get_LeftButton();
-    if (leftButton) {
-      var pickPos = $T21().op_Addition($S10().CallStatic($T21(), "op_Multiply", null, 
-          $T17().get_Mouse().get_Position().MemberwiseClone(), 
-          $S11().Construct(+((2 / +(this.get_Width()))), +((-2 / +(this.get_Height()))))
-        ).MemberwiseClone(), $S11().Construct(-1, 1)).MemberwiseClone();
-      this._scenePicker.View = (this.RenderCanvas$RC$value).get_View().MemberwiseClone();
-      this._scenePicker.Projection = (this.RenderCanvas$RC$value).get_Projection().MemberwiseClone();
-      var list = $T0D().ToList$b1($T23())((this._scenePicker).Pick(pickPos.MemberwiseClone()));
-      var pickResult = null;
-      var flag14 = (list.get_Count() | 0) > 0;
-      if (flag14) {
-        if ((arg_880_1 = $T09().$l$g9__26_0) === null) {
-          arg_880_1 = $T09().$l$g9__26_0 = $T13().New($T09().$l$g9, null, new JSIL.MethodPointerInfo($asm25.FuseeApp.Test_$l$gc, "$lRenderAFrame$gb__26_0", $S12(), false, false));
-        }
-        $S13().Call($T22().prototype, "Sort", null, list, arg_880_1);
-        pickResult = list.get_Item(0);
-      }
-      var arg_8B1_0 = (
-        (pickResult !== null)
-           ? pickResult.Node
-           : null)
-      ;
-      var expr_8A5 = this._currentPick;
-      var flag15 = arg_8B1_0 !== (
-        (expr_8A5 !== null)
-           ? expr_8A5.Node
-           : null)
-      ;
-      if (flag15) {
-        if (this._currentPick !== null) {
-          var component = $T0E().GetComponent$b1($T24())(this._currentPick.Node, 0);
-          (component.ShaderEffectComponent$Effect$value).SetEffectParam("DiffuseColor", this._oldColor.MemberwiseClone());
-        }
-        var flag17 = pickResult !== null;
-        if (flag17) {
-          var component2 = $T0E().GetComponent$b1($T24())(pickResult.Node, 0);
-          this._oldColor = $T0F().$Cast((component2.ShaderEffectComponent$Effect$value).GetEffectParam("DiffuseColor")).MemberwiseClone();
-          (component2.ShaderEffectComponent$Effect$value).SetEffectParam("DiffuseColor", $S0D().Construct(1, 0.4, 0.4));
-        }
-        this._currentPick = pickResult;
-      }
-    }
-    if (this._currentPick !== null) {
-      var transform = $T0E().GetTransform(this._currentPick.Node, 0);
-      transform.Rotation.x = +transform.Rotation.x + (+$T17().get_Keyboard().get_UpDownAxis() * +$T18().get_DeltaTime());
-      transform.Rotation.y = +transform.Rotation.y + (+$T17().get_Keyboard().get_LeftRightAxis() * +$T18().get_DeltaTime());
-      transform.Rotation.z = +transform.Rotation.z + (+$T17().get_Keyboard().get_WSAxis() * +$T18().get_DeltaTime());
-      var button2 = $T17().get_Keyboard().GetButton(96);
-      if (button2) {
-        transform.Rotation = $S0D().Construct(0, 0, 0);
-      }
-      $T1E().Log(this._currentPick.Node.Name);
-      $T1E().Log(transform.Rotation.MemberwiseClone());
     }
     (this._sceneRenderer).Render(this.RenderCanvas$RC$value);
     this.Present();
@@ -539,7 +448,7 @@ JSIL.DeclareNamespace("FuseeApp");
       this.get_Height()
     );
     var aspect = +((+(this.get_Width()) / +(this.get_Height())));
-    var projection = $T1B().CreatePerspectiveFieldOfView(0.7853982, aspect, 0.01, 200);
+    var projection = $T18().CreatePerspectiveFieldOfView(0.7853982, aspect, 0.01, 200);
     (this.RenderCanvas$RC$value.Projection = projection.MemberwiseClone());
   }; 
 
@@ -597,12 +506,6 @@ JSIL.DeclareNamespace("FuseeApp");
 
     $.Field({Static:false, Public:false}, "_sceneRenderer", $asm04.TypeRef("Fusee.Engine.Core.SceneRenderer"));
 
-    $.Field({Static:false, Public:false}, "_scenePicker", $asm04.TypeRef("Fusee.Engine.Core.ScenePicker"));
-
-    $.Field({Static:false, Public:false}, "_currentPick", $asm04.TypeRef("Fusee.Engine.Core.PickResult"));
-
-    $.Field({Static:false, Public:false}, "_oldColor", $asm0A.TypeRef("Fusee.Math.Core.float3"));
-
     $.Field({Static:false, Public:false}, "_lowerAxleTransform", $asm0B.TypeRef("Fusee.Serialization.TransformComponent"));
 
     $.Field({Static:false, Public:false}, "_middleAxleTransform", $asm0B.TypeRef("Fusee.Serialization.TransformComponent"));
@@ -654,58 +557,45 @@ JSIL.DeclareNamespace("FuseeApp");
   var $T01 = function () {
     return ($T01 = JSIL.Memoize($asm0F.System.String)) ();
   };
-  var $T02 = function () {
-    return ($T02 = JSIL.Memoize($asm04.Fusee.Engine.Core.PickResult)) ();
-  };
-  var $T03 = function () {
-    return ($T03 = JSIL.Memoize($asm0F.System.Math)) ();
-  };
-  var $S00 = function () {
-    return ($S00 = JSIL.Memoize(new JSIL.MethodSignature($asm0F.System.Int32, [$asm0F.System.Single]))) ();
-  };
 
 
   function $l$gc__ctor () {
   }; 
 
-  function $l$gc_$lInit$gb__25_0 (node) {
+  function $l$gc_$lInit$gb__22_0 (node) {
     return node.Name == "LowerAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_1 (node) {
+  function $l$gc_$lInit$gb__22_1 (node) {
     return node.Name == "MiddleAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_2 (node) {
+  function $l$gc_$lInit$gb__22_2 (node) {
     return node.Name == "UpperAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_3 (node) {
+  function $l$gc_$lInit$gb__22_3 (node) {
     return node.Name == "Foot";
   }; 
 
-  function $l$gc_$lInit$gb__25_4 (node) {
+  function $l$gc_$lInit$gb__22_4 (node) {
     return node.Name == "RightLowerAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_5 (node) {
+  function $l$gc_$lInit$gb__22_5 (node) {
     return node.Name == "LeftLowerAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_6 (node) {
+  function $l$gc_$lInit$gb__22_6 (node) {
     return node.Name == "RightHigherAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_7 (node) {
+  function $l$gc_$lInit$gb__22_7 (node) {
     return node.Name == "LeftHigherAxle";
   }; 
 
-  function $l$gc_$lInit$gb__25_8 (node) {
+  function $l$gc_$lInit$gb__22_8 (node) {
     return node.Name == "Pointer";
-  }; 
-
-  function $l$gc_$lRenderAFrame$gb__26_0 (a, b) {
-    return $S00().CallStatic($T03(), "Sign", null, +a.get_ClipPos().z - +b.get_ClipPos().z);
   }; 
 
   JSIL.MakeType({
@@ -722,77 +612,70 @@ JSIL.DeclareNamespace("FuseeApp");
       $l$gc__ctor
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_0", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_0", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_0
+      $l$gc_$lInit$gb__22_0
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_1", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_1", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_1
+      $l$gc_$lInit$gb__22_1
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_2", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_2", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_2
+      $l$gc_$lInit$gb__22_2
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_3", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_3", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_3
+      $l$gc_$lInit$gb__22_3
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_4", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_4", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_4
+      $l$gc_$lInit$gb__22_4
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_5", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_5", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_5
+      $l$gc_$lInit$gb__22_5
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_6", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_6", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_6
+      $l$gc_$lInit$gb__22_6
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_7", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_7", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_7
+      $l$gc_$lInit$gb__22_7
     );
 
-    $.Method({Static:false, Public:false}, "$lInit$gb__25_8", 
+    $.Method({Static:false, Public:false}, "$lInit$gb__22_8", 
       new JSIL.MethodSignature($.Boolean, [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]), 
-      $l$gc_$lInit$gb__25_8
-    );
-
-    $.Method({Static:false, Public:false}, "$lRenderAFrame$gb__26_0", 
-      new JSIL.MethodSignature($.Int32, [$asm04.TypeRef("Fusee.Engine.Core.PickResult"), $asm04.TypeRef("Fusee.Engine.Core.PickResult")]), 
-      $l$gc_$lRenderAFrame$gb__26_0
+      $l$gc_$lInit$gb__22_8
     );
 
     $.Field({Static:true , Public:true , ReadOnly:true }, "$l$g9", $.Type);
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_0", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_0", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_1", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_1", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_2", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_2", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_3", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_3", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_4", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_4", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_5", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_5", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_6", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_6", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_7", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_7", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
-    $.Field({Static:true , Public:true }, "$l$g9__25_8", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
-
-    $.Field({Static:true , Public:true }, "$l$g9__26_0", $asm0F.TypeRef("System.Comparison`1", [$asm04.TypeRef("Fusee.Engine.Core.PickResult")]));
+    $.Field({Static:true , Public:true }, "$l$g9__22_8", $asm0F.TypeRef("System.Predicate`1", [$asm0B.TypeRef("Fusee.Serialization.SceneNodeContainer")]));
 
 
     function $l$gc__cctor () {

@@ -33,9 +33,6 @@ namespace FuseeApp
 
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
-        private ScenePicker _scenePicker;
-        private PickResult _currentPick;
-        private float3 _oldColor;
         private TransformComponent _lowerAxleTransform;
         private TransformComponent _middleAxleTransform;
         private TransformComponent _upperAxleTransform;
@@ -78,7 +75,6 @@ namespace FuseeApp
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
-            _scenePicker = new ScenePicker(_scene);
         }
 
         // RenderAFrame is called once a frame
@@ -119,42 +115,35 @@ namespace FuseeApp
 
 
             //Inverse Kinematics
-            if (_currentPick == null)
+
+            //Map virtual position to the keybinds and set the pointer sphere to it's location (Note: pointer and virtual position are kept seperate so the pointer can easily be removed)
+            _virtualPos += new float3(Keyboard.LeftRightAxis * Time.DeltaTime, Keyboard.WSAxis * Time.DeltaTime, Keyboard.UpDownAxis * Time.DeltaTime);
+            _pointer.Translation = _virtualPos;
+
+            //Calculating distance from (0,1,0) to the virtual position (first in the x-z plane, then 3d). Then calculates inner angles alpha, beta, and gamma, as well as epsilon. (which dictates the rotation of the foot).
+            double xzDist = Math.Sqrt(Math.Pow((double)_virtualPos.x, 2.0d) + Math.Pow((double)_virtualPos.z, 2.0d));
+            double dist = Math.Sqrt(Math.Pow((double)xzDist, 2.0d) + Math.Pow((double)_virtualPos.y - 1, 2.0d));
+            float alpha = (float)Math.Acos(Math.Pow(dist, 2) / (4 * dist));
+            float beta = (float)Math.Acos((Math.Pow(dist, 2.0d) - 8.0d) / -8.0d);
+
+            //locks angle to prevent clipping
+            if (beta < M.DegreesToRadians(71))
             {
-                //Map virtual position to the keybinds and set the pointer sphere to it's location (Note: pointer and virtual position are kept seperate so the pointer can easily be removed)
-                _virtualPos += new float3(Keyboard.LeftRightAxis * Time.DeltaTime, Keyboard.WSAxis * Time.DeltaTime, Keyboard.UpDownAxis * Time.DeltaTime);
-                _pointer.Translation = _virtualPos;
+                beta = M.DegreesToRadians(71);
+            }
 
-                //Calculating distance from (0,1,0) to the virtual position (first in the x-z plane, then 3d). Then calculates inner angles alpha, beta, and gamma, as well as epsilon. (which dictates the rotation of the foot).
-                double xzDist = Math.Sqrt(Math.Pow((double)_virtualPos.x, 2.0d) + Math.Pow((double)_virtualPos.z, 2.0d));
-                double dist = Math.Sqrt(Math.Pow((double)xzDist, 2.0d) + Math.Pow((double)_virtualPos.y - 1, 2.0d));
-                float alpha = (float)Math.Acos(Math.Pow(dist, 2) / (4 * dist));
-                float beta = (float)Math.Acos((Math.Pow(dist, 2.0d) - 8.0d) / -8.0d);
-                
-                //locks angle to prevent clipping
-                if (beta < M.DegreesToRadians(71))
-                {
-                    beta = M.DegreesToRadians(71);
-                }
+            float gamma = (float)Math.Atan2((_virtualPos.y - 1), xzDist);
+            float epsilon = -(float)Math.Atan2(_virtualPos.z, _virtualPos.x);
 
-                float gamma = (float)Math.Atan2((_virtualPos.y - 1), xzDist);
-                float epsilon = -(float)Math.Atan2(_virtualPos.z,  _virtualPos.x);
+            //Actual angles the arms have from their original position (finalAlpha, finalBeta), as well as the angle of the pincer (delta).
+            float delta = 0;
+            float finalAlpha = 0;
+            float finalBeta = 0;
 
-                //Actual angles the arms have from their original position (finalAlpha, finalBeta), as well as the angle of the pincer (delta).
-                float delta = 0;
-                float finalAlpha = 0;
-                float finalBeta = 0;
-
-                //Next part is needed so angles calculate properly even when "distance" is to long to form a triangle
-                if (!float.IsNaN(alpha))
-                {
-                    finalAlpha = -(M.DegreesToRadians(90) - alpha - gamma);
-                    finalBeta = -(M.DegreesToRadians(180) - beta);
-                }
-                else
-                {
-                    finalAlpha = -(M.DegreesToRadians(90) - gamma);
-                }
+            //Next part is needed so angles calculate properly even when "distance" is to long to form a triangle
+            if (dist >= 4)
+            {
+                finalAlpha = -(M.DegreesToRadians(90) - gamma);
 
                 if (finalAlpha < M.DegreesToRadians(-90))
                 {
@@ -165,28 +154,38 @@ namespace FuseeApp
                     finalAlpha = M.DegreesToRadians(90);
                 }
 
-                if (!float.IsNaN(alpha))
-                {
-                    delta = (M.DegreesToRadians(90) - finalAlpha - beta);
-                }
-                else
-                {
-                    delta = (M.DegreesToRadians(-90) - finalAlpha);
-                }
-
-                _lowerAxleTransform.Rotation = new float3(0, 0, finalAlpha);
-                _middleAxleTransform.Rotation = new float3(0, 0, finalBeta);
-                _upperAxleTransform.Rotation = new float3(0, 0, delta);
-                _footTransform.Rotation = new float3(0, epsilon, 0);
-
-                /*Diagnostics.Log("Coordinates: " + _virtualPos);
-                Diagnostics.Log("Distance: " + dist);
-                Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
-                Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
-                Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
-                Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-                Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
+                finalBeta = 0;
+                delta = (M.DegreesToRadians(-90) - finalAlpha);
             }
+            else
+            {
+                finalAlpha = -(M.DegreesToRadians(90) - alpha - gamma);
+
+                if (finalAlpha < M.DegreesToRadians(-90))
+                {
+                    finalAlpha = M.DegreesToRadians(-90);
+                }
+                else if (finalAlpha > M.DegreesToRadians(90))
+                {
+                    finalAlpha = M.DegreesToRadians(90);
+                }
+
+                finalBeta = -(M.DegreesToRadians(180) - beta);
+                delta = (M.DegreesToRadians(90) - finalAlpha - beta);
+            }
+
+            _lowerAxleTransform.Rotation = new float3(0, 0, finalAlpha);
+            _middleAxleTransform.Rotation = new float3(0, 0, finalBeta);
+            _upperAxleTransform.Rotation = new float3(0, 0, delta);
+            _footTransform.Rotation = new float3(0, epsilon, 0);
+
+            Diagnostics.Log("Coordinates: " + _virtualPos);
+            Diagnostics.Log("Distance: " + dist);
+            Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
+            Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
+            Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
+            Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
+            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
 
             //Open/Close Pincer
             if (Keyboard.GetButton(79))
