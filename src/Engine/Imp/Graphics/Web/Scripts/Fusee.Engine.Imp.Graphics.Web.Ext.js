@@ -1299,10 +1299,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             return list;
         }
     );
-
+    
     $.Method({ Static: false, Public: true }, "Render",
         new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.IMeshImp")]),
-        function Render(mr) {
+        function Render(mr, type) {
             if (mr.VertexBufferObject != null) {
                 this.gl.enableVertexAttribArray($fuseeCommon.Fusee.Engine.Common.Helper.VertexAttribLocation);
                 this.gl.bindBuffer(this.gl.ARRAY_BUFFER, mr.VertexBufferObject);
@@ -1353,8 +1353,38 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             if (mr.ElementBufferObject != null) {
                 this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, mr.ElementBufferObject);
-                this.gl.drawElements(this.gl.TRIANGLES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
-                //this.gl.DrawArrays(this.gl.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
+
+                switch (mr.MeshType.name)
+                {
+                    case "TRIANGLES":
+                    default:
+                        this.gl.drawElements(this.gl.TRIANGLES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "POINT":
+                        this.gl.drawElements(this.gl.POINTS, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "LINES":
+                        this.gl.drawElements(this.gl.LINES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "LINE_LOOP":
+                        this.gl.drawElements(this.gl.LINE_LOOP, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "LINE_STRIP":
+                        this.gl.drawElements(this.gl.LINE_STRIP, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "PATCHES":
+                        throw new Error("WebGL2: Type primitive: PATCHES is not supported!");
+                        break;
+                    case "QUAD_STRIP":
+                        throw new Error("WebGL2: Type primitive: QUAD_STRIP is not supported!");
+                        break;
+                    case "TRIANGLE_FAN":
+                        this.gl.drawElements(this.gl.TRIANGLE_FAN, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break;
+                    case "TRIANGLE_STRIP":
+                        this.gl.drawElements(this.gl.TRIANGLE_STRIP, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        break; 
+                }
             }
 
             if (mr.VertexBufferObject != null) {

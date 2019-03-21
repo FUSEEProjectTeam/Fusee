@@ -250,15 +250,15 @@ namespace Fusee.Engine.Core
 
             _vertexShader = new List<string>();
             _pixelShader = new List<string>();
+            /* 
+                    // here we read and parse out vert and pixel shader
+                    var pixelShaderRaw = AssetStorage.Get<string>("Assets/Shader/PixelShader.frag"); 
+                    var vertexShaderRaw = AssetStorage.Get<string>("Assets/Shader/VertexShader.vert");
 
-            // here we read and parse out vert and pixel shader
-            var pixelShaderRaw = AssetStorage.Get<string>("Assets/Shader/PixelShader.frag"); 
-            var vertexShaderRaw = AssetStorage.Get<string>("Assets/Shader/VertexShader.vert");
+                    VS = ParseIncludes(vertexShaderRaw);
+                    PS = ParseIncludes(pixelShaderRaw);
+                    */
 
-            VS = ParseIncludes(vertexShaderRaw);
-            PS = ParseIncludes(pixelShaderRaw);
-
-            /*
             AnalyzeMaterialType(mc);
             AnalyzeMesh(mesh, wc);
             AnalzyeMaterialParams(mc);
@@ -266,7 +266,7 @@ namespace Fusee.Engine.Core
             VS = string.Join("\n", _vertexShader);
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
-            */
+            
             // Uber Shader - test purposes!
             //VS = AssetStorage.Get<string>("Shader/UberVertex.vert");
             //PS = AssetStorage.Get<string>("Shader/UberFragment.frag");

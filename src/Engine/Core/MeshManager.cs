@@ -132,6 +132,7 @@ namespace Fusee.Engine.Core
             // Setup handler to observe changes of the mesh data and dispose event (deallocation)
             mesh.MeshChanged += MeshChanged;
 
+            meshImp.MeshType = (OpenGLPrimitiveType) mesh.MeshType;
 
             _identifierToMeshImpDictionary.Add(mesh.SessionUniqueIdentifier, meshImp);
 

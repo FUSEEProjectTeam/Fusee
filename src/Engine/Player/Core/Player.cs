@@ -60,6 +60,11 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
+            var allMesh = _scene.Children.FindComponents<Mesh>(x => true).ToList();
+            foreach(var mesh in allMesh)
+            {
+                mesh.MeshType = (int)OpenGLPrimitiveType.LINES;
+            }
 
             _gui = CreateGui();
             // Create the interaction handler
