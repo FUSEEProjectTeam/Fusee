@@ -8,7 +8,7 @@ This is an example of a robot arm that can be moved using inverse kinematics. In
 * Pincer: Press "o" to open/close the pincer.
 
 ## Math
-To make the arm follow the movements of the pointer, we need to calculate the rotation of the foot around the y-axis, as well as the two joints around the z-axis.
+To make the arm follow the movements of the pointer, we need to calculate the rotation of the foot around the y-axis, as well as the two joints around the z-axis. *Note: Due to orientation in FUSEE, the signs might be switched in the actual program.*
 
 ### First, let's look at the rotation of the foot:
 To get the rotation of the foot we need to calculate the angle &epsilon;, as shown in the graphic below. We also need to calculate the distance between the arm and pointer (xzDist), which we will need in the next step. It calculates as follows:
@@ -40,6 +40,7 @@ Since the starting position (and therefore "angle 0°) of the arm is not along t
 * finalBeta = 180° - &beta;
 
 ### Last but not least, the pincer.
-As seen in the graphic below, the angle
+As seen in the graphic below, to properly adjust position of the pincer, we need to know the angle &delta;. It calculates as follows:
+* &delta; = -90° + finalAlpha + finalBeta
 
 ![pincer](/Assets/pincer.png "pincer")

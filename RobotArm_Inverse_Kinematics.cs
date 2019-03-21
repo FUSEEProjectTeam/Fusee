@@ -143,7 +143,7 @@ namespace FuseeApp
             //Next part is needed so angles calculate properly even when "distance" is to long to form a triangle
             if (dist >= 4)
             {
-                finalAlpha = -(M.DegreesToRadians(90) - gamma);
+                finalAlpha = (M.DegreesToRadians(90) - gamma);
 
                 if (finalAlpha < M.DegreesToRadians(-90))
                 {
@@ -155,11 +155,11 @@ namespace FuseeApp
                 }
 
                 finalBeta = 0;
-                delta = (M.DegreesToRadians(-90) - finalAlpha);
+                delta = (finalAlpha + M.DegreesToRadians(-90));
             }
             else
             {
-                finalAlpha = -(M.DegreesToRadians(90) - alpha - gamma);
+                finalAlpha = (M.DegreesToRadians(90) - alpha - gamma);
 
                 if (finalAlpha < M.DegreesToRadians(-90))
                 {
@@ -170,22 +170,24 @@ namespace FuseeApp
                     finalAlpha = M.DegreesToRadians(90);
                 }
 
-                finalBeta = -(M.DegreesToRadians(180) - beta);
-                delta = (M.DegreesToRadians(90) - finalAlpha - beta);
+                finalBeta = (M.DegreesToRadians(180) - beta);
+                delta = (finalAlpha + finalBeta + M.DegreesToRadians(-90));
             }
 
-            _lowerAxleTransform.Rotation = new float3(0, 0, finalAlpha);
-            _middleAxleTransform.Rotation = new float3(0, 0, finalBeta);
+            _lowerAxleTransform.Rotation = new float3(0, 0, -finalAlpha);
+            _middleAxleTransform.Rotation = new float3(0, 0, -finalBeta);
             _upperAxleTransform.Rotation = new float3(0, 0, delta);
             _footTransform.Rotation = new float3(0, epsilon, 0);
 
-            /*Diagnostics.Log("Coordinates: " + _virtualPos);
-            Diagnostics.Log("Distance: " + dist);
+            //Diagnostics.Log("Coordinates: " + _virtualPos);
+            //Diagnostics.Log("Distance: " + dist);
             Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
             Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
             Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
-            Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));*/
+            //Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
+            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
+            Diagnostics.Log("FinalAlpha: " + M.RadiansToDegrees(finalAlpha));
+            Diagnostics.Log("FinalBeta: " + M.RadiansToDegrees(finalBeta));
 
             //Open/Close Pincer
             if (Keyboard.GetButton(79))
