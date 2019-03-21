@@ -14,39 +14,41 @@ The pincer will always stay parallel to the ground, but can be opened and closed
 * Pincer: Press `O` to open/close the pincer.
 
 ## Math
-To make the arm follow the movements of the pointer, we need to calculate the rotation of the foot around the y-axis, as well as the two joints around the z-axis. *Note: Due to orientation in FUSEE, the signs might be switched in the actual program.*
+In order for the arm to properly follow the movements of the pointer a few calculations need to be made. Namely the rotation of the foot around the y-axis, as well as the rotation of the joints around the z-axis. In the following the relevant calculations are explained.  
 
-### First, let's look at the rotation of the foot:
-To get the rotation of the foot we need to calculate the angle &epsilon;, as shown in the graphic below. We also need to calculate the distance between the arm and pointer (xzDist), which we will need in the next step. It calculates as follows:
+*Note: Orientation might differ from that in the actual program.*
+
+### First, Rotation of the Foot
+The foot needs to rotate an amount of degrees equal to angle &epsilon; to follow the pointer (as can be seen in the graphic below). Since the height `y` can be disregarded for this, the angle can be calculated using the tangent (sin or cos could also be used, but arctan2 is more convenient since it calculates the angle for all quadrants). Furthermore, the distance between pointer and the center of the foot `xzDist` is needed for calculations down the line. This leads to the following two equations:  
 
 * &epsilon; = arctan2(z, x)
 * xzDist = &radic;(x<sup>2</sup> + z<sup>2</sup>)
 
 ![xz-plane](/Assets/xz-plane.png "xz-plane")
 
-### Secondly, we'll calculate rotation of the joints:
-To do that we have to calculate the inner angles &alpha;, &beta;, as well as the angle &gamma; between the vector to the pointer and the x-axis. (Note that we are using the objects coordinate system here, rather than the global coordinate system.)  
-Before we can calculate the angles, we need to figure out the vector "dist":
+### Second, Rotation of the Lower and Middle Joint
+The two arms of the robot, together with the vector between the base and the pointer, form a triangle (as shown in the graphic below). Since the inner angles &alpha; and &beta;, as well as the angle &gamma; are required for the roation of the joints, but are all unknown the first step is to calculate the distance `dist` as follows:
+
 * dist = &radic;(xzDist<sup>2</sup> + y<sup>2</sup>) 
 
-The angles then calculate as follows:
+Now, knowing the length of all the sides of the triangles, the sides calculate as follows, suing the law of cosines:
 * &alpha; = acos( (b<sup>2</sup> - a<sup>2</sup> - dist<sup>2</sup>) / (-2 a dist) )
 * &beta; = acos( (dist<sup>2</sup> - a<sup>2</sup> - b<sup>2</sup>) / (-2 a b) )
 * &gamma; = arctan2(y, xzDist)
 
-Knowing that a and b are equal in length the equations can be shortened to the following:
+Since in this example the two arms a and b are equal in length, the equations can be shortened as follows:
 * &alpha; = acos(dist<sup>2</sup> / (4 dist) )
 * &beta; = acos( (dist<sup>2</sup> - 2 a<sup>2</sup>) / (-4 a) )
 
 ![xy-plane](/Assets/xy-plane.png "xy-plane")
 
-### Third, calculating the actual angles:
+### Third, Rotation Angles
 Since the starting position (and therefore "angle 0°) of the arm is not along the x-axis, but rather the y-axis a few adjustments have to be made, which are as follows:
 * finalAlpha = 90° - &alpha; - &gamma;
 * finalBeta = 180° - &beta;
 
-### Last but not least, the pincer.
-As seen in the graphic below, to properly adjust position of the pincer, we need to know the angle &delta;. It calculates as follows:
+### Fourth, Orientation of the Pincer
+As seen in the graphic below, the pincer has to be rotated by an amount of degrees equal to angle &delta; to remain parallel to the ground. &delta; can be determined as follows:
 * &delta; = -90° + finalAlpha + finalBeta
 
 ![pincer](/Assets/pincer.png "pincer")
