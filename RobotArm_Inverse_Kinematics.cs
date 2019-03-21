@@ -181,13 +181,13 @@ namespace FuseeApp
 
             //Diagnostics.Log("Coordinates: " + _virtualPos);
             //Diagnostics.Log("Distance: " + dist);
-            Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
-            Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
-            Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
+            //Diagnostics.Log("Alpha: " + M.RadiansToDegrees(alpha));
+            //Diagnostics.Log("Beta: " + M.RadiansToDegrees(beta));
+            //Diagnostics.Log("Gamma: " + M.RadiansToDegrees(gamma));
             //Diagnostics.Log("Epsilon: " + M.RadiansToDegrees(epsilon));
-            Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
-            Diagnostics.Log("FinalAlpha: " + M.RadiansToDegrees(finalAlpha));
-            Diagnostics.Log("FinalBeta: " + M.RadiansToDegrees(finalBeta));
+            //Diagnostics.Log("Delta: " + M.RadiansToDegrees(delta));
+            //Diagnostics.Log("FinalAlpha: " + M.RadiansToDegrees(finalAlpha));
+            //Diagnostics.Log("FinalBeta: " + M.RadiansToDegrees(finalBeta));
 
             //Open/Close Pincer
             if (Keyboard.GetButton(79))
