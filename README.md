@@ -1,11 +1,17 @@
 # RobotArm_Inverse_Kinematics
-This is an example of a robot arm that can be moved using inverse kinematics. Instead of directly controlling the angles of the joints, you can controll a pointer (which is initially hidden within the upmost joint). The arm will then automatically adjust to follow the position of the pointer. The pincer of the arm is programmed to always stay parallel to the ground.
+Welcome to the RobotArm Demo FUSEE App, which illustrates a method to control a robot arm using inverse kinematics.
+
+`RobotArm_Inverse_Kinematics.cs` contains the source code for the working FUSEE application.  
+The model of the arm and pincer was created using Blender and importat as `.fus` file.
+
+## Basics
+The arm is controled using inverse kinematics. In this case it follows a pointer which is initially hidden within the upmost joint (behind the pincer), adjusting the angles of the joints automatically in the process.  
+The pincer will always stay parallel to the ground, but can be opened and closed.
 
 ## Controls
-
-* Camera: Press and hold the left mouse button and move the mouse to rotate the camera around the arm.
-* Arm: To move the pointer, use the arrow keys to navigate it along the x-z-plane, and "w" and "a" to move it along up and down (along the y-axis).
-* Pincer: Press "o" to open/close the pincer.
+* Camera: Press and hold the `left mouse button` and move the mouse to rotate the camera around the arm.
+* Arm: To move the pointer, use the `arrow keys` to navigate it along the x-z-plane, and `W` and `A` to move it along up and down (along the y-axis).
+* Pincer: Press `O` to open/close the pincer.
 
 ## Math
 To make the arm follow the movements of the pointer, we need to calculate the rotation of the foot around the y-axis, as well as the two joints around the z-axis. *Note: Due to orientation in FUSEE, the signs might be switched in the actual program.*
