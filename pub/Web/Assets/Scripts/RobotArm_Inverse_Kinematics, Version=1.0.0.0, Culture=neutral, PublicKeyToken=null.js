@@ -354,9 +354,8 @@ JSIL.DeclareNamespace("FuseeApp");
     if (flag2) {
       num5 = +$T1B().DegreesToRadians(71);
     }
-    var num6 = Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
     if ((Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))) >= 4) {
-      var num7 = -(+$T1B().DegreesToRadians(90) - num6);
+      var num7 = +$T1B().DegreesToRadians(90) - Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
       var flag4 = num7 < +$T1B().DegreesToRadians(-90);
       if (flag4) {
         num7 = +$T1B().DegreesToRadians(-90);
@@ -366,10 +365,10 @@ JSIL.DeclareNamespace("FuseeApp");
           num7 = +$T1B().DegreesToRadians(90);
         }
       }
-      var z = 0;
-      var num8 = +$T1B().DegreesToRadians(-90) - num7;
+      var num8 = 0;
+      var z = num7 + +$T1B().DegreesToRadians(-90);
     } else {
-      num7 = -((+$T1B().DegreesToRadians(90) - Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))))) - num6);
+      num7 = (+$T1B().DegreesToRadians(90) - Math.fround(Math.acos(+(((Math.pow(Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2)))), 2)) / (4 * (Math.sqrt(((Math.pow(Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2)))), 2)) + (Math.pow((this._virtualPos.y - 1), 2))))))))))) - Math.fround(Math.atan2(+this._virtualPos.y - 1, Math.sqrt(((Math.pow(this._virtualPos.x, 2)) + (Math.pow(this._virtualPos.z, 2))))));
       var flag6 = num7 < +$T1B().DegreesToRadians(-90);
       if (flag6) {
         num7 = +$T1B().DegreesToRadians(-90);
@@ -379,12 +378,12 @@ JSIL.DeclareNamespace("FuseeApp");
           num7 = +$T1B().DegreesToRadians(90);
         }
       }
-      z = -(+$T1B().DegreesToRadians(180) - num5);
-      num8 = (+$T1B().DegreesToRadians(90) - num7) - num5;
+      num8 = +$T1B().DegreesToRadians(180) - num5;
+      z = (num7 + num8) + +$T1B().DegreesToRadians(-90);
     }
-    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, num7);
-    this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, z);
-    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, num6);
+    this._lowerAxleTransform.Rotation = $S0D().Construct(0, 0, -num7);
+    this._middleAxleTransform.Rotation = $S0D().Construct(0, 0, -num8);
+    this._upperAxleTransform.Rotation = $S0D().Construct(0, 0, z);
     this._footTransform.Rotation = $S0D().Construct(0, -Math.fround(Math.atan2(this._virtualPos.z, this._virtualPos.x)), 0);
     var button = $T14().get_Keyboard().GetButton(79);
     if (button) {
