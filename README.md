@@ -1,4 +1,4 @@
-# RobotArm_Inverse_Kinematics
+# RobotArm Inverse Kinematics
 Welcome to the RobotArm Demo FUSEE App, which illustrates a method to control a robot arm using inverse kinematics.
 
 `RobotArm_Inverse_Kinematics.cs` contains the source code for the working FUSEE application.  
