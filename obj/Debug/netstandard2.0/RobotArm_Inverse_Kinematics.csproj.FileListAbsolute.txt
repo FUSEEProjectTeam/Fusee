@@ -11,3 +11,16 @@ C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\obj\Debug\netstandard2.0
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\xy-plane.png
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\xz-plane.png
 C:\Users\hallerjo\Downloads\RobotArm_Inverse_Kinematics\bin\Debug\netstandard2.0\Assets\pincer.png
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.csprojAssemblyReference.cache
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.csproj.CoreCompileInputs.cache
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.AssemblyInfoInputs.cache
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.AssemblyInfo.cs
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\Assets\pincer.png
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\Assets\roboter_arm.fus
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\Assets\xy-plane.png
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\Assets\xz-plane.png
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.deps.json
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
+c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb

@@ -30,10 +30,12 @@
   },
   "libraries": {
     "Microsoft.NETCore.Platforms/1.1.0": {
-      "sha512": "kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "sha512": "bLpT1f/SFlO1CzqXG12KnJzpZs6lv24uX2Rzi4Fmm0noJpNlnWRVryuO3yK18Ca04t/YHcO1e1Z0WDfjseqNzw==",
       "type": "package",
       "path": "microsoft.netcore.platforms/1.1.0",
       "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
         "ThirdPartyNotices.txt",
         "dotnet_library_license.txt",
         "lib/netstandard1.0/_._",
@@ -176,23 +178,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\hallerjo\\.nuget\\packages\\": {},
+    "C:\\Users\\jonas\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\RobotArm_Inverse_Kinematics.csproj",
+      "projectUniqueName": "c:\\Users\\jonas\\Desktop\\Coding\\robot-arm-ik\\RobotArm_Inverse_Kinematics.csproj",
       "projectName": "RobotArm_Inverse_Kinematics",
-      "projectPath": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\RobotArm_Inverse_Kinematics.csproj",
-      "packagesPath": "C:\\Users\\hallerjo\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\hallerjo\\Downloads\\RobotArm_Inverse_Kinematics\\obj\\",
+      "projectPath": "c:\\Users\\jonas\\Desktop\\Coding\\robot-arm-ik\\RobotArm_Inverse_Kinematics.csproj",
+      "packagesPath": "C:\\Users\\jonas\\.nuget\\packages\\",
+      "outputPath": "c:\\Users\\jonas\\Desktop\\Coding\\robot-arm-ik\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\hallerjo\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        "C:\\Users\\jonas\\AppData\\Roaming\\NuGet\\NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "netstandard2.0"

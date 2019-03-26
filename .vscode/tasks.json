@@ -16,7 +16,7 @@
         {
             "dependsOn": ["build"],
             "taskName": "Publish FUSEE Desktop app",
-            "command": "${env:FuseeRoot2}/bin/Debug/Tools/fusee publish --platform Desktop",
+            "command": "${env:FuseeRoot}/bin/Debug/Tools/fusee publish --platform Desktop",
             "type": "shell",
             "group": "build",
             "presentation": {
@@ -27,7 +27,7 @@
         {
             "dependsOn": ["build"],
             "taskName": "Publish FUSEE Web app",
-            "command": "${env:FuseeRoot2}/bin/Debug/Tools/fusee publish --platform Web",
+            "command": "${env:FuseeRoot}/bin/Debug/Tools/fusee publish --platform Web",
             "type": "shell",
             "group": "build",
             "presentation": {
