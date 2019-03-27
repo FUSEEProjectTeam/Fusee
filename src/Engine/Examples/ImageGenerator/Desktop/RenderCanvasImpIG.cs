@@ -144,11 +144,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
-        public RenderCanvasImpIG() 
+        public RenderCanvasImpIG(int width, int height) 
         {
-            const int width = 1280;
-            int height = 720;
-
             try
             {
                 _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
@@ -234,9 +231,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         public void Present()
         {
             GL.Flush();
-            /* if (_gameWindow != null)
-                _gameWindow.SwapBuffers();
-            */
+            /*if (_gameWindow != null)
+                _gameWindow.SwapBuffers();*/
         }
 
         /// <summary>
