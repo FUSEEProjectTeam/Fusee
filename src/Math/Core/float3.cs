@@ -1002,7 +1002,8 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 Barycentric(float3 a, float3 b, float3 c, float u, float v)
         {
-            return u*a + v*b + (1.0f-u-v)*c;
+            // return u*a + v*b + (1.0f-u-v)*c; while technically correct, does not yield the expected results
+            return (1.0f - u - v)*a + u*b + v*c;
         }
 
         /// <summary>
