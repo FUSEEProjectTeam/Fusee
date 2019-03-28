@@ -93,6 +93,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
         [JSExternal]
         public bool BoneIndicesSet { get; }
 
+   
+        public OpenGLPrimitiveType MeshType { get; set; }
+
+
         public void Dispose()
         {
             throw new NotImplementedException();

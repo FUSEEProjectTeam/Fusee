@@ -1,8 +1,12 @@
-﻿using Fusee.Engine.Common;
+﻿
+
+using Fusee.Engine.Common;
 
 #if PLATFORM_DESKTOP
+
 namespace Fusee.Engine.Imp.Graphics.Desktop
 #elif PLATFORM_ANDROID
+
 namespace Fusee.Engine.Imp.Graphics.Android
 #endif
 {
@@ -161,6 +165,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///   <c>true</c> if [triangles set]; otherwise, <c>false</c>.
         /// </value>
         public bool TrianglesSet { get { return ElementBufferObject != 0; } }
+
+
+        public OpenGLPrimitiveType MeshType { get; set;  }
         #endregion
     }
 }

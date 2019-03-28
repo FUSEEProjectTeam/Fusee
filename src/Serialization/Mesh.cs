@@ -240,6 +240,8 @@ namespace Fusee.Serialization
                     del(this, new MeshDataEventArgs(this, MeshChangedEnum.Triangles));
                 }
             }
+
+
         }
         
         /// <summary>
@@ -292,6 +294,10 @@ namespace Fusee.Serialization
                 }
             }
         }
+
+        [ProtoMember(11)]
+        public int MeshType = 0;
+     
 
         #endregion
 

@@ -456,7 +456,10 @@ namespace Fusee.Math.Core
         /// <returns>A QuaternionD that represents the orientation.</returns>
         public static QuaternionD FromAxisAngle(double3 axis, double angle)
         {
-            if (axis.LengthSquared > M.EpsilonDouble)
+            if (axis.LengthSquared < M.EpsilonFloat)
+                return Identity;
+                
+            if (axis.LengthSquared > 1.0)
                 return Identity;
 
             var result = Identity;

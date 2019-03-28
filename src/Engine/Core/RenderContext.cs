@@ -10,6 +10,8 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
+
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -20,6 +22,8 @@ namespace Fusee.Engine.Core
         #region Fields
 
         #region Private Fields
+
+        
 
         private readonly IRenderContextImp _rci;
 
@@ -1198,7 +1202,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                //Diagnostics.Log(ef.PixelShaderSrc[0]);
+                Diagnostics.Log(ef.PixelShaderSrc[0]);
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
@@ -1599,7 +1603,7 @@ namespace Fusee.Engine.Core
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.SetCubeMapRenderTarget(textureHandle, position);
         }
-        
+
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1608,7 +1612,7 @@ namespace Fusee.Engine.Core
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh m)
+        internal void Render(Mesh m)
         {
             if (_currentShaderEffect == null) return;
 
@@ -1618,7 +1622,6 @@ namespace Fusee.Engine.Core
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
 
             }
-
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
