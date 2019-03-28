@@ -475,7 +475,10 @@ namespace Fusee.Math.Core
         /// <returns>A normalized quaternion rotation.</returns>
         public static Quaternion FromAxisAngle(float3 axis, float angle)
         {
-            if (axis.LengthSquared > M.EpsilonFloat)
+            if (axis.LengthSquared < M.EpsilonFloat)
+                return Identity;
+                
+            if (axis.LengthSquared > 1f)
                 return Identity;
 
             var result = Identity;
@@ -545,7 +548,7 @@ namespace Fusee.Math.Core
             // The following requires halfAngle to be at least 0.5 degrees.
             if (cosHalfAngle < 0.99995f)
             {
-                // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "°");
+                // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "Â°");
                 // do proper slerp for big angles
                 var halfAngle = (float) System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = (float) System.Math.Sin(halfAngle);
@@ -556,7 +559,7 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // Console.WriteLine("Simple lerp for small angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle)) + "°");
+                // Console.WriteLine("Simple lerp for small angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle)) + "Â°");
                 // do lerp if angle is really small.
                 blendA = 1.0f - blend;
                 blendB = blend;

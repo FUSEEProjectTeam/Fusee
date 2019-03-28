@@ -1666,8 +1666,43 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (((MeshImp) mr).ElementBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ElementArrayBuffer, ((MeshImp) mr).ElementBufferObject);
-                GL.DrawElements(PrimitiveType.Triangles, ((MeshImp) mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
-                //GL.DrawArrays(GL.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
+
+                switch(((MeshImp)mr).MeshType)
+                {
+                    case OpenGLPrimitiveType.TRIANGLES:
+                    default:
+                        GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.POINT:
+                        // enable gl_PointSize to set the point size
+                        GL.Enable(EnableCap.VertexProgramPointSize);
+                        GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINES:
+                        GL.Enable(EnableCap.LineSmooth);
+                        GL.DrawElements(PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINE_LOOP:
+                        GL.Enable(EnableCap.LineSmooth);
+                        GL.DrawElements(PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINE_STRIP:
+                        GL.Enable(EnableCap.LineSmooth);
+                        GL.DrawElements(PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.PATCHES:
+                        GL.DrawElements(PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.QUAD_STRIP:
+                        GL.DrawElements(PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                        GL.DrawElements(PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                        GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        break; 
+                }
             }
 
 

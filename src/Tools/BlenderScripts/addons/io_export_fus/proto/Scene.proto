@@ -111,6 +111,7 @@ message Mesh {
    optional AABBf BoundingBox = 8;
    repeated float4 Tangents = 9;
    repeated float3 BiTangents = 10;
+   optional int32 MeshType = 11 [default = 0];
 }
 message RenderPass {
    optional string VS = 1;
