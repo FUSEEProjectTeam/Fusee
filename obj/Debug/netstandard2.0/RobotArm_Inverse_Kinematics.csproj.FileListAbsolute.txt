@@ -24,3 +24,17 @@ c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\Assets\xz-pl
 c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.deps.json
 c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
 c:\Users\jonas\Desktop\Coding\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\Assets\pincer.png
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\Assets\roboter_arm.fus
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\Assets\xy-plane.png
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\Assets\xz-plane.png
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.deps.json
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.csprojAssemblyReference.cache
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.csproj.CoreCompileInputs.cache
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.AssemblyInfoInputs.cache
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.AssemblyInfo.cs
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.dll
+C:\Repos\robot-arm-ik\obj\Debug\netstandard2.0\RobotArm_Inverse_Kinematics.pdb
+C:\Repos\robot-arm-ik\bin\Debug\netstandard2.0\Assets\roboter_arm.blend
