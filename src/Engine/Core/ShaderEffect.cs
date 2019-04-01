@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core
                 {
                     return pa;
                 }
-                return new object();
+                return null;
         }
      
         // This property returns the number of elements
