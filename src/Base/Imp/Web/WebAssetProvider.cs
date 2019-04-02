@@ -152,7 +152,6 @@ namespace Fusee.Base.Imp.Web
             throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
         }
 
-
         /// <summary>
         /// Checks the existance of the identified asset. Implement this on a given platform.
         /// </summary>
@@ -220,7 +219,6 @@ namespace Fusee.Base.Imp.Web
         {
             throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
         }
-
     }
 }
 
