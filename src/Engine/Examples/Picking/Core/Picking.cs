@@ -74,7 +74,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
             _aspectRatio = Width / (float)Height;
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Create the robot model
@@ -83,6 +83,9 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
 #if GUI_SIMPLE
             _gui = CreateGui();
@@ -231,22 +234,7 @@ namespace Fusee.Engine.Examples.Picking.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
-            _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
-            _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            _aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
-            _scenePicker.Projection = projection;
+            
         }
 
 #if GUI_SIMPLE
@@ -301,8 +289,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 }
             );
-            canvas.AddChild(fuseeLogo);
-            canvas.AddChild(text);
+            canvas.Children.Add(fuseeLogo);
+            canvas.Children.Add(text);
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
@@ -361,7 +349,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                             },
                             CreateCuboid(new float3(100, 20, 100))
                         },
-                        Children = new List<SceneNodeContainer>
+                        Children = new ChildList
                         {
                             new SceneNodeContainer
                             {
@@ -376,7 +364,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                     },
                                     CreateCuboid(new float3(20, 100, 20))
                                 },
-                                Children = new List<SceneNodeContainer>
+                                Children = new ChildList
                                 {
                                     new SceneNodeContainer
                                     {
@@ -385,7 +373,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                         {
                                             new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
                                         },
-                                        Children = new List<SceneNodeContainer>
+                                        Children = new ChildList
                                         {
                                             new SceneNodeContainer
                                             {
@@ -400,7 +388,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                     },
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
-                                                Children = new List<SceneNodeContainer>
+                                                Children = new ChildList
                                                 {
                                                     new SceneNodeContainer
                                                     {
@@ -409,7 +397,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                         {
                                                             new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
                                                         },
-                                                        Children = new List<SceneNodeContainer>
+                                                        Children = new ChildList
                                                         {
                                                             new SceneNodeContainer
                                                             {

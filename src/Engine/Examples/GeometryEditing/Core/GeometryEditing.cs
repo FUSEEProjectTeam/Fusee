@@ -59,7 +59,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
             _parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -72,6 +72,10 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
 
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
+
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            _scene.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -121,7 +125,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
         private void InteractionHandler()
         {
-            //Add new Geoemetry
+            //Add new Geometry
             if (Keyboard.GetKey(KeyCodes.D1) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;

@@ -6,6 +6,7 @@ using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Serialization;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -61,7 +62,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -138,9 +139,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            sc.Children[0].Components.Insert(0, projComp);
+
             _renderer = new SceneRenderer(sc);
 
-            var shaderFX = new ShaderEffect(new EffectPassDeclaration[] {
+            var shaderFx = new ShaderEffect(new[] {
                 new EffectPassDeclaration
                 {
                     PS = AssetStorage.Get<string>("FragShader.frag"),
@@ -156,7 +161,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
             });
 
-            RC.SetShaderEffect(shaderFX);
+            RC.SetShaderEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);

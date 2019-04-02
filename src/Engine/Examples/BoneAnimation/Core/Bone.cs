@@ -141,7 +141,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                 // Joints are added automatically during scene conversion (ConvertSceneGraph) 
             };
 
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            //_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
             // now we can convert the scene
             _scene = new ConvertSceneGraph().Convert(_scene);
 
@@ -171,6 +171,10 @@ namespace Fusee.Engine.Examples.Bone.Core
                 else
                     _sceneScale = float4x4.Identity;
             }
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
         }
@@ -291,18 +295,9 @@ namespace Fusee.Engine.Examples.Bone.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            
         }
 
         public static Mesh CreateCuboid(float3 size)

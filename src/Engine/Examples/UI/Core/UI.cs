@@ -102,7 +102,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 borderScaleFactor
 
             )
-            { Children = new List<SceneNodeContainer> { text } };
+            { Children = new ChildList() { text } };
             catTextureNode.Components.Add(_btnCat);
 
             var bltTextureNode = new TextureNodeContainer(
@@ -151,7 +151,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
             )
-            { Children = new List<SceneNodeContainer> { text, quagganTextureNode1 } };
+            { Children = new ChildList() { text, quagganTextureNode1 } };
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -204,7 +204,7 @@ namespace Fusee.Engine.Examples.UI.Core
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 })
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
                 {
                     //Simple Texture Node, contains a Blt"ed" texture.
                     bltTextureNode,

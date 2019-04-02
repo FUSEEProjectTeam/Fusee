@@ -94,6 +94,10 @@ namespace Fusee.Engine.Examples.Bump.Core
                 else
                     _sceneScale = float4x4.Identity;
             }
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
 

@@ -173,8 +173,8 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 borderScaleFactor
 
             );
-            annotation.AddChild(annotationText);
-            annotation.AddChild(icon);
+            annotation.Children.Add(annotationText);
+            annotation.Children.Add(icon);
 
             return annotation;
         }        

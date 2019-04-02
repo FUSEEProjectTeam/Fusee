@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
@@ -95,7 +96,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -169,9 +170,13 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            sc.Children[0].Components.Insert(0, projComp);
+
             _renderer = new SceneRenderer(sc);
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
 
         }
@@ -180,7 +185,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         public override void RenderAFrame()
         {
 
-            // Clear the backbuffer
+            // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);

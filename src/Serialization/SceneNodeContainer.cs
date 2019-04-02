@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Diagnostics;
 using ProtoBuf;
 
@@ -8,12 +7,12 @@ namespace Fusee.Serialization
 {
     public class OnAddChild : EventArgs
     {
+        public SceneNodeContainer Snc { get; }
         public OnAddChild(SceneNodeContainer snc)
         {
             Snc = snc;
         }
-
-        public SceneNodeContainer Snc { get; }
+        
     }
 
     /// <summary>
@@ -53,8 +52,14 @@ namespace Fusee.Serialization
 
         private ChildList _children;
 
+        /// <summary>
+        /// This SceneNodeContainer's parent. 
+        /// </summary>
         public SceneNodeContainer Parent;
 
+        /// <summary>
+        /// Creates a new instance of te SceneNodeContainer class. 
+        /// </summary>
         public SceneNodeContainer()
         {
             Components = new List<SceneComponentContainer>();

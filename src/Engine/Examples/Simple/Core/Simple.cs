@@ -183,7 +183,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                     Max = new float2(canvasWidth / 2, canvasHeight / 2f)
                 })
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
                 {
                     //Simple Texture Node, contains the fusee logo.
                     fuseeLogo,
