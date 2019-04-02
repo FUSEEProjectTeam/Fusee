@@ -170,6 +170,23 @@ namespace Fusee.Engine.Core
 
 
         #region Visitors
+
+
+        [VisitMethod]
+        public void PickProjection(ProjectionComponent pc)
+        {
+            switch (pc.ProjectionMethod)
+            {
+                case ProjectionMethod.PERSPECTIVE:
+                    var aspect = pc.Width / (float)pc.Height;
+                    Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);                    
+                    break;
+                case ProjectionMethod.ORTHOGRAPHIC:
+                    Projection = float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);                    
+                    break;
+            }
+        }
+
         [VisitMethod]
         public void PickTransform(TransformComponent transform)
         {

@@ -225,7 +225,7 @@ namespace Fusee.Engine.Player.Core
 
             var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
             RC.Projection = projection;
-            _sih.Projection = projection;
+            
             _sih.View = RC.ModelView;
 
             _guiRenderer.Render(RC);
@@ -243,10 +243,10 @@ namespace Fusee.Engine.Player.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
             // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
+            RC.Viewport(0, 0, e.Width, e.Height);
 
             var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
             _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
@@ -322,8 +322,7 @@ namespace Fusee.Engine.Player.Core
                 {
                     Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                }
-            )
+                })
             {
                 Children = new List<SceneNodeContainer>()
                 {
@@ -332,6 +331,10 @@ namespace Fusee.Engine.Player.Core
                     text
                 }
             };
+
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
             return new SceneContainer
             {

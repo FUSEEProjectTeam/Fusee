@@ -34,28 +34,13 @@ namespace Fusee.Engine.Examples.Simple.Core
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWindowWidth;
-        private float _initWindowHeight;
-        private float _initCanvasWidth;
-        private float _initCanvasHeight;
-        private float _canvasWidth = 16;
-        private float _canvasHeight = 9;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;        
 
         private bool _keys;
 
         // Init is called on startup. 
         public override void Init()
         {
-            _initWindowWidth = Width;
-            _initWindowHeight = Height;
-
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
-
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
             _aspectRatio = Width / (float)Height;
 
             _gui = CreateGui();
@@ -67,6 +52,9 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+
+            var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
@@ -134,48 +122,20 @@ namespace Fusee.Engine.Examples.Simple.Core
             }
 
             // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
-            var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            RC.Projection = projection;
-            _sih.Projection = projection;
-
-            _guiRenderer.Render(RC);
-
-            projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
+            _sceneRenderer.Render(RC);          
+            _guiRenderer.Render(RC);           
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
-            _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
-            _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            _aspectRatio = Width / (float)Height;
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
-
-            _sih.Projection = projection;
-        }
-
-        private SceneContainer CreateGui()
+          private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -196,7 +156,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -209,7 +169,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 vsTex,
                 psTex,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
@@ -219,10 +179,9 @@ namespace Fusee.Engine.Examples.Simple.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                }
-            )
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
             {
                 Children = new List<SceneNodeContainer>()
                 {
@@ -231,6 +190,10 @@ namespace Fusee.Engine.Examples.Simple.Core
                     text
                 }
             };
+
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
             
             return new SceneContainer
             {

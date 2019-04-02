@@ -2,6 +2,7 @@
 using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -11,7 +12,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
-        private SceneContainer _convertedScene;
+        private SceneContainer _convertedScene;        
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
 
@@ -44,16 +45,21 @@ namespace Fusee.Engine.Core
         {
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
-
+                        
             _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
             _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
             _boneContainers = new Stack<SceneNodeContainer>();
 
             Traverse(sc.Children);
-            return _convertedScene;
-        }
 
+            //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
+            var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+
+            _convertedScene.Children[0].Components.Insert(0,pc);
+            
+            return _convertedScene;
+        }        
         #region Visitors
 
         [VisitMethod]

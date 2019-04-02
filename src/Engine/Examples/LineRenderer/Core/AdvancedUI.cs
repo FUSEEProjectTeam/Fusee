@@ -39,7 +39,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
 
         private float _canvasWidth;
         private float _canvasHeight;
-        
+
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
@@ -106,7 +106,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
         // Init is called on startup. 
         public override void Init()
         {
-            if(_canvasRenderMode == CanvasRenderMode.SCREEN)
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 UIHelper.CanvasWidthInit = Width / 100f;
                 UIHelper.CanvasHeightInit = Height / 100f;
@@ -131,7 +131,10 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
-            
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
             {
@@ -186,9 +189,9 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //TODO: set screen space UI projection to orthographic in SceneRenderer
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
+            ////TODO: set screen space UI projection to orthographic in SceneRenderer
+            //var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
+            //RC.Projection = projection;
 
             #region Controls
             // Mouse and keyboard movement
@@ -246,7 +249,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             }
             #endregion
 
-           
+
             //Annotations will be unpdated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
@@ -279,7 +282,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
 
                     var col = UIHelper.MatColor.WHITE;
 
-                    if (uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
+                    if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
 
@@ -312,7 +315,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                         if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT                        
                             uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
                         else
-                            uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;                            
+                            uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;
                     }
                     _uiInput[k] = uiInput;
                 }
@@ -324,7 +327,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     var container = child.Children[k];
                     var annotation = container.Children[1];
                     var uiInput = _uiInput[k];
-                    
+
                     if (uiInput.IsVisible)
                     {
                         if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
@@ -345,7 +348,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                             comp.Active = false;
                     }
                 }
-                
+
                 // 3.   Update annotation positions on canvas and draw line
                 for (var k = 0; k < child.Children.Count; k++)
                 {
@@ -359,60 +362,62 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                         if (!uiInput.CircleCanvasPos.Equals(uiInput.CircleCanvasPosCache))
                         {
                             UpdateAnnotationOffsets(child.Children[uiInput.Identifier].Children[1], uiInput);
-                            DrawLine(child.Children[uiInput.Identifier].Children[2], uiInput);                                
+                            DrawLine(child.Children[uiInput.Identifier].Children[2], uiInput);
                         }
                     }
-                                    
-                    DrawLine(line, uiInput);                        
+
+                    DrawLine(line, uiInput);
 
                     uiInput.CircleCanvasPosCache = uiInput.CircleCanvasPos;
                     _uiInput[k] = uiInput;
                 }
             }
 
-            //TODO: set screen space UI projection to orthographic in SceneRenderer
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
-            {
-                // Render the scene loaded in Init()
-                _sceneRenderer.Render(RC);
+            ////TODO: set screen space UI projection to orthographic in SceneRenderer
+            //if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            //{
+            //    // Render the scene loaded in Init()
+            //    _sceneRenderer.Render(RC);
 
-                projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-                RC.Projection = projection;
-                _sih.Projection = projection;
+            //    projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            //    RC.Projection = projection;
+            //    //_sih.Projection = projection;
 
-                _guiRenderer.Render(RC);
-            }
-            else
-            {
-                _sceneRenderer.Render(RC);
-                _guiRenderer.Render(RC);
-            }
+            //    _guiRenderer.Render(RC);
+            //}
+            //else
+            //{
+               
+            //}
+
+            _sceneRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             Present();
         }
 
-       // Is called when the window was resized
-        public override void Resize()
+        // Is called when the window was resized
+        public override void Resize(ResizeEventArgs e)
         {
             // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
+            //RC.Viewport(0, 0, Width, Height);
 
             // Create a new projection matrix generating undistorted images on the new aspect ratio.
             _aspectRatio = Width / (float)Height;
 
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
-            
+
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
 
-                        
+
             // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
             // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
             // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
-            _sih.Projection = projection;
-            _scenePicker.Projection = projection;
+            //var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
+            //RC.Projection = projection;
+            //_sih.Projection = projection;
+            //_scenePicker.Projection = projection;
         }
 
         private SceneContainer CreateGui()
@@ -480,6 +485,10 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                    "#" + i + " " + item.SegmentationClass);
                 }
             }
+
+            var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
             return new SceneContainer
             {
@@ -597,7 +606,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 var halfAnnotationHeight = (UIHelper.AnnotationDim.y / 2f);
                 var buffer = halfAnnotationHeight - (halfAnnotationHeight / 100f * 10f);
                 //If we do not multiply by the resize scale factor the intersction test will return wrong results because AnnotationCanvasPos is in the range of the size of the initial canvas.
-                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos*_resizeScaleFactor, _uiInput[i].AnnotationCanvasPos* _resizeScaleFactor, new float2(0,buffer));
+                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos * _resizeScaleFactor, _uiInput[i].AnnotationCanvasPos * _resizeScaleFactor, new float2(0, buffer));
 
                 if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
 

@@ -478,6 +478,23 @@ namespace Fusee.Engine.Core
         #region Visitors
 
         [VisitMethod]
+        public void RenderProjection(ProjectionComponent pc)
+        {
+            switch (pc.ProjectionMethod)
+            {
+                case ProjectionMethod.PERSPECTIVE:
+                    var aspect = pc.Width / (float)pc.Height;
+                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
+                    _rc.Viewport(0, 0, pc.Width, pc.Height);
+                    break;
+                case ProjectionMethod.ORTHOGRAPHIC:                    
+                    _rc.Projection = float4x4.CreateOrthographic(pc.Width , pc.Height, pc.ZNear, pc.ZFar);
+                    _rc.Viewport(0, 0, pc.Width, pc.Height);
+                    break;
+            }
+        }
+
+        [VisitMethod]
         public void RenderBone(BoneComponent bone)
         {
             SceneNodeContainer boneContainer = CurrentNode;
@@ -534,7 +551,7 @@ namespace Fusee.Engine.Core
                 var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
-                var width = height * aspect;
+                var width = height * aspect;                
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {

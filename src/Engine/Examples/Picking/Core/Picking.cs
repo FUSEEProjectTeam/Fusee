@@ -197,7 +197,8 @@ namespace Fusee.Engine.Examples.Picking.Core
             }
 
             RC.ModelView = mtxCam * mtxRot;
-
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
             //Set the view matrix for the interaction handler.
@@ -209,19 +210,8 @@ namespace Fusee.Engine.Examples.Picking.Core
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
-            var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            RC.Projection = projection;
-            _sih.Projection = projection;
-
-            _guiRenderer.Render(RC);
-
-            projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
+            }           
+            _guiRenderer.Render(RC);          
 #endif           
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
@@ -239,7 +229,7 @@ namespace Fusee.Engine.Examples.Picking.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
             // Set the new rendering area to the entire new windows size
             RC.Viewport(0, 0, Width, Height);
@@ -257,11 +247,6 @@ namespace Fusee.Engine.Examples.Picking.Core
             var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
             RC.Projection = projection;
             _scenePicker.Projection = projection;
-
-#if GUI_SIMPLE
-            _sih.Projection = projection;
-#endif
-
         }
 
 #if GUI_SIMPLE
@@ -314,8 +299,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                 {
                     Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                }
-            )
+                })
             {
                 Children = new List<SceneNodeContainer>()
                 {
@@ -324,6 +308,10 @@ namespace Fusee.Engine.Examples.Picking.Core
                     text
                 }
             };
+
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
 
             return new SceneContainer

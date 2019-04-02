@@ -46,6 +46,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
         private float zNear = 1f;
         private float zFar = 1000;
+        private float fov = M.PiOver4;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -223,6 +224,12 @@ namespace Fusee.Engine.Examples.UI.Core
                     Diffuse = new MatChannelContainer { Color = new float3(1, 0, 0) },
                 })
             };
+
+            var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
+            var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
+            canvas.Components.Insert(0,projComp);
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -355,7 +362,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
-
+                        
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);
 
@@ -425,37 +432,6 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            float4x4 projection;
-
-            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
-            {
-                var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
-                _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
-                _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
-                projection = float4x4.CreateOrthographic(Width, Height, zNear, zFar);
-            }
-            else
-            {
-                projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, zNear, zFar);
-            }
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            RC.Projection = projection;
-            _sih.Projection = projection;
-        }
+        }        
     }
 }
