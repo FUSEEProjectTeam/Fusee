@@ -28,7 +28,7 @@ namespace Fusee.Xene
         /// </summary>
         /// <param name="sncThis">This scene node container.</param>
         /// <param name="type">The type of the components to look for.</param>
-        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        /// <returns>A List of components of the specified type, if contained within the given container.</returns>
         public static IEnumerable<SceneComponentContainer> GetComponentsInChildren(this SceneNodeContainer sncThis, Type type)
         {
             if (sncThis == null || type == null)

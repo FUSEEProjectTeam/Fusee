@@ -70,7 +70,7 @@ namespace Fusee.Engine.Core
                 var parent = _predecessors.Peek();
 
                 if (parent.Children == null)
-                    parent.Children = new List<SceneNodeContainer>();
+                    parent.Children = new ChildList();
 
                 _currentNode = new SceneNodeContainer { Name = snc.Name };
                 parent.Children.Add(_currentNode);

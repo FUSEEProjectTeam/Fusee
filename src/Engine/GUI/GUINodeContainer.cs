@@ -354,7 +354,7 @@ namespace Fusee.Engine.GUI
                 }
             };
 
-            Children = new List<SceneNodeContainer>()
+            Children = new ChildList()
             {
                 new SceneNodeContainer()
                 {

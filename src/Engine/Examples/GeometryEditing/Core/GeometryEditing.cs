@@ -411,18 +411,9 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 2000000);
+           
         }
 
     }

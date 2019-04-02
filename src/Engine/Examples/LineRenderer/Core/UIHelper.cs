@@ -154,8 +154,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 RalewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black), textSize * textSizeAdaptor);
 
-
-            return new TextureNodeContainer(
+            var annotation = new TextureNodeContainer(
                 "Annotation",
                 VsNineSlice,
                 PsNineSlice,
@@ -165,20 +164,19 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     Min = new float2(0, 0),
                     Max = new float2(0, 0)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit, AnnotationDim),
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, pos, CanvasHeightInit, CanvasWidthInit,
+                    AnnotationDim),
                 new float2(1, 1),
                 new float4(0.09f, 0.09f, 0.09f, 0.09f),
-                AnnotationBorderThickness.x, AnnotationBorderThickness.y, AnnotationBorderThickness.z, AnnotationBorderThickness.w,
+                AnnotationBorderThickness.x, AnnotationBorderThickness.y, AnnotationBorderThickness.z,
+                AnnotationBorderThickness.w,
                 borderScaleFactor
 
-            )
-            {
-                Children = new List<SceneNodeContainer>
-                {
-                    annotationText,
-                    icon
-                }
-            };
+            );
+            annotation.AddChild(annotationText);
+            annotation.AddChild(icon);
+
+            return annotation;
         }        
 
         private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)

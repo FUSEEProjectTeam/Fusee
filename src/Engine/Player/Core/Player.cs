@@ -77,7 +77,7 @@ namespace Fusee.Engine.Player.Core
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
 
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
@@ -322,15 +322,9 @@ namespace Fusee.Engine.Player.Core
                 {
                     Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                })
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
+                });
+            canvas.Children.Add(fuseeLogo);
+            canvas.Children.Add(text);
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);

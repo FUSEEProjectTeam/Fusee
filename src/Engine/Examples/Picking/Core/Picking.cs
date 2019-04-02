@@ -299,15 +299,10 @@ namespace Fusee.Engine.Examples.Picking.Core
                 {
                     Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                })
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
                 }
-            };
+            );
+            canvas.AddChild(fuseeLogo);
+            canvas.AddChild(text);
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);

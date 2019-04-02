@@ -462,14 +462,16 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 {
                     Min = new float2(-_canvasWidth / 2f, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2f, _canvasHeight / 2f)
-                })
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    fuseeLogo,
-                    markModelContainer
                 }
+            );
+
+            var canvasChildren = new List<SceneNodeContainer>()
+            {
+                fuseeLogo,
+                markModelContainer
             };
+            canvas.AddChildren(canvasChildren);
+
 
             for (var i = 0; i < _uiInput.Count; i++)
             {

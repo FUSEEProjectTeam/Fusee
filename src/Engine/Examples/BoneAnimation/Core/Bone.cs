@@ -46,7 +46,7 @@ namespace Fusee.Engine.Examples.Bone.Core
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
@@ -66,7 +66,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                             },
                             new BoneComponent()
                         },
-                        Children = new List<SceneNodeContainer>
+                        Children = new ChildList()
                         {
                             new SceneNodeContainer
                             {

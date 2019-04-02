@@ -97,7 +97,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
             if (assimpNode.HasChildren)
             {
-                fuNode.Children = new List<SceneNodeContainer>(assimpNode.ChildCount);
+                fuNode.Children = new ChildList();
                 _currentAssimpNode.Push();
                 // Recursively convert all children.
                 foreach (var child in assimpNode.Children)
