@@ -375,7 +375,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 }
             }
 
-            RC.ModelView = viewMatrix;
+            RC.View = viewMatrix;
             //var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = /*mtxOffset **/ _projection;
         }

@@ -193,7 +193,7 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 

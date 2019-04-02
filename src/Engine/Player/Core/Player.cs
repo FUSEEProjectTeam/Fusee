@@ -207,10 +207,10 @@ namespace Fusee.Engine.Player.Core
             // Wrap-around to keep _angleRoll between -PI and + PI
             _angleRoll = M.MinAngle(_angleRoll);
 
-            // Create the camera matrix and set it as the current ModelView transformation
+            // Create the camera matrix and set it as the current View transformation
             var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 
@@ -230,7 +230,7 @@ namespace Fusee.Engine.Player.Core
             var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
             RC.Projection = projection;
             
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             _guiRenderer.Render(RC);
 

@@ -231,14 +231,14 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current ModelView transformation
+            // Create the camera matrix and set it as the current View transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 0, -5, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
-            _scenePicker.View = RC.ModelView;
+            _sih.View = RC.View;
+            _scenePicker.View = RC.View;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
@@ -267,7 +267,14 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     var circle = container.Children[0];
                     var uiInput = _uiInput[k];
 
-                    var clipPos = uiInput.Position.TransformPerspective(RC.ModelViewProjection); //divides by w
+                    //the monkey's matrices
+                    var monkey = _scene.Children[0];
+                    var model = monkey.GetGlobalTransformation();
+                    var projection = monkey.GetParentProjection();
+
+                    var mvpMonkey = projection * RC.View * model;
+
+                    var clipPos = uiInput.Position.TransformPerspective(mvpMonkey); //divides by w
                     var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
 
                     canvasPosCircle.x *= _canvasWidth;

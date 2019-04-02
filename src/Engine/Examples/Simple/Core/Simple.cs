@@ -108,10 +108,10 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);

@@ -199,13 +199,13 @@ namespace Fusee.Engine.Examples.Picking.Core
                 _pick = false;
             }
 
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);

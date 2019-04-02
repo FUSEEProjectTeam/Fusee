@@ -181,10 +181,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 _beta -= speed.y * 0.0001f;
             }
 
-            // Create the camera matrix and set it as the current ModelView transformation.
+            // Create the camera matrix and set it as the current View transformation.
             var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
             var mtxCam = float4x4.LookAt(0, 0, -80, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
+            RC.View = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
 
             _renderer.Render(RC);
 

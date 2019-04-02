@@ -2,15 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 
-namespace Fusee.Xene
+namespace Fusee.Serialization
 {
     /// <summary>
     /// Static quick-hack helpers to access components within nodes.
     /// </summary>
     public static class ContainerExtensions
     {
+
+        public static float4x4 Matrix(this ProjectionComponent pc)
+        {
+            switch (pc.ProjectionMethod)
+            {
+                default:
+                case ProjectionMethod.PERSPECTIVE:
+                    var aspect = pc.Width / (float)pc.Height;
+                    return float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
+                case ProjectionMethod.ORTHOGRAPHIC:
+                    return float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);
+            }
+        }
+
         /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>

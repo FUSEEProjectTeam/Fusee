@@ -420,12 +420,12 @@ namespace Fusee.Engine.Examples.UI.Core
 
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
 
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);

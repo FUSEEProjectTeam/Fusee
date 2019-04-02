@@ -480,18 +480,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
         {
-            switch (pc.ProjectionMethod)
-            {
-                case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
-                    _rc.Viewport(0, 0, pc.Width, pc.Height);
-                    break;
-                case ProjectionMethod.ORTHOGRAPHIC:                    
-                    _rc.Projection = float4x4.CreateOrthographic(pc.Width , pc.Height, pc.ZNear, pc.ZFar);
-                    _rc.Viewport(0, 0, pc.Width, pc.Height);
-                    break;
-            }
+            _rc.Projection = pc.Matrix();
+            _rc.Viewport(0, 0, pc.Width, pc.Height);
         }
 
         [VisitMethod]
