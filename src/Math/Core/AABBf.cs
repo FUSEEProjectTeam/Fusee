@@ -92,12 +92,50 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// </summary>
+        /// <param name="a">The bounding boxes to build the union from.</param>
+        /// <param name="p">The point to be enclosed by the resulting bounding box</param>
+        /// <returns>The smallest axis aligned bounding box containing the input box and the point.</returns>
+        public static AABBf Union(AABBf a, float3 p)
+        {
+            AABBf ret;
+            ret.min.x = (a.min.x < p.x) ? a.min.x : p.x;
+            ret.min.y = (a.min.y < p.y) ? a.min.y : p.y;
+            ret.min.z = (a.min.z < p.z) ? a.min.z : p.z;
+            ret.max.x = (a.max.x > p.x) ? a.max.x : p.x;
+            ret.max.y = (a.max.y > p.y) ? a.max.y : p.y;
+            ret.max.z = (a.max.z > p.z) ? a.max.z : p.z;
+            return ret;
+        }
+        /// <summary>
+        ///     Calculates the bounding box around two existing bounding boxes.
+        /// </summary>
+        /// <param name="a">One of the bounding boxes to build the union from</param>
+        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
+        public static AABBf operator|(AABBf a, AABBf b) => Union(a, b);
+
+        /// <summary>
+        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// </summary>
+        /// <param name="a">The bounding boxes to build the union from.</param>
+        /// <param name="p">The point to be enclosed by the resulting bounding box</param>
+        /// <returns>The smallest axis aligned bounding box containing the input box and the point.</returns>
+        /// <example>
+        ///   Use this operator e.g. to calculate the bounding box for a given list of points.
+        ///   <code>
+        ///     AABB box = new AABB(pointList.First());
+        ///     foreach (float3 p in pointList)
+        ///         box |= p;
+        ///   </code>
+        /// </example>
+        public static AABBf operator|(AABBf a, float3 p) => Union(a, p);
+
+        /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public float3 Center
-        {
-            get { return (max + min)*0.5f; }
-        }
+        public float3 Center => (max + min) * 0.5f;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
