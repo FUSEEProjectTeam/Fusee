@@ -38,6 +38,7 @@ namespace Fusee.Engine.Player.Core
 
         private SceneContainer _gui;
         private SceneRenderer _guiRenderer;
+        private InputDevice _gameController;
         private SceneInteractionHandler _sih;
 
         private FontMap _guiLatoBlack;
@@ -94,13 +95,52 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
+
+            //Fusee.Engine.Core.Input.DeviceConnected += delegate (object sender, DeviceConnectionArgs e)
+            //{
+            //    if (e.InputDevice.Category == DeviceCategory.GameController)
+            //        _gameController = e.InputDevice;
+            //    Console.WriteLine("Controller Connected");
+            //};
+
+            //Fusee.Engine.Core.Input.DeviceDisconnected += delegate (object sender, DeviceConnectionArgs e)
+            //{
+            //    if (e.InputDevice.Category == DeviceCategory.GameController)
+            //        _gameController = null;
+            //    Console.WriteLine("Controller Disconnected");
+            //};
+
+            _gameController = Fusee.Engine.Core.Input.Devices.FirstOrDefault(dev => dev.Category == DeviceCategory.GameController);
+
+            for (int i = 0; i < _gameController.AxesCount; i++)
+            {
+
+                var curAxis = _gameController.GetAxisDescription(i);
+                
+                // if (curAxis.)
+            }
+            
+
+
+
+
+
         }
+
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            var controlleraxis = _gameController.GetAxis(0);
+            Diagnostics.Log(controlleraxis);
+            var button = _gameController.GetButton(0);
+            Diagnostics.Log(button);
+            if (_gameController != null)
+            {
+                _gameController.GetAxis(1);
+            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
