@@ -1,5 +1,8 @@
-﻿using System.Runtime.InteropServices;
-using ProtoBuf;
+﻿using ProtoBuf;
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Fusee.Math.Core
 {
@@ -8,24 +11,24 @@ namespace Fusee.Math.Core
     /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-    public struct AABBf
+    public struct AABBd
     {
         /// <summary>
         ///     The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(1)] public float3 min;
+        [ProtoMember(1)] public double3 min;
 
         /// <summary>
         ///     The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(2)] public float3 max;
+        [ProtoMember(2)] public double3 max;
 
         /// <summary>
         ///     Create a new axis aligned bounding box
         /// </summary>
         /// <param name="min_">the minimum x y and z values</param>
         /// <param name="max_">the maximum x y and z values</param>
-        public AABBf(float3 min_, float3 max_)
+        public AABBd(double3 min_, double3 max_)
         {
             min = min_;
             max = max_;
@@ -39,26 +42,26 @@ namespace Fusee.Math.Core
         /// <param name="m">The transformation matrix</param>
         /// <param name="box">the box to transform</param>
         /// <returns>A new axis aligned bounding box.</returns>
-        public static AABBf operator *(float4x4 m, AABBf box)
+        public static AABBd operator *(double4x4 m, AABBd box)
         {
-            float3[] cube =
+            double3[] cube =
             {
-                new float3(box.min.x, box.min.y, box.min.z),
-                new float3(box.min.x, box.min.y, box.max.z),
-                new float3(box.min.x, box.max.y, box.min.z),
-                new float3(box.min.x, box.max.y, box.max.z),
-                new float3(box.max.x, box.min.y, box.min.z),
-                new float3(box.max.x, box.min.y, box.max.z),
-                new float3(box.max.x, box.max.y, box.min.z),
-                new float3(box.max.x, box.max.y, box.max.z)
+                new double3(box.min.x, box.min.y, box.min.z),
+                new double3(box.min.x, box.min.y, box.max.z),
+                new double3(box.min.x, box.max.y, box.min.z),
+                new double3(box.min.x, box.max.y, box.max.z),
+                new double3(box.max.x, box.min.y, box.min.z),
+                new double3(box.max.x, box.min.y, box.max.z),
+                new double3(box.max.x, box.max.y, box.min.z),
+                new double3(box.max.x, box.max.y, box.max.z)
             };
 
             for (int i = 0; i < 8; i++)
             {
-                cube[i] = m*cube[i];
+                cube[i] = m * cube[i];
             }
 
-            AABBf ret;
+            AABBd ret;
             ret.min = cube[0];
             ret.max = cube[0];
             for (int i = 1; i < 8; i++)
@@ -79,9 +82,9 @@ namespace Fusee.Math.Core
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding boxe to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
-        public static AABBf Union(AABBf a, AABBf b)
+        public static AABBd Union(AABBd a, AABBd b)
         {
-            AABBf ret;
+            AABBd ret;
             ret.min.x = (a.min.x < b.min.x) ? a.min.x : b.min.x;
             ret.min.y = (a.min.y < b.min.y) ? a.min.y : b.min.y;
             ret.min.z = (a.min.z < b.min.z) ? a.min.z : b.min.z;
@@ -97,9 +100,9 @@ namespace Fusee.Math.Core
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
         /// <returns>The smallest axis aligned bounding box containing the input box and the point.</returns>
-        public static AABBf Union(AABBf a, float3 p)
+        public static AABBd Union(AABBd a, double3 p)
         {
-            AABBf ret;
+            AABBd ret;
             ret.min.x = (a.min.x < p.x) ? a.min.x : p.x;
             ret.min.y = (a.min.y < p.y) ? a.min.y : p.y;
             ret.min.z = (a.min.z < p.z) ? a.min.z : p.z;
@@ -108,13 +111,14 @@ namespace Fusee.Math.Core
             ret.max.z = (a.max.z > p.z) ? a.max.z : p.z;
             return ret;
         }
+
         /// <summary>
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding boxe to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
-        public static AABBf operator|(AABBf a, AABBf b) => Union(a, b);
+        public static AABBd operator |(AABBd a, AABBd b) => Union(a, b);
 
         /// <summary>
         ///     Calculates the bounding box around an existing bounding box and a single point.
@@ -126,21 +130,24 @@ namespace Fusee.Math.Core
         ///   Use this operator e.g. to calculate the bounding box for a given list of points.
         ///   <code>
         ///     AABB box = new AABB(pointList.First());
-        ///     foreach (float3 p in pointList)
+        ///     foreach (double3 p in pointList)
         ///         box |= p;
         ///   </code>
         /// </example>
-        public static AABBf operator|(AABBf a, float3 p) => Union(a, p);
+        public static AABBd operator |(AABBd a, double3 p) => Union(a, p);
 
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public float3 Center => (max + min) * 0.5f;
+        public double3 Center
+        {
+            get { return (max + min) * 0.5f; }
+        }
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
-        public float3 Size
+        public double3 Size
         {
             get { return (max - min); }
         }
@@ -150,7 +157,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="b"></param>
         /// <returns></returns>
-        public bool Intersects(AABBf b)
+        public bool Intersects(AABBd b)
         {
             return (min.x <= b.max.x && max.x >= b.min.x) &&
            (min.y <= b.max.y && max.y >= b.min.y) &&
@@ -162,7 +169,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
-        public bool Intersects(float3 point)
+        public bool Intersects(double3 point)
         {
             return (point.x >= min.x && point.x <= max.x) &&
             (point.y >= min.y && point.y <= max.y) &&
@@ -176,7 +183,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="viewingFrustrum">Projection matrix</param>
         /// <returns>false if fully outside, true if inside or intersects</returns>
-        public bool Intersects(float4x4 viewingFrustrum)
+        public bool Intersects(double4x4 viewingFrustrum)
         {
             // shorter variable
             var vF = viewingFrustrum;
@@ -184,38 +191,38 @@ namespace Fusee.Math.Core
             // split the viewing frustrum in 6 planes
             // plane equation = ax + by + cz + d = 0;
             // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3 
-            var planes = new float4[6];
+            var planes = new double4[6];
             // left
-            planes[0] = new float4(vF.M41 + vF.M11,
+            planes[0] = new double4(vF.M41 + vF.M11,
                                     vF.M42 + vF.M12,
                                     vF.M43 + vF.M13,
                                     vF.M44 + vF.M14);
             // right
-            planes[1] = new float4(vF.M41 - vF.M11,
+            planes[1] = new double4(vF.M41 - vF.M11,
                                     vF.M42 - vF.M12,
                                     vF.M43 - vF.M13,
                                     vF.M44 - vF.M14);
 
             // bottom
-            planes[2] = new float4(vF.M41 + vF.M21,
+            planes[2] = new double4(vF.M41 + vF.M21,
                                     vF.M42 + vF.M22,
                                     vF.M43 + vF.M23,
                                     vF.M44 + vF.M24);
 
             // top
-            planes[3] = new float4(vF.M41 - vF.M21,
+            planes[3] = new double4(vF.M41 - vF.M21,
                                     vF.M42 - vF.M22,
                                     vF.M43 - vF.M23,
                                     vF.M44 - vF.M24);
 
             // near
-            planes[4] = new float4(vF.M41 + vF.M31,
+            planes[4] = new double4(vF.M41 + vF.M31,
                                     vF.M42 + vF.M32,
                                     vF.M43 + vF.M33,
                                     vF.M44 + vF.M34);
 
             // far
-            planes[5] = new float4(vF.M41 - vF.M31,
+            planes[5] = new double4(vF.M41 - vF.M31,
                                     vF.M42 - vF.M32,
                                     vF.M43 - vF.M33,
                                     vF.M44 - vF.M34);
@@ -225,36 +232,36 @@ namespace Fusee.Math.Core
             // check if box is outside/inside of frustum
             for (int i = 0; i < 6; i++)
             {
-                cnt += (float4.Dot(planes[i], new float4(min.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(min.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(max.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(min.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(max.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(min.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(max.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(min.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
+                cnt += (double4.Dot(planes[i], new double4(max.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
 
                 if (cnt == 8) return false;
             }
 
             // now we check all 8 corners of our frustrum
             // create all 8 corners and transform them with the matrix given in this method
-            var vecFrustumF = new float4[8];
-            var vecFrustum = new float3[8];
+            var vecFrustumF = new double4[8];
+            var vecFrustum = new double3[8];
 
-            vecFrustumF[0] = new float4(-1.0f, -1.0f, 0.0f, 1.0f); // xyz
-            vecFrustumF[1] = new float4(1.0f, -1.0f, 0.0f, 1.0f); // Xyz
-            vecFrustumF[2] = new float4(-1.0f, 1.0f, 0.0f, 1.0f); // xYz
-            vecFrustumF[3] = new float4(1.0f, 1.0f, 0.0f, 1.0f); // XYz
-            vecFrustumF[4] = new float4(-1.0f, -1.0f, 1.0f, 1.0f); // xyZ
-            vecFrustumF[5] = new float4(1.0f, -1.0f, 1.0f, 1.0f); // XyZ
-            vecFrustumF[6] = new float4(-1.0f, 1.0f, 1.0f, 1.0f); // xYZ
-            vecFrustumF[7] = new float4(1.0f, 1.0f, 1.0f, 1.0f); // XYZ
+            vecFrustumF[0] = new double4(-1.0f, -1.0f, 0.0f, 1.0f); // xyz
+            vecFrustumF[1] = new double4(1.0f, -1.0f, 0.0f, 1.0f); // Xyz
+            vecFrustumF[2] = new double4(-1.0f, 1.0f, 0.0f, 1.0f); // xYz
+            vecFrustumF[3] = new double4(1.0f, 1.0f, 0.0f, 1.0f); // XYz
+            vecFrustumF[4] = new double4(-1.0f, -1.0f, 1.0f, 1.0f); // xyZ
+            vecFrustumF[5] = new double4(1.0f, -1.0f, 1.0f, 1.0f); // XyZ
+            vecFrustumF[6] = new double4(-1.0f, 1.0f, 1.0f, 1.0f); // xYZ
+            vecFrustumF[7] = new double4(1.0f, 1.0f, 1.0f, 1.0f); // XYZ
 
             for (var i = 0; i < vecFrustumF.Length; i++)
             {
-                var res = float4x4.Transform(viewingFrustrum, vecFrustumF[i]);
-                vecFrustum[i] = new float3(res.x, res.y, res.z);
+                var res = double4x4.Transform(viewingFrustrum, vecFrustumF[i]);
+                vecFrustum[i] = new double3(res.x, res.y, res.z);
             }
 
             // TODO: Replace with better code...
@@ -300,7 +307,7 @@ namespace Fusee.Math.Core
         /// <param name="left"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        public static bool Intersects(AABBf left, AABBf right)
+        public static bool Intersects(AABBd left, AABBd right)
         {
             return left.Intersects(right);
         }
@@ -311,9 +318,10 @@ namespace Fusee.Math.Core
         /// <param name="aabb"></param>
         /// <param name="point"></param>
         /// <returns></returns>
-        public static bool Intersects(AABBf aabb, float3 point)
+        public static bool Intersects(AABBd aabb, double3 point)
         {
             return aabb.Intersects(point);
         }
+
     }
 }
