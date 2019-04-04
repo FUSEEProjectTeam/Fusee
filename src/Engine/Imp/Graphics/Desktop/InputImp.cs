@@ -4,6 +4,7 @@ using OpenTK.Input;
 using Fusee.Engine.Common;
 using System.Collections.Generic;
 using System.Linq;
+using Fusee.Base.Core;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -347,17 +348,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class GamePadDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;
-        GamePadThumbSticks GamePadThumbSticks = new GamePadThumbSticks();
-        GamePadButtons GPB = new GamePadButtons();
-        GamePadTriggers GamePadTriggers = new GamePadTriggers();
+        private int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _btnToRightDesc, _btnToLeftDesc, _btnToUpDesc, _btnToDownDesc, _btnLeftDesc, _btnRightDesc, _btnL3, _btnR3;
-        internal GamePadDeviceImp(GameWindow window)
-        {
+
+        internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
+        {        
             _gameWindow = window;
-            //var device = _gameWindow.InputDriver.Joysticks[0];
-            var deviceID = 0;
-            var caps = GamePad.GetCapabilities(deviceID);
-            var state = GamePad.GetState(deviceID);
+            DeviceID = deviceID;
 
             _btnADesc = new ButtonImpDescription
             {
@@ -386,7 +383,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 },
                 PollButton = true
             };
-            _btnYDesc = new ButtonImpDescription
+            _btnBDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
@@ -542,7 +539,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                return 10;
+                return 8;
             }
 
         }
@@ -562,8 +559,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _btnSelectDesc;
                 yield return _btnRightDesc;
                 yield return _btnLeftDesc;
-                yield return _btnR3;
-                yield return _btnL3;
+                //yield return _btnR3;
+                //yield return _btnL3;
             }
         }
         ///<summary>
@@ -585,16 +582,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>The value at the given axis.</returns>
         public float GetAxis(int iAxisId)
         {
+            var currentThumbSticks = GamePad.GetState(DeviceID).ThumbSticks;
+
             switch (iAxisId)
             {
                 case 0:
-                    return GamePadThumbSticks.Left.X;
+                    return currentThumbSticks.Left.X;
                 case 1:
-                    return GamePadThumbSticks.Left.Y;
+                    return currentThumbSticks.Left.Y;
                 case 2:
-                    return GamePadThumbSticks.Right.X;
+                    return currentThumbSticks.Right.X;
                 case 3:
-                    return GamePadThumbSticks.Right.Y;
+                    return currentThumbSticks.Right.Y;
 
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
@@ -604,49 +603,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public bool GetButton(int iButtonId)
         {
+            var GPB = GamePad.GetState(DeviceID).Buttons;
+
             switch (iButtonId)
             {
                 case 0:
-                    if (GPB.A == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
+                    return GPB.A == ButtonState.Pressed;
                 case 1:
-                    if (GPB.X == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
+                    return GPB.X == ButtonState.Pressed;
                 case 2:
-                    if (GPB.Y == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
+                    return GPB.Y == ButtonState.Pressed;
                 case 3:
-                    if (GPB.B == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
-                case 6:
-                    if (GPB.LeftShoulder == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
-                case 7:
-                    if (GPB.RightShoulder == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
+                    return GPB.B == ButtonState.Pressed;
                 case 4:
-                    if (GPB.Start == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
+                    return GPB.Start == ButtonState.Pressed;
                 case 5:
-                    if (GPB.Back == ButtonState.Pressed)
-                        return true;
-                    else
-                        return false;
-
+                    return GPB.Back == ButtonState.Pressed;
+                case 6:
+                    return GPB.LeftShoulder == ButtonState.Pressed;
+                case 7:
+                    return GPB.RightShoulder == ButtonState.Pressed;
             }
             throw new InvalidOperationException($"Unknown button {iButtonId}. Cannot get value for unknown button.");
         }

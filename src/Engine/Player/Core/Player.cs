@@ -116,10 +116,10 @@ namespace Fusee.Engine.Player.Core
             {
 
                 var curAxis = _gameController.GetAxisDescription(i);
-                
+
                 // if (curAxis.)
             }
-            
+
 
 
 
@@ -133,13 +133,18 @@ namespace Fusee.Engine.Player.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            
+
             if (_gameController != null)
             {
-                var controlleraxis = _gameController.GetAxis(0);
-                    ;
-                Diagnostics.Log(controlleraxis);
-              
+                Diagnostics.Log($"Axis LeftStickX: {_gameController.GetAxis(0)}");
+                Diagnostics.Log($"Axis LeftStickY: {_gameController.GetAxis(1)}");
+                Diagnostics.Log($"Axis RightStickX: {_gameController.GetAxis(2)}");
+                Diagnostics.Log($"Axis RightStickY: {_gameController.GetAxis(3)}");
+
+                Diagnostics.Log($"Button A {(_gameController.GetButton(0) ? "PRESSED" : "")}"); // a 
+                Diagnostics.Log($"Button X {(_gameController.GetButton(1) ? "PRESSED" : "")}"); // x 
+                Diagnostics.Log($"Button Y {(_gameController.GetButton(2) ? "PRESSED" : "")}"); // y
+                Diagnostics.Log($"Button B {(_gameController.GetButton(3) ? "PRESSED" : "")}"); // b
             }
 
             // Mouse and keyboard movement
