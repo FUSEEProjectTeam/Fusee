@@ -349,7 +349,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     {
         private GameWindow _gameWindow;
         private int DeviceID;
-        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _btnToRightDesc, _btnToLeftDesc, _btnToUpDesc, _btnToDownDesc, _btnLeftDesc, _btnRightDesc, _btnL3, _btnR3;
+        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _btnToRightDesc, _btnToLeftDesc, _btnToUpDesc, _btnToDownDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
         internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
         {        
@@ -425,6 +425,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     Name = "GP right button",
                     Id = 7
+                },
+                PollButton = true
+            };
+            _btnL3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP L3 button",
+                    Id = 8
+                },
+                PollButton = true
+            };
+            _btnR3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP R3 button",
+                    Id = 9
                 },
                 PollButton = true
             };
@@ -530,6 +548,34 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     },
                     PollAxis = true
                 };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Trigger",
+                        Id = 4,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = 0,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Trigger",
+                        Id = 5,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = 0,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
             }
         }
         /// <summary>
@@ -539,7 +585,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                return 8;
+                return 10;
             }
 
         }
@@ -559,8 +605,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _btnSelectDesc;
                 yield return _btnRightDesc;
                 yield return _btnLeftDesc;
-                //yield return _btnR3;
-                //yield return _btnL3;
+                yield return _btnR3Desc;
+                yield return _btnL3Desc;
             }
         }
         ///<summary>
@@ -583,6 +629,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public float GetAxis(int iAxisId)
         {
             var currentThumbSticks = GamePad.GetState(DeviceID).ThumbSticks;
+            var currentTrigger = GamePad.GetState(DeviceID).Triggers;
 
             switch (iAxisId)
             {
@@ -594,6 +641,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return currentThumbSticks.Right.X;
                 case 3:
                     return currentThumbSticks.Right.Y;
+                case 4:
+                    return currentTrigger.Left;
+                case 5:
+                    return currentTrigger.Right;
 
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
@@ -623,6 +674,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return GPB.LeftShoulder == ButtonState.Pressed;
                 case 7:
                     return GPB.RightShoulder == ButtonState.Pressed;
+                case 8:
+                    return GPB.LeftStick == ButtonState.Pressed;
+                case 9:
+                    return GPB.RightStick == ButtonState.Pressed;
             }
             throw new InvalidOperationException($"Unknown button {iButtonId}. Cannot get value for unknown button.");
         }
