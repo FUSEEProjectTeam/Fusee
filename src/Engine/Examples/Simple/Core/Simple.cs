@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Common;
@@ -38,32 +39,79 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
-        //see Graphic Gems IV p. 222-229
-        private float3 RotMatToEulerYXZ(float4x4 rotMat)
+        //see Blender mathutils
+        /* Type for rotation order info - see wiki for derivation details */
+        struct RotOrderInfo
         {
-            var sy = System.Math.Sqrt((rotMat.M11 * rotMat.M11) + (rotMat.M21 * rotMat.M21));
-            bool isSingular = sy < 1e-6;
+            public int[] Axis;
+            public int Parity; /* parity of axis permutation (even=0, odd=1) - 'n' in original code */
+        }
+        
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        private static void MatToEuler2(float[][] mat, ref float[] eul1, ref float[] eul2)
+        {
 
-            var x = 0.0;
-            var y = 0.0;
-            var z = 0.0;
-
-            if (!isSingular)
+            var rotOrderInfo = new RotOrderInfo/* YXZ */
             {
-                x = System.Math.Atan2(rotMat.M32, rotMat.M33);
-                y = System.Math.Atan2(-rotMat.M31, sy);
-                z = System.Math.Atan2(rotMat.M21, rotMat.M11);
+                Axis = new[] {1, 0, 2},
+                Parity = 1
+            }; 
+
+            int i = rotOrderInfo.Axis[0], j = rotOrderInfo.Axis[1], k = rotOrderInfo.Axis[2];
+            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
+
+            var FLT_EPSILON = 1.192092896e-07F;
+
+            if (cy > 16.0f * FLT_EPSILON)
+            {
+                eul1[i] = (float)System.Math.Atan2(mat[j][k], mat[k][k]);
+                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = (float)System.Math.Atan2(mat[i][j], mat[i][i]);
+
+                eul2[i] = (float)System.Math.Atan2(-mat[j][k], -mat[k][k]);
+                eul2[j] = (float)System.Math.Atan2(-mat[i][k], -cy);
+                eul2[k] = (float)System.Math.Atan2(-mat[i][j], -mat[i][i]);
             }
             else
             {
-                x = System.Math.Atan2(-rotMat.M23, rotMat.M22);
-                y = System.Math.Atan2(-rotMat.M31, sy);
-                
+                eul1[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = 0;
+
+                eul2[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul2[j] = (float)System.Math.Atan2(-mat[i][k], cy);
+                eul2[k] = 0;
             }
 
-            return new float3((float)x, (float)y, (float)z);
-        }          
-                   
+            if (rotOrderInfo.Parity == 1) {
+                for (var l = 0; l < eul1.Length; l++)
+                {
+                    eul1[l] *= -1;
+                    eul1[l] *= -1;
+                }
+            }
+        }
+
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        static float3 MatToEuler(float[][] m)
+        {
+            var eul1 = new float[3];
+            var eul2 = new float[3];
+            float d1, d2;
+
+            MatToEuler2(m, ref eul1, ref eul2);
+
+            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
+            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
+
+            /* return best, which is just the one with lowest values it in */
+            if (d1 > d2)
+            {
+                return new float3(eul2[0], eul2[1], eul2[2]);
+            }
+
+            return new float3(eul1[0], eul1[1], eul1[2]);
+        }
         
 
         // Init is called on startup. 
@@ -83,17 +131,21 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-
-
-            var testCube = _rocketScene.Children[1];
-            var gChild = _rocketScene.Children[0].Children[0].Children[0];
+            
+            var testCube = _rocketScene.Children[0];
+            var gChild = _rocketScene.Children[1].Children[0].Children[0];
 
             var globalTransl = gChild.GetGlobalTranslation();
             var globalRot = gChild.GetGlobalRotation();
-            var euler = RotMatToEulerYXZ(globalRot);
+            var globalScale = gChild.GetGlobalScale();
+            
+            var arrayMat = new[] {globalRot.Row0.ToArray(), globalRot.Row1.ToArray(), globalRot.Row2.ToArray(), globalRot.Row3.ToArray() };
 
-            testCube.GetComponent<TransformComponent>().Translation = new float3(globalTransl.M14, globalTransl.M24, globalTransl.M34);
+            var euler = MatToEuler(arrayMat);
+
+            testCube.GetComponent<TransformComponent>().Translation = globalTransl;
             testCube.GetComponent<TransformComponent>().Rotation = euler;
+            testCube.GetComponent<TransformComponent>().Scale = globalScale;
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);

@@ -50,7 +50,7 @@ namespace Fusee.Xene
             if (snc.Parent == null)
                 return snc.GetComponent<TransformComponent>().Matrix();
 
-            snc.AccumulateGlobalTransform(ref res, GetLocalTransformation);
+            snc.AccumulateGlobalTransform(ref res);
             return res;
         }
 
@@ -59,41 +59,53 @@ namespace Fusee.Xene
         /// </summary>
         public static float4x4 GetGlobalRotation(this SceneNodeContainer snc)
         {
-            var res = GetLocalRotation(snc.GetComponent<TransformComponent>());
-            if (snc.Parent == null)
-                return res;
+            var res = GetGlobalTransformation(snc);
+            res.M14 = 0;
+            res.M24 = 0;
+            res.M34 = 0;
 
-            snc.AccumulateGlobalTransform(ref res, GetLocalRotation);
+            var scaleX = res.Column0.Length;
+            var scaleY = res.Column1.Length;
+            var scaleZ = res.Column2.Length;
+
+            res.M11 /= scaleX;
+            res.M21 /= scaleX;
+            res.M31 /= scaleX;
+
+            res.M12 /= scaleY;
+            res.M22 /= scaleY;
+            res.M32 /= scaleY;
+
+            res.M13 /= scaleZ;
+            res.M23 /= scaleZ;
+            res.M33 /= scaleZ;
+
             return res;
         }
 
         /// <summary>
-        /// Returns the global translation matrix as the product of all translations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// Returns the global translation as the product of all translations along the scene graph branch this SceneNodeContainer is a part of. 
         /// </summary>
-        public static float4x4 GetGlobalTranslation(this SceneNodeContainer snc)
+        public static float3 GetGlobalTranslation(this SceneNodeContainer snc)
         {
-            var res = GetLocalTranslation(snc.GetComponent<TransformComponent>());
-            if (snc.Parent == null)
-                return res;
-
-            snc.AccumulateGlobalTransform(ref res, GetLocalTranslation);
-            return res;
+            var transform = GetGlobalTransformation(snc);
+            return new float3(transform.M14,transform.M24, transform.M34);
         }
 
         /// <summary>
-        /// Returns the global scale matrix as the product of all scaling along the scene graph branch this SceneNodeContainer is a part of. 
+        /// Returns the global scale as the product of all scaling along the scene graph branch this SceneNodeContainer is a part of. 
         /// </summary>
-        public static float4x4 GetGlobalScale(this SceneNodeContainer snc)
+        public static float3 GetGlobalScale(this SceneNodeContainer snc)
         {
-            var res = GetLocalScale(snc.GetComponent<TransformComponent>());
-            if (snc.Parent == null)
-                return res;
+            var transform = GetGlobalTransformation(snc);
+            var scaleX = transform.Column0.Length;
+            var scaleY = transform.Column1.Length;
+            var scaleZ = transform.Column2.Length;
 
-            snc.AccumulateGlobalTransform(ref res, GetLocalTranslation);
-            return res;
+            return new float3(scaleX, scaleY, scaleZ);
         }
 
-        private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res, Func<TransformComponent, float4x4> GetTransform)
+        private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res)
         {
             while (true)
             {
@@ -105,9 +117,12 @@ namespace Fusee.Xene
                 var tcp = snc.Parent.GetComponent<TransformComponent>();
 
                 if (tcp == null)
+                {
+                    snc = snc.Parent;
                     continue;
+                }
 
-                res *= GetTransform(tcp);
+                res = GetLocalTransformation(tcp)* res;
                 snc = snc.Parent;
             }
         }
