@@ -2,15 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
+using Fusee.Serialization;
 
-namespace Fusee.Serialization
+
+namespace Fusee.Xene
 {
     /// <summary>
-    /// Static quick-hack helpers to access components within nodes.
+    /// Static quick-hack helpers to access components within nodes and get local and global transformation matrices.
     /// </summary>
     public static class ContainerExtensions
     {
-
+        /// <summary>
+        /// Calculates the appropriate projection matrix for the given projection method.
+        /// </summary>
+        /// <param name="pc">The projection component.</param>        
         public static float4x4 Matrix(this ProjectionComponent pc)
         {
             switch (pc.ProjectionMethod)
@@ -34,6 +39,142 @@ namespace Fusee.Serialization
             return float4x4.CreateTranslation(tcThis.Translation) * float4x4.CreateRotationY(tcThis.Rotation.y) *
                    float4x4.CreateRotationX(tcThis.Rotation.x) * float4x4.CreateRotationZ(tcThis.Rotation.z) *
                    float4x4.CreateScale(tcThis.Scale);
+        }
+
+        /// <summary>
+        /// Returns the global transformation matrix as the product of all transformations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalTransformation(this SceneNodeContainer snc)
+        {
+            var res = GetLocalTransformation(snc.GetComponent<TransformComponent>());
+            if (snc.Parent == null)
+                return snc.GetComponent<TransformComponent>().Matrix();
+
+            snc.AccumulateGlobalTransform(ref res, GetLocalTransformation);
+            return res;
+        }
+
+        /// <summary>
+        /// Returns the global rotation matrix as the product of all rotations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalRotation(this SceneNodeContainer snc)
+        {
+            var res = GetLocalRotation(snc.GetComponent<TransformComponent>());
+            if (snc.Parent == null)
+                return res;
+
+            snc.AccumulateGlobalTransform(ref res, GetLocalRotation);
+            return res;
+        }
+
+        /// <summary>
+        /// Returns the global translation matrix as the product of all translations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalTranslation(this SceneNodeContainer snc)
+        {
+            var res = GetLocalTranslation(snc.GetComponent<TransformComponent>());
+            if (snc.Parent == null)
+                return res;
+
+            snc.AccumulateGlobalTransform(ref res, GetLocalTranslation);
+            return res;
+        }
+
+        /// <summary>
+        /// Returns the global scale matrix as the product of all scaling along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalScale(this SceneNodeContainer snc)
+        {
+            var res = GetLocalScale(snc.GetComponent<TransformComponent>());
+            if (snc.Parent == null)
+                return res;
+
+            snc.AccumulateGlobalTransform(ref res, GetLocalTranslation);
+            return res;
+        }
+
+        private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res, Func<TransformComponent, float4x4> GetTransform)
+        {
+            while (true)
+            {
+                if (snc.Parent == null)
+                {
+                    return;
+                }
+
+                var tcp = snc.Parent.GetComponent<TransformComponent>();
+
+                if (tcp == null)
+                    continue;
+
+                res *= GetTransform(tcp);
+                snc = snc.Parent;
+            }
+        }
+
+        /// <summary>
+        /// Get the local transformation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalTransformation(this TransformComponent tc)
+        {
+            if (tc == null)
+                return float4x4.Identity;
+            return tc.Matrix();
+        }
+
+        /// <summary>
+        /// Get the local rotation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalRotation(this TransformComponent tc)
+        {
+            if (tc == null)
+                return float4x4.Identity;
+            return float4x4.CreateRotationY(tc.Rotation.y) *
+                   float4x4.CreateRotationX(tc.Rotation.x) * float4x4.CreateRotationZ(tc.Rotation.z);
+
+        }
+
+        /// <summary>
+        /// Get the local translation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalTranslation(this TransformComponent tc)
+        {
+            if (tc == null)
+                return float4x4.Identity;
+            return float4x4.CreateTranslation(tc.Translation);
+        }
+
+        /// <summary>
+        /// Get the local scale matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalScale(this TransformComponent tc)
+        {
+            if (tc == null)
+                return float4x4.Identity;
+            return float4x4.CreateScale(tc.Scale);
+        }
+
+        /// <summary>
+        /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
+        /// </summary>
+        public static float4x4 GetParentProjection(this SceneNodeContainer snc)
+        {
+            var res = float4x4.Identity;
+
+            if (snc.Parent == null)
+                return snc.GetComponent<ProjectionComponent>().Matrix();
+
+            var parent = snc.Parent;
+            while (true)
+            {
+                if (parent.Parent == null || res != float4x4.Identity)
+                {
+                    return res;
+                }
+
+                res = parent.GetComponent<ProjectionComponent>().Matrix();
+                parent = parent.Parent;
+            }
         }
 
         /// <summary>

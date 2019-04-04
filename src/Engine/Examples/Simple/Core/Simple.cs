@@ -38,6 +38,34 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private bool _keys;
 
+        //see Graphic Gems IV p. 222-229
+        private float3 RotMatToEulerYXZ(float4x4 rotMat)
+        {
+            var sy = System.Math.Sqrt((rotMat.M11 * rotMat.M11) + (rotMat.M21 * rotMat.M21));
+            bool isSingular = sy < 1e-6;
+
+            var x = 0.0;
+            var y = 0.0;
+            var z = 0.0;
+
+            if (!isSingular)
+            {
+                x = System.Math.Atan2(rotMat.M32, rotMat.M33);
+                y = System.Math.Atan2(-rotMat.M31, sy);
+                z = System.Math.Atan2(rotMat.M21, rotMat.M11);
+            }
+            else
+            {
+                x = System.Math.Atan2(-rotMat.M23, rotMat.M22);
+                y = System.Math.Atan2(-rotMat.M31, sy);
+                
+            }
+
+            return new float3((float)x, (float)y, (float)z);
+        }          
+                   
+        
+
         // Init is called on startup. 
         public override void Init()
         {
@@ -51,10 +79,21 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("test.fus");
 
             var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
+
+            var testCube = _rocketScene.Children[1];
+            var gChild = _rocketScene.Children[0].Children[0].Children[0];
+
+            var globalTransl = gChild.GetGlobalTranslation();
+            var globalRot = gChild.GetGlobalRotation();
+            var euler = RotMatToEulerYXZ(globalRot);
+
+            testCube.GetComponent<TransformComponent>().Translation = new float3(globalTransl.M14, globalTransl.M24, globalTransl.M34);
+            testCube.GetComponent<TransformComponent>().Rotation = euler;
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);

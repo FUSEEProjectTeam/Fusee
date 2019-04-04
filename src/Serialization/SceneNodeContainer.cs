@@ -6,10 +6,13 @@ using ProtoBuf;
 
 namespace Fusee.Serialization
 {
-    public class OnAddChild : EventArgs
+    /// <summary>
+    /// Event Arguments for adding a new child to a SceneNodeContainer and set its parent.
+    /// </summary>
+    public class AddChildEventArgs : EventArgs
     {
         public SceneNodeContainer Snc { get; }
-        public OnAddChild(SceneNodeContainer snc)
+        public AddChildEventArgs(SceneNodeContainer snc)
         {
             Snc = snc;
         }
@@ -67,49 +70,6 @@ namespace Fusee.Serialization
             Children = new ChildList();
             Children.OnAdd += (sender, e) => e.Snc.Parent = this;
         }
-
-        public float4x4 GetGlobalTransformation()
-        {
-            var res = float4x4.Identity;
-            if (Parent == null)
-                return this.GetComponent<TransformComponent>().Matrix();
-
-            AccumulateGlobalTransform(ref res, this);
-            return res;
-        }
-
-        private static void AccumulateGlobalTransform(ref float4x4 res, SceneNodeContainer snc)
-        {
-            while (true)
-            {
-                if (snc.Parent == null)
-                {
-                    return;
-                }
-
-                res *= snc.GetComponent<TransformComponent>().Matrix();
-                snc = snc.Parent;
-            }
-        }
-
-
-        public float4x4 GetParentProjection()
-        {
-            var res = float4x4.Identity;
-            if (Parent == null)
-                return this.GetComponent<ProjectionComponent>().Matrix();
-
-            var parent = Parent;
-            while (true)
-            {
-                if (parent.Parent == null || res != float4x4.Identity)
-                {
-                    return res;
-                }
-
-                res = parent.GetComponent<ProjectionComponent>().Matrix();
-                parent = parent.Parent;
-            }
-        }
+        
     }
 }

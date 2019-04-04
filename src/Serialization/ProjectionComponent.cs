@@ -9,7 +9,13 @@ namespace Fusee.Serialization
     /// </summary>
     public enum ProjectionMethod
     {
+        /// <summary>
+        /// Perspective projection
+        /// </summary>
         PERSPECTIVE,
+        /// <summary>
+        /// Orthographic projection
+        /// </summary>
         ORTHOGRAPHIC
     }
 
@@ -22,8 +28,14 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class ProjectionComponent : SceneComponentContainer
     {
+        /// <summary>
+        /// The width of the current viewport. Gets set automatically.
+        /// </summary>
         public int Width { get; private set; }
 
+        /// <summary>
+        /// The height of the current viewport. Gets set automatically.
+        /// </summary>
         public int Height { get; private set; }
 
         /// <summary>
