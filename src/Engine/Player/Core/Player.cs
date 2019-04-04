@@ -96,7 +96,9 @@ namespace Fusee.Engine.Player.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
 
-            //Fusee.Engine.Core.Input.DeviceConnected += delegate (object sender, DeviceConnectionArgs e)
+
+
+            //DeviceConnected += delegate (object sender, DeviceConnectionArgs e)
             //{
             //    if (e.InputDevice.Category == DeviceCategory.GameController)
             //        _gameController = e.InputDevice;
@@ -109,9 +111,7 @@ namespace Fusee.Engine.Player.Core
             //        _gameController = null;
             //    Console.WriteLine("Controller Disconnected");
             //};
-
-            _gameController = Fusee.Engine.Core.Input.Devices.FirstOrDefault(dev => dev.Category == DeviceCategory.GameController);
-
+            _gameController = Devices.First(dev => dev.Category == DeviceCategory.GameController);
             for (int i = 0; i < _gameController.AxesCount; i++)
             {
 
@@ -133,13 +133,13 @@ namespace Fusee.Engine.Player.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-            var controlleraxis = _gameController.GetAxis(0);
-            Diagnostics.Log(controlleraxis);
-            var button = _gameController.GetButton(0);
-            Diagnostics.Log(button);
+            
             if (_gameController != null)
             {
-                _gameController.GetAxis(1);
+                var controlleraxis = _gameController.GetAxis(0);
+                    ;
+                Diagnostics.Log(controlleraxis);
+              
             }
 
             // Mouse and keyboard movement

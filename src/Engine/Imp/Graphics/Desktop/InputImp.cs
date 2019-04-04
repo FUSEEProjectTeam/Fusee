@@ -364,52 +364,52 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP A",
-                    Id = (int)GPB.A
+                    Id = 0
                 },
-                PollButton = false
+                PollButton = true
             };
             _btnXDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP X",
-                    Id = (int)GPB.X
+                    Id = 1
                 },
-                PollButton = false
+                PollButton = true
             };
             _btnYDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP Y",
-                    Id = (int)GPB.Y
+                    Id = 2
                 },
-                PollButton = false
+                PollButton = true
             };
             _btnYDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP B",
-                    Id = (int)GPB.B
+                    Id = 3
                 },
-                PollButton = false
+                PollButton = true
             };
             _btnStartDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP Start",
-                    Id = (int)GPB.Start
+                    Id = 4
                 },
-                PollButton = false
+                PollButton = true
             };
             _btnSelectDesc = new ButtonImpDescription
             {
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP Select or Back",
-                    Id = (int)GPB.Back
+                    Id = 5
                 },
                 PollButton = true
             };
@@ -418,7 +418,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP left button",
-                    Id = (int)GPB.LeftShoulder
+                    Id = 6
                 },
                 PollButton = true
             };
@@ -427,25 +427,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 ButtonDesc = new ButtonDescription
                 {
                     Name = "GP right button",
-                    Id = (int)GPB.RightShoulder
-                },
-                PollButton = true
-            };
-            _btnR3 = new ButtonImpDescription
-            {
-                ButtonDesc = new ButtonDescription
-                {
-                    Name = "GP right stick",
-                    Id = (int)GPB.RightStick
-                },
-                PollButton = true
-            };
-            _btnL3 = new ButtonImpDescription
-            {
-                ButtonDesc = new ButtonDescription
-                {
-                    Name = "GP left stick",
-                    Id = (int)GPB.LeftStick
+                    Id = 7
                 },
                 PollButton = true
             };
