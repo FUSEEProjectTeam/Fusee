@@ -55,7 +55,7 @@ namespace Fusee.Math.Core
 
             for (int i = 0; i < 8; i++)
             {
-                cube[i] = m*cube[i];
+                cube[i] = m * cube[i];
             }
 
             AABBf ret;
@@ -114,7 +114,7 @@ namespace Fusee.Math.Core
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding boxe to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
-        public static AABBf operator|(AABBf a, AABBf b) => Union(a, b);
+        public static AABBf operator |(AABBf a, AABBf b) => Union(a, b);
 
         /// <summary>
         ///     Calculates the bounding box around an existing bounding box and a single point.
@@ -130,7 +130,7 @@ namespace Fusee.Math.Core
         ///         box |= p;
         ///   </code>
         /// </example>
-        public static AABBf operator|(AABBf a, float3 p) => Union(a, p);
+        public static AABBf operator |(AABBf a, float3 p) => Union(a, p);
 
         /// <summary>
         ///     Returns the center of the bounding box
@@ -210,9 +210,9 @@ namespace Fusee.Math.Core
 
             // near
             planes[4] = new float4(vF.M41 + vF.M31,
-                                    vF.M42 + vF.M32,
-                                    vF.M43 + vF.M33,
-                                    vF.M44 + vF.M34);
+                                     vF.M42 + vF.M32,
+                                     vF.M43 + vF.M33,
+                                     vF.M44 + vF.M34);
 
             // far
             planes[5] = new float4(vF.M41 - vF.M31,
@@ -220,78 +220,32 @@ namespace Fusee.Math.Core
                                     vF.M43 - vF.M33,
                                     vF.M44 - vF.M34);
 
-            var cnt = 0;
-
-            // check if box is outside/inside of frustum
-            for (int i = 0; i < 6; i++)
+            foreach (var plane in planes)
             {
-                cnt += (float4.Dot(planes[i], new float4(min.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, min.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, max.y, min.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, min.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(min.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-                cnt += (float4.Dot(planes[i], new float4(max.x, max.y, max.z, 1.0f)) < 0.0) ? 1 : 0;
-
-                if (cnt == 8) return false;
+                var side = Classify(this, plane);
+                if (side < 0) return false;
             }
-
-            // now we check all 8 corners of our frustrum
-            // create all 8 corners and transform them with the matrix given in this method
-            var vecFrustumF = new float4[8];
-            var vecFrustum = new float3[8];
-
-            vecFrustumF[0] = new float4(-1.0f, -1.0f, 0.0f, 1.0f); // xyz
-            vecFrustumF[1] = new float4(1.0f, -1.0f, 0.0f, 1.0f); // Xyz
-            vecFrustumF[2] = new float4(-1.0f, 1.0f, 0.0f, 1.0f); // xYz
-            vecFrustumF[3] = new float4(1.0f, 1.0f, 0.0f, 1.0f); // XYz
-            vecFrustumF[4] = new float4(-1.0f, -1.0f, 1.0f, 1.0f); // xyZ
-            vecFrustumF[5] = new float4(1.0f, -1.0f, 1.0f, 1.0f); // XyZ
-            vecFrustumF[6] = new float4(-1.0f, 1.0f, 1.0f, 1.0f); // xYZ
-            vecFrustumF[7] = new float4(1.0f, 1.0f, 1.0f, 1.0f); // XYZ
-
-            for (var i = 0; i < vecFrustumF.Length; i++)
-            {
-                var res = float4x4.Transform(viewingFrustrum, vecFrustumF[i]);
-                vecFrustum[i] = new float3(res.x, res.y, res.z);
-            }
-
-            // TODO: Replace with better code...
-            // check if frustum is outside/inside box
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].x > max.x ? 1 : 0;
-            if (cnt == 8) return false;
-
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].x < min.x ? 1 : 0;
-            if (cnt == 8) return false;
-
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].y > max.y ? 1 : 0;
-            if (cnt == 8) return false;
-
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].y < min.y ? 1 : 0;
-            if (cnt == 8) return false;
-
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].z > max.z ? 1 : 0;
-            if (cnt == 8) return false;
-
-            cnt = 0;
-            for (int i = 0; i < 8; i++)
-                cnt += vecFrustum[i].z < min.z ? 1 : 0;
-            if (cnt == 8) return false;
-
-
             return true;
 
+        }
+
+        private float Classify(AABBf aabb, float4 plane)
+        {
+            // maximum extent in direction of plane normal (plane.xyz)
+            var r = System.Math.Abs(aabb.Size.x * plane.x)
+                + System.Math.Abs(aabb.Size.y * plane.y)
+                + System.Math.Abs(aabb.Size.z * plane.z);
+
+            // signed distance between box center and plane
+            //float d = plane.Test(mCenter);
+            var d = float3.Dot(plane.xyz, aabb.Center) + plane.w;
+
+            // return signed distance
+            if (System.Math.Abs(d) < r)
+                return 0.0f;
+            else if (d < 0.0f)
+                return d + r;
+            return d - r;
         }
 
         /// <summary>
