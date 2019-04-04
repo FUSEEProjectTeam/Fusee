@@ -1,3 +1,4 @@
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2009
@@ -364,6 +365,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Three
 		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855} = {7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}
 		{82A2D997-B7AC-41D9-A166-65FCFED2114D} = {82A2D997-B7AC-41D9-A166-65FCFED2114D}
 	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ImageGenerator", "ImageGenerator", "{04F7E778-838A-4C2E-971D-04CA8ABDFCBF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.ImageGenerator.Desktop", "Engine\Examples\ImageGenerator\Desktop\Fusee.Engine.Examples.ImageGenerator.Desktop.csproj", "{C585FC60-C779-47E7-A727-0D2A0A745FC6}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1202,6 +1207,22 @@ Global
 		{CD936712-DC08-4DCD-B760-3C959750BDE5}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{CD936712-DC08-4DCD-B760-3C959750BDE5}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
 		{CD936712-DC08-4DCD-B760-3C959750BDE5}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Debug-Web|Any CPU.Build.0 = Debug|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6}.Release-Web|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1282,6 +1303,8 @@ Global
 		{B71F772C-2081-403D-B243-14608049F0CB} = {DF5CEA4E-1434-466F-9DC2-80AFDBB5A340}
 		{84598906-A01A-43A5-91C6-0ECF848C96FF} = {DF5CEA4E-1434-466F-9DC2-80AFDBB5A340}
 		{CD936712-DC08-4DCD-B760-3C959750BDE5} = {DF5CEA4E-1434-466F-9DC2-80AFDBB5A340}
+		{04F7E778-838A-4C2E-971D-04CA8ABDFCBF} = {E68628DA-312F-4171-A5ED-08072B5CCA3C}
+		{C585FC60-C779-47E7-A727-0D2A0A745FC6} = {04F7E778-838A-4C2E-971D-04CA8ABDFCBF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
