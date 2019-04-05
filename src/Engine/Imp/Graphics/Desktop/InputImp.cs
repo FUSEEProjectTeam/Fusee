@@ -344,12 +344,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 #pragma warning restore 0067
     }
 
-
+    /// <summary>
+    /// Implements a Gamepad Control option only works for XBox Gamepads
+    /// </summary>
     public class GamePadDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;
         private int DeviceID;
-        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _btnToRightDesc, _btnToLeftDesc, _btnToUpDesc, _btnToDownDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
+        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
         internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
         {        
@@ -443,6 +445,42 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 {
                     Name = "GP R3 button",
                     Id = 9
+                },
+                PollButton = true
+            };
+            _dpadUpDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad up",
+                    Id = 10
+                },
+                PollButton = true
+            };
+            _dpadDownDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Down",
+                    Id = 11
+                },
+                PollButton = true
+            };
+            _dpadLeftDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Left",
+                    Id = 12
+                },
+                PollButton = true
+            };
+            _dpadRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Right",
+                    Id = 13
                 },
                 PollButton = true
             };
@@ -585,7 +623,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                return 10;
+                return 14;
             }
 
         }
@@ -607,6 +645,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _btnLeftDesc;
                 yield return _btnR3Desc;
                 yield return _btnL3Desc;
+                yield return _dpadUpDesc;
+                yield return _dpadDownDesc;
+                yield return _dpadLeftDesc;
+                yield return _dpadRightDesc;
+
             }
         }
         ///<summary>
@@ -655,6 +698,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public bool GetButton(int iButtonId)
         {
             var GPB = GamePad.GetState(DeviceID).Buttons;
+            var Dpad = GamePad.GetState(DeviceID).DPad;
 
             switch (iButtonId)
             {
@@ -678,6 +722,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return GPB.LeftStick == ButtonState.Pressed;
                 case 9:
                     return GPB.RightStick == ButtonState.Pressed;
+                case 10:
+                    return Dpad.Up == ButtonState.Pressed;
+                case 11:
+                    return Dpad.Down == ButtonState.Pressed;
+                case 12:
+                    return Dpad.Left == ButtonState.Pressed;
+                case 13:
+                    return Dpad.Right == ButtonState.Pressed;
             }
             throw new InvalidOperationException($"Unknown button {iButtonId}. Cannot get value for unknown button.");
         }
