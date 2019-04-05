@@ -98,33 +98,6 @@ namespace Fusee.Engine.Player.Core
 
 
 
-            //DeviceConnected += delegate (object sender, DeviceConnectionArgs e)
-            //{
-            //    if (e.InputDevice.Category == DeviceCategory.GameController)
-            //        _gameController = e.InputDevice;
-            //    Console.WriteLine("Controller Connected");
-            //};
-
-            //Fusee.Engine.Core.Input.DeviceDisconnected += delegate (object sender, DeviceConnectionArgs e)
-            //{
-            //    if (e.InputDevice.Category == DeviceCategory.GameController)
-            //        _gameController = null;
-            //    Console.WriteLine("Controller Disconnected");
-            //};
-            _gameController = Devices.First(dev => dev.Category == DeviceCategory.GameController);
-            for (int i = 0; i < _gameController.AxesCount; i++)
-            {
-
-                var curAxis = _gameController.GetAxisDescription(i);
-
-                // if (curAxis.)
-            }
-
-
-
-
-
-
         }
 
 
@@ -134,26 +107,6 @@ namespace Fusee.Engine.Player.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //if (_gameController != null)
-            //{
-            //    Diagnostics.Log($"Axis LeftStickX: {_gameController.GetAxis(0)}");
-            //    Diagnostics.Log($"Axis LeftStickY: {_gameController.GetAxis(1)}");
-            //    Diagnostics.Log($"Axis RightStickX: {_gameController.GetAxis(2)}");
-            //    Diagnostics.Log($"Axis RightStickY: {_gameController.GetAxis(3)}");
-            //    Diagnostics.Log($"Axis LeftTrigger: {_gameController.GetAxis(4)}");
-            //    Diagnostics.Log($"Axis Righttrigger: {_gameController.GetAxis(5)}");
-
-            //    Diagnostics.Log($"Button A {(_gameController.GetButton(0) ? "PRESSED" : "")}"); // a 
-            //    Diagnostics.Log($"Button X {(_gameController.GetButton(1) ? "PRESSED" : "")}"); // x 
-            //    Diagnostics.Log($"Button Y {(_gameController.GetButton(2) ? "PRESSED" : "")}"); // y
-            //    Diagnostics.Log($"Button B {(_gameController.GetButton(3) ? "PRESSED" : "")}"); // b
-            //    Diagnostics.Log($"Button Start {(_gameController.GetButton(4) ? "PRESSED" : "")}"); // start
-            //    Diagnostics.Log($"Button Back {(_gameController.GetButton(5) ? "PRESSED" : "")}"); // back
-            //    Diagnostics.Log($"Button leftshoulder {(_gameController.GetButton(6) ? "PRESSED" : "")}"); // left shoulder
-            //    Diagnostics.Log($"Button rightshoulder {(_gameController.GetButton(7) ? "PRESSED" : "")}"); // right shoulder
-            //    Diagnostics.Log($"Button leftStick {(_gameController.GetButton(8) ? "PRESSED" : "")}"); // left stick
-            //    Diagnostics.Log($"Button rightStick {(_gameController.GetButton(9) ? "PRESSED" : "")}"); // right stick
-            //}
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
