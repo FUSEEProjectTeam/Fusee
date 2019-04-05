@@ -277,7 +277,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
     );
 
     $.Method({ Static: false, Public: true }, "DoResize",
-        new JSIL.MethodSignature(null, [$.Int, $.Int]),
+        new JSIL.MethodSignature(null, [$.Int32, $.Int32]),
         function DoResize(width, height) {
             if (this.Resize !== null) {
                 this.Resize(this, (new $fuseeCommon.Fusee.Engine.Common.ResizeEventArgs(width, height)).__Initialize__({}));

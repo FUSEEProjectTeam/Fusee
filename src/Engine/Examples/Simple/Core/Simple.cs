@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -29,96 +27,18 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;        
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private bool _keys;
-
-        //see Blender mathutils
-        /* Type for rotation order info - see wiki for derivation details */
-        struct RotOrderInfo
-        {
-            public int[] Axis;
-            public int Parity; /* parity of axis permutation (even=0, odd=1) - 'n' in original code */
-        }
-        
-        //see Blender mathutils and Graphic Gems IV p. 222-229
-        private static void MatToEuler2(float[][] mat, ref float[] eul1, ref float[] eul2)
-        {
-
-            var rotOrderInfo = new RotOrderInfo/* YXZ */
-            {
-                Axis = new[] {1, 0, 2},
-                Parity = 1
-            }; 
-
-            int i = rotOrderInfo.Axis[0], j = rotOrderInfo.Axis[1], k = rotOrderInfo.Axis[2];
-            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
-
-            var FLT_EPSILON = 1.192092896e-07F;
-
-            if (cy > 16.0f * FLT_EPSILON)
-            {
-                eul1[i] = (float)System.Math.Atan2(mat[j][k], mat[k][k]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
-                eul1[k] = (float)System.Math.Atan2(mat[i][j], mat[i][i]);
-
-                eul2[i] = (float)System.Math.Atan2(-mat[j][k], -mat[k][k]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], -cy);
-                eul2[k] = (float)System.Math.Atan2(-mat[i][j], -mat[i][i]);
-            }
-            else
-            {
-                eul1[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul1[j] = (float)System.Math.Atan2(-mat[i][k], cy);
-                eul1[k] = 0;
-
-                eul2[i] = (float)System.Math.Atan2(-mat[k][j], mat[j][j]);
-                eul2[j] = (float)System.Math.Atan2(-mat[i][k], cy);
-                eul2[k] = 0;
-            }
-
-            if (rotOrderInfo.Parity == 1) {
-                for (var l = 0; l < eul1.Length; l++)
-                {
-                    eul1[l] *= -1;
-                    eul1[l] *= -1;
-                }
-            }
-        }
-
-        //see Blender mathutils and Graphic Gems IV p. 222-229
-        static float3 MatToEuler(float[][] m)
-        {
-            var eul1 = new float[3];
-            var eul2 = new float[3];
-            float d1, d2;
-
-            MatToEuler2(m, ref eul1, ref eul2);
-
-            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
-            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
-
-            /* return best, which is just the one with lowest values it in */
-            if (d1 > d2)
-            {
-                return new float3(eul2[0], eul2[1], eul2[2]);
-            }
-
-            return new float3(eul1[0], eul1[1], eul1[2]);
-        }
-        
 
         // Init is called on startup. 
         public override void Init()
         {
-            _aspectRatio = Width / (float)Height;
-
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
@@ -127,25 +47,11 @@ namespace Fusee.Engine.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("test.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
+            //Add resize delegate
             var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-            
-            var testCube = _rocketScene.Children[0];
-            var gChild = _rocketScene.Children[1].Children[0].Children[0];
-
-            var globalTransl = gChild.GetGlobalTranslation();
-            var globalRot = gChild.GetGlobalRotation();
-            var globalScale = gChild.GetGlobalScale();
-            
-            var arrayMat = new[] {globalRot.Row0.ToArray(), globalRot.Row1.ToArray(), globalRot.Row2.ToArray(), globalRot.Row3.ToArray() };
-
-            var euler = MatToEuler(arrayMat);
-
-            testCube.GetComponent<TransformComponent>().Translation = globalTransl;
-            testCube.GetComponent<TransformComponent>().Rotation = euler;
-            testCube.GetComponent<TransformComponent>().Scale = globalScale;
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
@@ -213,14 +119,14 @@ namespace Fusee.Engine.Examples.Simple.Core
             }
 
             // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);          
-            _guiRenderer.Render(RC);           
+            _sceneRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-          private SceneContainer CreateGui()
+        private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
@@ -285,7 +191,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
             AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
-            
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -310,6 +216,5 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-
     }
 }

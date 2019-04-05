@@ -22,8 +22,8 @@ namespace Fusee.Serialization
     /// <summary>
     /// First evolutionary stage of the soon to be camera component.
     /// At the moment every scene graph needs to have at least one projection component. 
-    /// It will set the desired projection matrix that will be used for rendering the contents of the branch of the scene graph it is a part of (and only that branch).
-    /// A transform component in the same node as the projection component will not have any effect on the projection at the moment.
+    /// It will create the desired projection matrix that will be used for rendering the contents of the branch of the scene graph it is a part of (and only that branch).
+    /// A transform component in the same node as the projection component will not have any effect at the projection at the moment.
     /// </summary>
     [ProtoContract]
     public class ProjectionComponent : SceneComponentContainer
@@ -56,7 +56,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The projection method.        
         /// </summary>
-        public ProjectionMethod ProjectionMethod { get; private set; }
+        public ProjectionMethod ProjectionMethod { get; }
 
         /// <summary>
         /// Creates a new instance of the projection component class.        
@@ -71,6 +71,9 @@ namespace Fusee.Serialization
             Height = 1;
         }
 
+        /// <summary>
+        /// Is called when the window is resized.        
+        /// </summary>
         public void Resize(int width, int height)
         {
             Width = width;

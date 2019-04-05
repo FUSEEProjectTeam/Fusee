@@ -31,7 +31,6 @@ namespace Fusee.Engine.Player.Core
         private SceneRenderer _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
-        private float4x4 _projection;
         private bool _twoTouchRepeated;
 
         private bool _keys;
@@ -114,6 +113,7 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.Identity;
             }
 
+            //Add resize delegate
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Player.Core
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
-            RC.Projection = mtxOffset * _projection;
+            RC.Projection *= mtxOffset;
 
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
@@ -249,20 +249,7 @@ namespace Fusee.Engine.Player.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, e.Width, e.Height);
-
-            var resizeScaleFactor = new float2((100 / _initWindowWidth * Width) / 100, (100 / _initWindowHeight * Height) / 100);
-            _canvasHeight = _initCanvasHeight * resizeScaleFactor.y;
-            _canvasWidth = _initCanvasWidth * resizeScaleFactor.x;
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            _aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
+            
         }
 
         private SceneContainer CreateGui()
@@ -330,6 +317,7 @@ namespace Fusee.Engine.Player.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
 
+            //Create canvas projection component and add resize delegate
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
             AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });

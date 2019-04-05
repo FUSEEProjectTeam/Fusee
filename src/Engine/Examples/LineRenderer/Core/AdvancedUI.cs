@@ -406,25 +406,13 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            //RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
             _aspectRatio = Width / (float)Height;
 
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
-
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            //var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            //RC.Projection = projection;
-            //_sih.Projection = projection;
-            //_scenePicker.Projection = projection;
+            
         }
 
         private SceneContainer CreateGui()
@@ -623,15 +611,10 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 if (!intersectedAnnotations.ContainsKey(input.Identifier))
                     intersectedAnnotations.Add(input.Identifier, input.AnnotationCanvasPos); //add pos that is just being checked
 
-                var orderdBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList(); //JSIL not implemented exception: OrderdByDecending and Reverse
-                var orderdByDescending = new List<KeyValuePair<int, float2>>();
-                for (var i = 0; i < orderdBy.Count; i++) //Reverse
-                {
-                    orderdByDescending.Add(orderdBy[orderdBy.Count - 1 - i]);
-                }
-
+                var orderedBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList();
+                
                 intersectedAnnotations = new Dictionary<int, float2>();
-                foreach (var keyValue in orderdByDescending) //JSIL not implemented exception: ToDictionary
+                foreach (var keyValue in orderedBy) //JSIL not implemented exception: ToDictionary
                 {
                     intersectedAnnotations.Add(keyValue.Key, keyValue.Value);
                 }
@@ -656,25 +639,25 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     if (intersectedAnnotations.Count % 2 == 0) //even
                     {
                         if (i == middleIndex - 1)
-                            thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
-
-                        else if (i == middleIndex)
                             thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
 
+                        else if (i == middleIndex)
+                            thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
+
                         else if (i > middleIndex)
-                            thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+                            thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
 
                         else if (i < middleIndex)
-                            thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
+                            thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
 
                     }
                     else //odd
                     {
                         if (i > middleIndex)
-                            thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+                            thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
 
                         else if (i < middleIndex)
-                            thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
+                            thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
                     }
 
                     _uiInput[identifier] = thisInput;

@@ -132,43 +132,9 @@ namespace Fusee.Xene
         /// </summary>
         public static float4x4 GetLocalTransformation(this TransformComponent tc)
         {
-            if (tc == null)
-                return float4x4.Identity;
-            return tc.Matrix();
+            return tc == null ? float4x4.Identity : tc.Matrix();
         }
-
-        /// <summary>
-        /// Get the local rotation matrix from this TransformationComponent. 
-        /// </summary>
-        public static float4x4 GetLocalRotation(this TransformComponent tc)
-        {
-            if (tc == null)
-                return float4x4.Identity;
-            return float4x4.CreateRotationY(tc.Rotation.y) *
-                   float4x4.CreateRotationX(tc.Rotation.x) * float4x4.CreateRotationZ(tc.Rotation.z);
-
-        }
-
-        /// <summary>
-        /// Get the local translation matrix from this TransformationComponent. 
-        /// </summary>
-        public static float4x4 GetLocalTranslation(this TransformComponent tc)
-        {
-            if (tc == null)
-                return float4x4.Identity;
-            return float4x4.CreateTranslation(tc.Translation);
-        }
-
-        /// <summary>
-        /// Get the local scale matrix from this TransformationComponent. 
-        /// </summary>
-        public static float4x4 GetLocalScale(this TransformComponent tc)
-        {
-            if (tc == null)
-                return float4x4.Identity;
-            return float4x4.CreateScale(tc.Scale);
-        }
-
+        
         /// <summary>
         /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
         /// </summary>

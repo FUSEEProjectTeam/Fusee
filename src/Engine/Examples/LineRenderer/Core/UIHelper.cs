@@ -5,7 +5,6 @@ using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Engine.GUI;
 
 namespace Fusee.Engine.Examples.AdvancedUI.Core
 {
