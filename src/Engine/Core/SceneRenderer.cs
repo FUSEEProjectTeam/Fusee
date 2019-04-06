@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                     Active = true,
                     AmbientCoefficient = 0.0f,
                     Attenuation = 0.0f,
-                    Color = new float3(1.0f, 1.0f, 1.0f),
+                    Color = new float4(1.0f, 1.0f, 1.0f, 1f),
                     ConeAngle = 45f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
@@ -444,11 +444,11 @@ namespace Fusee.Engine.Core
                 {
                     Diffuse = new MatChannelContainer
                     {
-                        Color = new float3(0.5f, 0.5f, 0.5f)
+                        Color = new float4(0.5f, 0.5f, 0.5f,1.0f)
                     },
                     Specular = new SpecularChannelContainer
                     {
-                        Color = new float3(1, 1, 1),
+                        Color = new float4(1, 1, 1,1),
                         Intensity = 0.5f,
                         Shininess = 22
                     }
@@ -969,7 +969,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Represents the color.
         /// </summary>
-        public float3 Color;
+        public float4 Color;
         /// <summary>
         /// Represents the attenuation of the light.
         /// </summary>

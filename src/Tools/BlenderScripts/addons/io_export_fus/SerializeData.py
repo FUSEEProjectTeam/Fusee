@@ -657,6 +657,7 @@ def GetMaterial(obj, isWeb):
                         diffuse.Color.x = diffCol[0]
                         diffuse.Color.y = diffCol[1]
                         diffuse.Color.z = diffCol[2]
+                        diffuse.Color.w = diffCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -677,6 +678,7 @@ def GetMaterial(obj, isWeb):
                         specular.Color.x = specCol[0]
                         specular.Color.y = specCol[1]
                         specular.Color.z = specCol[2]
+                        specular.Color.w = specCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -702,6 +704,7 @@ def GetMaterial(obj, isWeb):
                         emissive.Color.x = emissiveCol[0]
                         emissive.Color.y = emissiveCol[1]
                         emissive.Color.z = emissiveCol[2]
+                        emissive.Color.w = emissiveCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -760,6 +763,7 @@ def GetMaterial(obj, isWeb):
                         diffuse.Color.x = diffCol[0]
                         diffuse.Color.y = diffCol[1]
                         diffuse.Color.z = diffCol[2]
+                        diffuse.Color.w = diffCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Base Color'].links
                         if len(links) > 0:
@@ -777,6 +781,7 @@ def GetMaterial(obj, isWeb):
                         spec.Color.x = specCol[0]
                         spec.Color.y = specCol[1]
                         spec.Color.z = specCol[2]
+                        spec.Color.w = specCol[3]
                         ## check, if material has got textures. If so, get texture filepath
                         #links = subsurfaceColor.links
                         #if len(links) > 0:
@@ -814,6 +819,7 @@ def SetDefaultMaterial(isWeb):
     diffuse.Color.x = 0.6
     diffuse.Color.y = 0.6
     diffuse.Color.z = 0.6
+    diffuse.Color.w = 1.0
 
     # Webviewer had problems with specular channel, therefore it was deactivated when exporting to web
     # if isWeb == False: (indent folloing if uncommenting this)
@@ -822,6 +828,7 @@ def SetDefaultMaterial(isWeb):
     specular.Color.x = 0.6
     specular.Color.y = 0.6
     specular.Color.z = 0.6
+    specular.Color.w = 1.0
 
     specular.SpecularChannelContainer.Intensity = 0.2
     specular.SpecularChannelContainer.Shininess = 0.2

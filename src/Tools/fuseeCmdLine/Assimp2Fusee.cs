@@ -156,7 +156,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 fuMat.Diffuse = new MatChannelContainer();
                 if (asMat.HasColorDiffuse)
                 {
-                    fuMat.Diffuse.Color = new float3(asMat.ColorDiffuse.R, asMat.ColorDiffuse.G, asMat.ColorDiffuse.B);
+                    fuMat.Diffuse.Color = new float4(asMat.ColorDiffuse.R, asMat.ColorDiffuse.G, asMat.ColorDiffuse.B,1.0f);
 
                     if (asMat.HasTextureDiffuse)
                     {
@@ -168,7 +168,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 {
                     fuMat.Specular = new SpecularChannelContainer
                     {
-                        Color = new float3(asMat.ColorSpecular.R, asMat.ColorSpecular.G, asMat.ColorSpecular.B),
+                        Color = new float4(asMat.ColorSpecular.R, asMat.ColorSpecular.G, asMat.ColorSpecular.B,1.0f),
                         Shininess = asMat.Shininess,
                         Intensity = asMat.ShininessStrength // * 0.01f TODO: Play around with variables here, as these are sometimes too small, or large
                     };

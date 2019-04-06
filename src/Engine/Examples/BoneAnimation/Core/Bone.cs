@@ -84,7 +84,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                                     {
                                         Diffuse = new MatChannelContainer
                                         {
-                                            Color = new float3(1.0f, 0.4f, 0.2f)
+                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
                                         }
                                     },
                                     CreateCuboid(float3.One)

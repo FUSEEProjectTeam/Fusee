@@ -38,26 +38,30 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
         internal static Font FontRaleway = AssetStorage.Get<Font>("Raleway-Regular.ttf");
         internal static FontMap RalewayFontMap = new FontMap(FontRaleway, 12);
 
-        internal static readonly float3 Green = new float3(0.14117f, 0.76078f, 0.48627f);
-        internal static readonly float3 Yellow = new float3(0.89411f, 0.63137f, 0.31372f);
-        internal static readonly float3 Gray = new float3(0.47843f, 0.52549f, 0.54901f);
-        internal static readonly float3 White = new float3(1, 1, 1);
+        internal static float alphaInv = 0.5f;
+        internal static float alphaVis = 1f;
+
+        internal static readonly float4 Green = new float4(0.14117f, 0.76078f, 0.48627f, alphaVis);
+        internal static readonly float4 Yellow = new float4(0.89411f, 0.63137f, 0.31372f, alphaVis);
+        internal static readonly float4 Gray = new float4(0.47843f, 0.52549f, 0.54901f, alphaVis);
+
+        internal static readonly float4 White = new float4(1, 1, 1, 1);
 
         private static readonly Texture _frameToCheck = new Texture(AssetStorage.Get<ImageData>("frame_yellow.png"));
         private static readonly Texture _frameDiscarded = new Texture(AssetStorage.Get<ImageData>("frame_gray.png"));
         private static readonly Texture _frameRecognizedMLOrConfirmed = new Texture(AssetStorage.Get<ImageData>("frame_green.png"));
-       
+
         private static readonly Texture _iconToCheck = new Texture(AssetStorage.Get<ImageData>("lightbulb.png"));
         private static readonly Texture _iconDiscarded = new Texture(AssetStorage.Get<ImageData>("minus-oktagon.png"));
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
-        internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float3(1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float3(1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float3(1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
 
-        internal static readonly ShaderEffect OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float3(1, 1, 1), new float3(1, 1, 1), 20, 0);
-        
+        internal static readonly ShaderEffect OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+
         private static float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
 
@@ -85,7 +89,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim,float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
             //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
             var textLength = text.Length;
@@ -95,8 +99,8 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             var container = new SceneNodeContainer
             {
                 Name = "Container"
-            };           
-            
+            };
+
 
             switch (annotationKind)
             {
@@ -176,11 +180,11 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             annotation.Children.Add(icon);
 
             return annotation;
-        }        
+        }
 
         private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
         {
-            float3 col;
+            float4 col;
 
             string nameSuffix;
 
@@ -226,7 +230,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float3(1,1,1), 20, 0)
+                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0)
                     },
                     new Circle(false, 30,100,_circleThickness)
                 }
@@ -235,7 +239,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
 
         private static SceneNodeContainer CreateLine(MatColor color)
         {
-            float3 col;
+            float4 col;
 
             switch (color)
             {
@@ -276,7 +280,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float3(1, 1, 1), 20, 0)
+                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
                     }
                 }
             };
@@ -292,13 +296,20 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
 
                 case MatColor.GREEN:
                     return GreenEffect;
-                    
+
                 case MatColor.YELLOW:
                     return YellowEffect;
-                    
+
                 case MatColor.GRAY:
                     return GrayEffect;
             }
+        }
+
+        internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
+        {
+            var color = (float4) effect.GetEffectParam(ShaderCodeBuilder.DiffuseColorName);
+            color.w = alpha;
+            effect.SetEffectParam(ShaderCodeBuilder.DiffuseColorName, color);              
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

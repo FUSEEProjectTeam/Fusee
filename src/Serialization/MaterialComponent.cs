@@ -17,7 +17,7 @@ namespace Fusee.Serialization
         /// The color of the light componennt.
         /// </summary>
         [ProtoMember(1)]
-        public float3 Color;
+        public float4 Color;
 
         /// <summary>
         /// If not null, the texture to use as the color.

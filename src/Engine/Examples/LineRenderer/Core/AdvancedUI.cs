@@ -75,7 +75,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0.90980f, 0.35686f, 0.35686f), new float3(1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
+                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
                             },
                             //sphere
                         }
@@ -94,7 +94,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float3(0, 0, 1), new float3(1,1,1), 20)
+                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20)
                             },
                             line
                         }
@@ -285,31 +285,20 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
-
-                    var col = UIHelper.MatColor.WHITE;
+                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();                    
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
+                        
+                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
-                        if (circle.Name.Contains("green"))
-                            col = UIHelper.MatColor.GREEN;
-
-                        else if (circle.Name.Contains("yellow"))
-                            col = UIHelper.MatColor.YELLOW;
-
-                        if (circle.Name.Contains("gray"))
-                            col = UIHelper.MatColor.GRAY;
-
-                        circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-
-                        col = UIHelper.MatColor.WHITE;
-                        circle.GetComponent<ShaderEffectComponent>().Effect = UIHelper.GetShaderEffectFromMatColor(col);
+                       
+                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
                     }
 
                     //1.2   Calculate annotation positions without intersections.
