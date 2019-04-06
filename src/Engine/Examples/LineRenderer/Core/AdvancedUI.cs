@@ -595,7 +595,7 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 var halfAnnotationHeight = (UIHelper.AnnotationDim.y / 2f);
                 var buffer = halfAnnotationHeight - (halfAnnotationHeight / 100f * 10f);
                 //If we do not multiply by the resize scale factor the intersction test will return wrong results because AnnotationCanvasPos is in the range of the size of the initial canvas.
-                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos * _resizeScaleFactor, _uiInput[i].AnnotationCanvasPos * _resizeScaleFactor, new float2(0, buffer));
+                var intersect = UIHelper.DoesAnnotationIntersectWithAnnotation(input.AnnotationCanvasPos, _uiInput[i].AnnotationCanvasPos, new float2(0, buffer));
 
                 if (!intersect || intersectedAnnotations.ContainsKey(counterpart.Identifier)) continue;
 
