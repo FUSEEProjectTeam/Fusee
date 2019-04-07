@@ -18,13 +18,24 @@ dir_path = os.path.join(dir_path, 'proto\\')
 sys.path.append(dir_path)
 import Scene_pb2 as Scene
 
+# Not possible because of pythons broken reference system
+# var class = new Class()
+# list.add(class)
+# take object 2 and change it; result = you change everything within this list and therefore all classes because this is no new instance
+class VertexWeight:
+    JointIndex = 0
+    Weight = 0.0
+
+    def __init__(self, jointIdx, weight):
+        self.JointIndex = jointIdx
+        self.Weight = weight
 
 # returns a serialized object, that can be saved to a file
 def SerializeData(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
     # init sceneContainer
     sceneContainer = Scene.SceneContainer()
     # write sceneHeader
-    sceneHeader = sceneContainer.Header;
+    sceneHeader = sceneContainer.Header
     sceneHeader.Version = 0
     sceneHeader.Generator = 'Blender FUSEE Exporter AddOn'
     sceneHeader.CreatedBy = getpass.getuser()
@@ -329,7 +340,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
-        rootMaterialComponent = None;
+        rootMaterialComponent = None
         rootMaterialComponent, textures = GetMaterial(obj, isWeb)       
 
         rootComponent1.payload = rootTransformComponent.SerializePartialToString()
@@ -417,6 +428,10 @@ def create_bone_payload(boneNode, obj, bone):
 
     return boneNode.SerializePartialToString()
 
+def PrintVertList(bla):
+      for i in range(0, len(bla)):
+            for j in range(0, len(bla[i])):
+                print("VertexIdx: " + str(i) + " Joint idx: " + str(bla[i][j].JointIndex) + " and a weight of: " + str(bla[i][j].Weight))
 
 def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
         serializedData = namedtuple('serializedData', ['obj', 'tex'])
@@ -435,7 +450,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
 
         for bone in obj.pose.bones:
             rootChildren = root.Children.add()
-            rootChildren.payload =  create_bone_payload(rootChildren, obj, bone);
+            rootChildren.payload =  create_bone_payload(rootChildren, obj, bone)
 
 
         ##Hierarchy 1 (root = obj)
@@ -486,6 +501,98 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         transformComponent.Scale.y = scale.z
         transformComponent.Scale.z = scale.y
 
+        # ----- Collect bones and weights
+
+        # WEIGHT COMPONENT
+        rootWeightComponent = Scene.SceneComponentContainer()
+        weightComponent = rootWeightComponent.WeightComponent
+        # vWeight = Scene.VertexWeight
+
+       
+        # get binding matrices (init of bones)
+        bindingMatricesList = []
+        
+
+        activeObj = bpy.context.active_object.children[0]
+
+        for n in activeObj.vertex_groups:
+            print("vertex_grpup name :" + str(n.name))
+
+        obj_group_names = [g.name for g in activeObj.vertex_groups]
+        obj_verts = activeObj.data.vertices
+
+        # vertexWeightList = [[[0]] * len(obj.pose.bones) ] * len(obj_verts) # consits of: VertexWeight
+
+        vertexWeightList = []       
+
+        for i in range(0, len(obj_verts)):
+            vertexWeightList.append([])          
+            # fill the list with empty elements with current bone idx
+            for j in range(0, len(obj.pose.bones)):                           
+                emptyVWeight = VertexWeight(j, 0)
+                #print(emptyVWeight.Weight)
+                vertexWeightList[i].append(emptyVWeight)       
+
+        # PrintVertList(vertexWeightList)
+
+        print("vertexWeightList length:" + str(len(vertexWeightList)))       
+
+        # TODO: change rotation order???! --> to euler(YXZ) --> matrix
+        
+        for i, bone in enumerate(obj.pose.bones):         
+
+            if obj.parent is None:
+                obj_mtx_clean = obj.matrix_world.copy()
+            else:
+                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
+
+            # change rotation order to YXZ
+            boneRot_eul = bone.matrix.to_euler('YXZ')
+            print(str(boneRot_eul))
+
+            boneRot_mat_x = Matrix.Rotation(-boneRot_eul.x, 4, 'X')
+            boneRot_mat_y = Matrix.Rotation(-boneRot_eul.z, 4, 'Y')
+            boneRot_mat_z = Matrix.Rotation(-boneRot_eul.y, 4, 'Z')
+            boneRot_mat = boneRot_mat_y @ boneRot_mat_x @ boneRot_mat_z
+
+            print(str(boneRot_mat))
+
+            obj_mtx = obj_mtx_clean.inverted() @ boneRot_mat            
+
+            # convert obj_mxt to float4x4 
+            tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
+
+            # add matrix to binding matrices:
+            bindingMatricesList.append(tmpMat)
+
+            if bone.name not in obj_group_names:
+                continue
+           
+            gidx = activeObj.vertex_groups[bone.name].index
+            
+            bone_verts = [v for v in obj_verts if gidx in [g.group for g in v.groups]]
+
+            for v in bone_verts:     
+                for grp in v.groups:
+                    if grp.group == gidx:                        
+                        w = grp.weight
+                        vertexWeightList[v.index][i].JointIndex = i
+                        vertexWeightList[v.index][i].Weight = w
+                        # print("Saving Vertex at position " + str(v.index) + " with joint idx: " + str(i) + " and a weight of: " + str(w))
+                        # print("Saved: " + str(vertexWeightList[v.index][i].Weight))
+                        # print("Saved: " + str(vertexWeightList[v.index][i].JointIndex))
+                        
+                        # print('Vertex',v.index,'has a weight of',w,'for bone',bone.name)
+        print(" ")
+        print(" --------------- PRINT WEIGHT FOR EACH VERTEX ----------------")
+        PrintVertList(vertexWeightList)
+
+        # append all found bindingMatrices
+        weightComponent.BindingMatrices.extend(bindingMatricesList)
+
+        #----------------------------------
+
+
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
@@ -497,16 +604,46 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
 
+        outputVertexWeightList = [[VertexWeight] * len(obj.pose.bones) ] * (len(bm.faces) * 3) # consits of: VertexWeight
+
         mesh = rootmesh.Mesh
         i = 0
         for face in bm.faces: 
             # TODO: assert that len(face.loops) == 3!
             add_vertex(0, face, i, mesh, uv_layer)
+            vertIdx = face.loops[0].vert.index
+            outVertWeight = vertexWeightList[vertIdx]
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
-            add_vertex(1, face, i, mesh, uv_layer)
+
+            add_vertex(1, face, i, mesh, uv_layer)            
+            vertIdx = face.loops[1].vert.index            
+            outVertWeight = vertexWeightList[vertIdx]
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
+
             add_vertex(2, face, i, mesh, uv_layer)
+            vertIdx = face.loops[2].vert.index
+            outVertWeight = vertexWeightList[vertIdx] 
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
+
+        # PrintVertList(outputVertexWeightList)
+
+
+        # iterate output, convert to protobuf
+        for vWeightList in outputVertexWeightList:
+            # create new vertexWeight, one vertWeight consits of 2 or more bones with their weights
+            VertexWeightList = weightComponent.WeightMap.add() # per vertex
+            perVertexList = []
+
+            for vWeight in vWeightList:
+                v = VertexWeightList.VertexWeights.add()
+                v.JointIndex = vWeight.JointIndex
+                v.Weight = vWeight.Weight
+                perVertexList.append(v)
+
+            VertexWeightList = perVertexList
 
         # BoundingBox
         bbox = obj.bound_box
@@ -530,38 +667,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
-        rootMaterialComponent, textures = GetMaterial(obj.children[0], isWeb)
-         
-        # WEIGHT COMPONENT
-        rootWeightComponent = Scene.SceneComponentContainer()
-        weightComponent = rootWeightComponent.WeightComponent
-
-        # get binding matrices (init of bones)
-        bindingMatricesList = []
-
-        for bone in obj.pose.bones:       
-            if obj.parent is None:
-                obj_mtx_clean = obj.matrix_world.copy()
-            else:
-                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
-
-            obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
-
-            # convert obj_mxt to float4x4 
-            tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
-
-            # add matrix to binding matrices:
-            bindingMatricesList.append(tmpMat)
-
-        # get weight map, where???
-        print(obj)
-        vertexWeightList = [] # consits of: VertexWeight    
-       
-        weightComponent.WeightMap.extend(vertexWeightList)
-
-        # append all found bindingMatrices
-        weightComponent.BindingMatrices.extend(bindingMatricesList)
-
+        rootMaterialComponent, textures = GetMaterial(obj.children[0], isWeb)     
 
         # SCENE NODE CONTAINER
         # write rootComponents to rootNode        

@@ -180,7 +180,7 @@ namespace Fusee.Engine.Core
         public void ConVWeight(WeightComponent weight)
         {
             // check if we have bones
-            if (_boneContainers.Count > 1)
+            if (_boneContainers.Count >= 1)
             {
                 
                 if(weight.Joints == null) // initialize joint container

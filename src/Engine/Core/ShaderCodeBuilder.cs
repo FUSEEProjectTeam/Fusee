@@ -346,7 +346,7 @@ namespace Fusee.Engine.Core
             if (_meshProbs.HasNormals)
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
 
-            if (_materialProbs.HasSpecular)
+            if (_materialProbs.HasSpecular && !_meshProbs.HasWeightMap)
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
 
             if (_meshProbs.HasWeightMap)

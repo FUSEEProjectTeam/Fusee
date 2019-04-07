@@ -488,8 +488,14 @@ namespace Fusee.Engine.Core
         public void RenderBone(BoneComponent bone)
         {
             SceneNodeContainer boneContainer = CurrentNode;
+
+            var trans = boneContainer.GetGlobalTranslation();
+            var rot = boneContainer.GetGlobalRotation();
+
+            var currentModel = float4x4.CreateTranslation(trans) * rot;
+
             float4x4 transform;
-            if (!_boneMap.TryGetValue(boneContainer, out transform))
+            if (!_boneMap.TryGetValue(boneContainer, out transform)) 
                 _boneMap.Add(boneContainer, _rc.Model);
             else
                 _boneMap[boneContainer] = _rc.Model;
