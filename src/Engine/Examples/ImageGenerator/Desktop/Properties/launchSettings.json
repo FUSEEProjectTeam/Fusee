@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Fusee.Engine.Examples.ImageGenerator.Desktop": {
+      "commandName": "Project",
+      "commandLineArgs": "shoot test.png"
+    }
+  }
+}
