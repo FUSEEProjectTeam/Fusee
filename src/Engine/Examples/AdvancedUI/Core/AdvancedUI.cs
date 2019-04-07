@@ -141,9 +141,9 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
                 var triangleNumber = rnd.Next(1, numberOfTriangles);
                 var triIndex = (triangleNumber - 1) * 3;
 
-                var triVert0 = monkey.Vertices[triIndex];
-                var triVert1 = monkey.Vertices[triIndex + 1];
-                var triVert2 = monkey.Vertices[triIndex + 2];
+                var triVert0 = monkey.Vertices[monkey.Triangles[triIndex]];
+                var triVert1 = monkey.Vertices[monkey.Triangles[triIndex + 1]];
+                var triVert2 = monkey.Vertices[monkey.Triangles[triIndex + 2]];
 
                 var middle = (triVert0 + triVert1 + triVert2) / 3;
 

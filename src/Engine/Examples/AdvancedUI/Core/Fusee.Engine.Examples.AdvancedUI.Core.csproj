@@ -12,6 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Monkey.fus" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\Monkey.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
@@ -85,9 +95,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\minus-oktagon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Monkey.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Assets\Raleway-Light.ttf">
