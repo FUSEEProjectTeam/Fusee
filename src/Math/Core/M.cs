@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns the Sin of the given value as float.
+        /// Returns the Cos of the given value as float.
         /// </summary>
         /// <param name="val">The value.</param>
         /// <returns></returns>

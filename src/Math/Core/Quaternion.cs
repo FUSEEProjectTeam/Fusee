@@ -599,7 +599,7 @@ namespace Fusee.Math.Core
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            e.y = M.TwoPi - e.y;
+            //e.y = M.TwoPi - e.y;
 
             // Calculating the Sine and Cosine for each half angle.
             // YAW/HEADING
@@ -615,10 +615,17 @@ namespace Fusee.Math.Core
             var c3 = (float) System.Math.Cos(e.z*0.5f);
 
             // Formula to construct a new Quaternion based on Euler Angles.
-            var x = s1*s2*c3 + c1*c2*s3;
+            /*var x = s1*s2*c3 + c1*c2*s3;
             var y = s1*c2*c3 + c1*s2*s3;
             var z = c1*s2*c3 - s1*c2*s3;
-            var w = c1*c2*c3 - s1*s2*s3;
+            var w = c1*c2*c3 - s1*s2*s3;*/
+
+
+            //New Formula
+            var x = c1 * s2 * c3 - s1 * c2 * s3;
+            var z = s1 * s2 * c3 + c1 * c2 * s3;
+            var y = s1 * c2 * c3 + c1 * s2 * s3;
+            var w = c1 * c2 * c3 - s1 * s2 * s3;
 
             return new Quaternion(x, y, z, w);
         }
@@ -647,15 +654,15 @@ namespace Fusee.Math.Core
 
             if (M.Equals(test, 1.0f))
             {
-                z = -2.0f*(float) System.Math.Atan2(q.x, q.w);
-                y = 0;
-                x = M.Pi/2;
+                y = 2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                z = M.Pi/2;
             }
             else if (M.Equals(test, -1.0f))
             {
-                z = 2.0f*(float) System.Math.Atan2(q.x, q.w);
-                y = 0;
-                x = M.Pi/-2;
+                y = -2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                z = M.Pi/-2;
             }
             else
             {
@@ -665,12 +672,12 @@ namespace Fusee.Math.Core
                 var sqW = q.w*q.w;
 
                 y = (float) System.Math.Atan2(2*(q.y*q.w - q.x*q.z), 1 - 2*sqY - 2*sqZ);
-                x = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
-                z = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
+                z = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
+                x = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
             }
 
             // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            y = M.TwoPi - y;
+            //y = M.TwoPi - y;
 
             // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
             while (y >= M.TwoPi)
@@ -721,7 +728,7 @@ namespace Fusee.Math.Core
             q.Normalize();
 
             // be careful here: you might need a transposed matrix!
-            return new float4x4
+            /*return new float4x4
             {
                 M11 = 1 - 2*(q.y*q.y + q.z*q.z),
                 M12 = 2*(q.x*q.y + q.z*q.w),
@@ -734,6 +741,28 @@ namespace Fusee.Math.Core
                 M31 = 2*(q.x*q.z + q.y*q.w),
                 M32 = 2*(q.y*q.z - q.x*q.w),
                 M33 = 1 - 2*(q.x*q.x + q.y*q.y),
+                M34 = 0,
+                M41 = 0,
+                M42 = 0,
+                M43 = 0,
+                M44 = 1
+            };*/
+
+
+            //New Formula
+            return new float4x4
+            {
+                M11 = 1 - 2 * (q.y * q.y + q.z * q.z),
+                M12 = 2 * (q.x * q.y - q.z * q.w),
+                M13 = 2 * (q.x * q.z + q.y * q.w),
+                M14 = 0,
+                M21 = 2 * (q.x * q.y + q.z * q.w),
+                M22 = 1 - 2 * (q.x * q.x + q.z * q.z),
+                M23 = 2 * (q.y * q.z - q.x * q.w),
+                M24 = 0,
+                M31 = 2 * (q.x * q.z - q.y * q.w),
+                M32 = 2 * (q.y * q.z + q.x * q.w),
+                M33 = 1 - 2 * (q.x * q.x + q.y * q.y),
                 M34 = 0,
                 M41 = 0,
                 M42 = 0,

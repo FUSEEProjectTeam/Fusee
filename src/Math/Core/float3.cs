@@ -742,12 +742,12 @@ namespace Fusee.Math.Core
         #region Max
 
         /// <summary>
-        /// Returns the float3 with the minimum magnitude
+        /// Returns the float3 with the maximum magnitude
         /// </summary>
         /// <param name="left">Left operand</param>
         /// <param name="right">Right operand</param>
         /// <returns>
-        /// The minimum float3
+        /// The maximum float3
         /// </returns>
         public static float3 Max(float3 left, float3 right)
         {
@@ -998,12 +998,12 @@ namespace Fusee.Math.Core
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
         /// <returns>
-        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
+        /// a when u=1, v=0, b when v=1,u=0, c when u=v=0, and a linear combination of a,b,c otherwise
         /// </returns>
         public static float3 Barycentric(float3 a, float3 b, float3 c, float u, float v)
         {
-            // return u*a + v*b + (1.0f-u-v)*c; while technically correct, does not yield the expected results
-            return (1.0f - u - v)*a + u*b + v*c;
+            return u*a + v*b + (1.0f-u-v)*c;
+
         }
 
         /// <summary>
