@@ -143,11 +143,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class SpaceMouseDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;
+        public int DeviceId = 0;
 
         internal SpaceMouseDeviceImp(GameWindow window)
         {
             _gameWindow = window;
-
         }
         /// <summary>
         /// Returns the name of the device
@@ -313,20 +313,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns></returns>
         public float GetAxis(int iAxisId)
         {
+
+            var currentAxis = Joystick.GetState(DeviceId);
+
             switch(iAxisId)
+
                 {
                 case 0:
-                    return 1;
+                    return currentAxis.GetAxis(JoystickAxis.Axis0);
                 case 1:
-                    return 2;
+                    return currentAxis.GetAxis(JoystickAxis.Axis1);
                 case 2:
-                    return 3;
+                    return currentAxis.GetAxis(JoystickAxis.Axis2);
                 case 3:
-                    return 4;
+                    return currentAxis.GetAxis(JoystickAxis.Axis3);
                 case 4:
-                    return 5;
+                    return currentAxis.GetAxis(JoystickAxis.Axis4);
                 case 5:
-                    return 6;
+                    return currentAxis.GetAxis(JoystickAxis.Axis5);
             }
         throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
@@ -536,6 +540,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     {
                         Name = "Left Stick X",
                         Id = 0,
+         
                         Direction = AxisDirection.X,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.Constant,
@@ -677,13 +682,25 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (iAxisId)
             {
                 case 0:
-                    return currentThumbSticks.Left.X;
+                    float i = 0;
+                    if (currentThumbSticks.Left.X <= -0.2f || currentThumbSticks.Left.X >= 0.2f)
+                        i = currentThumbSticks.Left.X;
+                    return i;
                 case 1:
-                    return currentThumbSticks.Left.Y;
+                    float j = 0;
+                    if (currentThumbSticks.Left.Y <= -0.2f || currentThumbSticks.Left.Y >= 0.2f)
+                        j = currentThumbSticks.Left.Y;
+                    return j;
                 case 2:
-                    return currentThumbSticks.Right.X;
+                    float k = 0;
+                    if (currentThumbSticks.Right.X <= -0.2f || currentThumbSticks.Right.X >= 0.2f)
+                        k = currentThumbSticks.Right.X;
+                    return k;
                 case 3:
-                    return currentThumbSticks.Right.Y;
+                    float l = 0;
+                    if (currentThumbSticks.Right.Y <= -0.2f || currentThumbSticks.Right.Y >= 0.2f)
+                        l = currentThumbSticks.Right.Y;
+                    return l;
                 case 4:
                     return currentTrigger.Left;
                 case 5:

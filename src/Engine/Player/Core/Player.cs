@@ -98,6 +98,23 @@ namespace Fusee.Engine.Player.Core
 
 
 
+      
+            _gameController = Devices.First(dev => dev.Category == DeviceCategory.GameController);
+            for (int i = 0; i < _gameController.AxesCount; i++)
+            {
+
+                var curAxis = _gameController.GetAxisDescription(i);
+
+                // if (curAxis.)
+            }
+
+            
+
+
+
+
+
+
         }
 
 
