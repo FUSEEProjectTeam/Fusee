@@ -56,7 +56,7 @@ namespace Fusee.Engine.Examples.Picking.Core
 
 #endif
         private PickResult _currentPick;
-        private float3 _oldColor;
+        private float4 _oldColor;
         private bool _pick;
         private float2 _pickPos;
 
@@ -170,8 +170,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3)ef.GetEffectParam("DiffuseColor"); // cast needed 
-                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat3(ColorUint.LawnGreen));
+                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -189,13 +189,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (newPick != null)
                     {
                         shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) shaderEffectComponent.DiffuseColor;
-                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat3(ColorUint.LawnGreen);
+                        _oldColor = (float4) shaderEffectComponent.DiffuseColor;
+                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat4(ColorUint.LawnGreen);
                     }
                     _currentPick = newPick;
+                }
 #endif
-
-
                 _pick = false;
             }
 
