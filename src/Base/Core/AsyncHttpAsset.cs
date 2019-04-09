@@ -23,10 +23,26 @@ namespace Fusee.Base.Core
                     },
                     Checker = (id) => { return true; }
                 }
+            },
+            {
+                typeof(byte[]),
+                new AssetHandler
+                {
+                    ReturnedType = typeof(byte[]),
+                    Decoder = (id, data) => {
+                        return data;
+                    },
+                    Checker = (id) => { return true; }
+                }
             }
         };
 
         public static Dictionary<Type, AssetHandler> AssetHandlers { get => _assetHandlers; set => _assetHandlers = value; }
+
+        public static void RegisterTypeHandler(Type type, AssetHandler assetHandler)
+        {
+            _assetHandlers.Add(type, assetHandler);
+        }
 
         public string Id { get; private set; }
         public Type Type { get; private set; }
@@ -36,8 +52,11 @@ namespace Fusee.Base.Core
         public event EventHandler onDone;
         public event EventHandler onFail;
 
-        public AsyncHttpAsset(string id, Type type, bool startLoad = true)
+        public AsyncHttpAsset(string id, Type type = null, bool startLoad = true)
         {
+            if (type == null)
+                type = typeof(byte[]);
+
             Id = id;
             Type = type;
 

@@ -965,8 +965,6 @@ namespace Fusee.Engine.Core
             return MakeShaderEffectFromMatComp(temp);
         }
 
-
-
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
@@ -1196,7 +1194,10 @@ namespace Fusee.Engine.Core
         private static Texture LoadTexture(string path)
         {
             var image = AssetStorage.Get<ImageData>(path);
-            return new Texture(image);
+            if (image != null)
+                return new Texture(image);
+
+            return null;
         }
 
         #endregion

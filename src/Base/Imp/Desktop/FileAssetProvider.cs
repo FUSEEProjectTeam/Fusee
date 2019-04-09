@@ -190,6 +190,5 @@ namespace Fusee.Base.Imp.Desktop
             bmp.UnlockBits(bmpData);
             return ret;
         }
-
     }
 }
