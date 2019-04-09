@@ -1,14 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Examples.Simple.Android</RootNamespace>
-    <AssemblyName>Fusee.Engine.Examples.Simple.Android</AssemblyName>
+    <RootNamespace>Fusee.Engine.Examples.AdvancedUI.Android</RootNamespace>
+    <AssemblyName>Fusee.Engine.Examples.AdvancedUI.Android</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{72B29431-717A-47AD-9BDB-2A60E284D727}</ProjectGuid>
+    <ProjectGuid>{68512A4F-8C6D-4A13-9AC3-BA79513766EF}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -22,7 +22,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\AdvancedUI\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -46,7 +46,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\AdvancedUI\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -60,9 +60,6 @@
     <Reference Include="Fusee.SerializationSerializer, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Xene">
-      <HintPath>..\..\..\..\..\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
@@ -113,11 +110,19 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
+    <Reference Include="D:\Dokumente\Git\Fusee\src\..\\bin\Debug\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
-    <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
-      <Name>Fusee.Engine.Examples.Simple.Core</Name>
+    <ProjectReference Include="..\..\..\..\Xene\Fusee.Xene.csproj">
+      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
+      <Name>Fusee.Xene</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
+      <Project>{b3ce4f39-fcc4-4388-8130-9d0b9d65d034}</Project>
+      <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Engine.Examples.AdvancedUI.Core.csproj">
+      <Name>Fusee.Engine.Examples.AdvancedUI.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28705.295
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.572
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Base", "Base", "{BF6B8C64-C111-450A-A8CA-297B75CDFEF8}"
 EndProject
@@ -372,6 +372,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Desktop", "Engine\Examples\AdvancedUI\Desktop\Fusee.Engine.Examples.AdvancedUI.Desktop.csproj", "{F3242115-95AC-40A5-8F84-9D6EF5A41E15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Web", "Engine\Examples\AdvancedUI\Web\Fusee.Engine.Examples.AdvancedUI.Web.csproj", "{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.AdvancedUI.Android", "Engine\Examples\AdvancedUI\Android\Fusee.Engine.Examples.AdvancedUI.Android.csproj", "{68512A4F-8C6D-4A13-9AC3-BA79513766EF}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -1258,6 +1260,30 @@ Global
 		{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
 		{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Android|Any CPU.Deploy.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Desktop|Any CPU.Deploy.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Web|Any CPU.Build.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Debug-Web|Any CPU.Deploy.0 = Debug|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Android|Any CPU.Deploy.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Desktop|Any CPU.Deploy.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF}.Release-Web|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1342,6 +1368,7 @@ Global
 		{AC71D89C-A7D4-4B2D-B402-E5C6586A5DC9} = {48BBE9F7-428D-4BFA-BA9C-5FF18A89D68B}
 		{F3242115-95AC-40A5-8F84-9D6EF5A41E15} = {48BBE9F7-428D-4BFA-BA9C-5FF18A89D68B}
 		{CD802F18-4DF3-4D8E-88EA-ED90211ABB09} = {48BBE9F7-428D-4BFA-BA9C-5FF18A89D68B}
+		{68512A4F-8C6D-4A13-9AC3-BA79513766EF} = {48BBE9F7-428D-4BFA-BA9C-5FF18A89D68B}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

@@ -95,7 +95,7 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll">
+    <Reference Include="D:\Dokumente\Git\Fusee\src\..\\bin\Debug\Libraries\Fusee.Base.Core.dll">
       <Name>Fusee.Base.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
@@ -116,6 +116,10 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
+    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.Simple.Core.csproj">
       <Name>Fusee.Engine.Examples.Simple.Core</Name>
     </ProjectReference>

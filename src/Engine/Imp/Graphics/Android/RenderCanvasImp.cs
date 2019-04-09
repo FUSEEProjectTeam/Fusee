@@ -308,10 +308,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        protected internal void DoResize()
+        protected internal void DoResize(int width, int height)
         {
             if (Resize != null)
-                Resize(this, new ResizeEventArgs());
+                Resize(this, new ResizeEventArgs(width, height));
         }
         #endregion
 
@@ -399,7 +399,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_renderCanvasImp != null)
             {
-                _renderCanvasImp.DoResize();
+                _renderCanvasImp.DoResize(Width, Height);
             }
         }
 
