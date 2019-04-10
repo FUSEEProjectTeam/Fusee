@@ -38,7 +38,6 @@ namespace Fusee.Engine.Player.Core
 
         private SceneContainer _gui;
         private SceneRenderer _guiRenderer;
-        private InputDevice _gameController;
         private SceneInteractionHandler _sih;
 
         private FontMap _guiLatoBlack;
@@ -96,18 +95,6 @@ namespace Fusee.Engine.Player.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
 
-
-
-      
-            _gameController = Devices.First(dev => dev.Category == DeviceCategory.GameController);
-            for (int i = 0; i < _gameController.AxesCount; i++)
-            {
-
-                var curAxis = _gameController.GetAxisDescription(i);
-
-                // if (curAxis.)
-            }
-
             
 
 
@@ -158,8 +145,8 @@ namespace Fusee.Engine.Player.Core
             }
             {
                 
-                _angleVelHorz += -RotationSpeed * _gameController.GetAxis(0) * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * _gameController.GetAxis(1) * DeltaTime * 0.05f;
+                _angleVelHorz += -RotationSpeed * GamePad.LSX * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * GamePad.LSY * DeltaTime * 0.05f;
             }
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
