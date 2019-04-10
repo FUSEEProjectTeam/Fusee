@@ -156,14 +156,18 @@ namespace Fusee.Engine.Player.Core
                 _angleRoll *= curDamp * 0.8f;
                 _offset *= curDamp * 0.8f;
             }
-
-            // UpDown / LeftRight rotation
-            if (Mouse.LeftButton)
             {
-                _keys = false;
-                _angleVelHorz += -RotationSpeed * _gameController.GetAxis(0) * DeltaTime * 0.0005f;
-                _angleVelVert += -RotationSpeed * _gameController.GetAxis(1) * DeltaTime * 0.0005f;
+                
+                _angleVelHorz += -RotationSpeed * _gameController.GetAxis(0) * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * _gameController.GetAxis(1) * DeltaTime * 0.05f;
             }
+            // UpDown / LeftRight rotation
+            if (Mouse.LeftButton) {
+                _keys = false;
+                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+            }
+            
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
