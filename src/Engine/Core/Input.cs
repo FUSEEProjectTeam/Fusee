@@ -136,7 +136,7 @@ namespace Fusee.Engine.Core
         /// The mouse (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="MouseInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="MouseInput"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static MouseDevice Mouse => Instance.MouseInput;
@@ -159,10 +159,33 @@ namespace Fusee.Engine.Core
         /// The keyboard (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="KeyboardInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="KeyboardInput"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static KeyboardDevice Keyboard => Instance.KeyboardInput;
+
+        /// <summary>
+        /// Retrieves the first GamePad device (if present).
+        /// </summary>
+        /// <value>
+        /// The GamePad (or null).
+        /// </value>
+        /// <remarks>
+        /// This is an instance property. Use <see cref="GamePad"/> for a static-over-singleton access
+        /// to the same functionality.
+        /// </remarks>
+        public GamePadDevice GamePadInput => GetInputDevice<GamePadDevice>();
+        /// <summary>
+        /// Retrieves the first GamePad device (if present).
+        /// </summary>
+        /// <value>
+        /// The GamePad (or null).
+        /// </value>
+        /// <remarks>
+        /// This is a static property. Use <see cref="GamePadInput"/> for an insatnce property 
+        /// to the same functionality.
+        /// </remarks>
+        public static GamePadDevice GamePad => Instance.GamePadInput;
 
         /// <summary>
         /// Retrieves the first touch device (if present).
@@ -182,7 +205,7 @@ namespace Fusee.Engine.Core
         /// The touch device (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="TouchInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="TouchInput"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static TouchDevice Touch => Instance.TouchInput;
@@ -266,6 +289,7 @@ namespace Fusee.Engine.Core
             RegisterInputDeviceType(new MatchFunc(delegate(IInputDeviceImp imp) { return imp.Category == DeviceCategory.Mouse; }),  new CreatorFunc(delegate(IInputDeviceImp imp) { return new MouseDevice(imp);}));
             RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Keyboard; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new KeyboardDevice(imp); }));
             RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Touch; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new TouchDevice(imp); }));
+            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.GameController; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new GamePadDevice(imp); }));
             // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
             // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
         }
