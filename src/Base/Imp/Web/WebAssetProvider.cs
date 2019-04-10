@@ -4,7 +4,6 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using JSIL.Meta;
 
-
 namespace Fusee.Base.Imp.Web
 {
     /// <summary>
@@ -24,23 +23,23 @@ namespace Fusee.Base.Imp.Web
 
             RegisterTypeHandler(new AssetHandler
             {
-                ReturnedType = typeof (ImageData),
-                Decoder = delegate(string id, object storage)
+                ReturnedType = typeof(ImageData),
+                Decoder = delegate (string id, object storage)
                 {
-                    string ext = Fusee.Base.Common.Path.GetExtension(id).ToLower();
+                    string ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
                         case ".jpg":
                         case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            return WrapImage(storage);
+                            return FileDecoder.WrapImage(storage);
                     }
                     return null;
                 },
-                Checker = delegate(string id)
+                Checker = delegate (string id)
                 {
-                    string ext = Fusee.Base.Common.Path.GetExtension(id).ToLower();
+                    string ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
                         case ".jpg":
@@ -59,14 +58,12 @@ namespace Fusee.Base.Imp.Web
                 ReturnedType = typeof(string),
                 Decoder = delegate (string id, object storage)
                 {
-                    string  sr = WrapString(storage);
+                    string sr = FileDecoder.WrapString(storage);
                     return sr;
                 },
                 Checker = id => true // If it's there, we can handle it...
-            }
-            );
+            });
         }
-
 
         /// <summary>
         /// Determines whether this instance can handle assets of the specified type (in general).
@@ -83,14 +80,13 @@ namespace Fusee.Base.Imp.Web
             return false;
         }
 
-
         /// <summary>
         /// Retrieves the asset identified by the given string.
         /// </summary>
         /// <param name="id">The identifier string.</param>
         /// <param name="type">The type of the asset.</param>
         /// <returns>
-        /// The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.
+        /// The asset, if this provider can acquire an asset with the given id and the given type. Otherwise null.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         public object GetAsset(string id, Type type)
@@ -112,7 +108,6 @@ namespace Fusee.Base.Imp.Web
             }
             return null;
         }
-
 
         /// <summary>
         /// Determines whether this asset provider can get the specified asset without actually getting it.
@@ -142,7 +137,7 @@ namespace Fusee.Base.Imp.Web
         }
 
         /// <summary>
-        /// Checks the existance of the identified asset. Implement this on a given platform.
+        /// Checks the existence of the identified asset. Implement this on a given platform.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return true if a stream can be created.</returns>
@@ -153,7 +148,7 @@ namespace Fusee.Base.Imp.Web
         }
 
         /// <summary>
-        /// Checks the existance of the identified asset. Implement this on a given platform.
+        /// Checks the existence of the identified asset. Implement this on a given platform.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return true if a stream can be created.</returns>
@@ -196,28 +191,6 @@ namespace Fusee.Base.Imp.Web
         public void RegisterTypeHandler(AssetHandler handler)
         {
             _assetHandlers.Add(handler.ReturnedType, handler);
-        }
-
-        /// <summary>
-        /// Loads a new Bitmap-Object from the given stream.
-        /// </summary>
-        /// <param name="assetOb">JSIL asset object containing the image in a supported format (png, jpg).</param>
-        /// <returns>An ImageData object with all necessary information.</returns>
-        [JSExternal]
-        public static ImageData WrapImage(object assetOb)
-        {
-            throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
-        }
-
-        /// <summary>
-        /// Wraps a string around the given asset object. The asset must contain text data.
-        /// </summary>
-        /// <param name="storage">JSIL asset object containing the image in a supported format (png, jpg).</param>
-        /// <returns>A string with the asset's contents</returns>
-        [JSExternal]
-        public static string WrapString(object storage)
-        {
-            throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
         }
     }
 }
