@@ -54,9 +54,11 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
 
             //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
-            var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-
-            _convertedScene.Children[0].Components.Insert(0,pc);
+            if (_convertedScene.Children[0].GetComponent<ProjectionComponent>() == null)
+            {
+                var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+                _convertedScene.Children[0].Components.Insert(0, pc);
+            }
             
             return _convertedScene;
         }        
