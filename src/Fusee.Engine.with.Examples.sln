@@ -382,8 +382,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Desktop", "Engine\Examples\AdvancedUI\Desktop\Fusee.Engine.Examples.AdvancedUI.Desktop.csproj", "{F3242115-95AC-40A5-8F84-9D6EF5A41E15}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Web", "Engine\Examples\AdvancedUI\Web\Fusee.Engine.Examples.AdvancedUI.Web.csproj", "{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855} = {7E9E4C1F-E2C8-4011-ACBC-E9D305DC4855}
+		{82A2D997-B7AC-41D9-A166-65FCFED2114D} = {82A2D997-B7AC-41D9-A166-65FCFED2114D}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Examples.AdvancedUI.Android", "Engine\Examples\AdvancedUI\Android\Fusee.Engine.Examples.AdvancedUI.Android.csproj", "{68512A4F-8C6D-4A13-9AC3-BA79513766EF}"
+	ProjectSection(ProjectDependencies) = postProject
+		{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0} = {19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}
+		{B3CE4F39-FCC4-4388-8130-9D0B9D65D034} = {B3CE4F39-FCC4-4388-8130-9D0B9D65D034}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

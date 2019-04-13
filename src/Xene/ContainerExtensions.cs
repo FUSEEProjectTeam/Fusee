@@ -159,7 +159,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Finds the components with the specified type in the children of this scene node container.
+        /// Finds the components with the specified type and the sub-types in the children of this scene node container.
         /// </summary>
         /// <param name="sncThis">This scene node container.</param>
         /// <param name="type">The type of the components to look for.</param>
