@@ -119,10 +119,7 @@ namespace Fusee.Engine.Examples.Simple.Core
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            
                
-
-
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);

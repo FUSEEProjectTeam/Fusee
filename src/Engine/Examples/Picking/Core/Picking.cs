@@ -207,12 +207,13 @@ namespace Fusee.Engine.Examples.Picking.Core
             _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }           
+            }
             _guiRenderer.Render(RC);          
 #endif           
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.

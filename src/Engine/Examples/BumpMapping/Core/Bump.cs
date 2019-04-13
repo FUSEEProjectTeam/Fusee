@@ -51,22 +51,21 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            // convert scene graph is not called yet in this project, so we can add a bump texture and convert it afterwards
-            _scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            {
-                Intensity = 0.5f,
-                Texture = "bump.png"
-            };
 
-            _scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            {
-                Intensity = 1.0f,
-                Texture = "bump.png"
-            };
+            //TODO: export the correct material - with bump channel - from blender exporter
+            //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
 
+            //_scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            //{
+            //    Intensity = 0.5f,
+            //    Texture = "bump.png"
+            //};
 
-            // now we can convert the scene
-            _scene = new ConvertSceneGraph().Convert(_scene);
+            //_scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            //{
+            //    Intensity = 1.0f,
+            //    Texture = "bump.png"
+            //};           
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();

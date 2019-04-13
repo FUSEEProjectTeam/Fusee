@@ -241,7 +241,8 @@ namespace Fusee.Engine.Examples.AdvancedUI.Core
             _scenePicker.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
