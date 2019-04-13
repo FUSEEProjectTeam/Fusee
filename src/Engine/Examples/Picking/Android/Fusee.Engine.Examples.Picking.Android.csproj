@@ -22,7 +22,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>..\..\..\..\..\bin\$(Configuration)\Examples\Picking\Android\</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Picking\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -36,7 +36,7 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
@@ -46,7 +46,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\..\..\bin\Release\Examples\Picking\Android\</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Picking\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -61,6 +61,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>..\..\..\..\..\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
@@ -74,8 +77,6 @@
     <Compile Include="Resources\Resource.Designer.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\Lato-Black.ttf" />
-    <AndroidAsset Include="Assets\RocketModel.fus" />
     <None Include="Properties\AndroidManifest.xml">
       <SubType>Designer</SubType>
     </None>
@@ -94,7 +95,7 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll">
+    <Reference Include="D:\Dokumente\Git\Fusee\src\..\\bin\Debug\Libraries\Fusee.Base.Core.dll">
       <Name>Fusee.Base.Core</Name>
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
@@ -115,6 +116,10 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
+    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
+      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
+      <Name>Fusee.Base.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.Picking.Core.csproj">
       <Name>Fusee.Engine.Examples.Picking.Core</Name>
     </ProjectReference>
@@ -123,25 +128,9 @@
     <AndroidAsset Include="Assets\AboutAssets.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </AndroidAsset>
-    <!--Content Include="Assets\RocketModel.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content-->
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\drawable\icon.png" />
   </ItemGroup>
-  <ItemGroup>
-    <AndroidAsset Include="Assets\FuseeText.png" />
-  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

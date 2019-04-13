@@ -1,11 +1,9 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
 
@@ -55,7 +53,7 @@ namespace Fusee.Engine.Examples.Picking.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
-                        return ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer;
+                        return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

@@ -109,7 +109,6 @@ namespace Fusee.Engine.Player.Desktop
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
 
-
                         var scene = ser.Deserialize((Stream) storage, null, typeof(SceneContainer)) ;
 
                         var container = scene as SceneContainer;
