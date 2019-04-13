@@ -252,7 +252,74 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
 
         # </CM's Checks
 
+        # <Export for completely smooth shaded models.>
+        # Does NOT export redundant vertices. Not in use because a mesh can have both, smooth and flat shaded faces.
+        # Therefore the optimal solution would be mixture of both, the above and the following method to support the export of meshes with the minimal number of vertices.
 
+        '''
+        class AddVert:
+            pass
+        
+        mesh = rootmesh.Mesh
+        bm.from_mesh(damesh)
+        uv_lay = bm.loops.layers.uv.active       
+
+        vertList = list()
+
+        for i, vert in enumerate(bm.verts):
+            addVert = AddVert()
+            addVert.thisVert = vert
+            addVert.wasAdded = False
+            vertList.append(addVert)            
+
+        vertices = [None]*len(bm.verts)
+        normals = [None]*len(bm.verts)
+        uvs = [None]*len(bm.verts)
+
+        for face in bm.faces:
+                
+            for loop in face.loops:
+        
+                vertIndex = loop.vert.index                       
+        
+                mesh.Triangles.append(vertIndex)               
+
+                value = vertList[vertIndex]
+        
+                if uv_lay is not None:
+                    uv = loop[uv_lay].uv
+            
+                if(value.wasAdded == False):
+
+                    vertices[vertIndex] = value.thisVert.co 
+
+                    normals[vertIndex] = loop.vert.normal                                    
+                
+                    if uv_lay is not None:
+                        uvs[vertIndex] = uv           
+            
+                    value.wasAdded = True
+                    vertList[vertIndex] = value 
+
+        # fill output mesh
+        for i, vert in enumerate(vertices):            
+            outVert = mesh.Vertices.add()                    
+            outVert.x = vert.x
+            outVert.y = vert.z
+            outVert.z = vert.y
+    
+            outNormal = mesh.Normals.add()            
+            outNormal.x = normals[i].x
+            outNormal.y = normals[i].z
+            outNormal.z = normals[i].y           
+    
+            if len(uvs) != 0:
+                outUv = mesh.UVs.add()
+                outUv.x = uvs[i].x
+                outUv.y = uvs[i].y
+ 
+        '''
+        # </Export for completely smooth shaded models>
 
         '''
         #count faces
