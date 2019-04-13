@@ -163,7 +163,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter,
-                (int)TextureMinFilter.LinearMipmapLinear);
+                (int)TextureMinFilter.Linear);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter,
                 (int)TextureMagFilter.Linear);
 

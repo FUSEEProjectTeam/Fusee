@@ -19,8 +19,8 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
     [FuseeApplication(Name = "FUSEE Geometry Editing Example", Description = "Example App to show basic geometry editing in FUSEE")]
     public class GeometryEditing : RenderCanvas
     {
-        private readonly float3 _selectedColor = new float3(0.7f, 0.3f, 0);
-        private readonly float3 _defaultColor = new float3(0.5f, 0.5f, 0.5f);
+        private readonly float4 _selectedColor = new float4(0.7f, 0.3f, 0,1.0f);
+        private readonly float4 _defaultColor = new float4(0.5f, 0.5f, 0.5f,1.0f);
 
         // angle and camera variables 
         private static float _angleHorz = M.PiOver6 * 2.0f, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom = 8, _xPos, _yPos;
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
             _parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -72,6 +72,10 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
 
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
+
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            _scene.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -121,7 +125,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
 
         private void InteractionHandler()
         {
-            //Add new Geoemetry
+            //Add new Geometry
             if (Keyboard.GetKey(KeyCodes.D1) && _keyTimeout < 0)
             {
                 _keyTimeout = 1;
@@ -371,7 +375,7 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
                 }
             }
 
-            RC.ModelView = viewMatrix;
+            RC.View = viewMatrix;
             //var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = /*mtxOffset **/ _projection;
         }
@@ -411,18 +415,9 @@ namespace Fusee.Engine.Examples.GeometryEditing.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 2000000);
+           
         }
 
     }

@@ -35,12 +35,12 @@ namespace Fusee.Engine.Examples.Bump.Web
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate(string id, object storage)
+                    Decoder = delegate (string id, object storage)
                     {
                         if (Path.GetExtension(id).ToLower().Contains("fus"))
                         {
                             var ser = new Serializer();
-                            return ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+                            return new ConvertSceneGraph().Convert(ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer);
                         }
                         return null;
                     },

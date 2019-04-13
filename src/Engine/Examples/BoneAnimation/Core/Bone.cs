@@ -46,7 +46,7 @@ namespace Fusee.Engine.Examples.Bone.Core
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
@@ -66,7 +66,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                             },
                             new BoneComponent()
                         },
-                        Children = new List<SceneNodeContainer>
+                        Children = new ChildList()
                         {
                             new SceneNodeContainer
                             {
@@ -84,7 +84,7 @@ namespace Fusee.Engine.Examples.Bone.Core
                                     {
                                         Diffuse = new MatChannelContainer
                                         {
-                                            Color = new float3(1.0f, 0.4f, 0.2f)
+                                            Color = new float4(1.0f, 0.4f, 0.2f,1.0f)
                                         }
                                     },
                                     CreateCuboid(float3.One)
@@ -94,27 +94,24 @@ namespace Fusee.Engine.Examples.Bone.Core
                     }
                 }
             };
-
+            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
             // convert scene graph is not called in this project, so we can add a bone animation
 
             // then add a weightcomponent with weight matrices etc:
             // binding matrices is the start point of every transformation
             // as many entries as vertices are present in current model
-            var allMeshes = _scene.Children.FindComponents(x => x.GetType() == typeof(Mesh)).Select(x => (Mesh)x).ToList();
-            var vertexCount = 0;
-            foreach (var mesh in allMeshes)
-            {
-                vertexCount += mesh.Vertices.Length;
-            }
+            //var cube = _scene.Children[0].GetComponent<Mesh>();
+            //var vertexCount = cube.Vertices.Length;
 
-            var bindingMatrices = new List<float4x4>();
-            for (var i = 0; i < vertexCount; i++)
-            {
-                bindingMatrices.Add(float4x4.Identity);
-            }
-
+            //var bindingMatrices = new List<float4x4>();
+            //for (var i = 0; i < vertexCount; i++)
+            //{
+            //    bindingMatrices.Add(float4x4.Identity);
+            //}
+            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
+            var wm = _scene.Children[1].Children[2].GetComponent<WeightComponent>();
             var WeightMap = new List<VertexWeightList>();
-            for (var i = 0; i < vertexCount; i++)
+            for (var i = 0; i < mesh.Vertices.Length; i++)
             {
                 WeightMap.Add(new VertexWeightList
                 {
@@ -123,27 +120,96 @@ namespace Fusee.Engine.Examples.Bone.Core
                         new VertexWeight
                         {
                             JointIndex = 0,
-                            Weight = 1
+                            Weight = (mesh.Vertices[i].y > 0 ? 1: 0f)
                         },
                         new VertexWeight()
                         {
                             JointIndex = 1,
-                            Weight = 0.5f
+                            Weight = (mesh.Vertices[i].y <= 0 ? 1f: 0f)
                         }
                     }
                 });
             }
+            wm.WeightMap = WeightMap;
+            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
-            _scene.Children[0].Children[0].Components[2] = new WeightComponent
-            {
-                BindingMatrices = bindingMatrices,
-                WeightMap = WeightMap
-                // Joints are added automatically during scene conversion (ConvertSceneGraph) 
-            };
+            //_scene.Children.Insert(0, new SceneNodeContainer()
+            //{
+            //    Name = "BoneContainer1",
+            //    Components = new List<SceneComponentContainer>()
+            //    {
+            //        new TransformComponent()
+            //        {
+            //            Translation = new float3(0, 2, 0),
+            //            Scale = new float3(1, 1, 1)
+            //        },
 
-            _scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
-            // now we can convert the scene
-            _scene = new ConvertSceneGraph().Convert(_scene);
+
+            //    },
+            //    Children = new ChildList
+            //    {
+            //        new SceneNodeContainer()
+            //        {
+            //            Components = new List<SceneComponentContainer>
+            //            {
+            //                new TransformComponent
+            //                {
+            //                    Translation = new float3(0, -1f, 0),
+            //                    Scale = new float3(1, 2, 1)
+            //                },
+            //                new BoneComponent(),
+            //                new Cube()
+            //            }
+            //        },
+
+
+            //        new SceneNodeContainer()
+            //        {
+            //            Name = "BoneContainer2",
+            //            Components = new List<SceneComponentContainer>
+            //            {
+            //                new TransformComponent
+            //                {
+            //                    Translation = new float3(0, -2, 0),
+            //                    Scale = new float3(1, 2, 1)
+            //                },
+
+            //            },
+
+            //            Children = new ChildList
+            //            {
+
+            //                new SceneNodeContainer
+            //                {
+
+            //                Components = new List<SceneComponentContainer>()
+            //                {
+            //                    new TransformComponent()
+            //                    {
+            //                        Translation = new float3(0, -0.5f, 0),
+            //                        Scale = new float3(1,1,1)
+            //                    },
+            //                    new BoneComponent(),
+            //                    new Cube()
+            //                }
+            //                }
+            //            }
+
+            //        }
+            //    }
+
+            //});
+
+            //_scene.Children[1].Components.Insert(1, new WeightComponent
+            //{
+            //    BindingMatrices = bindingMatrices,
+            //    WeightMap = WeightMap
+            //    // Joints are added automatically during scene conversion (ConvertSceneGraph) 
+            //});
+
+            ////_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
+            //// now we can convert the scene
+            //_scene = new ConvertSceneGraph().Convert(_scene);
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -171,6 +237,10 @@ namespace Fusee.Engine.Examples.Bone.Core
                 else
                     _sceneScale = float4x4.Identity;
             }
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
         }
@@ -265,14 +335,14 @@ namespace Fusee.Engine.Examples.Bone.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 
             // move one bone
-            var translation = _scene.Children[0].Children[0].GetComponent<TransformComponent>();
-            translation.Rotation.y -= Input.Keyboard.ADAxis * 0.05f;
-            translation.Rotation.x -= Input.Keyboard.WSAxis * 0.05f;
+            var translation = _scene.Children[1].Children[1].GetComponent<TransformComponent>();
+            translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
+            translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
             //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
 
@@ -291,18 +361,9 @@ namespace Fusee.Engine.Examples.Bone.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
 
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
         }
 
         public static Mesh CreateCuboid(float3 size)

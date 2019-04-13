@@ -170,12 +170,30 @@ namespace Fusee.Engine.Core
 
 
         #region Visitors
+
+
+        [VisitMethod]
+        public void PickProjection(ProjectionComponent pc)
+        {
+            switch (pc.ProjectionMethod)
+            {
+                case ProjectionMethod.PERSPECTIVE:
+                    var aspect = pc.Width / (float)pc.Height;
+                    Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);                    
+                    break;
+                case ProjectionMethod.ORTHOGRAPHIC:
+                    Projection = float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);                    
+                    break;
+            }
+        }
+
         [VisitMethod]
         public void PickTransform(TransformComponent transform)
         {
             State.Model *= transform.Matrix();
         }
 
+        private bool isCtcInitialized = false;
         [VisitMethod]
         public void PickCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -208,7 +226,7 @@ namespace Fusee.Engine.Core
                 var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
                 var width = height * aspect;
 
-                ctc.Size = new MinMaxRect
+                ctc.ScreenSpaceSize = new MinMaxRect
                 {
                     Min = new float2(canvasPos.x - width / 2, canvasPos.y - height / 2),
                     Max = new float2(canvasPos.x + width / 2, canvasPos.y + height / 2)
@@ -216,10 +234,19 @@ namespace Fusee.Engine.Core
 
                 var newRect = new MinMaxRect
                 {
-                    Min = ctc.Size.Min,
-                    Max = ctc.Size.Max
+                    Min = ctc.ScreenSpaceSize.Min,
+                    Max = ctc.ScreenSpaceSize.Max
                 };
 
+                if (!isCtcInitialized)
+                {
+                    ctc.Scale = new float2(ctc.Size.Size.x / ctc.ScreenSpaceSize.Size.x,
+                        ctc.Size.Size.y / ctc.ScreenSpaceSize.Size.y);
+
+                    _ctc = ctc;
+                    isCtcInitialized = true;
+
+                }
                 State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
                 State.Model *= State.CanvasXForm;
                 State.UiRect = newRect;
@@ -234,8 +261,8 @@ namespace Fusee.Engine.Core
             {
                 newRect = new MinMaxRect
                 {
-                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + rtc.Offsets.Min * _ctc.Scale,
-                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + rtc.Offsets.Max * _ctc.Scale
+                    Min = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Min + (rtc.Offsets.Min / _ctc.Scale.x),
+                    Max = State.UiRect.Min + State.UiRect.Size * rtc.Anchors.Max + (rtc.Offsets.Max / _ctc.Scale.y)
                 };
             }
             else
@@ -262,7 +289,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
-            float4x4 mvp = Projection * View * State.Model;
+            if (!mesh.Active) return;
+            var mvp = Projection * View * State.Model;
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates
