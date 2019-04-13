@@ -8,6 +8,7 @@ using Fusee.Engine.Common;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
+using Uri = Android.Net.Uri;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -242,7 +243,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void OpenLink(string link)
         {
             if (link.StartsWith("http://"))
-                Process.Start(link);
+            {
+                var intent = new Intent(Intent.ActionView);
+                intent.SetData(Uri.Parse(link));
+                _gameView.Context.StartActivity(intent);
+            }
         }
 
         /// <summary>
