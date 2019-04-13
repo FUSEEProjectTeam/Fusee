@@ -9,7 +9,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
 
-
 namespace Fusee.Engine.Imp.Graphics.Android
 {
     /// <summary>
@@ -253,6 +252,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_gameView != null)
                 _gameView.Run(30.0);
+
+            Width = _gameView.Size.Width;
+            Height = _gameView.Size.Height;
+            
         }
 
         #endregion
