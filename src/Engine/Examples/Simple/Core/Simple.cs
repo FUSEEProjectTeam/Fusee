@@ -40,6 +40,7 @@ namespace Fusee.Engine.Examples.Simple.Core
         public override void Init()
         {
             _gui = CreateGui();
+            Resize(new ResizeEventArgs(Width, Height));
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -111,12 +112,16 @@ namespace Fusee.Engine.Examples.Simple.Core
             _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if(!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
+            
+               
+
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
