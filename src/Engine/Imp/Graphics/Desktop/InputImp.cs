@@ -138,7 +138,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     }
 
     /// <summary>
-    /// Implements the Controls for a SixDOF device like a Spacmeouse
+    /// Implements the Controls with a SixDOF device like a Spacmeouse
     /// </summary>
     public class SpaceMouseDeviceImp : IInputDeviceImp
     {
@@ -314,23 +314,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public float GetAxis(int iAxisId)
         {
 
-            var currentAxis = Joystick.GetState(DeviceId)/*SixDOF.getAxis(DeviceID)*/;
+            var currentAxis = Joystick.GetState(DeviceId);
 
-            switch (iAxisId)
+            switch(iAxisId)
 
                 {
                 case 0:
-                    return currentAxis.GetAxis((int)SixDOF.XAxis);
+                    return currentAxis.GetAxis(JoystickAxis.Axis0);
                 case 1:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.YAxis*/);
+                    return currentAxis.GetAxis(JoystickAxis.Axis1);
                 case 2:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.ZAxis*/);
+                    return currentAxis.GetAxis(JoystickAxis.Axis2);
                 case 3:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.XRotation*/);
+                    return currentAxis.GetAxis(JoystickAxis.Axis3);
                 case 4:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.YRotation*/);
+                    return currentAxis.GetAxis(JoystickAxis.Axis4);
                 case 5:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.ZRotation*/);
+                    return currentAxis.GetAxis(JoystickAxis.Axis5);
             }
         throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
@@ -654,6 +654,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _dpadDownDesc;
                 yield return _dpadLeftDesc;
                 yield return _dpadRightDesc;
+
             }
         }
         ///<summary>

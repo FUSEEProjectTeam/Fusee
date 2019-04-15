@@ -188,29 +188,6 @@ namespace Fusee.Engine.Core
         public static GamePadDevice GamePad => Instance.GamePadInput;
 
         /// <summary>
-        /// Retrieves the first SixDOF device (if present).
-        /// </summary>
-        /// <value>
-        /// The Device (or null).
-        /// </value>
-        /// <remarks>
-        /// This is an instance property. Use <see cref="SixDOF"/> for a static-over-singleton access
-        /// to the same functionality.
-        /// </remarks>
-        public SixDOFDevice SixDOFInput => GetInputDevice<SixDOFDevice>();
-        /// <summary>
-        /// Retrieves the first GamePad device (if present).
-        /// </summary>
-        /// <value>
-        /// The GamePad (or null).
-        /// </value>
-        /// <remarks>
-        /// This is a static property. Use <see cref="SixDOFInput"/> for an insatnce property 
-        /// to the same functionality.
-        /// </remarks>
-        public static SixDOFDevice SDOF => Instance.SixDOFInput;
-
-        /// <summary>
         /// Retrieves the first touch device (if present).
         /// </summary>
         /// <value>

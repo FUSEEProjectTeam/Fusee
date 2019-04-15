@@ -516,55 +516,6 @@ namespace Fusee.Engine.Common
     }
 
 
-
-    /// <summary>
-    /// The different Axis a SixDOF device exposes
-    /// </summary>
-    public enum SixDOF : int
-    {
-#pragma warning disable 1591
-        XAxis = 0,
-        YAxis = 1,
-        ZAxis = 2,
-        XRotation = 3,
-        YRotation = 4,
-        ZRotation = 5
-#pragma warning restore 1591
-    }
-
-
-
-    /// <summary>
-    /// The buttons and Axes a GameController Exposes
-    /// </summary>
-    public enum Gamepad : int
-    {
-#pragma warning disable 1591
-        A = 0,
-        X = 1,
-        Y = 2,
-        B = 3,
-        Start = 4,
-        Back = 5,
-        leftShoulder = 6,
-        rightShoulder = 7,
-        L3 = 8,
-        R3 = 9,
-        DPadUp = 10,
-        DPadDown = 11,
-        DPadLeft = 12,
-        DPadRight = 13,
-        LeftStickX = 0,
-        LeftStickY = 1,
-        RightStickX = 2,
-        RightStickY = 3,
-        LeftTrigger = 4,
-        RightTrigger = 5
-
-#pragma warning restore 1591
-    }
-
-
     /// <summary>
     /// Game controller button Ids.
     /// </summary>
