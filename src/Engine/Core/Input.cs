@@ -37,7 +37,8 @@ namespace Fusee.Engine.Core
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
-    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/> and <see cref="Touch"/>
+    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>, 
+    /// <see cref="GamePad"/> and <see cref="SDOF"/>
     /// without even typing a namespace or classname.
     /// </remarks>
     public class Input
@@ -194,7 +195,7 @@ namespace Fusee.Engine.Core
         /// The Device (or null).
         /// </value>
         /// <remarks>
-        /// This is an instance property. Use <see cref="SixDOF"/> for a static-over-singleton access
+        /// This is an instance property. Use <see cref="SDOF"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
         public SixDOFDevice SixDOFInput => GetInputDevice<SixDOFDevice>();

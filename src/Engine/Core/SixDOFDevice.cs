@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// Rotation from the zeroing point around the x axis.
         /// </value>
-        public float XROT => GetAxis((int)SixDOF.XRotation);
+        public float XRot => GetAxis((int)SixDOF.XRotation);
 
         /// <summary>
         /// Gets the y rotation value.
@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// Rotation from the zeroing point around the y axis.
         /// </value>
-        public float YROT => GetAxis((int)SixDOF.YRotation);
+        public float YRot => GetAxis((int)SixDOF.YRotation);
 
         /// <summary>
         /// Gets the z rotation value.
