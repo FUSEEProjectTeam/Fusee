@@ -138,7 +138,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     }
 
     /// <summary>
-    /// Implements the Controls with a SixDOF device like a Spacmeouse
+    /// Implements the Controls for a SixDOF device like a Spacmeouse
     /// </summary>
     public class SpaceMouseDeviceImp : IInputDeviceImp
     {
@@ -314,23 +314,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public float GetAxis(int iAxisId)
         {
 
-            var currentAxis = Joystick.GetState(DeviceId);
+            var currentAxis = Joystick.GetState(DeviceId)/*SixDOF.getAxis(DeviceID)*/;
 
-            switch(iAxisId)
+            switch (iAxisId)
 
                 {
                 case 0:
-                    return currentAxis.GetAxis(JoystickAxis.Axis0);
+                    return currentAxis.GetAxis((int)SixDOF.XAxis);
                 case 1:
-                    return currentAxis.GetAxis(JoystickAxis.Axis1);
+                    return currentAxis.GetAxis(0/*(int)SixDOF.YAxis*/);
                 case 2:
-                    return currentAxis.GetAxis(JoystickAxis.Axis2);
+                    return currentAxis.GetAxis(0/*(int)SixDOF.ZAxis*/);
                 case 3:
-                    return currentAxis.GetAxis(JoystickAxis.Axis3);
+                    return currentAxis.GetAxis(0/*(int)SixDOF.XRotation*/);
                 case 4:
-                    return currentAxis.GetAxis(JoystickAxis.Axis4);
+                    return currentAxis.GetAxis(0/*(int)SixDOF.YRotation*/);
                 case 5:
-                    return currentAxis.GetAxis(JoystickAxis.Axis5);
+                    return currentAxis.GetAxis(0/*(int)SixDOF.ZRotation*/);
             }
         throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
