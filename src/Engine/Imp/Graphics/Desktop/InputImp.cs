@@ -411,7 +411,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 ButtonDesc = new ButtonDescription
                 {
-                    Name = "GP Select or Back",
+                    Name = "GP Back",
                     Id = 5
                 },
                 PollButton = true
@@ -709,6 +709,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
         }
+
         /// <summary>
         /// Returns a Boolean Value for Controller Input.
         /// </summary>
