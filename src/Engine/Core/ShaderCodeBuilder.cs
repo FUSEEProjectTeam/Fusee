@@ -1197,7 +1197,7 @@ namespace Fusee.Engine.Core
             if (image != null)
                 return new Texture(image);
 
-            return null;
+            return new Texture(new ImageData());
         }
 
         #endregion
