@@ -47,7 +47,7 @@ namespace Fusee.Base.Core
         public string Id { get; private set; }
         public Type Type { get; private set; }
         public object Content { get; private set; }
-        public AsyncAssetState State { get; private set; }
+        public AsyncAssetState State { get; set; }
 
         public event EventHandler onDone;
         public event EventHandler onFail;
@@ -171,6 +171,9 @@ namespace Fusee.Base.Core
         Downloading,
         Processing,
         Done,
-        Failed
+        Failed,
+        UserState1,
+        UserState2,
+        UserState3
     }
 }
