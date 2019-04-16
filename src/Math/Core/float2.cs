@@ -177,37 +177,12 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length.
         /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// <see cref="LengthSquared" />
         public float Length
         {
             get
             {
-                return (float)System.Math.Sqrt(x * x + y * y);
-            }
-        }
-
-        #endregion
-
-        #region public float LengthFast
-
-        /// <summary>
-        /// Gets an approximation of the vector length (magnitude).
-        /// </summary>
-        /// <value>
-        /// The length fast.
-        /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthSquared" />
-        /// <remarks>
-        /// This property uses an approximation of the square root function to calculate vector magnitude, with
-        /// an upper error bound of 0.001.
-        /// </remarks>
-        public float LengthFast
-        {
-            get
-            {
-                return 1.0f / M.InverseSqrtFast(x * x + y * y);
+                return (float)System.Math.Sqrt(LengthSquared);
             }
         }
 
@@ -222,7 +197,6 @@ namespace Fusee.Math.Core
         /// The length squared.
         /// </value>
         /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -1003,6 +977,7 @@ namespace Fusee.Math.Core
         /// <returns>
         /// The result of the operation.
         /// </returns>
+        [Obsolete]
         public static float2 Transform(float2 vec, Quaternion quat)
         {
             float2 result;
@@ -1016,6 +991,7 @@ namespace Fusee.Math.Core
         /// <param name="vec">The vector to transform.</param>
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <param name="result">The result of the operation.</param>
+        [Obsolete]
         public static void Transform(ref float2 vec, ref Quaternion quat, out float2 result)
         {
             Quaternion v = new Quaternion(vec.x, vec.y, 0, 0), i, t;
@@ -1024,6 +1000,36 @@ namespace Fusee.Math.Core
             Quaternion.Multiply(ref t, ref i, out v);
 
             result = new float2(v.x, v.y);
+        }
+
+        /// <summary>
+        /// Transforms a vector by a matrix.
+        /// </summary>
+        /// <param name="mat">The transfomation matrix.</param>
+        /// <param name="vec">The vector to transform.</param>
+        /// <returns>The transformed vector.</returns>
+        public static float2 Transform(float3x3 mat, float2 vec)
+        {
+            float4x4 temp = new float4x4(mat);
+
+            float2 result = Transform(temp, vec);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms a vector by a matrix.
+        /// </summary>
+        /// <param name="mat">The transformation matrix.</param>
+        /// <param name="vec">The vector to transform</param>
+        /// <returns>The transformed vector.</returns>
+        public static float2 Transform(float4x4 mat, float2 vec)
+        {
+            float3 temp = new float3(vec.x, vec.y, 1);
+
+            float2 result = float3.Transform(mat, temp).xy;
+
+            return result;
         }
 
         #endregion
@@ -1036,6 +1042,11 @@ namespace Fusee.Math.Core
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
+        /// </summary>
+        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
 
         #endregion
 
@@ -1128,6 +1139,28 @@ namespace Fusee.Math.Core
             vec1.x *= vec2.x;
             vec1.y *= vec2.y;
             return vec1;
+        }
+
+        /// <summary>
+        /// Multiplies a matrix with a vector.
+        /// </summary>
+        /// <param name="mat">Left operand (matrix).</param>
+        /// <param name="vec">Right operand (vector).</param>
+        /// <returns>Result of the multiplication.</returns>
+        public static float2 operator *(float3x3 mat, float2 vec)
+        {
+            return Transform(mat, vec);
+        }
+
+        /// <summary>
+        /// Multiplies a matrix with a vector.
+        /// </summary>
+        /// <param name="mat">Left operand (matrix).</param>
+        /// <param name="vec">Right operand (vector).</param>
+        /// <returns>Result of the multiplication.</returns>
+        public static float2 operator *(float4x4 mat, float2 vec)
+        {
+            return Transform(mat, vec);
         }
 
         /// <summary>

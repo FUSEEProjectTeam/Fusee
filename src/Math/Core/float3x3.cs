@@ -386,7 +386,7 @@ namespace Fusee.Math.Core
             return Mult(left, right);
         }
 
-        /// <summary>
+        /*/// <summary>
         ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="float4x4" /> instance.</param>
@@ -397,7 +397,7 @@ namespace Fusee.Math.Core
             return new float3(matrix.Column0.x*vector.x + matrix.Column1.x*vector.y + matrix.Column2.x*vector.z,
                 matrix.Column0.y*vector.x + matrix.Column1.y*vector.y + matrix.Column2.y*vector.z,
                 matrix.Column0.z*vector.x + matrix.Column1.z*vector.y + matrix.Column2.z*vector.z);
-        }
+        }*/
 
         /// <summary>
         ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).

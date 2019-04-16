@@ -255,13 +255,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets the length (magnitude) of the vector.
         /// </summary>
-        /// <see cref="LengthFast"/>
-        /// <seealso cref="LengthSquared"/>
+        /// <see cref="LengthSquared"/>
         public float Length
         {
             get
             {
-                return (float)System.Math.Sqrt(x * x + y * y + z * z + w * w);
+                return (float)System.Math.Sqrt(LengthSquared);
             }
         }
 
@@ -272,32 +271,10 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets the length in 1-norm.
         /// </summary>
-        /// <see cref="LengthFast"/>
-        /// <seealso cref="LengthSquared"/>
+        /// <see cref="LengthSquared"/>
         public float Length1
         {        
             get { return (float) System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
-        }
-
-        #endregion
-
-        #region public float LengthFast
-
-        /// <summary>
-        /// Gets an approximation of the vector length (magnitude).
-        /// </summary>
-        /// <remarks>
-        /// This property uses an approximation of the square root function to calculate vector magnitude, with
-        /// an upper error bound of 0.001.
-        /// </remarks>
-        /// <see cref="Length"/>
-        /// <seealso cref="LengthSquared"/>
-        public float LengthFast
-        {
-            get
-            {
-                return 1.0f / M.InverseSqrtFast(x * x + y * y + z * z + w * w);
-            }
         }
 
         #endregion
@@ -312,7 +289,6 @@ namespace Fusee.Math.Core
         /// for comparisons.
         /// </remarks>
         /// <see cref="Length"/>
-        /// <seealso cref="LengthFast"/>
         public float LengthSquared
         {
             get
@@ -456,6 +432,7 @@ namespace Fusee.Math.Core
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
         /// <returns>Result of subtraction</returns>
+        [Obsolete("Use Subtract() method instead.")]
         public static float4 Sub(float4 a, float4 b)
         {
             a.x -= b.x;
@@ -471,6 +448,7 @@ namespace Fusee.Math.Core
         /// <param name="a">First operand</param>
         /// <param name="b">Second operand</param>
         /// <param name="result">Result of subtraction</param>
+        [Obsolete("Use Subtract() method instead.")]
         public static void Sub(ref float4 a, ref float4 b, out float4 result)
         {
             result.x = a.x - b.x;
@@ -489,6 +467,7 @@ namespace Fusee.Math.Core
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
         /// <returns>Result of the multiplication</returns>
+        [Obsolete("Use Multiply() method instead.")]
         public static float4 Mult(float4 a, float f)
         {
             a.x *= f;
@@ -504,6 +483,7 @@ namespace Fusee.Math.Core
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
         /// <param name="result">Result of the multiplication</param>
+        [Obsolete("Use Multiply() method instead.")]
         public static void Mult(ref float4 a, float f, out float4 result)
         {
             result.x = a.x * f;
@@ -522,6 +502,7 @@ namespace Fusee.Math.Core
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
         /// <returns>Result of the division</returns>
+        [Obsolete("Use Divide() method instead.")]
         public static float4 Div(float4 a, float f)
         {
             float mult = 1.0f / f;
@@ -538,6 +519,7 @@ namespace Fusee.Math.Core
         /// <param name="a">Vector operand</param>
         /// <param name="f">Scalar operand</param>
         /// <param name="result">Result of the division</param>
+        [Obsolete("Use Divide() method instead.")]
         public static void Div(ref float4 a, float f, out float4 result)
         {
             float mult = 1.0f / f;
@@ -784,8 +766,8 @@ namespace Fusee.Math.Core
         {
             vec.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
             vec.y = vec.y < min.y ? min.y : vec.y > max.y ? max.y : vec.y;
-            vec.z = vec.x < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
-            vec.w = vec.y < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
+            vec.z = vec.z < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
+            vec.w = vec.w < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
             return vec;
         }
 
@@ -800,8 +782,8 @@ namespace Fusee.Math.Core
         {
             result.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
             result.y = vec.y < min.y ? min.y : vec.y > max.y ? max.y : vec.y;
-            result.z = vec.x < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
-            result.w = vec.y < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
+            result.z = vec.z < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
+            result.w = vec.w < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
         }
 
         #endregion
@@ -943,7 +925,7 @@ namespace Fusee.Math.Core
         /// <param name="c">Third input Vector</param>
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
-        /// <returns>a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise</returns>
+        /// <returns>a when u=1, v=0, b when v=1,u=0, c when u=v=0, and a linear combination of a,b,c otherwise</returns>
         public static float4 BaryCentric(float4 a, float4 b, float4 c, float u, float v)
         {
             return u*a + v*b + (1.0f-u-v)*c;
@@ -960,6 +942,24 @@ namespace Fusee.Math.Core
         {
             float4 tmp = mat * this;
             return tmp /= tmp.w;
+        }
+
+        /// <summary>
+        /// Transforms this Vector by the given Matrix.
+        /// </summary>
+        /// <param name="mat">The desired transformation matrix.</param>
+        /// <param name="vec">The vector to transform.</param>
+        /// <returns>The transformed vector.</returns>
+        public static float4 Transform(float4x4 mat, float4 vec)
+        {
+            float4 result;
+
+            result.x = Dot(mat.Row0, vec);
+            result.y = Dot(mat.Row1, vec);
+            result.z = Dot(mat.Row2, vec);
+            result.w = Dot(mat.Row3, vec);
+
+            return result;
         }
 
         /// <summary>
@@ -1006,9 +1006,91 @@ namespace Fusee.Math.Core
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
 
         /// <summary>
+        /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
+        /// </summary>
+        public float2 xz { get { return new float2(x, z); } set { x = value.x; z = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the x and w components of this instance.
+        /// </summary>
+        public float2 xw { get { return new float2(x, w); } set { x = value.x; w = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
+        /// </summary>
+        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
+        /// </summary>
+        public float2 yz { get { return new float2(y, z); } set { y = value.x; z = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and w components of this instance.
+        /// </summary>
+        public float2 yw { get { return new float2(y, w); } set { y = value.x; w = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
+        /// </summary>
+        public float2 zx { get { return new float2(z, x); } set { z = value.x; x = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
+        /// </summary>
+        public float2 zy { get { return new float2(z, y); } set { z = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the z and w components of this instance.
+        /// </summary>
+        public float2 zw { get { return new float2(z, w); } set { z = value.x; w = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the w and x components of this instance.
+        /// </summary>
+        public float2 wx { get { return new float2(w, x); } set { w = value.x; x = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the w and y components of this instance.
+        /// </summary>
+        public float2 wy { get { return new float2(w, y); } set { w = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the w and z components of this instance.
+        /// </summary>
+        public float2 wz { get { return new float2(w, z); } set { w = value.x; z = value.y; } }
+
+
+
+        /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
+        /// </summary>
+        public float3 xzy { get { return new float3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
+        /// </summary>
+        public float3 yzx { get { return new float3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// </summary>
+        public float3 yxz { get { return new float3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// </summary>
+        public float3 zxy { get { return new float3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// </summary>
+        public float3 zyx { get { return new float3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion
 
@@ -1101,6 +1183,17 @@ namespace Fusee.Math.Core
             vec.z *= scale;
             vec.w *= scale;
             return vec;
+        }
+
+        /// <summary>
+        /// Multiplies an matrix with a vector.
+        /// </summary>
+        /// <param name="mat">Left operand (matrix).</param>
+        /// <param name="vec">Right operand (vector).</param>
+        /// <returns></returns>
+        public static float4 operator *(float4x4 mat, float4 vec)
+        {
+            return Transform(mat, vec);
         }
 
         /// <summary>

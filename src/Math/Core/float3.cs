@@ -202,32 +202,10 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length.
         /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// <see cref="LengthSquared" />
         public float Length
         {
-            get { return (float)System.Math.Sqrt(x * x + y * y + z * z); }
-        }
-
-        #endregion
-
-        #region public float LengthFast
-
-        /// <summary>
-        /// Gets an approximation of the vector length (magnitude).
-        /// </summary>
-        /// <value>
-        /// The length fast.
-        /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthSquared" />
-        /// <remarks>
-        /// This property uses an approximation of the square root function to calculate vector magnitude, with
-        /// an upper error bound of 0.001.
-        /// </remarks>
-        public float LengthFast
-        {
-            get { return 1.0f / M.InverseSqrtFast(x * x + y * y + z * z); }
+            get { return (float)System.Math.Sqrt(LengthSquared); }
         }
 
         #endregion
@@ -241,7 +219,6 @@ namespace Fusee.Math.Core
         /// The length squared.
         /// </value>
         /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -276,7 +253,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public void NormalizeFast()
         {
-            var scale = M.InverseSqrtFast(x * x + y * y + z * z);
+            var scale = M.InverseSqrtFast(LengthSquared);
             x *= scale;
             y *= scale;
             z *= scale;
@@ -1034,213 +1011,34 @@ namespace Fusee.Math.Core
         #region Transform
 
         /// <summary>
-        /// Transform a direction vector by the given Matrix
-        /// Assumes the matrix has a bottom row of (0,0,0,1), that is the translation part is ignored.
+        /// Transfroms a vector by a given 3x3matrix.
         /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed vector
-        /// </returns>
-        public static float3 TransformVector(float3 vec, float4x4 mat)
-        {
-            float3 v;
-            v.x = Dot(vec, new float3(mat.Column0));
-            v.y = Dot(vec, new float3(mat.Column1));
-            v.z = Dot(vec, new float3(mat.Column2));
-            return v;
-        }
-
-        /// <summary>
-        /// Transform a direction vector by the given Matrix
-        /// Assumes the matrix has a bottom row of (0,0,0,1), that is the translation part is ignored.
-        /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
-        public static void TransformVector(ref float3 vec, ref float4x4 mat, out float3 result)
-        {
-            result.x = vec.x * mat.Row0.x +
-                       vec.y * mat.Row1.x +
-                       vec.z * mat.Row2.x;
-
-            result.y = vec.x * mat.Row0.y +
-                       vec.y * mat.Row1.y +
-                       vec.z * mat.Row2.y;
-
-            result.z = vec.x * mat.Row0.z +
-                       vec.y * mat.Row1.z +
-                       vec.z * mat.Row2.z;
-        }
-
-        /// <summary>
-        /// Transform a Normal by the given Matrix
-        /// </summary>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed normal
-        /// </returns>
-        /// <remarks>
-        /// This calculates the inverse of the given matrix, use TransformNormalInverse if you
-        /// already have the inverse to avoid this extra calculation
-        /// </remarks>
-        public static float3 TransformNormal(float3 norm, float4x4 mat)
-        {
-            mat.Invert();
-            return TransformNormalInverse(norm, mat);
-        }
-
-        /// <summary>
-        /// Transform a Normal by the given Matrix
-        /// </summary>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed normal</param>
-        /// <remarks>
-        /// This calculates the inverse of the given matrix, use TransformNormalInverse if you
-        /// already have the inverse to avoid this extra calculation
-        /// </remarks>
-        public static void TransformNormal(ref float3 norm, ref float4x4 mat, out float3 result)
-        {
-            var inverse = float4x4.Invert(mat);
-            TransformNormalInverse(ref norm, ref inverse, out result);
-        }
-
-        /// <summary>
-        /// Transform a Normal by the (transpose of the) given Matrix
-        /// </summary>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="invMat">The inverse of the desired transformation</param>
-        /// <returns>
-        /// The transformed normal
-        /// </returns>
-        /// <remarks>
-        /// This version doesn't calculate the inverse matrix.
-        /// Use this version if you already have the inverse of the desired transform to hand
-        /// </remarks>
-        public static float3 TransformNormalInverse(float3 norm, float4x4 invMat)
-        {
-            float3 n;
-            n.x = Dot(norm, new float3(invMat.Row0));
-            n.y = Dot(norm, new float3(invMat.Row1));
-            n.z = Dot(norm, new float3(invMat.Row2));
-            return n;
-        }
-
-        /// <summary>
-        /// Transform a Normal by the (transpose of the) given Matrix
-        /// </summary>
-        /// <param name="norm">The normal to transform</param>
-        /// <param name="invMat">The inverse of the desired transformation</param>
-        /// <param name="result">The transformed normal</param>
-        /// <remarks>
-        /// This version doesn't calculate the inverse matrix.
-        /// Use this version if you already have the inverse of the desired transform to hand
-        /// </remarks>
-        public static void TransformNormalInverse(ref float3 norm, ref float4x4 invMat, out float3 result)
-        {
-            result.x = norm.x * invMat.Row0.x +
-                       norm.y * invMat.Row0.y +
-                       norm.z * invMat.Row0.z;
-
-            result.y = norm.x * invMat.Row1.x +
-                       norm.y * invMat.Row1.y +
-                       norm.z * invMat.Row1.z;
-
-            result.z = norm.x * invMat.Row2.x +
-                       norm.y * invMat.Row2.y +
-                       norm.z * invMat.Row2.z;
-        }
-
-        /// <summary>
-        /// Transform a Position by the given Matrix
-        /// </summary>
-        /// <param name="pos">The position to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed position
-        /// </returns>
-        public static float3 TransformPosition(float3 pos, float4x4 mat)
-        {
-            float3 p;
-            p.x = Dot(pos, new float3(mat.Column0)) + mat.Row3.x;
-            p.y = Dot(pos, new float3(mat.Column1)) + mat.Row3.y;
-            p.z = Dot(pos, new float3(mat.Column2)) + mat.Row3.z;
-            return p;
-        }
-
-        /// <summary>
-        /// Transform a Position by the given Matrix
-        /// </summary>
-        /// <param name="pos">The position to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed position</param>
-        public static void TransformPosition(ref float3 pos, ref float4x4 mat, out float3 result)
-        {
-            result.x = pos.x * mat.Row0.x +
-                       pos.y * mat.Row1.x +
-                       pos.z * mat.Row2.x +
-                       mat.Row3.x;
-
-            result.y = pos.x * mat.Row0.y +
-                       pos.y * mat.Row1.y +
-                       pos.z * mat.Row2.y +
-                       mat.Row3.y;
-
-            result.z = pos.x * mat.Row0.z +
-                       pos.y * mat.Row1.z +
-                       pos.z * mat.Row2.z +
-                       mat.Row3.z;
-        }
-
-        /// <summary>
-        /// Transform a Vector by the given Matrix
-        /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed vector
-        /// </returns>
-        public static float3 Transform(float3 vec, float4x4 mat)
-        {
-            var v4 = new float4(vec.x, vec.y, vec.z, 1.0f);
-            v4 = mat * v4;
-            return v4.xyz;
-        }
-
-        /// <summary>
-        /// Transforms a vector by a quaternion rotation.
-        /// </summary>
+        /// <param name="mat">The transformation matrix.</param>
         /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <returns>
-        /// The result of the operation.
-        /// </returns>
-        public static float3 Transform(float3 vec, Quaternion quat)
+        /// <returns>The transformed vector.</returns>
+        public static float3 Transform(float3x3 mat, float3 vec)
         {
-            float3 result;
-            Transform(ref vec, ref quat, out result);
+            float4x4 temp = new float4x4(mat);
+
+            float3 result = Transform(temp, vec);
+
             return result;
         }
 
         /// <summary>
-        /// Transforms a vector by a quaternion rotation.
+        /// Transforms a vecotr by a given 4x4matrix.
         /// </summary>
+        /// <param name="mat">The transformation matrix.</param>
         /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Transform(ref float3 vec, ref Quaternion quat, out float3 result)
+        /// <returns>The transformed vector.</returns>
+        public static float3 Transform(float4x4 mat, float3 vec)
         {
-            // Since vec.w == 0, we can optimize quat * vec * quat^-1 as follows:
-            // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.ww * vec)
-            float3 xyz = quat.xyz, temp, temp2;
-            Cross(ref xyz, ref vec, out temp);
-            Multiply(ref vec, quat.w, out temp2);
-            Add(ref temp, ref temp2, out temp);
-            Cross(ref xyz, ref temp, out temp);
-            Multiply(ref temp, 2, out temp);
-            Add(ref vec, ref temp, out result);
+            float4 temp = new float4(vec, 1);
+            temp = float4.Transform(mat, temp);
+
+            float3 result = temp.xyz / temp.w;
+
+            return result;
         }
 
         /// <summary>
@@ -1321,6 +1119,56 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Rotate
+
+        /// <summary>
+        /// Rotates a vector by the given euler-angles in the following order: yaw (y-axis), pitch (x-axis), roll (z-axis).
+        /// </summary>
+        /// <param name="euler">The angles used for the rotation.</param>
+        /// <param name="vec">The vector to rotate.</param>
+        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Defautl is radians.</param>
+        /// <returns>The rotated vector.</returns>
+        public static float3 Rotate(float3 euler, float3 vec, bool inDegrees = false)
+        {
+            if (inDegrees)
+            {
+                euler.x = M.DegreesToRadians(euler.x);
+                euler.y = M.DegreesToRadians(euler.y);
+                euler.z = M.DegreesToRadians(euler.z);
+            }
+
+            float4x4 xRot = float4x4.CreateRotationX(euler.x);
+            float4x4 yRot = float4x4.CreateRotationY(euler.y);
+            float4x4 zRot = float4x4.CreateRotationZ(euler.z);
+
+            vec = Transform(yRot, vec);
+            vec = Transform(xRot, vec);
+            vec = Transform(zRot, vec);
+
+            float3 result = vec;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Rotates a vector by the given quaternion.
+        /// </summary>
+        /// <param name="quat">The quaternion used for the rotation.</param>
+        /// <param name="vec">The vector to rotate.</param>
+        /// <returns>The rotated vector.</returns>
+        public static float3 Rotate(Quaternion quat, float3 vec)
+        {
+            float3 temp, result;
+
+            temp = Cross(quat.xyz, vec) + quat.w * vec;
+            temp = Cross(2 * quat.xyz, temp);
+            result = vec + temp;
+
+            return result;
+        }
+
+        #endregion
+
         #endregion
 
         #region Swizzle
@@ -1328,23 +1176,64 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
-        /// <value>
-        /// The xy.
-        /// </value>
-        public float2 xy
-        {
-            get { return new float2(x, y); }
-            set
-            {
-                x = value.x;
-                y = value.y;
-            }
-        }
+        public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
+        /// </summary>
+        public float2 xz { get { return new float2(x, z); } set { x = value.x; z = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
+        /// </summary>
+        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
+        /// </summary>
+        public float2 yz { get { return new float2(y, z); } set { y = value.x; z = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
+        /// </summary>
+        public float2 zx { get { return new float2(z, x); } set { z = value.x; x = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
+        /// </summary>
+        public float2 zy { get { return new float2(z, y); } set { z = value.x; y = value.y; } }
+
+
 
         /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
+        /// </summary>
+        public float3 xzy { get { return new float3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
+        /// </summary>
+        public float3 yzx { get { return new float3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
+        /// </summary>
+        public float3 yxz { get { return new float3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
+        /// </summary>
+        public float3 zxy { get { return new float3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
+        /// </summary>
+        public float3 zyx { get { return new float3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion
 
@@ -1441,6 +1330,28 @@ namespace Fusee.Math.Core
             vec1.y *= vec2.y;
             vec1.z *= vec2.z;
             return vec1;
+        }
+
+        /// <summary>
+        /// Multiplies a matrix with a vector.
+        /// </summary>
+        /// <param name="mat">Left operand (matrix).</param>
+        /// <param name="vec">Right operand (vector.</param>
+        /// <returns>The result of the multiplication.</returns>
+        public static float3 operator *(float4x4 mat, float3 vec)
+        {
+            return Transform(mat, vec);
+        }
+
+        /// <summary>
+        /// Multiplies a matrix with a vector.
+        /// </summary>
+        /// <param name="mat">Left operand (matrix).</param>
+        /// <param name="vec">Right operand (vector.</param>
+        /// <returns>The result of the multiplication.</returns>
+        public static float3 operator *(float3x3 mat, float3 vec)
+        {
+            return Transform(mat, vec);
         }
 
         /// <summary>

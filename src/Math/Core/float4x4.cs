@@ -145,6 +145,18 @@ namespace Fusee.Math.Core
             Row3 = (float4)d4x4.Row3;
         }
 
+        /// <summary>
+        /// Constructs a new float4x4 from a float3x3 by setting the 4th column and row to UnitW respectively.
+        /// </summary>
+        /// <param name="f3x3">The float3x3 matrix to copy components from.</param>
+        public float4x4(float3x3 f3x3)
+        {
+            Row0 = new float4(f3x3.Row0, 0);
+            Row1 = new float4(f3x3.Row1, 0);
+            Row2 = new float4(f3x3.Row2, 0);
+            Row3 = new float4(0, 0, 0, 1);
+        }
+
         #endregion
 
         #region Public Members
@@ -1877,6 +1889,8 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
+        /*
+        Has been migrated to float4.
         /// <summary>
         /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
@@ -1886,7 +1900,7 @@ namespace Fusee.Math.Core
         public static float4 operator *(float4x4 matrix, float4 vector)
         {
             return Transform(matrix, vector);
-        }
+        }*/
 
         /// <summary>
         /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
@@ -1899,6 +1913,8 @@ namespace Fusee.Math.Core
             return TransformPremult(vector, matrix);
         }
 
+        /*
+        Has been migrated to float4
         /// <summary>
         /// Transforms a given threedimensional vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
@@ -1913,7 +1929,7 @@ namespace Fusee.Math.Core
         public static float3 operator *(float4x4 matrix, float3 vector)
         {
             return TransformPD(matrix, vector);
-        }
+        }*/
 
         /// <summary>
         /// Transforms a given threedimensional vector by a matrix via vector*matrix (Premultiplication of the vector).
