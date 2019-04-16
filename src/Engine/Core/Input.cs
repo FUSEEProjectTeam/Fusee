@@ -200,10 +200,10 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public SixDOFDevice SixDOFInput => GetInputDevice<SixDOFDevice>();
         /// <summary>
-        /// Retrieves the first GamePad device (if present).
+        /// Retrieves the first SixDOF device (if present).
         /// </summary>
         /// <value>
-        /// The GamePad (or null).
+        /// The SixDOFDevice (or null).
         /// </value>
         /// <remarks>
         /// This is a static property. Use <see cref="SixDOFInput"/> for an insatnce property 
