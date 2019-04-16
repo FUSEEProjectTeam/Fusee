@@ -91,14 +91,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            OpenTK.Graphics.OpenGL.PixelFormat format;
+            PixelFormat format;
             switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
+                    format = PixelFormat.Bgra;
                     break;
                 case ColorFormat.RGB:
-                    format = OpenTK.Graphics.OpenGL.PixelFormat.Rgb;
+                    format = PixelFormat.Bgr;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -117,12 +117,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
                     offset += lineBytes.Length;
                 }
-                    
-            } while(scanlines.MoveNext());
 
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle) tex).Handle);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height,
-                format, PixelType.UnsignedByte, bytes);
+            } while (scanlines.MoveNext());
+
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
+
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
         }
 
         /// <summary>
