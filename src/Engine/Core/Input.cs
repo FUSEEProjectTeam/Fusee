@@ -137,7 +137,7 @@ namespace Fusee.Engine.Core
         /// The mouse (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="MouseInput"/> for an insatnce property 
+        /// This is a static property. Use <see cref="MouseInput"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static MouseDevice Mouse => Instance.MouseInput;
