@@ -518,7 +518,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The different Axis a SixDOF device exposes
+    /// The different axes a SixDOF device e.g. spacemouse exposes.
     /// </summary>
     public enum SixDOF : int
     {
@@ -535,7 +535,7 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
-    /// The buttons and Axes a GameController Exposes
+    /// The buttons and axes a gamecontroller exposes.
     /// </summary>
     public enum Gamepad : int
     {
@@ -546,8 +546,8 @@ namespace Fusee.Engine.Common
         B = 3,
         Start = 4,
         Back = 5,
-        leftShoulder = 6,
-        rightShoulder = 7,
+        LeftShoulder = 6,
+        RightShoulder = 7,
         L3 = 8,
         R3 = 9,
         DPadUp = 10,

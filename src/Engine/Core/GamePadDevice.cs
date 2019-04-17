@@ -196,14 +196,14 @@ namespace Fusee.Engine.Core
         /// <value>
         /// <c>true</c> if the left button is currently pressed; otherwise, <c>false</c>.
         /// </value>
-        public bool LeftButton => GetButton((int)Gamepad.leftShoulder);
+        public bool LeftButton => GetButton((int)Gamepad.LeftShoulder);
         /// <summary>
         /// Retrieves the current state of the right button.
         /// </summary>
         /// <value>
         /// <c>true</c> if the right button is currently pressed; otherwise, <c>false</c>.
         /// </value>
-        public bool RightButton => GetButton((int)Gamepad.rightShoulder);
+        public bool RightButton => GetButton((int)Gamepad.RightShoulder);
         /// <summary>
         /// Retrieves the current state of the L3 button.
         /// </summary>
@@ -295,14 +295,14 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The description for the left button.
         /// </value>
-        public ButtonDescription LeftButtonDesc => GetButtonDescription((int)Gamepad.leftShoulder);
+        public ButtonDescription LeftButtonDesc => GetButtonDescription((int)Gamepad.LeftShoulder);
         /// <summary>
         /// Retrieves information about the right button.
         /// </summary>
         /// <value>
         /// The description for the right button.
         /// </value>
-        public ButtonDescription RightDesc => GetButtonDescription((int)Gamepad.rightShoulder);
+        public ButtonDescription RightDesc => GetButtonDescription((int)Gamepad.RightShoulder);
         /// <summary>
         /// Retrieves information about the L3 button.
         /// </summary>
