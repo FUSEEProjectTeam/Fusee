@@ -36,32 +36,73 @@ JSIL.ImplementExternals("Fusee.Base.Imp.Web.WebAssetProvider", function ($) {
 		}
 	);
 
-
 	return function (newThisType) { $thisType = newThisType; };
 });
 
 JSIL.ImplementExternals("Fusee.Base.Imp.Web.FileDecoder", function ($) {
 	// public static ImageData LoadImage(object assetOb)
-	$.Method({ Static: true, Public: true }, "WrapImage",
+	$.Method({ Static: true, Public: true }, "WrapImageJsil",
 		new JSIL.MethodSignature($WebBaseCore.TypeRef("Fusee.Base.Core.ImageData"), [$.Object]),
-		function WrapImage(assetOb) {
-			var image = assetOb.image;
-
-			// Akquire and copy pixel data
-			var canvas = document.createElement("canvas");
-			canvas.width = image.width;
-			canvas.height = image.height;
-			var context = canvas.getContext("2d");
-			context.translate(canvas.width / 2, canvas.height / 2);
-			context.scale(1, -1);
-			context.translate(-canvas.width / 2, -canvas.height / 2);
-			context.drawImage(image, 0, 0);
-			var myData = context.getImageData(0, 0, image.width, image.height);
-			// Create and initialize return object (FUSEE ImageData)
-			var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat($fuseeBaseCommon.Fusee.Base.Common.ColorFormat.RGBA));
-			return imageData;
+		function WrapImageJsil(assetOb) {
+			return DoWrapImage(assetOb.image);
 		}
 	);
+
+	$.Method({ Static: true, Public: true }, "WrapImageAsync",
+		new JSIL.MethodSignature(null, [$.Object, $.Object]),
+		function WrapImageAsync(arrayBuffer, callback) {
+			var bytes = new Uint8Array(arrayBuffer);
+
+			var image = new Image();
+			image.onload = function () {
+				callback(DoWrapImage(image));
+			};
+			image.src = 'data:image/png;base64,' + encode(bytes);
+		}
+	);
+
+	function encode(input) {
+		var keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+		var output = "";
+		var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+		var i = 0;
+
+		while (i < input.length) {
+			chr1 = input[i++];
+			chr2 = i < input.length ? input[i++] : Number.NaN; // Not sure if the index 
+			chr3 = i < input.length ? input[i++] : Number.NaN; // checks are needed here
+
+			enc1 = chr1 >> 2;
+			enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+			enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+			enc4 = chr3 & 63;
+
+			if (isNaN(chr2)) {
+				enc3 = enc4 = 64;
+			} else if (isNaN(chr3)) {
+				enc4 = 64;
+			}
+			output += keyStr.charAt(enc1) + keyStr.charAt(enc2) +
+				keyStr.charAt(enc3) + keyStr.charAt(enc4);
+		}
+		return output;
+	}
+
+	function DoWrapImage(image) {
+		// Akquire and copy pixel data
+		var canvas = document.createElement("canvas");
+		canvas.width = image.width;
+		canvas.height = image.height;
+		var context = canvas.getContext("2d");
+		context.translate(canvas.width / 2, canvas.height / 2);
+		context.scale(1, -1);
+		context.translate(-canvas.width / 2, -canvas.height / 2);
+		context.drawImage(image, 0, 0);
+		var myData = context.getImageData(0, 0, image.width, image.height);
+		// Create and initialize return object (FUSEE ImageData)
+		var imageData = new $WebBaseCore.Fusee.Base.Core.ImageData(myData.data, image.width, image.height, new $fuseeBaseCommon.Fusee.Base.Common.ImagePixelFormat($fuseeBaseCommon.Fusee.Base.Common.ColorFormat.RGBA));
+		return imageData;
+	}
 
 	$.Method({ Static: true, Public: true }, "WrapString",
 		new JSIL.MethodSignature($.String, [$.Object]),

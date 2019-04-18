@@ -15,9 +15,14 @@ namespace Fusee.Base.Imp.Web
         /// <param name="assetOb">JSIL asset object containing the image in a supported format (png, jpg).</param>
         /// <returns>An ImageData object with all necessary information.</returns>
         [JSExternal]
-        public static ImageData WrapImage(object assetOb)
+        public static void WrapImageAsync(object assetOb, object callback)
         {
             throw new NotImplementedException("This method is implemented in JavaScript [JSExternal]");
+        }
+        [JSExternal]
+        public static ImageData WrapImageJsil(object storage)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

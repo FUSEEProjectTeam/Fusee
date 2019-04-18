@@ -36,25 +36,18 @@ JSIL.ImplementExternals("Fusee.Base.Core.Diagnostics", function ($) {
 
 JSIL.ImplementExternals("Fusee.Base.Core.AsyncHttpAsset", function ($) {
 
-	$.Method({ Static: false, Public: false }, "StartGet",
+	$.Method({ Static: false, Public: false }, "DoGetAsset",
 		new JSIL.MethodSignature(null, null),
-		function StartGet() {
+		function DoGetAsset() {
 
 			var oReq = new XMLHttpRequest();
 
-			oReq.onload = () => this.JsDoneCallback(oReq.response);
-			oReq.onerror = () => this.JsFailCallback();
+			oReq.onload = () => this.ProcessAsset(oReq.response);
+			oReq.onerror = () => this.FailCallback();
 
 			oReq.open("GET", this.Id);
 			oReq.responseType = "arraybuffer";
 			oReq.send();
-		}
-	);
-
-	$.Method({ Static: true, Public: false }, "WrapString",
-		new JSIL.MethodSignature($.String, [$.Object]),
-		function WrapString(data) {
-			return new TextDecoder("utf-8").decode(data);
 		}
 	);
 

@@ -33,7 +33,7 @@ namespace Fusee.Base.Imp.Web
                         case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            return FileDecoder.WrapImage(storage);
+                            return FileDecoder.WrapImageJsil(storage);
                     }
                     return null;
                 },
