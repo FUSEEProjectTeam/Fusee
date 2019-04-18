@@ -5,20 +5,22 @@ using System.Runtime.InteropServices;
 using Fusee.Engine.Common;
 using OpenTK;
 using _3DconnexionDriver;
+using System.Windows.Forms;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
 
     /// <summary>
-    /// Input driver implementation supporting Windows 8 touch input as described in
+    /// Input driver implementation supporting Windows 8 spacemouse input as described in
     /// https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx
     /// </summary>
-    public class WindowsSpaceMouseDriverImp : IInputDriverImp
+    public class WindowsSpaceMouseDriverImp : Form, IInputDriverImp
     {
         GameWindow _gameWindow;
-        WindowsSpaceMouseInputDeviceImp _touch;
+        public event EventHandler<SpaceMouseArgs> SpaceMouseMoveEvent;
+        WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsTouchInputDriverImp"/> class.
+        /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDriverImp"/> class.
         /// </summary>
         /// <param name="renderCanvas">The render canvas. Internally this must be a Windows canvas with a valid window handle.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -37,7 +39,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentNullException(nameof(_gameWindow));
 
 
-            _touch = new WindowsSpaceMouseInputDeviceImp(_gameWindow);
+            _SMI = new WindowsSpaceMouseInputDeviceImp(_gameWindow, SpaceMouseMoveEvent);
         }
 
         /// <summary>
@@ -53,7 +55,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// devices are connected at driver instantiation and never disconnected (in this case <see cref="E:Fusee.Engine.Common.IInputDriverImp.NewDeviceConnected" />
         /// and <see cref="E:Fusee.Engine.Common.IInputDriverImp.DeviceDisconnected" /> are never fired).
         /// </remarks>
-        public IEnumerable<IInputDeviceImp> Devices { get { yield return _touch; } }
+        public IEnumerable<IInputDeviceImp> Devices { get { yield return _SMI; } }
 
         /// <summary>
         /// Gets the unique driver identifier.
@@ -69,7 +71,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <value>
         /// A human-readable string describing the driver.
         /// </value>
-        public string DriverDesc => "Driver providing a touch device implementation for Windows 8 (and up) touch input.";
+        public string DriverDesc => "Driver providing a spacemouse device implementation for Windows 8 (and up) spacemouse input.";
 
 #pragma warning disable 0067
         /// <summary>
@@ -130,16 +132,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     }
 
     /// <summary>
-    /// Touch input device implementation for the Windows platform. This implementation directly
+    /// SMI input device implementation for the Windows platform. This implementation directly
     /// sniffes at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
-    public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp
+    public class WindowsSpaceMouseInputDeviceImp : Form ,IInputDeviceImp
     {
 
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
+        public event EventHandler<SpaceMouseArgs> SpaceMouseMoveEvent;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
 
         // TODO: Add field for _3DConnexionDevice
@@ -181,10 +184,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         // private static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, int Msg, int wParam, IntPtr lParam);
         static extern IntPtr CallWindowProc(IntPtr lpPrevWndFunc, IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
-
-        [DllImport("user32.dll")]
-        static extern bool ScreenToClient(IntPtr hWnd, ref POINT lpPoint);
-
         private delegate IntPtr WinProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 
         private WinProc _newWinProc;
@@ -214,20 +213,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             OperatingSystem os = Environment.OSVersion;
 
             // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
-            // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" touch handling is first supported.
+            // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" SMI handling is first supported.
             if (os.Platform == PlatformID.Win32NT 
                 && (    os.Version.Major > 6
                      || os.Version.Major == 6 && os.Version.Minor >= 2) 
                 )
             {
-                EnableMouseInPointer(false);
-                if (_handle.Handle != IntPtr.Zero)
-                {
-                    _newWinProc = new WinProc(SpaceMouseWindowsProc);
-                    _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
-                }
+                //    EnableMouseInPointer(false);
+                //    if (_handle.Handle != IntPtr.Zero)
+                //    {
+                //        _newWinProc = new WinProc(SpaceMouseWindowsProc);
+                //        _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
+                //    }
             }
-        }
+    }
 
         private float GetWindowWidth()
         {
@@ -247,17 +246,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="gameWindow">The game window to hook on to reveive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
-        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow)
+        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow, EventHandler<SpaceMouseArgs> eventListener)
         {
             _gameWindow = gameWindow;
+            SpaceMouseMoveEvent += eventListener;
             _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
             _current3DConnexionDevice = new _3DconnexionDevice(_handle.ToString());
-            SpaceMouseWindowsProc();
+            _current3DConnexionDevice.InitDevice((IntPtr)_handle);
+
+            _current3DConnexionDevice.Motion += HandleMotion;
             // TODO: _current3DConnexionDevice.ZeroPoint = MyZeroPointHandler [to be implemented]
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
             ConnectWindowsEvents();
         }
+
+        private void HandleMotion(object sender, MotionEventArgs e)
+        {
+            SpaceMouseMoveEvent?.Invoke(sender, new SpaceMouseArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
+        }
+
         /// <summary>
         /// Returns the name of the device
         /// </summary>
@@ -266,7 +274,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             get
             {
-                return ;
+                return _current3DConnexionDevice.DeviceName;
             }
         }
 
@@ -304,7 +312,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -318,7 +326,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -332,7 +340,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -346,7 +354,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -360,7 +368,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -374,7 +382,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = -1,
                         MaxValueOrAxis = 1
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
             }
         }
@@ -439,5 +447,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     
     }
 
+    public class SpaceMouseArgs : EventArgs
+    {
+        private readonly int TX ,TY, TZ;
+        private readonly int RX, RY, RZ;
 
+        public SpaceMouseArgs(int tX, int tY, int tZ, int rX, int rY, int rZ)
+        {
+            this.TX = tX;
+            this.TY = tY;
+            this.TZ = tZ;
+            this.RX = rX;
+            this.RY = rY;
+            this.RZ = rZ;
+        }
+    }
 }

@@ -19,6 +19,8 @@ namespace Fusee.Engine.Player.Core
     {
         public string ModelFile = "Model.fus";
 
+        private TransformComponent SpaceMouse;
+
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
@@ -111,6 +113,9 @@ namespace Fusee.Engine.Player.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            SpaceMouse.Translation = new float3(SDOF.X, SDOF.Y, SDOF.Z);
+            SpaceMouse.Rotation = new float3(SDOF.XRot, SDOF.YRot, SDOF.ZRot);
+
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -119,7 +124,8 @@ namespace Fusee.Engine.Player.Core
             }
 
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-
+            if (SDOF.X != 0)
+                Console.Write($"Die X Axe ist {SDOF.X}");
             // Zoom & Roll
             if (Touch.TwoPoint)
             {
