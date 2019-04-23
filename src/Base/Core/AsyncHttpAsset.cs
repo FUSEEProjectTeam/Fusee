@@ -90,6 +90,7 @@ namespace Fusee.Base.Core
             if (!_assetHandlers.ContainsKey(Type))
             {
                 Diagnostics.Log(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
+                Type = typeof(byte[]);
             }
 
             State = AsyncAssetState.None;
