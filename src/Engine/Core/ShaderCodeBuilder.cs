@@ -1197,6 +1197,10 @@ namespace Fusee.Engine.Core
             if (image != null)
                 return new Texture(image);
 
+            image = AssetStorage.Get<ImageData>("DefaultTexture.png");
+            if (image != null)
+                return new Texture(image);
+
             return new Texture(new ImageData());
         }
 
