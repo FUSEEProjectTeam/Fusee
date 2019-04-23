@@ -42,7 +42,7 @@ JSIL.ImplementExternals("Fusee.Base.Core.AsyncHttpAsset", function ($) {
 
 			var oReq = new XMLHttpRequest();
 
-			oReq.onload = () => this.ProcessAsset(oReq.response);
+			oReq.onload = () => this.ProcessAsset(new Uint8Array(oReq.response));
 			oReq.onerror = () => this.FailCallback();
 
 			oReq.open("GET", this.Id);
