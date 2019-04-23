@@ -11,13 +11,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 {
 
     /// <summary>
-    /// Input driver implementation supporting Windows 8 spacemouse input as described in
-    /// https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx
+    /// Input driver implementation supporting Windows 8 spacemouse input.
     /// </summary>
     public class WindowsSpaceMouseDriverImp : Form, IInputDriverImp
     {
         GameWindow _gameWindow;
-        public event EventHandler<SpaceMouseArgs> SpaceMouseMoveEvent;
+        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;    
         WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDriverImp"/> class.
@@ -142,7 +141,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
-        public event EventHandler<SpaceMouseArgs> SpaceMouseMoveEvent;
+        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
 
         // TODO: Add field for _3DConnexionDevice
@@ -246,7 +245,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="gameWindow">The game window to hook on to reveive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
-        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow, EventHandler<SpaceMouseArgs> eventListener)
+        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow, EventHandler<MotionEventArgs> eventListener)
         {
             _gameWindow = gameWindow;
             SpaceMouseMoveEvent += eventListener;
@@ -255,7 +254,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _current3DConnexionDevice.InitDevice((IntPtr)_handle);
 
             _current3DConnexionDevice.Motion += HandleMotion;
-            // TODO: _current3DConnexionDevice.ZeroPoint = MyZeroPointHandler [to be implemented]
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
             ConnectWindowsEvents();
@@ -263,8 +261,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private void HandleMotion(object sender, MotionEventArgs e)
         {
-            SpaceMouseMoveEvent?.Invoke(sender, new SpaceMouseArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
+            SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
         }
+
+        
 
         /// <summary>
         /// Returns the name of the device
@@ -447,19 +447,4 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     
     }
 
-    public class SpaceMouseArgs : EventArgs
-    {
-        private readonly int TX ,TY, TZ;
-        private readonly int RX, RY, RZ;
-
-        public SpaceMouseArgs(int tX, int tY, int tZ, int rX, int rY, int rZ)
-        {
-            this.TX = tX;
-            this.TY = tY;
-            this.TZ = tZ;
-            this.RX = rX;
-            this.RY = rY;
-            this.RZ = rZ;
-        }
-    }
 }
