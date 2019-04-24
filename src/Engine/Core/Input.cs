@@ -68,7 +68,13 @@ namespace Fusee.Engine.Core
         public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
 
         private readonly Dictionary<string, InputDevice> _inputDevices;
+        /// <summary>
+        /// Returns the values of an input device.
+        /// </summary>
         public IEnumerable<InputDevice> InputDevices => _inputDevices.Values;
+        /// <summary>
+        /// Returns the input device values.
+        /// </summary>
         public static IEnumerable<InputDevice> Devices => Instance._inputDevices.Values;
 
         private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
@@ -247,7 +253,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceConnected
@@ -280,7 +286,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
@@ -416,7 +422,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="inputDriver">The new input driver to add.</param>
         /// <remarks>
-        /// This is a static method. Use <see cref="AddInputDriverImp}"/> for an insatnce property 
+        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static void AddDriverImp(IInputDriverImp inputDriver) => Instance.AddInputDriverImp(inputDriver);
@@ -565,7 +571,7 @@ namespace Fusee.Engine.Core
         private HashSet<int> _buttonsPressed;
 
         /// <summary>
-        ///     Gets or sets a value indicating whether to fix mouse at center.
+        ///     Gets and sets a value indicating whether to fix mouse at center.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
@@ -573,7 +579,7 @@ namespace Fusee.Engine.Core
         public bool FixMouseAtCenter { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the cursor is visible.
+        ///     Gets and sets a value indicating whether the cursor is visible.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the cursor is visible; otherwise, <c>false</c>.

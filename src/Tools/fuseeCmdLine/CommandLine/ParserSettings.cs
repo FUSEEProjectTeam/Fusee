@@ -51,7 +51,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether perform case sensitive comparisons.
+        /// Gets and sets a value indicating whether perform case sensitive comparisons.
         /// Note that case insensitivity only applies to <i>parameters</i>, not the values
         /// assigned to them (for example, enum parsing).
         /// </summary>
@@ -62,7 +62,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether perform case sensitive comparisons of <i>values</i>.
+        /// Gets and sets a value indicating whether perform case sensitive comparisons of <i>values</i>.
         /// Note that case insensitivity only applies to <i>values</i>, not the parameters.
         /// </summary>
         public bool CaseInsensitiveEnumValues
@@ -72,7 +72,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets the culture used when parsing arguments to typed properties.
+        /// Gets and sets the culture used when parsing arguments to typed properties.
         /// </summary>
         /// <remarks>
         /// Default is invariant culture, <see cref="System.Globalization.CultureInfo.InvariantCulture"/>.
@@ -89,7 +89,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="System.IO.TextWriter"/> used for help method output.
+        /// Gets and sets the <see cref="System.IO.TextWriter"/> used for help method output.
         /// Setting this property to null, will disable help screen.
         /// </summary>
         /// <remarks>
@@ -102,7 +102,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the parser shall move on to the next argument and ignore the given argument if it
+        /// Gets and sets a value indicating whether the parser shall move on to the next argument and ignore the given argument if it
         /// encounter an unknown arguments
         /// </summary>
         /// <value>
@@ -119,7 +119,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether enable double dash '--' syntax,
+        /// Gets and sets a value indicating whether enable double dash '--' syntax,
         /// that forces parsing of all subsequent tokens as values.
         /// </summary>
         public bool EnableDashDash
@@ -129,7 +129,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets the maximum width of the display.  This determines word wrap when displaying the text.
+        /// Gets and sets the maximum width of the display.  This determines word wrap when displaying the text.
         /// </summary>
         public int MaximumDisplayWidth
         {

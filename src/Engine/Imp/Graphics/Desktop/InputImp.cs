@@ -143,6 +143,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class SpaceMouseDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;
+        /// <summary>
+        /// The id of the targetet input device.
+        /// </summary>
         public int DeviceId = 0;
 
         internal SpaceMouseDeviceImp(GameWindow window)

@@ -52,7 +52,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.

@@ -21,7 +21,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
+        /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
         /// </summary>
         /// <value>
         /// The width.
@@ -36,7 +36,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Gets or sets the height in pixel units.
+        /// Gets and sets the height in pixel units.
         /// </summary>
         /// <value>
         /// The height.
@@ -53,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         private string _title;
         /// <summary>
-        /// Gets or sets the caption(title of the window).
+        /// Gets and sets the caption(title of the window).
         /// </summary>
         /// <value>
         /// The caption.
@@ -86,7 +86,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [vertical synchronize].
+        /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
         /// <value>
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [fullscreen] is enabled.
+        /// Gets and sets a value indicating whether [fullscreen] is enabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
@@ -155,7 +155,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Gets or sets the android view.
+        /// Gets and sets the android view.
         /// </summary>
         /// <value>
         /// The view.

@@ -81,7 +81,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets the option's mutually exclusive set name.
+        /// Gets and sets the option's mutually exclusive set name.
         /// </summary>
         public string SetName
         {

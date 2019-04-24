@@ -32,7 +32,7 @@ namespace Fusee.Serialization
         private float4[] _tangents;
 
         /// <summary>
-        /// Gets or sets the vertices.
+        /// Gets and sets the vertices.
         /// </summary>
         /// <value>
         /// The vertices.
@@ -77,7 +77,7 @@ namespace Fusee.Serialization
 
         private uint[] _colors;
         /// <summary>
-        /// Gets or sets the color of a single vertex.
+        /// Gets and sets the color of a single vertex.
         /// </summary>
         /// <value>
         /// The color.
@@ -106,7 +106,7 @@ namespace Fusee.Serialization
         
         private float3[] _normals;
         /// <summary>
-        /// Gets or sets the normals.
+        /// Gets and sets the normals.
         /// </summary>
         /// <value>
         /// The normals..
@@ -135,7 +135,7 @@ namespace Fusee.Serialization
         
         private float2[] _uvs;
         /// <summary>
-        /// Gets or sets the UV-coordinates.
+        /// Gets and sets the UV-coordinates.
         /// </summary>
         /// <value>
         /// The UV-coordinates.
@@ -164,7 +164,7 @@ namespace Fusee.Serialization
 
         private float4[] _boneWeights;
         /// <summary>
-        /// Gets or sets the boneweights.
+        /// Gets and sets the boneweights.
         /// </summary>
         /// <value>
         /// The boneweights.
@@ -193,7 +193,7 @@ namespace Fusee.Serialization
 
         private float4[] _boneIndices;
         /// <summary>
-        /// Gets or sets the boneindices.
+        /// Gets and sets the boneindices.
         /// </summary>
         /// <value>
         /// The boneindices.
@@ -222,7 +222,7 @@ namespace Fusee.Serialization
 
         private ushort[] _triangles;
         /// <summary>
-        /// Gets or sets the triangles.
+        /// Gets and sets the triangles.
         /// </summary>
         /// <value>
         /// The triangles.

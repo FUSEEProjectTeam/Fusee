@@ -1033,7 +1033,7 @@ namespace Fusee.Math.Core
         #region Swizzle
 
         /// <summary>
-        /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
+        /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
 
@@ -1279,7 +1279,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a float2.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a float2.
         /// </summary>
         /// <value>
         /// The parse property.

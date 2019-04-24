@@ -350,6 +350,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
         }
+        /// <summary>
+        /// Descriptions of the available axes.
+        /// </summary>
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
 
         
@@ -359,7 +362,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
          
         /// <summary>
-        /// Returns the name of the device
+        /// Returns the name of the device.
         /// </summary>
         public string Id
         {
@@ -371,22 +374,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Returns the description of this implementation
+        /// Returns the description of this implementation.
         /// </summary>
         public string Desc => "Standard spacemouse implementation";
 
         /// <summary>
-        /// Returns the Category this device belongs in
+        /// Returns the Category this device belongs in.
         /// </summary>
         public DeviceCategory Category => DeviceCategory.SixDOF;
 
         /// <summary>
-        /// Returns the number of Axes this device implements
+        /// Returns the number of Axes this device implements.
         /// </summary>
         public int AxesCount => 6;
 
         /// <summary>
-        /// Returns the descriptions for all axes of this device
+        /// Returns the descriptions for all axes of this device.
         /// </summary>
         public IEnumerable<AxisImpDescription> AxisImpDesc
         {
@@ -402,12 +405,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// This device does not reveal any Buttons
+        /// This device does not reveal any Buttons.
         /// </summary>
         public int ButtonCount => 0;
 
         /// <summary>
-        /// This device does not implement any Buttons
+        /// This device does not implement any Buttons.
         /// </summary>
 #pragma warning disable 0067
         public IEnumerable<ButtonImpDescription> ButtonImpDesc
@@ -428,14 +431,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// All Axis are poll based
+        /// All Axis are poll based.
         /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
 
 
         /// <summary>
-        /// Declares the axes a spacemouse exposes
+        /// Declares the axes a spacemouse exposes.
         /// </summary>
         public enum SpaceMouseAxis
         {
@@ -478,12 +481,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// This device does not implement any Buttons
+        /// This device does not implement any Buttons.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
 #pragma warning restore 0067
         /// <summary>
-        /// Returns the current value of the axis {AxisID}
+        /// Returns the current value of the axis {AxisID}.
         /// </summary>
         /// <param name="iAxisId"></param>
         /// <returns></returns>
@@ -493,7 +496,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// This device does not implement any Buttons
+        /// This device does not implement any Buttons.
         /// </summary>
         /// <param name="iButtonId"></param>
         /// <returns></returns>

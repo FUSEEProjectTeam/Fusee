@@ -194,7 +194,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 1 of this instance.
+        /// Gets and sets the value at row 1, column 1 of this instance.
         /// </summary>
         public double M11
         {
@@ -203,7 +203,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 2 of this instance.
+        /// Gets and sets the value at row 1, column 2 of this instance.
         /// </summary>
         public double M12
         {
@@ -212,7 +212,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 3 of this instance.
+        /// Gets and sets the value at row 1, column 3 of this instance.
         /// </summary>
         public double M13
         {
@@ -221,7 +221,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 1, column 4 of this instance.
+        /// Gets and sets the value at row 1, column 4 of this instance.
         /// </summary>
         public double M14
         {
@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 1 of this instance.
+        /// Gets and sets the value at row 2, column 1 of this instance.
         /// </summary>
         public double M21
         {
@@ -239,7 +239,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 2 of this instance.
+        /// Gets and sets the value at row 2, column 2 of this instance.
         /// </summary>
         public double M22
         {
@@ -248,7 +248,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 3 of this instance.
+        /// Gets and sets the value at row 2, column 3 of this instance.
         /// </summary>
         public double M23
         {
@@ -257,7 +257,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 2, column 4 of this instance.
+        /// Gets and sets the value at row 2, column 4 of this instance.
         /// </summary>
         public double M24
         {
@@ -266,7 +266,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 1 of this instance.
+        /// Gets and sets the value at row 3, column 1 of this instance.
         /// </summary>
         public double M31
         {
@@ -275,7 +275,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 2 of this instance.
+        /// Gets and sets the value at row 3, column 2 of this instance.
         /// </summary>
         public double M32
         {
@@ -284,7 +284,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 3 of this instance.
+        /// Gets and sets the value at row 3, column 3 of this instance.
         /// </summary>
         public double M33
         {
@@ -293,7 +293,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 3, column 4 of this instance.
+        /// Gets and sets the value at row 3, column 4 of this instance.
         /// </summary>
         public double M34
         {
@@ -302,7 +302,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 4, column 1 of this instance.
+        /// Gets and sets the value at row 4, column 1 of this instance.
         /// </summary>
         public double M41
         {
@@ -311,7 +311,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 4, column 2 of this instance.
+        /// Gets and sets the value at row 4, column 2 of this instance.
         /// </summary>
         public double M42
         {
@@ -320,7 +320,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 4, column 3 of this instance.
+        /// Gets and sets the value at row 4, column 3 of this instance.
         /// </summary>
         public double M43
         {
@@ -329,7 +329,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets the value at row 4, column 4 of this instance.
+        /// Gets and sets the value at row 4, column 4 of this instance.
         /// </summary>
         public double M44
         {
@@ -1880,7 +1880,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a double4x4.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a double4x4.
         /// </summary>
         /// <value>
         /// The parse property.

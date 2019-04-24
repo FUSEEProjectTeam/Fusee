@@ -27,7 +27,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether a command line option is required.
+        /// Gets and sets a value indicating whether a command line option is required.
         /// </summary>
         public bool Required
         {
@@ -74,7 +74,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets mapped property default value.
+        /// Gets and sets mapped property default value.
         /// </summary>
         public object Default
         {
@@ -86,7 +86,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a short description of this command line option. Usually a sentence summary.
+        /// Gets and sets a short description of this command line option. Usually a sentence summary.
         /// </summary>
         public string HelpText
         {
@@ -103,7 +103,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets mapped property meta value. Usually an uppercase hint of required value type.
+        /// Gets and sets mapped property meta value. Usually an uppercase hint of required value type.
         /// </summary>
         public string MetaValue
         {
@@ -120,7 +120,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether a command line option is visible in the help text.
+        /// Gets and sets a value indicating whether a command line option is visible in the help text.
         /// </summary>
         public bool Hidden
         {

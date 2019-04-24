@@ -6,7 +6,7 @@
     public interface IConeShapeImp : ICollisionShapeImp
     {
         /// <summary>
-        /// Gets or sets the index of the cone up.
+        /// Gets and sets the index of the cone up.
         /// </summary>
         /// <value>
         /// The index of the cone up.

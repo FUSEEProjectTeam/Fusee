@@ -93,6 +93,9 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
+        ///<summary>
+        ///Returns the transform component.
+        ///</summary>
         public void ConvTransform(TransformComponent transform)
         {
             if (_currentNode.Components == null)
@@ -151,13 +154,19 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(mesh);
         }
-
+        /// <summary>
+        /// Adds the light component.
+        /// </summary>
+        /// <param name="lightComponent"></param>
         [VisitMethod]
         public void ConvLight(LightComponent lightComponent)
         {
             _currentNode.Components.Add(lightComponent);
         }
-
+        /// <summary>
+        /// Adds the bone component.
+        /// </summary>
+        /// <param name="bone"></param>
         [VisitMethod]
         public void ConvBone(BoneComponent bone)
         {

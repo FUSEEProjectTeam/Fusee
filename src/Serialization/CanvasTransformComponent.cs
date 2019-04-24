@@ -31,7 +31,9 @@ namespace Fusee.Serialization
             Scale = CanvasRenderMode == CanvasRenderMode.SCREEN ? scale : 1;
         }
     }
-
+    ///<summary>
+    ///The rendermodes available.
+    ///</summary>
     [ProtoContract]
     public enum CanvasRenderMode
     {

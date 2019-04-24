@@ -1325,7 +1325,7 @@ namespace Fusee.Math.Core
         #region Swizzle
 
         /// <summary>
-        /// Gets or sets an OpenTK.float2 with the x and y components of this instance.
+        /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
         /// <value>
         /// The xy.
@@ -1341,7 +1341,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// Gets and sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
 
@@ -1607,7 +1607,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a float3.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a float3.
         /// </summary>
         /// <value>
         /// The parse property.

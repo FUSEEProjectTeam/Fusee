@@ -9,7 +9,7 @@ namespace Fusee.Engine.Common
     public interface IRenderCanvasImp
     {
         /// <summary>
-        /// Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
+        /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
         /// </summary>
         /// <value>
         /// The width.
@@ -17,7 +17,7 @@ namespace Fusee.Engine.Common
         int Width { get; set; }
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets the height(pixel units) of the Canvas.
+        /// Implementation Tasks: Gets and sets the height(pixel units) of the Canvas.
         /// </summary>
         /// <value>
         /// The height.
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Common
         int Height { get; set; }
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets the caption of the Application(Window Title).
+        /// Implementation Tasks: Gets and sets the caption of the Application(Window Title).
         /// </summary>
         /// <value>
         /// The caption.
@@ -41,7 +41,7 @@ namespace Fusee.Engine.Common
         float DeltaTime { get; }
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets a value indicating whether vertical synchronization is enabled.
+        /// Implementation Tasks: Gets and sets a value indicating whether vertical synchronization is enabled.
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
         /// <value>
@@ -50,7 +50,7 @@ namespace Fusee.Engine.Common
         bool VerticalSync { get; set; }
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets a value indicating whether this <see cref="IRenderCanvasImp"/> is in fullscreen mode.
+        /// Implementation Tasks: Gets and sets a value indicating whether this <see cref="IRenderCanvasImp"/> is in fullscreen mode.
         /// This option can not be applied to all plattforms. 
         /// </summary>
         /// <value>

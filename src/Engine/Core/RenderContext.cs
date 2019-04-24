@@ -22,8 +22,13 @@ namespace Fusee.Engine.Core
         #region Private Fields
 
         private readonly IRenderContextImp _rci;
-
+        /// <summary>
+        /// Gets and sets the viewport width.
+        /// </summary>
         public int ViewportWidth { get; private set; }
+        /// <summary>
+        /// Gets and sets the viewport heigth.
+        /// </summary>
         public int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
@@ -1738,7 +1743,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// Gets and sets a value indicating whether [debug lines enabled].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.

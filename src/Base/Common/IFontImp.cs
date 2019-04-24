@@ -73,7 +73,7 @@ namespace Fusee.Base.Common
     public interface IFontImp
     {
         /// <summary>
-        ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
+        ///     Gets and sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the kerning definition of a font should be used; otherwise, <c>false</c>.
@@ -81,7 +81,7 @@ namespace Fusee.Base.Common
         bool UseKerning { get; set; }
 
         /// <summary>
-        /// Gets or sets the size in pixels.
+        /// Gets and sets the size in pixels.
         /// </summary>
         /// <value>
         /// The vertical size of the font in pixels.

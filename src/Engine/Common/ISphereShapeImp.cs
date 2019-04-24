@@ -6,7 +6,7 @@
     public interface ISphereShapeImp : ICollisionShapeImp
     {
         /// <summary>
-        /// Gets or sets the radius.
+        /// Gets and sets the radius.
         /// </summary>
         /// <value>
         /// The radius.

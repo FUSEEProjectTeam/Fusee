@@ -58,7 +58,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Gets or sets the Top of stack.
+        /// Gets and sets the Top of stack.
         /// </summary>
         /// <value>
         /// The top of stack.
@@ -190,7 +190,7 @@ namespace Fusee.Xene
         public int Depth { get; private set; }
 
         /// <summary>
-        /// Gets or sets the Top of stack.
+        /// Gets and sets the Top of stack.
         /// </summary>
         /// <value>
         /// The top of stack.
@@ -373,7 +373,7 @@ namespace Fusee.Xene
         private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
 
         /// <summary>
-        /// Gets or sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
+        /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
         /// </summary>
         /// <value>
         /// The Model matrix.
@@ -385,7 +385,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Gets or sets the top of the View matrix stack. The View matrix transforms world coordinates into view coordinates.
+        /// Gets and sets the top of the View matrix stack. The View matrix transforms world coordinates into view coordinates.
         /// The View matrix contains a camera's extrinsic parameters (position and orientation).
         /// </summary>
         /// <value>
@@ -398,7 +398,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Gets or sets the top of the Projection matrix stack. The Projection matrix transforms view coordinates into projection coordinates.
+        /// Gets and sets the top of the Projection matrix stack. The Projection matrix transforms view coordinates into projection coordinates.
         /// The Projection matrix contains a camera's intrinsic parameters (field-of-view/focal length for perspective projections).
         /// </summary>
         /// <value>

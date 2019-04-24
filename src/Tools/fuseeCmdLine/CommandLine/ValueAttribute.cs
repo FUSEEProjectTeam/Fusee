@@ -31,7 +31,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets name of this positional value specification.
+        /// Gets and sets name of this positional value specification.
         /// </summary>
         public string MetaName
         {

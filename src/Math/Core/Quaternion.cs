@@ -50,7 +50,7 @@ namespace Fusee.Math.Core
         // ReSharper disable InconsistentNaming
 
         /// <summary>
-        ///     Gets or sets an Fusee.Math.float3 with the x, y and z components of this instance.
+        ///     Gets and sets an Fusee.Math.float3 with the x, y and z components of this instance.
         /// </summary>
         public float3 xyz
         {
@@ -59,7 +59,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the x component of this instance.
+        ///     Gets and sets the x component of this instance.
         /// </summary>
         public float x
         {
@@ -68,7 +68,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the y component of this instance.
+        ///     Gets and sets the y component of this instance.
         /// </summary>
         public float y
         {
@@ -77,7 +77,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the z component of this instance.
+        ///     Gets and sets the z component of this instance.
         /// </summary>
         public float z
         {
@@ -86,7 +86,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the w component of this instance.
+        ///     Gets and sets the w component of this instance.
         /// </summary>
         public float w
         {

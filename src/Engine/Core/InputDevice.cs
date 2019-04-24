@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this device is connected.
+        /// Gets and sets a value indicating whether this device is connected.
         /// </summary>
         /// <value>
         ///   <c>true</c> if this device is connected; otherwise, <c>false</c>.
@@ -815,7 +815,9 @@ namespace Fusee.Engine.Core
             }
             _buttonsToListenJustChanged.Clear();
         }
-
+        /// <summary>
+        /// Clears the button presses after rendering an image.
+        /// </summary>
         public void PostRender()
         {
             _buttonsDown.Clear();

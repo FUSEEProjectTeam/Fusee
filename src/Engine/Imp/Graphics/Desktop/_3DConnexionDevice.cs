@@ -357,6 +357,9 @@ namespace _3Dconnexion
 
 namespace _3DconnexionDriver
 {
+    /// <summary>
+    /// 3Dconnexion driver.
+    /// </summary>
     public class _3DconnexionDevice : IDisposable
     {
         IntPtr _deviceHandle = IntPtr.Zero;
@@ -386,7 +389,10 @@ namespace _3DconnexionDriver
         /// Buffer for Events
         /// </summary>
         private readonly Dictionary<SiApp.SiEventType, EventArgs> eventBuffer = new Dictionary<SiApp.SiEventType, EventArgs>();
-
+        /// <summary>
+        /// The 3Dconnexion device.
+        /// </summary>
+        /// <param name="appName"></param>
         public _3DconnexionDevice(string appName)
         {
             this.AppName = appName;
@@ -397,7 +403,9 @@ namespace _3DconnexionDriver
             };
             eventThread.Start();
         }
-
+        /// <summary>
+        /// Disposes of the connected device.
+        /// </summary>
         ~_3DconnexionDevice()
         {
             Dispose();
@@ -574,13 +582,18 @@ namespace _3DconnexionDriver
                 }
             }
         }
-
+        /// <summary>
+        /// Is called if the mouse is not moved.
+        /// </summary>
         protected virtual void OnZeroPoint()
         {
             if (ZeroPoint != null)
                 ZeroPoint(this, EventArgs.Empty);
         }
-
+        /// <summary>
+        /// Is called if the mouse is moved. 
+        /// </summary>
+        /// <param name="args"></param>
         protected virtual void OnMotion(MotionEventArgs args)
         {
             if (Motion != null)

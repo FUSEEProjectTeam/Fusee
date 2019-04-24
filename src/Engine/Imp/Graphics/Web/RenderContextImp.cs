@@ -13,18 +13,36 @@ using JSIL.Meta;
 
 namespace Fusee.Engine.Imp.Graphics.Web
 {
+    /// <summary>
+    /// Create an instance of this class to access the render context.
+    /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
+        /// <summary>
+        /// Gets and sets the background color.
+        /// </summary>
         [JSExternal]
         public float4 ClearColor { get; set; }
+        /// <summary>
+        /// Gets and sets the depth.
+        /// </summary>
         [JSExternal]
         public float ClearDepth { get; set; }
+        /// <summary>
+        /// Creates the shader.
+        /// </summary>
+        /// <param name="vs"></param>
+        /// <param name="ps"></param>
+        /// <returns></returns>
         [JSExternal]
         public IShaderProgramImp CreateShader(string vs, string ps)
         {
             throw new System.NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the shader.
+        /// </summary>
+        /// <param name="sp"></param>
         [JSExternal]
         public void RemoveShader(IShaderProgramImp sp)
         {

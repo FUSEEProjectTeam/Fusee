@@ -8,22 +8,48 @@ namespace Fusee.Engine.Core
     public class PickResult
     {
         // Data
+        /// <summary>
+        /// The scene code container.
+        /// </summary>
         public SceneNodeContainer Node;
+        /// <summary>
+        /// The mesh.
+        /// </summary>
         public Mesh Mesh;
         public int Triangle;
+        /// <summary>
+        /// The u, v coordinates.
+        /// </summary>
         public float U, V;
+        /// <summary>
+        /// The model view.
+        /// </summary>
         public float4x4 Model;
+        /// <summary>
+        /// The view matrix
+        /// </summary>
         public float4x4 View;
+        /// <summary>
+        /// The projection matrix.
+        /// </summary>
         public float4x4 Projection;
 
         // Convenience
+        /// <summary>
+        /// Gets the triangles of the picked mesh.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
         public void GetTriangle(out float3 a, out float3 b, out float3 c)
         {
             a = Mesh.Vertices[Mesh.Triangles[Triangle + 0]];
             b = Mesh.Vertices[Mesh.Triangles[Triangle + 1]];
             c = Mesh.Vertices[Mesh.Triangles[Triangle + 2]];
         }
-
+        /// <summary>
+        /// Returns the center of the picked triangle.
+        /// </summary>
         public float3 TriangleCenter
         {
             get
@@ -33,7 +59,9 @@ namespace Fusee.Engine.Core
                 return (a + b + c) / 3;
             }
         }
-
+        /// <summary>
+        /// Returns the barycentric tiangel coordinates.
+        /// </summary>
         public float3 TriangleBarycentric
         {
             get
@@ -43,14 +71,21 @@ namespace Fusee.Engine.Core
                 return float3.Barycentric(a, b, c, U, V);
             }
         }
-
+        /// <summary>
+        /// Gets the normals at the picked triangle.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="c"></param>
         public void GetNormals(out float3 a, out float3 b, out float3 c)
         {
             a = Mesh.Normals[Mesh.Triangles[Triangle + 0]];
             b = Mesh.Normals[Mesh.Triangles[Triangle + 1]];
             c = Mesh.Normals[Mesh.Triangles[Triangle + 2]];
         }
-
+        /// <summary>
+        /// Returns the normal at the center of the picked triangle.
+        /// </summary>
         public float3 NormalCenter
         {
             get
@@ -60,7 +95,9 @@ namespace Fusee.Engine.Core
                 return (a + b + c) / 3;
             }
         }
-
+        /// <summary>
+        /// Returns the barycentric normal coordinates.
+        /// </summary>
         public float3 NormalBarycentric
         {
             get
@@ -70,7 +107,9 @@ namespace Fusee.Engine.Core
                 return float3.Barycentric(a, b, c, U, V);
             }
         }
-
+        /// <summary>
+        /// Returns the model position.
+        /// </summary>
         public float3 ModelPos
         {
             get
@@ -78,7 +117,9 @@ namespace Fusee.Engine.Core
                 return TriangleBarycentric;
             }
         }
-
+        /// <summary>
+        /// Returns the clipping position of the model.
+        /// </summary>
         public float3 ClipPos
         {
             get
@@ -86,7 +127,9 @@ namespace Fusee.Engine.Core
                 return ModelPos.TransformPerspective(Projection * View * Model);
             }
         }
-
+        /// <summary>
+        /// Returns the world position of the model.
+        /// </summary>
         public float3 WorldPos
         {
             get
@@ -94,7 +137,9 @@ namespace Fusee.Engine.Core
                 return ModelPos.TransformPerspective(Model);
             }
         }
-
+        /// <summary>
+        /// Returns the camera position.
+        /// </summary>
         public float3 CameraPos
         {
             get
@@ -104,7 +149,9 @@ namespace Fusee.Engine.Core
         }
     }
 
-
+    /// <summary>
+    /// Implements the scene picker.
+    /// </summary>
     public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
     {
         private CanvasTransformComponent _ctc;
