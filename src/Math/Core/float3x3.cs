@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 
 namespace Fusee.Math.Core
 {
@@ -223,11 +224,11 @@ namespace Fusee.Math.Core
         #region public void Transpose()
 
         /// <summary>
-        ///     Converts this instance into its transpose.
+        ///     Returns the transposes of this instance.
         /// </summary>
-        public void Transpose()
+        public float3x3 Transpose()
         {
-            this = Transpose(this);
+            return Transpose(this);
         }
 
         #region float[] ToArray()
@@ -293,31 +294,18 @@ namespace Fusee.Math.Core
             if (right == Identity) return left;
             if (left == Zero || right == Zero) return Zero;
 
-            float3x3 result;
-
-            Mult(ref left, ref right, out result);
+            float3x3 result = new float3x3(
+                left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
+                left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
+                left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33,
+                left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31,
+                left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32,
+                left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33,
+                left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31,
+                left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32,
+                left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33);
 
             return result;
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The left operand of the multiplication.</param>
-        /// <param name="right">The right operand of the multiplication.</param>
-        /// <param name="result">A new instance that is the result of the multiplication</param>
-        public static void Mult(ref float3x3 left, ref float3x3 right, out float3x3 result)
-        {
-            result = new float3x3(
-                left.M11*right.M11 + left.M12*right.M21 + left.M13*right.M31,
-                left.M11*right.M12 + left.M12*right.M22 + left.M13*right.M32,
-                left.M11*right.M13 + left.M12*right.M23 + left.M13*right.M33,
-                left.M21*right.M11 + left.M22*right.M21 + left.M23*right.M31,
-                left.M21*right.M12 + left.M22*right.M22 + left.M23*right.M32,
-                left.M21*right.M13 + left.M22*right.M23 + left.M23*right.M33,
-                left.M31*right.M11 + left.M32*right.M21 + left.M33*right.M31,
-                left.M31*right.M12 + left.M32*right.M22 + left.M33*right.M32,
-                left.M31*right.M13 + left.M32*right.M23 + left.M33*right.M33);
         }
 
         #endregion
@@ -334,17 +322,74 @@ namespace Fusee.Math.Core
             return new float3x3(mat.Column0, mat.Column1, mat.Column2);
         }
 
+        #endregion
+
+        #region Transform
 
         /// <summary>
-        ///     Calculate the transpose of the given matrix
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
-        /// <param name="mat">The matrix to transpose</param>
-        /// <param name="result">The result of the calculation</param>
-        public static void Transpose(ref float3x3 mat, out float3x3 result)
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float3" /> instance.</param>
+        /// <returns>A new <see cref="float3" /> instance containing the result.</returns>
+        public static float3 Transform(float3x3 matrix, float3 vector)
         {
-            result.Row0 = mat.Column0;
-            result.Row1 = mat.Column1;
-            result.Row2 = mat.Column2;
+            float3 result;
+
+            result = new float3((matrix.M11 * vector.x) + (matrix.M12 * vector.y) + (matrix.M13 * vector.z),
+                                (matrix.M21 * vector.x) + (matrix.M22 * vector.y) + (matrix.M23 * vector.z),
+                                (matrix.M31 * vector.x) + (matrix.M32 * vector.y) + (matrix.M33 * vector.z));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float3" /> instance.</param>
+        /// <returns>A new <see cref="float3" /> instance containing the result.</returns>
+        public static float3 Transform(float3 vector, float3x3 matrix)
+        {
+            float3 result;
+
+            result = new float3((matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z),
+                                (matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z),
+                                (matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z));
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float2" /> instance.</param>
+        /// <returns>A new <see cref="float2" /> instance containing the result.</returns>
+        public static float2 Transform(float3x3 matrix, float2 vector)
+        {
+            float2 result;
+
+            float3 temp = new float3(vector.x, vector.y, 1);
+            result = Transform(matrix, temp).xy;
+
+            return result;
+        }
+
+        /// <summary>
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float2" /> instance.</param>
+        /// <returns>A new <see cref="float2" /> instance containing the result.</returns>
+        public static float2 Transform(float2 vector, float3x3 matrix)
+        {
+            float2 result;
+
+            float3 temp = new float3(vector.x, vector.y, 1);
+            result = Transform(temp, matrix).xy;
+
+            return result;
         }
 
         #endregion
@@ -386,30 +431,48 @@ namespace Fusee.Math.Core
             return Mult(left, right);
         }
 
-        /*/// <summary>
+        /// <summary>
         ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="float4x4" /> instance.</param>
-        /// <param name="vector">A <see cref="float4" /> instance.</param>
-        /// <returns>A new <see cref="float4" /> instance containing the result.</returns>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float3" /> instance.</param>
+        /// <returns>A new <see cref="float3" /> instance containing the result.</returns>
         public static float3 operator *(float3x3 matrix, float3 vector)
         {
-            return new float3(matrix.Column0.x*vector.x + matrix.Column1.x*vector.y + matrix.Column2.x*vector.z,
-                matrix.Column0.y*vector.x + matrix.Column1.y*vector.y + matrix.Column2.y*vector.z,
-                matrix.Column0.z*vector.x + matrix.Column1.z*vector.y + matrix.Column2.z*vector.z);
-        }*/
+            return Transform(matrix, vector);
+        }
 
         /// <summary>
         ///     Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
         /// </summary>
-        /// <param name="matrix">A <see cref="float4x4" /> instance.</param>
-        /// <param name="vector">A <see cref="float4" /> instance.</param>
-        /// <returns>A new <see cref="float4" /> instance containing the result.</returns>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float3" /> instance.</param>
+        /// <returns>A new <see cref="float3" /> instance containing the result.</returns>
         public static float3 operator *(float3 vector, float3x3 matrix)
         {
-            return new float3(matrix.M11*vector.x + matrix.M21*vector.y + matrix.M31*vector.z,
-                matrix.M12*vector.x + matrix.M22*vector.y + matrix.M32*vector.z,
-                matrix.M13*vector.x + matrix.M23*vector.y + matrix.M33*vector.z);
+            return Transform(vector, matrix);
+        }
+
+        /// <summary>
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float2" /> instance.</param>
+        /// <returns>A new <see cref="float2" /> instance containing the result.</returns>
+        public static float2 operator *(float3x3 matrix, float2 vector)
+        {
+            return Transform(matrix, vector);
+        }
+
+        /// <summary>
+        ///     Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// </summary>
+        /// <param name="matrix">A <see cref="float3x3" /> instance.</param>
+        /// <param name="vector">A <see cref="float2" /> instance.</param>
+        /// <returns>A new <see cref="float2" /> instance containing the result.</returns>
+        public static float2 operator *(float2 vector, float3x3 matrix)
+        {
+            return Transform(vector, matrix);
         }
 
         /// <summary>

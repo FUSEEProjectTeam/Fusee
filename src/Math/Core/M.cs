@@ -610,16 +610,4 @@ namespace Fusee.Math.Core
 
         #endregion
     }
-
-    /// <summary>
-    /// DEPRECATED!!!! Use <see cref="M"/> instead.
-    /// </summary>
-    [Obsolete]
-    public static class MathHelper
-    {
-        /// <summary>
-        /// DEPRECATED!!!! Use <see cref="M.PiOver4"/> instead.
-        /// </summary>
-        [Obsolete] public const float PiOver4 = M.PiOver4;
-    }
 }
