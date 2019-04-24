@@ -16,7 +16,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class WindowsSpaceMouseDriverImp : Form, IInputDriverImp
     {
         GameWindow _gameWindow;
-        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;    
+        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
         WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDriverImp"/> class.
@@ -136,9 +136,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
-    public class WindowsSpaceMouseInputDeviceImp : Form ,IInputDeviceImp
+    public class WindowsSpaceMouseInputDeviceImp : Form, IInputDeviceImp
     {
-
+        
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
         public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
@@ -167,8 +167,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly int GWLP_WNDPROC = -4;
 
 
-        private UInt16 LOWORD(UInt32 wParam) => unchecked ((UInt16) wParam);
-        private UInt16 HIWORD(UInt32 wParam) => unchecked ((UInt16)((wParam >> 16) & 0xFFFF));
+        private UInt16 LOWORD(UInt32 wParam) => unchecked((UInt16)wParam);
+        private UInt16 HIWORD(UInt32 wParam) => unchecked((UInt16)((wParam >> 16) & 0xFFFF));
 
         private UInt16 GET_X_LPARAM(UInt32 lp) => LOWORD(lp);
         private UInt16 GET_Y_LPARAM(UInt32 lp) => HIWORD(lp);
@@ -213,9 +213,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
             // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" SMI handling is first supported.
-            if (os.Platform == PlatformID.Win32NT 
-                && (    os.Version.Major > 6
-                     || os.Version.Major == 6 && os.Version.Minor >= 2) 
+            if (os.Platform == PlatformID.Win32NT
+                && (os.Version.Major > 6
+                     || os.Version.Major == 6 && os.Version.Minor >= 2)
                 )
             {
                 //    EnableMouseInPointer(false);
@@ -225,7 +225,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 //        _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
                 //    }
             }
-    }
+        }
 
         private float GetWindowWidth()
         {
@@ -247,6 +247,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow, EventHandler<MotionEventArgs> eventListener)
         {
+
+            
             _gameWindow = gameWindow;
             SpaceMouseMoveEvent += eventListener;
             _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
@@ -256,6 +258,91 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _current3DConnexionDevice.Motion += HandleMotion;
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
+            _TX = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Translation X",
+                    Id = (int)SpaceMouseAxis.TX,
+                    Direction = AxisDirection.X,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+            _TY = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Translation Y",
+                    Id = (int)SpaceMouseAxis.TY,
+                    Direction = AxisDirection.Y,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+            _TZ = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Translation Z",
+                    Id = (int)SpaceMouseAxis.TZ,
+                    Direction = AxisDirection.Z,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+            _RX = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Rotation Y",
+                    Id = (int)SpaceMouseAxis.RX,
+                    Direction = AxisDirection.Y,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+            _RY = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Rotation X",
+                    Id = (int)SpaceMouseAxis.RY,
+                    Direction = AxisDirection.X,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+            _RZ = new AxisImpDescription
+            {
+                AxisDesc = new AxisDescription
+                {
+                    Name = "Rotation Z",
+                    Id = (int)SpaceMouseAxis.RZ,
+                    Direction = AxisDirection.Z,
+                    Nature = AxisNature.Position,
+                    Bounded = AxisBoundedType.Constant,
+                    MinValueOrAxis = -1,
+                    MaxValueOrAxis = 1
+                },
+                PollAxis = false
+            };
+
             ConnectWindowsEvents();
         }
 
@@ -263,9 +350,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
         }
+        public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
 
         
+                 
+    
 
+
+         
         /// <summary>
         /// Returns the name of the device
         /// </summary>
@@ -300,90 +392,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal X",
-                        Id = 0,
-                        Direction = AxisDirection.X,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal Y",
-                        Id = 1,
-                        Direction = AxisDirection.Y,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal Z",
-                        Id = 2,
-                        Direction = AxisDirection.Z,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation Y",
-                        Id = 3,
-                        Direction = AxisDirection.Y,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation X",
-                        Id = 4,
-                        Direction = AxisDirection.X,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation Z",
-                        Id = 5,
-                        Direction = AxisDirection.Z,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = false
-                };
+                yield return _TX;
+                yield return _TY;
+                yield return _TZ;
+                yield return _RX;
+                yield return _RY;
+                yield return _RZ;
             }
         }
 
@@ -418,6 +432,51 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
+
+
+        /// <summary>
+        /// Declares the axes a spacemouse exposes
+        /// </summary>
+        public enum SpaceMouseAxis
+        {
+            TX = 0,
+            TY = 1,
+            TZ = 2,
+            RX = 3,
+            RY = 4,
+            RZ = 5
+        }
+
+
+        public void OnGameWinMouseMove(object sender, SpaceMouseAxis args)
+        {
+            AxisDescription AxisDesc;
+            switch (args)
+            {
+                case SpaceMouseAxis.TX:
+                    AxisDesc = _TX.AxisDesc;
+                    break;
+                case SpaceMouseAxis.TY:
+                    AxisDesc = _TY.AxisDesc;
+                    break;
+                case SpaceMouseAxis.TZ:
+                    AxisDesc = _TZ.AxisDesc;
+                    break;
+                case SpaceMouseAxis.RX:
+                    AxisDesc = _RX.AxisDesc;
+                    break;
+                case SpaceMouseAxis.RY:
+                    AxisDesc = _RY.AxisDesc;
+                    break;
+                case SpaceMouseAxis.RZ:
+                    AxisDesc = _RZ.AxisDesc;
+                    break;
+                default:
+                    return;
+
+            }
+        }
+
         /// <summary>
         /// This device does not implement any Buttons
         /// </summary>
@@ -429,7 +488,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="iAxisId"></param>
         /// <returns></returns>
         public float GetAxis(int iAxisId)
-        {            
+        {
             throw new InvalidOperationException("Device has no axis to be polled.");
         }
 
@@ -444,7 +503,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             throw new NotImplementedException();
         }
 #pragma warning restore 0067
-    
-    }
 
+    }
+    
 }

@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         /// <value>
         /// The SixDOF device´s deflection from its resting position in x direction.
         /// </value>
-        public float X => AxisValueChanged += event;
+                                                        //public float X => AxisValueChanged += event;
 
         /// <summary>
         /// Gets the y value.
