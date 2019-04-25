@@ -548,7 +548,7 @@ namespace Fusee.Math.Core
         }
 
         //TODO: MIGRATE TO QUATERNION
-
+        /*
         /// <summary>
         /// Transforms a vector by a quaternion rotation.
         /// </summary>
@@ -564,6 +564,7 @@ namespace Fusee.Math.Core
 
             return new float4(v.x, v.y, v.z, v.w);
         }
+        */
 
         #endregion
 

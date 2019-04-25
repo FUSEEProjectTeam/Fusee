@@ -1,69 +1,148 @@
 using Xunit;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Bson;
+using Xunit.Sdk;
+using Assert = Xunit.Assert;
 
 namespace Fusee.Math.Core
 {
     public class QuaternionTest
     {
         #region Fields
+
         [Fact]
         public void Identity_IsIdentity()
         {
-            var actual = Quaternion.Identity;
+            var expected = new Quaternion(0, 0, 0, 1);
 
-            Assert.Equal(new Quaternion(0, 0, 0, 1), actual);
+            Assert.Equal(expected, Quaternion.Identity);
         }
+
+        #endregion
+
+        #region Constructors
+
+        [Fact]
+        public void Constructor_Float3Single()
+        {
+            var actual = new Quaternion(new float3(1, 0, 0), 1);
+
+            Assert.Equal(new Quaternion(1, 0, 0, 1), actual);
+        }
+
+        [Fact]
+        public void Constructor_Singles()
+        {
+            var actual = new Quaternion(1,0,0, 1);
+
+            Assert.Equal(new Quaternion(new float3(1,0,0), 1), actual);
+        }
+
         #endregion
 
         #region Properties
+
         [Fact]
-        public void Length_IsOne()
+        public void Get_XYZ()
         {
-            var quat = new Quaternion(0, 0, 0, 1);
+            var quat = new Quaternion(1, 2, 3, 4);
 
-            var actual = quat.Length;
-
-            Assert.Equal(1, actual);
+            Assert.Equal(new float3(1,2,3), quat.xyz);
         }
 
         [Fact]
-        public void LengthSquared_IsTwo()
+        public void Get_X()
         {
-            var quat = new Quaternion(1, 0, 0, 1);
+            var quat = new Quaternion(1, 2, 3, 4);
 
-            var actual = quat.LengthSquared;
+            Assert.Equal(1, quat.x);
+        }
+
+        [Fact]
+        public void Get_Y()
+        {
+            var quat = new Quaternion(1, 2, 3, 4);
+
+            Assert.Equal(2, quat.y);
+        }
+
+        [Fact]
+        public void Get_Z()
+        {
+            var quat = new Quaternion(1, 2, 3, 4);
+
+            Assert.Equal(3, quat.z);
+        }
+
+        [Fact]
+        public void Get_W()
+        {
+            var quat = new Quaternion(1, 2, 3, 4);
+
+            Assert.Equal(4, quat.w);
+        }
+
+        [Fact]
+        public void Length_Is2()
+        {
+            var quat = new Quaternion(1, 1, 1, 1);
+
+            var actual = quat.Length;
 
             Assert.Equal(2, actual);
         }
 
         [Fact]
-        public void XYZ_IsVector()
+        public void LengthSquared_Is4()
         {
-            var quat = new Quaternion(1, 2, 3, 1);
+            var quat = new Quaternion(1, 1, 1, 1);
 
-            var actual = quat.xyz;
+            var actual = quat.LengthSquared;
 
-            Assert.Equal(new float3(1, 2, 3), actual);
+            Assert.Equal(4, actual);
         }
 
-        [Fact]
-        public void W_IsOne()
-        {
-            var quat = new Quaternion(0, 0, 0, 1);
-
-            var actual = quat.w;
-
-            Assert.Equal(1, actual);
-        }
         #endregion
 
         #region Operators
+
         [Theory]
         [MemberData(nameof(GetAddition))]
-        public void Addition_TwoQuaternions(Quaternion a, Quaternion b, Quaternion expected)
+        public void Operator_Addition(Quaternion left, Quaternion right, Quaternion expected)
         {
-            var actual = a + b;
+            var actual = left + right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Operator_Subtraction(Quaternion left, Quaternion right, Quaternion expected)
+        {
+            var actual = left - right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiplicationQuaterions))]
+        public void Operator_Multiplication_Quaternions(Quaternion left, Quaternion right, Quaternion expected)
+        {
+            var actual = left * right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiplicationScalar))]
+        public void Operator_Multiplication_Scalar(Quaternion quat, float scale, Quaternion expected)
+        {
+            var actual = quat * scale;
+
+            Assert.Equal(expected, actual);
+
+            actual = scale * quat;
 
             Assert.Equal(expected, actual);
         }
@@ -71,8 +150,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Equality_IsEqual()
         {
-            var a = new Quaternion(0, 0, 0, 1);
-            var b = new Quaternion(0, 0, 0, 1);
+            var a = new Quaternion(1, 1, 1, 1);
+            var b = new Quaternion(1, 1, 1, 1);
 
             Assert.True(a == b);
         }
@@ -80,8 +159,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Equality_IsInequal()
         {
-            var a = new Quaternion(0, 0, 0, 1);
-            var b = new Quaternion(1, 0, 0, 1);
+            var a = new Quaternion(1, 1, 1, 1);
+            var b = new Quaternion(0, 0, 0, 0);
 
             Assert.False(a == b);
         }
@@ -89,8 +168,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Inequality_IsEqual()
         {
-            var a = new Quaternion(0, 0, 0, 1);
-            var b = new Quaternion(0, 0, 0, 1);
+            var a = new Quaternion(1, 1, 1, 1);
+            var b = new Quaternion(1, 1, 1, 1);
 
             Assert.False(a != b);
         }
@@ -98,178 +177,170 @@ namespace Fusee.Math.Core
         [Fact]
         public void Inequality_IsInequal()
         {
-            var a = new Quaternion(0, 0, 0, 1);
-            var b = new Quaternion(1, 0, 0, 1);
+            var a = new Quaternion(1, 1, 1, 1);
+            var b = new Quaternion(0, 0, 0, 0);
 
             Assert.True(a != b);
         }
 
-        [Fact]
-        public void Multiply_QuaternionScalar()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-
-            var actual = quat * 2;
-
-            Assert.Equal(new Quaternion(2, 0, 0, 2), actual);
-        }
-
-        [Fact]
-        public void Multiply_ScalarQuaternion()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-
-            var actual = 2 * quat;
-
-            Assert.Equal(new Quaternion(2, 0, 0, 2), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultiplication))]
-        public void Multiply_TwoQuaternions(Quaternion a, Quaternion b, Quaternion expected)
-        {
-            var actual = a * b;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Subtraction_IsZero()
-        {
-            var quat = new Quaternion(1, 1, 1, 1);
-
-            var actual = quat - quat;
-
-            Assert.Equal(new Quaternion(0, 0, 0, 0), actual);
-        }
         #endregion
 
         #region Methods
 
         #region Arithmetic Functions
+
         [Theory]
         [MemberData(nameof(GetAddition))]
-        public void Add_ReturnMatrix(Quaternion a, Quaternion b, Quaternion expected)
+        public void Add_TwoQuaternions(Quaternion left, Quaternion right, Quaternion expected)
         {
-            Quaternion actual;
-
-            actual = Quaternion.Add(a, b);
+            var actual = Quaternion.Add(left, right);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetAddition))]
-        public void Add_ToMatrix(Quaternion a, Quaternion b, Quaternion expected)
+        [MemberData(nameof(GetSubtraction))]
+        public void Sub_TwoQuaternions(Quaternion left, Quaternion right, Quaternion expected)
         {
-            Quaternion actual;
-
-            Quaternion.Add(ref a, ref b, out actual);
+            var actual = Quaternion.Sub(left, right);
 
             Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Sub_IsZero_ReturnQuaternion()
+        [Theory]
+        [MemberData(nameof(GetMultiplicationQuaterions))]
+        public void Multiply_TwoQuaternions(Quaternion left, Quaternion right, Quaternion expected)
         {
-            var quat = new Quaternion(1, 1, 1, 1);
+            var actual = Quaternion.Multiply(left, right);
 
-            var actual = Quaternion.Sub(quat, quat);
-
-            Assert.Equal(new Quaternion(0, 0, 0, 0), actual);
+            Assert.Equal(expected, actual);
         }
 
-        [Fact]
-        public void Sub_IsZero_ToQuaternion()
+        [Theory]
+        [MemberData(nameof(GetMultiplicationScalar))]
+        public void Multiply_QuaternionScalar(Quaternion quat, float scale, Quaternion expected)
         {
-            var quat = new Quaternion(1, 1, 1, 1);
-            Quaternion actual;
+            var actual = Quaternion.Multiply(quat, scale);
 
-            Quaternion.Sub(ref quat, ref quat, out actual);
-
-            Assert.Equal(new Quaternion(0, 0, 0, 0), actual);
+            Assert.Equal(expected, actual);
         }
+
         #endregion
 
         #region Conjugate
-        [Fact]
-        public void Conjugate_Direct()
-        {
-            var actual = new Quaternion(1, 0, 0, 1);
-
-            actual.Conjugate();
-
-            Assert.Equal(new Quaternion(-1, 0, 0, 1), actual);
-        }
 
         [Fact]
-        public void Conjugate_ReturnMatrix()
+        public void Conjugate_Static()
         {
-            var quat = new Quaternion(1, 0, 0, 1);
+            var quat = new Quaternion(1, 1, 1, 2);
 
             var actual = Quaternion.Conjugate(quat);
 
-            Assert.Equal(new Quaternion(-1, 0, 0, 1), actual);
+            Assert.Equal(new Quaternion(-1, -1, -1, 2), actual);
         }
 
         [Fact]
-        public void Conjugate_ToMatrix()
+        public void Conjugate_Instance()
         {
-            var quat = new Quaternion(1, 0, 0, 1);
-            Quaternion actual;
+            var quat = new Quaternion(1, 1, 1, 2);
 
-            Quaternion.Conjugate(ref quat, out actual);
+            var actual = quat.Conjugate();
 
-            Assert.Equal(new Quaternion(-1, 0, 0, 1), actual);
+            Assert.Equal(new Quaternion(-1, -1, -1, 2), actual);
         }
+
         #endregion
 
-        #region Conversion
-        [Theory]
-        [MemberData(nameof(GetEuler))]
-        public void EulerToQuaternion_ReturnQuaternion(float3 angle, bool inDegrees, Quaternion expected)
+        #region Invert
+
+        [Fact]
+        public void Invert_Static()
         {
-            Quaternion actual;
+            var quat = new Quaternion(1, 1, 1, 1);
 
-            actual = Quaternion.EulerToQuaternion(angle, inDegrees);
+            var actual = Quaternion.Invert(quat);
 
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-            Assert.Equal(expected.w, actual.w, 3);
+            Assert.Equal(new Quaternion(-0.25f, -0.25f, -0.25f, 0.25f), actual);
         }
+
+        [Fact]
+        public void Invert_Instance()
+        {
+            var quat = new Quaternion(1, 1, 1, 1);
+
+            var actual = quat.Invert();
+
+            Assert.Equal(new Quaternion(-0.25f, -0.25f, -0.25f, 0.25f), actual);
+        }
+
+        #endregion
+
+        #region Normalize
+
+        [Fact]
+        public void Normalize_Static()
+        {
+            var quat = new Quaternion(1, 1, 1, 1);
+
+            var actual = Quaternion.Normalize(quat);
+
+            Assert.Equal(new Quaternion(0.5f, 0.5f, 0.5f, 0.5f), actual);
+        }
+
+        [Fact]
+        public void Normalize_Instance()
+        {
+            var quat = new Quaternion(1, 1, 1, 1);
+
+            var actual = quat.Normalize();
+
+            Assert.Equal(new Quaternion(0.5f, 0.5f, 0.5f, 0.5f), actual);
+        }
+
+        #endregion
+
+        #region FromAxisAngle
 
         [Theory]
         [MemberData(nameof(GetAxisAngle))]
-        public void FromAxisAngle_ReturnQuaternion(float3 axis, float angle, Quaternion expected)
+        public void FromAxisAngle_MainAxes(float3 axis, float angle, Quaternion expected)
         {
-            Quaternion actual;
+            var actual = Quaternion.FromAxisAngle(axis, angle);
 
-            actual = Quaternion.FromAxisAngle(axis, angle);
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-            Assert.Equal(expected.w, actual.w, 3);
+            Assert.Equal(expected, actual);
         }
 
-        //TODO: LookRotation
+        #endregion
+
+        #region Slerp
+
         [Theory]
-        [MemberData(nameof(GetLookRotation))]
-        public void LookRotation_ReturnQuaternion(float3 lookAt, float3 upDirection, Quaternion expected)
+        [MemberData(nameof(GetSlerp))]
+        public void Slerp_IsHalf(Quaternion a, Quaternion b, float blend, Quaternion expected)
         {
-            var actual = Quaternion.LookRotation(lookAt, upDirection);
+            var actual = Quaternion.Slerp(a, b, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Conversion
+
+        [Theory]
+        [MemberData(nameof(GetEulerQuaternion))]
+        public void EulerToQuaternion_MainAxes(float3 euler, bool inDegrees, Quaternion expected)
+        {
+            var actual = Quaternion.EulerToQuaternion(euler, inDegrees);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetEuler))]
-        public void QuaternionToEuler_ReturnEuler(float3 expected, bool inDegrees, Quaternion quat)
+        [MemberData(nameof(GetEulerQuaternion))]
+        public void QuaternionToEuler_MainAxes(float3 expected, bool inDegrees, Quaternion quat)
         {
-            float3 actual;
-
-            actual = Quaternion.QuaternionToEuler(quat, inDegrees);
+            var actual = Quaternion.QuaternionToEuler(quat, inDegrees);
 
             Assert.Equal(expected.x, actual.x, 4);
             Assert.Equal(expected.y, actual.y, 4);
@@ -277,283 +348,131 @@ namespace Fusee.Math.Core
         }
 
         [Theory]
-        [MemberData(nameof(GetMatrix))]
-        public void QuaternionToMatrix_ReturnMatrix(Quaternion quat, float4x4 expected)
+        [MemberData(nameof(GetMatrixQuaternion))]
+        public void QuaternionToMatrix_MainRotations(Quaternion quat, float4x4 expected)
         {
-            float4x4 actual;
-
-            actual = Quaternion.QuaternionToMatrix(quat);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetAxisAngle))]
-        public void ToAxisAngle_ReturnAxisAngle(float3 expectedVec, float expectedAngle, Quaternion quat)
-        {
-            float3 actualVec;
-            float actualAngle;
-
-            float4 actual = quat.ToAxisAngle();
-            actualVec = actual.xyz;
-            actualAngle = actual.w;
-
-            Assert.Equal(expectedVec.x, actualVec.x, 3);
-            Assert.Equal(expectedVec.y, actualVec.y, 3);
-            Assert.Equal(expectedVec.z, actualVec.z, 3);
-            Assert.Equal(expectedAngle, actualAngle, 3);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetAxisAngle))]
-        public void ToAxisAngle_ToAxisAngle(float3 expectedVec, float expectedAngle, Quaternion quat)
-        {
-            float3 actualVec;
-            float actualAngle;
-
-            quat.ToAxisAngle(out actualVec, out actualAngle);
-
-            Assert.Equal(expectedVec.x, actualVec.x, 3);
-            Assert.Equal(expectedVec.y, actualVec.y, 3);
-            Assert.Equal(expectedVec.z, actualVec.z, 3);
-            Assert.Equal(expectedAngle, actualAngle, 3);
-        }
-        #endregion
-
-        #region Invert
-        [Fact]
-        public void Invert_ReturnQuaternion()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-
-            var actual = Quaternion.Invert(quat);
-
-            Assert.Equal(new Quaternion(-0.5f, 0, 0, 0.5f), actual);
-        }
-
-        [Fact]
-        public void Invert_ToQuaternion()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-            Quaternion actual;
-
-            Quaternion.Invert(ref quat, out actual);
-
-            Assert.Equal(new Quaternion(-0.5f, 0, 0, 0.5f), actual);
-        }
-        #endregion
-
-        #region Multiply
-        [Theory]
-        [MemberData(nameof(GetMultiplication))]
-        public void Multiply_TwoQuaternions_ReturnQuaternion(Quaternion a, Quaternion b, Quaternion expected)
-        {
-            Quaternion actual;
-            
-            actual = Quaternion.Multiply(a, b);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultiplication))]
-        public void Multiply_TwoQuaternions_ToQuaternion(Quaternion a, Quaternion b, Quaternion expected)
-        {
-            Quaternion actual;
-
-            Quaternion.Multiply(ref a, ref b, out actual);
+            var actual = Quaternion.QuaternionToMatrix(quat);
 
             Assert.Equal(expected, actual);
         }
 
         [Fact]
-        public void Multiply_QuaternionScalar_ReturnQuaternion()
+        public void LookRotation_IsRotation()
         {
-            var quat = new Quaternion(1, 0, 0, 1);
-            Quaternion actual;
+            var lookAt = new float3(1, 0, 0);
+            var upDirection = new float3(0, 1, 0);
 
-            actual = Quaternion.Multiply(quat, 2);
+            var actual = Quaternion.LookRotation(lookAt, upDirection);
 
-            Assert.Equal(new Quaternion(2, 0, 0, 2), actual);
+            Assert.Equal(new Quaternion(0,0.7071068f,0,0.7071068f), actual);
         }
 
         [Fact]
-        public void Multiply_QuaternionScalar_ToQuaternion()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-            Quaternion actual;
-
-            Quaternion.Multiply(ref quat, 2, out actual);
-
-            Assert.Equal(new Quaternion(2, 0, 0, 2), actual);
-        }
-        #endregion
-
-        #region Normalize
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void Normalize_Direct(Quaternion quat, Quaternion expected)
-        {
-            quat.Normalize();
-
-            var actual = quat;
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-            Assert.Equal(expected.w, actual.w, 3);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void Normalize_ReturnMatrix(Quaternion quat, Quaternion expected)
-        {
-            Quaternion actual;
-
-            actual = Quaternion.Normalize(quat);
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-            Assert.Equal(expected.w, actual.w, 3);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void Normalize_ToMatrix(Quaternion quat, Quaternion expected)
-        {
-            Quaternion actual;
-
-            Quaternion.Normalize(ref quat, out actual);
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-            Assert.Equal(expected.w, actual.w, 3);
-        }
-        #endregion
-
-        #region Slerp
-        [Theory]
-        [MemberData(nameof(GetSlerp))]
-        public void Slerp_ReturnQuaternion(Quaternion quat1, Quaternion quat2, float blend, Quaternion expected)
-        {
-            quat1.Normalize();
-            quat2.Normalize();
-
-            var actual = Quaternion.Slerp(quat1, quat2, blend);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Other
-        [Fact]
-        public void CopySign_IsMinusOne()
+        public void CopySign_IsSign()
         {
             var a = 1;
             var b = -2;
 
             var actual = Quaternion.CopySign(a, b);
 
-            Assert.Equal(-a, actual);
+            Assert.Equal(-1, actual);
         }
+
+        #endregion
+
+        #region FromToRotation
 
         [Fact]
-        public void Equals_IsEqual()
+        public void FromToRotation_TestShortest()
         {
-            var a = new Quaternion(1, 0, 0, 1);
-            var b = new Quaternion(1, 0, 0, 1);
+            var from = new float3(0, 0, 0);
+            var to = new float3(90, 0, 0);
 
-            Assert.True(a.Equals(b));
+            var actual = Quaternion.FromToRotation(from, to);
+
+            Assert.Equal(new Quaternion(0,0,0,0), actual);
         }
 
-        [Fact]
-        public void Equals_IsInequal()
-        {
-            var a = new Quaternion(1, 0, 0, 1);
-            var b = new Quaternion(0, 0, 0, 1);
-
-            Assert.False(a.Equals(b));
-        }
-
-        //TODO: GetHashCodes
-
-        //TODO: GetType
-
-        [Fact]
-        public void ToString_IsString()
-        {
-            var quat = new Quaternion(1, 0, 0, 1);
-
-            var actual = quat.ToString();
-
-            Assert.Equal("V: (1, 0, 0), w: 1", actual);
-        }
         #endregion
 
         #endregion
 
-        #region IEnumberables
+        #region IEnumerables
+
         public static IEnumerable<object[]> GetAddition()
         {
-            var quat1 = new Quaternion(1, 1, 1, 0);
-            var quat2 = new Quaternion(1, 1, 1, 1);
+            var one = new Quaternion(1, 1, 1, 1);
+            var zero = new Quaternion(0, 0, 0, 0);
 
-            yield return new object[] { quat1, Quaternion.Identity, quat2 };
-            yield return new object[] { Quaternion.Identity, quat1, quat2 };
+            yield return new object[] {one, zero, one};
+            yield return new object[] {zero, one, one};
+            yield return new object[] {zero, zero, zero};
+            yield return new object[] {one, one, new Quaternion(2, 2, 2, 2)};
         }
 
-        public static IEnumerable<object[]> GetMultiplication()
+        public static IEnumerable<object[]> GetSubtraction()
         {
-            var a = new Quaternion(1, 1, 1, 1);
-            var b = new Quaternion(1, 0, 0, 1);
+            var one = new Quaternion(1, 1, 1, 1);
+            var zero = new Quaternion(0, 0, 0, 0);
 
-            yield return new object[] { a, Quaternion.Identity, a };
-            yield return new object[] { Quaternion.Identity, a, a };
+            yield return new object[] { one, zero, one };
+            yield return new object[] {zero, one, new Quaternion(-1, -1, -1, -1)};
+            yield return new object[] { zero, zero, zero };
+            yield return new object[] {one, one, zero};
         }
 
-        public static IEnumerable<object[]> GetEuler()
+        public static IEnumerable<object[]> GetMultiplicationQuaterions()
         {
-            yield return new object[] { new float3(0, 0, 0), false, new Quaternion(0, 0, 0, 1) };
-            yield return new object[] { new float3(90, 0, 0), true, new Quaternion(0.707f, 0, 0, 0.707f) };
-            yield return new object[] { new float3(0, 90, 0), true, new Quaternion(0, 0.707f, 0, 0.707f) };
-            yield return new object[] { new float3(0, 0, 90), true, new Quaternion(0, 0, 0.707f, 0.707f) };
+            var one = new Quaternion(1, 1, 1, 1);
+            var zero = new Quaternion(0, 0, 0, 0);
+
+            yield return new object[] {one, one, new Quaternion(2, 2, 2, -2)};
+            yield return new object[] {one, zero, zero};
+            yield return new object[] {zero, one, zero};
+        }
+
+        public static IEnumerable<object[]> GetMultiplicationScalar()
+        {
+            yield return new object[] {new Quaternion(1, 1, 1, 1), 2, new Quaternion(2, 2, 2, 2)};
+            yield return new object[] {new Quaternion(0, 0, 0, 0), 4, new Quaternion(0, 0, 0, 0)};
         }
 
         public static IEnumerable<object[]> GetAxisAngle()
         {
-            yield return new object[] { new float3(1, 0, 0), 0, new Quaternion(0, 0, 0, 1) };
-            yield return new object[] { new float3(1, 0, 0), 1.5708f, new Quaternion(0.707f, 0, 0, 0.707f) };
-            yield return new object[] { new float3(0, 1, 0), 1.5708f, new Quaternion(0, 0.707f, 0, 0.707f) };
-            yield return new object[] { new float3(0, 0, 1), 1.5708f, new Quaternion(0, 0, 0.707f, 0.707f) };
-        }
-
-        public static IEnumerable<object[]> GetNormalize()
-        {
-            yield return new object[] { new Quaternion(1, 0, 0, 1), new Quaternion(0.707f, 0, 0, 0.707f) };
-            yield return new object[] { new Quaternion(0, 0, 0, 1), new Quaternion(0, 0, 0, 1) };
-            yield return new object[] { new Quaternion(1, 1, 1, 1), new Quaternion(0.5f, 0.5f, 0.5f, 0.5f) };
-        }
-
-        public static IEnumerable<object[]> GetMatrix()
-        {
-            yield return new object[] { new Quaternion(1, 0, 0, 1), new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1) };
-            yield return new object[] { new Quaternion(0, 1, 0, 1), new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1) };
-            yield return new object[] { new Quaternion(0, 0, 1, 1), new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1) };
+            yield return new object[] {new float3(1, 0, 0), M.DegreesToRadians(90), new Quaternion(0.7071068f, 0, 0, 0.7071068f)};
+            yield return new object[] {new float3(0, 1, 0), M.DegreesToRadians(90), new Quaternion(0, 0.7071068f, 0, 0.7071068f)};
+            yield return new object[] {new float3(0, 0, 1), M.DegreesToRadians(90), new Quaternion(0, 0, 0.7071068f, 0.7071068f)};
         }
 
         public static IEnumerable<object[]> GetSlerp()
         {
-            yield return new object[] { new Quaternion(0, 0, 0, 1), new Quaternion(1, 0, 0, 1), 0.5f, new Quaternion(0.3826835f, 0, 0, 0.9238796f) };
-            yield return new object[] { new Quaternion(1, 0, 0, 1), new Quaternion(1, 0, 0, 1), 0.5f, new Quaternion(0.7071068f, 0, 0, 0.7071068f) };
+            var zero = new Quaternion(0, 0, 0, 0);
+            var one = new Quaternion(1, 1, 1, 1);
+
+            yield return new object[] {one, zero, 0.5f, one};
+            yield return new object[] {zero, one, 0.5f, one};
+            yield return new object[] {zero, zero, 0.5f, new Quaternion(0, 0, 0, 1)};
+            yield return new object[] {new Quaternion(0.7071068f, 0, 0, 0.7071068f), new Quaternion(0, 0.7071068f, 0, 0.7071068f), 0.5f, new Quaternion(0.4082483f, 0.4082483f, 0, 0.8164967f)};
         }
 
-        public static IEnumerable<object[]> GetLookRotation()
+        public static IEnumerable<object[]> GetEulerQuaternion()
         {
-            yield return new object[] { new float3(0, 0, 0), new float3(0, 1, 0), new Quaternion(0, 0, 0, 0.7071068f) };
-            yield return new object[] { new float3(1, 0, 0), new float3(0, 1, 0), new Quaternion(0, 0.7071068f, 0, 0.7071068f) };
+            yield return new object[] {new float3(90, 0, 0), true, new Quaternion(0.7071068f, 0, 0, 0.7071068f)};
+            yield return new object[] {new float3(0, 90, 0), true, new Quaternion(0, 0.7071068f, 0, 0.7071068f)};
+            yield return new object[] {new float3(0, 0, 90), true, new Quaternion(0, 0, 0.7071068f, 0.7071068f)};
         }
+
+        public static IEnumerable<object[]> GetMatrixQuaternion()
+        {
+            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
+            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
+            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
+
+            yield return new object[] {new Quaternion(0.7071068f, 0, 0, 0.7071068f), xRot};
+            yield return new object[] {new Quaternion(0, 0.7071068f, 0, 0.7071068f), yRot};
+            yield return new object[] {new Quaternion(0, 0, 0.7071068f, 0.7071068f), zRot};
+        }
+
         #endregion
     }
 }

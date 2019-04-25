@@ -17,7 +17,7 @@ namespace Fusee.Jometri
         /// <returns></returns>
         internal static float3 Reduce2D(this float3 vertPos, float3 normal)
         {
-            normal.Normalize(); //New z axis
+            normal = normal.Normalize(); //New z axis
 
             //If the normal equals the z axis of the world coodrinate system: reflect the point on the y axis.
             if (normal == float3.UnitZ)
@@ -34,9 +34,9 @@ namespace Fusee.Jometri
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
 
-            v2.Normalize();
+            v2 = v2.Normalize();
             var v3 = float3.Cross(normal, v2); //new y axis
-            v3.Normalize();
+            v3 = v3.Normalize();
 
             //Calculate change-of-basis matrix (orthonormal matrix).
             var row1 = new float3(v3.x, v2.x, normal.x);
@@ -48,7 +48,7 @@ namespace Fusee.Jometri
 
             //In an orthonomal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
             var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
-            transposeMat.Transpose();
+            transposeMat = transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;
 
@@ -83,7 +83,7 @@ namespace Fusee.Jometri
                 normal.z += (vCur.x - vNext.x) * (vCur.y + vNext.y);
             }
             normal = normal * -1;
-            normal.Normalize();
+            normal = normal.Normalize();
 
             return normal;
 

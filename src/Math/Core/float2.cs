@@ -47,39 +47,6 @@ namespace Fusee.Math.Core
             this.y = y;
         }
 
-        /// <summary>
-        /// Constructs a new float2 from the given float2.
-        /// </summary>
-        /// <param name="v">The float2 to copy components from.</param>
-        [Obsolete]
-        public float2(float2 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new float2 from the given float3.
-        /// </summary>
-        /// <param name="v">The float3 to copy components from. Z is discarded.</param>
-        [Obsolete]
-        public float2(float3 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new float2 from the given float4.
-        /// </summary>
-        /// <param name="v">The float4 to copy components from. Z and W are discarded.</param>
-        [Obsolete]
-        public float2(float4 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
         #endregion
 
         #region Public Members

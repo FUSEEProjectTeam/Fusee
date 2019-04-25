@@ -465,7 +465,7 @@ namespace Fusee.Math.Core
             var result = Identity;
 
             angle *= 0.5f;
-            axis.Normalize();
+            axis = axis.Normalize();
             result.xyz = axis*System.Math.Sin(angle);
             result.w = System.Math.Cos(angle);
 

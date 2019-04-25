@@ -303,6 +303,7 @@ namespace Fusee.Math.Core
         #endregion
 
         #region CreateFromAxisAngle
+
         [Theory]
         [MemberData(nameof(GetAxisAngle))]
         public void CreateFromAxisAngle_ReturnMatrix(float3 axis, float angle, float4x4 expected)
@@ -327,31 +328,6 @@ namespace Fusee.Math.Core
             Assert.Equal(expected.M44, actual.M44, 5);
         }
 
-        [Theory]
-        [MemberData(nameof(GetAxisAngle))]
-        public void CreateFromAxisAngle_ToMatrix(float3 axis, float angle, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateFromAxisAngle(axis, angle, out actual);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
         #endregion
 
         #region CreateOrthographic
@@ -362,32 +338,6 @@ namespace Fusee.Math.Core
             float4x4 actual;
 
             actual = float4x4.CreateOrthographic(width, height, zNear, zFar);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetOrthographic))]
-        public void CreateOrthographic_ToMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateOrthographic(width, height, zNear, zFar, out actual);
 
             Assert.Equal(expected.M11, actual.M11, 5);
             Assert.Equal(expected.M12, actual.M12, 5);
@@ -435,37 +385,9 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetOrthographic))]
-        public void CreateOrthographicOffCenter_ToMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar, out actual);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetOrthographic))]
         public void CreateOrthographicOffCenterRH_ReturnMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
         {
-            float4x4 actual;
-
-            float4x4.CreateOrthographicOffCenterRH(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar, out actual);
+            var actual = float4x4.CreateOrthographicOffCenterRH(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar);
 
             Assert.Equal(expected.M11, actual.M11, 5);
             Assert.Equal(expected.M12, actual.M12, 5);
@@ -514,43 +436,6 @@ namespace Fusee.Math.Core
         }
 
         [Theory]
-        [MemberData(nameof(GetPerspectiveFOW))]
-        public void CreatePerspectiveFieldOfView_ToMatrix(float fovy, float aspect, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar, out actual);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetPerspectiveFOWException))]
-        public void CreatePerspectiveFieldOfView_ThrowException(float fovy, float aspect, float zNear, float zFar, string expected)
-        {
-            float4x4 matrix;
-
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar, out matrix));
-
-            Assert.Equal(expected, actual.ParamName);
-        }
-
-        [Theory]
         [MemberData(nameof(GetPerspectiveOffCenter))]
         public void CreatePerspectiveOffCenter_ReturnMatrix(float left, float right, float bottom, float top, float zNear, float zFar, float4x4 expected)
         {
@@ -562,36 +447,12 @@ namespace Fusee.Math.Core
         }
 
         [Theory]
-        [MemberData(nameof(GetPerspectiveOffCenter))]
-        public void CreatePerspectiveOffCenter_ToMatrix(float left, float right, float bottom, float top, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, zNear, zFar, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
         [MemberData(nameof(GetPerspectiveOffCenterRH))]
         public void CreatePerspectiveOffCenterRH_ReturnMatrix(float left, float right, float bottom, float top, float zNear, float zFar, float4x4 expected)
         {
-            float4x4 actual;
-
-            float4x4.CreatePerspectiveOffCenterRH(left, right, bottom, top, zNear, zFar, out actual);
+            float4x4 actual = float4x4.CreatePerspectiveOffCenterRH(left, right, bottom, top, zNear, zFar);
 
             Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetPerspectiveOffCenterException))]
-        public void CreatePerspectiveOffCenter_ThrowException(float zNear, float zFar, string expected)
-        {
-            float4x4 matrix;
-
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.CreatePerspectiveOffCenter(-1, 1, -1, 1, zNear, zFar, out matrix));
-
-            Assert.Equal(expected, actual.ParamName);
         }
 
         [Theory]
@@ -600,7 +461,7 @@ namespace Fusee.Math.Core
         {
             float4x4 matrix;
 
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.CreatePerspectiveOffCenterRH(-1, 1, -1, 1, zNear, zFar, out matrix));
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.CreatePerspectiveOffCenterRH(-1, 1, -1, 1, zNear, zFar));
 
             Assert.Equal(expected, actual.ParamName);
         }
@@ -614,32 +475,6 @@ namespace Fusee.Math.Core
             float4x4 expected = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 
             actual = float4x4.CreateRotationX(1.5708f);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Fact]
-        public void CreateRotationX_ToMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
-
-            float4x4.CreateRotationX(1.5708f, out actual);
 
             Assert.Equal(expected.M11, actual.M11, 5);
             Assert.Equal(expected.M12, actual.M12, 5);
@@ -686,32 +521,6 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void CreateRotationY_ToMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
-
-            float4x4.CreateRotationY(1.5708f, out actual);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Fact]
         public void CreateRotationZ_ReturnMatrix()
         {
             float4x4 actual;
@@ -737,31 +546,6 @@ namespace Fusee.Math.Core
             Assert.Equal(expected.M44, actual.M44, 5);
         }
 
-        [Fact]
-        public void CreateRotationZ_ToMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
-            float4x4.CreateRotationZ(1.5708f, out actual);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
         #endregion
 
         #region CreateScale / Scale
@@ -772,17 +556,6 @@ namespace Fusee.Math.Core
             float4x4 actual;
 
             actual = float4x4.CreateScale(x);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void CreateScale_Single_ToMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateScale(x, out actual);
 
             Assert.Equal(expected, actual);
         }
@@ -801,34 +574,11 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetScale))]
-        public void CreateScale_Float3_ToMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-            float3 vec = new float3(x, y, z);
-
-            float4x4.CreateScale(ref vec, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
         public void CreateScale_3Singles_ReturnMatrix(float x, float y, float z, float4x4 expected)
         {
             float4x4 actual;
 
             actual = float4x4.CreateScale(x, y, z);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void CreateScale_3Singles_ToMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateScale(x, y, z, out actual);
 
             Assert.Equal(expected, actual);
         }
@@ -883,18 +633,6 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetTranslation))]
-        public void CreateTranslation_Float3_ToMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-            var vec = new float3(x, y, z);
-
-            float4x4.CreateTranslation(ref vec, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTranslation))]
         public void CreateTranslation_3Singles_ReturnMatrix(float x, float y, float z, float4x4 expected)
         {
             float4x4 actual;
@@ -904,33 +642,21 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetTranslation))]
-        public void CreateTranslation_3Singles_ToMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.CreateTranslation(x, y, z, out actual);
-
-            Assert.Equal(expected, actual);
-        }
         #endregion
 
         #region Invert
         [Theory]
         [MemberData(nameof(GetInvert))]
-        public void Invert_InvertMatrix(float4x4 matrix, float4x4 expected)
+        public void Invert_Instance(float4x4 matrix, float4x4 expected)
         {
-            var actual = matrix;
-
-            actual.Invert();
+            var actual = matrix.Invert();
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
         [MemberData(nameof(GetInvert))]
-        public void Invert_ReturnMatrix(float4x4 matrix, float4x4 expected)
+        public void Invert_Static(float4x4 matrix, float4x4 expected)
         {
             float4x4 actual;
 
@@ -987,48 +713,27 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetMult))]
-        public void Mult_TwoMatrices_ToMatrix(float4x4 left, float4x4 right, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.Mult(ref left, ref right, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultAffine))]
-        public void MultAffine_TwoMatrices_ToMatrix(float4x4 left, float4x4 right, float4x4 expected)
-        {
-            float4x4 actual;
-
-            float4x4.MultAffine(ref left, ref right, out actual);
-
-            Assert.Equal(expected, actual);
-        }
         #endregion
 
         #region Round
         [Fact]
-        public void Round_ReturnMatrix()
+        public void Round_Static()
         {
-            var matrix = new float4x4(1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f);
+            var matrix = new float4x4(1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f);
 
             var actual = float4x4.Round(matrix);
 
-            Assert.Equal(new float4x4(1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f), actual);
+            Assert.Equal(new float4x4(1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f), actual);
         }
 
         [Fact]
-        public void Round_Direct()
+        public void Round_Instance()
         {
-            var actual = new float4x4(1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f);
+            var actual = new float4x4(1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f);
 
-            actual.Round();
+            actual = actual.Round();
 
-            Assert.Equal(new float4x4(1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f, 1.234568f), actual);
+            Assert.Equal(new float4x4(1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f), actual);
         }
         #endregion
 
@@ -1050,7 +755,7 @@ namespace Fusee.Math.Core
         {
             float3 actual;
 
-            actual = float4x4.TransformPD(matrix, vector);
+            actual = float4x4.Transform(matrix, vector);
 
             Assert.Equal(-expected, actual);
         }
@@ -1072,7 +777,7 @@ namespace Fusee.Math.Core
         {
             float3 actual;
 
-            actual = float4x4.TransformPremultPD(vector, matrix);
+            actual = float4x4.TransformPremult(vector, matrix);
 
             Assert.Equal(expected, actual);
         }
@@ -1081,7 +786,7 @@ namespace Fusee.Math.Core
         #region Transpose
         [Theory]
         [MemberData(nameof(GetTranspose))]
-        public void Transpose_ReturnVector(float4x4 matrix, float4x4 expected)
+        public void Transpose_Static(float4x4 matrix, float4x4 expected)
         {
             float4x4 actual;
 
@@ -1092,22 +797,9 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetTranspose))]
-        public void Transpose_ToVector(float4x4 matrix, float4x4 expected)
+        public void Transpose_Instance(float4x4 matrix, float4x4 expected)
         {
-            float4x4 actual;
-
-            float4x4.Transpose(ref matrix, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTranspose))]
-        public void Transpose_Direct(float4x4 matrix, float4x4 expected)
-        {
-            float4x4 actual = matrix;
-
-            actual.Transpose();
+            float4x4 actual = matrix.Transpose();
 
             Assert.Equal(expected, actual);
         }

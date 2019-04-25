@@ -266,17 +266,6 @@ namespace Fusee.Math.Core
         }
 
         [Theory]
-        [MemberData(nameof(GetAddition))]
-        public void Add_TwoVectors_ToFloat4(float4 a, float4 b, float4 expected)
-        {
-            float4 actual;
-
-            float4.Add(ref a, ref b, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
         [MemberData(nameof(GetDivision))]
         public void Divide_TwoVectos_ReturnVector(float4 vec1, float x, float4 expected)
         {
@@ -289,32 +278,9 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetDivision))]
-        public void Divide_TwoVectos_ToVector(float4 vec1, float x, float4 expected)
-        {
-            var vec2 = new float4(x, x, x, x);
-            float4 actual;
-            
-            float4.Divide(ref vec1, ref vec2, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetDivision))]
         public void Divide_VectorScalar_ReturnVector(float4 vec1, float x, float4 expected)
         {
             var actual = float4.Divide(vec1, x);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetDivision))]
-        public void Divide_VectorScalar_ToVector(float4 vec1, float x, float4 expected)
-        {
-            float4 actual;
-            
-            float4.Divide(ref vec1, x, out actual);
 
             Assert.Equal(expected, actual);
         }
@@ -333,34 +299,11 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetMultiply))]
-        public void Multiply_TwoVectors_ToVector(float x, float4 vec1, float4 expected)
-        {
-            var vec2 = new float4(x, x, x, x);
-            float4 actual;
-
-            float4.Multiply(ref vec1, ref vec2, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultiply))]
         public void Multiply_VectorScalar_ReturnVector(float x, float4 vec1, float4 expected)
         {
             float4 actual;
 
             actual = float4.Multiply(vec1, x);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultiply))]
-        public void Multiply_VectorScalar_ToVector(float x, float4 vec1, float4 expected)
-        {
-            float4 actual;
-
-            float4.Multiply(ref vec1, x, out actual);
 
             Assert.Equal(expected, actual);
         }
@@ -372,17 +315,6 @@ namespace Fusee.Math.Core
             float4 actual;
 
             actual = float4.Subtract(vec1, vec2);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetSubtraction))]
-        public void Subtract_TwoVectors_ToVector(float4 vec1, float4 vec2, float4 expected)
-        {
-            float4 actual;
-
-            float4.Subtract(ref vec1, ref vec2, out actual);
 
             Assert.Equal(expected, actual);
         }
@@ -416,16 +348,6 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetClamp))]
-        public void Clamp_ToVector(float4 value, float4 min, float4 max, float4 expected)
-        {
-            float4 actual;
-
-            float4.Clamp(ref value, ref min, ref max, out actual);
-
-            Assert.Equal(expected, actual);
-        }
         #endregion
 
         #region Dot
@@ -440,20 +362,10 @@ namespace Fusee.Math.Core
             Assert.Equal(10, actual);
         }
 
-        [Fact]
-        public void Dot_TwoVectos_ToScalar()
-        {
-            float4 a = new float4(1, 1, 1, 1);
-            float4 b = new float4(1, 2, 3, 4);
-            float actual;
-
-            float4.Dot(ref a, ref b, out actual);
-
-            Assert.Equal(10, actual);
-        }
         #endregion
 
         #region Lerp
+
         [Theory]
         [MemberData(nameof(GetLerp))]
         public void Lerp_ReturnVector(float4 a, float4 b, float blend, float4 expected)
@@ -465,16 +377,6 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetLerp))]
-        public void Lerp_ToVector(float4 a, float4 b, float blend, float4 expected)
-        {
-            float4 actual;
-
-            float4.Lerp(ref a, ref b, blend, out actual);
-
-            Assert.Equal(expected, actual);
-        }
         #endregion
 
         #region MinMax
@@ -491,17 +393,6 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetMinMax))]
-        public void Max_ToVector(float4 a, float4 b)
-        {
-            float4 actual;
-
-            float4.Max(ref a, ref b, out actual);
-
-            Assert.Equal(new float4(1, 1, 1, 1), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMinMax))]
         public void Min_ReturnVector(float4 a, float4 b)
         {
             float4 actual;
@@ -511,33 +402,21 @@ namespace Fusee.Math.Core
             Assert.Equal(new float4(0, 0, 0, 0), actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetMinMax))]
-        public void Min_ToVector(float4 a, float4 b)
-        {
-            float4 actual;
-
-            float4.Min(ref a, ref b, out actual);
-
-            Assert.Equal(new float4(0, 0, 0, 0), actual);
-        }
         #endregion
 
         #region Normalize
         [Theory]
         [MemberData(nameof(GetNormalize))]
-        public void Normalize_Direct(float4 vec, float4 expected)
+        public void Normalize_Instance(float4 vec, float4 expected)
         {
-            float4 actual = vec;
-
-            actual.Normalize();
+            float4 actual = vec.Normalize();
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
         [MemberData(nameof(GetNormalize))]
-        public void Normalize_ReturnVector(float4 vec, float4 expected)
+        public void Normalize_Static(float4 vec, float4 expected)
         {
             float4 actual;
 
@@ -548,29 +427,16 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetNormalize))]
-        public void Normalize_ToVector(float4 vec, float4 expected)
+        public void NormalizeFast_Instance(float4 vec, float4 expected)
         {
-            float4 actual;
-
-            float4.Normalize(ref vec, out actual);
+            float4 actual = vec.NormalizeFast();
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
         [MemberData(nameof(GetNormalize))]
-        public void NormalizeFast_Direct(float4 vec, float4 expected)
-        {
-            float4 actual = vec;
-
-            actual.NormalizeFast();
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void NormalizeFast_ReturnVector(float4 vec, float4 expected)
+        public void NormalizeFast_Static(float4 vec, float4 expected)
         {
             float4 actual;
 
@@ -579,23 +445,12 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetNormalize))]
-        public void NormalizeFast_ToVector(float4 vec, float4 expected)
-        {
-            float4 actual;
-
-            float4.NormalizeFast(ref vec, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
         [Fact]
-        public void Normalize1_Direct()
+        public void Normalize1_Instance()
         {
             float4 actual = new float4(1, 1, 1, 1);
 
-            actual.Normalize1();
+            actual = actual.Normalize1();
 
             Assert.Equal(new float4(0.25f, 0.25f, 0.25f, 0.25f), actual);
         }
@@ -603,17 +458,17 @@ namespace Fusee.Math.Core
 
         #region Round
         [Fact]
-        public void Round_Direct()
+        public void Round_Instance()
         {
             var actual = new float4(1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f);
 
-            actual.Round();
+            actual = actual.Round();
 
             Assert.Equal(new float4(1.234568f, 1.234568f, 1.234568f, 1.234568f), actual);
         }
 
         [Fact]
-        public void Round_ReturnVector()
+        public void Round_Static()
         {
             var vec = new float4(1.23456789f, 1.23456789f, 1.23456789f, 1.23456789f);
 
@@ -621,37 +476,6 @@ namespace Fusee.Math.Core
 
             Assert.Equal(new float4(1.234568f, 1.234568f, 1.234568f, 1.234568f), actual);
         }
-        #endregion
-
-        #region Transform
-
-        [Theory]
-        [MemberData(nameof(GetTransformQuaternion))]
-        public void Transform_Quaternion(float4 vec, Quaternion quat, float4 expected)
-        {
-            var actual = float4.Transform(vec, quat);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransfromMatrix))]
-        public void Transform_4x4Matrix(float4 vec, float4x4 mat, float4 expected)
-        {
-            var actual = float4.Transform(mat, vec);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransfromMatrix))]
-        public void TransformPerspective_Direct(float4 vec, float4x4 mat, float4 expected)
-        {
-            var actual = vec.TransformPerspective(mat);
-
-            Assert.Equal(expected, actual);
-        }
-
         #endregion
 
         #region Other

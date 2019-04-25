@@ -1,322 +1,628 @@
 ﻿using Xunit;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using Xunit.Sdk;
 
 namespace Fusee.Math.Core
 {
     public class Float3Test
     {
-        #region IEnumerables
-        public static IEnumerable<object[]> GetFloat3()
-        {
-            var zero = new float3(0, 0, 0);
-            var one = new float3(1, 1, 1);
-
-            yield return new object[] {zero, one};
-            yield return new object[] {one, zero};
-        }
-
-        public static IEnumerable<object[]> GetUVExpected()
-        {
-            yield return new object[] { 0, 0, new float3(0, 0, 1) };
-            yield return new object[] { 1, 0, new float3(1, 0, 0) };
-            yield return new object[] { 0, 1, new float3(0, 1, 0) };
-        }
-
-        public static IEnumerable<object[]> GetFloat3ExpectedAngle()
-        {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            yield return new object[] { a, b, 1.5708f};
-            yield return new object[] { a, a, 0};
-        }
-
-        public static IEnumerable<object[]> GetVecMinMaxExpected()
-        {
-            var a = new float3(0, 0, 0);
-            var b = new float3(1, 1, 1);
-            var c = new float3(2, 2, 2);
-
-            yield return new object[] { a, b, c, b };
-            yield return new object[] { c, a, b, b };
-            yield return new object[] { b, a, c, b };
-        }
-
-        public static IEnumerable<object[]> GetVectorCross()
-        {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
-
-            yield return new object[] { a, b, c };
-            yield return new object[] { c, a, b };
-            yield return new object[] { b, c, a };
-            yield return new object[] { a, a, new float3(0, 0, 0) };
-            yield return new object[] { b, a, -c };
-        }
-
-        public static IEnumerable<object[]> GetBlendExpected()
-        {
-            var a = new float3(0, 0, 0);
-            var b = new float3(1, 1, 1);
-
-
-            yield return new object[] { a, b, 0, a };
-            yield return new object[] { a, b, 1, b };
-            yield return new object[] { a, b, 0.5f, new float3(0.5f, 0.5f, 0.5f) };
-        }
-
-        public static IEnumerable<object[]> GetVectorNorm()
-        {
-            yield return new object[] { new float3(5, 0, 0), new float3(1, 0, 0) };
-            yield return new object[] { new float3(0, 5, 0), new float3(0, 1, 0) };
-            yield return new object[] { new float3(0, 0, 5), new float3(0, 0, 1) };
-            yield return new object[] { new float3(5, 5, 5), new float3(0.57735f, 0.57735f, 0.57735f) };
-        }
-
-        public static IEnumerable<object[]> GetRotationMatrix()
-        {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
-
-            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
-            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
-            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
-
-            yield return new object[] { b, xRot, -c };
-            yield return new object[] { a, yRot, c };
-            yield return new object[] { b, zRot, a };
-        }
-
-        public static IEnumerable<object[]> GetQuaternion()
-        {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
-
-            var xRot = new Quaternion(new float3(0.707f, 0, 0), 0.707f);
-            var yRot = new Quaternion(new float3(0, 0.707f, 0), 0.707f);
-            var zRot = new Quaternion(new float3(0, 0, 0.707f), 0.707f);
-
-            yield return new object[] { b, xRot, -c };
-            yield return new object[] { a, yRot, c };
-            yield return new object[] { b, zRot, a };
-        }
-
-        public static IEnumerable<object[]> GetVecLength()
-        {
-            yield return new object[] { new float3(1, 0, 0), 1 };
-            yield return new object[] { new float3(0, 1, 0), 1 };
-            yield return new object[] { new float3(0, 0, 1), 1 };
-            yield return new object[] { new float3(0, 0, 0), 0 };
-            yield return new object[] { new float3(1, 1, 1), 1.73205f };
-        }
-        #endregion
-
         #region Fields
+
         [Fact]
         public void One_IsOne()
         {
-            Assert.Equal(new float3(1, 1, 1), float3.One);
-        }
+            var expected = new float3(1,1,1);
 
-        [Fact]
-        public void UnitX_EqualsX()
-        {
-            Assert.Equal(new float3(1, 0, 0), float3.UnitX);
-        }
-
-        [Fact]
-        public void UnitY_EqualsY()
-        {
-            Assert.Equal(new float3(0, 1, 0), float3.UnitY);
-        }
-
-        [Fact]
-        public void UnitZ_EqualZ()
-        {
-            Assert.Equal(new float3(0, 0, 1), float3.UnitZ);
+            Assert.Equal(expected, float3.One);
         }
 
         [Fact]
         public void Zero_IsZero()
         {
-            Assert.Equal(new float3(0, 0, 0), float3.Zero);
-        }
-        #endregion
+            var expected = new float3(0, 0, 0);
 
-        #region Operators
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Operator_Add_TwoVectors_ReturnOneVector(float3 x, float3 y)
-        {
-            var actual = x + y;
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-
+            Assert.Equal(expected, float3.Zero);
         }
 
         [Fact]
-        public void Operator_Division_VectorAndScalar_ReturnsVector()
+        public void UnitX_IsXVector()
         {
-            var vec = new float3(2, 2, 2);
-            var scalar = 2.0f;
+            var expected = new float3(1, 0, 0);
 
-            var actual = vec / scalar;
+            Assert.Equal(expected, float3.UnitX);
+        }
 
-            Assert.Equal(new float3(1, 1, 1), actual);
+        [Fact]
+        public void UnitY_IsYVector()
+        {
+            var expected = new float3(0, 1, 0);
+
+            Assert.Equal(expected, float3.UnitY);
+        }
+
+        [Fact]
+        public void UnitZ_IsZVector()
+        {
+            var expected = new float3(0, 0, 1);
+
+            Assert.Equal(expected, float3.UnitZ);
+        }
+
+        [Fact]
+        public void X_IsOne()
+        {
+            var actual = new float3(1, 0, 0);
+
+            Assert.Equal(1, actual.x);
+        }
+
+        [Fact]
+        public void Y_IsOne()
+        {
+            var actual = new float3(0, 1, 0);
+
+            Assert.Equal(1, actual.y);
+        }
+
+        [Fact]
+        public void Z_IsOne()
+        {
+            var actual = new float3(0, 0, 1);
+
+            Assert.Equal(1, actual.z);
+        }
+
+        #endregion
+
+        #region Constructors
+
+        [Fact]
+        public void Constructor_FromDouble3()
+        {
+            var d3 = new double3(1, 2, 3);
+
+            var actual = new float3(d3);
+
+            Assert.Equal(new float3(1,2,3), actual);
+        }
+
+        [Fact]
+        public void Constructor_FromFloat2()
+        {
+            var f2 = new float2(1, 2);
+
+            var actual = new float3(f2);
+
+            Assert.Equal(new float3(1, 2, 0), actual);
+        }
+
+        [Fact]
+        public void Constructor_FromFloat3()
+        {
+            var f3 = new float3(1, 2, 3);
+
+            var actual = new float3(f3);
+
+            Assert.Equal(f3, actual);
+        }
+
+        [Fact]
+        public void Constructor_FromFloat4()
+        {
+            var f4 = new float4(1, 2, 3, 4);
+
+            var actual = new float3(f4);
+
+            Assert.Equal(new float3(1, 2, 3), actual);
+        }
+
+        #endregion
+
+        #region Operators
+
+        [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Operator_Addition_IsExpected(float3 a, float3 b, float3 expected)
+        {
+            var actual = a + b;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Operator_Subtraction(float3 a, float3 b, float3 expected)
+        {
+            var actual = a - b;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Operator_UnaryNegation()
+        {
+            var vec = new float3(1, 1, 1);
+
+            var actual = -vec;
+
+            Assert.Equal(new float3(-1, -1, -1), actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Operator_Multiply_Scalar(float scale, float3 vec, float3 expected)
+        {
+            var actual1 = scale * vec;
+            var actual2 = vec * scale;
+
+            Assert.Equal(expected, actual1);
+            Assert.Equal(expected, actual2);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Operator_Multiply_Vector(float x, float3 vec1, float3 expected)
+        {
+            var vec2 = new float3(x, x, x);
+
+            var actual = vec1 * vec2;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDivision))]
+        public void Operator_Division_Scalar(float3 vec, float scale, float3 expected)
+        {
+            var actual = vec / scale;
+
+            Assert.Equal(expected, actual);
         }
 
         [Fact]
         public void Operator_Equality_IsEqual()
         {
-            var actual = new float3(1, 1, 1);
+            var a = new float3(1, 1, 1);
+            var b = new float3(1, 1, 1);
 
-            Assert.True(new float3(1, 1, 1) == actual);
+            Assert.True(a == b);
         }
 
         [Fact]
-        public void Explicit_DoubleToFloat()
+        public void Operator_Equality_IsInequal()
         {
-            var d = new double3(1, 1, 1);
+            var a = new float3(1, 1, 1);
+            var b = new float3(0, 0, 0);
 
-            var actual = (float3)d;
-
-            Assert.Equal(new float3(1, 1, 1), actual);
+            Assert.False(a == b);
         }
 
         [Fact]
-        public void Operator_Equality_IsNotEqual()
+        public void Operator_Inequality_IsInequal()
         {
-            var actual = new float3(1, 1, 1);
+            var a = new float3(1, 1, 1);
+            var b = new float3(0, 0, 0);
 
-            Assert.False(new float3(0, 0, 0) == actual);
+            Assert.True(a != b);
         }
 
         [Fact]
         public void Operator_Inequality_IsEqual()
         {
-            var actual = new float3(1, 1, 1);
+            var a = new float3(1, 1, 1);
+            var b = new float3(1, 1, 1);
 
-            Assert.False(new float3(1, 1, 1) != actual);
+            Assert.False(a != b);
         }
 
         [Fact]
-        public void Operator_Inequality_IsNotEqual()
+        public void Operator_Explicit_FromDouble3()
         {
-            var actual = new float3(1, 1, 1);
-
-            Assert.True(new float3(0, 0, 0) != actual);
-        }
-
-        [Fact]
-        public void Operator_Multiply_VectorAndScalar_ReturnVector()
-        {
-            var vec = new float3(1, 1, 1);
-            var scalar = 2.0f;
-
-            var actual = vec * scalar;
-
-            Assert.Equal(new float3(2, 2, 2), actual);
-        }
-
-        [Fact]
-        public void Operator_Multiply_ScalarAndVector_ReturnVector()
-        {
-            var vec = new float3(1, 1, 1);
-            var scalar = 2.0f;
-
-            var actual = scalar * vec;
-
-            Assert.Equal(new float3(2, 2, 2), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Operator_Multiply_TwoVectors_ReturnVector(float3 x, float3 y)
-        {
-            var actual = x * y;
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Fact]
-        public void Operator_Subtract_TwoVectors_ReturnVector()
-        {
-            var x = new float3(1, 1, 1);
-            var y = new float3(1, 1, 1);
-
-            var actual = x - y;
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Fact]
-        public void Operator_UnaryNegation_NegatePositiveVector()
-        {
-            var x = new float3(1, 1, 1);
-
-            var actual = -x;
-
-            Assert.Equal(new float3(-1, -1, -1), actual);
-        }
-
-        [Fact]
-        public void Operator_UnaryNegation_NegateNegativeVector()
-        {
-            var x = new float3(-1, -1, -1);
-
-            var actual = -x;
+            var actual = (float3) new double3(1, 1, 1);
 
             Assert.Equal(new float3(1, 1, 1), actual);
         }
+
+        #endregion
+
+        #region Properties
+
+        [Fact]
+        public void Length_Is16()
+        {
+            var vec = new float3(1, 1, 1);
+
+            var actual = vec.Length;
+
+            Assert.Equal(System.Math.Sqrt(3), actual, 6);
+        }
+
+        [Fact]
+        public void LengthSquared_Is3()
+        {
+            var vec = new float3(1, 1, 1);
+
+            var actual = vec.LengthSquared;
+
+            Assert.Equal(3, actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_Get()
+        {
+            var vec = new float3(1, 2, 3);
+
+            Assert.Equal(new float2(1, 2), vec.xy);
+            Assert.Equal(new float2(1, 3), vec.xz);
+            Assert.Equal(new float2(2, 1), vec.yx);
+            Assert.Equal(new float2(2, 3), vec.yz);
+            Assert.Equal(new float2(3, 1), vec.zx);
+            Assert.Equal(new float2(3, 2), vec.zy);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetXY()
+        {
+            var actual = new float3(0,0,0);
+
+            actual.xy = new float2(1, 2);
+
+            Assert.Equal(new float3(1, 2, 0), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetXZ()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.xz = new float2(1, 2);
+
+            Assert.Equal(new float3(1,0,2), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetYX()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.yx = new float2(1, 2);
+
+            Assert.Equal(new float3(2, 1, 0), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetYZ()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.yz = new float2(1, 2);
+
+            Assert.Equal(new float3(0, 1, 2), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetZX()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.zx = new float2(1, 2);
+
+            Assert.Equal(new float3(2, 0, 1), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float2_SetZY()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.zy = new float2(1, 2);
+
+            Assert.Equal(new float3(0, 2, 1), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_Get()
+        {
+            var vec = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(1, 2, 3), vec.xyz);
+            Assert.Equal(new float3(1, 3, 2), vec.xzy);
+            Assert.Equal(new float3(2, 3, 1), vec.yzx);
+            Assert.Equal(new float3(2, 1, 3), vec.yxz);
+            Assert.Equal(new float3(3, 1, 2), vec.zxy);
+            Assert.Equal(new float3(3, 2, 1), vec.zyx);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetXYZ()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.xyz = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(1, 2, 3), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetXZY()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.xzy = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(1, 3, 2), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetYZX()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.yzx = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(3, 1, 2), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetYXZ()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.yxz = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(2, 1, 3), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetZXY()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.zxy = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(2, 3, 1), actual);
+        }
+
+        [Fact]
+        public void Swizzle_Float3_SetZYX()
+        {
+            var actual = new float3(0, 0, 0);
+
+            actual.zyx = new float3(1, 2, 3);
+
+            Assert.Equal(new float3(3, 2, 1), actual);
+        }
+
         #endregion
 
         #region Methods
 
-        #region Add
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Add_TwoVectors_ReturnsVector(float3 x, float3 y)
-        {
-            var actual = float3.Add(x, y);
+        #region Arithmetic Functions
 
-            Assert.Equal(new float3(1, 1, 1), actual);
+        [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_IsOne(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.Add(a, b);
+
+            Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Add_TwoVectors_ToVector(float3 x, float3 y)
+        [MemberData(nameof(GetSubtraction))]
+        public void Subtract_IsZero(float3 a, float3 b, float3 expected)
         {
-            float3 actual;
+            var actual = float3.Subtract(a, b);
 
-            float3.Add(ref x, ref y, out actual);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
+            Assert.Equal(expected, actual);
         }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Multiply_VectorScale(float scale, float3 vec, float3 expected)
+        {
+            var actual = float3.Multiply(vec, scale);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Multiply_TwoVectors(float x, float3 vec1, float3 expected)
+        {
+            var vec2 = new float3(x, x, x);
+
+            var actual = float3.Multiply(vec1, vec2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDivision))]
+        public void Divide_VectorScale(float3 vec, float scale, float3 expected)
+        {
+            var actual = float3.Divide(vec, scale);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetDivision))]
+        public void Divide_TwoVectors(float3 vec1, float x, float3 expected)
+        {
+            var vec2 = new float3(x, x, x);
+
+            var actual = float3.Divide(vec1, vec2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region MinMax
+
+        [Theory]
+        [MemberData(nameof(GetComponentMin))]
+        public void ComponentMin_IsOne(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.ComponentMin(a, b);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetComponentMax))]
+        public void ComponentMax_IsTwo(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.ComponentMax(a, b);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetComponentMin))]
+        public void Min_IsOne(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.Min(a, b);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetComponentMax))]
+        public void Max_IsTwo(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.Max(a, b);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Clamp
+
+        [Theory]
+        [MemberData(nameof(GetClamp))]
+        public void Clamp_TestClamp(float3 vec, float3 min, float3 max, float3 expected)
+        {
+            var actual = float3.Clamp(vec, min, max);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Normalize
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void Normalize_Static(float3 vec, float3 expected)
+        {
+            var actual = float3.Normalize(vec);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void NormalizeFast_Static(float3 vec, float3 expected)
+        {
+            var actual = float3.NormalizeFast(vec);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void Normalize_Instance(float3 vec, float3 expected)
+        {
+            var actual = vec.Normalize();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetNormalize))]
+        public void NormalizeFast_Instance(float3 vec, float3 expected)
+        {
+            var actual = vec.NormalizeFast();
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void OrthoNormalize_NormTangent()
+        {
+            var normal = new float3(5, 0, 0);
+            var tangent = new float3(4, 4, 4);
+
+            var actual = float3.OrthoNormalize(normal, tangent);
+
+            Assert.Equal(new float3(1, 0, 0), actual[0]);
+            Assert.Equal(0, actual[1].x, 3);
+            Assert.Equal(0.707f, actual[1].y, 3);
+            Assert.Equal(0.707f, actual[1].z, 3);
+        }
+
+        #endregion
+
+        #region Dot
+
+        [Fact]
+        public void Dot_IsTen()
+        {
+            var a = new float3(1, 2, 3);
+            var b = new float3(3, 2, 1);
+
+            var actual = float3.Dot(a, b);
+
+            Assert.Equal(10, actual);
+        }
+
+        #endregion
+
+        #region Cross
+
+        [Theory]
+        [MemberData(nameof(GetCross))]
+        public void Cross_TestCross(float3 a, float3 b, float3 expected)
+        {
+            var actual = float3.Cross(a, b);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Lerp
+
+        [Theory]
+        [MemberData(nameof(GetLerp))]
+        public void Lerp_ZeroAndOne(float3 a, float3 b, float blend, float3 expected)
+        {
+            var actual = float3.Lerp(a, b, blend);
+
+            Assert.Equal(expected, actual);
+        }
+
         #endregion
 
         #region Barycentric
-        [Theory]
-        [MemberData(nameof(GetUVExpected))]
-        public void Barycentric_VaryUV_ReturnResult(float u, float v, float3 expected)
-        {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
 
+        [Theory]
+        [MemberData(nameof(GetBarycentric))]
+        public void Barycentric_TestBarycentric(float3 a, float3 b, float3 c, float u, float v, float3 expected)
+        {
             var actual = float3.Barycentric(a, b, c, u, v);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetUVExpected))]
-        public void GetBarycentric_CheckUV(float expectedU, float expectedV, float3 point)
+        [MemberData(nameof(GetBarycentric))]
+        public void GetBarycentric_GetUV(float3 a, float3 b, float3 c, float expectedU, float expectedV, float3 point)
         {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
             float u;
             float v;
 
@@ -325,645 +631,176 @@ namespace Fusee.Math.Core
             Assert.Equal(expectedU, u);
             Assert.Equal(expectedV, v);
         }
-        #endregion
-
-        #region CalculateAngle
-        [Theory]
-        [MemberData(nameof(GetFloat3ExpectedAngle))]
-        public void CalculateAngle_TwoVectors_ReturnAngle(float3 a, float3 b, float expected)
-        {
-            float actual;
-
-            actual = float3.CalculateAngle(a, b);
-
-            Assert.Equal(expected, actual, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetFloat3ExpectedAngle))]
-        public void CalculateAngle_TwoVectors_SaveToAngle(float3 a, float3 b, float expected)
-        {
-            float actual;
-
-            float3.CalculateAngle(ref a, ref b, out actual);
-
-            Assert.Equal(expected, actual, 5);
-        }
-        #endregion
-
-        #region Clamp
-        [Theory]
-        [MemberData(nameof(GetVecMinMaxExpected))]
-        public void Clamp_VectorToMinToMax(float3 vec, float3 min, float3 max, float3 expected)
-        {
-            var actual = float3.Clamp(vec, min, max);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVecMinMaxExpected))]
-        public void Clamp_VectorToMinToMax_ToVector(float3 vec, float3 min, float3 max, float3 expected)
-        {
-            float3 actual;
-
-            float3.Clamp(ref vec, ref min, ref max, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Components MinMax
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void ComponentMax_TwoVectors_ReturnOne(float3 a, float3 b)
-        {
-            var actual = float3.ComponentMax(a, b);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void ComponentMax_TwoVectors_ToVector(float3 a, float3 b)
-        {
-            float3 actual;
-
-            float3.ComponentMax(ref a, ref b, out actual);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void ComponentMin_TwoVectors_ReturnOne(float3 a, float3 b)
-        {
-            var actual = float3.ComponentMin(a, b);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void ComponentMin_TwoVectors_ToVector(float3 a, float3 b)
-        {
-            float3 actual;
-
-            float3.ComponentMin(ref a, ref b, out actual);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-        #endregion
-
-        #region Cross
-        [Theory]
-        [MemberData(nameof(GetVectorCross))]
-        public void Cross_TwoVectors_ReturnOne(float3 a, float3 b, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.Cross(a, b);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorCross))]
-        public void Cross_TwoVectors_ToVector(float3 a, float3 b, float3 expected)
-        {
-            float3 actual;
-
-            float3.Cross(ref a, ref b, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Divide
-        [Fact]
-        public void Divide_TwoVectors_ReturnOne()
-        {
-            float3 a = new float3(2, 2, 2);
-            float3 b = new float3(2, 2, 2);
-
-            var actual = float3.Divide(a, b);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-
-        [Fact]
-        public void Divide_TwoVectors_ToVector()
-        {
-            float3 a = new float3(2, 2, 2);
-            float3 b = new float3(2, 2, 2);
-            float3 actual;
-
-            float3.Divide(ref a, ref b, out actual);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-
-        [Fact]
-        public void Divide_VectorScalar_ReturnVector()
-        {
-            float3 vec = new float3(2, 2, 2);
-            float scalar = 2;
-
-            var actual = float3.Divide(vec, scalar);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-
-        [Fact]
-        public void Divide_VectorScalar_ToVector()
-        {
-            float3 vec = new float3(2, 2, 2);
-            float scalar = 2;
-            float3 actual;
-
-            float3.Divide(ref vec, scalar, out actual);
-
-            Assert.Equal(new float3(1, 1, 1), actual);
-        }
-        #endregion
-
-        #region Dot
-        [Fact]
-        public void Dot_TwoVectos_ReturnScalar()
-        {
-            float3 a = new float3(1, 1, 1);
-            float3 b = new float3(1, 2, 3);
-
-            var actual = float3.Dot(a, b);
-
-            Assert.Equal(6, actual);
-        }
-
-        [Fact]
-        public void Dot_TwoVectos_ToScalar()
-        {
-            float3 a = new float3(1, 1, 1);
-            float3 b = new float3(1, 2, 3);
-            float actual;
-
-            float3.Dot(ref a, ref b, out actual);
-
-            Assert.Equal(6, actual);
-        }
 
         #endregion
 
-        #region Lerp
-        [Theory]
-        [MemberData(nameof(GetBlendExpected))]
-        public void Lerp_BlendTwoVectors_ReturnVector(float3 a, float3 b, float blend, float3 expected)
-        {
-            float3 actual;
+        #region Angle
 
-            actual = float3.Lerp(a, b, blend);
+        //TODO: CalculateAngle
 
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetBlendExpected))]
-        public void Lerp_BlendTwoVectors_ToVector(float3 a, float3 b, float blend, float3 expected)
-        {
-            float3 actual;
-
-            float3.Lerp(ref a, ref b, blend, out actual);
-
-            Assert.Equal(expected, actual);
-        }
         #endregion
 
-        #region MinMax
-        [Fact]
-        public void Max_TwoVectors_ReturnVector()
-        {
-            var a = new float3(0, 0, 0);
-            var b = new float3(1, 1, 1);
-
-            var actual = float3.Max(a, b);
-            var actual2 = float3.Max(b, a);
-
-            Assert.Equal(b, actual);
-            Assert.Equal(b, actual2);
-        }
-
-        [Fact]
-        public void Min_TwoVectors_ReturnVector()
-        {
-            var a = new float3(0, 0, 0);
-            var b = new float3(1, 1, 1);
-
-            var actual = float3.Min(a, b);
-            var actual2 = float3.Min(b, a);
-
-            Assert.Equal(a, actual);
-            Assert.Equal(a, actual2);
-        }
-        #endregion
-
-        #region Multiply
-        [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Multiply_TwoVectors_ReturnVector(float3 a, float3 b)
-        {
-            var actual = float3.Multiply(a, b);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
+        #region Rotate
 
         [Theory]
-        [MemberData(nameof(GetFloat3))]
-        public void Multiply_TwoVectors_ToVector(float3 a, float3 b)
+        [MemberData(nameof(GetEuler))]
+        public void Rotate_Euler(float3 euler, float3 vec, bool inDegrees, float3 expected)
         {
-            float3 actual;
-
-            float3.Multiply(ref a, ref b, out actual);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Fact]
-        public void Multiply_VectorScalar_ReturnVector()
-        {
-            var vec = new float3(1, 1, 1);
-            var scalar = 0;
-
-            var actual = float3.Multiply(vec, scalar);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Fact]
-        public void Multiply_VectorScalar_ToVector()
-        {
-            var vec = new float3(1, 1, 1);
-            var scalar = 0;
-            float3 actual;
-
-            float3.Multiply(ref vec, scalar, out actual);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-        #endregion
-
-        #region Normalize
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void Normalize_SameVector(float3 vec, float3 expected)
-        {
-            vec.Normalize();
-
-            Assert.Equal(expected.x, vec.x, 6);
-            Assert.Equal(expected.y, vec.y, 6);
-            Assert.Equal(expected.z, vec.z, 6);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void Normalize_ReturnVecotr(float3 vec, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.Normalize(vec);
-
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void Normalize_ToVector(float3 vec, float3 expected)
-        {
-            float3 actual;
-
-            float3.Normalize(ref vec, out actual);
-
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void NormalizeFast_SameVector(float3 vec, float3 expected)
-        {
-            vec.Normalize();
-
-            Assert.Equal(expected.x, vec.x, 6);
-            Assert.Equal(expected.y, vec.y, 6);
-            Assert.Equal(expected.z, vec.z, 6);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void NormalizeFast_ReturnVecotr(float3 vec, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.Normalize(vec);
-
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVectorNorm))]
-        public void NormalizeFast_ToVector(float3 vec, float3 expected)
-        {
-            float3 actual;
-
-            float3.Normalize(ref vec, out actual);
-
-            Assert.Equal(expected.x, actual.x, 6);
-            Assert.Equal(expected.y, actual.y, 6);
-            Assert.Equal(expected.z, actual.z, 6);
-        }
-
-        [Fact]
-        public void OrthoNormalize_NormTangent_ReturnArray()
-        {
-            var normal = new float3(5, 0, 0);
-            var tangent = new float3(4, 4, 4);
-
-            var actual = float3.OrthoNormalize(normal, tangent);
-
-            Assert.Equal(new float3(1,0,0), actual[0]);
-            Assert.Equal(0, actual[1].x, 3);
-            Assert.Equal(0.707f, actual[1].y, 3);
-            Assert.Equal(0.707f, actual[1].z, 3);
-        }
-        #endregion
-
-        #region Subtract
-        [Fact]
-        public void Subtract_TwoVectors_ReturnVector()
-        {
-            var a = new float3(1, 1, 1);
-
-            var actual = float3.Subtract(a, a);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-
-        [Fact]
-        public void Subtract_TwoVectors_ToVector()
-        {
-            var a = new float3(1, 1, 1);
-            float3 actual;
-
-            float3.Subtract(ref a, ref a, out actual);
-
-            Assert.Equal(new float3(0, 0, 0), actual);
-        }
-        #endregion
-
-        #region Transform
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void Transform_VectorAndMatrix_ReturnVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.Transform(vec, matrix);
+            var actual = float3.Rotate(euler, vec, inDegrees);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
         [MemberData(nameof(GetQuaternion))]
-        public void Transform_VectorAndQuaternion_ReturnVector(float3 vec, Quaternion quat, float3 expected)
+        public void Rotate_Quaternion(Quaternion quat, float3 vec, float3 expected)
         {
-            float3 actual;
-
-            actual = float3.Transform(vec, quat);
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetQuaternion))]
-        public void Transform_VectorAndQuaternion_ToVector(float3 vec, Quaternion quat, float3 expected)
-        {
-            float3 actual;
-
-            float3.Transform(ref vec, ref quat, out actual);
-
-            Assert.Equal(expected.x, actual.x, 3);
-            Assert.Equal(expected.y, actual.y, 3);
-            Assert.Equal(expected.z, actual.z, 3);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformNormal_VectorAndMatrix_ReturnVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.TransformNormal(vec, matrix);
+            var actual = float3.Rotate(quat, vec);
 
             Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformNormal_VectorAndMatrix_ToVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            float3.TransformNormal(ref vec, ref matrix, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformNormalInverse_VectorAndMatrix_ReturnVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.TransformNormalInverse(vec, matrix);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformNormalInverse_VectorAndMatrix_ToVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            float3.TransformNormalInverse(ref vec, ref matrix, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformPerspective_VectorAndMatrix_ToVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            vec.TransformPerspective(matrix);
-
-            Assert.Equal(expected, vec);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransfromPosition_VectorAndMatrix_ReturnVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.TransformPosition(vec, matrix);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransfromPosition_VectorAndMatrix_ToVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            float3.TransformPosition(ref vec, ref matrix, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformVector_VectorAndMatrix_ReturnVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            actual = float3.TransformVector(vec, matrix);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetRotationMatrix))]
-        public void TransformVector_VectorAndMatrix_ToVector(float3 vec, float4x4 matrix, float3 expected)
-        {
-            float3 actual;
-
-            float3.TransformVector(ref vec, ref matrix, out actual);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Other
-        [Fact]
-        public void Equal_IsEqual()
-        {
-            var a = new float3(1, 1, 1);
-            var b = new float3(1, 1, 1);
-
-            Assert.True(float3.Equals(a, b));
-        }
-
-        [Fact]
-        public void Equal_IsInequal()
-        {
-            var a = new float3(1, 1, 1);
-            var b = new float3(0, 0, 0);
-
-            Assert.False(float3.Equals(a, b));
-        }
-
-        //TODO: HashCode & Type
-        [Fact]
-        public void ToArray_VectorToFloat()
-        {
-            var vec = new float3(1, 2, 3);
-
-            var actual = vec.ToArray();
-
-            Assert.Equal(new float[] { 1, 2, 3 }, actual);
-        }
-
-        [Fact]
-        public void ToString_VectorToString()
-        {
-            var vec = new float3(1, 2, 3);
-
-            var actual = vec.ToString();
-
-            Assert.Equal("(1, 2, 3)", actual);
-        }
         #endregion
 
         #endregion
 
-        #region Constructors
-        [Fact]
-        public void Float3_fromDouble3()
-        {
-            var actual = new double3(1, 1, 1);
+        #region IEnumerables
 
-            Assert.Equal(new float3(1, 1, 1), new float3(actual));
+        public static IEnumerable<object[]> GetAddition()
+        {
+            var one = new float3(1, 1, 1);
+            var zero = new float3(0, 0, 0);
+
+            yield return new object[] { one, zero, one };
+            yield return new object[] { zero, one, one };
         }
 
-        [Fact]
-        public void Float3_fromFloat2()
+        public static IEnumerable<object[]> GetDivision()
         {
-            var actual = new float2(1, 1);
-
-            Assert.Equal(new float3(1, 1, 0), new float3(actual));
+            yield return new object[] { new float3(2, 2, 2), 2, new float3(1, 1, 1) };
         }
 
-        [Fact]
-        public void Float3_fromFloat3()
+        public static IEnumerable<object[]> GetMultiply()
         {
-            var actual = new float3(1, 1, 1);
+            var one = new float3(1, 1, 1);
 
-            Assert.Equal(new float3(1, 1, 1), new float3(actual));
+            yield return new object[] { 1, one, one };
+            yield return new object[] { 2, one, new float3(2, 2, 2) };
+            yield return new object[] { 0, one, new float3(0, 0, 0) };
         }
 
-        [Fact]
-        public void Float3_fromFloat4()
+        public static IEnumerable<object[]> GetSubtraction()
         {
-            var actual = new float4(1, 1, 1, 1);
-
-            Assert.Equal(new float3(1, 1, 1), new float3(actual));
+            yield return new object[] { new float3(1, 1, 1), new float3(1, 1, 1), new float3(0, 0, 0) };
         }
+
+        public static IEnumerable<object[]> GetTransform4D()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
+            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
+            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
+
+            yield return new object[] {y, xRot, z};
+            yield return new object[] {z, yRot, x};
+            yield return new object[] {x, zRot, y};
+        }
+
+        public static IEnumerable<object[]> GetTransform3D()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            var xRot = new float3x3(new float3(1, 0, 0), new float3(0, 0, -1), new float3(0, 1, 0));
+            var yRot = new float3x3(new float3(0, 0, 1), new float3(0, 1, 0), new float3(-1, 0, 0));
+            var zRot = new float3x3(new float3(0, -1, 0), new float3(1, 0, 0), new float3(0, 0, 1));
+
+            yield return new object[] { y, xRot, z };
+            yield return new object[] { z, yRot, x };
+            yield return new object[] { x, zRot, y };
+        }
+
+        public static IEnumerable<object[]> GetComponentMin()
+        {
+            yield return new object[] {new float3(1, 1, 1), new float3(2, 2, 2), new float3(1, 1, 1)};
+            yield return new object[] {new float3(2, 2, 2), new float3(1, 1, 1), new float3(1, 1, 1)};
+        }
+
+        public static IEnumerable<object[]> GetComponentMax()
+        {
+            yield return new object[] { new float3(1, 1, 1), new float3(2, 2, 2), new float3(2, 2, 2) };
+            yield return new object[] { new float3(2, 2, 2), new float3(1, 1, 1), new float3(2, 2, 2) };
+        }
+
+        public static IEnumerable<object[]> GetClamp()
+        {
+            var zero = new float3(0, 0, 0);
+            var one = new float3(1, 1, 1);
+
+            yield return new object[] {new float3(-1, -1, -1), zero, one, zero};
+            yield return new object[] {new float3(2, 2, 2), zero, one, one};
+            yield return new object[] {new float3(0.5f, 0.5f, 0.5f), zero, one, new float3(0.5f, 0.5f, 0.5f)};
+        }
+
+        public static IEnumerable<object[]> GetNormalize()
+        {
+            yield return new object[] {new float3(2, 0, 0), new float3(1, 0, 0)};
+            yield return new object[] {new float3(0, 2, 0), new float3(0, 1, 0)};
+            yield return new object[] {new float3(0, 0, 2), new float3(0, 0, 1)};
+            yield return new object[] {new float3(1, 1, 1), new float3(0.5773503f, 0.5773503f, 0.5773503f) };
+        }
+
+        public static IEnumerable<object[]> GetCross()
+        {
+            yield return new object[] {new float3(1, 1, 1), new float3(1, 1, 1), new float3(0, 0, 0)};
+            yield return new object[] {new float3(1, 1, 1), new float3(1, 2, 3), new float3(1, -2, 1)};
+        }
+
+        public static IEnumerable<object[]> GetLerp()
+        {
+            yield return new object[] {new float3(0, 0, 0), new float3(1, 1, 1), 0.5f, new float3(0.5f, 0.5f, 0.5f)};
+            yield return new object[] {new float3(0, 0, 0), new float3(1, 1, 1), 0, new float3(0, 0, 0)};
+            yield return new object[] {new float3(0, 0, 0), new float3(1, 1, 1), 1, new float3(1, 1, 1)};
+        }
+
+        public static IEnumerable<object[]> GetBarycentric()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            yield return new object[] {x, y, z, 1, 0, x};
+            yield return new object[] {x, y, z, 0, 1, y};
+            yield return new object[] {x, y, z, 0, 0, z};
+        }
+
+        public static IEnumerable<object[]> GetEuler()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            yield return new object[] {new float3(90, 0, 0), y, true, z};
+            yield return new object[] {new float3(0, 90, 0), z, true, x};
+            yield return new object[] {new float3(0, 0, 90), x, true, y};
+        }
+
+        public static IEnumerable<object[]> GetQuaternion()
+        {
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            yield return new object[] {new Quaternion(0.7071068f, 0, 0, 0.7071068f), y, z};
+            yield return new object[] {new Quaternion(0, 0.7071068f, 0, 0.7071068f), z, x};
+            yield return new object[] {new Quaternion(0, 0, 0.7071068f, 0.7071068f), x, y};
+        }
+
         #endregion
 
-        #region Properties
-        [Theory]
-        [MemberData(nameof(GetVecLength))]
-        public void Length_TestLength(float3 vec, float expected)
-        {
-            var actual = vec.Length;
-
-            Assert.Equal(expected, actual, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVecLength))]
-        public void LengthFast_TestLength(float3 vec, float expected)
-        {
-            var actual = vec.Length;
-
-            Assert.Equal(expected, actual, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetVecLength))]
-        public void Lengthsquared_TestLength(float3 vec, float expected)
-        {
-            var actual = vec.LengthSquared;
-            expected *= expected;
-
-            Assert.Equal(expected, actual, 5);
-        }
-        #endregion
     }
 }
