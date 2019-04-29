@@ -380,6 +380,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.Advan
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Desktop", "Engine\Examples\AdvancedUI\Desktop\Fusee.Engine.Examples.AdvancedUI.Desktop.csproj", "{F3242115-95AC-40A5-8F84-9D6EF5A41E15}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C} = {4B5EC54F-E0FB-4AA8-85E7-EB84843D5C7C}
+		{F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6} = {F7AD2BB5-D2B0-4697-BDDB-4CC26152A6B6}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.AdvancedUI.Web", "Engine\Examples\AdvancedUI\Web\Fusee.Engine.Examples.AdvancedUI.Web.csproj", "{CD802F18-4DF3-4D8E-88EA-ED90211ABB09}"
 	ProjectSection(ProjectDependencies) = postProject
