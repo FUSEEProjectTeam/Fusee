@@ -536,41 +536,55 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Transform
-        //TODO: Migrate???
+        #region Rotate
+
         /// <summary>
-        /// Transform a double3 by the given Matrix, and project the resulting double4 back to a double3
+        /// Rotates a vector by the given euler-angles in the following order: yaw (y-axis), pitch (x-axis), roll (z-axis).
         /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed vector
-        /// </returns>
-        public static double3 TransformPerspective(double3 vec, double4x4 mat)
+        /// <param name="euler">The angles used for the rotation.</param>
+        /// <param name="vec">The vector to rotate.</param>
+        /// <param name="inDegrees">Optional: Whether the angles are given in degrees (true) or radians (false). Defautl is radians.</param>
+        /// <returns>The rotated vector.</returns>
+        public static double3 Rotate(double3 euler, double3 vec, bool inDegrees = false)
         {
-            double3 result;
-            TransformPerspective(ref vec, ref mat, out result);
+            if (inDegrees)
+            {
+                euler.x = M.DegreesToRadiansD(euler.x);
+                euler.y = M.DegreesToRadiansD(euler.y);
+                euler.z = M.DegreesToRadiansD(euler.z);
+            }
+
+            double4x4 xRot = double4x4.CreateRotationX(euler.x);
+            double4x4 yRot = double4x4.CreateRotationY(euler.y);
+            double4x4 zRot = double4x4.CreateRotationZ(euler.z);
+
+            vec = double4x4.Transform(yRot, vec);
+            vec = double4x4.Transform(xRot, vec);
+            vec = double4x4.Transform(zRot, vec);
+
+            double3 result = vec;
+
             return result;
         }
 
         /// <summary>
-        /// Transform a double3 by the given Matrix, and project the resulting double4 back to a double3
+        /// Rotates a vector by the given quaternion.
         /// </summary>
-        /// <param name="vec">The vector to transform</param>
-        /// <param name="mat">The desired transformation</param>
-        /// <param name="result">The transformed vector</param>
-        public static void TransformPerspective(ref double3 vec, ref double4x4 mat, out double3 result)
+        /// <param name="quat">The quaternion used for the rotation.</param>
+        /// <param name="vec">The vector to rotate.</param>
+        /// <returns>The rotated vector.</returns>
+        public static double3 Rotate(QuaternionD quat, double3 vec)
         {
-            double4 v = new double4(vec);
-            double4.Transform(ref v, ref mat, out v);
-            result.x = v.x / v.w;
-            result.y = v.y / v.w;
-            result.z = v.z / v.w;
+            double3 temp, result;
+
+            temp = Cross(quat.xyz, vec) + quat.w * vec;
+            temp = Cross(2 * quat.xyz, temp);
+            result = vec + temp;
+
+            return result;
         }
 
         #endregion
-
-        //TODO: Rotate
 
         #region CalculateAngle
 

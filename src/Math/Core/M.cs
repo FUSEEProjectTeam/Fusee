@@ -415,6 +415,28 @@ namespace Fusee.Math.Core
             return radians * radToDeg;
         }
 
+        /// <summary>
+        /// Convert degrees to radians
+        /// </summary>
+        /// <param name="degrees">An angle in degrees</param>
+        /// <returns>The angle expressed in radians</returns>
+        public static double DegreesToRadiansD(double degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0f;
+            return degrees * degToRad;
+        }
+
+        /// <summary>
+        /// Convert radians to degrees
+        /// </summary>
+        /// <param name="radians">An angle in radians</param>
+        /// <returns>The angle expressed in degrees</returns>
+        public static double RadiansToDegreesD(double radians)
+        {
+            const double radToDeg = 180.0f / System.Math.PI;
+            return radians * radToDeg;
+        }
+
         #endregion
 
 

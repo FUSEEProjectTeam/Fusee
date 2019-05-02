@@ -1156,7 +1156,7 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double3"/> instance containing the result.</returns>
-        public static double3 TransformPD(double4x4 matrix, double3 vector)
+        public static double3 Transform(double4x4 matrix, double3 vector)
         {
             double w = (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + matrix.M44;
             return new double3(
@@ -1176,7 +1176,7 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double3"/> instance.</param>
         /// <returns>A new <see cref="double3"/> instance containing the result.</returns>
-        public static double3 TransformPremultPD(double3 vector, double4x4 matrix)
+        public static double3 TransformPremult(double3 vector, double4x4 matrix)
         {
             double w = (matrix.M14 * vector.x) + (matrix.M24 * vector.y) + (matrix.M34 * vector.z) + matrix.M44;
             return new double3(
@@ -1185,8 +1185,29 @@ namespace Fusee.Math.Core
                 ((matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + matrix.M43) / w);
         }
 
+        /// <summary>
+        /// Transform a double3 by the given Matrix, and project the resulting double4 back to a double3
+        /// </summary>
+        /// <param name="vec">The vector to transform</param>
+        /// <param name="mat">The desired transformation</param>
+        /// <returns>
+        /// The transformed vector
+        /// </returns>
+        public static double3 TransformPerspective(double3 vec, double4x4 mat)
+        {
+            double3 result = new double3();
+
+            double4 v = new double4(vec);
+            v = mat * v;
+            result.x = v.x / v.w;
+            result.y = v.y / v.w;
+            result.z = v.z / v.w;
+
+            return result;
+        }
+
         #endregion
-        
+
         #endregion
 
         #region Operators
@@ -1281,7 +1302,7 @@ namespace Fusee.Math.Core
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double3 operator *(double4x4 matrix, double3 vector)
         {
-            return TransformPD(matrix, vector);
+            return Transform(matrix, vector);
         }
 
         /// <summary>
@@ -1297,7 +1318,7 @@ namespace Fusee.Math.Core
         /// <returns>A new <see cref="double4"/> instance containing the result.</returns>
         public static double3 operator *(double3 vector, double4x4 matrix)
         {
-            return TransformPremultPD(vector, matrix);
+            return TransformPremult(vector, matrix);
         }
 
         #endregion

@@ -547,25 +547,6 @@ namespace Fusee.Math.Core
             return tmp /= tmp.w;
         }
 
-        //TODO: MIGRATE TO QUATERNION
-        /*
-        /// <summary>
-        /// Transforms a vector by a quaternion rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <returns>The result of the operation.</returns>
-        public static float4 Transform(float4 vec, Quaternion quat)
-        {
-            Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
-            Quaternion.Invert(ref quat, out i);
-            Quaternion.Multiply(ref quat, ref v, out t);
-            Quaternion.Multiply(ref t, ref i, out v);
-
-            return new float4(v.x, v.y, v.z, v.w);
-        }
-        */
-
         #endregion
 
         #region Round

@@ -511,43 +511,6 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region Transform
-
-
-        //TODO: MIGRATE?
-        /// <summary>
-        /// Transforms a vector by a QuaternionD rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The QuaternionD to rotate the vector by.</param>
-        /// <returns>
-        /// The result of the operation.
-        /// </returns>
-        public static double2 Transform(double2 vec, QuaternionD quat)
-        {
-            double2 result;
-            Transform(ref vec, ref quat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transforms a vector by a QuaternionD rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The QuaternionD to rotate the vector by.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Transform(ref double2 vec, ref QuaternionD quat, out double2 result)
-        {
-            QuaternionD v = new QuaternionD(vec.x, vec.y, 0, 0), i, t;
-            QuaternionD.Invert(ref quat, out i);
-            QuaternionD.Multiply(ref quat, ref v, out t);
-            QuaternionD.Multiply(ref t, ref i, out v);
-
-            result = new double2(v.x, v.y);
-        }
-
-        #endregion
-
         #endregion
 
         #region Operators

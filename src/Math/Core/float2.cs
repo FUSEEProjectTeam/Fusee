@@ -479,7 +479,7 @@ namespace Fusee.Math.Core
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
         /// <returns>
-        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
+        /// a when u=1,v=9, b when u=0,v=1, c when u=v=1, and a linear combination of a,b,c otherwise
         /// </returns>
         public static float2 Barycentric(float2 a, float2 b, float2 c, float u, float v)
         {
@@ -536,7 +536,9 @@ namespace Fusee.Math.Core
         public static bool PointInTriangle(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
         {
             GetBarycentric(a, b, c, point, out u, out v);
-            return u >= 0 && v >= 0 && u + v < 1;
+
+            //was previously  "u >= 0 && v >= 0 && u + v < 1;", which returned false for u=v=0 and u=1, v=0
+            return u >= 0 && v >= 0 && u + v <= 1;
         }
 
         /// <summary>
