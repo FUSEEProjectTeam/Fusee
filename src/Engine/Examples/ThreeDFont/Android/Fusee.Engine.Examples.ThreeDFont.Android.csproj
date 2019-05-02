@@ -113,6 +113,9 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
+    </Reference>
     <ProjectReference Include="..\Core\Fusee.Engine.Examples.ThreeDFont.Core.csproj">
       <Name>Fusee.Engine.Examples.ThreeDFont.Core</Name>
     </ProjectReference>

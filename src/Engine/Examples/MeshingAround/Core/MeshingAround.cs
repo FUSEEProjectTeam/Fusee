@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
@@ -95,7 +96,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -169,9 +170,13 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            sc.Children[0].Components.Insert(0, projComp);
+
             _renderer = new SceneRenderer(sc);
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
 
         }
@@ -180,7 +185,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         public override void RenderAFrame()
         {
 
-            // Clear the backbuffer
+            // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
@@ -193,7 +198,7 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
             var mtxCam = float4x4.LookAt(0, 0, -3, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             _renderer.Render(RC);
 
@@ -207,19 +212,8 @@ namespace Fusee.Engine.Examples.MeshingAround.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 2000000);
-            RC.Projection = projection;
 
         }
 

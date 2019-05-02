@@ -438,9 +438,7 @@ namespace Fusee.Math.Core
         }
 
         #endregion
-
-
-
+        
 
         #region MinAngle
         /// <summary>

@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
@@ -41,7 +40,7 @@ namespace Fusee.Engine.Examples.Picking.Web
                         if (Path.GetExtension(id).ToLower().Contains("fus"))
                         {
                             var ser = new Serializer();
-                            return ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer;
+                            return new ConvertSceneGraph().Convert(ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer);
                         }
                         return null;
                     },

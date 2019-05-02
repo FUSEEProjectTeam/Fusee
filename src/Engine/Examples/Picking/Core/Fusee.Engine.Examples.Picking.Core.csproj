@@ -36,6 +36,9 @@
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.CSharp">
+      <HintPath>C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.7.1\Microsoft.CSharp.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />

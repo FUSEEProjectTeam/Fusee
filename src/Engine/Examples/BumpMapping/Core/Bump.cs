@@ -1,9 +1,7 @@
 ﻿using System;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -53,22 +51,21 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            // convert scene graph is not called yet in this project, so we can add a bump texture and convert it afterwards
-            _scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            {
-                Intensity = 0.5f,
-                Texture = "bump.png"
-            };
 
-            _scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
-            {
-                Intensity = 1.0f,
-                Texture = "bump.png"
-            };
+            //TODO: export the correct material - with bump channel - from blender exporter
+            //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
 
+            //_scene.Children[0].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            //{
+            //    Intensity = 0.5f,
+            //    Texture = "bump.png"
+            //};
 
-            // now we can convert the scene
-            _scene = new ConvertSceneGraph().Convert(_scene);
+            //_scene.Children[0].Children[1].GetComponent<MaterialComponent>().Bump = new BumpChannelContainer
+            //{
+            //    Intensity = 1.0f,
+            //    Texture = "bump.png"
+            //};           
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -96,6 +93,10 @@ namespace Fusee.Engine.Examples.Bump.Core
                 else
                     _sceneScale = float4x4.Identity;
             }
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
 
@@ -191,7 +192,7 @@ namespace Fusee.Engine.Examples.Bump.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
             RC.Projection = mtxOffset * _projection;
 
@@ -209,18 +210,9 @@ namespace Fusee.Engine.Examples.Bump.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            _projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
+            
         }
     }
 }
