@@ -218,12 +218,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                      || os.Version.Major == 6 && os.Version.Minor >= 2)
                 )
             {
-                //    EnableMouseInPointer(false);
-                //    if (_handle.Handle != IntPtr.Zero)
-                //    {
-                //        _newWinProc = new WinProc(SpaceMouseWindowsProc);
-                //        _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
-                //    }
+                if (_handle.Handle != IntPtr.Zero)
+                {
+                    _newWinProc = new WinProc(SpaceMouseWindowsProc);
+                    _oldWndProc = SetWindowLongPtr(_handle, GWLP_WNDPROC, Marshal.GetFunctionPointerForDelegate(_newWinProc));
+                }
             }
         }
 
@@ -443,43 +442,48 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public enum SpaceMouseAxis
         {
+            /// <summary>
+            /// Translation axis in x direction.
+            /// </summary>
             TX = 0,
+            /// <summary>
+            /// Translation axis in y direction.
+            /// </summary>
             TY = 1,
+            /// <summary>
+            /// Translation axis in z direction. 
+            /// </summary>
             TZ = 2,
+            /// <summary>
+            /// Rotation around the x axis.
+            /// </summary>
             RX = 3,
+            /// <summary>
+            /// Rotation around the y axis.
+            /// </summary>
             RY = 4,
+            /// <summary>
+            /// Rotation around the z axis.
+            /// </summary>
             RZ = 5
         }
 
-
-        public void OnGameWinMouseMove(object sender, SpaceMouseAxis args)
+        /// <summary>
+        /// Event to listen to to get the SDOF motion.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public void HandleMotion(object sender, MotionEventArgs args)
         {
-            AxisDescription AxisDesc;
-            switch (args)
-            {
-                case SpaceMouseAxis.TX:
-                    AxisDesc = _TX.AxisDesc;
-                    break;
-                case SpaceMouseAxis.TY:
-                    AxisDesc = _TY.AxisDesc;
-                    break;
-                case SpaceMouseAxis.TZ:
-                    AxisDesc = _TZ.AxisDesc;
-                    break;
-                case SpaceMouseAxis.RX:
-                    AxisDesc = _RX.AxisDesc;
-                    break;
-                case SpaceMouseAxis.RY:
-                    AxisDesc = _RY.AxisDesc;
-                    break;
-                case SpaceMouseAxis.RZ:
-                    AxisDesc = _RZ.AxisDesc;
-                    break;
-                default:
-                    return;
+            var T = new Fusee.Serialization.TransformComponent();
 
-            }
+            T.Translation = new Fusee.Math.Core.float3(args.TX, args.TY, args.TZ);
+            T.Rotation = new Fusee.Math.Core.float3 (args.RX, args.RY, args.RZ);
+            return;
+            
+
         }
+        
 
         /// <summary>
         /// This device does not implement any Buttons.
@@ -517,7 +521,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             base.WndProc(ref msg);
         }
 
-        private void HandleMotion(object sender, MotionEventArgs args) => SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(args.TX, args.TY, args.TZ, args.RX, args.RY, args.RZ));
     }
     
     

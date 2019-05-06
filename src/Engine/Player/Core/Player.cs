@@ -45,8 +45,6 @@ namespace Fusee.Engine.Player.Core
         private FontMap _guiLatoBlack;
         private float _maxPinchSpeed;
 
-        var driver = WindowsSpaceMouseDriverImp(HandleMouse);
-
         // Init is called on startup. 
         public override void Init()
         {
@@ -99,10 +97,6 @@ namespace Fusee.Engine.Player.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
 
-            
-
-
-
 
 
 
@@ -114,7 +108,6 @@ namespace Fusee.Engine.Player.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -216,7 +209,6 @@ namespace Fusee.Engine.Player.Core
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);

@@ -10,7 +10,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SixDOFDevice : InputDevice
     {
-
+        
         /// <summary>
         /// Initializes a new instance of the <see cref="SixDOFDevice"/> class.
         /// </summary>
@@ -18,14 +18,20 @@ namespace Fusee.Engine.Core
         public SixDOFDevice(IInputDeviceImp inpDeviceImp) : base(inpDeviceImp)
         {
         }
-
         /// <summary>
         /// Gets the x value.
         /// </summary>
         /// <value>
         /// The SixDOF device´s deflection from its resting position in x direction.
         /// </value>
-        //public float X => AxisValueChanged += event;
+        //public float X
+        //{
+        //    get
+        //    {
+        //        float v = MotionEvent += eventlistener;
+        //        return v;
+        //    }
+        //}
 
         /// <summary>
         /// Gets the y value.
