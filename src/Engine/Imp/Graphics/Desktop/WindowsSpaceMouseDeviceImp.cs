@@ -19,7 +19,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
         WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDriverImp"/> class.
+        /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
         /// </summary>
         /// <param name="renderCanvas">The render canvas. Internally this must be a Windows canvas with a valid window handle.</param>
         /// <exception cref="System.ArgumentNullException">
@@ -251,11 +251,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             
             _gameWindow = gameWindow;
             SpaceMouseMoveEvent += eventListener;
+
             _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
+
             _current3DConnexionDevice = new _3DconnexionDevice(_handle.ToString());
             _current3DConnexionDevice.InitDevice((IntPtr)_handle);
 
             _current3DConnexionDevice.Motion += HandleMotion;
+            Application.Run(new Form());
+            
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
             _TX = new AxisImpDescription
@@ -346,10 +350,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             ConnectWindowsEvents();
         }
 
-        private void HandleMotion(object sender, MotionEventArgs e)
-        {
-            SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(e.TX, e.TY, e.TZ, e.RX, e.RY, e.RZ));
-        }
+        
         /// <summary>
         /// Descriptions of the available axes.
         /// </summary>
@@ -507,6 +508,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 #pragma warning restore 0067
 
+        
+        protected override void WndProc(ref Message msg)
+        {
+            if (_current3DConnexionDevice != null)
+                _current3DConnexionDevice.ProcessWindowMessage(msg.Msg, msg.WParam, msg.LParam);
+
+            base.WndProc(ref msg);
+        }
+
+        private void HandleMotion(object sender, MotionEventArgs args) => SpaceMouseMoveEvent?.Invoke(sender, new MotionEventArgs(args.TX, args.TY, args.TZ, args.RX, args.RY, args.RZ));
     }
+    
     
 }

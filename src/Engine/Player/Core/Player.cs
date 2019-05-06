@@ -45,6 +45,8 @@ namespace Fusee.Engine.Player.Core
         private FontMap _guiLatoBlack;
         private float _maxPinchSpeed;
 
+        var driver = WindowsSpaceMouseDriverImp(HandleMouse);
+
         // Init is called on startup. 
         public override void Init()
         {
