@@ -1,4 +1,4 @@
-﻿/* It is auto-generated file. Do not modify it. */
+/* It is auto-generated file. Do not modify it. */
 "use strict";
 
 var currentLogLine = null;
@@ -1112,6 +1112,7 @@ function browserFinishedLoadingCallback (loadFailures) {
   var fullscreenButton = document.getElementById("fullscreenButton");
   var loadingProgress = document.getElementById("loadingProgress");
   var stats = document.getElementById("stats");
+  var canvas = document.getElementById("canvas");
 
   $jsilbrowserstate.isLoading = false;
   $jsilbrowserstate.isLoaded = true;
@@ -1146,8 +1147,10 @@ function browserFinishedLoadingCallback (loadFailures) {
   } finally {
     $jsilbrowserstate.isMainRunning = false;
 
-    if (loadingProgress)
+    if (loadingProgress) {
       loadingProgress.style.display = "none";
+      canvas.style.display = "block";
+    }
   }
 };
 
