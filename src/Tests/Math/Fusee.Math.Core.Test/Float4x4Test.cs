@@ -66,126 +66,9 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region Operators
-        [Theory]
-        [MemberData(nameof(GetAddition))]
-        public void Addition_TwoMatrices_ReturnMatrix(float4x4 a, float4x4 b, float4x4 expected)
-        {
-            var actual = a + b;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Equality_IsEqual()
-        {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            Assert.True(a == b);
-        }
-
-        [Fact]
-        public void Equality_IsInequal()
-        {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            Assert.False(a == b);
-        }
-
-        [Fact]
-        public void Inequality_IsEqual()
-        {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            Assert.False(a != b);
-        }
-
-        [Fact]
-        public void Inequality_IsInequal()
-        {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            Assert.True(a != b);
-        }
-
-        [Fact]
-        public void Explicit_DoubleToFloat()
-        {
-            var d = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            var actual = (float4x4)d;
-
-            Assert.Equal(new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void Multiply_Float3Matrix(float3 vec, float4x4 matrix, float3 expected)
-        {
-            var actual = vec * matrix;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void Multiply_MatrixFloat3(float3 vec, float4x4 matrix, float3 expected)
-        {
-            var actual = matrix * vec;
-
-            Assert.Equal(expected, -actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat4))]
-        public void Multiply_MatrixFloat4(float4 vec, float4x4 matrix, float4 expected)
-        {
-            var actual = matrix * vec;
-
-            Assert.Equal(expected, -actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat4))]
-        public void Multiply_Float4Matrix(float4 vec, float4x4 matrix, float4 expected)
-        {
-            var actual = vec * matrix;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Fact]
-        public void Multiply_TwoMatrices()
-        {
-            var a = float4x4.Identity;
-            var b = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            var actual = a * b;
-            var actual2 = b * a;
-
-            Assert.Equal(b, actual);
-            Assert.Equal(b, actual2);
-        }
-
-        [Fact]
-        public void Subtraction_TwoMatrices_ReturnMatrix()
-        {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var expected = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            var actual = a - a;
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
         #region Constructors
         [Fact]
-        public void Float4x4_FromDouble4x4()
+        public void Constructor_FromDouble4x4()
         {
             var d = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
@@ -195,7 +78,7 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void Float4x4_FromFloat4()
+        public void Constructor_FromFloat4()
         {
             var actual = new float4x4(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), new float4(1, 1, 1, 1));
 
@@ -205,7 +88,7 @@ namespace Fusee.Math.Core
 
         #region Properties
         [Fact]
-        public void Column0_IsCoumn()
+        public void Column0_IsColumn()
         {
             var matrix = float4x4.Identity;
 
@@ -215,7 +98,7 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void Column1_IsCoumn()
+        public void Column1_IsColumn()
         {
             var matrix = float4x4.Identity;
 
@@ -225,7 +108,7 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void Column2_IsCoumn()
+        public void Column2_IsColumn()
         {
             var matrix = float4x4.Identity;
 
@@ -235,7 +118,7 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void Column3_IsCoumn()
+        public void Column3_IsColumn()
         {
             var matrix = float4x4.Identity;
 
@@ -279,633 +162,605 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region Methods
+        #region Instance
 
-        #region Arithmetic Functions
-        [Theory]
-        [MemberData(nameof(GetAddition))]
-        public void Add_TwoMatrices_ReturnMatrix(float4x4 a, float4x4 b, float4x4 expected)
+        [Fact]
+        public void Invert_Instance()
         {
-            var actual = float4x4.Add(a, b);
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
-            Assert.Equal(expected, actual);
+            var actual = mat.Invert();
+
+            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
 
         [Fact]
-        public void Substract_TwoMatrices_Returnmatrix()
+        public void Transpose_Instance()
         {
-            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
-            var actual = float4x4.Substract(a, a);
+            var actual = mat.Transpose();
 
-            Assert.Equal(float4x4.Zero, actual);
-        }
-        #endregion
-
-        #region CreateFromAxisAngle
-
-        [Theory]
-        [MemberData(nameof(GetAxisAngle))]
-        public void CreateFromAxisAngle_ReturnMatrix(float3 axis, float angle, float4x4 expected)
-        {
-            var actual = float4x4.CreateFromAxisAngle(axis, angle);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        #endregion
-
-        #region CreateOrthographic
-        [Theory]
-        [MemberData(nameof(GetOrthographic))]
-        public void CreateOrthographic_ReturnMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreateOrthographic(width, height, zNear, zFar);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetOrthographic))]
-        public void CreateOrthographicOffCenter_ReturnMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetOrthographic))]
-        public void CreateOrthographicOffCenterRH_ReturnMatrix(float width, float height, float zNear, float zFar, float4x4 expected)
-        {
-            var actual = float4x4.CreateOrthographicOffCenterRH(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(-expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-        #endregion
-
-        #region CreatePerspective
-        [Theory]
-        [MemberData(nameof(GetPerspectiveFOW))]
-        public void CreatePerspectiveFieldOfView_ReturnMatrix(float fovy, float aspect, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetPerspectiveOffCenter))]
-        public void CreatePerspectiveOffCenter_ReturnMatrix(float left, float right, float bottom, float top, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreatePerspectiveOffCenter(left, right, bottom, top, zNear, zFar);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetPerspectiveOffCenterRH))]
-        public void CreatePerspectiveOffCenterRH_ReturnMatrix(float left, float right, float bottom, float top, float zNear, float zFar, float4x4 expected)
-        {
-            float4x4 actual = float4x4.CreatePerspectiveOffCenterRH(left, right, bottom, top, zNear, zFar);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetPerspectiveOffCenterException))]
-        public void CreatePerspectiveOffCenterRH_ThrowException(float zNear, float zFar, string expected)
-        {
-            float4x4 matrix;
-
-            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.CreatePerspectiveOffCenterRH(-1, 1, -1, 1, zNear, zFar));
-
-            Assert.Equal(expected, actual.ParamName);
-        }
-        #endregion
-
-        #region CreateRotation
-        [Fact]
-        public void CreateRotationX_ReturnMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
-
-            actual = float4x4.CreateRotationX(1.5708f);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Fact]
-        public void CreateRotationY_ReturnMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
-
-            actual = float4x4.CreateRotationY(1.5708f);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        [Fact]
-        public void CreateRotationZ_ReturnMatrix()
-        {
-            float4x4 actual;
-            float4x4 expected = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
-
-            actual = float4x4.CreateRotationZ(1.5708f);
-
-            Assert.Equal(expected.M11, actual.M11, 5);
-            Assert.Equal(expected.M12, actual.M12, 5);
-            Assert.Equal(expected.M13, actual.M13, 5);
-            Assert.Equal(expected.M14, actual.M14, 5);
-            Assert.Equal(expected.M21, actual.M21, 5);
-            Assert.Equal(expected.M22, actual.M22, 5);
-            Assert.Equal(expected.M23, actual.M23, 5);
-            Assert.Equal(expected.M24, actual.M24, 5);
-            Assert.Equal(expected.M31, actual.M31, 5);
-            Assert.Equal(expected.M32, actual.M32, 5);
-            Assert.Equal(expected.M33, actual.M33, 5);
-            Assert.Equal(expected.M34, actual.M34, 5);
-            Assert.Equal(expected.M41, actual.M41, 5);
-            Assert.Equal(expected.M42, actual.M42, 5);
-            Assert.Equal(expected.M43, actual.M43, 5);
-            Assert.Equal(expected.M44, actual.M44, 5);
-        }
-
-        #endregion
-
-        #region CreateScale / Scale
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void CreateScale_Single_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreateScale(x);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void CreateScale_Float3_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-            float3 vec = new float3(x, y, z);
-
-            actual = float4x4.CreateScale(vec);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void CreateScale_3Singles_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreateScale(x, y, z);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void Scale_Single_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.Scale(x);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void Scale_Vector_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-            var vec = new float3(x, y, z);
-
-            actual = float4x4.Scale(vec);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetScale))]
-        public void Scale_3Singles_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.Scale(x, y, z);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region CreateTranslation
-        [Theory]
-        [MemberData(nameof(GetTranslation))]
-        public void CreateTranslation_Float3_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-            var vec = new float3(x, y, z);
-
-            actual = float4x4.CreateTranslation(vec);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTranslation))]
-        public void CreateTranslation_3Singles_ReturnMatrix(float x, float y, float z, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.CreateTranslation(x, y, z);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Invert
-        [Theory]
-        [MemberData(nameof(GetInvert))]
-        public void Invert_Instance(float4x4 matrix, float4x4 expected)
-        {
-            var actual = matrix.Invert();
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetInvert))]
-        public void Invert_Static(float4x4 matrix, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.Invert(matrix);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region LookAt
-        [Theory]
-        [MemberData(nameof(GetLookAt))]
-        public void LookAt_ThreeVectors_ReturnMatrix(float3 eye, float3 target, float3 up, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.LookAt(eye, target, up);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetLookAt))]
-        public void LookAt_Singles_ReturnMatrix(float3 eye, float3 target, float3 up, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.LookAt(eye.x, eye.y, eye.z, target.x, target.y, target.z, up.x, up.y, up.z);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetLookAtRH))]
-        public void LookAtRH_ThreeVectors_ReturnMatrix(float3 eye, float3 target, float3 up, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.LookAtRH(eye, target, up);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Mult
-        [Theory]
-        [MemberData(nameof(GetMult))]
-        public void Mult_TwoMatrices_ReturnMatrix(float4x4 left, float4x4 right, float4x4 expected)
-        {
-            float4x4 actual;
-
-            actual = float4x4.Mult(left, right);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Round
-        [Fact]
-        public void Round_Static()
-        {
-            var matrix = new float4x4(1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f);
-
-            var actual = float4x4.Round(matrix);
-
-            Assert.Equal(new float4x4(1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f), actual);
+            Assert.Equal(new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1), actual);
         }
 
         [Fact]
         public void Round_Instance()
         {
-            var actual = new float4x4(1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f, 1.2345671f);
+            var mat = new float4x4( 1.23456789f, 0, 0, 1.23456712f, 
+                                    0, 1.23456789f, 0, 1.23456712f, 
+                                    0, 0, 1.23456789f, 1.23456712f, 
+                                    0, 0, 0, 1.23456712f);
 
-            actual = actual.Round();
+            var expected = new float4x4(1.234568f, 0, 0, 1.234567f,
+                                        0, 1.234568f, 0, 1.234567f,
+                                        0, 0, 1.234568f, 1.234567f,
+                                        0, 0, 0, 1.234567f);
 
-            Assert.Equal(new float4x4(1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f, 1.234567f), actual);
+            var actual = mat.Round();
+
+            Assert.Equal(expected, actual);
         }
+
         #endregion
 
-        #region Transform
+        #region Methods
+
+        #region CreateFromAxisAngle
+
         [Theory]
-        [MemberData(nameof(GetTransformFloat4))]
-        public void Transform_MatrixVector_ReturnVector(float4 vector, float4x4 matrix, float4 expected)
+        [MemberData(nameof(GetAxisAngle))]
+        public void CreateFromAxisAngle_MainAxes(float3 axis, float angle, float4x4 expected)
         {
-            float4 actual;
+            var actual = float4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(90));
 
-            actual = float4x4.Transform(matrix, vector);
-
-            Assert.Equal(-expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void TransformPD_MatrixVector_ReturnVector(float3 vector, float4x4 matrix, float3 expected)
+        #endregion
+
+        #region CreateRotation[XYZ]
+
+        [Fact]
+        public void CreateRotationX_90Degrees()
         {
-            float3 actual;
+            var expected = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
 
-            actual = float4x4.Transform(matrix, vector);
+            var actual = float4x4.CreateRotationX(M.DegreesToRadians(90));
 
-            Assert.Equal(-expected, actual);
+            Assert.Equal(expected, actual);
         }
 
-        [Theory]
-        [MemberData(nameof(GetTransformFloat4))]
-        public void TransformPremult_VectorMatrix_ReturnVector(float4 vector, float4x4 matrix, float4 expected)
+        [Fact]
+        public void CreateRotationY_90Degrees()
         {
-            float4 actual;
+            var expected = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
 
-            actual = float4x4.TransformPremult(vector, matrix);
+            var actual = float4x4.CreateRotationY(M.DegreesToRadians(90));
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateRotationZ_90Degrees()
+        {
+            var expected = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateRotationZ(M.DegreesToRadians(90));
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CreateTranslation
+
+        [Fact]
+        public void CreateTranslation_Singles()
+        {
+            var expected = new float4x4(1, 0, 0, 4, 0, 1, 0, 3, 0, 0, 1, 2, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateTranslation(4, 3, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateTranslation_Vector()
+        {
+            var expected = new float4x4(1, 0, 0, 4, 0, 1, 0, 3, 0, 0, 1, 2, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateTranslation(new float3(4, 3, 2));
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Rotation matrix to euler representation
+
+        [Theory]
+        [MemberData(nameof(GetMatrixEuler))]
+        public void RotMatToEuler_MainAxes(float4x4 mat, float3 expected)
+        {
+            var actual = float4x4.RotMatToEuler(mat);
+
+            actual.x = M.RadiansToDegrees(actual.x);
+            actual.y = M.RadiansToDegrees(actual.y);
+            actual.z = M.RadiansToDegrees(actual.z);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CreateScale
+
+        [Fact]
+        public void CreateScale_Single()
+        {
+            var expected = new float4x4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateScale(2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateScale_ThreeSingles()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateScale(1, 2, 3);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateScale_Vector()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateScale(new float3(1, 2, 3));
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CreateOrthographic
+
+        [Fact]
+        public void CreateOrthographic_Test()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, -3, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateOrthographic(2, 2, 1, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateOrthographicOffCenter_Test()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, -3, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateOrthographicOffCenter(-1, 1, -1, 1, 1, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreateOrthographicOffCenterRH_Test()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -2, -3, 0, 0, 0, 1);
+
+            var actual = float4x4.CreateOrthographicOffCenterRH(-1, 1, -1, 1, 1, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CreatePerspective
+
+        [Fact]
+        public void CreatePerspectiveFieldOfView_Result()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, -4, 0, 0, 1, 0);
+
+            var actual = float4x4.CreatePerspectiveFieldOfView(M.DegreesToRadians(90), 1, 1, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreatePerspectiveOffCenter_Test()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, -4, 0, 0, 1, 0);
+
+            var actual = float4x4.CreatePerspectiveOffCenter(-1, 1, -1, 1, 1, 2);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void CreatePerspectiveOffCenterRH_Test()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -3, -4, 0, 0, -1, 0);
+
+            var actual = float4x4.CreatePerspectiveOffCenterRH(-1, 1, -1, 1, 1, 2);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void TransformPremultPD_VectorMatrix_ReturnVector(float3 vector, float4x4 matrix, float3 expected)
+        [MemberData(nameof(GetPerspectiveFOWException))]
+        public void CreatePerspectiveFieldOfView_Exceptions(float fovy, float aspect, float zNear, float zFar, string expected)
         {
-            float3 actual;
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() =>
+                float4x4.CreatePerspectiveFieldOfView(fovy, aspect, zNear, zFar));
 
-            actual = float4x4.TransformPremult(vector, matrix);
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetPerspectiveOffCenterException))]
+        public void CreatePerspectiveOffCenter_Exceptions(float zNear, float zFar, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() =>
+                float4x4.CreatePerspectiveOffCenter(-1, 1, -1, 1,  zNear, zFar));
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetPerspectiveOffCenterException))]
+        public void CreatePerspectiveOffCenter_ExceptionsRH(float zNear, float zFar, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() =>
+                float4x4.CreatePerspectiveOffCenterRH(-1, 1, -1, 1, zNear, zFar));
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        #endregion
+
+        #region Scale Functions
+
+        [Fact]
+        public void Scale_Single()
+        {
+            var expected = new float4x4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.Scale(2);
 
             Assert.Equal(expected, actual);
         }
+
+        [Fact]
+        public void Scale_Vector()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.Scale(new float3(1, 2, 3));
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void Scale_ThreeSingles()
+        {
+            var expected = new float4x4(1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 1);
+
+            var actual = float4x4.Scale(1,2,3);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region CameraHelper
+
+        //TODO: LookAt(float3s)
+        //TODO: LookAtRH
+        //TODO: LookAt(Singles)
+
+        #endregion
+
+        #region Arithmetic Functions
+
+        [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_Static(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = float4x4.Add(left, right);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Substract_Static(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = float4x4.Substract(left, right);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Mult_Static(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = float4x4.Mult(left, right);
+        }
+
+        #endregion
+
+        #region Invert
+
+        [Fact]
+        public void Invert_Static()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.Invert();
+
+            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
+        }
+
         #endregion
 
         #region Transpose
-        [Theory]
-        [MemberData(nameof(GetTranspose))]
-        public void Transpose_Static(float4x4 matrix, float4x4 expected)
-        {
-            float4x4 actual;
 
-            actual = float4x4.Transpose(matrix);
+        [Fact]
+        public void Transpose_Static()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.Transpose();
+
+            Assert.Equal(new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 1, 1, 1), actual);
+        }
+
+        #endregion
+
+        #region Transform
+
+        [Theory]
+        [MemberData(nameof(GetTransform4D))]
+        public void Transform_4D_Static(float4x4 mat, float4 vec, float4 expected)
+        {
+            var actual = float4x4.Transform(mat, vec);
 
             Assert.Equal(expected, actual);
         }
 
         [Theory]
-        [MemberData(nameof(GetTranspose))]
-        public void Transpose_Instance(float4x4 matrix, float4x4 expected)
+        [MemberData(nameof(GetTransform4D))]
+        public void TransformPremult_4D_Static(float4x4 mat, float4 vec, float4 expected)
         {
-            float4x4 actual = matrix.Transpose();
+            var actual = float4x4.TransformPremult(vec, mat);
+
+            Assert.Equal(expected, -actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransform3D))]
+        public void Transform_3D_Static(float4x4 mat, float3 vec, float3 expected)
+        {
+            var actual = float4x4.Transform(mat, vec);
 
             Assert.Equal(expected, actual);
         }
-        #endregion
 
-        #region Other
-        [Fact]
-        public void Equals_IsEqual()
+        [Theory]
+        [MemberData(nameof(GetTransform3D))]
+        public void TransformPremult_3D_Static(float4x4 mat, float3 vec, float3 expected)
         {
-            var mat1 = float4x4.Identity;
-            var mat2 = float4x4.Identity;
+            var actual = float4x4.TransformPremult(vec, mat);
 
-            Assert.True(mat1.Equals(mat2));
+            Assert.Equal(expected, -actual);
         }
 
         [Fact]
-        public void Equals_IsInequal()
+        public void TransformPerspective_3D()
         {
-            var mat1 = float4x4.Identity;
-            var mat2 = float4x4.Zero;
+            var mat = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 2);
+            var vec = new float3(0, 1, 0);
 
-            Assert.False(mat1.Equals(mat2));
+            var actual = float4x4.TransformPerspective(mat, vec);
+
+            Assert.Equal(new float3(0, 0, 0.5f), actual);
         }
-
-        //TODO: GetHashCode
-
-        //TODO: GetType
 
         [Fact]
-        public void ToStrin_IsString()
+        public void TransformPerspective_4D()
         {
-            var matrix = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+            var mat = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 2);
+            var vec = new float4(0, 1, 0, 1);
 
-            var actual = matrix.ToString();
+            var actual = float4x4.TransformPerspective(mat, vec);
 
-            Assert.Equal("(1, 0, 0, 0)\n(0, 1, 0, 0)\n(0, 0, 1, 0)\n(0, 0, 0, 1)", actual);
+            Assert.Equal(new float4(0, 0, 0.5f, 1), actual);
         }
-        #endregion
 
         #endregion
 
-        #region IEnumerables
-        public static IEnumerable<object[]> GetAddition()
+        #region Round
+
+        [Fact]
+        public void Round_Static()
+        {
+            var mat = new float4x4(1.23456789f, 0, 0, 1.23456712f,
+                0, 1.23456789f, 0, 1.23456712f,
+                0, 0, 1.23456789f, 1.23456712f,
+                0, 0, 0, 1.23456712f);
+
+            var expected = new float4x4(1.234568f, 0, 0, 1.234567f,
+                0, 1.234568f, 0, 1.234567f,
+                0, 0, 1.234568f, 1.234567f,
+                0, 0, 0, 1.234567f);
+
+            var actual = mat.Round();
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #endregion
+
+        #region Operators
+
+        [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_Operator(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = left + right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Subtract_Operator(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = left - right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Mult_Operator(float4x4 left, float4x4 right, float4x4 expected)
+        {
+            var actual = left * right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransform4D))]
+        public void Transform_4D_Operator(float4x4 mat, float4 vec, float4 expected)
+        {
+            var actual = mat * vec;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransform4D))]
+        public void TransformPremult_4D_Operator(float4x4 mat, float4 vec, float4 expected)
+        {
+            var actual = vec * mat;
+
+            Assert.Equal(expected, -actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransform3D))]
+        public void Transform_3D_Operator(float4x4 mat, float3 vec, float3 expected)
+        {
+            var actual = mat * vec;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransform3D))]
+        public void TransformPremult_3D_Operator(float4x4 mat, float3 vec, float3 expected)
+        {
+            var actual = vec * mat;
+
+            Assert.Equal(expected, -actual);
+        }
+
+        [Fact]
+        public void Equality_IsEqual()
+        {
+            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            Assert.True(a == b);
+        }
+
+        [Fact]
+        public void Equality_IsInequal()
         {
             var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
             var b = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            yield return new object[] { a, b, a };
-            yield return new object[] { b, a, a };
+            Assert.False(a == b);
         }
 
-        public static IEnumerable<object[]> GetTransformFloat3()
+        [Fact]
+        public void Inequality_IsEqual()
         {
-            var a = new float3(1, 0, 0);
-            var b = new float3(0, 1, 0);
-            var c = new float3(0, 0, 1);
+            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
-            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
-            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
-
-            yield return new object[] { b, xRot, -c };
-            yield return new object[] { a, yRot, c };
-            yield return new object[] { b, zRot, a };
+            Assert.False(a != b);
         }
 
-        public static IEnumerable<object[]> GetTransformFloat4()
+        [Fact]
+        public void Inequality_IsInequal()
         {
-            var a = new float4(1, 0, 0, 0);
-            var b = new float4(0, 1, 0, 0);
-            var c = new float4(0, 0, 1, 0);
+            var a = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
-            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
-            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
-
-            yield return new object[] { b, xRot, -c };
-            yield return new object[] { a, yRot, c };
-            yield return new object[] { b, zRot, a };
+            Assert.True(a != b);
         }
+
+        [Fact]
+        public void Cast_FromDouble4x4()
+        {
+            var mat = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            var actual = (float4x4) mat;
+
+            Assert.Equal(new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), actual);
+        }
+
+        #endregion
+
+        #region Overrides
+
+        [Fact]
+        public void ToString_IsString()
+        {
+            var mat = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+            var actual = mat.ToString();
+
+            Assert.Equal("(1, 0, 0, 0)\n(0, 1, 0, 0)\n(0, 0, 1, 0)\n(0, 0, 0, 1)", actual);
+        }
+
+        //TODO: GetHasCode
+        //TODO: Equals(obj)
+
+        #endregion
+
+        #region IEnumerables
 
         public static IEnumerable<object[]> GetAxisAngle()
         {
-            var x = new float3(1, 0, 0);
-            var y = new float3(0, 1, 0);
-            var z = new float3(0, 0, 1);
-
-            var angle = 1.5708f;
-
-            var xRot = new float4x4(new float4(1, 0, 0, 0), new float4(0, 0, -1, 0), new float4(0, 1, 0, 0), new float4(0, 0, 0, 1));
-            var yRot = new float4x4(new float4(0, 0, 1, 0), new float4(0, 1, 0, 0), new float4(-1, 0, 0, 0), new float4(0, 0, 0, 1));
-            var zRot = new float4x4(new float4(0, -1, 0, 0), new float4(1, 0, 0, 0), new float4(0, 0, 1, 0), new float4(0, 0, 0, 1));
-
-            yield return new object[] { x, angle, xRot };
-            yield return new object[] { y, angle, yRot };
-            yield return new object[] { z, angle, zRot };
+            yield return new object[]
+                {new float3(1, 0, 0), 90, new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1)};
+            yield return new object[]
+                {new float3(0, 1, 0), 90, new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1)};
+            yield return new object[]
+                {new float3(0, 0, 1), 90, new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)};
         }
 
-        public static IEnumerable<object[]> GetOrthographic()
+        public static IEnumerable<object[]> GetMatrixEuler()
         {
-            yield return new object[] { 2, 2, -1, 1, float4x4.Identity };
-        }
-
-        public static IEnumerable<object[]> GetPerspectiveFOW()
-        {
-            yield return new object[] { 1.5708f, 1, 1, 2, new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, -4, 0, 0, 1, 0) };
+            yield return new object[]
+                {new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1), new float3(90, 0, 0)};
+            yield return new object[]
+                {new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1), new float3(0, 90, 0)};
+            yield return new object[]
+                {new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1), new float3(0, 0, 90)};
         }
 
         public static IEnumerable<object[]> GetPerspectiveFOWException()
@@ -918,16 +773,6 @@ namespace Fusee.Math.Core
             yield return new object[] { 1, 1, 2, 1, "zNear" };
         }
 
-        public static IEnumerable<object[]> GetPerspectiveOffCenter()
-        {
-            yield return new object[] { -1, 1, -1, 1, 1, 2, new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 3, -4, 0, 0, 1, 0) };
-        }
-
-        public static IEnumerable<object[]> GetPerspectiveOffCenterRH()
-        {
-            yield return new object[] { -1, 1, -1, 1, 1, 2, new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -3, -4, 0, 0, -1, 0) };
-        }
-
         public static IEnumerable<object[]> GetPerspectiveOffCenterException()
         {
             yield return new object[] { 0, 2, "zNear" };
@@ -935,66 +780,70 @@ namespace Fusee.Math.Core
             yield return new object[] { 2, 1, "zNear" };
         }
 
-        public static IEnumerable<object[]> GetScale()
+        public static IEnumerable<object[]> GetAddition()
         {
-            yield return new object[] { 1, 1, 1, float4x4.Identity };
-            yield return new object[] { 2, 2, 2, new float4x4(2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 1) };
+            var zero = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            yield return new object[] {zero, one, one};
+            yield return new object[] {one, zero, one};
+            yield return new object[] {zero, zero, zero};
+            yield return new object[] {one, one, new float4x4(2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2)};
         }
 
-        public static IEnumerable<object[]> GetTranslation()
+        public static IEnumerable<object[]> GetSubtraction()
         {
-            yield return new object[] { 1, 1, 1, new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1) };
+            var zero = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            yield return new object[] {one, zero, one};
+            yield return new object[] {zero, zero, zero};
+            yield return new object[] {one, one, zero};
         }
 
-        public static IEnumerable<object[]> GetInvert()
+        public static IEnumerable<object[]> GetMultiply()
         {
-            yield return new object[] { new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1) };
-            yield return new object[] { float4x4.Identity, float4x4.Identity };
-            yield return new object[] { new float4x4(0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0), new float4x4(0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0) };
-            yield return new object[] { new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1), new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1) };
+            var zero = new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+            var one = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var id = new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+            yield return new object[] {one, zero, zero};
+            yield return new object[] {zero, one, zero};
+            yield return new object[] {one, one, new float4x4(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4)};
+            yield return new object[] {one, id, one};
+            yield return new object[] {id, one, one};
         }
 
-        public static IEnumerable<object[]> GetLookAt()
+        public static IEnumerable<object[]> GetTransform4D()
         {
-            yield return new object[] { new float3(1, 0, 0), new float3(0, 0, 0), new float3(0, 1, 0), new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1) };
-            yield return new object[] { new float3(0, 0, 1), new float3(0, 0, 0), new float3(0, 1, 0), new float4x4(-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, -1, 1, 0, 0, 0, 1) };
+            var x = new float4(1, 0, 0, 0);
+            var y = new float4(0, 1, 0, 0);
+            var z = new float4(0, 0, 1, 0);
+
+            var xRot = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+            var yRot = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
+            var zRot = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+            yield return new object[] {xRot, y, z};
+            yield return new object[] {yRot, z, x};
+            yield return new object[] {zRot, x, y};
         }
 
-        public static IEnumerable<object[]> GetLookAtRH()
+        public static IEnumerable<object[]> GetTransform3D()
         {
-            yield return new object[] { new float3(1, 0, 0), new float3(0, 0, 0), new float3(0, 1, 0), new float4x4(0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 1) };
-            yield return new object[] { new float3(0, 0, 1), new float3(0, 0, 0), new float3(0, 1, 0), new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -1, 0, 0, 0, 1) };
+            var x = new float3(1, 0, 0);
+            var y = new float3(0, 1, 0);
+            var z = new float3(0, 0, 1);
+
+            var xRot = new float4x4(1, 0, 0, 0, 0, 0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1);
+            var yRot = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1);
+            var zRot = new float4x4(0, -1, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1);
+
+            yield return new object[] { xRot, y, z };
+            yield return new object[] { yRot, z, x };
+            yield return new object[] { zRot, x, y };
         }
 
-        public static IEnumerable<object[]> GetMult()
-        {
-            var mat1 = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            yield return new object[] { mat1, float4x4.Identity, mat1 };
-            yield return new object[] { float4x4.Identity, mat1, mat1 };
-            yield return new object[] { mat1, float4x4.Zero, float4x4.Zero };
-            yield return new object[] { float4x4.Zero, mat1, float4x4.Zero };
-            yield return new object[] { mat1, mat1, new float4x4(4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4) };
-        }
-
-        public static IEnumerable<object[]> GetMultAffine()
-        {
-            var mat1 = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 1);
-
-            yield return new object[] { mat1, float4x4.Identity, mat1 };
-            yield return new object[] { float4x4.Identity, mat1, mat1 };
-            yield return new object[] { mat1, float4x4.Zero, new float4x4(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1) };
-            yield return new object[] { float4x4.Zero, mat1, new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1) };
-            yield return new object[] { mat1, mat1, new float4x4(3, 3, 3, 4, 3, 3, 3, 4, 3, 3, 3, 4, 0, 0, 0, 1) };
-        }
-
-        public static IEnumerable<object[]> GetTranspose()
-        {
-            yield return new object[] { new float4x4(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0), new float4x4(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) };
-            yield return new object[] { new float4x4(0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0), new float4x4(0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0) };
-            yield return new object[] { new float4x4(0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0), new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0) };
-            yield return new object[] { new float4x4(0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1), new float4x4(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1) };
-        }
         #endregion
     }
 }

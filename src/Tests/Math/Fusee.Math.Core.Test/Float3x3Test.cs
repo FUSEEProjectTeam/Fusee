@@ -145,116 +145,25 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Operators
-
-        [Theory]
-        [MemberData(nameof(GetAddition))]
-        public void Operator_Addition(float3x3 left, float3x3 right, float3x3 expected)
-        {
-            var actual = left + right;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetSubtraction))]
-        public void Operator_Subtraction(float3x3 left, float3x3 right, float3x3 expected)
-        {
-            var actual = left - right;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetMultiply))]
-        public void Operator_Multiplication(float3x3 left, float3x3 right, float3x3 expected)
-        {
-            var actual = left * right;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void Operator_Multiply_MatrixFloat3(float3x3 mat, float3 vec, float3 expected)
-        {
-            var actual = mat * vec;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat3))]
-        public void Operator_Multiply_Float3Matrix(float3x3 mat, float3 vec, float3 expected)
-        {
-            var actual = vec * mat;
-
-            Assert.Equal(expected, -actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat2))]
-        public void Operator_Multiply_MatrixFloat2(float3x3 mat, float2 vec, float2 expected)
-        {
-            var actual = mat * vec;
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetTransformFloat2))]
-        public void Operator_Multiply_Float2Matrix(float3x3 mat, float2 vec, float2 expected)
-        {
-            var actual = vec * mat;
-
-            Assert.Equal(expected, -actual);
-        }
+        #region Instance
 
         [Fact]
-        public void Operator_Equality_IsEqual()
+        public void Transpose_Instance()
         {
-            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
 
-            Assert.True((a == b));
-        }
+            var actual = mat.Transpose();
 
-        [Fact]
-        public void Operator_Equality_IsInequal()
-        {
-            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            Assert.False((a == b));
-        }
-
-        [Fact]
-        public void Operator_Inequality_IsEqual()
-        {
-            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-
-            Assert.False((a != b));
-        }
-
-        [Fact]
-        public void Operator_Inequality_IsInequal()
-        {
-            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
-            var b = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
-
-            Assert.True((a != b));
+            Assert.Equal(new float3x3(1, 2, 3, 1, 2, 3, 1, 2, 3), actual);
         }
 
         #endregion
-
-        #region Methods
 
         #region Arithmetic Functions
 
         [Theory]
         [MemberData(nameof(GetAddition))]
-        public void Add_IsOne(float3x3 left, float3x3 right, float3x3 expected)
+        public void Add_Static(float3x3 left, float3x3 right, float3x3 expected)
         {
             var actual = float3x3.Add(left, right);
 
@@ -263,7 +172,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetSubtraction))]
-        public void Substract_IsZero(float3x3 left, float3x3 right, float3x3 expected)
+        public void Substract_Static(float3x3 left, float3x3 right, float3x3 expected)
         {
             var actual = float3x3.Substract(left, right);
 
@@ -276,7 +185,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetMultiply))]
-        public void Mult_TestMultiply(float3x3 left, float3x3 right, float3x3 expected)
+        public void Mult_Static(float3x3 left, float3x3 right, float3x3 expected)
         {
             var actual = float3x3.Mult(left, right);
 
@@ -297,23 +206,13 @@ namespace Fusee.Math.Core
             Assert.Equal(new float3x3(1, 2, 3, 1, 2, 3, 1, 2, 3), actual);
         }
 
-        [Fact]
-        public void Transpose_Instance()
-        {
-            var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
-
-            var actual = mat.Transpose();
-
-            Assert.Equal(new float3x3(1, 2, 3, 1, 2, 3, 1, 2, 3), actual);
-        }
-
         #endregion
 
         #region Transform
 
         [Theory]
         [MemberData(nameof(GetTransformFloat3))]
-        public void Transform_MatrixFloat3(float3x3 mat, float3 vec, float3 expected)
+        public void Transform_MatrixFloat3_Static(float3x3 mat, float3 vec, float3 expected)
         {
             var actual = float3x3.Transform(mat, vec);
 
@@ -322,7 +221,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetTransformFloat3))]
-        public void Transform_Float3Matrix(float3x3 mat, float3 vec, float3 expected)
+        public void Transform_Float3Matrix_Static(float3x3 mat, float3 vec, float3 expected)
         {
             var actual = float3x3.Transform(vec, mat);
 
@@ -331,7 +230,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetTransformFloat2))]
-        public void Transform_MatrixFloat2(float3x3 mat, float2 vec, float2 expected)
+        public void Transform_MatrixFloat2_Static(float3x3 mat, float2 vec, float2 expected)
         {
             var actual = float3x3.Transform(mat, vec);
 
@@ -340,7 +239,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetTransformFloat2))]
-        public void Transform_Float2Matrix(float3x3 mat, float2 vec, float2 expected)
+        public void Transform_Float2Matrix_Static(float3x3 mat, float2 vec, float2 expected)
         {
             var actual = float3x3.Transform(vec, mat);
 
@@ -348,6 +247,124 @@ namespace Fusee.Math.Core
         }
 
         #endregion
+
+        #region Operators
+
+        [Theory]
+        [MemberData(nameof(GetAddition))]
+        public void Add_Operator(float3x3 left, float3x3 right, float3x3 expected)
+        {
+            var actual = left + right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetSubtraction))]
+        public void Subtract_Operator(float3x3 left, float3x3 right, float3x3 expected)
+        {
+            var actual = left - right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetMultiply))]
+        public void Mult_Operator(float3x3 left, float3x3 right, float3x3 expected)
+        {
+            var actual = left * right;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransformFloat3))]
+        public void Transform_MatrixFloat3_Operator(float3x3 mat, float3 vec, float3 expected)
+        {
+            var actual = mat * vec;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransformFloat3))]
+        public void Transform_Float3Matrix_Operator(float3x3 mat, float3 vec, float3 expected)
+        {
+            var actual = vec * mat;
+
+            Assert.Equal(expected, -actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransformFloat2))]
+        public void Transform_MatrixFloat2_Operator(float3x3 mat, float2 vec, float2 expected)
+        {
+            var actual = mat * vec;
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTransformFloat2))]
+        public void Transform_Float2Matrix_Operator(float3x3 mat, float2 vec, float2 expected)
+        {
+            var actual = vec * mat;
+
+            Assert.Equal(expected, -actual);
+        }
+
+        [Fact]
+        public void Equality_IsEqual()
+        {
+            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            Assert.True((a == b));
+        }
+
+        [Fact]
+        public void Equality_IsInequal()
+        {
+            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+            Assert.False((a == b));
+        }
+
+        [Fact]
+        public void Inequality_IsEqual()
+        {
+            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+
+            Assert.False((a != b));
+        }
+
+        [Fact]
+        public void Inequality_IsInequal()
+        {
+            var a = new float3x3(1, 1, 1, 1, 1, 1, 1, 1, 1);
+            var b = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
+
+            Assert.True((a != b));
+        }
+
+        #endregion
+
+        #region Overrides
+
+        [Fact]
+        public void ToString_IsString()
+        {
+            var mat = new float3x3(1, 2, 3, 3, 1, 2, 2, 3, 1);
+
+            var actual = mat.ToString();
+
+            Assert.Equal("(1, 2, 3)\n(3, 1, 2)\n(2, 3, 1)", actual);
+        }
+
+        //TODO: GetHashCode
+        //TODO: Equals(obj)
 
         #endregion
 

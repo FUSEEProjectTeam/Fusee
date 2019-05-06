@@ -104,6 +104,16 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Fact]
+        public void ToArray_IsArray()
+        {
+            var vec = new float2(1, 2);
+
+            var actual = vec.ToArray();
+
+            Assert.Equal(new float[] {1, 2}, actual);
+        }
+
         #endregion
 
         #region Arithmetic Functions
@@ -262,7 +272,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetLerp))]
-        public void Lerp(float2 left, float2 right, float blend, float2 expected)
+        public void Lerp_TestLerp(float2 left, float2 right, float blend, float2 expected)
         {
             var actual = float2.Lerp(left, right, blend);
 
@@ -488,6 +498,21 @@ namespace Fusee.Math.Core
             Assert.Equal(new float2(1, 2), vec.rg);
             Assert.Equal(1, vec.r);
             Assert.Equal(2, vec.g);
+        }
+
+        [Fact]
+        public void Color_Set()
+        {
+            var vec = new float2();
+
+            vec.rg = new float2(1, 2);
+
+            Assert.Equal(new float2(1, 2), vec);
+
+            vec.r = 0;
+            vec.g = 1;
+
+            Assert.Equal(new float2(0, 1), vec);
         }
 
         #endregion

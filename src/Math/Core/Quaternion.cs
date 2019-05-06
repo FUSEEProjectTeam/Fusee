@@ -108,48 +108,7 @@ namespace Fusee.Math.Core
         /// <returns>A float4 that is the axis-angle representation of this quaternion.</returns>
         public float4 ToAxisAngle()
         {
-            Quaternion q = this;
-
-            if (q.w > 1.0f)
-                q = q.Normalize();
-
-            var result = new float4 {w = 2.0f*(float) System.Math.Acos(q.w)};
-
-            // angle
-            var den = (float) System.Math.Sqrt(1.0 - q.w*q.w);
-
-            if (den > M.EpsilonFloat)
-            {
-                result.xyz = q.xyz/den;
-            }
-            else
-            {
-                // This occurs when the angle is zero. 
-                // Not a problem: just set an arbitrary normalized axis.
-                result.xyz = float3.UnitX;
-            }
-
-            return result;
-        }
-
-        #endregion
-
-        #region SetFromToRotation
-
-        /// <summary>
-        ///     Set this quaternion to the shortest rotation from to.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        [Obsolete ("Use Static Method instead")]
-        public void SetFromToRotation(float3 from, float3 to)
-        {
-            float3 a = float3.Cross(from, to);
-
-            xyz = a;
-            w = (float)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + float3.Dot(from, to));
-
-            Normalize();
+            return ToAxisAngle(this);
         }
 
         #endregion
@@ -361,7 +320,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region FromAxisAngle
+        #region AxisAngle
 
         /// <summary>
         ///     Build a quaternion from the given axis and angle
@@ -385,6 +344,32 @@ namespace Fusee.Math.Core
             result.w = (float) System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        public static float4 ToAxisAngle(Quaternion quat)
+        {
+            Quaternion q = quat;
+
+            if (q.w > 1.0f)
+                q = q.Normalize();
+
+            var result = new float4 { w = 2.0f * (float)System.Math.Acos(q.w) };
+
+            // angle
+            var den = (float)System.Math.Sqrt(1.0 - q.w * q.w);
+
+            if (den > M.EpsilonFloat)
+            {
+                result.xyz = q.xyz / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero. 
+                // Not a problem: just set an arbitrary normalized axis.
+                result.xyz = float3.UnitX;
+            }
+
+            return result;
         }
 
         #endregion

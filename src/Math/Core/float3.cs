@@ -227,6 +227,20 @@ namespace Fusee.Math.Core
             return result;
         }
 
+        /// <summary>
+        /// Adds a scalar to a instance.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
+        public static float3 Add(float3 vec, float scale)
+        {
+            var result = new float3(vec.x + scale, vec.y + scale, vec.z + scale);
+            return result;
+        }
+
         #endregion
 
         #region Subtract
@@ -242,6 +256,20 @@ namespace Fusee.Math.Core
         public static float3 Subtract(float3 a, float3 b)
         {
             var result = new float3(a.x - b.x, a.y - b.y, a.z - b.z);
+            return result;
+        }
+
+        /// <summary>
+        /// Adds a scalar from a instance.
+        /// </summary>
+        /// <param name="left">The first instance.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// The result of the calculation.
+        /// </returns>
+        public static float3 Subtract(float3 vec, float scale)
+        {
+            var result = new float3(vec.x - scale, vec.y - scale, vec.z - scale);
             return result;
         }
 
@@ -576,35 +604,6 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region Transform
-
-        //TODO: Migrate to float4x4
-        /// <summary>
-        /// Transform this instance by the given Matrix, and project the resulting float4 back to a float3
-        /// </summary>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>
-        /// The transformed vector
-        /// </returns>
-        public float3 TransformPerspective(float4x4 mat)
-        {
-            var v = new float4(this, 1.0f);
-            v = mat * v;
-            float3 result = new float3();
-
-            if (v.w > M.EpsilonFloat)
-            {
-                result.x = v.x / v.w;
-                result.y = v.y / v.w;
-                result.z = v.z / v.w;
-            }
-            else
-                result = Zero;
-            return result;
-        }
-
-        #endregion
-
         #region CalculateAngle
 
         /// <summary>
@@ -780,10 +779,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 operator +(float3 left, float scalar)
         {
-            left.x += scalar;
-            left.y += scalar;
-            left.z += scalar;
-            return left;
+            return Add(left, scalar);
         }
 
         /// <summary>
@@ -809,10 +805,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float3 operator -(float3 left, float scalar)
         {
-            left.x -= scalar;
-            left.y -= scalar;
-            left.z -= scalar;
-            return left;
+            return Subtract(left, scalar);
         }
 
         /// <summary>

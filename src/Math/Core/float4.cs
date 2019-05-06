@@ -534,21 +534,6 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Transform
-
-        //TODO: MIGRATE TO FLOAT4x4
-        
-        /// <summary>Transform this Vector by the given Matrix and apply a perspective division.</summary>
-        /// <param name="mat">The desired transformation</param>
-        /// <returns>The transformed vector.</returns>
-        public float4 TransformPerspective(float4x4 mat)
-        {
-            float4 tmp = mat * this;
-            return tmp /= tmp.w;
-        }
-
-        #endregion
-
         #region Round
 
         /// <summary>
@@ -576,91 +561,9 @@ namespace Fusee.Math.Core
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
 
         /// <summary>
-        /// Gets or sets an OpenTK.float2 with the x and z components of this instance.
-        /// </summary>
-        public float2 xz { get { return new float2(x, z); } set { x = value.x; z = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the x and w components of this instance.
-        /// </summary>
-        public float2 xw { get { return new float2(x, w); } set { x = value.x; w = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
-        /// </summary>
-        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the y and z components of this instance.
-        /// </summary>
-        public float2 yz { get { return new float2(y, z); } set { y = value.x; z = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the y and w components of this instance.
-        /// </summary>
-        public float2 yw { get { return new float2(y, w); } set { y = value.x; w = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the z and x components of this instance.
-        /// </summary>
-        public float2 zx { get { return new float2(z, x); } set { z = value.x; x = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the z and y components of this instance.
-        /// </summary>
-        public float2 zy { get { return new float2(z, y); } set { z = value.x; y = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the z and w components of this instance.
-        /// </summary>
-        public float2 zw { get { return new float2(z, w); } set { z = value.x; w = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the w and x components of this instance.
-        /// </summary>
-        public float2 wx { get { return new float2(w, x); } set { w = value.x; x = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the w and y components of this instance.
-        /// </summary>
-        public float2 wy { get { return new float2(w, y); } set { w = value.x; y = value.y; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float2 with the w and z components of this instance.
-        /// </summary>
-        public float2 wz { get { return new float2(w, z); } set { w = value.x; z = value.y; } }
-
-
-
-        /// <summary>
         /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
         /// </summary>
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
-        /// </summary>
-        public float3 xzy { get { return new float3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
-        /// </summary>
-        public float3 yzx { get { return new float3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
-        /// </summary>
-        public float3 yxz { get { return new float3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
-        /// </summary>
-        public float3 zxy { get { return new float3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
-
-        /// <summary>
-        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
-        /// </summary>
-        public float3 zyx { get { return new float3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
 
         #endregion
 

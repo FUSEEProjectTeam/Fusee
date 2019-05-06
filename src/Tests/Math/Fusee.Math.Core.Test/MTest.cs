@@ -5,177 +5,6 @@ namespace Fusee.Math.Core
 {
     public class MTest
     {
-        #region Methods
-
-        #region BinomialCoefficient
-        [Fact]
-        public void BinominalCoefficient_IsOne()
-        {
-            var k = 0;
-            var n = 1;
-
-            Assert.Equal(1, M.BinomialCoefficient(n, k));
-        }
-
-        #endregion
-
-        #region Clamp
-        [Theory]
-        [InlineData(2, 0, 1)]
-        [InlineData(0, 1, 2)]
-        public void Clamp_IsMinIsMax_float(float x, float min, float max)
-        {
-            Assert.Equal(1, M.Clamp(x, min, max));
-        }
-
-        [Theory]
-        [InlineData(2, 0, 1)]
-        [InlineData(0, 1, 2)]
-        public void Clamp_IsMinIsMax_double(double x, double min, double max)
-        {
-            Assert.Equal(1, M.Clamp(x, min, max));
-        }
-
-        #endregion
-
-        #region Trigonometry
-        [Theory]
-        [InlineData(0, 1)]
-        [InlineData(M.PiOver2, 0)]
-        [InlineData(M.TwoPi/2, -1)]
-        public void Cos_TestValues(float value, float expected)
-        {
-            var actual = M.Cos(value);
-
-            Assert.Equal(expected, actual, 5);
-        }
-
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(M.PiOver2, 1)]
-        [InlineData(M.TwoPi / 2, 0)]
-        public void Sin_TestValues(float value, float expected)
-        {
-            var actual = M.Sin(value);
-
-            Assert.Equal(expected, actual, 5);
-        }
-
-        #endregion
-
-        #region DegreesToRadians
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(90, M.PiOver2)]
-        public void DegreesToRadians_TestValues(float degree, float expected)
-        {
-            var actual = M.DegreesToRadians(degree);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(M.PiOver2, 90)]
-        public void RadiansToDegrees_TestValues(float radians, float expected)
-        {
-            var actual = M.RadiansToDegrees(radians);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Equals
-        [Fact]
-        public void Equals_IsEqual_Float()
-        {
-            var a = 1.0f;
-            var b = 1.0f;
-
-            Assert.True(M.Equals(a, b));
-        }
-
-        [Fact]
-        public void Equals_IsInequal_Float()
-        {
-            var a = 1.0f;
-            var b = 0.0f;
-
-            Assert.False(M.Equals(a, b));
-        }
-
-        [Fact]
-        public void Equals_IsEqual_Double()
-        {
-            var a = 1.0d;
-            var b = 1.0d;
-
-            Assert.True(M.Equals(a, b));
-        }
-
-        [Fact]
-        public void Equals_IsInequal_Double()
-        {
-            var a = 1.0d;
-            var b = 0.0d;
-
-            Assert.False(M.Equals(a, b));
-        }
-
-        #endregion
-
-        #region Factorial
-        [Theory]
-        [InlineData(1, 1)]
-        [InlineData(3, 6)]
-        [InlineData(5, 120)]
-        public void Factorial_TestValues(int value, int expected)
-        {
-            var actual = M.Factorial(value);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region Conversion
-        [Fact]
-        public void Float4ToABGR_TestMax()
-        {
-            var vec = new float4(1, 1, 1, 1);
-            uint expected = 4294967295;
-
-            var actual = M.Float4ToABGR(vec);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
-        #region InverseSqrtFast
-        [Theory]
-        [InlineData(1.0d, 1.0d)]
-        [InlineData(4.0d, 0.5d)]
-        public void InverseSqrtFast_Double(double value, double expected)
-        {
-            var actual = M.InverseSqrtFast(value);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(1.0f, 1.0f)]
-        [InlineData(4.0f, 0.5f)]
-        public void InverseSqrtFast_Float(float value, float expected)
-        {
-            var actual = M.InverseSqrtFast(value);
-
-            Assert.Equal(expected, actual);
-        }
-
-        #endregion
-
         #region Max
         [Fact]
         public void Max_Double()
@@ -314,162 +143,6 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region MinAngle
-        [Theory]
-        [InlineData(2.0 * System.Math.PI, 0)]
-        [InlineData(System.Math.PI, System.Math.PI)]
-        [InlineData(0, 0)]
-        public void MinAngle_Double(double angle, double expected)
-        {
-            var actual = M.MinAngle(angle);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(M.TwoPi, 0)]
-        [InlineData(M.Pi, M.Pi)]
-        [InlineData(0, 0)]
-        public void MinAngle_Float(float angle, float expected)
-        {
-            var actual = M.MinAngle(angle);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region NextPowerOfTwo
-        [Fact]
-        public void NextPowerOfTwo_Double()
-        {
-            double value = 2.01d;
-
-            var actual = M.NextPowerOfTwo(value);
-
-            Assert.Equal(4, actual);
-        }
-
-        [Fact]
-        public void NextPowerOfTwo_Int32()
-        {
-            Int32 value = 3;
-
-            var actual = M.NextPowerOfTwo(value);
-
-            Assert.Equal(4, actual);
-        }
-
-        [Fact]
-        public void NextPowerOfTwo_Int64()
-        {
-            Int64 value = 3;
-
-            var actual = M.NextPowerOfTwo(value);
-
-            Assert.Equal(4, actual);
-        }
-
-        [Fact]
-        public void NextPowerOfTwo_Single()
-        {
-            float value = 2.1f;
-
-            var actual = M.NextPowerOfTwo(value);
-
-            Assert.Equal(4, actual);
-        }
-
-        [Fact]
-        public void IsPowerOfTwo_True()
-        {
-            var actual = M.IsPowerOfTwo(4);
-
-            Assert.True(actual);
-        }
-
-        [Fact]
-        public void IsPowerOfTwo_False()
-        {
-            var actual = M.IsPowerOfTwo(3);
-
-            Assert.False(actual);
-        }
-        #endregion
-
-        #region Interpolate/Lerp
-        [Theory]
-        [InlineData(0.5f, 0.5f)]
-        [InlineData(0, 0)]
-        [InlineData(1, 1)]
-        public void SineStep_TestValues(float t, float expected)
-        {
-            var actual = M.SineStep(t);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(1, 1)]
-        [InlineData(0.5f, 0.5f)]
-        public void SmootherStep(float t, float expected)
-        {
-            var actual = M.SmootherStep(t);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(0, 0)]
-        [InlineData(1, 1)]
-        [InlineData(0.5f, 0.5f)]
-        public void SmoothStep(float t, float expected)
-        {
-            var actual = M.SmoothStep(t);
-
-            Assert.Equal(expected, actual);
-        }
-
-        [Theory]
-        [InlineData(0, 1, 0.5f, 0.5f)]
-        [InlineData(0, 1, 0, 0)]
-        [InlineData(0, 1, 1, 1)]
-        public void Lerp(float a, float b, float blend, float expected)
-        {
-            var actual = M.Lerp(a, b, blend);
-
-            Assert.Equal(expected, actual);
-        }
-        #endregion
-
-        #region Swap
-        [Fact]
-        public void Swap_Double()
-        {
-            double a = 0;
-            double b = 1;
-
-            M.Swap(ref a, ref b);
-
-            Assert.Equal(1, a);
-            Assert.Equal(0, b);
-        }
-
-        [Fact]
-        public void Swap_Single()
-        {
-            float a = 0;
-            float b = 1;
-
-            M.Swap(ref a, ref b);
-
-            Assert.Equal(1, a);
-            Assert.Equal(0, b);
-        }
-        #endregion
-
-        #endregion
-
         #region Fields
         [Fact]
         public void EpsilonFloat_IsEpsilon()
@@ -567,5 +240,329 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, M.Log2E);
         }
         #endregion
+
+        #region Trigonometry
+        [Theory]
+        [InlineData(0, 1)]
+        [InlineData(M.PiOver2, 0)]
+        [InlineData(M.TwoPi / 2, -1)]
+        public void Cos_TestValues(float value, float expected)
+        {
+            var actual = M.Cos(value);
+
+            Assert.Equal(expected, actual, 5);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(M.PiOver2, 1)]
+        [InlineData(M.TwoPi / 2, 0)]
+        public void Sin_TestValues(float value, float expected)
+        {
+            var actual = M.Sin(value);
+
+            Assert.Equal(expected, actual, 5);
+        }
+
+        #endregion
+
+        #region NextPowerOfTwo
+        [Fact]
+        public void NextPowerOfTwo_Double()
+        {
+            double value = 2.01d;
+
+            var actual = M.NextPowerOfTwo(value);
+
+            Assert.Equal(4, actual);
+        }
+
+        [Fact]
+        public void NextPowerOfTwo_Int32()
+        {
+            Int32 value = 3;
+
+            var actual = M.NextPowerOfTwo(value);
+
+            Assert.Equal(4, actual);
+        }
+
+        [Fact]
+        public void NextPowerOfTwo_Int64()
+        {
+            Int64 value = 3;
+
+            var actual = M.NextPowerOfTwo(value);
+
+            Assert.Equal(4, actual);
+        }
+
+        [Fact]
+        public void NextPowerOfTwo_Single()
+        {
+            float value = 2.1f;
+
+            var actual = M.NextPowerOfTwo(value);
+
+            Assert.Equal(4, actual);
+        }
+
+        [Fact]
+        public void IsPowerOfTwo_True()
+        {
+            var actual = M.IsPowerOfTwo(4);
+
+            Assert.True(actual);
+        }
+
+        [Fact]
+        public void IsPowerOfTwo_False()
+        {
+            var actual = M.IsPowerOfTwo(3);
+
+            Assert.False(actual);
+        }
+        #endregion
+
+        #region Factorial
+        [Theory]
+        [InlineData(1, 1)]
+        [InlineData(3, 6)]
+        [InlineData(5, 120)]
+        public void Factorial_TestValues(int value, int expected)
+        {
+            var actual = M.Factorial(value);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region BinomialCoefficient
+        [Fact]
+        public void BinominalCoefficient_IsOne()
+        {
+            var k = 0;
+            var n = 1;
+
+            Assert.Equal(1, M.BinomialCoefficient(n, k));
+        }
+
+        #endregion
+
+        #region InverseSqrtFast
+        [Theory]
+        [InlineData(1.0d, 1.0d)]
+        [InlineData(4.0d, 0.5d)]
+        public void InverseSqrtFast_Double(double value, double expected)
+        {
+            var actual = M.InverseSqrtFast(value);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(1.0f, 1.0f)]
+        [InlineData(4.0f, 0.5f)]
+        public void InverseSqrtFast_Float(float value, float expected)
+        {
+            var actual = M.InverseSqrtFast(value);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region DegreesToRadians
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(90, M.PiOver2)]
+        public void DegreesToRadians_TestValues(float degree, float expected)
+        {
+            var actual = M.DegreesToRadians(degree);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(M.PiOver2, 90)]
+        public void RadiansToDegrees_TestValues(float radians, float expected)
+        {
+            var actual = M.RadiansToDegrees(radians);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region MinAngle
+        [Theory]
+        [InlineData(2.0 * System.Math.PI, 0)]
+        [InlineData(System.Math.PI, System.Math.PI)]
+        [InlineData(0, 0)]
+        public void MinAngle_Double(double angle, double expected)
+        {
+            var actual = M.MinAngle(angle);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(M.TwoPi, 0)]
+        [InlineData(M.Pi, M.Pi)]
+        [InlineData(0, 0)]
+        public void MinAngle_Float(float angle, float expected)
+        {
+            var actual = M.MinAngle(angle);
+
+            Assert.Equal(expected, actual);
+        }
+        #endregion
+
+        #region Conversion
+        [Fact]
+        public void Float4ToABGR_TestMax()
+        {
+            var vec = new float4(1, 1, 1, 1);
+            uint expected = 4294967295;
+
+            var actual = M.Float4ToABGR(vec);
+
+            Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region Swap
+        [Fact]
+        public void Swap_Double()
+        {
+            double a = 0;
+            double b = 1;
+
+            M.Swap(ref a, ref b);
+
+            Assert.Equal(1, a);
+            Assert.Equal(0, b);
+        }
+
+        [Fact]
+        public void Swap_Single()
+        {
+            float a = 0;
+            float b = 1;
+
+            M.Swap(ref a, ref b);
+
+            Assert.Equal(1, a);
+            Assert.Equal(0, b);
+        }
+        #endregion
+
+        #region Clamp
+        [Theory]
+        [InlineData(2, 0, 1)]
+        [InlineData(0, 1, 2)]
+        public void Clamp_IsMinIsMax_float(float x, float min, float max)
+        {
+            Assert.Equal(1, M.Clamp(x, min, max));
+        }
+
+        [Theory]
+        [InlineData(2, 0, 1)]
+        [InlineData(0, 1, 2)]
+        public void Clamp_IsMinIsMax_double(double x, double min, double max)
+        {
+            Assert.Equal(1, M.Clamp(x, min, max));
+        }
+
+        #endregion
+
+        #region Interpolate/Lerp
+        [Theory]
+        [InlineData(0.5f, 0.5f)]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        public void SineStep_TestValues(float t, float expected)
+        {
+            var actual = M.SineStep(t);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(0.5f, 0.5f)]
+        public void SmootherStep(float t, float expected)
+        {
+            var actual = M.SmootherStep(t);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, 0)]
+        [InlineData(1, 1)]
+        [InlineData(0.5f, 0.5f)]
+        public void SmoothStep(float t, float expected)
+        {
+            var actual = M.SmoothStep(t);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Theory]
+        [InlineData(0, 1, 0.5f, 0.5f)]
+        [InlineData(0, 1, 0, 0)]
+        [InlineData(0, 1, 1, 1)]
+        public void Lerp(float a, float b, float blend, float expected)
+        {
+            var actual = M.Lerp(a, b, blend);
+
+            Assert.Equal(expected, actual);
+        }
+        #endregion
+
+        #region Equals
+        [Fact]
+        public void Equals_IsEqual_Float()
+        {
+            var a = 1.0f;
+            var b = 1.0f;
+
+            Assert.True(M.Equals(a, b));
+        }
+
+        [Fact]
+        public void Equals_IsInequal_Float()
+        {
+            var a = 1.0f;
+            var b = 0.0f;
+
+            Assert.False(M.Equals(a, b));
+        }
+
+        [Fact]
+        public void Equals_IsEqual_Double()
+        {
+            var a = 1.0d;
+            var b = 1.0d;
+
+            Assert.True(M.Equals(a, b));
+        }
+
+        [Fact]
+        public void Equals_IsInequal_Double()
+        {
+            var a = 1.0d;
+            var b = 0.0d;
+
+            Assert.False(M.Equals(a, b));
+        }
+
+        #endregion
+
     }
 }

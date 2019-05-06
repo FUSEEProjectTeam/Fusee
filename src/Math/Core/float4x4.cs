@@ -436,7 +436,8 @@ namespace Fusee.Math.Core
         /// Build a rotation matrix from the specified axis/angle rotation.
         /// </summary>
         /// <param name="axis">The axis to rotate about.</param>
-        /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
+        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>
+        /// <param name="inDegrees">Whether the angle is given in degrees or radians (Default false).</param>
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
@@ -1345,6 +1346,44 @@ namespace Fusee.Math.Core
                 ((matrix.M11 * vector.x) + (matrix.M21 * vector.y) + (matrix.M31 * vector.z) + matrix.M41) / w,
                 ((matrix.M12 * vector.x) + (matrix.M22 * vector.y) + (matrix.M32 * vector.z) + matrix.M42) / w,
                 ((matrix.M13 * vector.x) + (matrix.M23 * vector.y) + (matrix.M33 * vector.z) + matrix.M43) / w);
+        }
+
+        /// <summary>
+        /// Transforms a given 3D vector by a matrix, and projects the resulting float4 back to a float3.
+        /// </summary>
+        /// <param name="mat">The desired transformation matrix.</param>
+        /// <param name="vec">The given vector.</param>
+        /// <returns>The transformed vector.</returns>
+        public static float3 TransformPerspective(float4x4 mat, float3 vec)
+        {
+            var v = new float4(vec, 1.0f);
+            v = mat * v;
+            float3 result = new float3();
+
+            if (v.w > M.EpsilonFloat)
+            {
+                result.x = v.x / v.w;
+                result.y = v.y / v.w;
+                result.z = v.z / v.w;
+            }
+            else
+            {
+                result = float3.Zero;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Transforms the given vector by the given matrix and applies a perspective division.
+        /// </summary>
+        /// <param name="mat">The desired transformation.</param>
+        /// <param name="vec">The given vector.</param>
+        /// <returns>The transformed vector.</returns>
+        public static float4 TransformPerspective(float4x4 mat, float4 vec)
+        {
+            float4 tmp = mat * vec;
+            return tmp /= tmp.w;
         }
 
         #endregion
