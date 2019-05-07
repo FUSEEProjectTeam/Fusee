@@ -257,7 +257,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _current3DConnexionDevice.InitDevice((IntPtr)_handle);
 
             _current3DConnexionDevice.Motion += HandleMotion;
-            Application.Run(new Form());
+            //Application.Run(new Form());
+            
             
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
@@ -355,23 +356,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
 
-        
-                 
-    
 
 
-         
+
+
+
+
         /// <summary>
         /// Returns the name of the device.
         /// </summary>
-        public string Id
-        {
-
-            get
-            {
-                return _current3DConnexionDevice.DeviceName;
-            }
-        }
+        public string Id => _current3DConnexionDevice.DeviceName;
 
         /// <summary>
         /// Returns the description of this implementation.
@@ -475,10 +469,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="args"></param>
         public void HandleMotion(object sender, MotionEventArgs args)
         {
-            var T = new Fusee.Serialization.TransformComponent();
-
-            T.Translation = new Fusee.Math.Core.float3(args.TX, args.TY, args.TZ);
-            T.Rotation = new Fusee.Math.Core.float3 (args.RX, args.RY, args.RZ);
+            var T = new Serialization.TransformComponent
+            {
+                Translation = new Math.Core.float3(args.TX, args.TY, args.TZ),
+                Rotation = new Math.Core.float3(args.RX, args.RY, args.RZ)
+            };
             return;
             
 

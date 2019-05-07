@@ -19,10 +19,10 @@ namespace Fusee.Engine.Core
         {
         }
         /// <summary>
-        /// Gets the x value.
+        /// Gets the deflection values.
         /// </summary>
         /// <value>
-        /// The SixDOF device´s deflection from its resting position in x direction.
+        /// The SixDOF device´s deflection from its resting position.
         /// </value>
         //public float X
         //{
@@ -32,48 +32,7 @@ namespace Fusee.Engine.Core
         //        return v;
         //    }
         //}
-
-        /// <summary>
-        /// Gets the y value.
-        /// </summary>
-        /// <value>
-        /// The SixDOF device´s deflection from its resting position in y direction.
-        /// </value>
-        public float Y => GetAxis((int)SixDOF.YAxis);
-
-        /// <summary>
-        /// Gets the z value.
-        /// </summary>
-        /// <value>
-        /// The SixDOF device´s deflection from its resting position in z direction.
-        /// </value>
-        public float Z => GetAxis((int)SixDOF.ZAxis);
-
-        /// <summary>
-        /// Gets the x rotation value.
-        /// </summary>
-        /// <value>
-        /// The SixDOF device´s deflection from its resting position around the x axis.
-        /// </value>
-        public float XRot => GetAxis((int)SixDOF.XRotation);
-
-        /// <summary>
-        /// Gets the y rotation value.
-        /// </summary>
-        /// <value>
-        /// The SixDOF device´s deflection from its resting position around the y axis.
-        /// </value>
-        public float YRot => GetAxis((int)SixDOF.YRotation);
-
-        /// <summary>
-        /// Gets the z rotation value.
-        /// </summary>
-        /// <value>
-        /// The SixDOF device´s deflection from its resting position around the z axis.
-        /// </value>
-        public float ZRot => GetAxis((int)SixDOF.ZRotation);
         
-
 
         /// <summary>
         /// Retrieves information about the x axis.

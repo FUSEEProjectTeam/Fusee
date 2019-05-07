@@ -2,10 +2,16 @@
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements an empty shape as collision shape.
+    /// </summary>
     public class EmptyShape : CollisionShape
     {
         internal IEmptyShapeImp _emtyShapeImp;
         //Inherited
+        /// <summary>
+        /// Gets and sets the margin for the empty shape.
+        /// </summary>
         public override float Margin
         {
 

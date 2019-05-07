@@ -396,7 +396,14 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
       
-
+        /// <summary>
+        /// Returns the pixel color.
+        /// </summary>
+        /// <param name="x">The Red value.</param>
+        /// <param name="y">The green value.</param>
+        /// <param name="w">The blue value.</param>
+        /// <param name="h">The gamma value.</param>
+        /// <returns></returns>
         [JSExternal]
         public IImageData GetPixelColor(int x, int y, int w, int h)
         {
@@ -432,31 +439,51 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
-
+        /// <summary>
+        /// Sets the uv coordinates.
+        /// </summary>
+        ///// <param name="mr"> </param>
+        /// <param name="uvs">The uv coordinates.</param>
         [JSExternal]
         public void SetUVs(IMeshImp mr, float2[] uvs)
         {
             throw new System.NotImplementedException();
         }
-
+        /// <summary>
+        /// Sets the bitangents.
+        /// </summary>
+        ///// <param name="mr"> </param>
+        /// <param name="bitangents">The bitangent.</param>
         [JSExternal]
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Sets the tangents.
+        /// </summary>
+        ///// <param name="mr"> </param>
+        /// <param name="tangents">Two points on the tangent.</param>
         [JSExternal]
         public void SetTangents(IMeshImp mr, float4[] tangents)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Sets the normals.
+        /// </summary>
+        ///// <param name="mr"> </param>
+        /// <param name="normals">The normal.</param>
         [JSExternal]
         public void SetNormals(IMeshImp mr, float3[] normals)
         {
             throw new System.NotImplementedException();
         }
-
+        /// <summary>
+        /// Sets the vertices.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
+        /// <param name="vertices">The vertices.</param>
         [JSExternal]
         public void SetVertices(IMeshImp mesh, float3[] vertices)
         {
@@ -464,42 +491,66 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
 
-
+        /// <summary>
+        /// Removes the vertices from the mesh.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveVertices(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the normals.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveNormals(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the colors.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveColors(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the uvs.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveUVs(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the triangles.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveTriangles(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the bone weights.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveBoneWeights(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the bone indices.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveBoneIndices(IMeshImp mesh)
         {
             throw new NotImplementedException();
         }
-
+        /// <summary>
+        /// Removes the tangents.
+        /// </summary>
+        /// <param name="mesh">The mesh.</param>
         public void RemoveTangents(IMeshImp mesh)
         {
             throw new NotImplementedException();

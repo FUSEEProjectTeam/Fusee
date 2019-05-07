@@ -7,8 +7,15 @@ namespace Fusee.Serialization
     [ProtoContract]
     public class XFormTextComponent : SceneComponentContainer
     {
+        /// <summary>
+        /// The ui text size.
+        /// </summary>
         public float TextScaleFactor;
 
+        /// <summary>
+        /// Implements the text component in the ui.
+        /// </summary>
+        /// <param name="textScaleFactor">The text size.</param>
         public XFormTextComponent(float textScaleFactor = 1f)
         {
             TextScaleFactor = textScaleFactor;

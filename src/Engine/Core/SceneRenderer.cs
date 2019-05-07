@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
     public enum LightingCalculationMethod
     {
         /// <summary> 
-        /// Simple Blinn Phong Shading without fresnel & distribution function
+        /// Simple Blinn Phong Shading without fresnel and distribution function
         /// </summary>
         SIMPLE,
 

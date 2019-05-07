@@ -17,6 +17,9 @@ namespace Fusee.Base.Imp.Web
         }
 
         public bool UseKerning { get; set; }
+        /// <summary>
+        /// Gets and sets the pixel height.
+        /// </summary>
         public uint PixelHeight { get; set; }
 
         [JSExternal]

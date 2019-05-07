@@ -666,7 +666,13 @@ namespace _3DconnexionDriver
 
     public class DeviceChangeEventArgs : EventArgs
     {
+        /// <summary>
+        /// Device connection type.
+        /// </summary>
         public readonly EDeviceChangeType Type;
+        /// <summary>
+        /// The device ID.
+        /// </summary>
         public readonly int DeviceID;
 
         public DeviceChangeEventArgs(int deviceId, int type)
@@ -680,11 +686,22 @@ namespace _3DconnexionDriver
             }
         }
     }
-
+    /// <summary>
+    /// Device connection type.
+    /// </summary>
     public enum EDeviceChangeType
     {
+        /// <summary>
+        /// Device is connected.
+        /// </summary>
         CONNECTED,
+        /// <summary>
+        /// Device is disconnected
+        /// </summary>
         DISCONNECTED,
+        /// <summary>
+        /// Connection type unknown.
+        /// </summary>
         UNKNOWN
     }
 
@@ -692,7 +709,13 @@ namespace _3DconnexionDriver
 
     public class MotionEventArgs : EventArgs
     {
+        /// <summary>
+        /// Translation axes.
+        /// </summary>
         public readonly int TX, TY, TZ;
+        /// <summary>
+        /// Rotation axes.
+        /// </summary>
         public readonly int RX, RY, RZ;
 
         public MotionEventArgs(int tx, int ty, int tz, int rx, int ry, int rz)

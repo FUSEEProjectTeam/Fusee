@@ -755,7 +755,9 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// The color value.
+        /// </summary>
         protected float3 _col;
 
         /// <summary>
@@ -1570,7 +1572,11 @@ namespace Fusee.Engine.Core
                 _rci.SetRenderState(theKey, theValue);
             }
         }
-
+        /// <summary>
+        /// Returns the current render state.
+        /// </summary>
+        /// <param name="renderState"></param>
+        /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
             return _rci.GetRenderState(renderState);
@@ -1665,7 +1671,6 @@ namespace Fusee.Engine.Core
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
-        /// <param name="value"></param>
         internal void SetShaderParamT(EffectParam param)
         {
             if (param.Info.Type == typeof(int))
@@ -1708,7 +1713,11 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
         }
-      
+        /// <summary>
+        /// Returns the hardware capabilities.
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
