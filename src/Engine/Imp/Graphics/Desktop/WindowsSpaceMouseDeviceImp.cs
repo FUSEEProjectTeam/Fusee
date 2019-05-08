@@ -13,10 +13,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// Input driver implementation supporting Windows 8 spacemouse input.
     /// </summary>
-    public class WindowsSpaceMouseDriverImp : Form, IInputDriverImp
+    public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
         GameWindow _gameWindow;
-        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
+       
         WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
@@ -38,7 +38,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentNullException(nameof(_gameWindow));
 
 
-            _SMI = new WindowsSpaceMouseInputDeviceImp(_gameWindow, SpaceMouseMoveEvent);
+            _SMI = new WindowsSpaceMouseInputDeviceImp(_gameWindow);
         }
 
         /// <summary>
@@ -141,7 +141,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
-        public event EventHandler<MotionEventArgs> SpaceMouseMoveEvent;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
 
         // TODO: Add field for _3DConnexionDevice
@@ -244,12 +243,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="gameWindow">The game window to hook on to reveive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
-        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow, EventHandler<MotionEventArgs> eventListener)
+        public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow)
         {
-
-            
             _gameWindow = gameWindow;
-            SpaceMouseMoveEvent += eventListener;
 
             _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
 
@@ -257,9 +253,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _current3DConnexionDevice.InitDevice((IntPtr)_handle);
 
             _current3DConnexionDevice.Motion += HandleMotion;
-            //Application.Run(new Form());
             
-            
+            ConnectWindowsEvents();
+
             // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
             _TX = new AxisImpDescription
@@ -267,7 +263,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Translation X",
-                    Id = (int)SpaceMouseAxis.TX,
+                    Id = (int)SixDOFAxis.TX,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -281,7 +277,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Translation Y",
-                    Id = (int)SpaceMouseAxis.TY,
+                    Id = (int)SixDOFAxis.TY,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -295,7 +291,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Translation Z",
-                    Id = (int)SpaceMouseAxis.TZ,
+                    Id = (int)SixDOFAxis.TZ,
                     Direction = AxisDirection.Z,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -309,7 +305,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Rotation Y",
-                    Id = (int)SpaceMouseAxis.RX,
+                    Id = (int)SixDOFAxis.RX,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -323,7 +319,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Rotation X",
-                    Id = (int)SpaceMouseAxis.RY,
+                    Id = (int)SixDOFAxis.RY,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -337,7 +333,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 AxisDesc = new AxisDescription
                 {
                     Name = "Rotation Z",
-                    Id = (int)SpaceMouseAxis.RZ,
+                    Id = (int)SixDOFAxis.RZ,
                     Direction = AxisDirection.Z,
                     Nature = AxisNature.Position,
                     Bounded = AxisBoundedType.Constant,
@@ -347,7 +343,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 PollAxis = false
             };
 
-            ConnectWindowsEvents();
+            
         }
 
         
@@ -425,42 +421,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// All Axis are poll based.
+        /// All axes are event based.
         /// </summary>
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
-
-
-
-        /// <summary>
-        /// Declares the axes a spacemouse exposes.
-        /// </summary>
-        public enum SpaceMouseAxis
-        {
-            /// <summary>
-            /// Translation axis in x direction.
-            /// </summary>
-            TX = 0,
-            /// <summary>
-            /// Translation axis in y direction.
-            /// </summary>
-            TY = 1,
-            /// <summary>
-            /// Translation axis in z direction. 
-            /// </summary>
-            TZ = 2,
-            /// <summary>
-            /// Rotation around the x axis.
-            /// </summary>
-            RX = 3,
-            /// <summary>
-            /// Rotation around the y axis.
-            /// </summary>
-            RY = 4,
-            /// <summary>
-            /// Rotation around the z axis.
-            /// </summary>
-            RZ = 5
-        }
 
         /// <summary>
         /// Event to listen to to get the SDOF motion.
@@ -469,14 +432,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="args"></param>
         public void HandleMotion(object sender, MotionEventArgs args)
         {
-            var T = new Serialization.TransformComponent
+            if (AxisValueChanged != null)
             {
-                Translation = new Math.Core.float3(args.TX, args.TY, args.TZ),
-                Rotation = new Math.Core.float3(args.RX, args.RY, args.RZ)
-            };
-            return;
-            
-
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _TX.AxisDesc, Value = args.TX });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _TY.AxisDesc, Value = args.TY });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _TZ.AxisDesc, Value = args.TZ });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _RX.AxisDesc, Value = args.RX });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _RY.AxisDesc, Value = args.RY });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = _RZ.AxisDesc, Value = args.RZ });
+            }
+            if (ButtonValueChanged != null)
+            {
+                // TODO
+            }
         }
         
 

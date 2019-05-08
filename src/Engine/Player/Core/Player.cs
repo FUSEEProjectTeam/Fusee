@@ -19,8 +19,6 @@ namespace Fusee.Engine.Player.Core
     {
         public string ModelFile = "Model.fus";
 
-        private TransformComponent SpaceMouse;
-
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
@@ -44,6 +42,9 @@ namespace Fusee.Engine.Player.Core
 
         private FontMap _guiLatoBlack;
         private float _maxPinchSpeed;
+
+        InputDevice spaceMouse;
+        InputDevice gamePad;
 
         // Init is called on startup. 
         public override void Init()
@@ -97,15 +98,32 @@ namespace Fusee.Engine.Player.Core
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
 
+            gamePad = GetDevice<GamePadDevice>();
+    }
+            
+        
+        // TODO: SpaceMouse als convenience-KLassen-Instanz von SixDOF
+        // TODO: sollte null zurückliefern, wenn keine SpaceMouse/GamePad angesteckt ist!
+        // spaceMouse = Input.GetDevice<SixDOF>();
 
+        // TODO: Test,  ob Event bei Einstecken/Ausziehen von Spacemouse & Gamepad ausgelöst wird:
+        // Input.DeviceConnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!") ;
+        // Input.DeviceDisconnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!");
 
-
-        }
-
+        // TODO: SpaceMouse-Zugriff bei nicht installiertem Treiber:
+        //  - sollte nicht abstürzen
+        //  - Input.GetDevice<SixDOF>() sollte null zurückliefern 
+    
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            if (spaceMouse != null)
+            {
+                _angleHorz += spaceMouse.GetAxis((int)SixDOFAxis.RX) * 0.0005f;
+                _angleVert += spaceMouse.GetAxis((int)SixDOFAxis.RY) * 0.0005f;
+            }
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -141,8 +159,8 @@ namespace Fusee.Engine.Player.Core
             }
             {
                 
-                _angleVelHorz += -RotationSpeed * GamePad.LSX * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * GamePad.LSY * DeltaTime * 0.05f;
+                _angleVelHorz += -RotationSpeed * gamePad.GetAxis((int)Gamepad.LeftStickX) * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * gamePad.GetAxis((int)Gamepad.LeftStickY) * DeltaTime * 0.05f;
             }
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {

@@ -48,7 +48,6 @@ namespace Fusee.Engine.Core
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
     /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>, 
-    /// <see cref="GamePad"/> and <see cref="SDOF"/>
     /// without even typing a namespace or classname.
     /// </remarks>
     public class Input
@@ -182,52 +181,6 @@ namespace Fusee.Engine.Core
         public static KeyboardDevice Keyboard => Instance.KeyboardInput;
 
         /// <summary>
-        /// Retrieves the first GamePad device (if present).
-        /// </summary>
-        /// <value>
-        /// The GamePad (or null).
-        /// </value>
-        /// <remarks>
-        /// This is an instance property. Use <see cref="GamePad"/> for a static-over-singleton access
-        /// to the same functionality.
-        /// </remarks>
-        public GamePadDevice GamePadInput => GetInputDevice<GamePadDevice>();
-        /// <summary>
-        /// Retrieves the first GamePad device (if present).
-        /// </summary>
-        /// <value>
-        /// The GamePad (or null).
-        /// </value>
-        /// <remarks>
-        /// This is a static property. Use <see cref="GamePadInput"/> for an insatnce property 
-        /// to the same functionality.
-        /// </remarks>
-        public static GamePadDevice GamePad => Instance.GamePadInput;
-
-        /// <summary>
-        /// Retrieves the first SixDOF device (if present).
-        /// </summary>
-        /// <value>
-        /// The Device (or null).
-        /// </value>
-        /// <remarks>
-        /// This is an instance property. Use <see cref="SDOF"/> for a static-over-singleton access
-        /// to the same functionality.
-        /// </remarks>
-        public SixDOFDevice SixDOFInput => GetInputDevice<SixDOFDevice>();
-        /// <summary>
-        /// Retrieves the first SixDOF device (if present).
-        /// </summary>
-        /// <value>
-        /// The SixDOFDevice (or null).
-        /// </value>
-        /// <remarks>
-        /// This is a static property. Use <see cref="SixDOFInput"/> for an insatnce property 
-        /// to the same functionality.
-        /// </remarks>
-        public static SixDOFDevice SDOF => Instance.SixDOFInput;
-
-        /// <summary>
         /// Retrieves the first touch device (if present).
         /// </summary>
         /// <value>
@@ -329,8 +282,6 @@ namespace Fusee.Engine.Core
             RegisterInputDeviceType(new MatchFunc(delegate(IInputDeviceImp imp) { return imp.Category == DeviceCategory.Mouse; }),  new CreatorFunc(delegate(IInputDeviceImp imp) { return new MouseDevice(imp);}));
             RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Keyboard; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new KeyboardDevice(imp); }));
             RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Touch; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new TouchDevice(imp); }));
-            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.GameController; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new GamePadDevice(imp); }));
-            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.SixDOF; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new SixDOFDevice(imp); }));
             // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
             // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
         }

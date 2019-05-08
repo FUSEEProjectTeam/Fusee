@@ -32,15 +32,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _keyboard = new KeyboardDeviceImp(_gameWindow);
             _mouse = new MouseDeviceImp(_gameWindow);
             _gamePad = new GamePadDeviceImp(_gameWindow);
-            _spaceMouse = new SpaceMouseDeviceImp(_gameWindow);
         }
 
         private GameWindow _gameWindow;
         private KeyboardDeviceImp _keyboard;
         private MouseDeviceImp _mouse;
         private GamePadDeviceImp _gamePad;
-        private SpaceMouseDeviceImp _spaceMouse;
-
+ 
         /// <summary>
         /// Devices supported by this driver: One mouse and one keyboard.
         /// </summary>
@@ -51,8 +49,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _mouse;
                 yield return _keyboard;
                 yield return _gamePad;
-                yield return _spaceMouse;
-            }
+             }
         }
 
         /// <summary>
@@ -137,219 +134,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
     }
 
-    /// <summary>
-    /// Implements the Controls for a SixDOF device like a Spacmeouse
-    /// </summary>
-    public class SpaceMouseDeviceImp : IInputDeviceImp
-    {
-        private GameWindow _gameWindow;
-        /// <summary>
-        /// The id of the targetet input device.
-        /// </summary>
-        public int DeviceId = 0;
-
-        internal SpaceMouseDeviceImp(GameWindow window)
-        {
-            _gameWindow = window;
-        }
-        /// <summary>
-        /// Returns the name of the device
-        /// </summary>
-        public string Id
-        {
-
-            get
-            {
-                return GetType().FullName;
-            }
-        }
-
-        /// <summary>
-        /// Returns the description of this implementation
-        /// </summary>
-        public string Desc => "Standard spacemouse implementation";
-
-        /// <summary>
-        /// Returns the Category this device belongs in
-        /// </summary>
-        public DeviceCategory Category => DeviceCategory.SixDOF;
-
-        /// <summary>
-        /// Returns the number of Axes this device implements
-        /// </summary>
-        public int AxesCount => 6;
-
-        /// <summary>
-        /// Returns the descriptions for all axes of this device
-        /// </summary>
-        public IEnumerable<AxisImpDescription> AxisImpDesc
-        {
-            get
-            {
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal X",
-                        Id = 0,
-                        Direction = AxisDirection.X,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal Y",
-                        Id = 1,
-                        Direction = AxisDirection.Y,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Horizontal Z",
-                        Id = 2,
-                        Direction = AxisDirection.Z,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation Y",
-                        Id = 3,
-                        Direction = AxisDirection.Y,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation X",
-                        Id = 4,
-                        Direction = AxisDirection.X,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-                yield return new AxisImpDescription
-                {
-                    AxisDesc = new AxisDescription
-                    {
-                        Name = "Rotation Z",
-                        Id = 5,
-                        Direction = AxisDirection.Z,
-                        Nature = AxisNature.Position,
-                        Bounded = AxisBoundedType.Constant,
-                        MinValueOrAxis = -1,
-                        MaxValueOrAxis = 1
-                    },
-                    PollAxis = true
-                };
-            }
-        }
-
-        /// <summary>
-        /// This device does not reveal any Buttons
-        /// </summary>
-        public int ButtonCount => 0;
-
-        /// <summary>
-        /// This device does not implement any Buttons
-        /// </summary>
-        #pragma warning disable 0067
-        public IEnumerable<ButtonImpDescription> ButtonImpDesc
-        {
-            get
-            {
-                yield return new ButtonImpDescription
-                {
-                    ButtonDesc = new ButtonDescription
-                    {
-                        Name = "no buttons implemented",
-                        Id = 0
-                       
-                    },
-                    PollButton = false
-                };
-            }
-        }
-
-        /// <summary>
-        /// All Axis are poll based
-        /// </summary>
-        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
-
-        /// <summary>
-        /// This device does not implement any Buttons
-        /// </summary>
-        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-        #pragma warning restore 0067
-        /// <summary>
-        /// Returns the current value of the axis {AxisID}
-        /// </summary>
-        /// <param name="iAxisId"></param>
-        /// <returns></returns>
-        public float GetAxis(int iAxisId)
-        {
-
-            var currentAxis = Joystick.GetState(DeviceId)/*SixDOF.getAxis(DeviceID)*/;
-
-            switch (iAxisId)
-
-                {
-                case 0:
-                    return currentAxis.GetAxis((int)SixDOF.XAxis);
-                case 1:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.YAxis*/);
-                case 2:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.ZAxis*/);
-                case 3:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.XRotation*/);
-                case 4:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.YRotation*/);
-                case 5:
-                    return currentAxis.GetAxis(0/*(int)SixDOF.ZRotation*/);
-            }
-        throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
-        }
-
-        /// <summary>
-        /// This device does not implement any Buttons
-        /// </summary>
-        /// <param name="iButtonId"></param>
-        /// <returns></returns>
-        #pragma warning disable 0067
-        public bool GetButton(int iButtonId)
-        {
-            throw new NotImplementedException();
-        }
-#pragma warning restore 0067
-    }
 
     /// <summary>
     /// Implements a Gamepad Control option only works for XBox Gamepads

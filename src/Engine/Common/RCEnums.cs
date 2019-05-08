@@ -516,22 +516,36 @@ namespace Fusee.Engine.Common
     }
 
 
-
     /// <summary>
     /// The different axes a SixDOF device e.g. spacemouse exposes.
     /// </summary>
-    public enum SixDOF : int
+    public enum SixDOFAxis
     {
-#pragma warning disable 1591
-        XAxis = 0,
-        YAxis = 1,
-        ZAxis = 2,
-        XRotation = 3,
-        YRotation = 4,
-        ZRotation = 5
-#pragma warning restore 1591
+        /// <summary>
+        /// Translation axis in x direction.
+        /// </summary>
+        TX = 0,
+        /// <summary>
+        /// Translation axis in y direction.
+        /// </summary>
+        TY = 1,
+        /// <summary>
+        /// Translation axis in z direction. 
+        /// </summary>
+        TZ = 2,
+        /// <summary>
+        /// Rotation around the x axis.
+        /// </summary>
+        RX = 3,
+        /// <summary>
+        /// Rotation around the y axis.
+        /// </summary>
+        RY = 4,
+        /// <summary>
+        /// Rotation around the z axis.
+        /// </summary>
+        RZ = 5
     }
-
 
 
     /// <summary>
