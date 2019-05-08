@@ -19,7 +19,17 @@ namespace Fusee.Engine.Core
 
     // Two-phased creation. First check if a match is given, then create.
     // This allows for preparing steps if a match is detected before the creation occurs.
+    /// <summary>
+    /// Checks if there is a matching device available.
+    /// </summary>
+    /// <param name="device"></param>
+    /// <returns></returns>
     public delegate bool MatchFunc(IInputDeviceImp device);
+    /// <summary>
+    /// Creates the input device.
+    /// </summary>
+    /// <param name="device"></param>
+    /// <returns></returns>
     public delegate InputDevice CreatorFunc(IInputDeviceImp device);
 
     class SpecialDeviceCreator
@@ -332,7 +342,11 @@ namespace Fusee.Engine.Core
         ///     Provides the singleton Instance of the Input Class.
         /// </summary>
         public static Input Instance => _instance ?? (_instance = new Input());
-
+        /// <summary>
+        /// Registers the type of input device available.
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="creator"></param>
         public void RegisterInputDeviceType(MatchFunc match, CreatorFunc creator) 
         {
             if (match == null) throw new ArgumentNullException(nameof(match));

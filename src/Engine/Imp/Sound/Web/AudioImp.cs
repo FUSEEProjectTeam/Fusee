@@ -32,7 +32,12 @@ namespace Fusee.Engine.Imp.Sound.Web
         {
             throw new System.NotImplementedException();
         }
-
+        /// <summary>
+        /// Loads an audio file.
+        /// </summary>
+        /// <param name="fileName">The file name.</param>
+        /// <param name="streaming">Returns if the audio file is being streamed.</param>
+        /// <returns></returns>
         [JSExternal]
         public IAudioStreamImp LoadFile(string fileName, bool streaming)
         {

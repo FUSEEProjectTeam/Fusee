@@ -148,10 +148,25 @@ namespace Fusee.Base.Core
 
     public enum AsyncAssetState
     {
+        /// <summary>
+        /// No available state.
+        /// </summary>
         None,
+        /// <summary>
+        /// Asset is being downloaded.
+        /// </summary>
         Downloading,
+        /// <summary>
+        /// Asset is being processed.
+        /// </summary>
         Processing,
+        /// <summary>
+        /// State: done.
+        /// </summary>
         Done,
+        /// <summary>
+        /// State: failed.
+        /// </summary>
         Failed
     }
 }
