@@ -36,22 +36,45 @@ namespace Fusee.Engine.Examples.Picking.Core
 
         private bool _keys;
 
+        private const float ZNear = 1f;
+        private const float ZFar = 1000;
+        private float _aspectRatio;
+        private float _fovy = M.PiOver4;
+
 #if GUI_SIMPLE
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private float _initWindowWidth;
+        private float _initWindowHeight;
+        private float _initCanvasWidth;
+        private float _initCanvasHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
+
 #endif
         private PickResult _currentPick;
-        private float3 _oldColor;
+        private float4 _oldColor;
         private bool _pick;
         private float2 _pickPos;
 
         // Init is called on startup. 
         public override void Init()
         {
+            _initWindowWidth = Width;
+            _initWindowHeight = Height;
 
-            // Set the clear color for the backbuffer to white (100% intentsity in all color channels R, G, B, A).
+            _initCanvasWidth = Width / 100f;
+            _initCanvasHeight = Height / 100f;
+
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
+            _aspectRatio = Width / (float)Height;
+
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Create the robot model
@@ -60,6 +83,9 @@ namespace Fusee.Engine.Examples.Picking.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
+
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
 #if GUI_SIMPLE
             _gui = CreateGui();
@@ -128,14 +154,14 @@ namespace Fusee.Engine.Examples.Picking.Core
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
-                
+
                 PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
 #if WEBBUILD
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-                   
+
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
@@ -144,8 +170,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) ef.GetEffectParam("DiffuseColor"); // cast needed 
-                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat3(ColorUint.LawnGreen));
+                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
@@ -163,36 +189,33 @@ namespace Fusee.Engine.Examples.Picking.Core
                     if (newPick != null)
                     {
                         shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float3) shaderEffectComponent.DiffuseColor;
-                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat3(ColorUint.LawnGreen);
+                        _oldColor = (float4) shaderEffectComponent.DiffuseColor;
+                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat4(ColorUint.LawnGreen);
                     }
                     _currentPick = newPick;
+                }
 #endif
-
-
                 _pick = false;
             }
 
-            RC.ModelView = mtxCam * mtxRot;
-
+            RC.View = mtxCam * mtxRot;
+            // Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            _guiRenderer.Render(RC);
-#endif
-
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
+            _guiRenderer.Render(RC);          
+#endif           
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
@@ -209,25 +232,9 @@ namespace Fusee.Engine.Examples.Picking.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(MathHelper.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
-            _scenePicker.Projection = projection;
-
-#if GUI_SIMPLE
-            _sih.Projection = projection;
-#endif
-
+            
         }
 
 #if GUI_SIMPLE
@@ -251,22 +258,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                 psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
-                //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
-                },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, -0.5f),
-                    Max = new float2(1.75f, 0)
-                });
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
@@ -277,37 +274,27 @@ namespace Fusee.Engine.Examples.Picking.Core
                 "ButtonText",
                 vsTex,
                 psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 }
-            )
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
-                }
-            };
+            );
+            canvas.Children.Add(fuseeLogo);
+            canvas.Children.Add(text);
+
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
 
             return new SceneContainer
@@ -357,12 +344,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                             new TransformComponent { Scale = float3.One },
                            new MaterialComponent
                            {
-                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Red) },
-                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+                                Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Red) },
+                                Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                             },
                             CreateCuboid(new float3(100, 20, 100))
                         },
-                        Children = new List<SceneNodeContainer>
+                        Children = new ChildList
                         {
                             new SceneNodeContainer
                             {
@@ -372,12 +359,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                                     new TransformComponent {Translation=new float3(0, 60, 0),  Scale = float3.One },
                                    new MaterialComponent
                                     {
-                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Green) },
-                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Green) },
+                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                     },
                                     CreateCuboid(new float3(20, 100, 20))
                                 },
-                                Children = new List<SceneNodeContainer>
+                                Children = new ChildList
                                 {
                                     new SceneNodeContainer
                                     {
@@ -386,7 +373,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                         {
                                             new TransformComponent {Translation=new float3(-20, 40, 0),  Rotation = new float3(0.35f, 0, 0), Scale = float3.One},
                                         },
-                                        Children = new List<SceneNodeContainer>
+                                        Children = new ChildList
                                         {
                                             new SceneNodeContainer
                                             {
@@ -396,12 +383,12 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                     new MaterialComponent
                                                     {
-                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Yellow) },
-                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Yellow) },
+                                                        Specular = new SpecularChannelContainer {Color =ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                     },
                                                     CreateCuboid(new float3(20, 100, 20))
                                                 },
-                                                Children = new List<SceneNodeContainer>
+                                                Children = new ChildList
                                                 {
                                                     new SceneNodeContainer
                                                     {
@@ -410,7 +397,7 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                         {
                                                             new TransformComponent {Translation=new float3(20, 40, 0),  Rotation = new float3(0.25f, 0, 0), Scale = float3.One},
                                                         },
-                                                        Children = new List<SceneNodeContainer>
+                                                        Children = new ChildList
                                                         {
                                                             new SceneNodeContainer
                                                             {
@@ -420,8 +407,8 @@ namespace Fusee.Engine.Examples.Picking.Core
                                                                     new TransformComponent {Translation=new float3(0, 40, 0),  Scale = float3.One },
                                                                     new MaterialComponent
                                                                     {
-                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat3(ColorUint.Blue) },
-                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat3(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
+                                                                        Diffuse = new MatChannelContainer { Color = ColorUint.Tofloat4(ColorUint.Blue) },
+                                                                        Specular = new SpecularChannelContainer {Color = ColorUint.Tofloat4(ColorUint.White), Intensity = 1.0f, Shininess = 4.0f}
                                                                     },
                                                                     CreateCuboid(new float3(20, 100, 20))
                                                                 }

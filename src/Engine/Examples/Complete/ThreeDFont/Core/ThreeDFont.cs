@@ -6,6 +6,7 @@ using Fusee.Jometri;
 using Fusee.Math.Core;
 using static Fusee.Engine.Core.Input;
 using Fusee.Serialization;
+using Fusee.Xene;
 
 namespace Fusee.Engine.Examples.ThreeDFont.Core
 {
@@ -61,7 +62,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
             var parentNode = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>(),
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
             };
 
             var parentTrans = new TransformComponent
@@ -138,9 +139,13 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
 
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            sc.Children[0].Components.Insert(0, projComp);
+
             _renderer = new SceneRenderer(sc);
 
-            var shaderFX = new ShaderEffect(new EffectPassDeclaration[] {
+            var shaderFx = new ShaderEffect(new[] {
                 new EffectPassDeclaration
                 {
                     PS = AssetStorage.Get<string>("FragShader.frag"),
@@ -156,7 +161,7 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 new EffectParameterDeclaration { Name = "xform", Value = float4x4.Identity}
             });
 
-            RC.SetShaderEffect(shaderFX);
+            RC.SetShaderEffect(shaderFx);
 
             // Set the clear color for the backbuffer
             RC.ClearColor = new float4(0, 0.61f, 0.88f, 1);
@@ -176,10 +181,10 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
                 _beta -= speed.y * 0.0001f;
             }
 
-            // Create the camera matrix and set it as the current ModelView transformation.
+            // Create the camera matrix and set it as the current View transformation.
             var mtxRot = float4x4.CreateRotationX(_beta) * float4x4.CreateRotationY(_alpha);
             var mtxCam = float4x4.LookAt(0, 0, -80, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
+            RC.View = mtxCam * mtxRot * ModelXForm(new float3(-55, -8, 0), float3.Zero);
 
             _renderer.Render(RC);
 
@@ -187,19 +192,9 @@ namespace Fusee.Engine.Examples.ThreeDFont.Core
         }
 
         // Is called when the window was resized
-        public override void Resize()
+        public override void Resize(ResizeEventArgs e)
         {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(3.141592f * 0.25f, aspectRatio, 10f, 2000);
-            RC.Projection = projection;
+            
         }
 
         private static float4x4 ModelXForm(float3 pos, float3 pivot)

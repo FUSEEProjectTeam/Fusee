@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -22,20 +21,26 @@ namespace Fusee.Engine.Examples.Simple.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-        
+
         private SceneContainer _rocketScene;
         private SceneRenderer _sceneRenderer;
+
+        private const float ZNear = 1f;
+        private const float ZFar = 1000;
+        private float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private bool _keys;
 
-       // Init is called on startup. 
+        // Init is called on startup. 
         public override void Init()
         {
             _gui = CreateGui();
+            Resize(new ResizeEventArgs(Width, Height));
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -44,6 +49,10 @@ namespace Fusee.Engine.Examples.Simple.Core
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+
+            //Add resize delegate
+            var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_rocketScene);
@@ -85,7 +94,7 @@ namespace Fusee.Engine.Examples.Simple.Core
                 }
                 else
                 {
-                    var curDamp = (float) System.Math.Exp(-Damping * DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -97,19 +106,20 @@ namespace Fusee.Engine.Examples.Simple.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if(!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
+               
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -118,28 +128,13 @@ namespace Fusee.Engine.Examples.Simple.Core
             Present();
         }
 
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float) Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
-
-            _sih.Projection = projection;
-        }
-
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -156,56 +151,38 @@ namespace Fusee.Engine.Examples.Simple.Core
                 psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
-                //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
-                },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, -0.5f),
-                    Max = new float2(1.75f, 0)
-                });
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var latoFontMap = new FontMap(fontLato, 36);
+            var guiLatoBlack = new FontMap(fontLato, 18);
+
             var text = new TextNodeContainer(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
                 psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
-                latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }
-            )
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
             {
-                Children = new List<SceneNodeContainer>()
+                Children = new ChildList()
                 {
                     //Simple Texture Node, contains the fusee logo.
                     fuseeLogo,
@@ -213,6 +190,9 @@ namespace Fusee.Engine.Examples.Simple.Core
                 }
             };
 
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
             return new SceneContainer
             {
@@ -238,6 +218,5 @@ namespace Fusee.Engine.Examples.Simple.Core
         {
             OpenLink("http://fusee3d.org");
         }
-
     }
 }

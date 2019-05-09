@@ -36,7 +36,17 @@ namespace Fusee.Engine.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode;
+        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private float _initWindowWidth;
+        private float _initWindowHeight;
+        private float _initCanvasWidth;
+        private float _initCanvasHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
+
+        private float zNear = 1f;
+        private float zFar = 1000;
+        private float fov = M.PiOver4;
 
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
@@ -46,15 +56,13 @@ namespace Fusee.Engine.Examples.UI.Core
             var vsNineSlice = AssetStorage.Get<string>("nineSlice.vert");
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
-            _canvasRenderMode = CanvasRenderMode.SCREEN;
-            
-            var canvasScaleFactor = 0.01f;
+            var canvasScaleFactor = _initWindowWidth / _canvasWidth;
             float textSize = 2;
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 textSize *= canvasScaleFactor;
-                borderScaleFactor = 0.01f;
+                borderScaleFactor = canvasScaleFactor;
             }
 
             var text = new TextNodeContainer(
@@ -62,11 +70,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 "ButtonText",
                 vsTex,
                 psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 1)
-                },
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
                 new MinMaxRect
                 {
                     Min = new float2(1f, 0.5f),
@@ -81,29 +85,24 @@ namespace Fusee.Engine.Examples.UI.Core
                 AssetStorage.Get<string>("nineSliceTile.frag"),
                 //Set the diffuse texture you want to use.
                 new Texture(AssetStorage.Get<ImageData>("Kitti.jpg")),
+
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(1, 0) //Anchor is in the lower right corner of the parent
-                },
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(5.5f, 0),
-                    Max = new float2(-5.5f, 4f)
-                },
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 2.5f, 0), _initCanvasHeight, _initCanvasWidth, new float2(5, 4)),
                 //Choose in how many tiles you want to split the inner part of the texture. Use float2.one if you want it stretched.
                 new float2(5, 5),
                 //Tell how many percent of the texture, seen from the edges, belongs to the border. Order: left, right, top, bottom.
                 new float4(0.11f, 0.11f, 0.06f, 0.17f),
-                4,
+                4, 4, 4, 4,
                 borderScaleFactor
-                
-            ){ Children = new List<SceneNodeContainer> { text} };
+
+            )
+            { Children = new ChildList() { text } };
             catTextureNode.Components.Add(_btnCat);
 
             var bltTextureNode = new TextureNodeContainer(
@@ -115,19 +114,12 @@ namespace Fusee.Engine.Examples.UI.Core
                 //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 0) //Anchor is in the lower right corner of the parent
-                },
+                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT),//Anchor is in the lower left corner of the parent. Anchor is in the lower right corner of the parent.
+
                 //Define Offset and therefor the size of the element.
                 //Min: distance to this elements Min anchor.
                 //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(4, 4)
-                });
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(0, 0), _initCanvasHeight, _initCanvasWidth, new float2(4, 4)));
 
             var quagganTextureNode1 = new TextureNodeContainer(
                 "Quaggan1",
@@ -135,19 +127,12 @@ namespace Fusee.Engine.Examples.UI.Core
                 psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0), //Anchor is in the upper left corner.
-                    Max = new float2(1, 0) //Anchor is in the upper left corner.
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(2.5f, 0),
-                    Max = new float2(-2.5f, 1)
-                },
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(2.5f, 0), 3, 6, new float2(1, 1)),
+
                 new float2(1, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                1f,
+                1, 1, 1, 1,
                 borderScaleFactor
             );
 
@@ -157,17 +142,16 @@ namespace Fusee.Engine.Examples.UI.Core
                 psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("9SliceSprites-4.png")),
                 //In this setup the element will stay in the upper right corner of the parent and will not be stretched at all.
-                new MinMaxRect
-                {
-                    Min = new float2(1, 1), //Anchor is in the upper right corner.
-                    Max = new float2(1, 1) //Anchor is in the upper right corner.
-                },
-                new MinMaxRect {Min = new float2(-6, -3f), Max = new float2(0, 0)},
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_RIGHT),//Anchor is in the upper right corner.//Anchor is in the upper right corner.
+
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_RIGHT, new float2(_initCanvasWidth - 6, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 3)),
+
                 new float2(2, 3),
                 new float4(0.1f, 0.1f, 0.1f, 0.1f),
-                2.5f,
+                2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
-            ) {Children = new List<SceneNodeContainer> {text, quagganTextureNode1}};
+            )
+            { Children = new ChildList() { text, quagganTextureNode1 } };
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -175,19 +159,39 @@ namespace Fusee.Engine.Examples.UI.Core
                 psNineSlice,
                 new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
                 //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the upper left corner.
-                    Max = new float2(0, 1) //Anchor is in the upper left corner.
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(0, -1),
-                    Max = new float2(6, 0)
-                },
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 1), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
                 new float2(5, 1),
                 new float4(0.1f, 0.1f, 0.1f, 0.09f),
-                1f,
+                1, 1, 1, 1,
+                borderScaleFactor
+            );
+
+            var quagganTextureNode2 = new TextureNodeContainer(
+                "Quaggan",
+                vsNineSlice,
+                psNineSlice,
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT), //Anchor is in the lower right corner.Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 3), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                new float2(5, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                1, 1, 1, 1,
+                borderScaleFactor
+            );
+
+            var quagganTextureNode3 = new TextureNodeContainer(
+                "Quaggan",
+                vsNineSlice,
+                psNineSlice,
+                new Texture(AssetStorage.Get<ImageData>("testTex.jpg")),
+                //In this setup the element will stay in the upper left corner of the parent and will not be stretched at all.
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_VERTICAL), //Anchor is in the lower right corner. Anchor is in the lower left corner.
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_VERTICAL, new float2(0, _initCanvasHeight - 5), _initCanvasHeight, _initCanvasWidth, new float2(6, 1)),
+                new float2(5, 1),
+                new float4(0.1f, 0.1f, 0.1f, 0.09f),
+                1, 1, 1, 1,
                 borderScaleFactor
             );
 
@@ -196,28 +200,36 @@ namespace Fusee.Engine.Examples.UI.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }, canvasScaleFactor)
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
                 {
-                    Children = new List<SceneNodeContainer>()
-                    {
-                        //Simple Texture Node, contains a Blt"ed" texture.
-                        bltTextureNode,
-                        //Add nine sliced textures to canvas
-                        catTextureNode,
-                        quagganTextureNode,
-                        nineSliceTextureNode
-                    }
-                };
-            
+                    //Simple Texture Node, contains a Blt"ed" texture.
+                    bltTextureNode,
+                    //Add nine sliced textures to canvas
+                    catTextureNode,
+                    quagganTextureNode,
+                    nineSliceTextureNode,
+                    quagganTextureNode2,
+                    quagganTextureNode3
+                }
+            };
+
             var canvasMat = new ShaderEffectComponent
             {
                 Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
                 {
-                    Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0,1) },
                 })
             };
+
+            var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
+            var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
+            canvas.Components.Insert(0,projComp);
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -249,7 +261,7 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer {Color = new float3(1, 0.4f, 0.1f)},
+                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f,1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -260,7 +272,7 @@ namespace Fusee.Engine.Examples.UI.Core
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer {Color = new float3(1, 0, 0)},
+                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0,1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -301,6 +313,21 @@ namespace Fusee.Engine.Examples.UI.Core
         // Init is called on startup. 
         public override void Init()
         {
+            _initWindowWidth = Width;
+            _initWindowHeight = Height;
+            if (_canvasRenderMode == CanvasRenderMode.SCREEN)
+            {
+                _initCanvasWidth = Width / 100f;
+                _initCanvasHeight = Height / 100f;
+            }
+            else
+            {
+                _initCanvasWidth = 16;
+                _initCanvasHeight = 9;
+            }
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
@@ -335,7 +362,7 @@ namespace Fusee.Engine.Examples.UI.Core
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
-
+                        
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);
 
@@ -378,7 +405,7 @@ namespace Fusee.Engine.Examples.UI.Core
                 }
                 else
                 {
-                    var curDamp = (float) System.Math.Exp(-Damping * Time.DeltaTime);
+                    var curDamp = (float)System.Math.Exp(-Damping * Time.DeltaTime);
                     _angleVelHorz *= curDamp;
                     _angleVelVert *= curDamp;
                 }
@@ -392,37 +419,25 @@ namespace Fusee.Engine.Examples.UI.Core
                 mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
 
             var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
 
-            // Render the scene loaded in Init()
+            RC.View = mtxCam * mtxRot;
+
             _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            if (!Input.Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+
+            if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float) Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.1f, 20000);
-            RC.Projection = projection;
-            _sih.Projection = projection;
-        }
+        }        
     }
 }

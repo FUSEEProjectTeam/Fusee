@@ -22,7 +22,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bone\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -46,7 +46,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Android</OutputPath>
+    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Bone\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -112,6 +112,9 @@
     </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
     </Reference>
   </ItemGroup>
   <ItemGroup>

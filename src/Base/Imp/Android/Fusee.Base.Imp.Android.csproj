@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ApkAssetProvider.cs" />
+    <Compile Include="FileDecoder.cs" />
     <Compile Include="FontImp.cs" />
     <Compile Include="IOImp.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />

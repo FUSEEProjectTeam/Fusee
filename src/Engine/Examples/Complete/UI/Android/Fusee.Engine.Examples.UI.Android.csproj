@@ -111,6 +111,9 @@
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
     </Reference>
+    <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
+    </Reference>
     <Reference Include="$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>

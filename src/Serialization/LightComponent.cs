@@ -42,7 +42,7 @@ namespace Fusee.Serialization
         /// Represents the color.
         /// </summary>
         [ProtoMember(2)]
-        public float3 Color;
+        public float4 Color;
         /// <summary>
         /// Represents the position of the light.
         /// </summary>
