@@ -221,7 +221,7 @@ namespace Fusee.Math.Core
 
         #region Instance
 
-        #region public void Transpose()
+        #region public Transpose()
 
         /// <summary>
         ///     Returns the transposes of this instance.

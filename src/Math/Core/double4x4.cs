@@ -353,7 +353,7 @@ namespace Fusee.Math.Core
 
         #region Instance
 
-        #region public void Invert()
+        #region public Invert()
 
         /// <summary>
         /// Converts this instance into its inverse.
@@ -365,7 +365,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Transpose()
+        #region public Transpose()
 
         /// <summary>
         /// Converts this instance into its transpose.
@@ -1193,11 +1193,11 @@ namespace Fusee.Math.Core
         /// <returns>
         /// The transformed vector
         /// </returns>
-        public static double3 TransformPerspective(double3 vec, double4x4 mat)
+        public static double3 TransformPerspective(double4x4 mat, double3 vec)
         {
             double3 result = new double3();
 
-            double4 v = new double4(vec);
+            double4 v = new double4(vec, 1);
             v = mat * v;
             result.x = v.x / v.w;
             result.y = v.y / v.w;

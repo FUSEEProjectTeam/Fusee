@@ -131,7 +131,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the float2 to unit length.
@@ -143,7 +143,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the float2 to approximately unit length.

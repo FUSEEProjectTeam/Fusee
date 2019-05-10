@@ -128,7 +128,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the double2 to unit length.
@@ -140,7 +140,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the double2 to approximately unit length.
@@ -246,7 +246,7 @@ namespace Fusee.Math.Core
 
 
         /// <summary>
-        /// Multiplies a vector by the components a vector (scale).
+        /// Multiplies a vector by the components of a vector (scale).
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
@@ -579,6 +579,19 @@ namespace Fusee.Math.Core
         public static double2 operator *(double scale, double2 vec)
         {
             return Multiply(vec, scale);
+        }
+
+        /// <summary>
+        /// Multiplies a vector by the components of a vector (scale).
+        /// </summary>
+        /// <param name="vector">Left operand.</param>
+        /// <param name="scale">Right operand.</param>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
+        public static double2 operator *(double2 vector, double2 scale)
+        {
+            return Multiply(vector, scale);
         }
 
         /// <summary>

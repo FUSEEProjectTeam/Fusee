@@ -378,7 +378,7 @@ namespace Fusee.Math.Core
 
         #region Instance
 
-        #region public void Invert()
+        #region public Invert()
 
         /// <summary>
         /// Converts this instance into its inverse.
@@ -390,7 +390,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Transpose()
+        #region public Transpose()
 
         /// <summary>
         /// Converts this instance into its transpose.
@@ -414,7 +414,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Round()
+        #region public Round()
 
         /// <summary>
         /// Rounds this instance to 6 digits (max float precision).

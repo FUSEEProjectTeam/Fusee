@@ -213,7 +213,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the float4 to unit length.
@@ -225,7 +225,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize1()
+        #region public Normalize1()
 
         /// <summary>
         /// Scales the float4 to unit length in 1-norm.
@@ -237,7 +237,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the float4 to approximately unit length.
@@ -262,7 +262,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Round()
+        #region public Round()
 
         /// <summary>
         /// Rounds the float4 to 6 digits (max float precision).

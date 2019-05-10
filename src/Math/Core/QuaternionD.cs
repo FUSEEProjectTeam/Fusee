@@ -108,28 +108,7 @@ namespace Fusee.Math.Core
         /// <returns>A double4 that is the axis-angle representation of this QuaternionD.</returns>
         public double4 ToAxisAngle()
         {
-            QuaternionD q = this;
-
-            if (q.w > 1.0f)
-                q = q.Normalize();
-
-            var result = new double4 {w = 2.0f*System.Math.Acos(q.w)};
-
-            // angle
-            var den = System.Math.Sqrt(1.0 - q.w*q.w);
-
-            if (den > M.EpsilonDouble)
-            {
-                result.xyz = q.xyz/den;
-            }
-            else
-            {
-                // This occurs when the angle is zero. 
-                // Not a problem: just set an arbitrary normalized axis.
-                result.xyz = double3.UnitX;
-            }
-
-            return result;
+            return ToAxisAngle(this);
         }
 
         #endregion
@@ -159,7 +138,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         ///     Scales the QuaternionD to unit length.
@@ -171,14 +150,27 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Conjugate()
+        #region public Conjugate()
 
         /// <summary>
-        ///     Convert this QuaternionD to its conjugate
+        ///     Convert this QuaternionD to its conjugate.
         /// </summary>
         public QuaternionD Conjugate()
         {
             return Conjugate(this);
+        }
+
+        #endregion
+
+        #region public Invert()
+
+        /// <summary>
+        /// Convert this QuaternionD to its inverse.
+        /// </summary>
+        /// <returns></returns>
+        public QuaternionD Invert()
+        {
+            return Invert(this);
         }
 
         #endregion
@@ -329,7 +321,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region FromAxisAngle
+        #region AxisAngle
 
         /// <summary>
         ///     Build a QuaternionD from the given axis and angle
@@ -353,6 +345,35 @@ namespace Fusee.Math.Core
             result.w = System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        /// <summary>
+        /// Output an axis-angle representation of the given Quaternion.
+        /// </summary>
+        /// <param name="q">The given Quaternion.</param>
+        /// <returns>The resulting axis-angle representation.</returns>
+        public static double4 ToAxisAngle(QuaternionD q)
+        {
+            if (q.w > 1.0f)
+                q = q.Normalize();
+
+            var result = new double4 { w = 2.0f * System.Math.Acos(q.w) };
+
+            // angle
+            var den = System.Math.Sqrt(1.0 - q.w * q.w);
+
+            if (den > M.EpsilonDouble)
+            {
+                result.xyz = q.xyz / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero. 
+                // Not a problem: just set an arbitrary normalized axis.
+                result.xyz = double3.UnitX;
+            }
+
+            return result;
         }
 
         #endregion

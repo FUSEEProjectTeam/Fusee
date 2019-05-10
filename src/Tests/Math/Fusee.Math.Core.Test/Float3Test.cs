@@ -110,7 +110,7 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void LengthSquare_Is3()
+        public void LengthSquared_Is3()
         {
             var vec = new float3(1, 1, 1);
 
@@ -149,11 +149,13 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Methods
+
         #region Arithmetic Functions
 
         [Theory]
         [MemberData(nameof(GetAddition))]
-        public void Add_Twovectors_Static(float3 left, float3 right, float3 expected)
+        public void Add_TwoVectors_Static(float3 left, float3 right, float3 expected)
         {
             var actual = float3.Add(left, right);
 
@@ -198,7 +200,7 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetMultiply))]
-        public void Mulitply_TwoVectors_Static(float3 left, float scale, float3 expected)
+        public void Multitply_TwoVectors_Static(float3 left, float scale, float3 expected)
         {
             var right = new float3(scale, scale, scale);
 
@@ -407,6 +409,8 @@ namespace Fusee.Math.Core
 
             Assert.Equal(expected, actual);
         }
+
+        #endregion
 
         #endregion
 

@@ -131,7 +131,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the double3 to unit length.
@@ -143,7 +143,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the double3 to approximately unit length.
@@ -685,6 +685,19 @@ namespace Fusee.Math.Core
         /// The result of the calculation.
         /// </returns>
         public static double3 operator *(double scale, double3 vec)
+        {
+            return Multiply(vec, scale);
+        }
+
+        /// <summary>
+        /// Multiplies a vector by the components a vector (scale).
+        /// </summary>
+        /// <param name="vector">Left operand.</param>
+        /// <param name="scale">Right operand.</param>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
+        public static double3 operator *(double3 vec, double3 scale)
         {
             return Multiply(vec, scale);
         }

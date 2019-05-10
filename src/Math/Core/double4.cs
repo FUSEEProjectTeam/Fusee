@@ -189,7 +189,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the double4 to unit length.
@@ -201,7 +201,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the double4 to approximately unit length.
@@ -378,8 +378,8 @@ namespace Fusee.Math.Core
         {
             vec.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
             vec.y = vec.y < min.y ? min.y : vec.y > max.y ? max.y : vec.y;
-            vec.z = vec.x < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
-            vec.w = vec.y < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
+            vec.z = vec.z < min.z ? min.z : vec.z > max.z ? max.z : vec.z;
+            vec.w = vec.w < min.w ? min.w : vec.w > max.w ? max.w : vec.w;
             return vec;
         }
 
@@ -574,6 +574,19 @@ namespace Fusee.Math.Core
         /// The result of the calculation.
         /// </returns>
         public static double4 operator *(double scale, double4 vec)
+        {
+            return Multiply(vec, scale);
+        }
+
+        /// <summary>
+        /// Multiplies a vector by the components a vector (scale).
+        /// </summary>
+        /// <param name="vector">Left operand.</param>
+        /// <param name="scale">Right operand.</param>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
+        public static double4 operator *(double4 vec, double4 scale)
         {
             return Multiply(vec, scale);
         }

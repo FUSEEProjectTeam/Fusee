@@ -462,9 +462,41 @@ namespace Fusee.Math.Core
 
         #region CameraHelper
 
-        //TODO: LookAt(float3s)
-        //TODO: LookAtRH
-        //TODO: LookAt(Singles)
+        [Fact]
+        public void LookAt_Vectors()
+        {
+            var eye = new float3(1, 0, 0);
+            var target = new float3(0, 0, 0);
+            var up = new float3(0, 1, 0);
+            var expected = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1);
+
+            var actual = float4x4.LookAt(eye, target, up);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void LookAtRH_Vectors()
+        {
+            var eye = new float3(1, 0, 0);
+            var target = new float3(0, 0, 0);
+            var up = new float3(0, 1, 0);
+            var expected = new float4x4(0, 0, -1, 0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 0, 1);
+
+            var actual = float4x4.LookAtRH(eye, target, up);
+
+            Assert.Equal(expected, actual);
+        }
+
+        [Fact]
+        public void LookAt_Singles()
+        {
+            var expected = new float4x4(0, 0, 1, 0, 0, 1, 0, 0, -1, 0, 0, 1, 0, 0, 0, 1);
+
+            var actual = float4x4.LookAt(1, 0, 0, 0, 0, 0, 0, 1, 0);
+
+            Assert.Equal(expected, actual);
+        }
 
         #endregion
 

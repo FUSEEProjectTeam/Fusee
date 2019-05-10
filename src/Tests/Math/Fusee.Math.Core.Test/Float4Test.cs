@@ -196,6 +196,8 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Methods
+
         #region Arithmetic Functions
 
         [Theory]
@@ -377,6 +379,8 @@ namespace Fusee.Math.Core
 
             Assert.Equal(new float4(1.234568f, 1.234568f, 1.234568f, 1.234568f), actual);
         }
+
+        #endregion
 
         #endregion
 

@@ -138,7 +138,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         ///     Scales the Quaternion to unit length.
@@ -150,7 +150,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Conjugate()
+        #region public Conjugate()
 
         /// <summary>
         ///     Convert this quaternion to its conjugate.
@@ -162,7 +162,7 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Invert()
+        #region public Invert()
 
         /// <summary>
         ///     Convert this quaternion to its inverse.
@@ -501,6 +501,7 @@ namespace Fusee.Math.Core
             return new Quaternion(x, y, z, w);
         }
 
+        //TODO: Figure out why this is here!
         public static float3 FromQuatToEuler(Quaternion q1)
         {
             float sqw = q1.w * q1.w;
@@ -608,11 +609,11 @@ namespace Fusee.Math.Core
                 z = M.RadiansToDegrees(z);
             }
 
-            return new float3(z, y, x);
+            return new float3(x, y, z);
         }
 
         /// <summary>
-        ///     Takes a float4x4 matric and returns quaternions.
+        ///     Takes a lookAt and upDirection vector and returns a quaternion rotation.
         /// </summary>
         /// <param name="lookAt">The look at.</param>
         /// <param name="upDirection">Up direction.</param>
@@ -698,7 +699,7 @@ namespace Fusee.Math.Core
             q.xyz = a;
             q.w = (float)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + float3.Dot(from, to));
 
-            q.Normalize();
+            q = q.Normalize();
 
             return q;
         }
@@ -717,8 +718,8 @@ namespace Fusee.Math.Core
         {
             Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
             i = Invert(quat);
-            t = Multiply(quat,v);
-            v = Multiply(t,i);
+            t = Multiply(v,quat);
+            v = Multiply(i,t);
 
             return new float4(v.x, v.y, v.z, v.w);
         }
