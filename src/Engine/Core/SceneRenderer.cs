@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Physical based shading with environment cube map algorithm
         /// </summary>
-        ADVANCEDwENVMAP
+        ADVANCEDENVMAP
     }
 
     /// <summary>

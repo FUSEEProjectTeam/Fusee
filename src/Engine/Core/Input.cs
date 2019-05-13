@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
         /// The input driver implmementations.
         /// </value>
         /// <remarks>
-        /// This is a static method. Use <see cref="InputDrivers"/> for an insatnce method 
+        /// This is a static method. Use <see cref="InputDrivers"/> for an instance method 
         /// to the same functionality.
         /// </remarks>
         public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
@@ -87,6 +87,7 @@ namespace Fusee.Engine.Core
         public static IEnumerable<InputDevice> Devices => Instance._inputDevices.Values;
 
         private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
+        public readonly SixDOFDevice spaceMouseInput;
 
         /// <summary>
         /// Gets the input devices of a certain type. Shortcut for
@@ -288,6 +289,7 @@ namespace Fusee.Engine.Core
 
 
         private static Input _instance;
+        public GamePadDevice GamePadInput;
 
         /// <summary>
         ///     Provides the singleton Instance of the Input Class.
