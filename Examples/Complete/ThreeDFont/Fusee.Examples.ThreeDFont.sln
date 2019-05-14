@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ThreeDFont.Desktop", "Desktop\Fusee.Examples.ThreeDFont.Desktop.csproj", "{2AF22B4E-337D-4A87-AF3E-8E20823F7D9E}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ThreeDFont.Web", "Web\Fusee.Examples.ThreeDFont.Web.csproj", "{9EB00529-0063-46BB-8F2C-A3E976F89417}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.ThreeDFont.Android", "Android\Fusee.Examples.ThreeDFont.Android.csproj", "{84598906-A01A-43A5-91C6-0ECF848C96FF}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{E0B120F5-2537-4D07-AA3F-0CF111654114}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.GeometryEditing.Desktop", "Desktop\Fusee.Examples.GeometryEditing.Desktop.csproj", "{8C6DA13A-48C1-44D9-851D-A10B5251A50B}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.GeometryEditing.Web", "Web\Fusee.Examples.GeometryEditing.Web.csproj", "{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.GeometryEditing.Android", "Android\Fusee.Examples.GeometryEditing.Android.csproj", "{2ED62798-177E-4A95-9910-D418042C52E4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{61DCBA89-7ADD-4DD3-A9B2-7244EF2E2321}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

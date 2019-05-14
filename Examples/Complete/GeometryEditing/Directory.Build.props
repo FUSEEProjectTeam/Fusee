@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">E:\Git\Fusee\</FuseeRoot>
+    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\..\..\</FuseeRoot>
     <!-- Build into main FUSEE bin directory -->
     <FuseeBuildRoot>$(FuseeRoot)</FuseeBuildRoot>
     <!-- Build into local bin directory -->

@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2005
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.MeshingAround.Desktop", "Desktop\Fusee.Examples.MeshingAround.Desktop.csproj", "{8C6DA13A-48C1-44D9-851D-A10B5251A50B}"
 EndProject
@@ -10,6 +10,12 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.MeshingAround.Web", "Web\Fusee.Examples.MeshingAround.Web.csproj", "{1B2DBB9B-A929-4F67-ABEF-B8B12966B6B8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.MeshingAround.Android", "Android\Fusee.Examples.MeshingAround.Android.csproj", "{8E79A538-2A18-4A48-B39D-4BFC5829BDF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{233EB66B-6AAE-4357-8B23-86EA292B687D}"
+	ProjectSection(SolutionItems) = preProject
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
