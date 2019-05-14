@@ -1,19 +1,19 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Player.Android</RootNamespace>
-    <AssemblyName>Fusee.Engine.Player.Android</AssemblyName>
-    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..</FuseeRoot>
+    <RootNamespace>Fusee.Examples.Simple.Android</RootNamespace>
+    <AssemblyName>Fusee.Examples.Simple.Android</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
+    <!-- Build into main FUSEE bin directory -->
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">$(FuseeRoot)</FuseeBuildRoot>
+    <!-- Build into local bin directory -->
+    <!-- <FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
-    <OutputPath>$(BaseOutputPath)\Player\Android</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{A7B18E33-2677-4441-B5C6-ED85421CBA13}</ProjectGuid>
+    <ProjectGuid>{72B29431-717A-47AD-9BDB-2A60E284D727}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -27,6 +27,9 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
+    <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -34,24 +37,29 @@
     <AndroidLinkMode>None</AndroidLinkMode>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkSkip />
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
     <Debugger>Xamarin</Debugger>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
-    <AndroidSupportedAbis />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
+    <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <MonoDroidLinkMode>Full</MonoDroidLinkMode>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <AndroidSupportedAbis />
   </PropertyGroup>
   <!-- External References -->
   <ItemGroup>
@@ -65,44 +73,38 @@
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll">
+      <Name>Fusee.SerializationSerializer</Name>
     </Reference>
-    <ProjectReference Include="$(FuseeRoot)\src\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}</Project>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
       <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Base\Imp\Android\Fusee.Base.Imp.Android.csproj">
-      <Project>{19A46A28-9369-4AF2-A8A5-0303D3A0A8C0}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
       <Name>Fusee.Base.Imp.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Serialization\Fusee.Serialization.csproj">
-      <Project>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll">
+      <Name>Fusee.Math.Core</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll">
       <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Xene\Fusee.Xene.csproj">
-      <Project>{10DA02FC-109F-4D71-864A-9F5B1E9A0D70}</Project>
-      <Name>Fusee.Xene</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
-      <Project>{DFD770F6-4222-4255-AAE0-DCACDC7B21EB}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll">
       <Name>Fusee.Engine.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
-      <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
-      <Project>{fe8c3118-a8f4-45cc-bf31-e2f38771bf4c}</Project>
-      <Name>Fusee.Engine.Player.Core</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
+    </Reference>
+    <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj">
+      <Name>Fusee.Examples.Simple.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->
