@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                var mat = Projection * View * Model
+                var mat = Projection * View * Model;
                 return float4x4.TransformPerspective(mat, ModelPos);
             }
         }
