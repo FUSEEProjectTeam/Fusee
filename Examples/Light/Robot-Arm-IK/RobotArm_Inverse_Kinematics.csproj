@@ -1,6 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\..\..\</FuseeRoot>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\**\*">
@@ -8,28 +9,28 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Base.Common.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Base.Common.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Base.Core.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Base.Core.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Math.Core.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Math.Core.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Serialization.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Serialization.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Xene.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Xene.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Engine.Common.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Engine.Common.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Engine.Core.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Engine.Core.dll">
       <Private>False</Private>
     </Reference>
-    <Reference Include="$(FuseeRoot)bin/Debug/Libraries/Fusee.Engine.GUI.dll">
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Engine.GUI.dll">
       <Private>False</Private>
     </Reference>    
   </ItemGroup>

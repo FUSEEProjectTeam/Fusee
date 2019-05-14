@@ -73,6 +73,8 @@ namespace FuseeApp
 
             _open = false;
 
+            AddResizeDelegate(delegate { _scene.Children[0].GetComponent<ProjectionComponent>().Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
         }
@@ -233,27 +235,6 @@ namespace FuseeApp
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
-        }
-
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 0.01 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 200 (Anything further away from the camera than 200 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 0.01f, 200.0f);
-            RC.Projection = projection;
         }
     }
 }
