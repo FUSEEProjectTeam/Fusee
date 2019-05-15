@@ -42,10 +42,9 @@ namespace Fusee.Engine.Player.Core
 
         private FontMap _guiLatoBlack;
         private float _maxPinchSpeed;
-        private SixDOFDevice spaceMouse;
-        private GamePadDevice GamePad;
-        public SixDOFDevice spaceMouseInput;
-        public GamePadDevice GamePadInput;
+        private SixDOFDevice _spaceMouse;
+        private GamePadDevice _gamePad;
+      
 
         // Init is called on startup. 
         public override void Init()
@@ -71,9 +70,8 @@ namespace Fusee.Engine.Player.Core
 
             
             // Register the input devices that are not already given.
-            spaceMouse = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);
-                        
-            GamePad = GetDevice<GamePadDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.GameController);
+            _spaceMouse = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);                      
+            _gamePad = GetDevice<GamePadDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.GameController);
 
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
@@ -112,13 +110,12 @@ namespace Fusee.Engine.Player.Core
         // TODO: sollte null zurückliefern, wenn keine SpaceMouse/GamePad angesteckt ist!
         // spaceMouse = Input.GetDevice<SixDOF>();
 
-        // TODO: Test,  ob Event bei Einstecken/Ausziehen von Spacemouse & Gamepad ausgelöst wird:
+        // TODO: Test,  ob Event bei Einstecken/Ausziehen von Spacemouse & Gamepad ausgelöst wird: Sparen
         // Input.DeviceConnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!") ;
         // Input.DeviceDisconnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!");
 
         // TODO: SpaceMouse-Zugriff bei nicht installiertem Treiber:
         //  - sollte nicht abstürzen
-        //  - Input.GetDevice<SixDOF>() sollte null zurückliefern 
 
         
         // RenderAFrame is called once a frame
@@ -162,16 +159,16 @@ namespace Fusee.Engine.Player.Core
                 _offset *= curDamp * 0.8f;
             }
 
-            if (GamePad != null) 
+            if (_gamePad != null) 
             {              
-                _angleVelHorz += -RotationSpeed * GamePad.LSX/*GamePad.GetAxis((int)Gamepad.LeftStickX)*/ * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * GamePad.LSY/*GamePad.GetAxis((int)Gamepad.LeftStickY)*/ * DeltaTime * 0.05f;
+                _angleVelHorz += -RotationSpeed * _gamePad.LSX/*GamePad.GetAxis((int)Gamepad.LeftStickX)*/ * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * _gamePad.LSY/*GamePad.GetAxis((int)Gamepad.LeftStickY)*/ * DeltaTime * 0.05f;
             }
 
-            if (spaceMouse != null)
+            if (_spaceMouse != null)
             {
-                _angleVelHorz += spaceMouse.Rotation.y /*spaceMouse.GetAxis((int)SixDOFAxis.RY)*/ * -0.0005f;
-                _angleVelVert += spaceMouse.Rotation.x /*spaceMouse.GetAxis((int)SixDOFAxis.RX)*/ * -0.0005f;
+                _angleVelHorz += _spaceMouse.Rotation.y /*spaceMouse.GetAxis((int)SixDOFAxis.RY)*/ * -0.00005f;
+                _angleVelVert += _spaceMouse.Rotation.x /*spaceMouse.GetAxis((int)SixDOFAxis.RX)*/ * -0.00005f;
             }
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {

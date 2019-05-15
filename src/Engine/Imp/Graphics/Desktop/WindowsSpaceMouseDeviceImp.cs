@@ -25,6 +25,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <exception cref="System.ArgumentNullException">
         /// </exception>
         /// <exception cref="System.ArgumentException">RenderCanvas must be of type <see cref="RenderCanvasImp"/></exception>
+        /// <remarks>
+        /// The current implementation does not fire the <see cref="NewDeviceConnected"/> and  <see cref="DeviceDisconnected"/>
+        /// events. This driver will always report one connected SpaceMouse no matter how many physical devices are connected
+        /// to the machine. If no physical SpaceMouse is present all of its axes and buttons will return 0.
+        /// </remarks>
         public WindowsSpaceMouseDriverImp(IRenderCanvasImp renderCanvas)
         {
             if (renderCanvas == null)
@@ -136,7 +141,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
-    public class WindowsSpaceMouseInputDeviceImp : Form, IInputDeviceImp
+    public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp
     {
         
         private HandleRef _handle;
@@ -474,15 +479,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             throw new NotImplementedException();
         }
 #pragma warning restore 0067
-
-        
-        protected override void WndProc(ref Message msg)
-        {
-            if (_current3DConnexionDevice != null)
-                _current3DConnexionDevice.ProcessWindowMessage(msg.Msg, msg.WParam, msg.LParam);
-
-            base.WndProc(ref msg);
-        }
 
     }
     
