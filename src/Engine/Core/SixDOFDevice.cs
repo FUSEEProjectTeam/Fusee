@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
                 return T;
             }
         }
-
+        
         /// <summary>
         /// Gets the rotation values.
         /// </summary>

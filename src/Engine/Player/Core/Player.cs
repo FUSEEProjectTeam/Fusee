@@ -44,8 +44,8 @@ namespace Fusee.Engine.Player.Core
         private float _maxPinchSpeed;
         private SixDOFDevice spaceMouse;
         private GamePadDevice GamePad;
-        
-        //GamePadDevice GamePad;
+        public SixDOFDevice spaceMouseInput;
+        public GamePadDevice GamePadInput;
 
         // Init is called on startup. 
         public override void Init()
@@ -64,14 +64,18 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
-
+            
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-            SixDOFDevice spaceMouseInput = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);
-            spaceMouse = Input.Instance.spaceMouseInput;
-            GamePadDevice GamePadInput = GetDevice<GamePadDevice>();
-            GamePad = Input.Instance.GamePadInput; //Devices.First(dev => dev.Category == DeviceCategory.GameController);
+
+            
+            // Register the input devices that are not already given.
+            spaceMouse = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);
+                        
+            GamePad = GetDevice<GamePadDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.GameController);
+
+
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
@@ -104,14 +108,7 @@ namespace Fusee.Engine.Player.Core
             
         }
         
-        //    public GamePadDevice GamePadInput = GetDevice<GamePadDevice>();
 
-        //    public SixDOFDevice SpaceMouseInput = GetDevice<SixDOFDevice>();
-        //GamePadDevice GamePad => Instance.GamePadInput;
-        //SixDOFDevice spaceMouse => SpaceMouseInput;
-
-
-        // TODO: SpaceMouse als convenience-KLassen-Instanz von SixDOF
         // TODO: sollte null zurückliefern, wenn keine SpaceMouse/GamePad angesteckt ist!
         // spaceMouse = Input.GetDevice<SixDOF>();
 
@@ -127,14 +124,9 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
-            var i = spaceMouse.Translation;
-            Console.Write(i);
-            if (spaceMouse != null)
-            {
-                _angleHorz += spaceMouse.GetAxis((int)SixDOFAxis.RY) * -0.0005f;
-                _angleVert += spaceMouse.GetAxis((int)SixDOFAxis.RX) * -0.0005f;
-            }
+           
+           
+           
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -169,11 +161,17 @@ namespace Fusee.Engine.Player.Core
                 _angleRoll *= curDamp * 0.8f;
                 _offset *= curDamp * 0.8f;
             }
+
+            if (GamePad != null) 
+            {              
+                _angleVelHorz += -RotationSpeed * GamePad.LSX/*GamePad.GetAxis((int)Gamepad.LeftStickX)*/ * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * GamePad.LSY/*GamePad.GetAxis((int)Gamepad.LeftStickY)*/ * DeltaTime * 0.05f;
+            }
+
+            if (spaceMouse != null)
             {
-                
-                
-                _angleVelHorz += -RotationSpeed * GamePad.GetAxis((int)Gamepad.LeftStickX) * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * GamePad.GetAxis((int)Gamepad.LeftStickY) * DeltaTime * 0.05f;
+                _angleVelHorz += spaceMouse.Rotation.y /*spaceMouse.GetAxis((int)SixDOFAxis.RY)*/ * -0.0005f;
+                _angleVelVert += spaceMouse.Rotation.x /*spaceMouse.GetAxis((int)SixDOFAxis.RX)*/ * -0.0005f;
             }
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
