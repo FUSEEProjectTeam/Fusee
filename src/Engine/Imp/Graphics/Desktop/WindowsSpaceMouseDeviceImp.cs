@@ -261,7 +261,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             
             ConnectWindowsEvents();
 
-            // TODO: implement Handlers. Call IInputDevice.AxisValueChanged / ButtonValueChanged events
 
             _TX = new AxisImpDescription
             {

@@ -138,6 +138,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// <summary>
     /// Implements a Gamepad Control option only works for XBox Gamepads
     /// </summary>
+    /// /// <remarks>
+    /// The current implementation does not fire the <see cref="NewDeviceConnected"/> and  <see cref="DeviceDisconnected"/>
+    /// events. This driver will always report one connected GamePad no matter how many physical devices are connected
+    /// to the machine. If no physical GamePad is present all of its axes and buttons will return 0 or false.
+    /// </remarks>
     public class GamePadDeviceImp : IInputDeviceImp
     {
         private GameWindow _gameWindow;

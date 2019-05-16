@@ -68,11 +68,13 @@ namespace Fusee.Engine.Player.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            
+
             // Register the input devices that are not already given.
+
             _spaceMouse = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);                      
             _gamePad = GetDevice<GamePadDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.GameController);
-
+            
+            
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -106,14 +108,6 @@ namespace Fusee.Engine.Player.Core
             
         }
         
-
-        // TODO: sollte null zurückliefern, wenn keine SpaceMouse/GamePad angesteckt ist!
-        // spaceMouse = Input.GetDevice<SixDOF>();
-
-        // TODO: Test,  ob Event bei Einstecken/Ausziehen von Spacemouse & Gamepad ausgelöst wird: Sparen
-        // Input.DeviceConnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!") ;
-        // Input.DeviceDisconnected += (object sender, DeviceConnectionArgs e) => Diagnostics.Log("Device " + e.InputDevice.Desc + " connected!");
-
         // TODO: SpaceMouse-Zugriff bei nicht installiertem Treiber:
         //  - sollte nicht abstürzen
 
@@ -121,9 +115,7 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-           
-           
-           
+
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -133,7 +125,7 @@ namespace Fusee.Engine.Player.Core
             {
                 _keys = true;
             }
-
+            
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
             // Zoom & Roll
             if (Touch.TwoPoint)
@@ -161,14 +153,14 @@ namespace Fusee.Engine.Player.Core
 
             if (_gamePad != null) 
             {              
-                _angleVelHorz += -RotationSpeed * _gamePad.LSX/*GamePad.GetAxis((int)Gamepad.LeftStickX)*/ * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * _gamePad.LSY/*GamePad.GetAxis((int)Gamepad.LeftStickY)*/ * DeltaTime * 0.05f;
+                _angleVelHorz += -RotationSpeed * _gamePad.LSX * DeltaTime * 0.05f;
+                _angleVelVert += -RotationSpeed * _gamePad.LSY * DeltaTime * 0.05f;
             }
 
             if (_spaceMouse != null)
             {
-                _angleVelHorz += _spaceMouse.Rotation.y /*spaceMouse.GetAxis((int)SixDOFAxis.RY)*/ * -0.00005f;
-                _angleVelVert += _spaceMouse.Rotation.x /*spaceMouse.GetAxis((int)SixDOFAxis.RX)*/ * -0.00005f;
+                _angleHorz += _spaceMouse.Rotation.y * -0.00005f;
+                _angleVert += _spaceMouse.Rotation.x * -0.00005f;
             }
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
