@@ -293,6 +293,11 @@ namespace Fusee.Serialization
             }
         }
 
+        /// <summary>
+        /// If set to true the mesh will be renderd and pickable.
+        /// </summary>
+        public bool Active = true;
+
         #endregion
 
         /// <summary>

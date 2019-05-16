@@ -715,10 +715,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        internal protected void DoResize()
+        internal protected void DoResize(int width, int height)
         {
             if (Resize != null)
-                Resize(this, new ResizeEventArgs());
+                Resize(this, new ResizeEventArgs(width, height));
         }
 
         #endregion
@@ -827,7 +827,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _renderCanvasImp.BaseWidth = Width;
                 _renderCanvasImp.BaseHeight = Height;
-                _renderCanvasImp.DoResize();
+                _renderCanvasImp.DoResize(Width, Height);
             }
 
             /*

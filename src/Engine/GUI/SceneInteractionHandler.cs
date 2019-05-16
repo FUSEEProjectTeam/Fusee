@@ -19,12 +19,7 @@ namespace Fusee.Engine.GUI
         /// <summary>
         /// The View matrix for calculating the correct pick position.
         /// </summary>
-        public float4x4 View;
-
-        /// <summary>
-        /// The projection matrix for calculating the correct pick position.
-        /// </summary>
-        public float4x4 Projection;
+        public float4x4 View;        
 
         private SceneNodeContainer _pickRes;
         private SceneNodeContainer _pickResCache;
@@ -71,7 +66,7 @@ namespace Fusee.Engine.GUI
         public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
         {
             _scenePicker.View = View;
-            _scenePicker.Projection = Projection;
+            
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
             var pickResults = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
@@ -105,6 +100,6 @@ namespace Fusee.Engine.GUI
                 btn.IsMouseOver = true;
                 btn.InvokeEvents();
             }
-        }
+        }        
     }
 }

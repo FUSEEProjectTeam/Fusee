@@ -1,12 +1,11 @@
-﻿#version 100        
+﻿#version 300 es    
 
-attribute vec3 fuVertex;
-attribute vec3 fuNormal;
-attribute vec2 fuUV;
+in vec3 fuVertex;
+in vec3 fuNormal;
+in vec2 fuUV;
 
-varying vec2 vUV;
-varying vec3 vMVNormal;
-
+out vec2 vUV;
+out vec3 vMVNormal;
 
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_ITMV;

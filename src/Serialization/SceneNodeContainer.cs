@@ -1,9 +1,24 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
+using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization
 {
+    /// <summary>
+    /// Event Arguments for adding a new child to a SceneNodeContainer and set its parent.
+    /// </summary>
+    public class AddChildEventArgs : EventArgs
+    {
+        public SceneNodeContainer Snc { get; }
+        public AddChildEventArgs(SceneNodeContainer snc)
+        {
+            Snc = snc;
+        }
+        
+    }
+
     /// <summary>
     /// The building block to create hierarchies.
     /// </summary>
@@ -21,12 +36,40 @@ namespace Fusee.Serialization
         /// The components this node is made of.
         /// </summary>
         [ProtoMember(2, AsReference = true)]
-        public List<SceneComponentContainer> Components = new List<SceneComponentContainer>();
+        public List<SceneComponentContainer> Components;
 
         /// <summary>
         /// Possible children. 
         /// </summary>
         [ProtoMember(3, AsReference = true)]
-        public List<SceneNodeContainer> Children = new List<SceneNodeContainer>();
-     }
+        public ChildList Children {
+            get => _children;
+            set
+            {
+                _children = value;
+                foreach (var child in _children)
+                {
+                    child.Parent = this;
+                }
+            }
+        }
+
+        private ChildList _children;
+
+        /// <summary>
+        /// This SceneNodeContainer's snc. 
+        /// </summary>
+        public SceneNodeContainer Parent;
+
+        /// <summary>
+        /// Creates a new instance of te SceneNodeContainer class. 
+        /// </summary>
+        public SceneNodeContainer()
+        {
+            Components = new List<SceneComponentContainer>();
+            Children = new ChildList();
+            Children.OnAdd += (sender, e) => e.Snc.Parent = this;
+        }
+        
+    }
 }

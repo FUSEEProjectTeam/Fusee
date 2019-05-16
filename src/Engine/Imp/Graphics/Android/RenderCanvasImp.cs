@@ -8,7 +8,7 @@ using Fusee.Engine.Common;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
-
+using Uri = Android.Net.Uri;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -243,7 +243,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public void OpenLink(string link)
         {
             if (link.StartsWith("http://"))
-                Process.Start(link);
+            {
+                var intent = new Intent(Intent.ActionView);
+                intent.SetData(Uri.Parse(link));
+                _gameView.Context.StartActivity(intent);
+            }
         }
 
         /// <summary>
@@ -253,6 +257,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_gameView != null)
                 _gameView.Run(30.0);
+
+            Width = _gameView.Size.Width;
+            Height = _gameView.Size.Height;
+            
         }
 
         #endregion
@@ -308,10 +316,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        protected internal void DoResize()
+        protected internal void DoResize(int width, int height)
         {
             if (Resize != null)
-                Resize(this, new ResizeEventArgs());
+                Resize(this, new ResizeEventArgs(width, height));
         }
         #endregion
 
@@ -399,7 +407,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (_renderCanvasImp != null)
             {
-                _renderCanvasImp.DoResize();
+                _renderCanvasImp.DoResize(Width, Height);
             }
         }
 

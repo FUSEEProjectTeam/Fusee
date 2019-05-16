@@ -1056,6 +1056,22 @@ namespace Fusee.Math.Core
             return left;
         }
 
+
+        /// <summary>
+        /// Adds a scalar to the specified instance.
+        /// </summary>
+        /// <param name="left">Left operand.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// Result of addition.
+        /// </returns>
+        public static float2 operator +(float2 left, float scalar)
+        {
+            left.x += scalar;
+            left.y += scalar;
+            return left;
+        }
+
         /// <summary>
         /// Subtracts the specified instances.
         /// </summary>
@@ -1068,6 +1084,21 @@ namespace Fusee.Math.Core
         {
             left.x -= right.x;
             left.y -= right.y;
+            return left;
+        }
+
+        /// <summary>
+        /// Subtracts a scalar from the specified instance.
+        /// </summary>
+        /// <param name="left">Left operand.</param>
+        /// <param name="scalar">The scalar.</param>
+        /// <returns>
+        /// Result of addition.
+        /// </returns>
+        public static float2 operator -(float2 left, float scalar)
+        {
+            left.x -= scalar;
+            left.y -= scalar;
             return left;
         }
 

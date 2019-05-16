@@ -1291,6 +1291,9 @@ namespace Fusee.Engine.Core
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
+                        if (initValue == null)
+                            continue;
+
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
                         object globalFXValue;
                         if (_allFXParams.TryGetValue(paramNew.Name, out globalFXValue))

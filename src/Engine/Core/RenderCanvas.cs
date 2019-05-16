@@ -206,7 +206,17 @@ namespace Fusee.Engine.Core
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate { Resize(); };
+            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
+        }
+
+        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
+        {
+            CanvasImplementor.Resize += action;
+        }
+
+        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
+        {
+            CanvasImplementor.Resize -= action;
         }
 
         /// <summary>
@@ -254,7 +264,7 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to apply window resize code. Typically, an application
         ///     will change the projection matrix of the render context (<see cref="RC" />) to match the new aspect ratio.
         /// </remarks>
-        public virtual void Resize()
+        public virtual void Resize(ResizeEventArgs e)
         {
         }
 
