@@ -79,13 +79,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 #pragma warning disable 0067
         /// <summary>
-        /// Not supported on this driver. Mouse and keyboard are considered to be connected all the time.
+        /// Not supported on this driver. The device is considered to be connected all the time.
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<DeviceImpDisconnectedArgs> DeviceDisconnected;
 
         /// <summary>
-        /// Not supported on this driver. Mouse and keyboard are considered to be connected all the time.
+        /// Not supported on this driver. The device is considered to be connected all the time.
         /// You can register handlers but they will never get called.
         /// </summary>
         public event EventHandler<NewDeviceImpConnectedArgs> NewDeviceConnected;
@@ -148,7 +148,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
 
-        // TODO: Add field for _3DConnexionDevice
 
         #region Windows handling
         // This helper static method is required because the 32-bit version of user32.dll does not contain this API
@@ -347,8 +346,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 },
                 PollAxis = false
             };
+            Button1 = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "Button1",
+                    Id = 0
 
-            
+                },
+                PollButton = false
+            };
+            Button2 = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "Button2",
+                    Id = 1
+
+                },
+                PollButton = false
+            };
+
+
         }
 
         
@@ -357,11 +376,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
 
-
-
-
-
-
+        /// <summary>
+        /// Descriptions of the available buttons.
+        /// </summary>
+        public ButtonImpDescription Button1, Button2;
 
         /// <summary>
         /// Returns the name of the device.
@@ -412,16 +430,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                yield return new ButtonImpDescription
-                {
-                    ButtonDesc = new ButtonDescription
-                    {
-                        Name = "no buttons implemented",
-                        Id = 0
+                yield return Button1;
+                yield return Button2;
 
-                    },
-                    PollButton = false
-                };
             }
         }
 
@@ -448,7 +459,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             if (ButtonValueChanged != null)
             {
-                // TODO
+                //ButtonValueChanged(this, new ButtonValueChangedArgs { Button = Button1.ButtonDesc, Pressed });
+                //ButtonValueChanged(this, new ButtonValueChangedArgs { Button = Button2.ButtonDesc, Pressed });
             }
         }
         

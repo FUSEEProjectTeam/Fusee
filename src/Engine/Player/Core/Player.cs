@@ -71,8 +71,8 @@ namespace Fusee.Engine.Player.Core
 
             // Register the input devices that are not already given.
 
-            _spaceMouse = GetDevice<SixDOFDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.SixDOF);                      
-            _gamePad = GetDevice<GamePadDevice>(); //Devices.First(dev => dev.Category == DeviceCategory.GameController);
+            _spaceMouse = GetDevice<SixDOFDevice>();                  
+            _gamePad = GetDevice<GamePadDevice>();
             
             
 
@@ -107,15 +107,11 @@ namespace Fusee.Engine.Player.Core
             _guiRenderer = new SceneRenderer(_gui);
             
         }
-        
-        // TODO: SpaceMouse-Zugriff bei nicht installiertem Treiber:
-        //  - sollte nicht abstürzen
 
         
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -153,8 +149,8 @@ namespace Fusee.Engine.Player.Core
 
             if (_gamePad != null) 
             {              
-                _angleVelHorz += -RotationSpeed * _gamePad.LSX * DeltaTime * 0.05f;
-                _angleVelVert += -RotationSpeed * _gamePad.LSY * DeltaTime * 0.05f;
+                _angleHorz += -RotationSpeed * _gamePad.LSX * DeltaTime;
+                _angleVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
             }
 
             if (_spaceMouse != null)
