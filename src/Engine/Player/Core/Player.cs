@@ -175,7 +175,7 @@ namespace Fusee.Engine.Player.Core
 
             if (_gamePad != null) 
             {              
-                _angleHorz += -RotationSpeed * _gamePad.LSX * DeltaTime;
+                _angleHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
                 _angleVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
             }
 
