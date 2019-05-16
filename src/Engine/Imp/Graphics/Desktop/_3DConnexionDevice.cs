@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using _3Dconnexion;
 using System.Threading;
 using System.Runtime.InteropServices;
+using Fusee.Base.Core;
 
 namespace _3Dconnexion
 {
@@ -506,43 +507,49 @@ namespace _3DconnexionDriver
                 throw new ObjectDisposedException("");
             if (IsAvailable)
                 return; //Init already done.
+
+            SiApp.SpwRetVal v = SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR;
+
             try
             {
-                var v = SiApp.SiInitialize();
-
-                if (v == SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR)
-                    throw new _3DxException("Unable to load SiApp DLL");
-
-
-                var o = default(SiApp.SiOpenData);
-                SiApp.SiOpenWinInit(ref o, windowHandle);
-
-                _deviceHandle = SiApp.SiOpen(this.AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
-                if (_deviceHandle == IntPtr.Zero)
-                {
-                    SiApp.SiTerminate();
-                    throw new _3DxException("Unable to open device");
-                }
-
-                string devName;
-                SiApp.SiGetDeviceName(_deviceHandle, out devName);
-
-                this.DeviceName = devName;
-
-                this.DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
-
-                SiApp.SiDevInfo info = default(SiApp.SiDevInfo);
-                SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
-
-                this.FirmwareVersion = info.firmware;
+                v = SiApp.SiInitialize();
             }
             catch
             {
                 // throw new _3DxException("Driver not installed.");
-                Console.WriteLine("3DX Driver is not installed");
-                _deviceHandle = IntPtr.Zero;
-                this.IsDisposed = true;
+                Diagnostics.Log("3DX Driver is not installed");
+                eventThread.Abort();
+                Dispose();
+                return;
             }
+
+            if (v == SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR)
+                throw new _3DxException("Unable to load SiApp DLL");
+
+
+            var o = default(SiApp.SiOpenData);
+            SiApp.SiOpenWinInit(ref o, windowHandle);
+
+            _deviceHandle = SiApp.SiOpen(this.AppName, SiApp.SI_ANY_DEVICE, IntPtr.Zero, SiApp.SI_EVENT, ref o);
+            if (_deviceHandle == IntPtr.Zero)
+            {
+                SiApp.SiTerminate();
+                throw new _3DxException("Unable to open device");
+            }
+
+            string devName;
+            SiApp.SiGetDeviceName(_deviceHandle, out devName);
+
+            this.DeviceName = devName;
+
+            this.DeviceID = SiApp.SiGetDeviceID(_deviceHandle);
+
+            SiApp.SiDevInfo info = default(SiApp.SiDevInfo);
+            SiApp.SiGetDeviceInfo(_deviceHandle, ref info);
+
+            this.FirmwareVersion = info.firmware;
+
+
         }
 
         /// <summary>
@@ -550,21 +557,14 @@ namespace _3DconnexionDriver
         /// </summary>
         public void CloseDevice()
         {
-            try
+
+
+            if (_deviceHandle != IntPtr.Zero)
             {
-                if (_deviceHandle != IntPtr.Zero)
-                {
-                    SiApp.SiClose(_deviceHandle);
-                    _deviceHandle = IntPtr.Zero;
-                }
-            }
-            catch
-            {
-                // throw new _3DxException("Driver not installed.");
-                Console.WriteLine("3DX Driver is not installed");
-                this.IsDisposed = true;
+                SiApp.SiClose(_deviceHandle);
                 _deviceHandle = IntPtr.Zero;
             }
+
         }
 
         /// <summary>
@@ -575,8 +575,6 @@ namespace _3DconnexionDriver
         /// <param name="lParam"></param>
         public void ProcessWindowMessage(int msg, IntPtr wParam, IntPtr lParam)
         {
-            try
-            { 
             if (this.IsDisposed) //We don't throw an Exception in the Message Loop, just return
                 return;
 
@@ -586,31 +584,23 @@ namespace _3DconnexionDriver
             var t = SiApp.SiGetEvent(_deviceHandle, SiApp.SI_AVERAGE_EVENTS, ref evd, ref edata);
             if (t == SiApp.SpwRetVal.SI_IS_EVENT)
             {
-                    switch (edata.type)
-                    {
-                        case SiApp.SiEventType.SI_ZERO_EVENT:
-                            lock (eventBuffer)
-                            {
-                                eventBuffer[SiApp.SiEventType.SI_ZERO_EVENT] = EventArgs.Empty;
-                                Monitor.Pulse(eventBuffer);
-                            }
-                            break;
-                        case SiApp.SiEventType.SI_MOTION_EVENT:
-                            lock (eventBuffer)
-                            {
-                                eventBuffer[SiApp.SiEventType.SI_MOTION_EVENT] = MotionEventArgs.FromEventArray(edata.spwData.mData);
-                                Monitor.Pulse(eventBuffer);
-                            }
-                            break;
-                    }
+                switch (edata.type)
+                {
+                    case SiApp.SiEventType.SI_ZERO_EVENT:
+                        lock (eventBuffer)
+                        {
+                            eventBuffer[SiApp.SiEventType.SI_ZERO_EVENT] = EventArgs.Empty;
+                            Monitor.Pulse(eventBuffer);
+                        }
+                        break;
+                    case SiApp.SiEventType.SI_MOTION_EVENT:
+                        lock (eventBuffer)
+                        {
+                            eventBuffer[SiApp.SiEventType.SI_MOTION_EVENT] = MotionEventArgs.FromEventArray(edata.spwData.mData);
+                            Monitor.Pulse(eventBuffer);
+                        }
+                        break;
                 }
-            }
-            catch
-            {
-                Console.WriteLine("3DX Driver is not installed");
-                // throw new _3DxException("Driver not installed.");
-                _deviceHandle = IntPtr.Zero;
-                this.IsDisposed = true;
             }
         }
         /// <summary>

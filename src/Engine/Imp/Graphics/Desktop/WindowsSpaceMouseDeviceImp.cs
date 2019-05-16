@@ -206,7 +206,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private IntPtr SpaceMouseWindowsProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
         {
             // TODO
-            _current3DConnexionDevice.ProcessWindowMessage((int)Msg, wParam, lParam);
+            if(!_current3DConnexionDevice.IsDisposed)
+                _current3DConnexionDevice.ProcessWindowMessage((int)Msg, wParam, lParam);
 
             return CallWindowProc(_oldWndProc, hWnd, Msg, wParam, lParam);
         }
