@@ -101,7 +101,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F81FE3E2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{BA542BBF-9BDD-4B41-9550-BE7570280F3A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Math.Core.Test", "Tests\Math\Fusee.Math.Core.Test\Fusee.Math.Core.Test.csproj", "{61892547-20E6-4FE6-AA22-1CD0C82BB361}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Math.Core.Test", "src\Tests\Math\Fusee.Math.Core.Test\Fusee.Math.Core.Test.csproj", "{61892547-20E6-4FE6-AA22-1CD0C82BB361}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
