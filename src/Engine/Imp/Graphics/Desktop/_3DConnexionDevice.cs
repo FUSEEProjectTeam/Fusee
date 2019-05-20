@@ -518,7 +518,7 @@ namespace _3DconnexionDriver
             {
                 // throw new _3DxException("Driver not installed.");
                 Diagnostics.Log("3DX Driver is not installed");
-                eventThread.Abort();
+                eventThread.Suspend();
                 Dispose();
                 return;
             }

@@ -92,10 +92,10 @@ namespace Fusee.Engine.Player.Core
 
             // Register the input devices that are not already given.
 
-            _spaceMouse = GetDevice<SixDOFDevice>();                  
+            _spaceMouse = GetDevice<SixDOFDevice>();
             _gamePad = GetDevice<GamePadDevice>();
-            
-            
+ 
+ 
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
