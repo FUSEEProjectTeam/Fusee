@@ -65,15 +65,15 @@
     <AndroidResource Include="Resources\Values\Strings.xml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
+    <ProjectReference Include="$(FuseeRoot)\src\Base\Common\Fusee.Base.Common.csproj">
       <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
       <Name>Fusee.Base.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
+    <ProjectReference Include="$(FuseeRoot)\src\Base\Core\Fusee.Base.Core.csproj">
       <Project>{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}</Project>
       <Name>Fusee.Base.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
+    <ProjectReference Include="$(FuseeRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
     </ProjectReference>

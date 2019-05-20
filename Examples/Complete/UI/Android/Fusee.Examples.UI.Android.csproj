@@ -1,0 +1,138 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Examples.UI.Android</RootNamespace>
+    <AssemblyName>Fusee.Examples.UI.Android</AssemblyName>
+    <FuseeBuildRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
+    <!-- Build into main FUSEE bin directory -->
+    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">$(FuseeRoot)</FuseeBuildRoot>
+    <!-- Build into local bin directory -->
+    <!-- <FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{73A74ADF-6308-42A0-8BA6-2B5D53238546}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <FileAlignment>512</FileAlignment>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidApplication>true</AndroidApplication>
+    <TargetFrameworkVersion>v8.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v8.1</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
+    <OutputPath>$(BaseOutputPath)\Examples\UI\Android</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MonoDroidLinkMode>None</MonoDroidLinkMode>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkSkip />
+    <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
+    <BundleAssemblies>False</BundleAssemblies>
+    <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
+    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <Debugger>Xamarin</Debugger>
+    <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
+    <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>True</Optimize>
+    <OutputPath>$(BaseOutputPath)\Examples\UI\Android</OutputPath>
+    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
+    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <MonoDroidLinkMode>Full</MonoDroidLinkMode>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <!-- External References -->
+  <ItemGroup>
+    <Reference Include="Mono.Android" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="OpenTK" />
+    <Reference Include="protobuf-net">
+      <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <!-- Fusee References -->
+  <ItemGroup>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll">
+      <Name>Fusee.SerializationSerializer</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
+      <Name>Fusee.Base.Common</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+      <Name>Fusee.Base.Core</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
+      <Name>Fusee.Base.Imp.Android</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll">
+      <Name>Fusee.Math.Core</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll">
+      <Name>Fusee.Serialization</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll">
+      <Name>Fusee.Engine.Common</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
+      <Name>Fusee.Engine.Core</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
+      <Name>Fusee.Engine.Imp.Graphics.Android</Name>
+    </Reference>
+    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+      <Name>Fusee.Xene</Name>
+    </Reference>
+    <ProjectReference Include="..\Core\Fusee.Examples.UI.Core.csproj">
+      <Name>Fusee.Examples.UI.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <!-- Assets -->
+  <ItemGroup>
+    <Compile Include="MainActivity.cs" />
+    <Compile Include="Resources\Resource.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Properties\AndroidManifest.xml">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\strings.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\icon.png" />
+    <AndroidResource Include="Resources\drawable-hdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-ldpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-mdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-xhdpi\icon.png" />
+    <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidAsset Include="Assets\AboutAssets.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </AndroidAsset>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+</Project>
