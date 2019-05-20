@@ -7,7 +7,6 @@
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Tests</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
   
   <ItemGroup>
