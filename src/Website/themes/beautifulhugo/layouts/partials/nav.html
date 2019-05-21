@@ -7,11 +7,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <!-- a class="navbar-brand" href="{{ "" | absLangURL }}">{{ .Site.Title }}</a-->
-      <a class="navbar-brand" href="{{ "" | absLangURL }}">
-        <!--img class="avatar-img" src="{{ .Site.Params.brandimg | absURL }}" alt="{{ .Site.Title }}" /-->
-        {{ .Site.Title }}
-      </a>
+      <a class="navbar-brand" href="{{ "" | absLangURL }}">{{ .Site.Title }}</a>
     </div>
 
     <div class="collapse navbar-collapse" id="main-navbar">
@@ -22,13 +18,13 @@
               <a class="navlinks-parent" href="javascript:void(0)">{{ .Name }}</a>
               <div class="navlinks-children">
                 {{ range .Children }}
-                  <a href="{{ .URL | relLangURL }}">{{ .Name }}</a>
+                  <a href="{{ .URL | absLangURL }}">{{ .Name }}</a>
                 {{ end }}
               </div>
             </li>
           {{ else }}
             <li>
-              <a title="{{ .Name }}" href="{{ .URL  | relLangURL }}">{{ .Name }}</a>
+              <a title="{{ .Name }}" href="{{ .URL  | absLangURL }}">{{ .Name }}</a>
             </li>
           {{ end }}
         {{ end }}
@@ -66,15 +62,15 @@
       </ul>
     </div>
 
-    <div class="avatar-container">
-      <div class="avatar-img-border">
-        {{ if isset .Site.Params "logo" }}
+    {{ if isset .Site.Params "logo" }}
+      <div class="avatar-container">
+        <div class="avatar-img-border">
           <a title="{{ .Site.Title }}" href="{{ "" | absLangURL }}">
             <img class="avatar-img" src="{{ .Site.Params.logo | absURL }}" alt="{{ .Site.Title }}" />
           </a>
-        {{ end }}
+        </div>
       </div>
-    </div>
+    {{ end }}
 
   </div>
 </nav>
