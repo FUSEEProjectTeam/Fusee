@@ -346,40 +346,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 },
                 PollAxis = false
             };
-            Button1 = new ButtonImpDescription
-            {
-                ButtonDesc = new ButtonDescription
-                {
-                    Name = "Button1",
-                    Id = 0
-
-                },
-                PollButton = false
-            };
-            Button2 = new ButtonImpDescription
-            {
-                ButtonDesc = new ButtonDescription
-                {
-                    Name = "Button2",
-                    Id = 1
-
-                },
-                PollButton = false
-            };
-
-
         }
 
-        
+
         /// <summary>
         /// Descriptions of the available axes.
         /// </summary>
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
-
-        /// <summary>
-        /// Descriptions of the available buttons.
-        /// </summary>
-        public ButtonImpDescription Button1, Button2;
 
         /// <summary>
         /// Returns the name of the device.
@@ -426,15 +399,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// This device does not implement any Buttons.
         /// </summary>
 #pragma warning disable 0067
-        public IEnumerable<ButtonImpDescription> ButtonImpDesc
-        {
-            get
-            {
-                yield return Button1;
-                yield return Button2;
-
-            }
-        }
+        public IEnumerable<ButtonImpDescription> ButtonImpDesc => throw new NotImplementedException("Button are handled by the 3DX interface");
+        
 
         /// <summary>
         /// All axes are event based.
@@ -481,7 +447,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// This device does not implement any Buttons.
+        /// Button are handled by the 3DX interface.
         /// </summary>
         /// <param name="iButtonId"></param>
         /// <returns></returns>
