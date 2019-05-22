@@ -173,24 +173,28 @@ namespace Fusee.Engine.Player.Core
                 _offset *= curDamp * 0.8f;
             }
 
-            if (_gamePad != null) 
-            {              
-                _angleHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
-                _angleVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
-            }
+            
 
-            if (_spaceMouse != null)
-            {
-                _angleHorz += _spaceMouse.Rotation.y * -0.00005f;
-                _angleVert += _spaceMouse.Rotation.x * -0.00005f;
-            }
+            
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
                 _keys = false;
                 _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
-            
+
+            else if (_spaceMouse != null)
+            {
+                _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
+                _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
+            }
+
+            else if(_gamePad != null)
+            {
+                _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
+                _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
+            }
+
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
