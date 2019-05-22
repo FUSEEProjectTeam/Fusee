@@ -138,7 +138,7 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
+            Diagnostics.Log(_gamePad.LSX);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

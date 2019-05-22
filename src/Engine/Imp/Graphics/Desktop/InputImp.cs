@@ -332,7 +332,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     {
                         Name = "Left Stick X",
                         Id = 0,
-         
                         Direction = AxisDirection.X,
                         Nature = AxisNature.Position,
                         Bounded = AxisBoundedType.Constant,

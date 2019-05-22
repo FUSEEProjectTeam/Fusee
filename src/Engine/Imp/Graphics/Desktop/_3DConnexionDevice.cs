@@ -510,18 +510,20 @@ namespace _3DconnexionDriver
 
             SiApp.SpwRetVal v = SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR;
 
-            try
-            {
-                v = SiApp.SiInitialize();
-            }
-            catch
-            {
-                // throw new _3DxException("Driver not installed.");
-                Diagnostics.Log("3DX Driver is not installed");
-                eventThread.Suspend();
-                Dispose();
-                return;
-            }
+            v = SiApp.SiInitialize();
+
+            //try
+            //{
+            //    v = SiApp.SiInitialize();
+            //}
+            //catch
+            //{
+            //    // throw new _3DxException("Driver not installed.");
+            //    Diagnostics.Log("3DX Driver is not installed");
+            //    eventThread.Abort();
+            //    Dispose();
+            //    return;
+            //}
 
             if (v == SiApp.SpwRetVal.SPW_DLL_LOAD_ERROR)
                 throw new _3DxException("Unable to load SiApp DLL");

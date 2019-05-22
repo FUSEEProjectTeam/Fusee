@@ -6,6 +6,7 @@ using Fusee.Engine.Common;
 using OpenTK;
 using _3DconnexionDriver;
 using System.Windows.Forms;
+using Fusee.Base.Core;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -205,7 +206,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private IntPtr SpaceMouseWindowsProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
         {
             // TODO
-            if(!_current3DConnexionDevice.IsDisposed)
+            if(_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
                 _current3DConnexionDevice.ProcessWindowMessage((int)Msg, wParam, lParam);
 
             return CallWindowProc(_oldWndProc, hWnd, Msg, wParam, lParam);
@@ -254,13 +255,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             _handle = new HandleRef(_gameWindow, _gameWindow.WindowInfo.Handle);
 
-            _current3DConnexionDevice = new _3DconnexionDevice(_handle.ToString());
-            _current3DConnexionDevice.InitDevice((IntPtr)_handle);
+            try
+            {
+                _current3DConnexionDevice = new _3DconnexionDevice(_handle.ToString());
+                _current3DConnexionDevice.InitDevice((IntPtr)_handle);
+                _current3DConnexionDevice.Motion += HandleMotion;
 
-            _current3DConnexionDevice.Motion += HandleMotion;
-            
-            ConnectWindowsEvents();
-
+                ConnectWindowsEvents();
+            }
+            catch (Exception ex)
+            {
+                Diagnostics.Log("Trouble initializing the SpaceMouse. Probably due to not-installed driver.\n" + ex);
+                _current3DConnexionDevice = null;
+            }
 
             _TX = new AxisImpDescription
             {
@@ -346,14 +353,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 },
                 PollAxis = false
             };
-            _b = new ButtonImpDescription
-            {
-                ButtonDesc = new ButtonDescription
-                {
-                    Name = "Buttons are handled by the 3D Connexion interface.",
-                    Id = 0,
-                }
-            };
         }
 
 
@@ -363,14 +362,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
 
         /// <summary>
-        /// Buttons are handled by the 3D Connexion interface.
-        /// </summary>
-        public ButtonImpDescription _b;
-
-        /// <summary>
         /// Returns the name of the device.
         /// </summary>
-        public string Id => _current3DConnexionDevice.DeviceName;
+        public string Id => (_current3DConnexionDevice == null) ? "SpaceMouse not installed" : _current3DConnexionDevice.DeviceName;
 
         /// <summary>
         /// Returns the description of this implementation.
@@ -414,13 +408,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 #pragma warning disable 0067
         public IEnumerable<ButtonImpDescription> ButtonImpDesc
         {
-
             get
             {
-                yield return _b;
-
-                
-
+                yield break;
             }
         }
         
