@@ -346,6 +346,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 },
                 PollAxis = false
             };
+            _b = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "Buttons are handled by the 3D Connexion interface.",
+                    Id = 0,
+                }
+            };
         }
 
 
@@ -353,6 +361,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Descriptions of the available axes.
         /// </summary>
         public AxisImpDescription _TX, _TY, _TZ, _RX, _RY, _RZ;
+
+        /// <summary>
+        /// Buttons are handled by the 3D Connexion interface.
+        /// </summary>
+        public ButtonImpDescription _b;
 
         /// <summary>
         /// Returns the name of the device.
@@ -396,10 +409,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public int ButtonCount => 0;
 
         /// <summary>
-        /// This device does not implement any Buttons.
+        /// Buttons are handled by the 3D Connexion interface.
         /// </summary>
 #pragma warning disable 0067
-        public IEnumerable<ButtonImpDescription> ButtonImpDesc => throw new NotImplementedException("Button are handled by the 3DX interface");
+        public IEnumerable<ButtonImpDescription> ButtonImpDesc
+        {
+
+            get
+            {
+                yield return _b;
+
+                
+
+            }
+        }
         
 
         /// <summary>
