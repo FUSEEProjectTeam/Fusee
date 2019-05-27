@@ -179,8 +179,8 @@ namespace Fusee.Engine.Player.Core
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
                 _keys = false;
-                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.00005f;
+                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.00005f;
             }
 
             else if (_spaceMouse != null)
