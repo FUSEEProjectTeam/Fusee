@@ -519,6 +519,91 @@ namespace Fusee.Math.Core
             return result;
         }
 
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xy">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYX(float2 xy)
+        {
+            return CreateRotationYX(xy.x, xy.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYX(float x, float y)
+        {
+            return CreateRotationY(y) * CreateRotationX(x);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and z-axis.
+        /// </summary>
+        /// <param name="yz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYZ(float2 yz)
+        {
+            return CreateRotationYZ(yz.x, yz.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYZ(float y, float z)
+        {
+            return CreateRotationY(y) * CreateRotationZ(z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationXZ(float2 xz)
+        {
+            return CreateRotationXZ(xz.x, xz.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationXZ(float x, float z)
+        {
+            return CreateRotationX(x) * CreateRotationZ(z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xyz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYXZ(float3 xyz)
+        {
+            return CreateRotationYXZ(xyz.x, xyz.y, xyz.z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYXZ(float x, float y, float z)
+        {
+            return CreateRotationY(y) * CreateRotationX(x) * CreateRotationZ(z);
+        }
+
         #endregion
 
         #region CreateTranslation
