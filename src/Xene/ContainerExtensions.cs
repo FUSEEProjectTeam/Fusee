@@ -336,5 +336,37 @@ namespace Fusee.Xene
 
             return sc;
         }
+
+        public static void Rotate(this TransformComponent tc, float3 xyz, Space space = Space.Model)
+        {
+            Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
+        }
+
+        public static void Rotate(this TransformComponent tc, Quaternion quaternion, Space space = Space.Model)
+        {
+            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+        }
+
+        public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
+        {
+            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+
+            if (space == Space.Model)
+            {
+                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * rotationMtx);
+            }
+            else
+            {
+                var euler = float4x4.RotMatToEuler(currentRotationMtx);
+
+                tc.Rotation = float4x4.RotMatToEuler(rotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            }
+        }
+
+        public enum Space
+        {
+            World,
+            Model
+        }
     }
 }
