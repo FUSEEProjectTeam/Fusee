@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
@@ -313,16 +313,34 @@ namespace Fusee.Xene
             return sc;
         }
 
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="xyz">Rotation amount as float3.</param>
+        /// <param name="space"></param>
         public static void Rotate(this TransformComponent tc, float3 xyz, Space space = Space.Model)
         {
             Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
         }
 
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="quaternion">Rotation amount in Quaternion.</param>
+        /// <param name="space"></param>
         public static void Rotate(this TransformComponent tc, Quaternion quaternion, Space space = Space.Model)
         {
             Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
         }
 
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="rotationMtx">Rotation amount represented as float4x4.</param>
+        /// <param name="space">Rotation in reference of model or world space.</param>
         public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
         {
             var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
