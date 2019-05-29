@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Math.Core;
@@ -344,16 +344,17 @@ namespace Fusee.Xene
         public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
         {
             var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+            var addRotationMtx = rotationMtx.RotationComponent();
 
             if (space == Space.Model)
             {
-                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * rotationMtx);
+                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * addRotationMtx);
             }
             else
             {
                 var euler = float4x4.RotMatToEuler(currentRotationMtx);
 
-                tc.Rotation = float4x4.RotMatToEuler(rotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
             }
         }
 
