@@ -1539,9 +1539,9 @@ namespace Fusee.Math.Core
             var translationVec = GetTranslation(mat);
             var translationMtx = float4x4.Identity;
 
-            translationMtx.M14 = mat.M14;
-            translationMtx.M24 = mat.M24;
-            translationMtx.M34 = mat.M34;
+            translationMtx.M14 = translationVec.x;
+            translationMtx.M24 = translationVec.y;
+            translationMtx.M34 = translationVec.z;
 
             return translationMtx;
         }
