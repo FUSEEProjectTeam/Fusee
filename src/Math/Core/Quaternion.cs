@@ -103,64 +103,12 @@ namespace Fusee.Math.Core
         #region ToAxisAngle
 
         /// <summary>
-        ///     Convert the current quaternion to axis angle representation
-        /// </summary>
-        /// <param name="axis">The resultant axis</param>
-        /// <param name="angle">The resultant angle</param>
-        public void ToAxisAngle(out float3 axis, out float angle)
-        {
-            float4 result = ToAxisAngle();
-            axis = result.xyz;
-            angle = result.w;
-        }
-
-        /// <summary>
         ///     Convert this instance to an axis-angle representation.
         /// </summary>
         /// <returns>A float4 that is the axis-angle representation of this quaternion.</returns>
         public float4 ToAxisAngle()
         {
-            Quaternion q = this;
-
-            if (q.w > 1.0f)
-                q.Normalize();
-
-            var result = new float4 {w = 2.0f*(float) System.Math.Acos(q.w)};
-
-            // angle
-            var den = (float) System.Math.Sqrt(1.0 - q.w*q.w);
-
-            if (den > M.EpsilonFloat)
-            {
-                result.xyz = q.xyz/den;
-            }
-            else
-            {
-                // This occurs when the angle is zero. 
-                // Not a problem: just set an arbitrary normalized axis.
-                result.xyz = float3.UnitX;
-            }
-
-            return result;
-        }
-
-        #endregion
-
-        #region SetFromToRotation
-
-        /// <summary>
-        ///     Set this quaternion to the shortest rotation from to.
-        /// </summary>
-        /// <param name="from"></param>
-        /// <param name="to"></param>
-        public void SetFromToRotation(float3 from, float3 to)
-        {
-            float3 a = float3.Cross(from, to);
-
-            xyz = a;
-            w = (float)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + float3.Dot(from, to));
-
-            Normalize();
+            return ToAxisAngle(this);
         }
 
         #endregion
@@ -190,29 +138,38 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         ///     Scales the Quaternion to unit length.
         /// </summary>
-        public void Normalize()
+        public Quaternion Normalize()
         {
-            if (!(Length > M.EpsilonFloat)) return;
-            var scale = 1.0f/Length;
-            xyz *= scale;
-            w *= scale;
+            return Normalize(this);
         }
 
         #endregion
 
-        #region public void Conjugate()
+        #region public Conjugate()
 
         /// <summary>
-        ///     Convert this quaternion to its conjugate
+        ///     Convert this quaternion to its conjugate.
         /// </summary>
-        public void Conjugate()
+        public Quaternion Conjugate()
         {
-            xyz = -xyz;
+            return Conjugate(this);
+        }
+
+        #endregion
+
+        #region public Invert()
+
+        /// <summary>
+        ///     Convert this quaternion to its inverse.
+        /// </summary>
+        public Quaternion Invert()
+        {
+            return Invert(this);
         }
 
         #endregion
@@ -245,19 +202,6 @@ namespace Fusee.Math.Core
                 left.w + right.w);
         }
 
-        /// <summary>
-        ///     Add two quaternions
-        /// </summary>
-        /// <param name="left">The first operand</param>
-        /// <param name="right">The second operand</param>
-        /// <param name="result">The result of the addition</param>
-        public static void Add(ref Quaternion left, ref Quaternion right, out Quaternion result)
-        {
-            result = new Quaternion(
-                left.xyz + right.xyz,
-                left.w + right.w);
-        }
-
         #endregion
 
         #region Sub
@@ -275,19 +219,6 @@ namespace Fusee.Math.Core
                 left.w - right.w);
         }
 
-        /// <summary>
-        ///     Subtracts two instances.
-        /// </summary>
-        /// <param name="left">The left instance.</param>
-        /// <param name="right">The right instance.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Sub(ref Quaternion left, ref Quaternion right, out Quaternion result)
-        {
-            result = new Quaternion(
-                left.xyz - right.xyz,
-                left.w - right.w);
-        }
-
         #endregion
 
         #region Mult
@@ -298,65 +229,15 @@ namespace Fusee.Math.Core
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
-        [Obsolete("Use Multiply instead.")]
-        public static Quaternion Mult(Quaternion left, Quaternion right)
-        {
-            return new Quaternion(
-                right.w*left.xyz + left.w*right.xyz + float3.Cross(left.xyz, right.xyz),
-                left.w*right.w - float3.Dot(left.xyz, right.xyz));
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        [Obsolete("Use Multiply instead.")]
-        public static void Mult(ref Quaternion left, ref Quaternion right, out Quaternion result)
-        {
-            result = new Quaternion(
-                right.w*left.xyz + left.w*right.xyz + float3.Cross(left.xyz, right.xyz),
-                left.w*right.w - float3.Dot(left.xyz, right.xyz));
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion Multiply(Quaternion left, Quaternion right)
         {
-            Quaternion result;
-            Multiply(ref left, ref right, out result);
+            Quaternion result = new Quaternion(
+                left.w * right.x + left.x * right.w - left.y * right.z + left.z * right.y,
+                left.w * right.y + left.x * right.z + left.y * right.w - left.z * right.x,
+                left.w * right.z - left.x * right.y + left.y * right.x + left.z * right.w,
+                left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z);
+
             return result;
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(ref Quaternion left, ref Quaternion right, out Quaternion result)
-        {
-            result = new Quaternion(
-                left.w*right.x + left.x*right.w + left.y*right.z - left.z*right.y,
-                left.w*right.y + left.y*right.w + left.z*right.x - left.x*right.z,
-                left.w*right.z + left.z*right.w + left.x*right.y - left.y*right.x,
-                left.w*right.w - left.x*right.x - left.y*right.y - left.z*right.z);
-        }
-
-        /// <summary>
-        ///     Multiplies an instance by a scalar.
-        /// </summary>
-        /// <param name="quaternion">The instance.</param>
-        /// <param name="scale">The scalar.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(ref Quaternion quaternion, float scale, out Quaternion result)
-        {
-            result = new Quaternion(quaternion.x*scale, quaternion.y*scale, quaternion.z*scale, quaternion.w*scale);
         }
 
         /// <summary>
@@ -384,16 +265,6 @@ namespace Fusee.Math.Core
             return new Quaternion(-q.xyz, q.w);
         }
 
-        /// <summary>
-        ///     Get the conjugate of the given quaternion
-        /// </summary>
-        /// <param name="q">The quaternion</param>
-        /// <param name="result">The conjugate of the given quaternion</param>
-        public static void Conjugate(ref Quaternion q, out Quaternion result)
-        {
-            result = new Quaternion(-q.xyz, q.w);
-        }
-
         #endregion
 
         #region Invert
@@ -406,28 +277,20 @@ namespace Fusee.Math.Core
         public static Quaternion Invert(Quaternion q)
         {
             Quaternion result;
-            Invert(ref q, out result);
-            return result;
-        }
 
-        /// <summary>
-        ///     Get the inverse of the given quaternion
-        /// </summary>
-        /// <param name="q">The quaternion to invert</param>
-        /// <param name="result">The inverse of the given quaternion</param>
-        public static void Invert(ref Quaternion q, out Quaternion result)
-        {
             float lengthSq = q.LengthSquared;
 
             if (lengthSq > M.EpsilonFloat)
             {
-                var i = 1.0f/lengthSq;
-                result = new Quaternion(q.xyz*-i, q.w*i);
+                var i = 1.0f / lengthSq;
+                result = new Quaternion(q.xyz * -i, q.w * i);
             }
             else
             {
                 result = q;
             }
+
+            return result;
         }
 
         #endregion
@@ -442,30 +305,22 @@ namespace Fusee.Math.Core
         public static Quaternion Normalize(Quaternion q)
         {
             Quaternion result;
-            Normalize(ref q, out result);
-            return result;
-        }
 
-        /// <summary>
-        ///     Scale the given quaternion to unit length
-        /// </summary>
-        /// <param name="q">The quaternion to normalize</param>
-        /// <param name="result">The normalized quaternion</param>
-        public static void Normalize(ref Quaternion q, out Quaternion result)
-        {
             float scale;
 
             if (!(q.Length > M.EpsilonFloat))
                 scale = 0;
             else
-                scale = 1.0f/q.Length;
+                scale = 1.0f / q.Length;
 
-            result = new Quaternion(q.xyz*scale, q.w*scale);
+            result = new Quaternion(q.xyz * scale, q.w * scale);
+
+            return result;
         }
 
         #endregion
 
-        #region FromAxisAngle
+        #region AxisAngle
 
         /// <summary>
         ///     Build a quaternion from the given axis and angle
@@ -484,11 +339,37 @@ namespace Fusee.Math.Core
             var result = Identity;
 
             angle *= 0.5f;
-            axis.Normalize();
+            axis = axis.Normalize();
             result.xyz = axis*(float) System.Math.Sin(angle);
             result.w = (float) System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        public static float4 ToAxisAngle(Quaternion quat)
+        {
+            Quaternion q = quat;
+
+            if (q.w > 1.0f)
+                q = q.Normalize();
+
+            var result = new float4 { w = 2.0f * (float)System.Math.Acos(q.w) };
+
+            // angle
+            var den = (float)System.Math.Sqrt(1.0 - q.w * q.w);
+
+            if (den > M.EpsilonFloat)
+            {
+                result.xyz = q.xyz / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero. 
+                // Not a problem: just set an arbitrary normalized axis.
+                result.xyz = float3.UnitX;
+            }
+
+            return result;
         }
 
         #endregion
@@ -598,9 +479,6 @@ namespace Fusee.Math.Core
                 e = new float3(rX, rY, rZ);
             }
 
-            // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            //e.y = M.TwoPi - e.y;
-
             // Calculating the Sine and Cosine for each half angle.
             // YAW/HEADING
             var s1 = (float) System.Math.Sin(e.y*0.5f);
@@ -615,14 +493,15 @@ namespace Fusee.Math.Core
             var c3 = (float) System.Math.Cos(e.z*0.5f);
 
             // Formula to construct a new Quaternion based on Euler Angles.
-            var x = s1*s2*c3 + c1*c2*s3;
-            var y = s1*c2*c3 + c1*s2*s3;
-            var z = c1*s2*c3 - s1*c2*s3;
-            var w = c1*c2*c3 - s1*s2*s3;
+            var x = c1 * s2 * c3 - s1 * c2 * s3;
+            var z = s1 * s2 * c3 + c1 * c2 * s3;
+            var y = s1 * c2 * c3 + c1 * s2 * s3;
+            var w = c1 * c2 * c3 - s1 * s2 * s3;
 
             return new Quaternion(x, y, z, w);
         }
 
+        //TODO: Figure out why this is here!
         public static float3 FromQuatToEuler(Quaternion q1)
         {
             float sqw = q1.w * q1.w;
@@ -685,7 +564,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
-            q.Normalize();
+            q = q.Normalize();
 
             float test = 2.0f*(q.x*q.y + q.z*q.w);
 
@@ -695,15 +574,15 @@ namespace Fusee.Math.Core
 
             if (M.Equals(test, 1.0f))
             {
-                z = -2.0f*(float) System.Math.Atan2(q.x, q.w);
-                y = 0;
-                x = M.Pi/2;
+                y = 2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                z = M.Pi/2;
             }
             else if (M.Equals(test, -1.0f))
             {
-                z = 2.0f*(float) System.Math.Atan2(q.x, q.w);
-                y = 0;
-                x = M.Pi/-2;
+                y = -2.0f*(float) System.Math.Atan2(q.x, q.w);
+                x = 0;
+                z = M.Pi/-2;
             }
             else
             {
@@ -713,14 +592,11 @@ namespace Fusee.Math.Core
                 var sqW = q.w*q.w;
 
                 y = (float) System.Math.Atan2(2*(q.y*q.w - q.x*q.z), 1 - 2*sqY - 2*sqZ);
-                x = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
-                z = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
+                z = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
+                x = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
             }
 
-            // y angle (YAW/HEADING) needs to be reversed. Probably due to left-handedness
-            //y = M.TwoPi - y;
-
-            // Clamp angles to ranges around 0 (e.g. [-PI, PI] for yaw)
+            // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
             while (y >= M.TwoPi)
                 y -= M.TwoPi;
             while (y <= -M.TwoPi)
@@ -733,11 +609,11 @@ namespace Fusee.Math.Core
                 z = M.RadiansToDegrees(z);
             }
 
-            return new float3(z, y, x);
+            return new float3(x, y, z);
         }
 
         /// <summary>
-        ///     Takes a float4x4 matric and returns quaternions.
+        ///     Takes a lookAt and upDirection vector and returns a quaternion rotation.
         /// </summary>
         /// <param name="lookAt">The look at.</param>
         /// <param name="upDirection">Up direction.</param>
@@ -766,22 +642,21 @@ namespace Fusee.Math.Core
         /// <returns>A matrix of type float4x4 from the passed Quaternion.</returns>
         public static float4x4 QuaternionToMatrix(Quaternion q)
         {
-            q.Normalize();
+            q = q.Normalize();
 
-            // be careful here: you might need a transposed matrix!
             return new float4x4
             {
-                M11 = 1 - 2*(q.y*q.y + q.z*q.z),
-                M12 = 2*(q.x*q.y + q.z*q.w),
-                M13 = 2*(q.x*q.z - q.y*q.w),
+                M11 = 1 - 2 * (q.y * q.y + q.z * q.z),
+                M12 = 2 * (q.x * q.y - q.z * q.w),
+                M13 = 2 * (q.x * q.z + q.y * q.w),
                 M14 = 0,
-                M21 = 2*(q.x*q.y - q.z*q.w),
-                M22 = 1 - 2*(q.x*q.x + q.z*q.z),
-                M23 = 2*(q.z*q.y + q.x*q.w),
+                M21 = 2 * (q.x * q.y + q.z * q.w),
+                M22 = 1 - 2 * (q.x * q.x + q.z * q.z),
+                M23 = 2 * (q.y * q.z - q.x * q.w),
                 M24 = 0,
-                M31 = 2*(q.x*q.z + q.y*q.w),
-                M32 = 2*(q.y*q.z - q.x*q.w),
-                M33 = 1 - 2*(q.x*q.x + q.y*q.y),
+                M31 = 2 * (q.x * q.z - q.y * q.w),
+                M32 = 2 * (q.y * q.z + q.x * q.w),
+                M33 = 1 - 2 * (q.x * q.x + q.y * q.y),
                 M34 = 0,
                 M41 = 0,
                 M42 = 0,
@@ -819,9 +694,34 @@ namespace Fusee.Math.Core
         {
             Quaternion q = new Quaternion();
 
-            q.SetFromToRotation(from, to);
+            float3 a = float3.Cross(from, to);
+
+            q.xyz = a;
+            q.w = (float)(System.Math.Sqrt(System.Math.Pow(from.Length, 2) * System.Math.Pow(to.Length, 2)) + float3.Dot(from, to));
+
+            q = q.Normalize();
 
             return q;
+        }
+
+        #endregion
+
+        #region Transform
+
+        /// <summary>
+        /// Transforms a vector by a quaternion rotation.
+        /// </summary>
+        /// <param name="vec">The vector to transform.</param>
+        /// <param name="quat">The quaternion to rotate the vector by.</param>
+        /// <returns>The result of the operation.</returns>
+        public static float4 Transform(float4 vec, Quaternion quat)
+        {
+            Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
+            i = Invert(quat);
+            t = Multiply(v,quat);
+            v = Multiply(i,t);
+
+            return new float4(v.x, v.y, v.z, v.w);
         }
 
         #endregion
@@ -838,9 +738,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static Quaternion operator +(Quaternion left, Quaternion right)
         {
-            left.xyz += right.xyz;
-            left.w += right.w;
-            return left;
+            return Add(left, right);
         }
 
         /// <summary>
@@ -851,9 +749,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static Quaternion operator -(Quaternion left, Quaternion right)
         {
-            left.xyz -= right.xyz;
-            left.w -= right.w;
-            return left;
+            return Sub(left, right);
         }
 
         /// <summary>
@@ -864,8 +760,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static Quaternion operator *(Quaternion left, Quaternion right)
         {
-            Multiply(ref left, ref right, out left);
-            return left;
+            return Multiply(left, right);
         }
 
         /// <summary>
@@ -876,8 +771,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion operator *(Quaternion quaternion, float scale)
         {
-            Multiply(ref quaternion, scale, out quaternion);
-            return quaternion;
+            return Multiply(quaternion, scale);
         }
 
         /// <summary>
@@ -888,7 +782,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion operator *(float scale, Quaternion quaternion)
         {
-            return new Quaternion(quaternion.x*scale, quaternion.y*scale, quaternion.z*scale, quaternion.w*scale);
+            return Multiply(quaternion, scale);
         }
 
         /// <summary>

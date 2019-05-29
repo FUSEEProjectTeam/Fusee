@@ -275,7 +275,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                     var mvpMonkey = projection * RC.View * model;
 
-                    var clipPos = uiInput.Position.TransformPerspective(mvpMonkey); //divides by w
+                    var clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position); //divides by 2
                     var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
 
                     canvasPosCircle.x *= _canvasWidth;

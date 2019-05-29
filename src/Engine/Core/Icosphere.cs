@@ -41,7 +41,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < verts.Count; i++)
             {
                 var vert = verts[i];
-                vert.Normalize();
+                vert = vert.Normalize();
                 verts[i] = vert;
             }
 
@@ -215,7 +215,7 @@ namespace Fusee.Engine.Core
         //Add vertex to mesh, normalize position to be on unit sphere.
         private ushort AddNormalizedVertex(float3 p)
         {
-            p.Normalize();
+            p = p.Normalize();
             _sphereVertices.Add(p);
 
             return _newVertIndex++;
@@ -291,7 +291,7 @@ namespace Fusee.Engine.Core
             else
             {
                 var averageNormal = (triNormal + normals[triIndex]) / 2;
-                averageNormal.Normalize();
+                averageNormal = averageNormal.Normalize();
                 normals[triIndex] = averageNormal;
             }
         }
@@ -303,7 +303,7 @@ namespace Fusee.Engine.Core
 
             var normal = float3.Cross(w, v);
 
-            normal.Normalize();
+            normal = normal.Normalize();
             return normal;
         }
     }

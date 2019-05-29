@@ -11,4 +11,4 @@ IF ERRORLEVEL 1 (
 @echo on
 
 rd %BUILDPATH% /S /Q
-hugo --destination %BUILDPATH% --theme=beautifulhugo --baseURL http://fusee3d.org/
+hugo --destination %BUILDPATH% --theme=beautifulhugo --baseURL https://fusee3d.org/

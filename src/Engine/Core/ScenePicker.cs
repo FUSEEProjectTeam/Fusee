@@ -124,7 +124,8 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                return ModelPos.TransformPerspective(Projection * View * Model);
+                var mat = Projection * View * Model;
+                return float4x4.TransformPerspective(mat, ModelPos);
             }
         }
         /// <summary>
@@ -134,7 +135,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                return ModelPos.TransformPerspective(Model);
+                return float4x4.TransformPerspective(Model, ModelPos);
             }
         }
         /// <summary>
@@ -144,7 +145,8 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                return ModelPos.TransformPerspective(View * Model);
+                var mat = View * Model;
+                return float4x4.TransformPerspective(mat, ModelPos);
             }
         }
     }
@@ -341,9 +343,14 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < mesh.Triangles.Length; i += 3)
             {
                 // a, b c: current triangle's vertices in clip coordinates
-                float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
-                float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
-                float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
+                float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1);
+                a = float4x4.TransformPerspective(mvp, a);
+
+                float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1);
+                b = float4x4.TransformPerspective(mvp, b);
+
+                float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1);
+                c = float4x4.TransformPerspective(mvp, c);
 
                 float u, v;
                 // Point-in-Triangle-Test

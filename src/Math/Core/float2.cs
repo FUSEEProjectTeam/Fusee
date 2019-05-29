@@ -47,127 +47,11 @@ namespace Fusee.Math.Core
             this.y = y;
         }
 
-        /// <summary>
-        /// Constructs a new float2 from the given float2.
-        /// </summary>
-        /// <param name="v">The float2 to copy components from.</param>
-        [Obsolete]
-        public float2(float2 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new float2 from the given float3.
-        /// </summary>
-        /// <param name="v">The float3 to copy components from. Z is discarded.</param>
-        [Obsolete]
-        public float2(float3 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new float2 from the given float4.
-        /// </summary>
-        /// <param name="v">The float4 to copy components from. Z and W are discarded.</param>
-        [Obsolete]
-        public float2(float4 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
         #endregion
 
         #region Public Members
 
         #region Instance
-
-        #region public void Add()
-
-        /// <summary>
-        /// Add the Vector passed as parameter to this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Add() method instead.")]
-        public void Add(float2 right)
-        {
-            this.x += right.x;
-            this.y += right.y;
-        }
-
-        /// <summary>
-        /// Add the Vector passed as parameter to this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Add() method instead.")]
-        public void Add(ref float2 right)
-        {
-            this.x += right.x;
-            this.y += right.y;
-        }
-
-        #endregion public void Add()
-
-        #region public void Sub()
-
-        /// <summary>
-        /// Subtract the Vector passed as parameter from this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public void Sub(float2 right)
-        {
-            this.x -= right.x;
-            this.y -= right.y;
-        }
-
-        /// <summary>
-        /// Subtract the Vector passed as parameter from this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public void Sub(ref float2 right)
-        {
-            this.x -= right.x;
-            this.y -= right.y;
-        }
-
-        #endregion public void Sub()
-
-        #region public void Mult()
-
-        /// <summary>
-        /// Multiply this instance by a scalar.
-        /// </summary>
-        /// <param name="f">Scalar operand.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Mult(float f)
-        {
-            this.x *= f;
-            this.y *= f;
-        }
-
-        #endregion public void Mult()
-
-        #region public void Div()
-
-        /// <summary>
-        /// Divide this instance by a scalar.
-        /// </summary>
-        /// <param name="f">Scalar operand.</param>
-        [Obsolete("Use static Divide() method instead.")]
-        public void Div(float f)
-        {
-            float mult = 1.0f / f;
-            this.x *= mult;
-            this.y *= mult;
-        }
-
-        #endregion public void Div()
 
         #region public float Length
 
@@ -177,37 +61,12 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length.
         /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// <see cref="LengthSquared" />
         public float Length
         {
             get
             {
-                return (float)System.Math.Sqrt(x * x + y * y);
-            }
-        }
-
-        #endregion
-
-        #region public float LengthFast
-
-        /// <summary>
-        /// Gets an approximation of the vector length (magnitude).
-        /// </summary>
-        /// <value>
-        /// The length fast.
-        /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthSquared" />
-        /// <remarks>
-        /// This property uses an approximation of the square root function to calculate vector magnitude, with
-        /// an upper error bound of 0.001.
-        /// </remarks>
-        public float LengthFast
-        {
-            get
-            {
-                return 1.0f / M.InverseSqrtFast(x * x + y * y);
+                return (float)System.Math.Sqrt(LengthSquared);
             }
         }
 
@@ -222,7 +81,6 @@ namespace Fusee.Math.Core
         /// The length squared.
         /// </value>
         /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -273,71 +131,29 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the float2 to unit length.
         /// </summary>
-        public void Normalize()
+        public float2 Normalize()
         {
-            float scale = 1.0f / this.Length;
-            x *= scale;
-            y *= scale;
+            return Normalize(this);
         }
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the float2 to approximately unit length.
         /// </summary>
-        public void NormalizeFast()
+        public float2 NormalizeFast()
         {
-            float scale = M.InverseSqrtFast(x * x + y * y);
-            x *= scale;
-            y *= scale;
+            return NormalizeFast(this);
         }
 
         #endregion
-
-        #region public void Scale()
-
-        /// <summary>
-        /// Scales the current float2 by the given amounts.
-        /// </summary>
-        /// <param name="sx">The scale of the x component.</param>
-        /// <param name="sy">The scale of the y component.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(float sx, float sy)
-        {
-            this.x = x * sx;
-            this.y = y * sy;
-        }
-
-        /// <summary>
-        /// Scales this instance by the given parameter.
-        /// </summary>
-        /// <param name="scale">The scaling of the individual components.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(float2 scale)
-        {
-            this.x *= scale.x;
-            this.y *= scale.y;
-        }
-
-        /// <summary>
-        /// Scales this instance by the given parameter.
-        /// </summary>
-        /// <param name="scale">The scaling of the individual components.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(ref float2 scale)
-        {
-            this.x *= scale.x;
-            this.y *= scale.y;
-        }
-
-        #endregion public void Scale()
 
         /// <summary>
         /// Returns an array of floats with the two components of the vector.
@@ -381,111 +197,6 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Obsolete
-
-        #region Sub
-
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <returns>
-        /// Result of subtraction
-        /// </returns>
-        [Obsolete("Use static Subtract() method instead.")]
-        public static float2 Sub(float2 a, float2 b)
-        {
-            a.x -= b.x;
-            a.y -= b.y;
-            return a;
-        }
-
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">Result of subtraction</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public static void Sub(ref float2 a, ref float2 b, out float2 result)
-        {
-            result.x = a.x - b.x;
-            result.y = a.y - b.y;
-        }
-
-        #endregion
-
-        #region Mult
-
-        /// <summary>
-        /// Multiply a vector and a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <returns>
-        /// Result of the multiplication
-        /// </returns>
-        [Obsolete("Use static Multiply() method instead.")]
-        public static float2 Mult(float2 a, float f)
-        {
-            a.x *= f;
-            a.y *= f;
-            return a;
-        }
-
-        /// <summary>
-        /// Multiply a vector and a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <param name="result">Result of the multiplication</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public static void Mult(ref float2 a, float f, out float2 result)
-        {
-            result.x = a.x * f;
-            result.y = a.y * f;
-        }
-
-        #endregion
-
-        #region Div
-
-        /// <summary>
-        /// Divide a vector by a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <returns>
-        /// Result of the division
-        /// </returns>
-        [Obsolete("Use static Divide() method instead.")]
-        public static float2 Div(float2 a, float f)
-        {
-            float mult = 1.0f / f;
-            a.x *= mult;
-            a.y *= mult;
-            return a;
-        }
-
-        /// <summary>
-        /// Divide a vector by a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <param name="result">Result of the division</param>
-        [Obsolete("Use static Divide() method instead.")]
-        public static void Div(ref float2 a, float f, out float2 result)
-        {
-            float mult = 1.0f / f;
-            result.x = a.x * mult;
-            result.y = a.y * mult;
-        }
-
-        #endregion
-
-        #endregion
-
         #region Add
 
         /// <summary>
@@ -498,19 +209,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Add(float2 a, float2 b)
         {
-            Add(ref a, ref b, out a);
-            return a;
-        }
+            var result = new float2(a.x + b.x, a.y + b.y);
 
-        /// <summary>
-        /// Adds two vectors.
-        /// </summary>
-        /// <param name="a">Left operand.</param>
-        /// <param name="b">Right operand.</param>
-        /// <param name="result">Result of operation.</param>
-        public static void Add(ref float2 a, ref float2 b, out float2 result)
-        {
-            result = new float2(a.x + b.x, a.y + b.y);
+            return result;
         }
 
         #endregion
@@ -527,19 +228,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Subtract(float2 a, float2 b)
         {
-            Subtract(ref a, ref b, out a);
-            return a;
-        }
+            var result = new float2(a.x - b.x, a.y - b.y);
 
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">Result of subtraction</param>
-        public static void Subtract(ref float2 a, ref float2 b, out float2 result)
-        {
-            result = new float2(a.x - b.x, a.y - b.y);
+            return result;
         }
 
         #endregion
@@ -556,19 +247,8 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Multiply(float2 vector, float scale)
         {
-            Multiply(ref vector, scale, out vector);
-            return vector;
-        }
-
-        /// <summary>
-        /// Multiplies a vector by a scalar.
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Multiply(ref float2 vector, float scale, out float2 result)
-        {
-            result = new float2(vector.x * scale, vector.y * scale);
+            var result = new float2(vector.x * scale, vector.y * scale);
+            return result;
         }
 
         /// <summary>
@@ -581,19 +261,8 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Multiply(float2 vector, float2 scale)
         {
-            Multiply(ref vector, ref scale, out vector);
-            return vector;
-        }
-
-        /// <summary>
-        /// Multiplies a vector by the components of a vector (scale).
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Multiply(ref float2 vector, ref float2 scale, out float2 result)
-        {
-            result = new float2(vector.x * scale.x, vector.y * scale.y);
+            var result = new float2(vector.x * scale.x, vector.y * scale.y);
+            return result;
         }
 
         #endregion
@@ -610,19 +279,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Divide(float2 vector, float scale)
         {
-            Divide(ref vector, scale, out vector);
-            return vector;
-        }
+            var result = new float2(vector.x / scale, vector.y / scale);
 
-        /// <summary>
-        /// Divides a vector by a scalar.
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Divide(ref float2 vector, float scale, out float2 result)
-        {
-            Multiply(ref vector, 1 / scale, out result);
+            return result;
         }
 
         /// <summary>
@@ -635,19 +294,9 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 Divide(float2 vector, float2 scale)
         {
-            Divide(ref vector, ref scale, out vector);
-            return vector;
-        }
+            var result = new float2(vector.x / scale.x, vector.y / scale.y);
 
-        /// <summary>
-        /// Divide a vector by the components of a vector (scale).
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Divide(ref float2 vector, ref float2 scale, out float2 result)
-        {
-            result = new float2(vector.x / scale.x, vector.y / scale.y);
+            return result;
         }
 
         #endregion
@@ -669,18 +318,6 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        /// <summary>
-        /// Calculate the component-wise minimum of two vectors
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">The component-wise minimum</param>
-        public static void ComponentMin(ref float2 a, ref float2 b, out float2 result)
-        {
-            result.x = a.x < b.x ? a.x : b.x;
-            result.y = a.y < b.y ? a.y : b.y;
-        }
-
         #endregion
 
         #region ComponentMax
@@ -698,18 +335,6 @@ namespace Fusee.Math.Core
             a.x = a.x > b.x ? a.x : b.x;
             a.y = a.y > b.y ? a.y : b.y;
             return a;
-        }
-
-        /// <summary>
-        /// Calculate the component-wise maximum of two vectors
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">The component-wise maximum</param>
-        public static void ComponentMax(ref float2 a, ref float2 b, out float2 result)
-        {
-            result.x = a.x > b.x ? a.x : b.x;
-            result.y = a.y > b.y ? a.y : b.y;
         }
 
         #endregion
@@ -766,19 +391,6 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        /// <summary>
-        /// Clamp a vector to the given minimum and maximum vectors
-        /// </summary>
-        /// <param name="vec">Input vector</param>
-        /// <param name="min">Minimum vector</param>
-        /// <param name="max">Maximum vector</param>
-        /// <param name="result">The clamped vector</param>
-        public static void Clamp(ref float2 vec, ref float2 min, ref float2 max, out float2 result)
-        {
-            result.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
-            result.y = vec.y < min.y ? min.y : vec.y > max.y ? max.y : vec.y;
-        }
-
         #endregion
 
         #region Normalize
@@ -796,18 +408,6 @@ namespace Fusee.Math.Core
             vec.x *= scale;
             vec.y *= scale;
             return vec;
-        }
-
-        /// <summary>
-        /// Scale a vector to unit length
-        /// </summary>
-        /// <param name="vec">The input vector</param>
-        /// <param name="result">The normalized vector</param>
-        public static void Normalize(ref float2 vec, out float2 result)
-        {
-            float scale = 1.0f / vec.Length;
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
         }
 
         #endregion
@@ -829,18 +429,6 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        /// <summary>
-        /// Scale a vector to approximately unit length
-        /// </summary>
-        /// <param name="vec">The input vector</param>
-        /// <param name="result">The normalized vector</param>
-        public static void NormalizeFast(ref float2 vec, out float2 result)
-        {
-            float scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
-        }
-
         #endregion
 
         #region Dot
@@ -856,17 +444,6 @@ namespace Fusee.Math.Core
         public static float Dot(float2 left, float2 right)
         {
             return left.x * right.x + left.y * right.y;
-        }
-
-        /// <summary>
-        /// Calculate the dot (scalar) product of two vectors
-        /// </summary>
-        /// <param name="left">First operand</param>
-        /// <param name="right">Second operand</param>
-        /// <param name="result">The dot product of the two inputs</param>
-        public static void Dot(ref float2 left, ref float2 right, out float result)
-        {
-            result = left.x * right.x + left.y * right.y;
         }
 
         #endregion
@@ -889,19 +466,6 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        /// <summary>
-        /// Returns a new Vector that is the linear blend of the 2 given Vectors
-        /// </summary>
-        /// <param name="a">First input vector</param>
-        /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
-        /// <param name="result">a when blend=0, b when blend=1, and a linear combination otherwise</param>
-        public static void Lerp(ref float2 a, ref float2 b, float blend, out float2 result)
-        {
-            result.x = blend * (b.x - a.x) + a.x;
-            result.y = blend * (b.y - a.y) + a.y;
-        }
-
         #endregion
 
         #region Barycentric
@@ -915,7 +479,7 @@ namespace Fusee.Math.Core
         /// <param name="u">First Barycentric Coordinate</param>
         /// <param name="v">Second Barycentric Coordinate</param>
         /// <returns>
-        /// a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise
+        /// a when u=1,v=9, b when u=0,v=1, c when u=v=1, and a linear combination of a,b,c otherwise
         /// </returns>
         public static float2 Barycentric(float2 a, float2 b, float2 c, float u, float v)
         {
@@ -972,7 +536,9 @@ namespace Fusee.Math.Core
         public static bool PointInTriangle(float2 a, float2 b, float2 c, float2 point, out float u, out float v)
         {
             GetBarycentric(a, b, c, point, out u, out v);
-            return u >= 0 && v >= 0 && u + v < 1;
+
+            //was previously  "u >= 0 && v >= 0 && u + v < 1;", which returned false for u=v=0 and u=1, v=0
+            return u >= 0 && v >= 0 && u + v <= 1;
         }
 
         /// <summary>
@@ -993,41 +559,6 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Transform
-
-        /// <summary>
-        /// Transforms a vector by a quaternion rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <returns>
-        /// The result of the operation.
-        /// </returns>
-        public static float2 Transform(float2 vec, Quaternion quat)
-        {
-            float2 result;
-            Transform(ref vec, ref quat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transforms a vector by a quaternion rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The quaternion to rotate the vector by.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Transform(ref float2 vec, ref Quaternion quat, out float2 result)
-        {
-            Quaternion v = new Quaternion(vec.x, vec.y, 0, 0), i, t;
-            Quaternion.Invert(ref quat, out i);
-            Quaternion.Multiply(ref quat, ref v, out t);
-            Quaternion.Multiply(ref t, ref i, out v);
-
-            result = new float2(v.x, v.y);
-        }
-
-        #endregion
-
         #endregion
 
         #region Swizzle
@@ -1036,6 +567,11 @@ namespace Fusee.Math.Core
         /// Gets and sets an OpenTK.float2 with the x and y components of this instance.
         /// </summary>
         public float2 xy { get { return new float2(x, y); } set { x = value.x; y = value.y; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float2 with the y and x components of this instance.
+        /// </summary>
+        public float2 yx { get { return new float2(y, x); } set { y = value.x; x = value.y; } }
 
         #endregion
 
@@ -1051,9 +587,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator +(float2 left, float2 right)
         {
-            left.x += right.x;
-            left.y += right.y;
-            return left;
+            return Add(left, right);
         }
 
 
@@ -1082,9 +616,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator -(float2 left, float2 right)
         {
-            left.x -= right.x;
-            left.y -= right.y;
-            return left;
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -1126,9 +658,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator *(float2 vec, float scale)
         {
-            vec.x *= scale;
-            vec.y *= scale;
-            return vec;
+            return Multiply(vec, scale);
         }
 
         /// <summary>
@@ -1141,9 +671,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator *(float scale, float2 vec)
         {
-            vec.x *= scale;
-            vec.y *= scale;
-            return vec;
+            return Multiply(vec, scale);
         }
 
         /// <summary>
@@ -1156,9 +684,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator *(float2 vec1, float2 vec2)
         {
-            vec1.x *= vec2.x;
-            vec1.y *= vec2.y;
-            return vec1;
+            return Multiply(vec1, vec2);
         }
 
         /// <summary>
@@ -1171,10 +697,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static float2 operator /(float2 vec, float scale)
         {
-            float mult = 1.0f / scale;
-            vec.x *= mult;
-            vec.y *= mult;
-            return vec;
+            return Divide(vec, scale);
         }
 
         /// <summary>
