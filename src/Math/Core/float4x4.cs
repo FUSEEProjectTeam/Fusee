@@ -370,7 +370,7 @@ namespace Fusee.Math.Core
         /// </remarks>
         public float3 Offset
         {
-            get { return new float3(Row0.w, Row1.w, Row2.w); }
+            get { return GetTranslation(this); }
             // No setter here - might be too confusing
         }
 
@@ -422,6 +422,50 @@ namespace Fusee.Math.Core
         public float4x4 Round()
         {
             return Round(this);
+        }
+
+        #endregion
+
+        #region TRS Decomposition
+
+        /// <summary>
+        /// The translation component of this matrix.
+        /// </summary>
+        public float4x4 TranslationComponent()
+        {
+            return TranslationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The translation of this matrix.
+        /// </summary>
+        public float3 Translation()
+        {
+            return GetTranslation(this);
+        }
+
+        /// <summary>
+        /// The rotation component of this matrix.
+        /// </summary>
+        public float4x4 RotationComponent()
+        {
+            return RotationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale component of this matrix.
+        /// </summary>
+        public float4x4 ScaleComponent()
+        {
+            return ScaleDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale factors of this matrix.
+        /// </summary>
+        public float3 Scale()
+        {
+            return GetScale(this);
         }
 
         #endregion
@@ -1469,6 +1513,95 @@ namespace Fusee.Math.Core
         {
             float4 tmp = mat * vec;
             return tmp /= tmp.w;
+        }
+
+        #endregion
+
+        #region TRS Decomposition
+
+        /// <summary>
+        /// Calculates translation of the given float4x4 matrix and returns it as a float3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float3 GetTranslation(float4x4 mat)
+        {
+            return new float3(mat.M14, mat.M24, mat.M34);
+        }
+
+        /// <summary>
+        /// Calculates and returns only the translation component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 TranslationDecomposition(float4x4 mat)
+        {
+            var translationVec = GetTranslation(mat);
+            var translationMtx = float4x4.Identity;
+
+            translationMtx.M14 = mat.M14;
+            translationMtx.M24 = mat.M24;
+            translationMtx.M34 = mat.M34;
+
+            return translationMtx;
+        }
+
+        /// <summary>
+        /// Calculates and returns the rotation component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 RotationDecomposition(float4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var rotationMtx = float4x4.Identity;
+
+            rotationMtx.M11 = mat.M11 / scalevector.x;
+            rotationMtx.M21 = mat.M21 / scalevector.x;
+            rotationMtx.M31 = mat.M31 / scalevector.x;
+
+            rotationMtx.M12 = mat.M12 / scalevector.y;
+            rotationMtx.M22 = mat.M22 / scalevector.y;
+            rotationMtx.M32 = mat.M32 / scalevector.y;
+
+            rotationMtx.M13 = mat.M13 / scalevector.z;
+            rotationMtx.M23 = mat.M23 / scalevector.z;
+            rotationMtx.M33 = mat.M33 / scalevector.z;
+
+            return rotationMtx;
+        }
+
+        /// <summary>
+        /// Calculates the scale factor of the given float4x4 and returns it as a float3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float3 GetScale(float4x4 mat)
+        {
+            var scale = float3.One;
+
+            scale.x = mat.Column0.Length;
+            scale.y = mat.Column1.Length;
+            scale.z = mat.Column2.Length;
+
+            return scale;
+        }
+
+        /// <summary>
+        /// Calculates and returns the scale component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 ScaleDecomposition(float4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var scaleMtx = float4x4.Identity;
+
+            scaleMtx.M11 = scalevector.x;
+            scaleMtx.M22 = scalevector.y;
+            scaleMtx.M33 = scalevector.z;
+
+            return scaleMtx;
         }
 
         #endregion

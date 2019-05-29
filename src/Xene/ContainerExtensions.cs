@@ -59,28 +59,8 @@ namespace Fusee.Xene
         /// </summary>
         public static float4x4 GetGlobalRotation(this SceneNodeContainer snc)
         {
-            var res = GetGlobalTransformation(snc);
-            res.M14 = 0;
-            res.M24 = 0;
-            res.M34 = 0;
-
-            var scaleX = res.Column0.Length;
-            var scaleY = res.Column1.Length;
-            var scaleZ = res.Column2.Length;
-
-            res.M11 /= scaleX;
-            res.M21 /= scaleX;
-            res.M31 /= scaleX;
-
-            res.M12 /= scaleY;
-            res.M22 /= scaleY;
-            res.M32 /= scaleY;
-
-            res.M13 /= scaleZ;
-            res.M23 /= scaleZ;
-            res.M33 /= scaleZ;
-
-            return res;
+            var transform = GetGlobalTransformation(snc);
+            return transform.RotationComponent();
         }
 
         /// <summary>
@@ -89,7 +69,7 @@ namespace Fusee.Xene
         public static float3 GetGlobalTranslation(this SceneNodeContainer snc)
         {
             var transform = GetGlobalTransformation(snc);
-            return new float3(transform.M14,transform.M24, transform.M34);
+            return transform.Translation();
         }
 
         /// <summary>
@@ -98,11 +78,7 @@ namespace Fusee.Xene
         public static float3 GetGlobalScale(this SceneNodeContainer snc)
         {
             var transform = GetGlobalTransformation(snc);
-            var scaleX = transform.Column0.Length;
-            var scaleY = transform.Column1.Length;
-            var scaleZ = transform.Column2.Length;
-
-            return new float3(scaleX, scaleY, scaleZ);
+            return transform.Scale();
         }
 
         private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res)
