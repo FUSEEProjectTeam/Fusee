@@ -223,6 +223,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         [DllImport("user32.dll")]
         private static extern IntPtr EnableMouseInPointer(bool fEnable);
+        /// <summary>
+        /// The touch point.
+        /// </summary>
 
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT

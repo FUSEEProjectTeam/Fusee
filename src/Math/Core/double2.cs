@@ -709,7 +709,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a double2.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a double2.
         /// </summary>
         /// <value>
         /// The parse property.

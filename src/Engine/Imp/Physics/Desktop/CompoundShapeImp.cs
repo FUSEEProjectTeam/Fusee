@@ -13,7 +13,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal CompoundShape BtCompoundShape;
         //Inherited
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.

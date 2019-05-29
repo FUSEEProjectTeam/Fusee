@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         #region Implementor Fields
 
         /// <summary>
-        ///     Gets or sets the canvas implementor.
+        ///     Gets and sets the canvas implementor.
         /// </summary>
         /// <value>
         ///     The canvas implementor.
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         public IRenderCanvasImp CanvasImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the RenderContext implementor.
+        ///     Gets and sets the RenderContext implementor.
         /// </summary>
         /// <value>
         ///     The context implementor.
@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core
         public IRenderContextImp ContextImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the audio implementor.
+        ///     Gets and sets the audio implementor.
         /// </summary>
         /// <value>
         ///     The audio implementor.
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Core
         public IAudioImp AudioImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the input driver implementor.
+        ///     Gets and sets the input driver implementor.
         /// </summary>
         /// <value>
         ///     The input driver implementor.
@@ -52,7 +52,7 @@ namespace Fusee.Engine.Core
         public IInputDriverImp InputDriverImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the video manager implementor.
+        ///     Gets and sets the video manager implementor.
         /// </summary>
         /// <value>
         ///     The video manager implementor.
@@ -61,7 +61,7 @@ namespace Fusee.Engine.Core
         public IVideoManagerImp VideoManagerImplementor { set; get; }
 
         /// <summary>
-        ///     Gets or sets the network implementor.
+        ///     Gets and sets the network implementor.
         /// </summary>
         /// <value>
         ///     The network implementor.
@@ -376,7 +376,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether VSync is active.
+        ///     Gets and sets a value indicating whether VSync is active.
         /// </summary>
         /// <value>
         ///     <c>true</c> if VSync is active; otherwise, <c>false</c>.
@@ -388,7 +388,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether this <see cref="RenderCanvas" /> is fullscreen.
+        ///     Gets and sets a value indicating whether this <see cref="RenderCanvas" /> is fullscreen.
         /// </summary>
         /// <value>
         ///     <c>true</c> if fullscreen; otherwise, <c>false</c>.

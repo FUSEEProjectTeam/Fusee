@@ -41,7 +41,7 @@ namespace Fusee.Xirkit
         /// </summary>
         public List<ChannelBase> ChannelBaseList { get { return _channels; } }
         /// <summary>
-        /// Gets or sets the animation mode.
+        /// Gets and sets the animation mode.
         /// </summary>
         /// <value>
         /// The animation mode.

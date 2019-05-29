@@ -103,8 +103,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         ///   <c>true</c> if [boneindices set]; otherwise, <c>false</c>.
         /// </value>
         public bool BoneIndicesSet { get { return BoneIndexBufferObject != 0; } }
-
+        /// <summary>
+        /// Returns wether the tangents have been set.
+        /// </summary>
         public bool TangentsSet { get; }
+        /// <summary>
+        /// Returns wether be bitangents have been set.
+        /// </summary>
         public bool BiTangentsSet { get; }
 
         /// <summary>

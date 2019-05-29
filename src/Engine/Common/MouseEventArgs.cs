@@ -8,7 +8,7 @@ namespace Fusee.Engine.Common
     public class MouseEventArgs : EventArgs
     {
         /// <summary>
-        /// Gets or sets the button.
+        /// Gets and sets the button.
         /// </summary>
         /// <value>
         /// The button.
@@ -16,7 +16,7 @@ namespace Fusee.Engine.Common
         public MouseButtons Button { get; set; }
 
         /// <summary>
-        /// Gets or sets the position.
+        /// Gets and sets the position.
         /// </summary>
         /// <value>
         /// The position.

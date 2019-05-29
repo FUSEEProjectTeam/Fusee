@@ -90,7 +90,7 @@
         uint FontSize { get; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
+        ///     Gets and sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the kerning definition of a font should be used; otherwise, <c>false</c>.

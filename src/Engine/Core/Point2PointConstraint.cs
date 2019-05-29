@@ -3,10 +3,15 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements a point to point constraint.
+    /// </summary>
     public class Point2PointConstraint
     {
         internal IPoint2PointConstraintImp _iP2PConstraintImp;
-
+        /// <summary>
+        /// Gets and sets the first pivot point.
+        /// </summary>
         public float3 PivotInA
         {
             get
@@ -20,6 +25,9 @@ namespace Fusee.Engine.Core
             }
             
         }
+        /// <summary>
+        /// Gets and sets the second pivot point.
+        /// </summary>
         public float3 PivotInB
         {
             get
@@ -51,7 +59,9 @@ namespace Fusee.Engine.Core
         }
 
         
-
+        /// <summary>
+        /// Returns the first rigid body.
+        /// </summary>
         public RigidBody RigidBodyA
         {
             get
@@ -60,6 +70,9 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
+        /// <summary>
+        /// Returns the second rigid body.
+        /// </summary>
         public RigidBody RigidBodyB
         {
             get
@@ -68,6 +81,10 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
+        /// <summary>
+        /// Returns the Uid.
+        /// </summary>
+        /// <returns></returns>
         public int GetUid()
         {
             var retval = _iP2PConstraintImp.GetUid();

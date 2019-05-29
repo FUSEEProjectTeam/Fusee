@@ -798,7 +798,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Clear Fields
 
         /// <summary>
-        /// Gets or sets the color of the background.
+        /// Gets and sets the color of the background.
         /// </summary>
         /// <value>
         /// The color of the clear.
@@ -815,7 +815,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the clear depth value which is used to clear the depth buffer.
+        /// Gets and sets the clear depth value which is used to clear the depth buffer.
         /// </summary>
         /// <value>
         /// Specifies the depth value used when the depth buffer is cleared. The initial value is 1. This value is clamped to the range [0,1].

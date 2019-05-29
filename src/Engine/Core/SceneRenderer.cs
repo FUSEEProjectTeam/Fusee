@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
     public enum LightingCalculationMethod
     {
         /// <summary> 
-        /// Simple Blinn Phong Shading without fresnel & distribution function
+        /// Simple Blinn Phong Shading without fresnel and distribution function
         /// </summary>
         SIMPLE,
 
@@ -155,7 +155,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Physical based shading with environment cube map algorithm
         /// </summary>
-        ADVANCEDwENVMAP
+        ADVANCEDENVMAP
     }
 
     /// <summary>
@@ -173,6 +173,9 @@ namespace Fusee.Engine.Core
         private readonly bool _wantToRenderWithShadows;
         private readonly bool _wantToRenderDeferred;
         private readonly bool _wantToRenderEnvMap;
+        /// <summary>
+        /// Gets and sets the size of the shadow map.
+        /// </summary>
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
         private CanvasTransformComponent _ctc;
@@ -253,6 +256,9 @@ namespace Fusee.Engine.Core
 
             private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
 
+            /// <summary>
+            /// Gets and sets the shader effect.
+            /// </summary>
             public ShaderEffect Effect
             {
                 set { _effect.Tos = value; }
@@ -274,7 +280,12 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Initialization Construction Startup
-
+        /// <summary>
+        /// Implements the scene renderer.
+        /// </summary>
+        /// <param name="sc"></param>
+        /// <param name="RenderDeferred"></param>
+        /// <param name="RenderShadows"></param>
         public SceneRenderer(SceneContainer sc, bool RenderDeferred = false, bool RenderShadows = false)
              : this(sc)
         {
@@ -429,7 +440,10 @@ namespace Fusee.Engine.Core
             }
         }
 
-
+        /// <summary>
+        /// Sets the rendercontext for the given scene.
+        /// </summary>
+        /// <param name="rc"></param>
         public void SetContext(RenderContext rc)
         {
             if (rc == null)
@@ -465,7 +479,10 @@ namespace Fusee.Engine.Core
             }
         }
         #endregion
-
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>
         public void Render(RenderContext rc)
         {
             SetContext(rc);
@@ -476,7 +493,10 @@ namespace Fusee.Engine.Core
 
 
         #region Visitors
-
+        /// <summary>
+        /// Renders the bones.
+        /// </summary>
+        /// <param name="bone"></param>
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
         {
@@ -500,7 +520,10 @@ namespace Fusee.Engine.Core
             else
                 _boneMap[boneContainer] = _rc.Model;
         }
-
+        /// <summary>
+        /// Renders the weight.
+        /// </summary>
+        /// <param name="weight"></param>
         [VisitMethod]
         public void RenderWeight(WeightComponent weight)
         {
@@ -1025,7 +1048,7 @@ namespace Fusee.Engine.Core
         private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
 
         /// <summary>
-        /// Gets or sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
+        /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
         /// </summary>
         /// <value>
         /// The Model matrix.

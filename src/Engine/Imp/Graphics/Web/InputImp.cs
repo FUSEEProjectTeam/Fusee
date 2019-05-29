@@ -703,7 +703,10 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
         #endregion
 
-
+        /// <summary>
+        /// Implements a touch device for windows.
+        /// </summary>
+        /// <param name="canvas"></param>
         public TouchDeviceImp(object canvas)
         {
             _canvas = canvas;

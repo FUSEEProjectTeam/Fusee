@@ -36,7 +36,9 @@ namespace Fusee.Serialization
             Size = ScreenSpaceSize;
         }
     }
-
+    ///<summary>
+    ///The rendermodes available.
+    ///</summary>
     [ProtoContract]
     public enum CanvasRenderMode
     {
