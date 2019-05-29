@@ -15,7 +15,9 @@ namespace Fusee.Engine.Core
         {
             _dwi = dynamicWorld;
         }
-
+        /// <summary>
+        /// Returns the gravity value.
+        /// </summary>
         public float3 Gravity
         {
             get { return _dwi.Gravity; }
@@ -106,19 +108,32 @@ namespace Fusee.Engine.Core
 
             return retval;
         }
-
+        /// <summary>
+        /// Returns the step simulation.
+        /// </summary>
+        /// <param name="timeSteps"></param>
+        /// <param name="maxSubSteps"></param>
+        /// <param name="fixedTimeSteps"></param>
+        /// <returns></returns>
         public int StepSimulation(float timeSteps, int maxSubSteps, float fixedTimeSteps = 1/60)
         {
             return _dwi.StepSimulation(timeSteps, maxSubSteps, fixedTimeSteps);
         }
-
+        /// <summary>
+        /// Returns the rigidbody.
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
         public RigidBody GetRigidBody(int i)
         {
             var rbi = _dwi.GetRigidBody(i);
             var retval = (RigidBody) rbi.UserObject;
             return retval;
         }
-
+        /// <summary>
+        /// Returns the number of rigid body´s.
+        /// </summary>
+        /// <returns></returns>
         public int NumberRigidBodies()
         {
             var number = _dwi.NumberRigidBodies();
@@ -411,13 +426,18 @@ namespace Fusee.Engine.Core
         }
 
         #endregion CollisionShapes
-
+        /// <summary>
+        /// Returns the number of constraints.
+        /// </summary>
+        /// <returns></returns>
         public int NumberConstraints()
         {
             var number = _dwi.NumberConstraints();
             return number;
         }
-
+        /// <summary>
+        /// Disposes the rigid body.
+        /// </summary>
         public void Dispose()
         {
             _dwi.Dispose();

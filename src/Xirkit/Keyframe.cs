@@ -21,7 +21,7 @@
         }
 
         /// <summary>
-        /// Gets or sets the time.
+        /// Gets and sets the time.
         /// </summary>
         /// <value>
         /// The new time.
@@ -37,7 +37,7 @@
 
 
         /// <summary>
-        /// Gets or sets the value.
+        /// Gets and sets the value.
         /// </summary>
         /// <value>
         /// The new value.

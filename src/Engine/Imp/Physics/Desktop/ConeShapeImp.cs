@@ -11,7 +11,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
     {
         internal ConeShape BtConeShape;
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.
@@ -30,7 +30,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the local scaling.
+        /// Gets and sets the local scaling.
         /// </summary>
         /// <value>
         /// The local scaling.
@@ -50,7 +50,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the index of the cone up.
+        /// Gets and sets the index of the cone up.
         /// </summary>
         /// <value>
         /// The index of the cone up.

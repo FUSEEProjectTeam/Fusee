@@ -3,10 +3,15 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Constraints for a generic six degrees of freedom device.
+    /// </summary>
     public class Generic6DofConstraint
     {
         internal IGeneric6DofConstraintImp _IG6DofConstraintImp;
-
+        /// <summary>
+        /// Returns the lower limit for an angle.
+        /// </summary>
         public float3 AngularLowerLimit
         {
             get
@@ -20,6 +25,9 @@ namespace Fusee.Engine.Core
                 o._IG6DofConstraintImp.AngularLowerLimit = value;
             }
         }
+        /// <summary>
+        /// Returns the upper limit for an angle.
+        /// </summary>
         public float3 AngularUpperLimit
         {
             get
@@ -33,7 +41,9 @@ namespace Fusee.Engine.Core
                 o._IG6DofConstraintImp.AngularUpperLimit = value;
             }
         }
-
+        /// <summary>
+        /// returns the anchor position.
+        /// </summary>
         public void CalcAnchorPos()
         {
             _IG6DofConstraintImp.CalcAnchorPos();
@@ -91,11 +101,21 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Returns the value for a 6Dof axis.
+        /// </summary>
+        /// <param name="axisIndex"></param>
+        /// <returns></returns>
         public float GetAngle(int axisIndex)
         {
             var retval = _IG6DofConstraintImp.GetAngle(axisIndex);
             return retval;
         }
+        /// <summary>
+        /// Returns the axis of a 6Dof device.
+        /// </summary>
+        /// <param name="axisIndex"></param>
+        /// <returns></returns>
         public float3 GetAxis(int axisIndex)
         {
             var retval = _IG6DofConstraintImp.GetAxis(axisIndex);
@@ -108,6 +128,11 @@ namespace Fusee.Engine.Core
             return retval;
         }
 
+        /// <summary>
+        /// Returns if the limit index is limited.
+        /// </summary>
+        /// <param name="limitIndex"></param>
+        /// <returns></returns>
         public bool IsLimited(int limitIndex)
         {
             var retval = _IG6DofConstraintImp.IsLimited(limitIndex);
@@ -148,6 +173,13 @@ namespace Fusee.Engine.Core
         {
             _IG6DofConstraintImp.SetFrames(frameA, frameB);
         }
+
+        /// <summary>
+        /// Sets the limits for an axis.
+        /// </summary>
+        /// <param name="axis"></param>
+        /// <param name="lo"></param>
+        /// <param name="hi"></param>
         public void SetLimit(int axis, float lo, float hi)
         {
             _IG6DofConstraintImp.SetLimit(axis, lo, hi);
@@ -177,7 +209,9 @@ namespace Fusee.Engine.Core
         {
             _IG6DofConstraintImp.UpdateRhs(timeStep);
         }
-
+        /// <summary>
+        /// Returns the rigid body a.
+        /// </summary>
         public RigidBody RigidBodyA
         {
             get
@@ -186,6 +220,9 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
+        /// <summary>
+        /// Returns the rigid body b.
+        /// </summary>
         public RigidBody RigidBodyB
         {
             get
@@ -194,6 +231,11 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
+
+        /// <summary>
+        /// Returns the Uid.
+        /// </summary>
+        /// <returns></returns>
         public int GetUid()
         {
             var retval = _IG6DofConstraintImp.GetUid();

@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the index of the cone's up axis
+        /// Gets and sets the index of the cone's up axis
         /// </summary>
         /// <value>
         /// The index of cone's up axis.

@@ -11,21 +11,21 @@ namespace Fusee.Engine.Common
         // IRigidBodyImp RigidBody(float mass, float3 worldTransform, /*shape, */ float3 inertia);
 
         /// <summary>
-        /// Gets or sets the gravity.
+        /// Gets and sets the gravity.
         /// </summary>
         /// <value>
         /// The gravity.
         /// </value>
         float3 Gravity { get; set; }
         /// <summary>
-        /// Gets or sets the mass.
+        /// Gets and sets the mass.
         /// </summary>
         /// <value>
         /// The mass.
         /// </value>
         float Mass { get; set; }
         /// <summary>
-        /// Gets or sets the inertia.
+        /// Gets and sets the inertia.
         /// </summary>
         /// <value>
         /// The inertia.
@@ -33,14 +33,14 @@ namespace Fusee.Engine.Common
         float3 Inertia { get; set; }
 
         /// <summary>
-        /// Gets or sets the world transform.
+        /// Gets and sets the world transform.
         /// </summary>
         /// <value>
         /// The world transform.
         /// </value>
         float4x4 WorldTransform { get; set; }
         /// <summary>
-        /// Gets or sets the position.
+        /// Gets and sets the position.
         /// </summary>
         /// <value>
         /// The position.
@@ -95,14 +95,14 @@ namespace Fusee.Engine.Common
 
         //Translate RigidBody by a Vector
         /// <summary>
-        /// Gets or sets the linear velocity.
+        /// Gets and sets the linear velocity.
         /// </summary>
         /// <value>
         /// The linear velocity.
         /// </value>
         float3 LinearVelocity { get; set; }
         /// <summary>
-        /// Gets or sets the angular velocity.
+        /// Gets and sets the angular velocity.
         /// </summary>
         /// <value>
         /// The angular velocity.
@@ -110,14 +110,14 @@ namespace Fusee.Engine.Common
         float3 AngularVelocity { get; set; }
 
         /// <summary>
-        /// Gets or sets the linear factor.
+        /// Gets and sets the linear factor.
         /// </summary>
         /// <value>
         /// The linear factor.
         /// </value>
         float3 LinearFactor { get; set; }
         /// <summary>
-        /// Gets or sets the angular factor.
+        /// Gets and sets the angular factor.
         /// </summary>
         /// <value>
         /// The angular factor.
@@ -126,14 +126,14 @@ namespace Fusee.Engine.Common
 
         //"physic Matrial"
         /// <summary>
-        /// Gets or sets the restitution.
+        /// Gets and sets the restitution.
         /// </summary>
         /// <value>
         /// The restitution.
         /// </value>
         float Restitution { get; set; }
         /// <summary>
-        /// Gets or sets the friction.
+        /// Gets and sets the friction.
         /// </summary>
         /// <value>
         /// The friction.
@@ -162,7 +162,7 @@ namespace Fusee.Engine.Common
         float AngularDrag { get; }
 
         /// <summary>
-        /// Gets or sets the collision shape.
+        /// Gets and sets the collision shape.
         /// </summary>
         /// <value>
         /// The collision shape.
@@ -170,7 +170,7 @@ namespace Fusee.Engine.Common
         ICollisionShapeImp CollisionShape { get; set; }
 
         /// <summary>
-        /// Gets or sets a user object.
+        /// Gets and sets a user object.
         /// </summary>
         /// <value>
         /// The user object.

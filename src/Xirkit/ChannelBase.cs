@@ -12,7 +12,7 @@
         private float _time;
 
         /// <summary>
-        /// Gets or sets the time of the Channel.
+        /// Gets and sets the time of the Channel.
         /// </summary>
         public float Time { get { return _time; } /* set { _time = value; } */  }
 

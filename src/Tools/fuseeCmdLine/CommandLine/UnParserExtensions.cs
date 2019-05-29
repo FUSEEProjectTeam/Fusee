@@ -20,7 +20,7 @@ namespace CommandLine
         private bool useEqualToken;
 
         /// <summary>
-        /// Gets or sets a value indicating whether unparsing process shall prefer short or long names.
+        /// Gets and sets a value indicating whether unparsing process shall prefer short or long names.
         /// </summary>
         public bool PreferShortName
         {
@@ -29,7 +29,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether unparsing process shall group switches.
+        /// Gets and sets a value indicating whether unparsing process shall group switches.
         /// </summary>
         public bool GroupSwitches
         {
@@ -38,7 +38,7 @@ namespace CommandLine
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether unparsing process shall use equal sign with long names.
+        /// Gets and sets a value indicating whether unparsing process shall use equal sign with long names.
         /// </summary>
         public bool UseEqualToken
         {

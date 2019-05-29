@@ -10,28 +10,28 @@ namespace Fusee.Engine.Common
     {
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="KeyEventArgs"/> is shift.
+        /// Gets and sets a value indicating whether this <see cref="KeyEventArgs"/> is shift.
         /// </summary>
         /// <value>
         ///   <c>true</c> if shift; otherwise, <c>false</c>.
         /// </value>
         public bool Shift { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="KeyEventArgs"/> is alt.
+        /// Gets and sets a value indicating whether this <see cref="KeyEventArgs"/> is alt.
         /// </summary>
         /// <value>
         ///   <c>true</c> if alt; otherwise, <c>false</c>.
         /// </value>
         public bool Alt { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="KeyEventArgs"/> is control.
+        /// Gets and sets a value indicating whether this <see cref="KeyEventArgs"/> is control.
         /// </summary>
         /// <value>
         ///   <c>true</c> if control; otherwise, <c>false</c>.
         /// </value>
         public bool Control { get; set; }
         /// <summary>
-        /// Gets or sets the key code.
+        /// Gets and sets the key code.
         /// </summary>
         /// <value>
         /// The key code.

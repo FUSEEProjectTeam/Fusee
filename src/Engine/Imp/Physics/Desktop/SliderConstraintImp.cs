@@ -108,7 +108,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the damping dir angular.
+        /// Gets and sets the damping dir angular.
         /// </summary>
         /// <value>
         /// The damping dir angular.
@@ -127,7 +127,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the damping dir lin.
+        /// Gets and sets the damping dir lin.
         /// </summary>
         /// <value>
         /// The damping dir lin.
@@ -146,7 +146,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the damping lim angular.
+        /// Gets and sets the damping lim angular.
         /// </summary>
         /// <value>
         /// The damping lim angular.
@@ -165,7 +165,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the damping lim lin.
+        /// Gets and sets the damping lim lin.
         /// </summary>
         /// <value>
         /// The damping lim lin.
@@ -184,7 +184,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the damping ortho angular.
+        /// Gets and sets the damping ortho angular.
         /// </summary>
         /// <value>
         /// The damping ortho angular.
@@ -203,7 +203,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the damping ortho lin.
+        /// Gets and sets the damping ortho lin.
         /// </summary>
         /// <value>
         /// The damping ortho lin.
@@ -281,7 +281,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the lower angular limit.
+        /// Gets and sets the lower angular limit.
         /// </summary>
         /// <value>
         /// The lower angular limit.
@@ -300,7 +300,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the lower lin limit.
+        /// Gets and sets the lower lin limit.
         /// </summary>
         /// <value>
         /// The lower lin limit.
@@ -320,7 +320,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the maximum angular motor force.
+        /// Gets and sets the maximum angular motor force.
         /// </summary>
         /// <value>
         /// The maximum angular motor force.
@@ -339,7 +339,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the maximum lin motor force.
+        /// Gets and sets the maximum lin motor force.
         /// </summary>
         /// <value>
         /// The maximum lin motor force.
@@ -359,7 +359,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [powered angular motor].
+        /// Gets and sets a value indicating whether [powered angular motor].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [powered angular motor]; otherwise, <c>false</c>.
@@ -378,7 +378,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets a value indicating whether [powered lin motor].
+        /// Gets and sets a value indicating whether [powered lin motor].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [powered lin motor]; otherwise, <c>false</c>.
@@ -398,7 +398,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the restitution dir angular.
+        /// Gets and sets the restitution dir angular.
         /// </summary>
         /// <value>
         /// The restitution dir angular.
@@ -417,7 +417,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the restitution dir lin.
+        /// Gets and sets the restitution dir lin.
         /// </summary>
         /// <value>
         /// The restitution dir lin.
@@ -436,7 +436,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the restitution lim angular.
+        /// Gets and sets the restitution lim angular.
         /// </summary>
         /// <value>
         /// The restitution lim angular.
@@ -455,7 +455,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the restitution lim lin.
+        /// Gets and sets the restitution lim lin.
         /// </summary>
         /// <value>
         /// The restitution lim lin.
@@ -474,7 +474,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the restitution ortho angular.
+        /// Gets and sets the restitution ortho angular.
         /// </summary>
         /// <value>
         /// The restitution ortho angular.
@@ -493,7 +493,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the restitution ortho lin.
+        /// Gets and sets the restitution ortho lin.
         /// </summary>
         /// <value>
         /// The restitution ortho lin.
@@ -524,7 +524,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the softness dir angular.
+        /// Gets and sets the softness dir angular.
         /// </summary>
         /// <value>
         /// The softness dir angular.
@@ -543,7 +543,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the softness dir lin.
+        /// Gets and sets the softness dir lin.
         /// </summary>
         /// <value>
         /// The softness dir lin.
@@ -562,7 +562,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the softness lim angular.
+        /// Gets and sets the softness lim angular.
         /// </summary>
         /// <value>
         /// The softness lim angular.
@@ -581,7 +581,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the softness lim lin.
+        /// Gets and sets the softness lim lin.
         /// </summary>
         /// <value>
         /// The softness lim lin.
@@ -600,7 +600,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the softness ortho angular.
+        /// Gets and sets the softness ortho angular.
         /// </summary>
         /// <value>
         /// The softness ortho angular.
@@ -619,7 +619,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the softness ortho lin.
+        /// Gets and sets the softness ortho lin.
         /// </summary>
         /// <value>
         /// The softness ortho lin.
@@ -668,7 +668,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the target angular motor velocity.
+        /// Gets and sets the target angular motor velocity.
         /// </summary>
         /// <value>
         /// The target angular motor velocity.
@@ -687,7 +687,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the target lin motor velocity.
+        /// Gets and sets the target lin motor velocity.
         /// </summary>
         /// <value>
         /// The target lin motor velocity.
@@ -722,7 +722,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the upper angular limit.
+        /// Gets and sets the upper angular limit.
         /// </summary>
         /// <value>
         /// The upper angular limit.
@@ -741,7 +741,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the upper lin limit.
+        /// Gets and sets the upper lin limit.
         /// </summary>
         /// <value>
         /// The upper lin limit.
@@ -761,7 +761,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [use frame offset].
+        /// Gets and sets a value indicating whether [use frame offset].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [use frame offset]; otherwise, <c>false</c>.
@@ -836,7 +836,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.

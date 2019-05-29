@@ -52,6 +52,9 @@ namespace Fusee.Engine.Player.Core
         private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
+        private SixDOFDevice _spaceMouse;
+        private GamePadDevice _gamePad;
+      
 
         // Init is called on startup. 
         public override void Init()
@@ -81,10 +84,18 @@ namespace Fusee.Engine.Player.Core
 
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
-
+            
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
+
+
+            // Register the input devices that are not already given.
+
+            _spaceMouse = GetDevice<SixDOFDevice>();
+            _gamePad = GetDevice<GamePadDevice>();
+ 
+ 
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -120,11 +131,14 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _guiRenderer = new SceneRenderer(_gui);
+            
         }
 
+        
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            Diagnostics.Log(_gamePad.LSX);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -133,9 +147,8 @@ namespace Fusee.Engine.Player.Core
             {
                 _keys = true;
             }
-
+            
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-
             // Zoom & Roll
             if (Touch.TwoPoint)
             {
@@ -160,13 +173,28 @@ namespace Fusee.Engine.Player.Core
                 _offset *= curDamp * 0.8f;
             }
 
+            
+
+            
             // UpDown / LeftRight rotation
-            if (Mouse.LeftButton)
-            {
+            if (Mouse.LeftButton) {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.00005f;
+                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.00005f;
             }
+
+            else if (_spaceMouse != null)
+            {
+                _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
+                _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
+            }
+
+            else if(_gamePad != null)
+            {
+                _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
+                _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
+            }
+
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
@@ -221,7 +249,6 @@ namespace Fusee.Engine.Player.Core
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
 

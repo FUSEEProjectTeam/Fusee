@@ -72,7 +72,7 @@ namespace Fusee.Serialization
     public class JointWeightColumn
     {
         /// <summary>
-        /// DEPRECATED: Gets or sets the joint weights.
+        /// DEPRECATED: Gets and sets the joint weights.
         /// </summary>
         /// <value>
         /// The joint weights.

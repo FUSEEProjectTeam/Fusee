@@ -14,7 +14,7 @@ namespace Fusee.Xirkit
         private List<InPin<T>> _links;
         private IMemberAccessor<T> _memberAccessor;
         /// <summary>
-        /// Gets or sets the member accessor.
+        /// Gets and sets the member accessor.
         /// </summary>
         /// <value>
         /// The member accessor.

@@ -611,7 +611,7 @@ namespace Fusee.Math.Core
         #region Swizzle
 
         /// <summary>
-        /// Gets or sets an OpenTK.double2 with the x and y components of this instance.
+        /// Gets and sets an OpenTK.double2 with the x and y components of this instance.
         /// </summary>
         /// <value>
         /// The xy.
@@ -849,7 +849,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a double3.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a double3.
         /// </summary>
         /// <value>
         /// The parse property.

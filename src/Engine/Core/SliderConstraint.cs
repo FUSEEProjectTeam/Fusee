@@ -3,10 +3,15 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements the slider constraint
+    /// </summary>
     public class SliderConstraint
     {
         internal ISliderConstraintImp _iSliderConstraintImp;
-
+        /// <summary>
+        /// Returns the anchor in a.
+        /// </summary>
         public float3 AnchorInA
         {
             get
@@ -15,6 +20,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+        /// <summary>
+        /// Returns the anchor in b.
+        /// </summary>
         public float3 AnchorInB
         {
             get
@@ -23,7 +31,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Returns the angular depth.
+        /// </summary>
         public float AngularDepth
         {
             get
@@ -31,7 +41,10 @@ namespace Fusee.Engine.Core
                 var retval = _iSliderConstraintImp.AngularDepth;
                 return retval;
             }
-        }
+        } 
+        /// <summary>
+        /// Returns the angular position.
+        /// </summary>
         public float AngularPos
         {
             get
@@ -40,11 +53,18 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Calcualtes the transform for A and B.
+        /// </summary>
+        /// <param name="transA"></param>
+        /// <param name="transB"></param>
         public void CalculateTransforms(float4x4 transA, float4x4 transB)
         {
             _iSliderConstraintImp.CalculateTransforms(transA, transB);
-        }
+        } 
+        /// <summary>
+        /// Returns the calcualted transforms of a.
+        /// </summary>
         public float4x4 CalculatedTransformA
         {
             get
@@ -53,6 +73,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+        /// <summary>
+        /// Returns the calculated transforms of b.
+        /// </summary>
         public float4x4 CalculatedTransformB
         {
             get
@@ -61,7 +84,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the angular dampening direction.
+        /// </summary>
         public float DampingDirAngular
         {
             get
@@ -75,6 +100,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingDirAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear dampening direction.
+        /// </summary>
         public float DampingDirLin
         {
             get
@@ -88,6 +116,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingDirLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular dampening lim.
+        /// </summary>
         public float DampingLimAngular
         {
             get
@@ -101,6 +132,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingLimAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear dampening lim.
+        /// </summary>
         public float DampingLimLin
         {
             get
@@ -114,6 +148,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingLimLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular dampening orthogonals.
+        /// </summary>
         public float DampingOrthoAngular
         {
             get
@@ -127,6 +164,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingOrthoAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear dampening orthogonals.
+        /// </summary>
         public float DampingOrthoLin
         {
             get
@@ -140,7 +180,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.DampingOrthoLin = value;
             }
         }
-
+        /// <summary>
+        /// Returns the frame offset for a.
+        /// </summary>
         public float4x4 FrameOffsetA
         {
             get
@@ -149,6 +191,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+        /// <summary>
+        /// Returns the frame offset for b.
+        /// </summary>
         public float4x4 FrameOffsetB
         {
             get
@@ -157,7 +202,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Returns the linear depth.
+        /// </summary>
         public float LinDepth
         {
             get
@@ -166,6 +213,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+        /// <summary>
+        /// Return the linear position.
+        /// </summary>
         public float LinPos
         {
             get
@@ -174,7 +224,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the lower angular limit.
+        /// </summary>
         public float LowerAngularLimit
         {
             get
@@ -188,6 +240,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.LowerAngularLimit = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the lower linear limit.
+        /// </summary>
         public float LowerLinLimit
         {
             get
@@ -201,7 +256,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.LowerLinLimit = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the maximum angular motor force.
+        /// </summary>
         public float MaxAngularMotorForce
         {
             get
@@ -215,6 +272,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.MaxAngularMotorForce = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the maximum linear motor force.
+        /// </summary>
         public float MaxLinMotorForce
         {
             get
@@ -228,7 +288,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.MaxLinMotorForce = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the powered angular motor.
+        /// </summary>
         public bool PoweredAngularMotor
         {
             get
@@ -242,6 +304,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.PoweredAngularMotor = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear powered motor.
+        /// </summary>
         public bool PoweredLinMotor
         {
             get
@@ -255,7 +320,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.PoweredLinMotor = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the  angular restitution direction.
+        /// </summary>
         public float RestitutionDirAngular
         {
             get
@@ -269,6 +336,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionDirAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear restitution direction.
+        /// </summary>
         public float RestitutionDirLin
         {
             get
@@ -282,6 +352,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionDirLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular restitution lim.
+        /// </summary>
         public float RestitutionLimAngular
         {
             get
@@ -295,6 +368,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionLimAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear restitution lim.
+        /// </summary>
         public float RestitutionLimLin
         {
             get
@@ -308,6 +384,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionLimLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular restitution orthogonal.
+        /// </summary>
         public float RestitutionOrthoAngular
         {
             get
@@ -321,6 +400,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionOrthoAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear restitution orthogonal.
+        /// </summary>
         public float RestitutionOrthoLin
         {
             get
@@ -334,13 +416,19 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.RestitutionOrthoLin = value;
             }
         }
-
+        /// <summary>
+        /// Sets the frames.
+        /// </summary>
+        /// <param name="frameA"></param>
+        /// <param name="frameB"></param>
         public void SetFrames(float4x4 frameA, float4x4 frameB)
         {
             var o = (SliderConstraint)_iSliderConstraintImp.UserObject;
             o._iSliderConstraintImp.SetFrames(frameA, frameB);
         }
-
+        /// <summary>
+        /// Gets and sets the angular softness direction.
+        /// </summary>
         public float SoftnessDirAngular
         {
             get
@@ -354,6 +442,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessDirAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear softness direction.
+        /// </summary>
         public float SoftnessDirLin
         {
             get
@@ -367,6 +458,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessDirLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular softness lim.
+        /// </summary>
         public float SoftnessLimAngular
         {
             get
@@ -380,6 +474,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessLimAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear softness lim.
+        /// </summary>
         public float SoftnessLimLin
         {
             get
@@ -393,6 +490,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessLimLin = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the angular softness orthogonal.
+        /// </summary>
         public float SoftnessOrthoAngular
         {
             get
@@ -406,6 +506,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessOrthoAngular = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the linear softness orthogonal.
+        /// </summary>
         public float SoftnessOrthoLin
         {
             get
@@ -419,7 +522,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.SoftnessOrthoLin = value;
             }
         }
-
+        /// <summary>
+        /// Returns the solved angular limit.
+        /// </summary>
         public bool SolveAngularLimit
         {
             get
@@ -428,6 +533,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
+        /// <summary>
+        /// Returns the solved linear limit.
+        /// </summary>
         public bool SolveLinLimit
         {
             get
@@ -436,7 +544,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the target angular motor velocity.
+        /// </summary>
         public float TargetAngularMotorVelocity
         {
             get
@@ -450,7 +560,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.TargetAngularMotorVelocity = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the target linear motor velocity.
+        /// </summary>
         public float TargetLinMotorVelocity
         {
             get
@@ -464,16 +576,23 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.TargetLinMotorVelocity = value;
             }
         }
-
+        /// <summary>
+        /// Tests the angular limits.
+        /// </summary>
         public void TestAngularLimits()
         {
             _iSliderConstraintImp.TestAngularLimits();
         }
+        /// <summary>
+        /// Tests the linear limits.
+        /// </summary>
         public void TestLinLimits()
         {
             _iSliderConstraintImp.TestLinLimits();
         }
-
+        /// <summary>
+        /// Gets and sets the upper angular limit.
+        /// </summary>
         public float UpperAngularLimit
         {
             get
@@ -487,6 +606,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.UpperAngularLimit = value;
             }
         }
+        /// <summary>
+        /// Gets and sets the upper linear limit.
+        /// </summary>
         public float UpperLinLimit
         {
             get
@@ -500,7 +622,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.UpperLinLimit = value;
             }
         }
-       
+        /// <summary>
+        /// Gets and sets the use of frame offset.
+        /// </summary>
         public bool UseFrameOffset
         {
             get
@@ -514,7 +638,9 @@ namespace Fusee.Engine.Core
                 o._iSliderConstraintImp.UseFrameOffset = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the use of the linear reference frame a.
+        /// </summary>
         public bool UseLinearReferenceFrameA
         {
             get
@@ -524,6 +650,9 @@ namespace Fusee.Engine.Core
             }
         }
         #region IConstraintImp
+        /// <summary>
+        /// Returns the rigid body a.
+        /// </summary>
         public RigidBody RigidBodyA
         {
             get
@@ -532,7 +661,9 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
-
+        /// <summary>
+        /// Returns the rigid body b.
+        /// </summary>
         public RigidBody RigidBodyB
         {
             get
@@ -541,6 +672,10 @@ namespace Fusee.Engine.Core
                 return (RigidBody)retval;
             }
         }
+        /// <summary>
+        /// Returns the Uid.
+        /// </summary>
+        /// <returns></returns>
         public int GetUid()
         {
             var retval = _iSliderConstraintImp.GetUid();
