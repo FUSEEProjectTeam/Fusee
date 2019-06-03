@@ -77,6 +77,48 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        ///     Applies a tranformation function on the bounding box. After the tranformation another
+        ///     axis alignes bounding box results. This is done by transforming all eight
+        ///     vertices of the box with the given transformation function and re-aligning to the axes afterwards.
+        /// </summary>
+        /// <param name="func">The transformation function</param>
+        /// <param name="box">the box to transform</param>
+        /// <returns>A new axis aligned bounding box.</returns>
+        public static AABBd operator ^(Func<double3, double3> func, AABBd box)
+        {
+            double3[] cube =
+            {
+                new double3(box.min.x, box.min.y, box.min.z),
+                new double3(box.min.x, box.min.y, box.max.z),
+                new double3(box.min.x, box.max.y, box.min.z),
+                new double3(box.min.x, box.max.y, box.max.z),
+                new double3(box.max.x, box.min.y, box.min.z),
+                new double3(box.max.x, box.min.y, box.max.z),
+                new double3(box.max.x, box.max.y, box.min.z),
+                new double3(box.max.x, box.max.y, box.max.z)
+            };
+
+            for (int i = 0; i < 8; i++)
+            {
+                cube[i] = func(cube[i]);
+            }
+
+            AABBd ret;
+            ret.min = cube[0];
+            ret.max = cube[0];
+            for (int i = 1; i < 8; i++)
+            {
+                if (cube[i].x < ret.min.x) ret.min.x = cube[i].x;
+                if (cube[i].y < ret.min.y) ret.min.y = cube[i].y;
+                if (cube[i].z < ret.min.z) ret.min.z = cube[i].z;
+                if (cube[i].x > ret.max.x) ret.max.x = cube[i].x;
+                if (cube[i].y > ret.max.y) ret.max.y = cube[i].y;
+                if (cube[i].z > ret.max.z) ret.max.z = cube[i].z;
+            }
+            return ret;
+        }
+
+        /// <summary>
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>

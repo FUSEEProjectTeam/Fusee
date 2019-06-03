@@ -1525,7 +1525,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The mesh which buffer respectively GPU memory should be deleted.</param>
         public void RemoveVertices(IMeshImp mr)
         {
-            GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
+                      GL.DeleteBuffer(((MeshImp)mr).VertexBufferObject);
             ((MeshImp)mr).InvalidateVertices();
         }
 

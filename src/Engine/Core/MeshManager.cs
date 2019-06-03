@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Serialization;
 
@@ -14,32 +16,35 @@ namespace Fusee.Engine.Core
 
         private void Remove(IMeshImp meshImp)
         {
-            if (meshImp.VerticesSet)
-                _renderContextImp.RemoveVertices(meshImp);
+                if (meshImp.VerticesSet)
+                    _renderContextImp.RemoveVertices(meshImp);
 
-            if (meshImp.NormalsSet)
-                _renderContextImp.RemoveNormals(meshImp);
+                if (meshImp.NormalsSet)
+                    _renderContextImp.RemoveNormals(meshImp);
 
-            if (meshImp.ColorsSet)
-                _renderContextImp.RemoveColors(meshImp);
+                if (meshImp.ColorsSet)
+                    _renderContextImp.RemoveColors(meshImp);
 
-            if (meshImp.UVsSet)
-                _renderContextImp.RemoveUVs(meshImp);
+                if (meshImp.UVsSet)
+                    _renderContextImp.RemoveUVs(meshImp);
 
-            if (meshImp.TrianglesSet)
-                _renderContextImp.RemoveTriangles(meshImp);
+                if (meshImp.TrianglesSet)
+                    _renderContextImp.RemoveTriangles(meshImp);
 
-            if (meshImp.BoneWeightsSet)
-                _renderContextImp.RemoveBoneWeights(meshImp);
+                if (meshImp.BoneWeightsSet)
+                    _renderContextImp.RemoveBoneWeights(meshImp);
 
-            if (meshImp.BoneIndicesSet)
-                _renderContextImp.RemoveBoneIndices(meshImp);
+                if (meshImp.BoneIndicesSet)
+                    _renderContextImp.RemoveBoneIndices(meshImp);
 
-            if(meshImp.TangentsSet)
-                _renderContextImp.RemoveTangents(meshImp);
+                if (meshImp.TangentsSet)
+                    _renderContextImp.RemoveTangents(meshImp);
 
-            if (meshImp.BiTangentsSet)
-                _renderContextImp.RemoveBiTangents(meshImp);
+                if (meshImp.BiTangentsSet)
+                    _renderContextImp.RemoveBiTangents(meshImp);
+
+            // Force collection
+            GC.Collect();
         }
 
         private void MeshChanged(object sender, MeshDataEventArgs meshDataEventArgs)
@@ -56,7 +61,7 @@ namespace Fusee.Engine.Core
             switch (meshDataEventArgs.ChangedEnum)
             {
                 case MeshChangedEnum.Disposed:
-                    // Add the meshImp to the toBeDeleted Stack...
+                    // Add the meshImp to the toBeDeleted Stack...#
                     _toBeDeletedMeshImps.Push(toBeUpdatedMeshImp);
                     // remove the meshImp from the dictionary, the meshImp data now only resides inside the gpu and will be cleaned up on bottom of Render(Mesh mesh)
                     _identifierToMeshImpDictionary.Remove(mesh.SessionUniqueIdentifier);
@@ -168,8 +173,8 @@ namespace Fusee.Engine.Core
                 return;
             }
             while (_toBeDeletedMeshImps.Count > 0)
-            {
-                IMeshImp tobeDeletedMeshImp = _toBeDeletedMeshImps.Pop();
+            {         
+                var tobeDeletedMeshImp = _toBeDeletedMeshImps.Pop();
                 Remove(tobeDeletedMeshImp);
             }
         }

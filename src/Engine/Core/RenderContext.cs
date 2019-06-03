@@ -1644,17 +1644,18 @@ namespace Fusee.Engine.Core
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
-
-                    // After rendering always cleanup pending meshes
-                    _meshManager.Cleanup();
-                    _textureManager.Cleanup();
                 }
+
+                // After rendering always cleanup pending meshes
+                _meshManager.Cleanup();
+                _textureManager.Cleanup();
 
                 // After rendering all passes cleanup shadereffect
                 _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
             {
+              
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }

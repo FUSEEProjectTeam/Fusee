@@ -306,11 +306,26 @@ namespace Fusee.Serialization
         /// </summary>
         public void Dispose()
         {
-            var del = MeshChanged;
-            if (del != null)
-            {
-                del(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
-            }
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        // Flag: Has Dispose already been called?
+        bool disposed = false;
+
+        /// <summary>
+        /// Protected implementation of Dispose pattern.
+        /// </summary>
+        /// <param name="disposing"></param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+
+           if (disposing)            
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Disposed));
+
+            disposed = true;
         }
 
         /// <summary>
@@ -318,7 +333,7 @@ namespace Fusee.Serialization
         /// </summary>
         ~Mesh()
         {
-            Dispose();
+            Dispose(false);
         }
     }
 }
