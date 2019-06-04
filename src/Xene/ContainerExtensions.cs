@@ -314,6 +314,26 @@ namespace Fusee.Xene
         }
 
         /// <summary>
+        /// Translate this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translation">Translation amount as float3.</param>
+        public static void Translate(this TransformComponent tc, float3 xyz)
+        {
+            tc.Translation += xyz;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translationMtx">Translation amount as represented in float4x4.</param>
+        public static void Translate(this TransformComponent tc, float4x4 translationMtx)
+        {
+            tc.Translation += translationMtx.Translation();
+        }
+
+        /// <summary>
         /// Rotates this node.
         /// </summary>
         /// <param name="tc"></param>
@@ -339,7 +359,7 @@ namespace Fusee.Xene
         /// Rotates this node.
         /// </summary>
         /// <param name="tc"></param>
-        /// <param name="rotationMtx">Rotation amount represented as float4x4.</param>
+        /// <param name="rotationMtx">Rotation amount as represented in float4x4.</param>
         /// <param name="space">Rotation in reference to model or world space.</param>
         public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
         {
@@ -358,9 +378,18 @@ namespace Fusee.Xene
             }
         }
 
+        /// <summary>
+        /// Reference space for rotation.
+        /// </summary>
         public enum Space
         {
+            /// <summary>
+            /// World space
+            /// </summary>
             World,
+            /// <summary>
+            /// Model space
+            /// </summary>
             Model
         }
     }
