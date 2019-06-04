@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using Fusee.Engine.Common;
 using OpenTK;
 using _3DconnexionDriver;
-using System.Windows.Forms;
 using Fusee.Base.Core;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop

@@ -138,8 +138,8 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            if (_gamePad != null)
-                Diagnostics.Log(_gamePad.LSX);
+            //if (_gamePad != null)
+            //    Diagnostics.Log(_gamePad.LSX);
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
@@ -211,13 +211,12 @@ namespace Fusee.Engine.Player.Core
                 {
                     _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                     _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
+                }               
             }
+
+            _angleVelHorz *= curDamp;
+            _angleVelVert *= curDamp;
+
 
             _zoom += _zoomVel;
             // Limit zoom
