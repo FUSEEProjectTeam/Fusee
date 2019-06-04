@@ -176,26 +176,25 @@ namespace Fusee.Engine.Player.Core
             }
 
             
-
-            
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
+
                 _keys = false;
-                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.00005f;
-                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.00005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
 
-            else if (_spaceMouse != null)
-            {
-                _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
-                _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
-            }
+            //else if (_spaceMouse != null)
+            //{
+            //    _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
+            //    _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
+            //}
 
-            else if(_gamePad != null)
-            {
-                _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
-                _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
-            }
+            //else if (_gamePad != null)
+            //{
+            //    _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
+            //    _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
+            //}
 
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
@@ -211,11 +210,14 @@ namespace Fusee.Engine.Player.Core
                 {
                     _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                     _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }               
+                }
+                else
+                {
+                    _angleVelHorz *= curDamp;
+                    _angleVelVert *= curDamp;
+                }
             }
 
-            _angleVelHorz *= curDamp;
-            _angleVelVert *= curDamp;
 
 
             _zoom += _zoomVel;
