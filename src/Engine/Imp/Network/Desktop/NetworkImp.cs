@@ -31,7 +31,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         private NetPeerConfiguration _netConfig;
 
         /// <summary>
-        /// Gets or sets the configuration of the network. <see cref="NetConfigValues" />
+        /// Gets and sets the configuration of the network. <see cref="NetConfigValues" />
         /// </summary>
         /// <value>
         /// The configuration.
@@ -65,7 +65,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         public List<INetworkConnection> Connections { get; private set; }
 
         /// <summary>
-        /// Gets or sets the status.
+        /// Gets and sets the status.
         /// </summary>
         /// <value>
         /// The status.

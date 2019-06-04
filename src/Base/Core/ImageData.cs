@@ -32,6 +32,26 @@ namespace Fusee.Base.Core
             PixelFormat = colorFormat;
         }
 
+        public ImageData(int width = 2048, int height = 2048)
+        {
+            Width = width;
+            Height = height;
+
+            PixelFormat = new ImagePixelFormat(ColorFormat.RGBA);
+
+            int byteSize = Width * Height * PixelFormat.BytesPerPixel;
+
+            PixelData = new byte[byteSize]; //4k = 67108864
+
+            for (int i = 0; i < byteSize; i += PixelFormat.BytesPerPixel)
+            {
+                PixelData[i] = 255;
+                PixelData[i + 1] = 127;
+                PixelData[i + 2] = 127;
+                PixelData[i + 3] = 255;
+            }
+        }
+
         /// <summary>
         /// Width in pixels.
         /// </summary>

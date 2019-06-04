@@ -39,14 +39,14 @@ namespace Fusee.Engine.Common
     public class NetStatusValues
     {
         /// <summary>
-        /// Gets or sets a value indicating whether [connected].
+        /// Gets and sets a value indicating whether [connected].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [connected]; otherwise, <c>false</c>.
         /// </value>
         public bool Connected { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether [connecting].
+        /// Gets and sets a value indicating whether [connecting].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [connecting]; otherwise, <c>false</c>.
@@ -99,14 +99,14 @@ namespace Fusee.Engine.Common
     public interface INetworkImp
     {
         /// <summary>
-        /// Gets or sets the configuration of the network. <see cref="NetConfigValues"/>
+        /// Gets and sets the configuration of the network. <see cref="NetConfigValues"/>
         /// </summary>
         /// <value>
         /// The configuration.
         /// </value>
         NetConfigValues Config { get; set; }
         /// <summary>
-        /// Gets or sets the status.
+        /// Gets and sets the status.
         /// </summary>
         /// <value>
         /// The status.

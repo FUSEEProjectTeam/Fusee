@@ -26,8 +26,13 @@ namespace Fusee.Engine.Core
         
 
         private readonly IRenderContextImp _rci;
-
+        /// <summary>
+        /// Gets and sets the viewport width.
+        /// </summary>
         public int ViewportWidth { get; private set; }
+        /// <summary>
+        /// Gets and sets the viewport heigth.
+        /// </summary>
         public int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
@@ -754,7 +759,9 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// The color value.
+        /// </summary>
         protected float3 _col;
 
         /// <summary>
@@ -1288,6 +1295,9 @@ namespace Fusee.Engine.Core
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
+                        if (initValue == null)
+                            continue;
+
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
                         object globalFXValue;
                         if (_allFXParams.TryGetValue(paramNew.Name, out globalFXValue))
@@ -1569,7 +1579,11 @@ namespace Fusee.Engine.Core
                 _rci.SetRenderState(theKey, theValue);
             }
         }
-
+        /// <summary>
+        /// Returns the current render state.
+        /// </summary>
+        /// <param name="renderState"></param>
+        /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
             return _rci.GetRenderState(renderState);
@@ -1664,7 +1678,6 @@ namespace Fusee.Engine.Core
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
-        /// <param name="value"></param>
         internal void SetShaderParamT(EffectParam param)
         {
             if (param.Info.Type == typeof(int))
@@ -1707,7 +1720,11 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
         }
-      
+        /// <summary>
+        /// Returns the hardware capabilities.
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
@@ -1742,7 +1759,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// Gets and sets a value indicating whether [debug lines enabled].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.

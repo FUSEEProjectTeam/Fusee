@@ -11,7 +11,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
     {
         internal CylinderShape BtCylinderShape;
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.
@@ -31,7 +31,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the local scaling.
+        /// Gets and sets the local scaling.
         /// </summary>
         /// <value>
         /// The local scaling.

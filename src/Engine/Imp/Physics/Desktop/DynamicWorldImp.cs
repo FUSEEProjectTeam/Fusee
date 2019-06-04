@@ -59,7 +59,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
 
         /// <summary>
-        /// Gets or sets the gravity.
+        /// Gets and sets the gravity.
         /// </summary>
         /// <value>
         /// The gravity.

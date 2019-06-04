@@ -60,7 +60,7 @@ enum LerpType {
 }
 message LightComponent {
    optional bool Active = 1 [default = false];
-   optional float3 Color = 2;
+   optional float4 Color = 2;
    optional float3 Position = 3;
    optional float Attenuation = 4 [default = 0];
    optional float AmbientCoefficient = 5 [default = 0];
@@ -76,7 +76,7 @@ enum LightType {
    Legacy = 3;
 }
 message MatChannelContainer {
-   optional float3 Color = 1;
+   optional float4 Color = 1;
    optional string Texture = 2;
    optional float Mix = 3 [default = 0];
    // the following represent sub-types; at most 1 should have a value

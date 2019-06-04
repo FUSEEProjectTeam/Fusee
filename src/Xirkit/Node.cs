@@ -26,7 +26,7 @@ namespace Fusee.Xirkit
         private object _o;
         private ICalculationPerformer _cp;
         /// <summary>
-        /// Gets or sets the object to host by this node.
+        /// Gets and sets the object to host by this node.
         /// </summary>
         /// <value>
         /// The object to be hosted.

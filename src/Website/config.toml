@@ -1,4 +1,4 @@
-baseurl = "https://username.morefusee.io"
+baseurl = "https://fusee3d.org/"
 DefaultContentLanguage = "en"
 title = "FUSEE 3D"
 theme = "beautifulhugo"
@@ -64,19 +64,19 @@ pygmentCodeFences = true
   [[menu.main]]
       parent = "gettingstarted"
       name = "Necessary Tools"
-      url = "page/necessary-tools/"
+      url = "/page/necessary-tools/"
       weight = 10
 
   [[menu.main]]
       parent = "gettingstarted"
       name = "Installl FUSEE"
-      url = "page/install-fusee/"
+      url = "/page/install-fusee/"
       weight = 20
 
   [[menu.main]]
       parent = "gettingstarted"
       name = "First FUSEE App"
-      url = "page/firstfuseeapp/"
+      url = "/page/firstfuseeapp/"
       weight = 30
 
 
@@ -88,7 +88,7 @@ pygmentCodeFences = true
  [[menu.main]]
       parent = "morefusee"
       name = "Api Reference"
-      url = "http://fusee3d.org/xref/"
+      url = "https://fusee3d.org/xref/"
       weight = 1
 
   [[menu.main]]

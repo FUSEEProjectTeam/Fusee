@@ -22,7 +22,7 @@ namespace Fusee.Engine.Common
         /// </value>
         float3 LocalScaling { get; set; }
         /// <summary>
-        /// Gets or sets a user object.
+        /// Gets and sets a user object.
         /// </summary>
         /// <value>
         /// The user object.

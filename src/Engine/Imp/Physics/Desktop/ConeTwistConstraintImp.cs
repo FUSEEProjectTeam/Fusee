@@ -70,7 +70,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the fix thresh.
+        /// Gets and sets the fix thresh.
         /// </summary>
         /// <value>
         /// The fix thresh.
@@ -369,7 +369,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.

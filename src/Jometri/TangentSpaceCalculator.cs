@@ -87,7 +87,7 @@ namespace Fusee.Jometri
 
                 // Gram-Schmidt orthogonalize
                 var tangent = t - n * float3.Dot(n, t);
-                tangent.Normalize();
+                tangent = tangent.Normalize();
 
                 // Calculate handedness
                 var wComponent = (float3.Dot(float3.Cross(n, t), tan2[i]) < 0.0F) ? -1.0f : 1.0f;

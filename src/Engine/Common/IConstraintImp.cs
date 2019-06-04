@@ -28,7 +28,7 @@
         /// <returns>The uid.</returns>
         int GetUid();
         /// <summary>
-        /// Gets or sets a user object.
+        /// Gets and sets a user object.
         /// </summary>
         /// <value>
         /// The user object.

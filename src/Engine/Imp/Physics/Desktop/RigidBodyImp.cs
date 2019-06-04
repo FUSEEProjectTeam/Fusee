@@ -17,7 +17,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal CollisionShape btColShape;
 
         /// <summary>
-        /// Gets or sets the gravity.
+        /// Gets and sets the gravity.
         /// </summary>
         /// <value>
         /// The gravity.
@@ -37,7 +37,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
         private float _mass;
         /// <summary>
-        /// Gets or sets the mass.
+        /// Gets and sets the mass.
         /// </summary>
         /// <value>
         /// The mass.
@@ -59,7 +59,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         private float3 _inertia;
         /// <summary>
-        /// Gets or sets the inertia.
+        /// Gets and sets the inertia.
         /// </summary>
         /// <value>
         /// The inertia.
@@ -79,7 +79,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the world transform.
+        /// Gets and sets the world transform.
         /// </summary>
         /// <value>
         /// The world transform.
@@ -99,7 +99,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the position.
+        /// Gets and sets the position.
         /// </summary>
         /// <value>
         /// The position.
@@ -199,7 +199,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the linear velocity.
+        /// Gets and sets the linear velocity.
         /// </summary>
         /// <value>
         /// The linear velocity.
@@ -219,7 +219,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the angular velocity.
+        /// Gets and sets the angular velocity.
         /// </summary>
         /// <value>
         /// The angular velocity.
@@ -240,7 +240,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the linear factor.
+        /// Gets and sets the linear factor.
         /// </summary>
         /// <value>
         /// The linear factor.
@@ -260,7 +260,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the angular factor.
+        /// Gets and sets the angular factor.
         /// </summary>
         /// <value>
         /// The angular factor.
@@ -282,7 +282,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
 
         /// <summary>
-        /// Gets or sets the restitution.
+        /// Gets and sets the restitution.
         /// </summary>
         /// <value>
         /// The restitution.
@@ -301,7 +301,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the friction.
+        /// Gets and sets the friction.
         /// </summary>
         /// <value>
         /// The friction.
@@ -352,7 +352,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
 
         /// <summary>
-        /// Gets or sets the collision shape.
+        /// Gets and sets the collision shape.
         /// </summary>
         /// <value>
         /// The collision shape.
@@ -529,7 +529,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
       
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.

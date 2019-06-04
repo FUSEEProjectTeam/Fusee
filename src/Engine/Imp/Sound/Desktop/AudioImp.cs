@@ -48,7 +48,12 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             foreach (var audioStream in _allStreams)
                audioStream.Dispose();
         }
-
+        /// <summary>
+        /// Loads an audio file.
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <param name="streaming"></param>
+        /// <returns></returns>
         public IAudioStreamImp LoadFile(string fileName, bool streaming)
         {
             throw new NotImplementedException();

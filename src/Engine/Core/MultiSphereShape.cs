@@ -3,6 +3,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements a multi sphere collision shape.
+    /// </summary>
     public class MultiSphereShape : CollisionShape
     {
         internal IMultiSphereShapeImp _multiSphereShapeImp;
@@ -20,19 +23,29 @@ namespace Fusee.Engine.Core
                 o._capsuleShapeImp.Margin = value;
             }
         }
-
+        /// <summary>
+        /// Returns the spheres position.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public float3 GetSpherePosition(int index)
         {
             var retval = _multiSphereShapeImp.GetSpherePosition(index);
             return retval;
         }
-
+        /// <summary>
+        /// Returns the spheres radius. 
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public float GetSphereRadius(int index)
         {
             var retval = _multiSphereShapeImp.GetSphereRadius(index);
             return retval;
         }
-
+        /// <summary>
+        /// Returns the number of spheres.
+        /// </summary>
         public int SphereCount
         {
             get

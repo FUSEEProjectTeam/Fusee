@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the fix threshold.
+        /// Gets and sets the fix threshold.
         /// </summary>
         /// <value>
         /// The fix thresh.

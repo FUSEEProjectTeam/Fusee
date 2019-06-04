@@ -19,7 +19,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         internal bool IsStream { get; set; }
 
         /// <summary>
-        /// Gets or sets the volume of this <see cref="IAudioStreamImp" /> (0 - 100).
+        /// Gets and sets the volume of this <see cref="IAudioStreamImp" /> (0 - 100).
         /// </summary>
         /// <value>
         /// The volume of this <see cref="IAudioStreamImp" /> (0 - 100).
@@ -31,7 +31,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the panning of this <see cref="IAudioStreamImp" /> (-100 to +100).
+        /// Gets and sets the panning of this <see cref="IAudioStreamImp" /> (-100 to +100).
         /// </summary>
         /// <value>
         /// The panning of this <see cref="IAudioStreamImp" /> (-100 to +100).
@@ -43,7 +43,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="IAudioStreamImp" /> shall be looped.
+        /// Gets and sets a value indicating whether this <see cref="IAudioStreamImp" /> shall be looped.
         /// </summary>
         /// <value>
         /// <c>true</c> if this <see cref="IAudioStreamImp" /> shall be looped; otherwise, <c>false</c>.

@@ -350,7 +350,7 @@ namespace Fusee.Tools.fuseeCmdLine
         {
             private System.IFormatProvider formatProviderField  = global::System.Globalization.CultureInfo.InvariantCulture;
             /// <summary>
-            /// Gets or sets format provider to be used by ToStringWithCulture method.
+            /// Gets and sets format provider to be used by ToStringWithCulture method.
             /// </summary>
             public System.IFormatProvider FormatProvider
             {

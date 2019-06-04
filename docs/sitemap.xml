@@ -3,38 +3,38 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>http://fusee3d.org/page/firstfuseeapp/</loc>
+    <loc>https://fusee3d.org/page/firstfuseeapp/</loc>
     <lastmod>2017-11-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://fusee3d.org/page/install-fusee/</loc>
+    <loc>https://fusee3d.org/page/install-fusee/</loc>
     <lastmod>2017-11-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://fusee3d.org/page/necessary-tools/</loc>
+    <loc>https://fusee3d.org/page/necessary-tools/</loc>
     <lastmod>2017-11-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://fusee3d.org/categories/</loc>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://fusee3d.org/</loc>
+    <loc>https://fusee3d.org/</loc>
     <lastmod>2017-11-25T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>http://fusee3d.org/page/</loc>
+    <loc>https://fusee3d.org/page/</loc>
     <lastmod>2017-11-25T00:00:00+00:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
-    <loc>http://fusee3d.org/tags/</loc>
+    <loc>https://fusee3d.org/categories/</loc>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>https://fusee3d.org/tags/</loc>
     <priority>0</priority>
   </url>
   

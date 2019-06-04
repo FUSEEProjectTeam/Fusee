@@ -13,7 +13,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal HingeConstraint _hci;
 
         /// <summary>
-        /// Gets or sets a value indicating whether [angular only].
+        /// Gets and sets a value indicating whether [angular only].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [angular only]; otherwise, <c>false</c>.
@@ -33,7 +33,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [enable motor].
+        /// Gets and sets a value indicating whether [enable motor].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [enable motor]; otherwise, <c>false</c>.
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the maximum motor impulse.
+        /// Gets and sets the maximum motor impulse.
         /// </summary>
         /// <value>
         /// The maximum motor impulse.
@@ -304,7 +304,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.
