@@ -62,22 +62,22 @@ namespace Fusee.Examples.LASReaderExample.Core
         internal static ShaderEffect StandardEffect()
         {
             return new ShaderEffect(new[]
-                        {
-                            new EffectPassDeclaration
-                            {
-                                VS = AssetStorage.Get<string>("PointVertexShader.vert"),
-                                PS = AssetStorage.Get<string>("PointPixelShader.frag"),
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    ZEnable = true,
-                                }
-                            }
-                        },
-                        new[]
-                        {
-                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity}
-                        });
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("PointVertexShader.vert"),
+                    PS = AssetStorage.Get<string>("PointPixelShader.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity}
+            });
         }
 
         /// <summary>

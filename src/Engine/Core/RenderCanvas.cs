@@ -184,6 +184,7 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
+            RC.EnablePointSize();
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;

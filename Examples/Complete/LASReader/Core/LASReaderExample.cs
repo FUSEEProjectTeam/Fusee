@@ -53,11 +53,12 @@ namespace Fusee.Examples.LASReaderExample.Core
                 Children = new List<SceneNodeContainer>()
             };
 
-            _scene.Children.Add(LAZtoSceneNode.FromLAZ("XXX", LAZtoSceneNode.StandardEffect()));
+            _scene.Children.Add(LAZtoSceneNode.FromLAZ("E:/bunny.las", LAZtoSceneNode.StandardEffect()));
 
             var conv = new ConvertSceneGraph();
 
-            _scene = conv.Convert(_scene);
+            var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+            _scene.Children[0].Components.Insert(0, pc);
 
             //Add resize delegate
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();

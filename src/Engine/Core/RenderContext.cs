@@ -771,6 +771,7 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+
             View = float4x4.Identity;
             Model = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -792,6 +793,8 @@ namespace Fusee.Engine.Core
 
             //_debugShader = Shaders.GetColorShader(this);
             //_debugColor = _debugShader.GetShaderParam("color");
+
+            
         }
 
         #endregion
@@ -1541,6 +1544,11 @@ namespace Fusee.Engine.Core
         public void SetShaderParam(IShaderParam param, int val)
         {
             _rci.SetShaderParam(param, val);
+        }
+
+        public void EnablePointSize()
+        {
+            _rci.EnablePointSize();
         }
 
         #endregion

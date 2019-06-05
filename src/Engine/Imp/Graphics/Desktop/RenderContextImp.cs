@@ -793,6 +793,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+        public void EnablePointSize()
+        {
+            GL.Enable(EnableCap.ProgramPointSize);
+        }
+
         #endregion
 
         #region Clear Fields

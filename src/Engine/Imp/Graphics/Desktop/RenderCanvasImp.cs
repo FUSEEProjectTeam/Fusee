@@ -6,7 +6,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using Fusee.Engine.Common;
-using System.Drawing;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
