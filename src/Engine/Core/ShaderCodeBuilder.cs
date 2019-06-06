@@ -1111,8 +1111,7 @@ namespace Fusee.Engine.Core
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
-                            AlphaBlendEnable = true,
-                            
+                            AlphaBlendEnable = true   
                         }
                     }
                 },

@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(FuseeBuildRoot)\ext\LASlib\libLASlib.dll" Link="Natives\libLASlib.dll" />
+    <None Include="$(FuseeBuildRoot)\ext\LASlib\libLASlib.so" Link="Natives\libLASlib.so" />
+
+  </ItemGroup>
+
+</Project>
