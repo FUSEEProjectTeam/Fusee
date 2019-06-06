@@ -218,8 +218,6 @@ namespace Fusee.Engine.Player.Core
                 }
             }
 
-
-
             _zoom += _zoomVel;
             // Limit zoom
             if (_zoom < 80)
@@ -254,18 +252,11 @@ namespace Fusee.Engine.Player.Core
             }
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
-
-            _sceneRenderer.Render(RC);
-
-            var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            RC.Projection = projection;
+            _sceneRenderer.Render(RC);            
             
             _sih.View = RC.View;
 
-            _guiRenderer.Render(RC);
-
-            projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
+            _guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
