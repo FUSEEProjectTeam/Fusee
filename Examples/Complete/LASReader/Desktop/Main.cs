@@ -16,8 +16,6 @@ namespace Fusee.Examples.LASReaderExample.Desktop
     {
         public static void Main()
         {
-            Console.ReadKey();
-
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 

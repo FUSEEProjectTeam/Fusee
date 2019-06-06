@@ -13,6 +13,7 @@ uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_P;
 
 out vec3 vNormal;
+out vec3 vWorldNormal;
 out vec4 vModelPos;
 out vec4 vViewPos;
 out vec4 vWorldPos;
@@ -32,11 +33,18 @@ void main(void)
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
 	float projFactor = ((1.0 / tan(fov / 2.0))/ -vViewPos.z)* ScreenParams.y / 2.0;
 	vWorldSpacePointRad = PointSize / projFactor;
+	
 
-	//vViewNormal = mul(normalize(v.normal), FUSEE_ITMV);
+	vNormal = fuNormal;	
 
-	vNormal = fuNormal;
+	float d = length(abs(vViewPos - vClipPos));				
+	//Make point size dependent on distance to camera.
 
-	gl_PointSize = PointSize;
+	float pSize = round(PointSize * (1/d));
+	if(pSize < 1)
+		pSize = 1;
+
+	gl_PointSize = pSize; //OpenGL only
+
 	gl_Position = vClipPos;
 }
