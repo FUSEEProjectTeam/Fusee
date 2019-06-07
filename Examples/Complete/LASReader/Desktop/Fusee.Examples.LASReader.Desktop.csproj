@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.LASReader.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.LASReader.Desktop</PackageId>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>

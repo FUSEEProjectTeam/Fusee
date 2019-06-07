@@ -184,6 +184,7 @@ namespace Fusee.Engine.Player.Core
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
 
+            // TODO: fixme I'm broken.
             //else if (_spaceMouse != null)
             //{
             //    _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
