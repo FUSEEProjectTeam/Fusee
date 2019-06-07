@@ -8,16 +8,6 @@
     <StartupObject />
   </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="libLASlib.dll" />
-    <None Remove="libLASlib.so" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="libLASlib.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Math.Core">
@@ -31,7 +21,11 @@
     </Content>
   </ItemGroup>
 
-  
+  <ItemGroup>
+    <Content Include="libLASlib.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
 
 

@@ -1382,39 +1382,36 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 {
                     case OpenGLPrimitiveType.TRIANGLES:
                     default:
-                        GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.Triangles, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.POINT:
                         // enable gl_PointSize to set the point size
-                        GL.Enable(EnableCap.ProgramPointSize);
+                        GL.Enable(All.DepthTest);
                         //GL.Enable(EnableCap.DepthTest);
                         //GL.DepthMask(true);
-                        GL.Enable(EnableCap.VertexProgramPointSize);
-                        GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        //GL.Enable(All.VertexProgramPointSize);
+                        GL.DrawElements(All.Points, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.LINES:
-                        GL.Enable(EnableCap.LineSmooth);
-                        GL.DrawElements(PrimitiveType.Lines, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.Lines, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.LINE_LOOP:
-                        GL.Enable(EnableCap.LineSmooth);
-                        GL.DrawElements(PrimitiveType.LineLoop, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.LineLoop, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.LINE_STRIP:
-                        GL.Enable(EnableCap.LineSmooth);
-                        GL.DrawElements(PrimitiveType.LineStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.LineStrip, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.PATCHES:
-                        GL.DrawElements(PrimitiveType.Patches, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        throw new NotSupportedException("Pathes is no valid primitive type within OpenGL ES 3.0");
                         break;
                     case OpenGLPrimitiveType.QUAD_STRIP:
-                        GL.DrawElements(PrimitiveType.QuadStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
                         break;
                     case OpenGLPrimitiveType.TRIANGLE_FAN:
-                        GL.DrawElements(PrimitiveType.TriangleFan, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.TriangleFan, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.TRIANGLE_STRIP:
-                        GL.DrawElements(PrimitiveType.TriangleStrip, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
+                        GL.DrawElements(All.TriangleStrip, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
                         break;
                 }
             }

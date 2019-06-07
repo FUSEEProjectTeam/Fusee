@@ -41,7 +41,7 @@
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
     <BundleAssemblies>False</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
-    <AndroidSupportedAbis>armeabi-v7a;x86_64</AndroidSupportedAbis>
+    <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
     <Debugger>Xamarin</Debugger>
