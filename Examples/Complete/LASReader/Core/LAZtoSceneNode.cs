@@ -3,10 +3,8 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LASlibNet;
 
 namespace Fusee.Examples.LASReaderExample.Core
@@ -16,7 +14,7 @@ namespace Fusee.Examples.LASReaderExample.Core
         public static SceneNodeContainer FromLAZ(string fileName, ShaderEffect effect)
         {
             var lazReader = new LASReader(fileName);
-            var allPoints = lazReader.Points.Select(pt => new float4((float)pt.X, (float)pt.Z, (float)pt.Y, pt.Intensity)).ToList();
+            var allPoints = lazReader.Points.Select(pt => new float4((float)pt.X, (float)pt.Z, (float)pt.Y, pt.intensity)).ToList();
 
             var allMeshes = new List<Mesh>();
 
@@ -59,25 +57,38 @@ namespace Fusee.Examples.LASReaderExample.Core
             return returnNodeContainer;
         }
 
-        internal static ShaderEffect StandardEffect()
+        internal static ShaderEffect StandardEffect(float2 screenParams)
         {
             return new ShaderEffect(new[]
-                        {
-                            new EffectPassDeclaration
-                            {
-                                VS = AssetStorage.Get<string>("PointVertexShader.vert"),
-                                PS = AssetStorage.Get<string>("PointPixelShader.frag"),
-                                StateSet = new RenderStateSet
-                                {
-                                    AlphaBlendEnable = true,
-                                    ZEnable = true,
-                                }
-                            }
-                        },
-                        new[]
-                        {
-                            new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity}
-                        });
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("PointVertexShader.vert"),
+                    PS = AssetStorage.Get<string>("PointPixelShader.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "PointSize", Value = 100},
+                new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
+
+                new EffectParameterDeclaration {Name = "PointShape", Value = (int)PointShape.PARABOLID},
+                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.WEIGHT},
+                new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting.UNLIT},
+                new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
+                new EffectParameterDeclaration {Name = "Shininess", Value = 200f},
+                new EffectParameterDeclaration {Name = "Color", Value = new float4(0,0,1,1)},
+                new EffectParameterDeclaration {Name = "SecularColor", Value = new float4(1,1,1,1)},
+            });
         }
 
         /// <summary>

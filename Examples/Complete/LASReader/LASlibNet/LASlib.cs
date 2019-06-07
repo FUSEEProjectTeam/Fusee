@@ -47,7 +47,7 @@ namespace LASlibNet
         public double Y;
         public double Z;
 
-        public ushort Intensity;
+        public ushort intensity;
 
         public byte Classification;
         public byte UserData;
@@ -63,7 +63,7 @@ namespace LASlibNet
             point.Y = v.Y;
             point.Z = v.Z;
 
-            point.Intensity = v.Intensity;
+            point.intensity = v.Intensity;
 
             point.Classification = v.Classification;
             point.UserData = v.UserData;
@@ -100,7 +100,7 @@ namespace LASlibNet
             hashCode = hashCode * -1521134295 + X.GetHashCode();
             hashCode = hashCode * -1521134295 + Y.GetHashCode();
             hashCode = hashCode * -1521134295 + Z.GetHashCode();
-            hashCode = hashCode * -1521134295 + Intensity.GetHashCode();
+            hashCode = hashCode * -1521134295 + intensity.GetHashCode();
             hashCode = hashCode * -1521134295 + Classification.GetHashCode();
             hashCode = hashCode * -1521134295 + UserData.GetHashCode();
             hashCode = hashCode * -1521134295 + R.GetHashCode();

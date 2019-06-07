@@ -72,7 +72,7 @@ namespace Fusee.Examples.LASReader.Android
                     });
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new LASReaderExample.Core.LASReaderExample();
+                var app = new Core.Simple();
 
 		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
 		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
