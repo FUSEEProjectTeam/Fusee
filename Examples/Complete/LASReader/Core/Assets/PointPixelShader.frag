@@ -19,6 +19,56 @@ in vec4 vColor;
 
 out vec4 oColor;
 
+float EDLResponse(int pixelSize)
+{
+	vec2 offsetsToNeighbours[8] = vec2[8]
+	(
+		pixelSize * vec2( 1, -1 ), 	// right bottom
+		pixelSize * vec2( 1, 0 ), 	// right middle
+		pixelSize * vec2( 1, 1 ),	// right top
+		pixelSize * vec2( 0, -1 ),	// middle bottom
+		pixelSize * vec2( 0, 1 ), 	// middle top
+		pixelSize * vec2( -1, -1 ),	// left bottom
+		pixelSize * vec2( -1, 0 ), 	// left middle
+		pixelSize * vec2( -1, 1 ) 	// left top
+	);
+	
+	float response = 0.0;
+	float thisDepth = 0.0; //this fragments depth
+	int neighbourCount = 0;
+
+	for(int i = 0; i < 8; i++)
+	{
+		vec2 neighbourUv = vec2(0,0);//vUV + offsetsToNeighbours[i]
+		float neighbourDepth = 0;//texture(vDepth, neighbourUv).x;
+
+		if(neighbourDepth == 0.0)
+			neighbourDepth = 100000000;
+			
+		//neighborDepth = getHyperbolicDepth(neighborDepth);
+		
+		if(neighbourDepth > thisDepth) // only count neighbors which in are in front of pixel
+			continue;
+
+		response += max(0,log2(thisDepth) - log2(neighbourDepth));
+		neighbourCount += 1;
+	}
+
+	response /= neighbourCount;
+
+	if(neighbourCount == 0)
+		response = 1.0;
+
+	return response;
+	
+}
+
+float EDLShadingFactor(int edlStrength, int pixelSize)
+{
+	float response = EDLResponse(pixelSize);
+	return exp(-response * 300 * edlStrength);
+}
+
 void main(void)
 {	
 	vec2 distanceVector = (2 * gl_PointCoord) - 1; //[-1,1]
@@ -100,6 +150,9 @@ void main(void)
 		case 3:
 			oColor = vec4(weight, weight, weight, 1);
 		break;
+		case 4:			
+			oColor = vec4(gl_FragDepth, gl_FragDepth, gl_FragDepth, 1.0);		
+		
 	}
 
 	vec3 normalDir = normalize(vNormal);
@@ -123,20 +176,26 @@ void main(void)
 		{
 			break;
 		}
-		case 1: //diffuse
+		case 1:
+		{	
+			oColor *= EDLShadingFactor(1,1);
+			break;
+		}
+		case 2: //diffuse
 		{
 			oColor = diffuseReflection;		
 			break;
 		}
 
-		case 2: //blinn phong
+		case 3: //blinn phong
 		{
 			float specularAmmount = pow(max(dot(normalDir, halfwayDir), 0.0), Shininess);
 			specularReflection = SecularColor * pow(specularAmmount, Shininess);
 
 			oColor = diffuseReflection + (SpecularStrength * specularReflection);						
 			break;
-		}
+		}		
 	}
 
 }
+
