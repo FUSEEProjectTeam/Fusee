@@ -1,13 +1,25 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+﻿<Project>
   <PropertyGroup>
+    <RootNamespace>Fusee.Pointcloud.Reader.LASReader</RootNamespace>
+    <PackageId>Fusee.Pointcloud.Reader.LASReader</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <OutputType>Library</OutputType>
   </PropertyGroup>
 
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+  </ItemGroup>
+  
   <ItemGroup>
     <None Include="$(FuseeBuildRoot)\ext\LASlib\libLASlib.dll" Link="Natives\libLASlib.dll" />
     <None Include="$(FuseeBuildRoot)\ext\LASlib\libLASlib.so" Link="Natives\libLASlib.so" />
-
   </ItemGroup>
-
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

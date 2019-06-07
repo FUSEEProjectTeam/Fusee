@@ -30,21 +30,23 @@ namespace Fusee.Pointcloud.Common
     {
         public PointFormat Format => throw new NotImplementedException();
 
+        public IMeta MetaInfo => throw new NotImplementedException();
+
         public bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa)
         {
-            var rawPoint = ReadNextRawPoint();
+            //var rawPoint = ReadNextRawPoint();
 
-            if (pa.HasPositionFloat32)
-                pa.SetPositionFloat32(point, rawPoint.Pos);
+            //if (pa.HasPositionFloat32)
+            //    pa.SetPositionFloat32(point, rawPoint.Pos);
 
-            if (pa.HasNormalFloat32)
-                pa.SetNormal(point, rawPoint.Pos);
+            //if (pa.HasNormalFloat32)
+            //    pa.SetNormal(point, rawPoint.Pos);
 
-            if (pa.GetPositionFloat32)
-                pa.SetPositionFloat32(point, rawPoint.Pos);
+            //if (pa.GetPositionFloat32)
+            //    pa.SetPositionFloat32(point, rawPoint.Pos);
 
-            if (pa.GetPositionFloat32)
-                pa.SetPositionFloat32(point, rawPoint.Pos);
+            //if (pa.GetPositionFloat32)
+            //    pa.SetPositionFloat32(point, rawPoint.Pos);
 
             return true;
         }

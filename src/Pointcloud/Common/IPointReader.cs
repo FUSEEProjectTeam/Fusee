@@ -4,7 +4,5 @@ using System.Text;
 
 namespace Fusee.Pointcloud.Common
 {
-    class IPointReader
-    {
-    }
+
 }
