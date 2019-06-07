@@ -3,6 +3,107 @@ using System;
 
 namespace Fusee.Pointcloud.Common
 {
+    /// <summary>
+    ///     A pointcloud consists of a point accessor which enables access to the points as well as some information about the point type.
+    ///     Furthermore the data itself as well as some meta information like offset information.
+    /// </summary>
+    /// <typeparam name="TPoint">Point type</typeparam>
+    public interface IPointcloud<TPoint>
+    {
+        PointAccessor<TPoint> Pa { get; }
+
+        Span<TPoint> Points { get; }
+
+        IMeta MetaInfo { get; }
+    }
+
+    /// <summary>
+    ///     Every pointcloud needs a point accessor
+    /// </summary>
+    /// <typeparam name="TPoint"></typeparam>
+    public class PointAccessor<TPoint>
+    {
+        // PointXYZ
+        public virtual bool HasPositionFloat3_32 => false;
+        public virtual bool HasPositionFloat3_64 => false;
+
+        /// PointXYZI
+        public virtual bool HasIntensityInt_8 => false;
+        public virtual bool HasIntensityInt_16 => false;
+        public virtual bool HasIntensityInt_32 => false;
+        public virtual bool HasIntensityInt_64 => false;
+        public virtual bool HasIntensityUInt_8 => false;
+        public virtual bool HasIntensityUInt_16 => false;
+        public virtual bool HasIntensityUInt_32 => false;
+        public virtual bool HasIntensityUInt_64 => false;
+        public virtual bool HasIntensityFloat32 => false;
+        public virtual bool HasIntensityFloat64 => false;
+
+        // PointXYZINormal
+        public virtual bool HasNormalFloat3_32 => false;
+        public virtual bool HasNormalFloat3_64 => false;
+
+        // PointXYZINormalRGB
+        public virtual bool HasColorInt_8 => false;
+        public virtual bool HasColorInt_16 => false;
+        public virtual bool HasColorInt_32 => false;
+        public virtual bool HasColorInt_64 => false;
+        public virtual bool HasColorUInt_8 => false;
+        public virtual bool HasColorUInt_16 => false;
+        public virtual bool HasColorUInt_32 => false;
+        public virtual bool HasColorUInt_64 => false;
+        public virtual bool HasColorFloat32 => false;
+        public virtual bool HasColorFloat64 => false;
+        public virtual bool HasColorFloat3_32 => false;
+        public virtual bool HasColorFloat3_64 => false;
+
+        // PointXYZINormalRGBL
+
+
+        public virtual ref float3 GetPositionFloat32(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support PositionFloat32");
+        }
+
+        public virtual void SetPositionFloat32(ref TPoint point, float3 val)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support PositionFloat64");
+        }
+
+        public virtual float3 PositionFloat64(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat32");
+        }
+
+        public virtual float3 NormalFloat32(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support NormalFloat32");
+        }
+
+        public virtual float3 ColorFloat32(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat32");
+        }
+
+        public virtual double3 NormalFloat64(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support NormalFloat64");
+        }
+
+        public virtual double3 ColorFloat64(TPoint point)
+        {
+            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat64");
+        }
+    }
+
+
+
+
+
+
+
+
+
     // LAZ Reader
     /*
      *  - Öffne File
@@ -149,53 +250,7 @@ namespace Fusee.Pointcloud.Common
 
 
 
-    public class PointAccessor<TPoint>
-    {
-        public virtual bool HasPositionFloat32 => false;
-        public virtual bool HasPositionFloat64 => false;
 
-        public virtual bool HasNormalFloat32 => false;
-        public virtual bool HasNormalFloat64 => false;
-        public virtual bool HasColorFloat32 => false;
-        public virtual bool HasColorFloat64 => false;
-
-
-        public virtual ref float3 GetPositionFloat32(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support PositionFloat32");
-        }
-
-        public virtual void SetPositionFloat32(ref TPoint point, float3 val)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support PositionFloat64");
-        }
-
-
-        public virtual float3 PositionFloat64(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat32");
-        }
-
-        public virtual float3 NormalFloat32(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support NormalFloat32");
-        }
-
-        public virtual float3 ColorFloat32(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat32");
-        }
-
-        public virtual double3 NormalFloat64(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support NormalFloat64");
-        }
-
-        public virtual double3 ColorFloat64(TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support ColorFloat64");
-        }
-    }
 
     internal class ExamplePoint
     {
@@ -262,28 +317,21 @@ namespace Fusee.Pointcloud.Common
         // Header info
     }
 
-    internal interface IPointcloud<TPoint>
-    {
-        PointAccessor<TPoint> Pa { get; }
-        Span<TPoint> Points { get; }
-
-        IMeta MetaInfo { get; }
-    }
 
     internal class PointCloudMethods
     {
         public void ReadPoints(IPointReader pointReader)
         {
-            ExamplePointAccessor pa = new ExamplePointAccessor();
+            var pa = new ExamplePointAccessor();
 
-            ExamplePoint[] points = new ExamplePoint[100];
+            var points = new ExamplePoint[100];
 
-            for(int i = 0; i < 100; i++)
+            for (var i = 0; i < 100; i++)
             {
                 pointReader.ReadNextPoint(ref points[i], pa);
             }
         }
-            
+
         public static void AnotherTry<TPoint>(Span<TPoint> points, PointAccessor<TPoint> pa)
         {
             if (!pa.HasNormalFloat32)
@@ -291,7 +339,7 @@ namespace Fusee.Pointcloud.Common
 
 
             // foreach(var point in points)
-            for (int i = 0; i < points.Length; i++)
+            for (var i = 0; i < points.Length; i++)
             {
                 // Top
                 // p.Normal(pa) ?? 
