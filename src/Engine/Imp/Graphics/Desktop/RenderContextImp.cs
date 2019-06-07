@@ -792,12 +792,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
             }
         }
-
-        public void EnablePointSize()
-        {
-            GL.Enable(EnableCap.ProgramPointSize);
-        }
-
         #endregion
 
         #region Clear Fields
@@ -1369,6 +1363,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
                     case OpenGLPrimitiveType.POINT:
                         // enable gl_PointSize to set the point size
+                        GL.Enable(EnableCap.ProgramPointSize);
+                        //GL.Enable(EnableCap.DepthTest);
+                        //GL.DepthMask(true);
                         GL.Enable(EnableCap.VertexProgramPointSize);
                         GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;

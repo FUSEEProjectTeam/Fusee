@@ -494,7 +494,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
             catch
             {

@@ -193,8 +193,6 @@ namespace Fusee.Engine.Common
         [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
 
-        void EnablePointSize();
-
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>

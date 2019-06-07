@@ -3,10 +3,8 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using LASlibNet;
 
 namespace Fusee.Examples.LASReaderExample.Core
@@ -83,8 +81,8 @@ namespace Fusee.Examples.LASReaderExample.Core
                 new EffectParameterDeclaration {Name = "PointSize", Value = 100},
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
 
-                new EffectParameterDeclaration {Name = "PointShape", Value = (int)PointShape.RECT},
-                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.NORMAL},
+                new EffectParameterDeclaration {Name = "PointShape", Value = (int)PointShape.PARABOLID},
+                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.WEIGHT},
                 new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting.UNLIT},
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
                 new EffectParameterDeclaration {Name = "Shininess", Value = 200f},

@@ -9,9 +9,9 @@ namespace Fusee.Examples.LASReaderExample.Core
     {
         RECT = 0,
         CIRCLE = 1,
-        CONE = 2,
-        SPHERE = 3,
-        PARABOLID = 4
+        PARABOLID = 2,
+        CONE = 3,
+        SPHERE = 4
 
     }
 

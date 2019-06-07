@@ -188,9 +188,6 @@ namespace Fusee.Examples.LASReaderExample.Core
             if ((_angleVert > twoPi && _angleVert > 0) || _angleVert < -twoPi)
                 _angleVert = _angleVert % twoPi;
 
-            Debug.WriteLine("Hor: "+ _angleHorz);
-            Debug.WriteLine("Vert: "+_angleVert);
-
             _cameraPos += (RC.View.Row2.xyz) * Keyboard.WSAxis;
             _cameraPos += (RC.View.Row0.xyz) * Keyboard.ADAxis;
 

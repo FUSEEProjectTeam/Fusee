@@ -183,8 +183,7 @@ namespace Fusee.Engine.Core
                 SetWindowSize(windowWidth, windowHeight);
 
             RC = new RenderContext(ContextImplementor);
-            RC.Viewport(0, 0, Width, Height);
-            RC.EnablePointSize();
+            RC.Viewport(0, 0, Width, Height);            
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;

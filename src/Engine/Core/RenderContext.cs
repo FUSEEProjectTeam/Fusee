@@ -1545,12 +1545,6 @@ namespace Fusee.Engine.Core
         {
             _rci.SetShaderParam(param, val);
         }
-
-        public void EnablePointSize()
-        {
-            _rci.EnablePointSize();
-        }
-
         #endregion
 
         #region Render releated Members

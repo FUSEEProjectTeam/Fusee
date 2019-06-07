@@ -36,10 +36,10 @@ void main(void)
 	case 1: // circle						
 
 		float distanceFromCenter = length(2.0 * gl_PointCoord - 1.0);
-
-		if (distanceFromCenter > 1.0)
+			
+		if(distanceFromCenter > 1.0)
 			discard;
-
+			
 		gl_FragDepth = gl_FragCoord.z;
 
 		break;
