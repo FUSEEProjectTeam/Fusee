@@ -609,6 +609,5 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
-
     }
 }

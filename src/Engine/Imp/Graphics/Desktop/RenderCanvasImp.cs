@@ -6,7 +6,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Platform;
 using Fusee.Engine.Common;
-using System.Drawing;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
@@ -495,7 +494,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             try
             {
-                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
             }
             catch
             {
