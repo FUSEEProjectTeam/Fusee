@@ -82,7 +82,7 @@ namespace Fusee.Examples.LASReaderExample.Core
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
 
                 new EffectParameterDeclaration {Name = "PointShape", Value = (int)PointShape.PARABOLID},
-                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.WEIGHT},
+                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.DEPTH},
                 new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting.UNLIT},
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
                 new EffectParameterDeclaration {Name = "Shininess", Value = 200f},

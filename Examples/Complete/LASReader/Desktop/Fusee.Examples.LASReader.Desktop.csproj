@@ -5,6 +5,7 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />

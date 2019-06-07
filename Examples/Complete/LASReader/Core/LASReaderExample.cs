@@ -18,7 +18,7 @@ namespace Fusee.Examples.LASReaderExample.Core
     public class LASReaderExample : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom, _translX, _translZ;
+        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -28,19 +28,19 @@ namespace Fusee.Examples.LASReaderExample.Core
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
         private ScenePicker _scenePicker;
-        private bool _twoTouchRepeated;      
+        private bool _twoTouchRepeated;
 
         private bool _keys;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        
+
         private float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;        
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -51,7 +51,7 @@ namespace Fusee.Examples.LASReaderExample.Core
         private GamePadDevice _gamePad;
 
         private float3 _cameraPos;
-        
+
         // Init is called on startup. 
         public override void Init()
         {
@@ -64,9 +64,7 @@ namespace Fusee.Examples.LASReaderExample.Core
             _canvasWidth = _initCanvasWidth;
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
-            _zoom = 1;
-            _translX = 0;
-            _translZ = 0;
+            _zoom = 1;       
 
             _angleRoll = 0;
             _angleRollInit = 0;
@@ -88,7 +86,7 @@ namespace Fusee.Examples.LASReaderExample.Core
             var conv = new ConvertSceneGraph();
 
             var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            _scene.Children[0].Components.Insert(0, pc);            
+            _scene.Children[0].Components.Insert(0, pc);
 
             _gui = CreateGui();
             // Create the interaction handler
@@ -109,7 +107,7 @@ namespace Fusee.Examples.LASReaderExample.Core
         public override void RenderAFrame()
         {
             // Clear the backbuffer
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);            
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -141,28 +139,28 @@ namespace Fusee.Examples.LASReaderExample.Core
                 _angleRoll *= curDamp * 0.8f;
                 _offset *= curDamp * 0.8f;
             }
-            
+
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton)
             {
                 _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            } 
+                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+            }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
                 touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
+                _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
             }
             else
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
                 }
                 else
                 {
@@ -188,8 +186,8 @@ namespace Fusee.Examples.LASReaderExample.Core
             if ((_angleVert > twoPi && _angleVert > 0) || _angleVert < -twoPi)
                 _angleVert = _angleVert % twoPi;
 
-            _cameraPos += (RC.View.Row2.xyz) * Keyboard.WSAxis;
-            _cameraPos += (RC.View.Row0.xyz) * Keyboard.ADAxis;
+            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 3;
+            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 3;
 
             RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
 
@@ -206,7 +204,7 @@ namespace Fusee.Examples.LASReaderExample.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
             _sih.View = RC.View;
-            _guiRenderer.Render(RC);           
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -315,23 +313,23 @@ namespace Fusee.Examples.LASReaderExample.Core
             float cosYaw = M.Cos(yaw);
             float sinYaw = M.Sin(yaw);
 
-            float3 xaxis = float3.Normalize(new float3 ( cosYaw, 0, -sinYaw ));
-            float3 yaxis = float3.Normalize(new float3 ( sinYaw * sinPitch, cosPitch, cosYaw * sinPitch ));
-            float3 zaxis = float3.Normalize(new float3 ( sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw ));
+            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
+            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
+            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
 
             // Create a 4x4 view matrix from the right, up, forward and eye position vectors
             float4x4 viewMatrix = new float4x4(
-                new float4(       xaxis.x,            yaxis.x,            zaxis.x,      0 ),
-                new float4(       xaxis.y,            yaxis.y,            zaxis.y,      0 ),
-                new float4(       xaxis.z,            yaxis.z,            zaxis.z,      0 ),
-                new float4( -float3.Dot( xaxis, eye ), -float3.Dot( yaxis, eye ), -float3.Dot( zaxis, eye ), 1 )
+                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
+                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
+                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
+                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
             );
 
-            viewMatrix = float4x4.Transpose(viewMatrix);            
+            viewMatrix = float4x4.Transpose(viewMatrix);
 
             return viewMatrix;
-            
-        }       
-        
+
+        }
+
     }
 }
