@@ -1363,9 +1363,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
                     case OpenGLPrimitiveType.POINT:
                         // enable gl_PointSize to set the point size
-                        GL.Enable(EnableCap.ProgramPointSize);
-                        //GL.Enable(EnableCap.DepthTest);
-                        //GL.DepthMask(true);
+                        GL.Enable(EnableCap.ProgramPointSize);                      
                         GL.Enable(EnableCap.VertexProgramPointSize);
                         GL.DrawElements(PrimitiveType.Points, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
