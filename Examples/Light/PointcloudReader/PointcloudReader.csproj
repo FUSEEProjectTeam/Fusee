@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\**\*">
@@ -30,6 +30,12 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Engine.GUI.dll">
+      <Private>False</Private>
+    </Reference>    
+    <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.Pointcloud.Common.dll">
+      <Private>False</Private>
+    </Reference>    
+        <Reference Include="$(FuseeRoot)/bin/Debug/Libraries/Fusee.LASReader.dll">
       <Private>False</Private>
     </Reference>    
   </ItemGroup>

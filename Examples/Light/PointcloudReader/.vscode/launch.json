@@ -6,11 +6,11 @@
     "configurations": [
         {
             "name": "Debug in FUSEE Player",
-            "type": "clr",
+            "type": "coreclr",
             "request": "launch", 
             "preLaunchTask": "build",
-            "program": "${env:FuseeRoot}/bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.exe",
-            "args": ["${workspaceRoot}/bin/Debug/netstandard2.0/PointcloudReader.dll"],
+            "program": "${env:FuseeRoot}/bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.dll",
+            "args": ["${workspaceRoot}/bin/Debug/netcoreapp2.2/PointcloudReader.dll"],
             "cwd": "${env:FuseeRoot}bin/Debug/Player/Desktop",
             "stopAtEntry": false,
             "console": "externalTerminal"
@@ -24,8 +24,7 @@
             "args": ["server", "${workspaceRoot}/pub/Web"],
             "cwd": ".",
             "stopAtEntry": false,
-            "console": "externalTerminal",
-            "noDebug": true
+            "console": "externalTerminal"           
         }
     ]
 }

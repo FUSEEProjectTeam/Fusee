@@ -4,18 +4,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "taskName": "build",
+            "label": "build",
             "command": "dotnet build",
             "type": "shell",
             "group": "build",
             "presentation": {
-                "reveal": "silent"
+                "reveal": "always"
             },
             "problemMatcher": "$msCompile"
         },
         {
             "dependsOn": ["build"],
-            "taskName": "Publish FUSEE Desktop app",
+            "label": "Publish FUSEE Desktop app",
             "command": "fusee publish --platform Desktop",
             "type": "shell",
             "group": "build",
@@ -26,7 +26,7 @@
         },
         {
             "dependsOn": ["build"],
-            "taskName": "Publish FUSEE Web app",
+            "label": "Publish FUSEE Web app",
             "command": "fusee publish --platform Web",
             "type": "shell",
             "group": "build",
