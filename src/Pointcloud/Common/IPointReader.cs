@@ -4,61 +4,40 @@ using System.Text;
 
 namespace Fusee.Pointcloud.Common
 {
+    public interface IPointFormat
+    {
+    }
+
+    /// <summary>
+    ///     This is the meta info about one pointcloud, normally stored in the header of a pointcloud 
+    /// </summary>
+    public interface IMeta
+    {
+        // e.g.
+        // AABBd AABB { get; }
+    }
+
     public interface IPointReader
     {
-        PointFormat Format { get; }
+        /// <summary>
+        ///     This is the point description: Which type am I, which variables do I hold?
+        ///     E.g. PointXYZI with normals
+        /// </summary>
+        IPointFormat Format { get; }
 
-        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa);
-
+        /// <summary>
+        ///     Meta information about the pointcloud, usually saved in a header
+        /// </summary>
         IMeta MetaInfo { get; }
+
+        /// <summary>
+        ///     While we have a point read the next with given point accessor
+        ///     The "raw" read within this method should happen with one delegate
+        /// </summary>
+        /// <typeparam name="TPoint">The point type we want to write to</typeparam>
+        /// <param name="point">The point we want to write to</param>
+        /// <param name="pa">The accessor how to write to the point</param>
+        /// <returns></returns>
+        bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa);
     }
-
-
-
-    // LAZ Reader
-    /*
-     *  - Öffne File
-     *  - Gib PointFormat zurück, was steckt in deiner LAZ-Datei
-     *  - Gib mir ein Subset von deinem Vorhandenen zurück
-     */
-
-    /*
-     * - Anfrage an LAZ-File was kannst du denn und dann
-     * - Kreiere Pointcloud mit Accessor-Struktur,
-     * - Frage LAZReader ob file alles beinhaltet, wenn ja fülle die Pointcloud
-     */
-
-    public class ExamplePointReader : IPointReader
-    {
-        public PointFormat Format => throw new NotImplementedException();
-
-        public IMeta MetaInfo => throw new NotImplementedException();
-
-        public bool ReadNextPoint<TPoint>(ref TPoint point, PointAccessor<TPoint> pa)
-        {
-            //var rawPoint = ReadNextRawPoint();
-
-            //if (pa.HasPositionFloat32)
-            //    pa.SetPositionFloat32(point, rawPoint.Pos);
-
-            //if (pa.HasNormalFloat32)
-            //    pa.SetNormal(point, rawPoint.Pos);
-
-            //if (pa.GetPositionFloat32)
-            //    pa.SetPositionFloat32(point, rawPoint.Pos);
-
-            //if (pa.GetPositionFloat32)
-            //    pa.SetPositionFloat32(point, rawPoint.Pos);
-
-            return true;
-        }
-    }
-
-    public struct PointFormat
-    {
-
-    }
-
-
-
 }

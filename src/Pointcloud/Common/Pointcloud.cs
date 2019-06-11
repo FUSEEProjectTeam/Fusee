@@ -132,22 +132,22 @@ namespace Fusee.Pointcloud.Common
         #region PointT_Methods
 
         #region PointXYZ
-        public virtual ref float3 GetPositionFloat32(TPoint point)
+        public virtual ref float3 GetPositionFloat3_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
         }
 
-        public virtual void SetPositionFloat32(ref TPoint point, float3 val)
+        public virtual void SetPositionFloat3_32(ref TPoint point, float3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
         }
 
-        public virtual ref double3 GetPositionFloat64(TPoint point)
+        public virtual ref double3 GetPositionFloat3_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat64");
         }
 
-        public virtual void SetPositionFloat64(ref TPoint point, double3 val)
+        public virtual void SetPositionFloat3_64(ref TPoint point, double3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat64");
         }
@@ -156,52 +156,52 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZI
 
         #region Getter
-        public virtual ref sbyte GetIntensityInt_8(TPoint point)
+        public virtual ref sbyte GetIntensityInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_8");
         }
 
-        public virtual ref short GetIntensityInt_16(TPoint point)
+        public virtual ref short GetIntensityInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_16");
         }
 
-        public virtual ref int GetIntensityInt_32(TPoint point)
+        public virtual ref int GetIntensityInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_32");
         }
 
-        public virtual ref long GetIntensityInt_64(TPoint point)
+        public virtual ref long GetIntensityInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityInt_64");
         }
 
-        public virtual ref byte GetIntensityUInt_8(TPoint point)
+        public virtual ref byte GetIntensityUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_8");
         }
 
-        public virtual ref ushort GetIntensityUInt_16(TPoint point)
+        public virtual ref ushort GetIntensityUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_16");
         }
 
-        public virtual ref uint GetIntensityUInt_32(TPoint point)
+        public virtual ref uint GetIntensityUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_32");
         }
 
-        public virtual ref ulong GetIntensityUInt_64(TPoint point)
+        public virtual ref ulong GetIntensityUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityUInt_64");
         }
 
-        public virtual ref float GetIntensityFloat32(TPoint point)
+        public virtual ref float GetIntensityFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityFloat32");
         }
 
-        public virtual ref double GetIntensityFloat64(TPoint point)
+        public virtual ref double GetIntensityFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetIntensityFloat64");
         }
@@ -264,12 +264,12 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormal
 
         #region Getter      
-        public virtual ref float3 GetNormalFloat3_32(TPoint point)
+        public virtual ref float3 GetNormalFloat3_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetNormalFloat3_32");
         }
 
-        public virtual ref double3 GetNormalFloat3_64(TPoint point)
+        public virtual ref double3 GetNormalFloat3_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetNormalFloat3_64");
         }
@@ -292,62 +292,62 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormalRGB
 
         #region Getter
-        public virtual ref sbyte GetColorInt_8(TPoint point)
+        public virtual ref sbyte GetColorInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_8");
         }
 
-        public virtual ref short GetColorInt_16(TPoint point)
+        public virtual ref short GetColorInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_16");
         }
 
-        public virtual ref int GetColorInt_32(TPoint point)
+        public virtual ref int GetColorInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_32");
         }
 
-        public virtual ref long GetColorInt_64(TPoint point)
+        public virtual ref long GetColorInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorInt_64");
         }
 
-        public virtual ref byte GetColorUInt_8(TPoint point)
+        public virtual ref byte GetColorUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_8");
         }
 
-        public virtual ref ushort GetColorUInt_16(TPoint point)
+        public virtual ref ushort GetColorUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_16");
         }
 
-        public virtual ref uint GetColorUInt_32(TPoint point)
+        public virtual ref uint GetColorUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_32");
         }
 
-        public virtual ref ulong GetColorUInt_64(TPoint point)
+        public virtual ref ulong GetColorUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorUInt_64");
         }
 
-        public virtual ref float GetColorFloat32(TPoint point)
+        public virtual ref float GetColorFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat32");
         }
 
-        public virtual ref double GetColorFloat64(TPoint point)
+        public virtual ref double GetColorFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat64");
         }
 
-        public virtual ref float3 GetColorFloat3_32(TPoint point)
+        public virtual ref float3 GetColorFloat3_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat3_32");
         }
 
-        public virtual ref double3 GetColorFloat3_64(TPoint point)
+        public virtual ref double3 GetColorFloat3_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetColorFloat3_64");
         }
@@ -420,52 +420,52 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormalRGBL
 
         #region Getter
-        public virtual ref sbyte GetLabelInt_8(TPoint point)
+        public virtual ref sbyte GetLabelInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_8");
         }
 
-        public virtual ref short GetLabelInt_16(TPoint point)
+        public virtual ref short GetLabelInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_16");
         }
 
-        public virtual ref int GetLabelInt_32(TPoint point)
+        public virtual ref int GetLabelInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_32");
         }
 
-        public virtual ref long GetLabelInt_64(TPoint point)
+        public virtual ref long GetLabelInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelInt_64");
         }
 
-        public virtual ref byte GetLabelUInt_8(TPoint point)
+        public virtual ref byte GetLabelUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_8");
         }
 
-        public virtual ref ushort GetLabelUInt_16(TPoint point)
+        public virtual ref ushort GetLabelUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_16");
         }
 
-        public virtual ref uint GetLabelUInt_32(TPoint point)
+        public virtual ref uint GetLabelUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_32");
         }
 
-        public virtual ref ulong GetLabelUInt_64(TPoint point)
+        public virtual ref ulong GetLabelUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelUInt_64");
         }
 
-        public virtual ref float GetLabelFloat32(TPoint point)
+        public virtual ref float GetLabelFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelFloat32");
         }
 
-        public virtual ref double GetLabelFloat64(TPoint point)
+        public virtual ref double GetLabelFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetLabelFloat64");
         }
@@ -528,52 +528,52 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormalRGBLCurvature
 
         #region Getter
-        public virtual ref sbyte GetCurvatureInt_8(TPoint point)
+        public virtual ref sbyte GetCurvatureInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_8");
         }
 
-        public virtual ref short GetCurvatureInt_16(TPoint point)
+        public virtual ref short GetCurvatureInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_16");
         }
 
-        public virtual ref int GetCurvatureInt_32(TPoint point)
+        public virtual ref int GetCurvatureInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_32");
         }
 
-        public virtual ref long GetCurvatureInt_64(TPoint point)
+        public virtual ref long GetCurvatureInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureInt_64");
         }
 
-        public virtual ref byte GetCurvatureUInt_8(TPoint point)
+        public virtual ref byte GetCurvatureUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_8");
         }
 
-        public virtual ref ushort GetCurvatureUInt_16(TPoint point)
+        public virtual ref ushort GetCurvatureUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_16");
         }
 
-        public virtual ref uint GetCurvatureUInt_32(TPoint point)
+        public virtual ref uint GetCurvatureUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_32");
         }
 
-        public virtual ref ulong GetCurvatureUInt_64(TPoint point)
+        public virtual ref ulong GetCurvatureUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureUInt_64");
         }
 
-        public virtual ref float GetCurvatureFloat32(TPoint point)
+        public virtual ref float GetCurvatureFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureFloat32");
         }
 
-        public virtual ref double GetCurvatureFloat64(TPoint point)
+        public virtual ref double GetCurvatureFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetCurvatureFloat64");
         }
@@ -636,52 +636,52 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormalRGBLCurvatureHitCount
 
         #region Getter
-        public virtual ref sbyte GetHitCountInt_8(TPoint point)
+        public virtual ref sbyte GetHitCountInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_8");
         }
 
-        public virtual ref short GetHitCountInt_16(TPoint point)
+        public virtual ref short GetHitCountInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_16");
         }
 
-        public virtual ref int GetHitCountInt_32(TPoint point)
+        public virtual ref int GetHitCountInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_32");
         }
 
-        public virtual ref long GetHitCountInt_64(TPoint point)
+        public virtual ref long GetHitCountInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountInt_64");
         }
 
-        public virtual ref byte GetHitCountUInt_8(TPoint point)
+        public virtual ref byte GetHitCountUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_8");
         }
 
-        public virtual ref ushort GetHitCountUInt_16(TPoint point)
+        public virtual ref ushort GetHitCountUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_16");
         }
 
-        public virtual ref uint GetHitCountUInt_32(TPoint point)
+        public virtual ref uint GetHitCountUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_32");
         }
 
-        public virtual ref ulong GetHitCountUInt_64(TPoint point)
+        public virtual ref ulong GetHitCountUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountUInt_64");
         }
 
-        public virtual ref float GetHitCountFloat32(TPoint point)
+        public virtual ref float GetHitCountFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountFloat32");
         }
 
-        public virtual ref double GetHitCountFloat64(TPoint point)
+        public virtual ref double GetHitCountFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetHitCountFloat64");
         }
@@ -744,52 +744,52 @@ namespace Fusee.Pointcloud.Common
         #region PointXYZINormalRGBLCurvatureHitCountGPSTime
 
         #region Getter
-        public virtual ref sbyte GetGPSTimeInt_8(TPoint point)
+        public virtual ref sbyte GetGPSTimeInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_8");
         }
 
-        public virtual ref short GetGPSTimeInt_16(TPoint point)
+        public virtual ref short GetGPSTimeInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_16");
         }
 
-        public virtual ref int GetGPSTimeInt_32(TPoint point)
+        public virtual ref int GetGPSTimeInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_32");
         }
 
-        public virtual ref long GetGPSTimeInt_64(TPoint point)
+        public virtual ref long GetGPSTimeInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeInt_64");
         }
 
-        public virtual ref byte GetGPSTimeUInt_8(TPoint point)
+        public virtual ref byte GetGPSTimeUInt_8(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_8");
         }
 
-        public virtual ref ushort GetGPSTimeUInt_16(TPoint point)
+        public virtual ref ushort GetGPSTimeUInt_16(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_16");
         }
 
-        public virtual ref uint GetGPSTimeUInt_32(TPoint point)
+        public virtual ref uint GetGPSTimeUInt_32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_32");
         }
 
-        public virtual ref ulong GetGPSTimeUInt_64(TPoint point)
+        public virtual ref ulong GetGPSTimeUInt_64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeUInt_64");
         }
 
-        public virtual ref float GetGPSTimeFloat32(TPoint point)
+        public virtual ref float GetGPSTimeFloat32(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat32");
         }
 
-        public virtual ref double GetGPSTimeFloat64(TPoint point)
+        public virtual ref double GetGPSTimeFloat64(ref TPoint point)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetGPSTimeFloat64");
         }
@@ -850,15 +850,6 @@ namespace Fusee.Pointcloud.Common
         #endregion
 
         #endregion
-    }
-
-    /// <summary>
-    ///     This is the meta info about one pointcloud, normally stored in the header of a pointcloud 
-    /// </summary>
-    public interface IMeta
-    {
-        // e.g.
-        // AABBd AABB { get; }
     }
 
     /// <summary>
