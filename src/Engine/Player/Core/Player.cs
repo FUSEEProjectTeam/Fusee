@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
@@ -52,7 +52,7 @@ namespace Fusee.Engine.Player.Core
         private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
-        private SixDOFDevice _spaceMouse;
+
         private GamePadDevice _gamePad;
       
 
@@ -89,12 +89,8 @@ namespace Fusee.Engine.Player.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-
-            // Register the input devices that are not already given.
-
-            _spaceMouse = GetDevice<SixDOFDevice>();
             _gamePad = GetDevice<GamePadDevice>();
- 
+            // Register the input devices that are not already given.
  
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
@@ -138,10 +134,23 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            Diagnostics.Log(_gamePad.LSX);
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            Diagnostics.Log(_gamePad.LSX);
+
+            /*
+            if (Keyboard.GetKey(KeyCodes.K))
+            {
+                if (!K_pressed)
+                {
+                    // Only once!
+                }
+                K_pressed = true;
+            }
+            else
+                K_pressed = false;
+            */
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -181,18 +190,6 @@ namespace Fusee.Engine.Player.Core
                 _keys = false;
                 _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.00005f;
                 _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.00005f;
-            }
-
-            else if (_spaceMouse != null)
-            {
-                _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
-                _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
-            }
-
-            else if(_gamePad != null)
-            {
-                _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
-                _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
             }
 
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
