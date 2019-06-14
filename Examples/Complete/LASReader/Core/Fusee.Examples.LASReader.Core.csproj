@@ -17,15 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Assets\PointPixelShader.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PointVertexShader.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\LASlibNet\LASlibNet.csproj" />
   </ItemGroup>
 

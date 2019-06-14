@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -81,7 +81,7 @@ namespace Fusee.Examples.LASReaderExample.Core
                 Children = new List<SceneNodeContainer>()
             };
 
-            _scene.Children.Add(LAZtoSceneNode.FromLAZ("E:/bornheim_IRIS12_20180713_128_CPS_0000_000000.laz", LAZtoSceneNode.StandardEffect(new float2(Width, Height))));
+            _scene.Children.Add(LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", LAZtoSceneNode.StandardEffect(new float2(Width, Height))));
 
             var conv = new ConvertSceneGraph();
 

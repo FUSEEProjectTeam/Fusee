@@ -11,17 +11,26 @@ namespace Fusee.Examples.LASReaderExample.Core
 {
     public static class LAZtoSceneNode
     {
+        private static uint ColorToUInt(int r, int g, int b)
+        {
+            return (uint)((b << 16) | (g << 8) | (r << 0));
+        }
+
         public static SceneNodeContainer FromLAZ(string fileName, ShaderEffect effect)
         {
             var lazReader = new LASReader(fileName);
-            var allPoints = lazReader.Points.Select(pt => new float4((float)pt.X, (float)pt.Z, (float)pt.Y, pt.intensity)).ToList();
+            var points = lazReader.Points.ToList();
+
+            var allPoints = points.Select(pt => new float4((float)pt.X, (float)pt.Z, (float)pt.Y, pt.intensity)).ToList();
+            var allColors = points.Select(pt => new float3(pt.R / 256, pt.G / 256, pt.B / 256)).ToList();
 
             var allMeshes = new List<Mesh>();
 
             var maxVertCount = ushort.MaxValue - 1;
 
-            var allPointsSplitted = SplitList(allPoints, maxVertCount);
-           
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
+
             var returnNodeContainer = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>
@@ -41,18 +50,22 @@ namespace Fusee.Examples.LASReaderExample.Core
 
             var maxIntensityVal = 1 << 12; // 12 bit
 
-            foreach (var pointSplit in allPointsSplitted)
+            for (int i = 0; i < allPointsSplitted.Count; i++)
             {
+                var pointSplit = allPointsSplitted[i];
+                var colorSplit = allColorsSplitted[i];
+
                 var currentMesh = new Mesh
                 {
                     Vertices = pointSplit.Select(pt => pt.xyz).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.POINT,
-                    Normals = pointSplit.Select(pt => new float3(pt.w / maxIntensityVal, pt.w / maxIntensityVal, pt.w / maxIntensityVal)).ToArray()
+                    Normals = pointSplit.Select(pt => new float3(pt.w / maxIntensityVal, pt.w / maxIntensityVal, pt.w / maxIntensityVal)).ToArray(),
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray()
                 };
 
                 returnNodeContainer.Components.Add(currentMesh);
-            }
+            }            
 
             return returnNodeContainer;
         }
@@ -63,8 +76,8 @@ namespace Fusee.Examples.LASReaderExample.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = AssetStorage.Get<string>("PointVertexShader.vert"),
-                    PS = AssetStorage.Get<string>("PointPixelShader.frag"),
+                    VS = AssetStorage.Get<string>("PointCloud.vert"),
+                    PS = AssetStorage.Get<string>("PointCloud.frag"),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
@@ -82,7 +95,7 @@ namespace Fusee.Examples.LASReaderExample.Core
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
 
                 new EffectParameterDeclaration {Name = "PointShape", Value = (int)PointShape.PARABOLID},
-                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.DEPTH},
+                new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.POINT},
                 new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting.UNLIT},
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
                 new EffectParameterDeclaration {Name = "Shininess", Value = 200f},
