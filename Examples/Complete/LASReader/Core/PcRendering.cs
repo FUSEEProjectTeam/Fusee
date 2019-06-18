@@ -56,6 +56,8 @@ namespace Fusee.Examples.PcRendering.Core
         private ShaderEffect _depthPassEf;
         private ShaderEffect _colorPassEf;
 
+        private bool _isTexInitialized = false;
+
         // Init is called on startup. 
         public override void Init()
         {
@@ -83,9 +85,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene = new SceneContainer
             {
                 Children = new List<SceneNodeContainer>()
-            };
-
-            
+            };           
 
             _pc = LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", _depthPassEf);
             _scene.Children.Add(_pc);            
@@ -102,7 +102,7 @@ namespace Fusee.Examples.PcRendering.Core
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             //create depth tex and fbo
-            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);            
 
             _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
             _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
@@ -231,7 +231,18 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            _depthPassEf.SetEffectParam("ScreenParams", new float2(Width, Height));
+            //(re)create depth tex and fbo
+            if (_isTexInitialized)
+            {
+                RC.RemoveTextureHandle(_texHandle);
+                _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+            } 
+
+            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
+            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
+
+            _isTexInitialized = true;
+
         }
 
         private SceneContainer CreateGui()

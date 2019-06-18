@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
@@ -1009,6 +1009,14 @@ namespace Fusee.Engine.Core
             return _rci.CreateWritableTexture(width, height, textureFormat);
         }
 
+        /// <summary>
+        /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
+        /// </summary>
+        /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>
+        public void RemoveTextureHandle(ITextureHandle textureHandle)
+        {
+            _rci.RemoveTextureHandle(textureHandle);
+        }
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
