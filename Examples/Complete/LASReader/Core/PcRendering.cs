@@ -236,10 +236,10 @@ namespace Fusee.Examples.PcRendering.Core
             {
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
-            } 
 
-            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
-            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
+                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
+                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
+            }          
 
             _isTexInitialized = true;
 

@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
     <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
@@ -10,6 +10,24 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\PointCloud.frag" />
+    <None Remove="Assets\PointCloud.vert" />
+    <None Remove="Assets\PointDepth.frag" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\PointCloud.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\PointCloud.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Assets\PointDepth.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />

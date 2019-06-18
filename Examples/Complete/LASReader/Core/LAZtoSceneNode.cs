@@ -11,75 +11,11 @@ using System.Linq;
 
 namespace Fusee.Examples.PcRendering.Core
 {
-
-    internal struct LAZPointType
-    {
-        public double3 Position;
-        public float3 Color;
-        public ushort Intensity;
-    }
-
-    internal class MyPointAcessor : PointAccessor<LAZPointType>
-    {
-        public override bool HasPositionFloat3_64 => true;
-        public override bool HasColorFloat3_32 => true;
-        public override bool HasIntensityUInt_16 => true;
-
-        public override void SetColorFloat3_32(ref LAZPointType point, float3 val)
-        {
-            point.Color = val;
-        }
-
-        public override ref float3 GetColorFloat3_32(ref LAZPointType point)
-        {
-            return ref point.Color;
-        }
-
-        public override void SetPositionFloat3_64(ref LAZPointType point, double3 val)
-        {
-            point.Position = val;
-        }
-
-        public override ref double3 GetPositionFloat3_64(ref LAZPointType point)
-        {
-            return ref point.Position;
-        }
-
-        public override ref ushort GetIntensityUInt_16(ref LAZPointType point)
-        {
-            return ref point.Intensity;
-        }
-
-        public override void SetIntensityUInt_16(ref LAZPointType point, ushort val)
-        {
-            point.Intensity = val;
-        }
-    }
-
-    internal class LAZPointcloud : IPointcloud<LAZPointType>
-    {
-        public IMeta MetaInfo { get; private set; }
-
-        private readonly LAZPointType[] _points;
-
-        public Span<LAZPointType> Points => new Span<LAZPointType>(_points);
-
-        public PointAccessor<LAZPointType> Pa { get; private set; }
-
-        public LAZPointcloud(int pntCnt)
-        {
-            var myPointAccessor = new MyPointAcessor();
-            Pa = myPointAccessor;
-
-            _points = new LAZPointType[pntCnt];
-        }
-    }
-
     public static class LAZtoSceneNode
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.PARABOLID;
-        public static ColorMode ColorMode = ColorMode.POINT;
+        public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 20;
         public static float4 SingleColor = new float4(1, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
@@ -232,6 +168,69 @@ namespace Fusee.Examples.PcRendering.Core
             {
                 yield return locations.GetRange(i, M.Min(nSize, locations.Count - i));
             }
+        }
+    }
+
+    internal struct LAZPointType
+    {
+        public double3 Position;
+        public float3 Color;
+        public ushort Intensity;
+    }
+
+    internal class MyPointAcessor : PointAccessor<LAZPointType>
+    {
+        public override bool HasPositionFloat3_64 => true;
+        public override bool HasColorFloat3_32 => true;
+        public override bool HasIntensityUInt_16 => true;
+
+        public override void SetColorFloat3_32(ref LAZPointType point, float3 val)
+        {
+            point.Color = val;
+        }
+
+        public override ref float3 GetColorFloat3_32(ref LAZPointType point)
+        {
+            return ref point.Color;
+        }
+
+        public override void SetPositionFloat3_64(ref LAZPointType point, double3 val)
+        {
+            point.Position = val;
+        }
+
+        public override ref double3 GetPositionFloat3_64(ref LAZPointType point)
+        {
+            return ref point.Position;
+        }
+
+        public override ref ushort GetIntensityUInt_16(ref LAZPointType point)
+        {
+            return ref point.Intensity;
+        }
+
+        public override void SetIntensityUInt_16(ref LAZPointType point, ushort val)
+        {
+            point.Intensity = val;
+        }
+    }
+
+    internal class LAZPointcloud : IPointcloud<LAZPointType>
+    {
+        public IMeta MetaInfo { get; private set; }
+
+        private readonly LAZPointType[] _points;
+
+        public Span<LAZPointType> Points => new Span<LAZPointType>(_points);
+
+        public PointAccessor<LAZPointType> Pa { get; private set; }
+
+        public LAZPointcloud(int pntCnt)
+        {
+            var myPointAccessor = new MyPointAcessor();
+            Pa = myPointAccessor;
+
+            _points = new LAZPointType[pntCnt];
         }
     }
 }

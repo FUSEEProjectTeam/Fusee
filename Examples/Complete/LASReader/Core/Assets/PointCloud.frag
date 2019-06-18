@@ -205,8 +205,9 @@ void main(void)
 			vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
 			float z = texture2D(DepthTex, uv).x;
 			float linearDepth = LinearizeDepth(z);
+
 			if(linearDepth > 0.1)
-				oColor *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);				
+				oColor.xyz *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);
 			
 			break;
 		}
