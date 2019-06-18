@@ -2,7 +2,6 @@
 
 uniform mat4 FUSEE_P;
 uniform int PointShape;
-uniform vec2 ClipPlaneDist;
 
 in vec4 vViewPos;
 in vec4 vClipPos;

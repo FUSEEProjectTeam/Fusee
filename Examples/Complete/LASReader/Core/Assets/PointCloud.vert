@@ -2,6 +2,8 @@
 
 uniform vec2 ScreenParams;
 uniform int PointSize;
+uniform int PointShape;
+uniform mat4 FUSEE_ITMV;
 uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_P;
@@ -22,6 +24,7 @@ in vec3 fuColor;
 void main(void)
 {	
 	vColor = fuColor;
+	//vIntensity = intensity;
 
 	vClipPos = FUSEE_MVP * vec4(fuVertex.xyz, 1.0);		
 	vViewPos = FUSEE_V * FUSEE_M * vec4(fuVertex.xyz, 1.0);
@@ -31,15 +34,16 @@ void main(void)
 	float projFactor = ((1.0 / tan(fov / 2.0))/ -vViewPos.z)* ScreenParams.y / 2.0;
 	vWorldSpacePointRad = PointSize / projFactor;	
 
-	vNormal = fuNormal;
+	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
 
-	float pSize = round(PointSize / vClipPos.w);
+	float pSize = round(PointSize / vClipPos.w);	 
 
-	if(pSize < 1)
-		pSize = 1;
-	if(pSize > PointSize)
-		pSize = PointSize;
+	clamp(pSize, 1, PointSize);
 
-	gl_PointSize = pSize; //OpenGL only
+	if(PointShape == 0 || PointShape == 1)
+		gl_PointSize = pSize;
+	else
+		gl_PointSize = PointSize;
+
 	gl_Position = vClipPos;	
 }

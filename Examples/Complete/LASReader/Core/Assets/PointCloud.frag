@@ -1,6 +1,8 @@
 #version 330 core
 
 uniform mat4 FUSEE_P;
+uniform mat4 FUSEE_V;
+uniform mat4 FUSEE_M;
 
 uniform int PointShape;
 uniform int ColorMode;
@@ -16,12 +18,13 @@ uniform float EDLStrength;
 uniform int EDLNeighbourPixels;
 uniform sampler2D DepthTex;
 
-in vec3 vColor;
+in vec4 vColor;
 in vec3 vNormal;
 in vec4 vViewPos;
 in vec4 vClipPos;
 in vec4 vWorldPos;
 in float vWorldSpacePointRad;
+in vec4 vIntensity;
 out vec4 oColor;
 
 float LinearizeDepth(float depth) 
@@ -155,7 +158,7 @@ void main(void)
 	{
 		case 0: // default = point cloud rgb
 			default:
-			oColor = vec4(vColor,1.0); //vColor = vertex color
+			oColor = vColor; //vColor = vertex color
 		break;
 		case 1:
 			oColor = Color; //one color for all points (uniform)
@@ -168,20 +171,25 @@ void main(void)
 			break;
 		case 4:
 			oColor = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);
-			break;		
+			break;
+		case 5:
+			oColor = vIntensity;
+		break;
 	}
 
 	vec3 normalDir = normalize(vNormal);
 	
-	//vec3 worldSpaceCameraPos = invView translation column
+	mat4 invMv = inverse(FUSEE_V * FUSEE_M);
+	vec3 worldSpaceCameraPos = invMv[3].xyz;
+	vec3 worldSpaceLightPos = worldSpaceCameraPos;
 
-	vec3 viewDir = normalize(-vViewPos.xyz);
-	vec3 lightDir = normalize(vWorldPos.xyz - vViewPos.xyz);
-	vec3 halfwayDir = normalize(lightDir + viewDir);
+	vec3 viewDir = normalize(worldSpaceCameraPos.xyz - vWorldPos.xyz);
+	vec3 lightDir = normalize( vec3(0, 0,-1f));
+	vec3 halfwayDir = reflect(-lightDir, normalDir);
 
-	vec4 diffuseReflection = vec4((1.0,1.0,1.0) * oColor.rgb * max(0.0, dot(normalDir, lightDir)),1); //Diffuse component
+	float intensityDiff = max(dot(normalDir, lightDir), 0.0);
 
-	float intensityDiff = max(0.0, dot(normalDir, lightDir));
+	vec4 diffuseReflection = vec4((1.0,1.0,1.0) * oColor.rgb * intensityDiff, 1); //Diffuse component	
 
 	vec4 specularReflection = vec4(0, 0, 0, 1);
 
@@ -198,7 +206,8 @@ void main(void)
 			float z = texture2D(DepthTex, uv).x;
 			float linearDepth = LinearizeDepth(z);
 			if(linearDepth > 0.1)
-				oColor *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);						
+				oColor *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);				
+			
 			break;
 		}
 		case 2: //diffuse

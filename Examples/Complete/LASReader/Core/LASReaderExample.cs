@@ -51,6 +51,11 @@ namespace Fusee.Examples.LASReaderExample.Core
         private GamePadDevice _gamePad;
 
         private float3 _cameraPos;
+        private ITextureHandle _texHandle;
+        private SceneNodeContainer _pc;
+
+        private ShaderEffect _depthPassEf;
+        private ShaderEffect _colorPassEf;
 
         // Init is called on startup. 
         public override void Init()
@@ -81,9 +86,11 @@ namespace Fusee.Examples.LASReaderExample.Core
                 Children = new List<SceneNodeContainer>()
             };
 
-            _scene.Children.Add(LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", LAZtoSceneNode.StandardEffect(new float2(Width, Height))));
+            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
+            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar));
 
-            var conv = new ConvertSceneGraph();
+            _pc = LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", _depthPassEf);
+            _scene.Children.Add(_pc);            
 
             var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             _scene.Children[0].Components.Insert(0, pc);
@@ -96,10 +103,13 @@ namespace Fusee.Examples.LASReaderExample.Core
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
+            //create depth tex and fbo
+            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);            
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _guiRenderer = new SceneRenderer(_gui);           
         }
 
 
@@ -200,14 +210,27 @@ namespace Fusee.Examples.LASReaderExample.Core
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            // Tick any animations and Render the scene loaded in Init()
-            _sceneRenderer.Animate();
+
+            //Render Depth-only pass
+            _pc.GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+            _sceneRenderer.Render(RC, _texHandle);
+            
+            //Render color pass
+            _pc.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;            
             _sceneRenderer.Render(RC);
+
+            //Render GUI
             _sih.View = RC.View;
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
+        }
+
+        // Is called when the window was resized
+        public override void Resize(ResizeEventArgs e)
+        {
+            _depthPassEf.SetEffectParam("ScreenParams", new float2(Width, Height));
         }
 
         private SceneContainer CreateGui()

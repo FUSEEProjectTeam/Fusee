@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportHeight { get; private set; }
 
-        private ShaderProgram _currentShader;
+        public ShaderProgram _currentShader { get; private set; }
         private readonly MatrixParamNames _currentShaderParams;
         private ShaderEffect _currentShaderEffect;
 
@@ -1021,6 +1021,12 @@ namespace Fusee.Engine.Core
             _rci.SetShaderParamTexture(param, textureHandle);
         }
 
+        //  // TEXHANDLE_BYPASS
+        public void SetShaderParamTextureHandle(IShaderParam param, ITextureHandle textureHandle)
+        {
+            _rci.SetShaderParamTexture(param, textureHandle);
+        }
+
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
@@ -1154,6 +1160,7 @@ namespace Fusee.Engine.Core
             }
 
         }
+        
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
@@ -1295,6 +1302,7 @@ namespace Fusee.Engine.Core
 
                 foreach (var paramNew in shaderParamInfos)
                 {
+                    var paramNew_ = paramNew;   // TEXHANDLE_BYPASS
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
@@ -1322,18 +1330,24 @@ namespace Fusee.Engine.Core
                         // ReSharper disable UseMethodIsInstanceOfType
                         // ReSharper disable OperatorIsCanBeUsed
                         var initValType = initValue.GetType();
-                        if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
+
+                        if (typeof(ITextureHandle).IsAssignableFrom(initValType) && paramNew.Type == typeof(ITexture))  // TEXHANDLE_BYPASS
+                        {
+                            paramNew_.Type = typeof(ITextureHandle);
+                        }
+
+                        if (!(((paramNew_.Type == typeof(int) || paramNew_.Type == typeof(float))
                                   &&
                                   (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
                                 )
                                 ||
-                                (paramNew.Type.IsAssignableFrom(initValType))
+                                (paramNew_.Type.IsAssignableFrom(initValType))
                              ) 
-                            && !paramNew.Name.Contains("BONES")
+                            && !paramNew_.Name.Contains("BONES")
                         )
                         {
-                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
-                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew_.Type.ToString() + " " + paramNew_.Name +
+                                                " was defined as " + initValType.ToString() + " " + paramNew_.Name + " during initialization (different types).");
                         }
                         // ReSharper restore OperatorIsCanBeUsed
                         // ReSharper restore UseMethodIsInstanceOfType
@@ -1341,15 +1355,15 @@ namespace Fusee.Engine.Core
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
                         object paramExistingTmp;
-                        if (sFxParam.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
+                        if (sFxParam.Parameters.TryGetValue(paramNew_.Name, out paramExistingTmp))
                         {
                             paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
-                            if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                            if (paramExisting.Info.Size != paramNew_.Size || paramExisting.Info.Type != paramNew_.Type)
                             {
                                 // This should never happen due to the previous error check. Check it anyway...
                                 throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
-                                                    paramNew.Name +
+                                                    paramNew_.Name +
                                                     " already defined with a different type in effect pass " +
                                                    paramExisting.ShaderInxs[0]);
                             }
@@ -1360,18 +1374,18 @@ namespace Fusee.Engine.Core
                         {
                             paramExisting = new EffectParam()
                             {
-                                Info = paramNew,
+                                Info = paramNew_,
                                 ShaderInxs = new List<int>(new int[] { i }),
                                 Value = initValue
                             };
-                            sFxParam.Parameters.Add(paramNew.Name, paramExisting);
+                            sFxParam.Parameters.Add(paramNew_.Name, paramExisting);
                         }
                         sFxParam.ParamsPerPass[i].Add(paramExisting);
                     }
                     else
                     {
                         // This should not happen due to shader compiler optimization
-                        Diagnostics.Log($"Warning: uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
+                        Diagnostics.Log($"Warning: uniform variable {paramNew_.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
                     }
                 }
             }
@@ -1596,11 +1610,11 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(Texture texture)
+        public void SetRenderTarget(ITextureHandle textureHandle = null)
         {
-            if (texture != null)
+            if (textureHandle != null)
             {
-                ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+                //ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
                 _rci.SetRenderTarget(textureHandle);
             }
             else
@@ -1720,6 +1734,10 @@ namespace Fusee.Engine.Core
             else if (param.Info.Type == typeof(ITexture))
             {
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+            }
+            else if (param.Info.Type == typeof(ITextureHandle))  //  // TEXHANDLE_BYPASS
+            {
+                SetShaderParamTextureHandle(param.Info.Handle, (ITextureHandle)param.Value);
             }
         }
         /// <summary>

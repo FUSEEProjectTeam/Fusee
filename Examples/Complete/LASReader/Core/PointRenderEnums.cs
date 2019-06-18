@@ -19,15 +19,16 @@ namespace Fusee.Examples.LASReaderExample.Core
     {
         POINT,
         SINGLE,
-        NORMAL,        
+        NORMAL,
         WEIGHT,
-        DEPTH
+        DEPTH,
+        INTENSITY
     }
 
     public enum Lighting
     {
         UNLIT = 0,
-        EDL =1 ,
+        EDL = 1,
         DIFFUSE = 2,
         BLINN_PHONG = 3
     }

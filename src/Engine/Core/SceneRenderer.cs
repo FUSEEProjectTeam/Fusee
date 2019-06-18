@@ -483,11 +483,12 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>
-        public void Render(RenderContext rc)
+        /// <param name="texHandle">Optional parameter: set this if you want to render to a texture that has the given handle.</param>
+        public void Render(RenderContext rc, ITextureHandle texHandle = null)
         {
             SetContext(rc);
 
-            rc.SetRenderTarget(null);
+            rc.SetRenderTarget(texHandle);
             Traverse(_sc.Children);
         }
 

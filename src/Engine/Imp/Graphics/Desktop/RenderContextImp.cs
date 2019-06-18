@@ -412,7 +412,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
 
-            return new TextureHandle { Handle = textureHandle, FboHandle = fboHandle };
+            return new TextureHandle { Handle = textureHandle, FboHandle = fboHandle, TextureWidth = width, TextureHeight = height};
         }
 
         private static TextureHandle CreateCubeMapFramebuffer(int width, int height)
