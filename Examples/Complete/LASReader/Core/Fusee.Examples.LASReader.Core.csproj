@@ -17,7 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\LASlibNet\LASlibNet.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
   </ItemGroup>
 
   <ItemGroup>

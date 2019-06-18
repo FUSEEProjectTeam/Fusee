@@ -1,14 +1,80 @@
 ﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.LASReader;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.Common;
 using Fusee.Serialization;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using LASlibNet;
 
 namespace Fusee.Examples.LASReaderExample.Core
 {
+
+    internal struct LAZPointType
+    {
+        public double3 Position;
+        public float3 Color;
+        public ushort Intensity;
+    }
+
+    internal class MyPointAcessor : PointAccessor<LAZPointType>
+    {
+        public override bool HasPositionFloat3_64 => true;
+        public override bool HasColorFloat3_32 => true;
+        public override bool HasIntensityUInt_16 => true;
+
+        public override void SetColorFloat3_32(ref LAZPointType point, float3 val)
+        {
+            point.Color = val;
+        }
+
+        public override ref float3 GetColorFloat3_32(ref LAZPointType point)
+        {
+            return ref point.Color;
+        }
+
+        public override void SetPositionFloat3_64(ref LAZPointType point, double3 val)
+        {
+            point.Position = val;
+        }
+
+        public override ref double3 GetPositionFloat3_64(ref LAZPointType point)
+        {
+            return ref point.Position;
+        }
+
+        public override ref ushort GetIntensityUInt_16(ref LAZPointType point)
+        {
+            return ref point.Intensity;
+        }
+
+        public override void SetIntensityUInt_16(ref LAZPointType point, ushort val)
+        {
+            point.Intensity = val;
+        }
+    }
+
+    internal class LAZPointcloud : IPointcloud<LAZPointType>
+    {
+        public IMeta MetaInfo { get; private set; }
+
+        private readonly LAZPointType[] _points;
+
+        public Span<LAZPointType> Points => new Span<LAZPointType>(_points);
+
+        public PointAccessor<LAZPointType> Pa { get; private set; }
+
+        public LAZPointcloud(int pntCnt)
+        {
+            var myPointAccessor = new MyPointAcessor();
+            Pa = myPointAccessor;
+
+            _points = new LAZPointType[pntCnt];
+        }
+    }
+
     public static class LAZtoSceneNode
     {
         public static PointShape Shape = PointShape.PARABOLID;
@@ -24,13 +90,17 @@ namespace Fusee.Examples.LASReaderExample.Core
             return (uint)((b << 16) | (g << 8) | (r << 0));
         }
 
-        public static SceneNodeContainer FromLAZ(string fileName, ShaderEffect effect)
+        public static SceneNodeContainer FromLAZ(string pathToPc, ShaderEffect effect)
         {
-            var lazReader = new LASReader(fileName);
-            var points = lazReader.Points.ToList();
+            var reader = new LASPointReader(pathToPc);
+            var pointCnt = (MetaInfo)reader.MetaInfo;
+            var myPC = new LAZPointcloud((int)pointCnt.PointCnt);
+            for (var i = 0; i < myPC.Points.Length; i++)
+                if (!reader.ReadNextPoint(ref myPC.Points[i], myPC.Pa)) break;
 
-            var allPoints = points.Select(pt => new float4((float)pt.X, (float)pt.Z, (float)pt.Y, pt.intensity)).ToList();
-            var allColors = points.Select(pt => new float3(pt.R / 256, pt.G / 256, pt.B / 256)).ToList();
+            var allPoints = myPC.Points.ToArray().Select(pt => new float3((float)pt.Position.x, (float)pt.Position.z, (float)pt.Position.y)).ToList();
+            var allIntensities = myPC.Points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            var allColors = myPC.Points.ToArray().Select(pt => new float3(pt.Color.r / 256, pt.Color.g / 256, pt.Color.b / 256)).ToList();
 
             var allMeshes = new List<Mesh>();
 
@@ -38,6 +108,7 @@ namespace Fusee.Examples.LASReaderExample.Core
 
             var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
             var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
+            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
 
             var returnNodeContainer = new SceneNodeContainer
             {
@@ -56,8 +127,6 @@ namespace Fusee.Examples.LASReaderExample.Core
                 }
             };
 
-            var maxIntensityVal = 1 << 12; // 12 bit
-
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
                 var pointSplit = allPointsSplitted[i];
@@ -68,8 +137,8 @@ namespace Fusee.Examples.LASReaderExample.Core
                     Vertices = pointSplit.Select(pt => pt.xyz).ToArray(),
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.POINT,
-                    Normals = pointSplit.Select(pt => new float3(pt.w / maxIntensityVal, pt.w / maxIntensityVal, pt.w / maxIntensityVal)).ToArray(),
-                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray()
+                    Normals = new float3[pointSplit.Count],
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),                    
                 };
 
                 returnNodeContainer.Components.Add(currentMesh);

@@ -176,6 +176,7 @@ namespace Fusee.LASReader
                         HasUserData = false
                     };
                 case 2:
+                case 3:
                     return new PointFormat
                     {
                         HasClassification = true,
