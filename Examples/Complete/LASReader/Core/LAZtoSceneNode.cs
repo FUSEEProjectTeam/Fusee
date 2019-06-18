@@ -77,8 +77,9 @@ namespace Fusee.Examples.PcRendering.Core
 
     public static class LAZtoSceneNode
     {
+        public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.PARABOLID;
-        public static ColorMode ColorMode = ColorMode.SINGLE;
+        public static ColorMode ColorMode = ColorMode.POINT;
         public static int Size = 20;
         public static float4 SingleColor = new float4(1, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
@@ -176,7 +177,7 @@ namespace Fusee.Examples.PcRendering.Core
             });
         }
 
-        internal static ShaderEffect StandardEffect(float2 screenParams, float2 clipPlaneDist)
+        internal static ShaderEffect StandardEffect(float2 screenParams, float2 clipPlaneDist, ITextureHandle depthTexHandle)
         {
             return new ShaderEffect(new[]
             {
@@ -207,7 +208,8 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
                 new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode},
 
-                new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting.EDL},
+                new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting},
+                new EffectParameterDeclaration{Name = "DepthTex", Value = depthTexHandle},
                 new EffectParameterDeclaration{Name = "EDLStrength", Value = EdlStrength},
                 new EffectParameterDeclaration{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},

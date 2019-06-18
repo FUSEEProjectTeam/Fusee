@@ -85,8 +85,7 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };
 
-            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
-            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar));
+            
 
             _pc = LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", _depthPassEf);
             _scene.Children.Add(_pc);            
@@ -103,7 +102,10 @@ namespace Fusee.Examples.PcRendering.Core
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             //create depth tex and fbo
-            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);            
+            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+
+            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
+            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -220,7 +222,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             //Render GUI
             _sih.View = RC.View;
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
