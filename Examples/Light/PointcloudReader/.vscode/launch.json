@@ -1,0 +1,30 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug in FUSEE Player",
+            "type": "coreclr",
+            "request": "launch", 
+            "preLaunchTask": "build",
+            "program": "${env:FuseeRoot}/bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.dll",
+            "args": ["${workspaceRoot}/bin/Debug/netcoreapp2.2/PointcloudReader.dll"],
+            "cwd": "${env:FuseeRoot}bin/Debug/Player/Desktop",
+            "stopAtEntry": false,
+            "console": "externalTerminal"
+        },
+        {
+            "name": "Start in FUSEE Web Player",
+            "type": "clr",
+            "request": "launch", 
+            "preLaunchTask": "Publish FUSEE Web app",
+            "program": "${env:FuseeRoot}/bin/Debug/Tools/fusee.exe",
+            "args": ["server", "${workspaceRoot}/pub/Web"],
+            "cwd": ".",
+            "stopAtEntry": false,
+            "console": "externalTerminal"           
+        }
+    ]
+}
