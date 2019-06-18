@@ -1,19 +1,16 @@
 ﻿using System.IO;
-using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
 using System;
-using System.Diagnostics;
 
-namespace Fusee.Examples.LASReaderExample.Desktop
+namespace Fusee.Examples.PcRendering.Desktop
 {
-    public class LASReaderExample
+    public class PcRendering
     {
         public static void Main()
         {
@@ -49,7 +46,7 @@ namespace Fusee.Examples.LASReaderExample.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.LASReaderExample();
+            var app = new Core.PcRendering();
             
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);

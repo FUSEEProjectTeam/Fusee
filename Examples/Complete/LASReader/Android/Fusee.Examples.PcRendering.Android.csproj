@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.LASReader.Android</RootNamespace>
-    <AssemblyName>Fusee.Examples.LASReader.Android</AssemblyName>
+    <RootNamespace>Fusee.Examples.PcRendering.Android</RootNamespace>
+    <AssemblyName>Fusee.Examples.PcRendering.Android</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
     <!-- Build into main FUSEE bin directory -->
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">$(FuseeRoot)</FuseeBuildRoot>
@@ -27,7 +27,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(BaseOutputPath)\Examples\LASReader\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -39,7 +39,7 @@
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkSkip />
     <EmbedAssembliesIntoApk>False</EmbedAssembliesIntoApk>
-    <BundleAssemblies>False</BundleAssemblies>
+    <BundleAssemblies>false</BundleAssemblies>
     <AndroidCreatePackagePerAbi>False</AndroidCreatePackagePerAbi>
     <AndroidSupportedAbis>armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
@@ -47,11 +47,13 @@
     <Debugger>Xamarin</Debugger>
     <AndroidEnableMultiDex>False</AndroidEnableMultiDex>
     <DevInstrumentationEnabled>True</DevInstrumentationEnabled>
+    <AotAssemblies>false</AotAssemblies>
+    <EnableLLVM>false</EnableLLVM>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(BaseOutputPath)\Examples\LASReader\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Android</OutputPath>
     <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
@@ -103,8 +105,9 @@
     <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
       <Name>Fusee.Xene</Name>
     </Reference>
-    <ProjectReference Include="..\Core\Fusee.Examples.LASReader.Core.csproj">
-      <Name>Fusee.Examples.LASReader.Core</Name>
+    <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj">
+      <Name>Fusee.Examples.PcRendering.Core</Name>
+      <Project>{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}</Project>
     </ProjectReference>
   </ItemGroup>
   <!-- Assets -->

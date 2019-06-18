@@ -7,15 +7,14 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
-namespace Fusee.Examples.LASReaderExample.Core
+namespace Fusee.Examples.PcRendering.Core
 {
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
-    public class LASReaderExample : RenderCanvas
+    public class PcRendering : RenderCanvas
     {
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;

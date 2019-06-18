@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Fusee.Examples.LASReaderExample.Core
+namespace Fusee.Examples.PcRendering.Core
 {
 
     public enum PointShape

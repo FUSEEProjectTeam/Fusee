@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Examples.LASReaderExample.Core
+namespace Fusee.Examples.PcRendering.Core
 {
 
     internal struct LAZPointType

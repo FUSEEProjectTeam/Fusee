@@ -449,17 +449,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reader", "Reader", "{BBBFE3
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.LASReader", "src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj", "{715F0EB6-146A-41DF-9180-BCBDAEE168B4}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LASReader", "LASReader", "{74D585F2-3C49-4ED1-A0BF-2973F21ABDED}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PcRendering", "PcRendering", "{74D585F2-3C49-4ED1-A0BF-2973F21ABDED}"
 	ProjectSection(SolutionItems) = preProject
 		Examples\Complete\LASReader\Directory.Build.props = Examples\Complete\LASReader\Directory.Build.props
 		Examples\Complete\LASReader\Directory.Build.targets = Examples\Complete\LASReader\Directory.Build.targets
 	EndProjectSection
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.LASReader.Desktop", "Examples\Complete\LASReader\Desktop\Fusee.Examples.LASReader.Desktop.csproj", "{C2811943-EA22-4152-918C-6061A076C56C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.Desktop", "Examples\Complete\LASReader\Desktop\Fusee.Examples.PcRendering.Desktop.csproj", "{C2811943-EA22-4152-918C-6061A076C56C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.LASReader.Core", "Examples\Complete\LASReader\Core\Fusee.Examples.LASReader.Core.csproj", "{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.Core", "Examples\Complete\LASReader\Core\Fusee.Examples.PcRendering.Core.csproj", "{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.LASReader.Android", "Examples\Complete\LASReader\Android\Fusee.Examples.LASReader.Android.csproj", "{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.PcRendering.Android", "Examples\Complete\LASReader\Android\Fusee.Examples.PcRendering.Android.csproj", "{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

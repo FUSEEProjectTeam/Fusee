@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.LASReader.Desktop</RootNamespace>
-    <PackageId>Fusee.Examples.LASReader.Desktop</PackageId>
+    <RootNamespace>Fusee.Examples.PcRendering.Desktop</RootNamespace>
+    <PackageId>Fusee.Examples.PcRendering.Desktop</PackageId>
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
@@ -11,17 +11,16 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\LASReader\Desktop\</OutputPath>
-    <StartupObject>Fusee.Examples.LASReaderExample.Desktop.LASReaderExample</StartupObject>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Desktop\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.LASReader.Core.csproj">
-      <Name>Fusee.Examples.LASReader.Core</Name>
+    <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj">
+      <Name>Fusee.Examples.PcRendering.Core</Name>
     </ProjectReference>
   </ItemGroup>
 

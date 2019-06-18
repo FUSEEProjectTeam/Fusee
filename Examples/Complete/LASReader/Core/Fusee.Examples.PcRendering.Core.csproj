@@ -1,25 +1,20 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.LASReader.Core</RootNamespace>
-    <PackageId>Fusee.Examples.LASReader.Core</PackageId>
+    <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
+    <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\LASReader\Core\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Core\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\PointPixelShader.frag" />
-    <None Remove="Assets\PointVertexShader.vert" />
-  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
     <ProjectReference Include="..\..\..\..\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
-  </ItemGroup>
+  </ItemGroup>  
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
