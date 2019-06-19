@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Engine.Common;
@@ -249,7 +249,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Gets the value currently present at the given axis.
+        ///     Gets the value currently present at the given axis. In respect to the axis deadzone.
         /// </summary>
         /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
         /// <returns>The value currently set on the axis.</returns>
@@ -259,15 +259,69 @@ namespace Fusee.Engine.Core
         ///  </remarks>
         public float GetAxis(int axisId)
         {
+            float value = GetAxisRaw(axisId);
+
+            if (_axes.ContainsKey(axisId))
+            {
+                if (System.Math.Abs(value) >= _axes[axisId].Deadzone)
+                {
+                    value -= _axes[axisId].Deadzone * System.Math.Sign(value);
+                }
+                else
+                {
+                    value = 0;
+                }
+            }
+
+            return value;
+        }        
+        
+        /// <summary>
+        ///     Gets the value currently present at the given axis. Without considering the deadzone.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <returns>The value currently set on the axis.</returns>
+        /// <remarks>
+        ///     See <see cref="AxisDescription"/> to get information about how to interpret the
+        ///     values returned by a given axis.
+        ///  </remarks>
+        public float GetAxisRaw(int axisId)
+        {
             if (!_isConnected)
                 return 0;
 
             float value;
+
             if (TryGetPolledAxis(axisId, out value))
                 return value;
 
             if (_axesToListen.TryGetValue(axisId, out value))
                 return value;
+
+            throw new InvalidOperationException($"Axis Id {axisId} not supported by device {_inpDevImp.Desc}.");
+        }
+
+        /// <summary>
+        /// Sets the deadzone for the given axis.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <param name="value"></param>
+        public void SetAxisDeadzone(int axisId, float value)
+        {
+            AxisDescription desc = GetAxisDescription(axisId);
+            desc.Deadzone = value;
+            _axes[axisId] = desc;
+        }
+
+        /// <summary>
+        /// Gets the value currently set for the axis deadzone.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <returns></returns>
+        public float GetAxisDeadzone(int axisId)
+        {
+            if (_axes.ContainsKey(axisId))
+                return _axes[axisId].Deadzone;
 
             throw new InvalidOperationException($"Axis Id {axisId} not supported by device {_inpDevImp.Desc}.");
         }
