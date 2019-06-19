@@ -59,28 +59,8 @@ namespace Fusee.Xene
         /// </summary>
         public static float4x4 GetGlobalRotation(this SceneNodeContainer snc)
         {
-            var res = GetGlobalTransformation(snc);
-            res.M14 = 0;
-            res.M24 = 0;
-            res.M34 = 0;
-
-            var scaleX = res.Column0.Length;
-            var scaleY = res.Column1.Length;
-            var scaleZ = res.Column2.Length;
-
-            res.M11 /= scaleX;
-            res.M21 /= scaleX;
-            res.M31 /= scaleX;
-
-            res.M12 /= scaleY;
-            res.M22 /= scaleY;
-            res.M32 /= scaleY;
-
-            res.M13 /= scaleZ;
-            res.M23 /= scaleZ;
-            res.M33 /= scaleZ;
-
-            return res;
+            var transform = GetGlobalTransformation(snc);
+            return transform.RotationComponent();
         }
 
         /// <summary>
@@ -89,7 +69,7 @@ namespace Fusee.Xene
         public static float3 GetGlobalTranslation(this SceneNodeContainer snc)
         {
             var transform = GetGlobalTransformation(snc);
-            return new float3(transform.M14,transform.M24, transform.M34);
+            return transform.Translation();
         }
 
         /// <summary>
@@ -98,11 +78,7 @@ namespace Fusee.Xene
         public static float3 GetGlobalScale(this SceneNodeContainer snc)
         {
             var transform = GetGlobalTransformation(snc);
-            var scaleX = transform.Column0.Length;
-            var scaleY = transform.Column1.Length;
-            var scaleZ = transform.Column2.Length;
-
-            return new float3(scaleX, scaleY, scaleZ);
+            return transform.Scale();
         }
 
         private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res)
@@ -335,6 +311,86 @@ namespace Fusee.Xene
             }
 
             return sc;
+        }
+
+        /// <summary>
+        /// Translate this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translation">Translation amount as float3.</param>
+        public static void Translate(this TransformComponent tc, float3 xyz)
+        {
+            tc.Translation += xyz;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translationMtx">Translation amount as represented in float4x4.</param>
+        public static void Translate(this TransformComponent tc, float4x4 translationMtx)
+        {
+            tc.Translation += translationMtx.Translation();
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="xyz">Rotation amount as float3.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, float3 xyz, Space space = Space.Model)
+        {
+            Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="quaternion">Rotation amount in Quaternion.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, Quaternion quaternion, Space space = Space.Model)
+        {
+            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="rotationMtx">Rotation amount as represented in float4x4.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
+        {
+            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+            var addRotationMtx = rotationMtx.RotationComponent();
+
+            if (space == Space.Model)
+            {
+                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * addRotationMtx);
+            }
+            else
+            {
+                var euler = float4x4.RotMatToEuler(currentRotationMtx);
+
+                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            }
+        }
+
+        /// <summary>
+        /// Reference space for rotation.
+        /// </summary>
+        public enum Space
+        {
+            /// <summary>
+            /// World space
+            /// </summary>
+            World,
+            /// <summary>
+            /// Model space
+            /// </summary>
+            Model
         }
     }
 }
