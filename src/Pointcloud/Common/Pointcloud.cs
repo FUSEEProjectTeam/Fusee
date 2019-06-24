@@ -853,7 +853,8 @@ namespace Fusee.Pointcloud.Common
     }
 
     /// <summary>
-    ///     A pointcloud consists of a point accessor which enables access to the points as well as some information about the point type.
+    ///     A pointcloud consists of a point accessor which enables access to the 
+    ///     as well as some information about the point type.
     ///     Furthermore the data itself as well as some meta information like offset information.
     /// </summary>   
     /// <typeparam name="TPoint">Point type</typeparam>

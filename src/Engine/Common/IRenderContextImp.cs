@@ -251,6 +251,12 @@ namespace Fusee.Engine.Common
         void RemoveTextureHandle(ITextureHandle textureHandle);
 
         /// <summary>
+        /// Sets the line width when drawing a mesh with primitive mode line
+        /// </summary>
+        /// <param name="width"></param>
+        void SetLineWidth(float width);
+
+        /// <summary>
         /// 
         /// </summary>
         /// <param name="texture"></param>

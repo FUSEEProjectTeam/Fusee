@@ -627,6 +627,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return paramList;
         }
 
+        public void SetLineWidth(float width)
+        {
+            GL.LineWidth(width);
+        }
+
         /// <summary>
         /// Sets a float shader parameter.
         /// </summary>
