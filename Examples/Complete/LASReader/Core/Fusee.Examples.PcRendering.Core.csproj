@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
     <PackageId>Fusee.Examples.PcRendering.Core</PackageId>

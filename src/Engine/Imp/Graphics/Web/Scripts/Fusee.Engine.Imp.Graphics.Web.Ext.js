@@ -1182,6 +1182,14 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         }
     );
 
+    $.Method({ Static: false, Public: true }, "RemoveTextureHandle",
+        new JSIL.MethodSignature(null, [$fuseeCommon.TypeRef("Fusee.Engine.Common.ITextureHandle")]),
+        function RemoveTextureHandle(texHandle) {
+
+            console.error("Not implemented!");           
+        }
+    );
+
     $debug = function (log_txt) {
         if (typeof window.console != 'undefined') {
             console.log(log_txt);

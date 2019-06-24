@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="..\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="..\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
+    <ProjectReference Include="..\src\Serialization\Fusee.Serialization.csproj" />
+  </ItemGroup>
+
+</Project>
