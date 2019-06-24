@@ -87,6 +87,14 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };           
 
+
+
+
+
+
+
+
+                       
             _pc = LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", _depthPassEf);
             _scene.Children.Add(_pc);            
 

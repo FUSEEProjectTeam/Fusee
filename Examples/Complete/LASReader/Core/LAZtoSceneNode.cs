@@ -4,6 +4,7 @@ using Fusee.Engine.Core;
 using Fusee.LASReader;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
+using Fusee.Pointcloud.OoCFileGen;
 using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
@@ -176,9 +177,10 @@ namespace Fusee.Examples.PcRendering.Core
         public double3 Position;
         public float3 Color;
         public ushort Intensity;
+        public int3 GridIndex;
     }
 
-    internal class MyPointAcessor : PointAccessor<LAZPointType>
+    internal class MyPointAcessor : GridPtAccessor<LAZPointType>
     {
         public override bool HasPositionFloat3_64 => true;
         public override bool HasColorFloat3_32 => true;
@@ -212,6 +214,16 @@ namespace Fusee.Examples.PcRendering.Core
         public override void SetIntensityUInt_16(ref LAZPointType point, ushort val)
         {
             point.Intensity = val;
+        }
+
+        public override ref int3 GetGridIdx(ref LAZPointType point)
+        {
+            return ref point.GridIndex;
+        }
+
+        public override void SetGridIdx(ref LAZPointType point, int3 val)
+        {
+            point.GridIndex = val;
         }
     }
 

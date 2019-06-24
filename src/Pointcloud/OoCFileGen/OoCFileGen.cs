@@ -31,7 +31,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
         }
 
-        public virtual void SetGridIndex(ref TPoint point, int3 val)
+        public virtual void SetGridIdx(ref TPoint point, int3 val)
         {
             throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
         }
@@ -83,7 +83,7 @@ namespace Fusee.Pointcloud.OoCFileGen
 
                 var cell = GridCells[indexX, indexY, indexZ];
                 cell.Payload.Add(point);
-                ptAccessor.SetGridIndex(ref point, new int3(indexX, indexY, indexZ));
+                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
             }
         }
 
@@ -146,7 +146,6 @@ namespace Fusee.Pointcloud.OoCFileGen
             Payload = payload;
         }
     }
-
 
     public class PtOctree<TCollection, TPoint> : IOctree<TPoint>
     {

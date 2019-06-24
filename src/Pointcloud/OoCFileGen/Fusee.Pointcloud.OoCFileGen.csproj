@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <ApplicationIcon />
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
