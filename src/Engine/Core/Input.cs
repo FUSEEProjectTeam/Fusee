@@ -122,7 +122,7 @@ namespace Fusee.Engine.Core
         /// This is an instance method. Use <see cref="GetDevice{TDevice}"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-       public TDevice GetInputDevice<TDevice>() where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().FirstOrDefault();
+        public TDevice GetInputDevice<TDevice>(int id = 0) where TDevice : InputDevice => _inputDevices.Values.OfType<TDevice>().ElementAtOrDefault(id) ;
         /// <summary>
         /// Gets the first input device of a certain type. Shortcut for
         /// <code>InputDevices.OfType&lt;TDevice&gt;().FirstOrDefault()</code>
@@ -133,7 +133,7 @@ namespace Fusee.Engine.Core
         /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an insatnce method 
         /// to the same functionality.
         /// </remarks>
-        public static TDevice GetDevice<TDevice>() where TDevice : InputDevice => Instance.GetInputDevice<TDevice>();
+        public static TDevice GetDevice<TDevice>(int deviceid = 0) where TDevice : InputDevice => Instance.GetInputDevice<TDevice>(deviceid);
 
         /// <summary>
         /// Retrieves the first mouse device (if present).
@@ -145,7 +145,7 @@ namespace Fusee.Engine.Core
         /// This is an instance property. Use <see cref="Mouse"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public MouseDevice MouseInput => GetInputDevice<MouseDevice>();
+        public MouseDevice MouseInput => GetInputDevice<MouseDevice>(0);
         /// <summary>
         /// Retrieves the first mouse device (if present).
         /// </summary>
@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core
         /// This is an instance property. Use <see cref="Keyboard"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public KeyboardDevice KeyboardInput => GetInputDevice<KeyboardDevice>();
+        public KeyboardDevice KeyboardInput => GetInputDevice<KeyboardDevice>(0);
         /// <summary>
         /// Retrieves the first keyboard device (if present).
         /// </summary>
@@ -191,7 +191,7 @@ namespace Fusee.Engine.Core
         /// This is an instance property. Use <see cref="Touch"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
-        public TouchDevice TouchInput => GetInputDevice<TouchDevice>();
+        public TouchDevice TouchInput => GetInputDevice<TouchDevice>(0);
         /// <summary>
         /// Retrieves the first touch device (if present).
         /// </summary>
