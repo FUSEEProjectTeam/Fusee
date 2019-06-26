@@ -196,7 +196,6 @@ namespace Fusee.Pointcloud.OoCFileGen
 
         public bool IsLeaf { get; internal set; }
 
-
         public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
         {
             Center = center;
@@ -358,7 +357,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             return child;
         }
 
-        public static IEnumerable<TPoint> GetPointsFromGrid<TPoint>(PtOctant<TPoint> octant)
+        public static IEnumerable<TPoint> GetPointsFromGrid(PtOctant<TPoint> octant)
         {
             foreach (var cell in octant.Grid.GridCells.Values)
             {
