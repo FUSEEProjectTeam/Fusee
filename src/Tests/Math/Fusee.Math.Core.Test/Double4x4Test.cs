@@ -179,6 +179,106 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new double4x4(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.Equal(0, actual[0, 0]);
+            Assert.Equal(1, actual[0, 1]);
+            Assert.Equal(2, actual[0, 2]);
+            Assert.Equal(3, actual[0, 3]);
+
+            Assert.Equal(4, actual[1, 0]);
+            Assert.Equal(5, actual[1, 1]);
+            Assert.Equal(6, actual[1, 2]);
+            Assert.Equal(7, actual[1, 3]);
+
+            Assert.Equal(8, actual[2, 0]);
+            Assert.Equal(9, actual[2, 1]);
+            Assert.Equal(10, actual[2, 2]);
+            Assert.Equal(11, actual[2, 3]);
+
+            Assert.Equal(12, actual[3, 0]);
+            Assert.Equal(13, actual[3, 1]);
+            Assert.Equal(14, actual[3, 2]);
+            Assert.Equal(15, actual[3, 3]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = double4x4.Zero;
+            actual[0, 0] = 0;
+            actual[0, 1] = 1;
+            actual[0, 2] = 2;
+            actual[0, 3] = 3;
+
+            actual[1, 0] = 4;
+            actual[1, 1] = 5;
+            actual[1, 2] = 6;
+            actual[1, 3] = 7;
+
+            actual[2, 0] = 8;
+            actual[2, 1] = 9;
+            actual[2, 2] = 10;
+            actual[2, 3] = 11;
+
+            actual[3, 0] = 12;
+            actual[3, 1] = 13;
+            actual[3, 2] = 14;
+            actual[3, 3] = 15;
+
+            Assert.Equal(0, actual[0, 0]);
+            Assert.Equal(1, actual[0, 1]);
+            Assert.Equal(2, actual[0, 2]);
+            Assert.Equal(3, actual[0, 3]);
+
+            Assert.Equal(4, actual[1, 0]);
+            Assert.Equal(5, actual[1, 1]);
+            Assert.Equal(6, actual[1, 2]);
+            Assert.Equal(7, actual[1, 3]);
+
+            Assert.Equal(8, actual[2, 0]);
+            Assert.Equal(9, actual[2, 1]);
+            Assert.Equal(10, actual[2, 2]);
+            Assert.Equal(11, actual[2, 3]);
+
+            Assert.Equal(12, actual[3, 0]);
+            Assert.Equal(13, actual[3, 1]);
+            Assert.Equal(14, actual[3, 2]);
+            Assert.Equal(15, actual[3, 3]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => double4x4.Zero[idx, idx]);
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var d4 = double4x4.Zero; d4[idx, idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 4, "Index 4,4 not eligible for a double4x4 type" };
+            yield return new object[] { 5, "Index 5,5 not eligible for a double4x4 type" };
+            yield return new object[] { -1, "Index -1,-1 not eligible for a double4x4 type" };
+        }
+
+        #endregion
+
         #region Methods
 
         #region CreateFromAxisAngle

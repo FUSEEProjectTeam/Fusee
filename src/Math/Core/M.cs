@@ -1,4 +1,7 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using static Fusee.Math.Core.Eigen;
 
 namespace Fusee.Math.Core
 {
@@ -23,7 +26,7 @@ namespace Fusee.Math.Core
         /// <param name="a">a.</param>
         /// <param name="b">b.</param>
         /// <returns>The minimum of a and b.</returns>
-        public static float Min(float a, float b) 
+        public static float Min(float a, float b)
         {
             return (a < b) ? a : b;
         }
@@ -191,12 +194,12 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Defines the value of Pi multiplied by two as a <see cref="System.Single"/>.
         /// </summary>
-        public const float TwoPi = 2 *Pi;
+        public const float TwoPi = 2 * Pi;
 
         /// <summary>
         /// Defines the value of Pi multiplied by 3 and divided by two as a <see cref="System.Single"/>.
         /// </summary>
-        public const float ThreePiOver2 = 3 *Pi / 2;
+        public const float ThreePiOver2 = 3 * Pi / 2;
 
         /// <summary>
         /// Defines the value of E as a <see cref="System.Single"/>.
@@ -251,7 +254,7 @@ namespace Fusee.Math.Core
         public static long NextPowerOfTwo(long n)
         {
             if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
-            return (long)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
+            return (long)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -262,7 +265,7 @@ namespace Fusee.Math.Core
         public static int NextPowerOfTwo(int n)
         {
             if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
-            return (int)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
+            return (int)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -273,7 +276,7 @@ namespace Fusee.Math.Core
         public static float NextPowerOfTwo(float n)
         {
             if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
-            return (float)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
+            return (float)System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -284,7 +287,7 @@ namespace Fusee.Math.Core
         public static double NextPowerOfTwo(double n)
         {
             if (n < 0) throw new ArgumentOutOfRangeException("n", "Must be positive.");
-            return System.Math.Pow(2, System.Math.Ceiling(System.Math.Log((double)n, 2)));
+            return System.Math.Pow(2, System.Math.Ceiling(System.Math.Log(n, 2)));
         }
 
         /// <summary>
@@ -327,7 +330,7 @@ namespace Fusee.Math.Core
         /// <returns>n! / (k! * (n - k)!)</returns>
         public static long BinomialCoefficient(int n, int k)
         {
-            return Factorial(n) / (Factorial(k) *Factorial(n - k));
+            return Factorial(n) / (Factorial(k) * Factorial(n - k));
         }
 
         #endregion
@@ -438,7 +441,277 @@ namespace Fusee.Math.Core
         }
 
         #endregion
+
+        #region Pointcloud
+
+        /// <summary>
+        ///     Calculates the centroid point (mean) from given vertices in single precision
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static float3 CalculateCentroid(IEnumerable<float3> vertices)
+        {
+            var centroid = float3.Zero;
+
+            foreach (var vert in vertices)
+                centroid += vert;
+
+            return centroid / vertices.Count();
+        }
+
+        /// <summary>
+        ///     Calculates the centroid point (mean) from given vertices in double precision
+        /// </summary>
+        /// <param name="vertices"></param>
+        /// <returns></returns>
+        public static double3 CalculateCentroid(IEnumerable<double3> vertices)
+        {
+            var centroid = double3.Zero;
+
+            foreach (var vert in vertices)
+                centroid += vert;
+
+            return centroid / vertices.Count();
+        }
+
+        #endregion
+
+        #region Covariance
+
+        /// <summary>
+        ///     Generates a covariance matrix from given centroid and vertices in single precision
+        /// </summary>
+        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
+        /// <param name="vertices">The vertex data</param>
+        /// <returns></returns>
+        public static float4x4 CreateCovarianceMatrix(float3 centroid, IEnumerable<float3> vertices)
+        {
+            var res = float4x4.Zero;
+            var numPoints = vertices.Count();
+            foreach (var vec in vertices)
+            {
+                res.M11 += Covariance(vec.x, vec.x, centroid.x, centroid.x, numPoints);
+                res.M12 += Covariance(vec.x, vec.y, centroid.x, centroid.y, numPoints);
+                res.M13 += Covariance(vec.x, vec.z, centroid.x, centroid.z, numPoints);
+
+                res.M21 += Covariance(vec.y, vec.x, centroid.y, centroid.x, numPoints);
+                res.M22 += Covariance(vec.y, vec.y, centroid.y, centroid.y, numPoints);
+                res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
+
+                res.M31 += Covariance(vec.z, vec.x, centroid.z, centroid.x, numPoints);
+                res.M32 += Covariance(vec.z, vec.y, centroid.z, centroid.y, numPoints);
+                res.M33 += Covariance(vec.z, vec.z, centroid.z, centroid.z, numPoints);
+            }
+
+            res.M44 = 1;
+
+            return res;
+        }
+
+        /// <summary>
+        ///     Generates a covariance matrix from given centroid and vertices in double precision
+        /// </summary>
+        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
+        /// <param name="vertices">The vertex data</param>
+        /// <returns></returns>
+        public static double4x4 CreateCovarianceMatrix(double3 centroid, IEnumerable<double3> vertices)
+        {
+            var res = double4x4.Zero;
+            var numPoints = vertices.Count();
+            foreach (var vec in vertices)
+            {
+                res.M11 += Covariance(vec.x, vec.x, centroid.x, centroid.x, numPoints);
+                res.M12 += Covariance(vec.x, vec.y, centroid.x, centroid.y, numPoints);
+                res.M13 += Covariance(vec.x, vec.z, centroid.x, centroid.z, numPoints);
+
+                res.M21 += Covariance(vec.y, vec.x, centroid.y, centroid.x, numPoints);
+                res.M22 += Covariance(vec.y, vec.y, centroid.y, centroid.y, numPoints);
+                res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
+
+                res.M31 += Covariance(vec.z, vec.x, centroid.z, centroid.x, numPoints);
+                res.M32 += Covariance(vec.z, vec.y, centroid.z, centroid.y, numPoints);
+                res.M33 += Covariance(vec.z, vec.z, centroid.z, centroid.z, numPoints);
+            }
+
+            res.M44 = 1;
+
+            return res;
+        }
+
+        private static float Covariance(float item1, float item2, float centroid1, float centroid2, int numberOfPoints)
+        {
+            return (item1 - centroid1) * (item2 - centroid2) / numberOfPoints;
+        }
+
+        private static double Covariance(double item1, double item2, double centroid1, double centroid2, int numberOfPoints)
+        {
+            return (item1 - centroid1) * (item2 - centroid2) / numberOfPoints;
+        }
+
+
+        #endregion
+
+        #region Eigen
+
+        /// <summary>
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision
+        /// </summary>
+        /// <param name="covarianceMatrix"></param>
+        /// <returns></returns>
+        public static EigenF EigenFromCovarianceMat(float4x4 covarianceMatrix)
+        {
+            return Diagonalizer(covarianceMatrix);
+        }
+
+        /// <summary>
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision
+        /// </summary>
+        /// <param name="covarianceMatrix"></param>
+        /// <returns></returns>
+        public static EigenD EigenFromCovarianceMat(double4x4 covarianceMatrix)
+        {
+            return Diagonalizer(covarianceMatrix);
+        }
         
+        /// <summary>
+        ///     Diagonalizes a given covariance matrix with single precision
+        ///     
+        ///     <para>
+        ///         Credits to: https://github.com/melax/sandbox
+        ///         http://melax.github.io/diag.html
+        ///         A must be a symmetric matrix.
+        ///         returns quaternion q such that its corresponding matrix Q 
+        ///         can be used to Diagonalize A
+        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///     </para>
+        /// </summary>
+        /// <param name="A">The covariance matrix</param>
+        /// <returns></returns>
+        public static EigenF Diagonalizer(float4x4 A)
+        {
+            const int maxsteps = 24; // certainly wont need that many.
+
+            var q = new Quaternion(0, 0, 0, 1);
+            var D = float4x4.Identity;
+            var Q = float4x4.Identity;
+            for (var i = 0; i < maxsteps; i++)
+            {
+                // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
+                Q = q.ToRotMat(); // v*Q == q*v*conj(q)
+                D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
+                var offDiagonal = new float3(D.M23, D.M13, D.M12); // elements not on the diagonal
+                var om = new float3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
+                var k = (om.x > om.y && om.x > om.z) ? 0 : (om.y > om.z) ? 1 : 2; // index of largest element of offdiag
+                var k1 = (k + 1) % 3;
+                var k2 = (k + 2) % 3;
+
+                if (offDiagonal[k].Equals(0.0f)) break;  // diagonal already
+
+                var theta = (D[k2, k2] - D[k1, k1]) / (2.0f * offDiagonal[k]);
+                var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
+                theta *= sgn; // make it positive
+                var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
+                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c 
+
+                if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
+
+                var jr = new Quaternion(0, 0, 0, 0)
+                {
+                    [k] = (float)(sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
+                }; // jacobi rotation for this iteration.
+
+                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
+                jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
+                jr.w = (float) System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
+                if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
+                q *= jr;
+                q.Normalize();
+            }
+
+            return new EigenF
+            {
+                Values = new[]
+                {
+                    D.M11,
+                    D.M22,
+                    D.M33
+                },
+                Vectors = Q
+            };
+        }
+
+        /// <summary>
+        ///     Diagonalizes a given covariance matrix with double precision
+        ///     
+        ///     <para>
+        ///         Credits to: https://github.com/melax/sandbox
+        ///         http://melax.github.io/diag.html
+        ///         A must be a symmetric matrix.
+        ///         returns quaternion q such that its corresponding matrix Q 
+        ///         can be used to Diagonalize A
+        ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///     </para>
+        /// </summary>
+        /// <param name="A">The covariance matrix</param>
+        /// <returns></returns>
+        public static EigenD Diagonalizer(double4x4 A)
+        {
+            const int maxsteps = 24; // certainly wont need that many.
+
+            var q = new QuaternionD(0, 0, 0, 1);
+            var D = double4x4.Identity;
+            var Q = double4x4.Identity;
+            for (var i = 0; i < maxsteps; i++)
+            {
+                // Q = float4x4.CreateRotation(q); // v*Q == q*v*conj(q)
+                Q = q.ToRotMat(); // v*Q == q*v*conj(q)
+                D = Q.Transpose() * A * Q;  // A = Q^T*D*Q
+                var offDiagonal = new double3(D.M23, D.M13, D.M12); // elements not on the diagonal
+                var om = new double3(System.Math.Abs(offDiagonal.x), System.Math.Abs(offDiagonal.y), System.Math.Abs(offDiagonal.z)); // mag of each offdiag elem
+                var k = (om.x > om.y && om.x > om.z) ? 0 : (om.y > om.z) ? 1 : 2; // index of largest element of offdiag
+                var k1 = (k + 1) % 3;
+                var k2 = (k + 2) % 3;
+
+                if (offDiagonal[k].Equals(0.0f)) break;  // diagonal already
+
+                var theta = (D[k2, k2] - D[k1, k1]) / (2.0f * offDiagonal[k]);
+                var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
+                theta *= sgn; // make it positive
+                var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
+                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c 
+
+                if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
+
+                var jr = new QuaternionD(0, 0, 0, 0) // jacobi rotation for this iteration.
+                {
+                    [k] = (sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
+                };
+
+                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
+                jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
+                jr.w = System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
+                if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
+                q *= jr;
+                q.Normalize();
+            }
+
+            return new EigenD
+            {
+                Values = new[]
+                {
+                    D.M11,
+                    D.M22,
+                    D.M33
+                },
+                Vectors = Q
+            };
+        }
+
+        #endregion
 
         #region MinAngle
         /// <summary>
@@ -499,7 +772,7 @@ namespace Fusee.Math.Core
         /// <param name="b">The second value.</param>
         public static void Swap(ref double a, ref double b)
         {
-            double temp = a;
+            var temp = a;
             a = b;
             b = temp;
         }
@@ -511,7 +784,7 @@ namespace Fusee.Math.Core
         /// <param name="b">The second value.</param>
         public static void Swap(ref float a, ref float b)
         {
-            float temp = a;
+            var temp = a;
             a = b;
             b = temp;
         }

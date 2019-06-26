@@ -34,6 +34,66 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new Quaternion(3, 7, 8, 1);
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = new Quaternion(0, 0, 0, 0);
+            actual[0] = 3;
+            actual[1] = 7;
+            actual[2] = 8;
+            actual[3] = 1;
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new Quaternion(0, 0, 0, 0)[idx]);
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var q4 = new Quaternion(0, 0, 0, 0); q4[idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 7, "Index 7 not eligible for a Quaternion type" };
+            yield return new object[] { 6, "Index 6 not eligible for a Quaternion type" };
+        }
+
+        #endregion
+        
         #region Properties
 
         [Fact]
@@ -238,6 +298,20 @@ namespace Fusee.Math.Core
             Assert.Equal(expected, actual);
         }
 
+        [Theory]
+        [MemberData(nameof(GetAxisAngle))]
+        public void ToRotMat_Static(Quaternion quat, float4 expected)
+        {
+            var actual = Quaternion.ToRotMat(quat);
+
+            var expectedAxis = new float3(expected.xyz);
+            var expectedAngle = expected.w;
+
+            var expectedRotMat = float4x4.CreateRotation(expectedAxis, expectedAngle);
+
+            Assert.Equal(expectedRotMat, actual);
+        }
+
         #endregion
 
         #region Slerp
@@ -317,7 +391,7 @@ namespace Fusee.Math.Core
             var actual = Quaternion.FromToRotation(from, to);
 
             Assert.Equal(expected, actual);
-        }
+        }       
 
         #endregion
 

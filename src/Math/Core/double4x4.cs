@@ -353,6 +353,54 @@ namespace Fusee.Math.Core
 
         #region Instance
 
+        #region this
+        /// <summary>
+        ///     Sets/Gets value from given index
+        /// </summary>
+        /// <param name="i">The ROW index</param>
+        /// <param name="j">The COLUMN index</param>
+        /// <returns></returns>
+        public double this[int i, int j]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0:
+                        return Row0[j];
+                    case 1:
+                        return Row1[j];
+                    case 2:
+                        return Row2[j];
+                    case 3:
+                        return Row3[j];
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        Row0[j] = value;
+                        break;
+                    case 1:
+                        Row1[j] = value;
+                        break;
+                    case 2:
+                        Row2[j] = value;
+                        break;
+                    case 3:
+                        Row3[j] = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+        }
+        #endregion
+
         #region public Invert()
 
         /// <summary>

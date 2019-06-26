@@ -165,6 +165,48 @@ namespace Fusee.Math.Core
 
         #region Public Members
 
+        #region this
+        public float this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    case 3:
+                        return w;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    case 3:
+                        w = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type");
+                }
+            }
+        }
+        #endregion
+
         #region Instance
 
         #region public float Length
@@ -839,46 +881,6 @@ namespace Fusee.Math.Core
         /// The parse property.
         /// </value>
         public static Converter<string, float4> Parse { get; set; }
-
-        public float this[int i]
-        {
-            set
-            {
-                switch (i)
-                {
-                    case 0:
-                        x = value;
-                        break;
-                    case 1:
-                        y = value;
-                        break;
-                    case 2:
-                        z = value;
-                        break;
-                    case 3:
-                        w = value;
-                        break;
-                    default:
-                        throw new IndexOutOfRangeException("float4 cannot be indexed with an index of " + i);
-                }
-            }
-            get 
-            {
-                switch (i)
-                {
-                    case 0:
-                        return x;
-                    case 1:
-                        return y;
-                    case 2:
-                        return z;
-                    case 3:
-                        return w;
-                    default:
-                        throw new IndexOutOfRangeException("float4 cannot be indexed with an index of " + i);
-                }
-            }
-        }
     }
 
     // ReSharper restore InconsistentNaming
