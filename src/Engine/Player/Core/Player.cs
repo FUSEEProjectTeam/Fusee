@@ -89,9 +89,9 @@ namespace Fusee.Engine.Player.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            _gamePad = GetDevice<GamePadDevice>();
+           
             // Register the input devices that are not already given.
- 
+            _gamePad = GetDevice<GamePadDevice>();
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -137,20 +137,8 @@ namespace Fusee.Engine.Player.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            Diagnostics.Log(_gamePad.LSX);
+            Diagnostics.Log($"{_gamePad.LSX}, {_gamePad.LSY}");
 
-            /*
-            if (Keyboard.GetKey(KeyCodes.K))
-            {
-                if (!K_pressed)
-                {
-                    // Only once!
-                }
-                K_pressed = true;
-            }
-            else
-                K_pressed = false;
-            */
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
