@@ -15,10 +15,10 @@ namespace Fusee.Examples.PcRendering.Core
     public static class LAZtoSceneNode
     {
         public static Lighting Lighting = Lighting.EDL;
-        public static PointShape Shape = PointShape.PARABOLID;
+        public static PointShape Shape = PointShape.CIRCLE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
-        public static int Size = 20;
-        public static float4 SingleColor = new float4(1, 1, 1, 1);
+        public static int Size = 100;
+        public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
 
@@ -83,6 +83,82 @@ namespace Fusee.Examples.PcRendering.Core
             }            
 
             return returnNodeContainer;
+        }
+
+        public static SceneNodeContainer FromPointList(List<LAZPointType> points, ShaderEffect effect)
+        {
+            var allPoints = points.ToArray().Select(pt => new float3((float)pt.Position.x, (float)pt.Position.y, (float)pt.Position.z)).ToList();
+            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            var allColors = points.ToArray().Select(pt => new float3(pt.Color.r / 256, pt.Color.g / 256, pt.Color.b / 256)).ToList();
+
+            var allMeshes = new List<Mesh>();
+
+            var maxVertCount = ushort.MaxValue - 1;
+
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
+            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
+
+            var returnNodeContainer = new SceneNodeContainer
+            {
+                Name = "PointCloud",
+                Components = new List<SceneComponentContainer>
+                {
+                    new TransformComponent
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One,
+                        Translation = new float3(0,0,0)
+                    },
+                    new ShaderEffectComponent
+                    {
+                        Effect = effect
+                    }
+                }
+            };
+
+            for (int i = 0; i < allPointsSplitted.Count; i++)
+            {
+                var pointSplit = allPointsSplitted[i];
+                var colorSplit = allColorsSplitted[i];
+
+                var currentMesh = new Mesh
+                {
+                    Vertices = pointSplit.Select(pt => pt.xyz).ToArray(),
+                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
+                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    Normals = new float3[pointSplit.Count],
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
+                };
+
+                returnNodeContainer.Components.Add(currentMesh);
+            }
+
+            return returnNodeContainer;
+        }
+
+        public static List<LAZPointType> ListFromLAZ(string pathToPc)
+        {
+            var reader = new LASPointReader(pathToPc);
+            var pointCnt = (MetaInfo)reader.MetaInfo;
+            var myPC = new LAZPointcloud((int)pointCnt.PointCnt);
+            for (var i = 0; i < myPC.Points.Length; i++)
+                if (!reader.ReadNextPoint(ref myPC.Points[i], myPC.Pa)) break;
+
+
+            var firstPoint = myPC.Points[0];
+
+            for (int i = 0; i < myPC.Points.Length; i++)
+            {
+                var pt = myPC.Points[i];
+
+                pt.Position -= firstPoint.Position;
+                pt.Position = new double3(pt.Position.x, pt.Position.z, pt.Position.y);
+
+                myPC.Points[i] = pt;
+            }
+
+            return myPC.Points.ToArray().ToList();
         }
 
         internal static ShaderEffect DepthPassEffect(float2 screenParams)
@@ -172,7 +248,7 @@ namespace Fusee.Examples.PcRendering.Core
         }
     }
 
-    internal struct LAZPointType
+    public class LAZPointType
     {
         public double3 Position;
         public float3 Color;
@@ -243,6 +319,7 @@ namespace Fusee.Examples.PcRendering.Core
             Pa = myPointAccessor;
 
             _points = new LAZPointType[pntCnt];
+            _points = _points.Select(pt => new LAZPointType()).ToArray();
         }
     }
 }

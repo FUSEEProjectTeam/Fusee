@@ -3,11 +3,12 @@ using Fusee.Pointcloud.Common;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Pointcloud.OoCFileGen
 {
 
-    public struct int3
+    public struct int3 : IEquatable<int3>
     {
         public int x;
         public int y;
@@ -18,7 +19,36 @@ namespace Fusee.Pointcloud.OoCFileGen
             this.x = x;
             this.y = y;
             this.z = z;
+        }
 
+        public static int3 operator +(int3 left, int3 right)
+        {
+            return new int3(left.x + right.x, left.y + right.y, left.z + right.z);
+        }
+
+        public bool Equals(int3 other)
+        {
+            if (this.x == other.x && this.y == other.y && this.z == other.z)
+                return true;
+            else return false;
+        }
+        public static bool operator ==(int3 left, int3 right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(int3 left, int3 right)
+        {
+            return left.Equals(right);
+        }
+
+        //https://stackoverflow.com/questions/22494481/how-to-hash-a-3-dimensional-index
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return x + (31 * y) + (31 * 31 * z);
+            }
         }
     }
 
@@ -39,10 +69,17 @@ namespace Fusee.Pointcloud.OoCFileGen
 
     public class Grid<TPoint>
     {
-        public Bucket<TPoint>[,,] GridCells;
+        public Dictionary<int3, GridCell<TPoint>> GridCells;
 
-        public Grid(GridPtAccessor<TPoint> ptAccessor, double3 parentOctantCenter, double resolution, List<TPoint> gridPoints)
+        private List<int3> _neighbouCellIdxOffsets;
+
+        public Grid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point)
         {
+            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
+            GridCells = new Dictionary<int3, GridCell<TPoint>>(128 * 128 * 128);
+
+            var lowerLeft = parentOctant.Center - new double3(parentOctant.Size / 2d, parentOctant.Size / 2d, parentOctant.Size / 2d);
+            var firstCenter = new double3(lowerLeft.x + (parentOctant.Resolution / 2d), lowerLeft.y + (parentOctant.Resolution / 2d), lowerLeft.z + (parentOctant.Resolution / 2d));
             //create GridCell Array
             for (var x = 0; x < 128; x++)
             {
@@ -50,44 +87,118 @@ namespace Fusee.Pointcloud.OoCFileGen
                 {
                     for (var z = 0; z < 128; z++)
                     {
-                        var parentRes = resolution * 2;
-                        var startPos = new double3((parentOctantCenter.x - parentRes) + resolution / 2, (parentOctantCenter.y - parentRes) + resolution / 2, (parentOctantCenter.z - parentRes) + resolution / 2);
-                        var center = new double3(startPos.x * x, startPos.x * y, startPos.x * z);
-                        GridCells[x, y, z] = new Bucket<TPoint>(center, resolution);
+                        var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
+                        GridCells.Add(new int3(x, y, z), new GridCell<TPoint>(center, parentOctant.Resolution));
                     }
                 }
             }
 
-            //fill with gridPoints
-            ReadPointsToGrid(ptAccessor, resolution, parentOctantCenter, gridPoints);
+            ReadPointToGrid(ptAccessor, parentOctant, point);
         }
 
-        //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
-        public void ReadPointsToGrid(GridPtAccessor<TPoint> ptAccessor, double resolution, double3 center, List<TPoint> points)
+        public Grid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, List<TPoint> points)
         {
-            var halfSize = resolution / 2d;
-            var translationVec = new double3(center.x - halfSize, center.y - halfSize, center.z - halfSize); //translate to zero
+            _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
+            GridCells = new Dictionary<int3, GridCell<TPoint>>(128 * 128 * 128);
 
-            for (var i = 0; i < points.Count; i++)
+            var lowerLeft = parentOctant.Center - new double3(parentOctant.Size / 2d, parentOctant.Size / 2d, parentOctant.Size / 2d);
+            var firstCenter = new double3(lowerLeft.x + (parentOctant.Resolution / 2d), lowerLeft.y + (parentOctant.Resolution / 2d), lowerLeft.z + (parentOctant.Resolution / 2d));
+            //create GridCell Array
+            for (var x = 0; x < 128; x++)
             {
-                var point = points[i];
-                var tPointPos = ptAccessor.GetPositionFloat3_64(ref point);
+                for (var y = 0; y < 128; y++)
+                {
+                    for (var z = 0; z < 128; z++)
+                    {
+                        var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
+                        GridCells.Add(new int3(x, y, z), new GridCell<TPoint>(center, parentOctant.Resolution));
+                    }
+                }
+            }
 
-                var x = tPointPos.x - translationVec.x;
-                var y = tPointPos.y - translationVec.y;
-                var z = tPointPos.z - translationVec.z;
-
-                var indexX = (int)((x * 128) / resolution);
-                var indexY = (int)((y * 128) / resolution);
-                var indexZ = (int)((z * 128) / resolution);
-
-                var cell = GridCells[indexX, indexY, indexZ];
-                cell.Payload.Add(point);
-                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+            for (int i = 0; i < points.Count; i++)
+            {
+                TPoint pt = points[i];
+                ReadPointToGrid(ptAccessor, parentOctant, pt);
+                points[i] = pt;
             }
         }
 
-        public static List<int3> GetGridNeighbourIndices(int dist)
+        //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
+        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point)
+        {
+            var halfSize = parentOctant.Size / 2d;
+            var translationVec = new double3(parentOctant.Center.x - halfSize, parentOctant.Center.y - halfSize, parentOctant.Center.z - halfSize); //translate to zero
+
+            var tPointPos = ptAccessor.GetPositionFloat3_64(ref point);
+
+            var x = tPointPos.x - translationVec.x;
+            var y = tPointPos.y - translationVec.y;
+            var z = tPointPos.z - translationVec.z;
+
+            var indexX = (int)((x * 128) / parentOctant.Size);
+            var indexY = (int)((y * 128) / parentOctant.Size);
+            var indexZ = (int)((z * 128) / parentOctant.Size);
+
+            GridCells.TryGetValue(new int3(indexX, indexY, indexZ), out var cell);
+
+            //check if NN is too close            
+            foreach (var idxOffset in _neighbouCellIdxOffsets)
+            { 
+                var neighbourCellIdx = new int3(indexX, indexY, indexZ) + idxOffset;
+
+                if (neighbourCellIdx.x < 0 || neighbourCellIdx.x > 127)
+                    continue;
+                if (neighbourCellIdx.y < 0 || neighbourCellIdx.y > 127)
+                    continue;
+                if (neighbourCellIdx.z < 0 || neighbourCellIdx.z > 127)
+                    continue;
+
+                GridCells.TryGetValue(neighbourCellIdx, out var neighbourCell);
+
+                if (neighbourCell == null)
+                    continue;
+                if (neighbourCell.Occupant == null)
+                    continue;
+
+                if ((tPointPos - ptAccessor.GetPositionFloat3_64(ref neighbourCell.Occupant)).Length < neighbourCell.Size) //neighbourCell.Size equals spacing/ resolution of the octant
+                { 
+                    parentOctant.Payload.Add(point);
+                    ptAccessor.SetGridIdx(ref point, new int3(-1, -1, -1));
+
+                    return;
+                }
+            }
+
+            //set or change cell occupant if neccessary
+            if (cell.Occupant == null)
+            {
+                cell.Occupant = point;
+                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+            }
+            else
+            {
+                var occupantDistToCenter = (ptAccessor.GetPositionFloat3_64(ref cell.Occupant) - cell.Center).Length;
+                var pointDistToCenter = (tPointPos - cell.Center).Length;
+
+                if (pointDistToCenter < occupantDistToCenter)
+                {
+                    var occ = cell.Occupant;
+                    ptAccessor.SetGridIdx(ref occ, new int3(-1, -1, -1));
+                    parentOctant.Payload.Add(cell.Occupant);
+
+                    ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+                    cell.Occupant = point; 
+                }
+                else
+                {
+                    ptAccessor.SetGridIdx(ref point, new int3(-1, -1, -1));
+                    parentOctant.Payload.Add(point);                    
+                }
+            }            
+        }
+
+        private static List<int3> GetGridNeighbourIndices(int dist)
         {
             var searchkernel = new List<int3>();
             var startIdx = new int3(-dist, -dist, -dist);
@@ -122,19 +233,17 @@ namespace Fusee.Pointcloud.OoCFileGen
 
     public class PtOctant<TPoint> : Octant<TPoint>
     {
-        //public PointAccessor<TPoint> PtAccessor { get; private set; }
-
-        public TPoint Occupant;
-
         //The Resolution of an Octant is defined by the minimum distance (spacing) between points.
         //If the minimum distance between a point and its nearest neighbour is smaller then this distance, it will fall into a child octant.
         public double Resolution;
 
         public Grid<TPoint> Grid;
 
-        public PtOctant(double3 center, double size, Grid<TPoint> grid, List<TPoint> payload = null, Octant<TPoint>[] children = null)
-        {
+        public bool IsLeaf { get; internal set; }
 
+
+        public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
+        {
             Center = center;
             Size = size;
 
@@ -143,19 +252,19 @@ namespace Fusee.Pointcloud.OoCFileGen
             else
                 Children = children;
 
-            Payload = payload;
+            Payload = new List<TPoint>();
         }
     }
 
-    public class PtOctree<TCollection, TPoint> : IOctree<TPoint>
+    public class PtOctree<TPoint>
     {
         public int MaxNoOfPointsInBucket { get; private set; }
 
         public GridPtAccessor<TPoint> PtAccessor { get; private set; }
 
-        public Octant<TPoint> Root { get; set; }
-
-        private List<int3> _gridCellNeighbourIndices;
+        public PtOctant<TPoint> Root { get; set; }
+        
+        public int MaxLevel { get; private set; }
 
         public PtOctree(AABBd aabb, GridPtAccessor<TPoint> pa, List<TPoint> points, int maxNoOfPointsInBucket)
         {
@@ -170,173 +279,66 @@ namespace Fusee.Pointcloud.OoCFileGen
             if (aabb.Size.z > aabbMaxLength)
                 aabbMaxLength = aabb.Size.z;
 
-            var res = aabbMaxLength / 128d; //spacing
-            var rootGrid = new Grid<TPoint>(PtAccessor, aabb.Center, res, points);
-            var root = new PtOctant<TPoint>(aabb.Center, aabbMaxLength, rootGrid)
+            aabbMaxLength += (aabbMaxLength / 100 * 0.01d); //add 1% of the size to it to ensure no point lies on the border of the aabb or the octant.
+
+            var res = aabbMaxLength / 128d; //spacing            
+            var root = new PtOctant<TPoint>(aabb.Center, aabbMaxLength)
             {
                 Resolution = res
             };
+            var rootGrid = new Grid<TPoint>(PtAccessor, root, points);
+            root.Grid = rootGrid;
+            root.Level = 0;
 
             Root = root;
 
-            _gridCellNeighbourIndices = Grid<TPoint>.GetGridNeighbourIndices(1);
-
-            Subdivide(Root);//Initial subdiv
+            if (Root.Payload.Count >= MaxNoOfPointsInBucket)
+            {
+                Subdivide(Root);//Initial subdiv
+            }
         }
 
-        public void Subdivide(Octant<TPoint> octant)
-        {
-            //counts the number of points a child octant would have
-            var child0Cnt = 0;
-            var child1Cnt = 0;
-            var child2Cnt = 0;
-            var child3Cnt = 0;
-            var child4Cnt = 0;
-            var child5Cnt = 0;
-            var child6Cnt = 0;
-            var child7Cnt = 0;
+        public void Subdivide(PtOctant<TPoint> octant)
+        {            
+            for (int i = 0; i < octant.Payload.Count; i++) {            
+                var pt = octant.Payload[i];
+                var ptPos = PtAccessor.GetPositionFloat3_64(ref pt);
+                var posInParent = GetChildIndexToWritePoint(octant, ptPos);
 
-            //saves the index of the child octant a point would fall into
-            var childIndices = new int[octant.Payload.Count];
+                CreateChildAndReadPtToGrid(posInParent, octant, pt);                
+            }            
+            octant.Payload.Clear();
 
-            for (int i = 0; i < octant.Payload.Count; i++)
+            for (int i = 0; i < octant.Children.Length; i++)
             {
-                var point = octant.Payload[i];
-                var gridIdx = PtAccessor.GetGridIdx(ref point);
+                var child = (PtOctant<TPoint>)octant.Children[i];
+                if (child == null) continue;
 
-                //check if neighbour gridCell has point with dist < res
-                foreach (var neighbourCellIdx in _gridCellNeighbourIndices)
+                if (child.Payload.Count >= MaxNoOfPointsInBucket)
                 {
-                    var ptOctant = (PtOctant<TPoint>)octant;
-                    var neighbourCell = ptOctant.Grid.GridCells[gridIdx.x + neighbourCellIdx.x, gridIdx.y + neighbourCellIdx.y, gridIdx.z + neighbourCellIdx.z];
-
-                    for (int k = 0; k < neighbourCell.Payload.Count; k++)
-                    {
-                        var pt = neighbourCell.Payload[i];
-                        var neighbouPtPos = PtAccessor.GetPositionFloat3_64(ref pt);
-                        var pointPos = PtAccessor.GetPositionFloat3_64(ref point);
-
-                        var dist = (pointPos - neighbouPtPos).Length;
-
-                        //if a point is closer as minimum distance it falls into a child
-                        if (dist <= ptOctant.Resolution)
-                        {
-                            var childOctantIdx = GetChildIndexToWritePoint(octant, pointPos);
-                            childIndices[i] = childOctantIdx;
-
-                            //but only create child if it would have more then the max number of points --> a Octant does not nessesarily have 8 children!!
-                            //if one of the lists reaches the max amount of points --> create child bucket
-                            switch (childOctantIdx)
-                            {
-                                default:
-                                case 0:
-                                    child0Cnt++;
-                                    if (child0Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(0, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 0, childPayload);
-                                        octant.Children[0] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-
-                                    break;
-                                case 1:
-                                    child1Cnt++;
-                                    if (child1Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(1, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 1, childPayload);
-                                        octant.Children[1] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 2:
-                                    child2Cnt++;
-                                    if (child2Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(2, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 2, childPayload);
-                                        octant.Children[2] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 3:
-                                    child3Cnt++;
-                                    if (child3Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(3, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 3, childPayload);
-                                        octant.Children[3] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 4:
-                                    child4Cnt++;
-                                    if (child4Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(4, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 4, childPayload);
-                                        octant.Children[4] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 5:
-                                    child5Cnt++;
-                                    if (child5Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(5, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 5, childPayload);
-                                        octant.Children[5] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 6:
-                                    child6Cnt++;
-                                    if (child5Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(6, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 6, childPayload);
-                                        octant.Children[6] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                                case 7:
-                                    child7Cnt++;
-                                    if (child5Cnt > MaxNoOfPointsInBucket)
-                                    {
-                                        //get points from payload and childIndices
-                                        var childPayload = GetPayload(7, octant.Payload, childIndices).ToList();
-                                        var childOctant = CreateChild(ptOctant, 7, childPayload);
-                                        octant.Children[7] = childOctant;
-                                        Subdivide(childOctant);
-                                    }
-                                    break;
-                            }
-                        }
-
-                    }
+                    Subdivide(child);
                 }
+                else                
+                    child.IsLeaf = true;                
             }
-
         }
-
-
-
-        private IEnumerable<TPoint> GetPayload(int childIdx, List<TPoint> parentPayload, int[] childIndices)
+               
+        private void CreateChildAndReadPtToGrid(int posInParent, PtOctant<TPoint> octant, TPoint point)
         {
-            for (int i = 0; i < childIndices.Length; i++)
+            PtOctant<TPoint> child;
+
+            if (octant.Children[posInParent] == null)
             {
-                var thisPointsChildIdx = childIndices[i];
-                if (thisPointsChildIdx == childIdx)
-                    yield return parentPayload[i];
+                child = CreateChild(octant, posInParent);
+                var childGrid = new Grid<TPoint>(PtAccessor, child, point);
+                child.Grid = childGrid;
+                octant.Children[posInParent] = child;                
             }
+            else
+            {
+                child = (PtOctant<TPoint>)octant.Children[posInParent];
+                child.Grid.ReadPointToGrid(PtAccessor, child, point);
+            } 
         }
 
         private static int GetChildIndexToWritePoint(Octant<TPoint> octant, double3 point)
@@ -355,7 +357,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             return Convert.ToInt32(indexY.ToString() + indexZ + indexX, 2);
         }
 
-        private PtOctant<TPoint> CreateChild(PtOctant<TPoint> parent, int posInParent, List<TPoint> points)
+        private PtOctant<TPoint> CreateChild(PtOctant<TPoint> parent, int posInParent)
         {
             double3 childCenter;
             var childsHalfSize = parent.Size / 4d;
@@ -389,16 +391,27 @@ namespace Fusee.Pointcloud.OoCFileGen
             }
 
             var childRes = parent.Size / 2d;
-            var childGrid = new Grid<TPoint>(PtAccessor, childCenter, childRes, points);
-            var child = new PtOctant<TPoint>(childCenter, childRes, childGrid);
-            child.Resolution = parent.Resolution / 2d;
+            var child = new PtOctant<TPoint>(childCenter, childRes)
+            {
+                Resolution = parent.Resolution / 2d,
+                Level = parent.Level + 1
+            };
+
+            if (MaxLevel < child.Level)
+                MaxLevel = child.Level;
 
             return child;
         }
 
-        public void Traverse()
+        public static IEnumerable<TPoint> GetPointsFromGrid<TPoint>(PtOctant<TPoint> octant)
         {
-            throw new NotImplementedException();
+            foreach (var cell in octant.Grid.GridCells.Values)
+            {
+                if(cell.Occupant != null)
+                    yield return cell.Occupant;
+            }
+
         }
+
     }
 }

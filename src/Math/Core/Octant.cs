@@ -19,8 +19,7 @@ namespace Fusee.Math.Core
         /// Length, width and height of this Octant.
         /// </summary>
         public double Size { get; protected set; }
-
-        public List<T> Payload;
+        
 
         /// <summary>
         /// Creates a new instance of type Bucket.
@@ -30,15 +29,25 @@ namespace Fusee.Math.Core
 
         }
 
-        public Bucket(double3 center, double size, List<T> payload = null)
+        public Bucket(double3 center, double size)
         {
             Center = center;
             Size = size;
 
-            if (payload == null)
-                Payload = new List<T>();
-            else
-                Payload = payload;
+            
+        }
+    }
+
+    public class GridCell<T>: Bucket<T>
+    {
+        public T Occupant;
+
+        public GridCell(double3 center, double size)
+        {
+            Center = center;
+            Size = size;
+
+            
         }
     }
 
@@ -52,7 +61,11 @@ namespace Fusee.Math.Core
         /// Children of this Octant. Must contain eight or null (leaf node) children.
         /// </summary>
         public Octant<T>[] Children;
-        
+
+        public List<T> Payload;
+
+        public int Level;
+
         /// <summary>
         /// Creates a new instance of type Octant.
         /// </summary>

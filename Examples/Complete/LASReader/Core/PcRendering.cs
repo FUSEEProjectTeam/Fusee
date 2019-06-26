@@ -4,6 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.OoCFileGen;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
@@ -56,7 +57,62 @@ namespace Fusee.Examples.PcRendering.Core
         private ShaderEffect _depthPassEf;
         private ShaderEffect _colorPassEf;
 
+        private ShaderEffect _wireFrameMat;
+
         private bool _isTexInitialized = false;
+
+        private readonly WireframeCube wfc = new WireframeCube();
+        private readonly ShaderEffect wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
+
+        private void GetPointsFromOctreeLevel(int lvl, PtOctant<LAZPointType> octant)
+        {   
+            for (int i = 0; i < octant.Children.Length; i++)
+            {
+                var child = (PtOctant<LAZPointType>)octant.Children[i];
+
+                if (child == null) continue;
+
+                var wcSn = new SceneNodeContainer()
+                {
+                    Name = "WireframeCube",
+                    Components = new List<SceneComponentContainer>()
+                    {
+                        new TransformComponent()
+                        {
+                            Scale = float3.One * (float)child.Size,
+                            Translation = (float3) child.Center
+                        },
+                        new ShaderEffectComponent()
+                        {
+                            Effect = wfcEffect
+                        },
+                        wfc
+                    }
+                };
+
+                _scene.Children.Add(wcSn);
+
+                if (child.Level < lvl)
+                {
+                    
+                    if (child.IsLeaf)
+                    {                        
+                        var childPoints = PtOctree<LAZPointType>.GetPointsFromGrid(child).ToList();
+                        //childPoints.AddRange(child.Payload);
+                        var sn = LAZtoSceneNode.FromPointList(childPoints, _depthPassEf);
+                        _scene.Children.Add(sn);
+                    }
+
+                    GetPointsFromOctreeLevel(lvl, child);                    
+                }
+                else
+                {
+                    var childPoints = PtOctree<LAZPointType>.GetPointsFromGrid(child).ToList();
+                    var sn = LAZtoSceneNode.FromPointList(childPoints, _depthPassEf);
+                    _scene.Children.Add(sn);
+                }
+            }
+        }        
 
         // Init is called on startup. 
         public override void Init()
@@ -87,16 +143,17 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };           
 
+            var points = LAZtoSceneNode.ListFromLAZ("E:/HolbeinPferd.las");
 
+            var aabb = new AABBd(points[0].Position, points[0].Position);
+            foreach (var pt in points)
+            {
+                aabb |= pt.Position;
+            }
+            var gridPtAccessor = new MyPointAcessor();
+            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 5000);
 
-
-
-
-
-
-                       
-            _pc = LAZtoSceneNode.FromLAZ("E:/HolbeinPferd.las", _depthPassEf);
-            _scene.Children.Add(_pc);            
+            GetPointsFromOctreeLevel(3, octree.Root); 
 
             var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             _scene.Children[0].Components.Insert(0, pc);
@@ -110,8 +167,9 @@ namespace Fusee.Examples.PcRendering.Core
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             //create depth tex and fbo
-            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);            
+            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
+            _wireFrameMat = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
             _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
             _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
 
@@ -221,11 +279,24 @@ namespace Fusee.Examples.PcRendering.Core
             }
 
             //Render Depth-only pass
-            _pc.GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+            foreach (var sn in _scene.Children)
+            {
+                sn.GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+            }            
             _sceneRenderer.Render(RC, _texHandle);
-            
+
             //Render color pass
-            _pc.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;            
+            foreach (var sn in _scene.Children)
+            {           
+                if(sn.Name.Contains("Cube"))
+                    sn.GetComponent<ShaderEffectComponent>().Effect = _wireFrameMat;
+                else if(sn.Name.Contains("PointCloud"))
+                    sn.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
+            }
+
+            _scene.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
+
+            //_pc.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;            
             _sceneRenderer.Render(RC);
 
             //Render GUI
