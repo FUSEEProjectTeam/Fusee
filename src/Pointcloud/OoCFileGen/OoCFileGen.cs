@@ -7,51 +7,6 @@ using System.Threading.Tasks;
 
 namespace Fusee.Pointcloud.OoCFileGen
 {
-
-    public struct int3 : IEquatable<int3>
-    {
-        public int x;
-        public int y;
-        public int z;
-
-        public int3(int x, int y, int z)
-        {
-            this.x = x;
-            this.y = y;
-            this.z = z;
-        }
-
-        public static int3 operator +(int3 left, int3 right)
-        {
-            return new int3(left.x + right.x, left.y + right.y, left.z + right.z);
-        }
-
-        public bool Equals(int3 other)
-        {
-            if (this.x == other.x && this.y == other.y && this.z == other.z)
-                return true;
-            else return false;
-        }
-        public static bool operator ==(int3 left, int3 right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(int3 left, int3 right)
-        {
-            return left.Equals(right);
-        }
-
-        //https://stackoverflow.com/questions/22494481/how-to-hash-a-3-dimensional-index
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                return x + (31 * y) + (31 * 31 * z);
-            }
-        }
-    }
-
     public class GridPtAccessor<TPoint> : PointAccessor<TPoint>
     {
         public bool HasGridIdx = true;
