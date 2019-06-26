@@ -31,16 +31,23 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             _keyboard = new KeyboardDeviceImp(_gameWindow);
             _mouse = new MouseDeviceImp(_gameWindow);
-            _gamePad = new GamePadDeviceImp(_gameWindow);
+            _gamePad0 = new GamePadDeviceImp(_gameWindow, 0);
+            _gamePad1 = new GamePadDeviceImp(_gameWindow, 1);
+            _gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
+            _gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
         }
 
         private GameWindow _gameWindow;
         private KeyboardDeviceImp _keyboard;
         private MouseDeviceImp _mouse;
-        private GamePadDeviceImp _gamePad;
- 
+        private GamePadDeviceImp _gamePad0;
+        private GamePadDeviceImp _gamePad1;
+        private GamePadDeviceImp _gamePad2;
+        private GamePadDeviceImp _gamePad3;
+
+
         /// <summary>
-        /// Devices supported by this driver: One mouse and one keyboard.
+        /// Devices supported by this driver: One mouse, one keyboard and up to four gamepads.
         /// </summary>
         public IEnumerable<IInputDeviceImp> Devices
         {
@@ -48,8 +55,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 yield return _mouse;
                 yield return _keyboard;
-                yield return _gamePad;
-             }
+                yield return _gamePad0;
+                yield return _gamePad1;
+                yield return _gamePad2;
+                yield return _gamePad3;
+
+            }
         }
 
         /// <summary>
@@ -145,7 +156,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
-        internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
+        internal GamePadDeviceImp(GameWindow window, int deviceID)
         {        
             _gameWindow = window;
             DeviceID = deviceID;
