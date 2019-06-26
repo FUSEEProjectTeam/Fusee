@@ -1,6 +1,7 @@
 ﻿using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,24 +34,9 @@ namespace Fusee.Pointcloud.OoCFileGen
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
 
-            var parentHalfSize = parentOctant.Size / 2d;
-            var parentHalfRes = parentOctant.Resolution / 2d;
-            var lowerLeft = parentOctant.Center - new double3(parentHalfSize, parentHalfSize, parentHalfSize);
-            var firstCenter = new double3(lowerLeft.x + parentHalfRes, lowerLeft.y + parentHalfRes, lowerLeft.z + parentHalfRes);
-            //create GridCell Array
-            for (var x = 0; x < 128; x++)
-            {
-                for (var y = 0; y < 128; y++)
-                {
-                    for (var z = 0; z < 128; z++)
-                    {
-                        var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
-                        GridCells[x, y, z] = new GridCell<TPoint>(center, parentOctant.Resolution);
-                    }
-                }
-            }
+            var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
 
-            ReadPointToGrid(ptAccessor, parentOctant, point);
+            ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
         }
 
         public Grid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, List<TPoint> points)
@@ -58,33 +44,26 @@ namespace Fusee.Pointcloud.OoCFileGen
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
 
-            var parentHalfSize = parentOctant.Size / 2d;
-            var parentHalfRes = parentOctant.Resolution / 2d;
-            var lowerLeft = parentOctant.Center - new double3(parentHalfSize, parentHalfSize, parentHalfSize);
-            var firstCenter = new double3(lowerLeft.x + parentHalfRes, lowerLeft.y + parentHalfRes, lowerLeft.z + parentHalfRes);
-            //create GridCell Array
-            for (var x = 0; x < 128; x++)
-            {
-                for (var y = 0; y < 128; y++)
-                {
-                    for (var z = 0; z < 128; z++)
-                    {
-                        var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
-                        GridCells[x, y, z] = new GridCell<TPoint>(center, parentOctant.Resolution);
-                    }
-                }
-            }
+            var firstCenter = CalcCenterOfUpperLeftCell(parentOctant);
 
             for (int i = 0; i < points.Count; i++)
             {
                 TPoint pt = points[i];
-                ReadPointToGrid(ptAccessor, parentOctant, pt);
+                ReadPointToGrid(ptAccessor, parentOctant, pt, firstCenter);
                 points[i] = pt;
             }
         }
 
+        public static double3 CalcCenterOfUpperLeftCell(PtOctant<TPoint> parentOctant)
+        {
+            var parentHalfSize = parentOctant.Size / 2d;
+            var parentHalfRes = parentOctant.Resolution / 2d;
+            var lowerLeft = parentOctant.Center - new double3(parentHalfSize, parentHalfSize, parentHalfSize);
+            return new double3(lowerLeft.x + parentHalfRes, lowerLeft.y + parentHalfRes, lowerLeft.z + parentHalfRes);
+        }
+
         //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
-        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point)
+        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point, double3 firstCenter)
         {
             var halfSize = parentOctant.Size / 2d;
             var translationVec = new double3(parentOctant.Center.x - halfSize, parentOctant.Center.y - halfSize, parentOctant.Center.z - halfSize); //translate to zero
@@ -101,10 +80,18 @@ namespace Fusee.Pointcloud.OoCFileGen
 
             var cell = GridCells[indexX, indexY, indexZ];
 
+            //create CridCell on demand
+            if(cell == null)
+            {
+                var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
+                cell = new GridCell<TPoint>(center, parentOctant.Resolution);
+                GridCells[indexX, indexY, indexZ] = cell;               
+            }
+
             //check if NN is too close            
             foreach (var idxOffset in _neighbouCellIdxOffsets)
             {
-                var neighbourCellIdx = new int3(indexX, indexY, indexZ) + idxOffset;
+                //var neighbourCellIdx = new int3(indexX, indexY, indexZ) + idxOffset;
 
                 var nIndexX = indexX + idxOffset.x;
                 var nIndexY = indexY + idxOffset.y;
@@ -298,10 +285,14 @@ namespace Fusee.Pointcloud.OoCFileGen
             }
             else
             {
+                var firstCenter = Grid<TPoint>.CalcCenterOfUpperLeftCell(octant);
                 child = (PtOctant<TPoint>)octant.Children[posInParent];
-                child.Grid.ReadPointToGrid(PtAccessor, child, point);
+                child.Grid.ReadPointToGrid(PtAccessor, child, point, firstCenter);
             } 
         }
+
+        private static BitArray bitArray = new BitArray(3);
+        private static int[] resultArray = new int[1];
 
         private static int GetChildIndexToWritePoint(Octant<TPoint> octant, double3 point)
         {
@@ -316,7 +307,13 @@ namespace Fusee.Pointcloud.OoCFileGen
             var indexY = (int)((y * 2.0) / octant.Size);
             var indexZ = (int)((z * 2.0) / octant.Size);
 
-            return Convert.ToInt32(indexY.ToString() + indexZ + indexX, 2);
+            bitArray[0] = indexX == 1;
+            bitArray[1] = indexZ == 1;
+            bitArray[2] = indexY == 1;            
+
+            bitArray.CopyTo(resultArray, 0);
+
+            return resultArray[0];           
         }
 
         private PtOctant<TPoint> CreateChild(PtOctant<TPoint> parent, int posInParent)
@@ -368,13 +365,12 @@ namespace Fusee.Pointcloud.OoCFileGen
         public static IEnumerable<TPoint> GetPointsFromGrid(PtOctant<TPoint> octant)
         {
             foreach (var cell in octant.Grid.GridCells)
-            {
+            { 
+                if (cell == null) continue;
                 if (cell.Occupant != null)
                     yield return cell.Occupant;
             }
-            
-
-        }
+        }        
 
     }
 }

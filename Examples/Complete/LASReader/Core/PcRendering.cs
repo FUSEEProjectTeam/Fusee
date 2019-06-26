@@ -143,7 +143,7 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };           
 
-            var points = LAZtoSceneNode.ListFromLAZ("E:/HolbeinPferd.las");
+            var points = LAZtoSceneNode.ListFromLAZ("E:/MegaPoints.las");
 
             var aabb = new AABBd(points[0].Position, points[0].Position);
             foreach (var pt in points)
@@ -151,9 +151,9 @@ namespace Fusee.Examples.PcRendering.Core
                 aabb |= pt.Position;
             }
             var gridPtAccessor = new MyPointAcessor();
-            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 5000);
+            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 25000);
 
-            GetPointsFromOctreeLevel(3, octree.Root); 
+            GetPointsFromOctreeLevel(6, octree.Root); 
 
             var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             _scene.Children[0].Components.Insert(0, pc);
