@@ -64,6 +64,7 @@ namespace Fusee.Examples.PcRendering.Core
         private readonly WireframeCube wfc = new WireframeCube();
         private readonly ShaderEffect wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
 
+
         private void GetPointsFromOctreeLevel(int lvl, PtOctant<LAZPointType> octant)
         {   
             for (int i = 0; i < octant.Children.Length; i++)
@@ -143,17 +144,24 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };           
 
-            var points = LAZtoSceneNode.ListFromLAZ("E:/MegaPoints.las");
+            var points = LAZtoSceneNode.ListFromLAZ("E:/HolbeinPferd.las");
 
             var aabb = new AABBd(points[0].Position, points[0].Position);
             foreach (var pt in points)
             {
                 aabb |= pt.Position;
             }
-            var gridPtAccessor = new MyPointAcessor();
-            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 25000);
+            var gridPtAccessor = new MyPointAcessor();            
+            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 500);
 
-            GetPointsFromOctreeLevel(6, octree.Root); 
+            GetPointsFromOctreeLevel(3, octree.Root);
+
+            var occFileWriter = new PtOctreeFileWriter<LAZPointType>("E:/HolbeinPferdOctree");
+            occFileWriter.WriteHierarchy(octree);
+            octree.Traverse((PtOctant<LAZPointType> node) =>
+            {
+                occFileWriter.WriteNode(octree.PtAccessor, node);
+            });
 
             var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             _scene.Children[0].Components.Insert(0, pc);

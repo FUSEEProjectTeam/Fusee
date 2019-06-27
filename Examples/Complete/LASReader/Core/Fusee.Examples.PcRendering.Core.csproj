@@ -30,12 +30,6 @@
     <Content Include="Assets\PointDepth.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileGen.csproj" />
-    <ProjectReference Include="..\..\..\..\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
   </ItemGroup>  
 
   <ItemGroup>
@@ -62,6 +56,15 @@
     </Reference>
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.LASReader">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.LASReader.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.OocFileGen">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OocFileGen.dll</HintPath>
     </Reference>
   </ItemGroup>
 

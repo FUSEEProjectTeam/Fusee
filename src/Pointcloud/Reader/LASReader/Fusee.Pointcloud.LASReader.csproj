@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Pointcloud.Reader.LASReader</RootNamespace>
-    <PackageId>Fusee.Pointcloud.Reader.LASReader</PackageId>
+    <RootNamespace>Fusee.Pointcloud.LASReader</RootNamespace>
+    <PackageId>Fusee.Pointcloud.LASReader</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
   </PropertyGroup>

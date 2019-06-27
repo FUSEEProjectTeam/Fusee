@@ -1,55 +1,9 @@
 ﻿using System.Collections.Generic;
 using System;
+using Fusee.Math.Core;
 
-namespace Fusee.Math.Core
+namespace Fusee.Engine.Core
 {
-
-    /// <summary>
-    /// Node for use in an Grid-like structure.
-    /// </summary>
-    /// <typeparam name="T">Defines the type of the payload.</typeparam>
-    public class Bucket<T>
-    {
-        /// <summary>
-        /// Center of this Bucket in world space coordinates.
-        /// </summary>
-        public double3 Center { get; protected set; }
-
-        /// <summary>
-        /// Length, width and height of this Octant.
-        /// </summary>
-        public double Size { get; protected set; }
-        
-
-        /// <summary>
-        /// Creates a new instance of type Bucket.
-        /// </summary>
-        protected Bucket()
-        {
-
-        }
-
-        public Bucket(double3 center, double size)
-        {
-            Center = center;
-            Size = size;
-
-            
-        }
-    }
-
-    public class GridCell<T>: Bucket<T>
-    {
-        public T Occupant;
-
-        public GridCell(double3 center, double size)
-        {
-            Center = center;
-            Size = size;
-
-            
-        }
-    }
 
     /// <summary>
     /// Node for use in an Octree.
@@ -62,8 +16,14 @@ namespace Fusee.Math.Core
         /// </summary>
         public Octant<T>[] Children;
 
+        /// <summary>
+        /// The payload of this octant.
+        /// </summary>
         public List<T> Payload;
 
+        /// <summary>
+        /// The level of the octant in the octree.
+        /// </summary>
         public int Level;
 
         /// <summary>

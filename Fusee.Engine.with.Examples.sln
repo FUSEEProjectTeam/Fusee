@@ -447,7 +447,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.Common", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reader", "Reader", "{BBBFE38F-19C3-4E84-9E6E-7F148E55AF9C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.LASReader", "src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj", "{715F0EB6-146A-41DF-9180-BCBDAEE168B4}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.LASReader", "src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.LASReader.csproj", "{715F0EB6-146A-41DF-9180-BCBDAEE168B4}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PcRendering", "PcRendering", "{74D585F2-3C49-4ED1-A0BF-2973F21ABDED}"
 	ProjectSection(SolutionItems) = preProject
