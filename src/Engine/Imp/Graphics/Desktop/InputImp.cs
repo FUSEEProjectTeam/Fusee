@@ -33,8 +33,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _mouse = new MouseDeviceImp(_gameWindow);
             _gamePad0 = new GamePadDeviceImp(_gameWindow, 0);
             _gamePad1 = new GamePadDeviceImp(_gameWindow, 1);
-            _gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
-            _gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
+            //_gamePad2 = new GamePadDeviceImp(_gameWindow, 2);
+            //_gamePad3 = new GamePadDeviceImp(_gameWindow, 3);
         }
 
         private GameWindow _gameWindow;
@@ -42,8 +42,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private MouseDeviceImp _mouse;
         private GamePadDeviceImp _gamePad0;
         private GamePadDeviceImp _gamePad1;
-        private GamePadDeviceImp _gamePad2;
-        private GamePadDeviceImp _gamePad3;
+        //private GamePadDeviceImp _gamePad2;
+        //private GamePadDeviceImp _gamePad3;
 
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield return _keyboard;
                 yield return _gamePad0;
                 yield return _gamePad1;
-                yield return _gamePad2;
-                yield return _gamePad3;
+                //yield return _gamePad2;
+                //yield return _gamePad3;
 
             }
         }
@@ -160,7 +160,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int DeviceID;
         private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
 
-        internal GamePadDeviceImp(GameWindow window, int deviceID)
+        internal GamePadDeviceImp(GameWindow window, int deviceID = 0)
         {        
             _gameWindow = window;
             DeviceID = deviceID;
@@ -301,7 +301,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             get
             {
-                return GetType().FullName;
+                return GamePad.GetName(DeviceID);
             }
         }
         /// <summary>

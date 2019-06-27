@@ -54,7 +54,9 @@ namespace Fusee.Engine.Player.Core
         private float _maxPinchSpeed;
 
         private GamePadDevice _gamePad;
-      
+        private GamePadDevice _gamePad1;
+
+
 
         // Init is called on startup. 
         public override void Init()
@@ -91,7 +93,9 @@ namespace Fusee.Engine.Player.Core
 
            
             // Register the input devices that are not already given.
-            _gamePad = GetDevice<GamePadDevice>();
+            _gamePad = GetDevice<GamePadDevice>(0);
+            _gamePad1 = GetDevice<GamePadDevice>(1);
+
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -138,6 +142,10 @@ namespace Fusee.Engine.Player.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             Diagnostics.Log($"{_gamePad.LSX}, {_gamePad.LSY}");
+            Diagnostics.Log($"{_gamePad.Id } ");
+            //Diagnostics.Log($"{_gamePad1.LSX}, {_gamePad1.LSY}");
+            //Diagnostics.Log($"{_gamePad1.Id } ");
+
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
