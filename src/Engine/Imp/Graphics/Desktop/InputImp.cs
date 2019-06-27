@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using OpenTK;
 using OpenTK.Input;
 using Fusee.Engine.Common;
@@ -70,11 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-#if PLATFORM_DESKTOP
                 const string pf = "Desktop";
-#elif PLATFORM_ANDROID
-                const string pf = "Android";
-#endif
                 return "OpenTK GameWindow Mouse and Keyboard input driver for " + pf;
             }
         }
