@@ -1,5 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Pointcloud.Common
 {
@@ -848,6 +850,912 @@ namespace Fusee.Pointcloud.Common
         #endregion
 
         #endregion
+
+        #endregion
+
+        #region RawData
+
+        private delegate byte[] EncodeRawPoint(ref TPoint point);
+
+        private delegate void DecodeRawPoint(ref TPoint pointIn, byte[] byteIn);
+
+        #region RawDataEncode
+
+        private delegate byte[] EncodeRawPosition(ref TPoint point);
+
+        private delegate byte[] EncodeRawIntensity(ref TPoint point);
+
+        private delegate byte[] EncodeRawNormals(ref TPoint point);
+
+        private delegate byte[] EncodeRawRGB(ref TPoint point);
+
+        private delegate byte[] EncodeRawLabel(ref TPoint point);
+
+        private delegate byte[] EncodeRawCurvature(ref TPoint point);
+
+        private delegate byte[] EncodeRawHitCount(ref TPoint point);
+
+        private delegate byte[] EncodeRawGPSTime(ref TPoint point);
+
+        private EncodeRawPoint _getRawPointMethod = null;
+
+        private EncodeRawPoint GetRawPointMethod
+        {
+            get
+            {
+                if (_getRawPointMethod != null)
+                    return _getRawPointMethod;
+
+                // First call, construct everything and save the resulting method
+                _getRawPointMethod = (ref TPoint point) =>
+                {
+                    var position = GetRawPositionMethod(ref point);
+                    var intensity = GetRawIntensityMethod(ref point);
+                    var normals = GetRawNormalsMethod(ref point);
+                    var rgb = GetRawRGBMethod(ref point);
+                    var label = GetRawLabelMethod(ref point);
+                    var curvature = GetRawCurvatureMethod(ref point);
+                    var hitCount = GetRawHitCountMethod(ref point);
+                    var GPSTime = GetRawGPSTimeMethod(ref point);
+
+                    // XYZINormalRGBLCurvatureHitCountGPSTime
+                    return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
+                };
+                return _getRawPointMethod;
+            }
+        }
+
+        private EncodeRawPosition GetRawPositionMethod
+        {
+            get
+            {
+                if (HasPositionFloat3_32)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetPositionFloat3_32(ref point).x);
+                        var y = BitConverter.GetBytes(GetPositionFloat3_32(ref point).y);
+                        var z = BitConverter.GetBytes(GetPositionFloat3_32(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                if (HasPositionFloat3_64)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetPositionFloat3_64(ref point).x);
+                        var y = BitConverter.GetBytes(GetPositionFloat3_64(ref point).y);
+                        var z = BitConverter.GetBytes(GetPositionFloat3_64(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                return (ref TPoint point) => new byte[] { };
+            }
+        }
+
+        private EncodeRawIntensity GetRawIntensityMethod
+        {
+            get
+            {
+                // Int
+                if (HasIntensityInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_8(ref point)); };
+                if (HasIntensityInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_16(ref point)); };
+                if (HasIntensityInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_32(ref point)); };
+                if (HasIntensityInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityInt_64(ref point)); };
+
+                // Uint
+                if (HasIntensityUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_8(ref point)); };
+                if (HasIntensityUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_16(ref point)); };
+                if (HasIntensityUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_32(ref point)); };
+                if (HasIntensityUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityUInt_64(ref point)); };
+
+                if (HasIntensityFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat32(ref point)); };
+                if (HasIntensityFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetIntensityFloat64(ref point)); };
+
+                return (ref TPoint point) => new byte[] { };
+            }
+        }
+
+        private EncodeRawNormals GetRawNormalsMethod
+        {
+            get
+            {
+                if (HasNormalFloat3_32)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetNormalFloat3_32(ref point).x);
+                        var y = BitConverter.GetBytes(GetNormalFloat3_32(ref point).y);
+                        var z = BitConverter.GetBytes(GetNormalFloat3_32(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                if (HasNormalFloat3_64)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetNormalFloat3_64(ref point).x);
+                        var y = BitConverter.GetBytes(GetNormalFloat3_64(ref point).y);
+                        var z = BitConverter.GetBytes(GetNormalFloat3_64(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                return (ref TPoint point) => new byte[] { };
+            }
+        }
+
+        private EncodeRawRGB GetRawRGBMethod
+        {
+            get
+            {
+                // Int
+                if (HasColorInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_8(ref point)); };
+                if (HasColorInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_16(ref point)); };
+                if (HasColorInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_32(ref point)); };
+                if (HasColorInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorInt_64(ref point)); };
+
+                // Uint
+                if (HasColorUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_8(ref point)); };
+                if (HasColorUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_16(ref point)); };
+                if (HasColorUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_32(ref point)); };
+                if (HasColorUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorUInt_64(ref point)); };
+
+                if (HasColorFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat32(ref point)); };
+                if (HasColorFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetColorFloat64(ref point)); };
+
+
+                if (HasColorFloat3_32)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetColorFloat3_32(ref point).x);
+                        var y = BitConverter.GetBytes(GetColorFloat3_32(ref point).y);
+                        var z = BitConverter.GetBytes(GetColorFloat3_32(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                if (HasColorFloat3_64)
+                {
+                    return (ref TPoint point) =>
+                    {
+                        var x = BitConverter.GetBytes(GetColorFloat3_64(ref point).x);
+                        var y = BitConverter.GetBytes(GetColorFloat3_64(ref point).y);
+                        var z = BitConverter.GetBytes(GetColorFloat3_64(ref point).z);
+
+                        return x.Concat(y).Concat(z).ToArray();
+                    };
+                }
+                return (ref TPoint point) => new byte[] { };
+            }
+
+        }
+
+        private EncodeRawLabel GetRawLabelMethod
+        {
+            get
+            {
+                // Int
+                if (HasLabelInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_8(ref point)); };
+                if (HasLabelInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_16(ref point)); };
+                if (HasLabelInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_32(ref point)); };
+                if (HasLabelInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelInt_64(ref point)); };
+
+                // Uint
+                if (HasLabelUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_8(ref point)); };
+                if (HasLabelUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_16(ref point)); };
+                if (HasLabelUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_32(ref point)); };
+                if (HasLabelUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelUInt_64(ref point)); };
+
+                if (HasLabelFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat32(ref point)); };
+                if (HasLabelFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetLabelFloat64(ref point)); };
+
+                return (ref TPoint point) => new byte[] { };
+            }
+
+        }
+
+        private EncodeRawCurvature GetRawCurvatureMethod
+        {
+            get
+            {
+                // Int
+                if (HasCurvatureInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_8(ref point)); };
+                if (HasCurvatureInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_16(ref point)); };
+                if (HasCurvatureInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_32(ref point)); };
+                if (HasCurvatureInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureInt_64(ref point)); };
+
+                // Uint
+                if (HasCurvatureUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_8(ref point)); };
+                if (HasCurvatureUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_16(ref point)); };
+                if (HasCurvatureUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_32(ref point)); };
+                if (HasCurvatureUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureUInt_64(ref point)); };
+
+                if (HasCurvatureFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat32(ref point)); };
+                if (HasCurvatureFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetCurvatureFloat64(ref point)); };
+
+                return (ref TPoint point) => new byte[] { };
+            }
+
+        }
+
+        private EncodeRawHitCount GetRawHitCountMethod
+        {
+            get
+            {
+                // Int
+                if (HasHitCountInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_8(ref point)); };
+                if (HasHitCountInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_16(ref point)); };
+                if (HasHitCountInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_32(ref point)); };
+                if (HasHitCountInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountInt_64(ref point)); };
+
+                // Uint
+                if (HasHitCountUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_8(ref point)); };
+                if (HasHitCountUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_16(ref point)); };
+                if (HasHitCountUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_32(ref point)); };
+                if (HasHitCountUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountUInt_64(ref point)); };
+
+                if (HasHitCountFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat32(ref point)); };
+                if (HasHitCountFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetHitCountFloat64(ref point)); };
+
+                return (ref TPoint point) => new byte[] { };
+            }
+
+        }
+
+        private EncodeRawGPSTime GetRawGPSTimeMethod
+        {
+            get
+            {
+                // Int
+                if (HasGPSTimeInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_8(ref point)); };
+                if (HasGPSTimeInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_16(ref point)); };
+                if (HasGPSTimeInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_32(ref point)); };
+                if (HasGPSTimeInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeInt_64(ref point)); };
+
+                // Uint
+                if (HasGPSTimeUInt_8)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_8(ref point)); };
+                if (HasGPSTimeUInt_16)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_16(ref point)); };
+                if (HasGPSTimeUInt_32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_32(ref point)); };
+                if (HasGPSTimeUInt_64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeUInt_64(ref point)); };
+
+                if (HasGPSTimeFloat32)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat32(ref point)); };
+                if (HasGPSTimeFloat64)
+                    return (ref TPoint point) => { return BitConverter.GetBytes(GetGPSTimeFloat64(ref point)); };
+
+                return (ref TPoint point) => new byte[] { };
+            }
+
+        }
+
+        #endregion
+
+        #region RawDataDecode
+
+        private delegate void DecodeRawPosition(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawIntensity(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawNormals(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawRGB(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawLabel(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawCurvature(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawHitCount(ref TPoint pointIn, byte[] byteIn);
+
+        private delegate void DecodeRawGPSTime(ref TPoint pointIn, byte[] byteIn);
+
+        private DecodeRawPoint _setRawPointMethod = null;
+
+        private DecodeRawPoint SetRawPointMethod
+        {
+            get
+            {
+                if (_setRawPointMethod != null)
+                    return _setRawPointMethod;
+
+                // First call, construct everything and save the resulting method
+                _setRawPointMethod = (ref TPoint pointInt, byte[] byteIn) =>
+                {
+                    // Call all methods to recreate the point
+                    SetRawPositionMethod(ref pointInt, byteIn);
+                    SetRawIntensityMethod(ref pointInt, byteIn);
+                    SetRawNormalsMethod(ref pointInt, byteIn);
+                    SetRawRGBMethod(ref pointInt, byteIn);
+                    SetRawLabelMethod(ref pointInt, byteIn);
+                    SetRawCurvatureMethod(ref pointInt, byteIn);
+                    SetRawHitCountMethod(ref pointInt, byteIn);
+                    SetRawGPSTimeMethod(ref pointInt, byteIn);
+                };
+
+                return _setRawPointMethod;
+            }
+        }
+
+        /// <summary>
+        ///     Needed for correct array offsets during read
+        /// </summary>
+        internal struct ByteArrayOffsets
+        {
+            // XYZINormalRGBLCurvatureHitCountGPSTime
+
+            internal int PositionOffset;
+            internal int IntensityOffset;
+            internal int NormalsOffset;
+            internal int RGBOffset;
+            internal int LabelOffset;
+            internal int CurvatureOffset;
+            internal int HitCountOffset;
+            internal int GPSTimeOffset;
+        }
+
+        private bool OffsetsCalculated = false;
+        private ByteArrayOffsets _offsets;
+
+        internal ByteArrayOffsets Offsets
+        {
+            get
+            {
+                if (OffsetsCalculated)
+                    return _offsets;
+
+                // XYZINormalRGBLCurvatureHitCountGPSTime
+
+                _offsets = new ByteArrayOffsets();
+
+                // position
+                if (HasPositionFloat3_32)
+                    _offsets.PositionOffset = 3 * Marshal.SizeOf<float>();
+                if (HasPositionFloat3_64)
+                    _offsets.PositionOffset = 3 * Marshal.SizeOf<double>();
+
+                // Intensity
+                if (HasIntensityInt_8)
+                    _offsets.IntensityOffset = Marshal.SizeOf<sbyte>();
+                if (HasIntensityInt_16)
+                    _offsets.IntensityOffset = Marshal.SizeOf<short>();
+                if (HasIntensityInt_32)
+                    _offsets.IntensityOffset = Marshal.SizeOf<int>();
+                if (HasIntensityInt_64)
+                    _offsets.IntensityOffset = Marshal.SizeOf<long>();
+
+                if (HasIntensityUInt_8)
+                    _offsets.IntensityOffset = Marshal.SizeOf<byte>();
+                if (HasIntensityUInt_16)
+                    _offsets.IntensityOffset = Marshal.SizeOf<ushort>();
+                if (HasIntensityUInt_32)
+                    _offsets.IntensityOffset = Marshal.SizeOf<uint>();
+                if (HasIntensityUInt_64)
+                    _offsets.IntensityOffset = Marshal.SizeOf<ulong>();
+
+                if (HasIntensityFloat32)
+                    _offsets.IntensityOffset = Marshal.SizeOf<float>();
+
+                if (HasIntensityFloat64)
+                    _offsets.IntensityOffset = Marshal.SizeOf<double>();
+
+                // Normal
+                if (HasNormalFloat3_32)
+                    _offsets.NormalsOffset = 3 * Marshal.SizeOf<float>();
+                if (HasNormalFloat3_64)
+                    _offsets.NormalsOffset = 3 * Marshal.SizeOf<double>();
+
+                // Color
+                if (HasColorInt_8)
+                    _offsets.RGBOffset = Marshal.SizeOf<sbyte>();
+                if (HasColorInt_16)
+                    _offsets.RGBOffset = Marshal.SizeOf<short>();
+                if (HasColorInt_32)
+                    _offsets.RGBOffset = Marshal.SizeOf<int>();
+                if (HasColorInt_64)
+                    _offsets.RGBOffset = Marshal.SizeOf<long>();
+
+                if (HasColorUInt_8)
+                    _offsets.RGBOffset = Marshal.SizeOf<byte>();
+                if (HasColorUInt_16)
+                    _offsets.RGBOffset = Marshal.SizeOf<ushort>();
+                if (HasColorUInt_32)
+                    _offsets.RGBOffset = Marshal.SizeOf<uint>();
+                if (HasColorUInt_64)
+                    _offsets.RGBOffset = Marshal.SizeOf<ulong>();
+
+                if (HasColorFloat32)
+                    _offsets.RGBOffset = Marshal.SizeOf<float>();
+
+                if (HasColorFloat64)
+                    _offsets.RGBOffset = Marshal.SizeOf<double>();
+
+                if (HasColorFloat3_32)
+                    _offsets.RGBOffset = 3 * Marshal.SizeOf<float>();
+
+                if (HasColorFloat3_64)
+                    _offsets.RGBOffset = 3 * Marshal.SizeOf<double>();
+
+                // Label                
+                if (HasLabelInt_8)
+                    _offsets.LabelOffset = Marshal.SizeOf<sbyte>();
+                if (HasLabelInt_16)
+                    _offsets.LabelOffset = Marshal.SizeOf<short>();
+                if (HasLabelInt_32)
+                    _offsets.LabelOffset = Marshal.SizeOf<int>();
+                if (HasLabelInt_64)
+                    _offsets.LabelOffset = Marshal.SizeOf<long>();
+
+                if (HasLabelUInt_8)
+                    _offsets.LabelOffset = Marshal.SizeOf<byte>();
+                if (HasLabelUInt_16)
+                    _offsets.LabelOffset = Marshal.SizeOf<ushort>();
+                if (HasLabelUInt_32)
+                    _offsets.LabelOffset = Marshal.SizeOf<uint>();
+                if (HasLabelUInt_64)
+                    _offsets.LabelOffset = Marshal.SizeOf<ulong>();
+
+                if (HasLabelFloat32)
+                    _offsets.LabelOffset = Marshal.SizeOf<float>();
+
+                if (HasLabelFloat64)
+                    _offsets.LabelOffset = Marshal.SizeOf<double>();
+
+                // Curvature
+                if (HasCurvatureInt_8)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<sbyte>();
+                if (HasCurvatureInt_16)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<short>();
+                if (HasCurvatureInt_32)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<int>();
+                if (HasCurvatureInt_64)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<long>();
+
+                if (HasCurvatureUInt_8)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<byte>();
+                if (HasCurvatureUInt_16)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<ushort>();
+                if (HasCurvatureUInt_32)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<uint>();
+                if (HasCurvatureUInt_64)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<ulong>();
+
+                if (HasCurvatureFloat32)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<float>();
+
+                if (HasCurvatureFloat64)
+                    _offsets.CurvatureOffset = Marshal.SizeOf<double>();
+
+
+                // Hitcount
+                if (HasHitCountInt_8)
+                    _offsets.HitCountOffset = Marshal.SizeOf<sbyte>();
+                if (HasHitCountInt_16)
+                    _offsets.HitCountOffset = Marshal.SizeOf<short>();
+                if (HasHitCountInt_32)
+                    _offsets.HitCountOffset = Marshal.SizeOf<int>();
+                if (HasHitCountInt_64)
+                    _offsets.HitCountOffset = Marshal.SizeOf<long>();
+
+                if (HasHitCountUInt_8)
+                    _offsets.HitCountOffset = Marshal.SizeOf<byte>();
+                if (HasHitCountUInt_16)
+                    _offsets.HitCountOffset = Marshal.SizeOf<ushort>();
+                if (HasHitCountUInt_32)
+                    _offsets.HitCountOffset = Marshal.SizeOf<uint>();
+                if (HasHitCountUInt_64)
+                    _offsets.HitCountOffset = Marshal.SizeOf<ulong>();
+
+                if (HasHitCountFloat32)
+                    _offsets.HitCountOffset = Marshal.SizeOf<float>();
+
+                if (HasHitCountFloat64)
+                    _offsets.HitCountOffset = Marshal.SizeOf<double>();
+
+                // GPSTime
+                if (HasGPSTimeInt_8)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<sbyte>();
+                if (HasGPSTimeInt_16)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<short>();
+                if (HasGPSTimeInt_32)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<int>();
+                if (HasGPSTimeInt_64)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<long>();
+
+                if (HasGPSTimeUInt_8)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<byte>();
+                if (HasGPSTimeUInt_16)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<ushort>();
+                if (HasGPSTimeUInt_32)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<uint>();
+                if (HasGPSTimeUInt_64)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<ulong>();
+
+                if (HasGPSTimeFloat32)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<float>();
+
+                if (HasGPSTimeFloat64)
+                    _offsets.GPSTimeOffset = Marshal.SizeOf<double>();
+
+                OffsetsCalculated = true;
+
+                return _offsets;
+            }
+        }
+
+        private DecodeRawPosition SetRawPositionMethod
+        {
+            get
+            {
+                if (HasPositionFloat3_32)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var offset = Marshal.SizeOf<float>();
+                        var x = BitConverter.ToSingle(byteIn, 0);
+                        var y = BitConverter.ToSingle(byteIn, offset);
+                        var z = BitConverter.ToSingle(byteIn, offset * 2);
+
+                        SetPositionFloat3_32(ref pointIn, new float3(x, y, z));
+                    };
+                }
+                if (HasPositionFloat3_64)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var offset = Marshal.SizeOf<double>();
+                        var x = BitConverter.ToDouble(byteIn, 0);
+                        var y = BitConverter.ToDouble(byteIn, offset);
+                        var z = BitConverter.ToDouble(byteIn, offset * 2);
+
+                        SetPositionFloat3_64(ref pointIn, new double3(x, y, z));
+                    };
+                }
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+        }
+
+        private DecodeRawPosition SetRawIntensityMethod
+        {
+            get
+            {
+                if (HasIntensityInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
+                if (HasIntensityInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
+                if (HasIntensityInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
+                if (HasIntensityInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_64(ref pointIn, BitConverter.ToInt64(byteIn, Offsets.PositionOffset));
+
+                if (HasIntensityUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_8(ref pointIn, byteIn[Offsets.PositionOffset]);
+                if (HasIntensityUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, Offsets.PositionOffset));
+                if (HasIntensityUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, Offsets.PositionOffset));
+                if (HasIntensityUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, Offsets.PositionOffset));
+
+                if (HasIntensityFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
+                if (HasIntensityFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+        }
+
+        private DecodeRawNormals SetRawNormalsMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset;
+
+                if (HasNormalFloat3_32)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var dataOffset = Marshal.SizeOf<float>();
+                        var x = BitConverter.ToSingle(byteIn, offset);
+                        var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
+                        var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
+
+                        SetNormalFloat3_32(ref pointIn, new float3(x, y, z));
+                    };
+                }
+                if (HasNormalFloat3_64)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var dataOffset = Marshal.SizeOf<double>();
+
+                        var x = BitConverter.ToDouble(byteIn, offset);
+                        var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
+                        var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
+
+                        SetNormalFloat3_64(ref pointIn, new double3(x, y, z));
+                    };
+                }
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+        }
+
+        private DecodeRawLabel SetRawRGBMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset;
+
+                if (HasColorInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                if (HasColorInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_16(ref pointIn, byteIn[offset]);
+                if (HasColorInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                if (HasColorInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+
+                if (HasColorUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_8(ref pointIn, byteIn[offset + 1]);
+                if (HasColorUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                if (HasColorUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                if (HasColorUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+
+                if (HasColorFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                if (HasColorFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetColorFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+
+                if (HasColorFloat3_32)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var dataOffset = Marshal.SizeOf<float>();
+
+                        var x = BitConverter.ToSingle(byteIn, offset);
+                        var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
+                        var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
+
+                        SetColorFloat3_32(ref pointIn, new float3(x, y, z));
+                    };
+                }
+                if (HasColorFloat3_64)
+                {
+                    return (ref TPoint pointIn, byte[] byteIn) =>
+                    {
+                        var dataOffset = Marshal.SizeOf<double>();
+
+                        var x = BitConverter.ToDouble(byteIn, offset);
+                        var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
+                        var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
+
+                        SetColorFloat3_64(ref pointIn, new double3(x, y, z));
+                    };
+                }
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+
+        }
+
+        private DecodeRawCurvature SetRawLabelMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset;
+
+                if (HasLabelInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                if (HasLabelInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_16(ref pointIn, byteIn[offset]);
+                if (HasLabelInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                if (HasLabelInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+
+                if (HasLabelUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_8(ref pointIn, byteIn[offset + 1]);
+                if (HasLabelUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                if (HasLabelUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                if (HasLabelUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+
+                if (HasLabelFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                if (HasLabelFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetLabelFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+
+        }
+
+        private DecodeRawHitCount SetRawCurvatureMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
+
+                if (HasCurvatureInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                if (HasCurvatureInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_16(ref pointIn, byteIn[offset]);
+                if (HasCurvatureInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                if (HasCurvatureInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+
+                if (HasCurvatureUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_8(ref pointIn, byteIn[offset + 1]);
+                if (HasCurvatureUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                if (HasCurvatureUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                if (HasCurvatureUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+
+                if (HasCurvatureFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                if (HasCurvatureFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetCurvatureFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+
+        }
+
+        private DecodeRawGPSTime SetRawHitCountMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset;
+
+                if (HasHitCountInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                if (HasHitCountInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_16(ref pointIn, byteIn[offset]);
+                if (HasHitCountInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                if (HasHitCountInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+
+                if (HasHitCountUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_8(ref pointIn, byteIn[offset + 1]);
+                if (HasHitCountUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                if (HasHitCountUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                if (HasHitCountUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+
+                if (HasHitCountFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                if (HasHitCountFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetHitCountFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+
+        }
+
+        private DecodeRawPosition SetRawGPSTimeMethod
+        {
+            get
+            {
+                var offset = Offsets.PositionOffset + Offsets.IntensityOffset + Offsets.NormalsOffset + Offsets.RGBOffset + Offsets.LabelOffset + Offsets.HitCountOffset;
+
+                if (HasGPSTimeInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_8(ref pointIn, (sbyte)byteIn[offset]);
+                if (HasGPSTimeInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_16(ref pointIn, byteIn[offset]);
+                if (HasGPSTimeInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_32(ref pointIn, BitConverter.ToInt32(byteIn, offset));
+                if (HasGPSTimeInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeInt_64(ref pointIn, BitConverter.ToInt64(byteIn, offset));
+
+                if (HasGPSTimeUInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_8(ref pointIn, byteIn[offset + 1]);
+                if (HasGPSTimeUInt_16)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_16(ref pointIn, BitConverter.ToUInt16(byteIn, offset));
+                if (HasGPSTimeUInt_32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_32(ref pointIn, BitConverter.ToUInt32(byteIn, offset));
+                if (HasGPSTimeUInt_64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeUInt_64(ref pointIn, BitConverter.ToUInt64(byteIn, offset));
+
+                if (HasGPSTimeFloat32)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat32(ref pointIn, BitConverter.ToSingle(byteIn, offset));
+                if (HasGPSTimeFloat64)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetGPSTimeFloat64(ref pointIn, BitConverter.ToDouble(byteIn, offset));
+
+                return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
+            }
+        }
+
+        #endregion
+
+        public byte[] GetRawPoint(ref TPoint point)
+        {
+            if (point == null)
+                throw new NullReferenceException("Given point is null!");
+
+            return GetRawPointMethod(ref point);
+        }
+
+        public void SetRawPoint(ref TPoint pointIn, byte[] byteIn)
+        {
+            if (pointIn == null || byteIn == null || byteIn.Length < 8)
+                throw new NullReferenceException("Invalid data given");
+
+            SetRawPointMethod(ref pointIn, byteIn);
+        }
 
         #endregion
     }
