@@ -1,7 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Pointcloud.Common
@@ -878,20 +877,33 @@ namespace Fusee.Pointcloud.Common
 
         private delegate byte[] EncodeRawGPSTime(ref TPoint point);
 
-        private EncodeRawPoint GetRawPointMethod => (ref TPoint point) =>
-        {
-            var position = GetRawPositionMethod(ref point);
-            var intensity = GetRawIntensityMethod(ref point);
-            var normals = GetRawNormalsMethod(ref point);
-            var rgb = GetRawRGBMethod(ref point);
-            var label = GetRawLabelMethod(ref point);
-            var curvature = GetRawCurvatureMethod(ref point);
-            var hitCount = GetRawHitCountMethod(ref point);
-            var GPSTime = GetRawGPSTimeMethod(ref point);
+        private EncodeRawPoint _getRawPointMethod = null;
 
-            // XYZINormalRGBLCurvatureHitCountGPSTime
-            return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
-        };
+        private EncodeRawPoint GetRawPointMethod
+        {
+            get
+            {
+                if (_getRawPointMethod != null)
+                    return _getRawPointMethod;
+
+                // First call, construct everything and save the resulting method
+                _getRawPointMethod = (ref TPoint point) =>
+                {
+                    var position = GetRawPositionMethod(ref point);
+                    var intensity = GetRawIntensityMethod(ref point);
+                    var normals = GetRawNormalsMethod(ref point);
+                    var rgb = GetRawRGBMethod(ref point);
+                    var label = GetRawLabelMethod(ref point);
+                    var curvature = GetRawCurvatureMethod(ref point);
+                    var hitCount = GetRawHitCountMethod(ref point);
+                    var GPSTime = GetRawGPSTimeMethod(ref point);
+
+                    // XYZINormalRGBLCurvatureHitCountGPSTime
+                    return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
+                };
+                return _getRawPointMethod;
+            }
+        }
 
         private EncodeRawPosition GetRawPositionMethod
         {
@@ -1199,37 +1211,54 @@ namespace Fusee.Pointcloud.Common
 
         private delegate void DecodeRawGPSTime(ref TPoint pointIn, byte[] byteIn);
 
-        private DecodeRawPoint SetRawPointMethod => (ref TPoint pointInt, byte[] byteIn) =>
-        {
-            // Call all methods to recreate the point
-            SetRawPositionMethod(ref pointInt, byteIn);
-            SetRawIntensityMethod(ref pointInt, byteIn);
-            SetRawNormalsMethod(ref pointInt, byteIn);
-            SetRawRGBMethod(ref pointInt, byteIn);
-            SetRawLabelMethod(ref pointInt, byteIn);
-            SetRawCurvatureMethod(ref pointInt, byteIn);
-            SetRawHitCountMethod(ref pointInt, byteIn);
-            SetRawGPSTimeMethod(ref pointInt, byteIn);
-        };
+        private DecodeRawPoint _setRawPointMethod = null;
 
-        public struct ByteArrayOffsets
+        private DecodeRawPoint SetRawPointMethod
+        {
+            get
+            {
+                if (_setRawPointMethod != null)
+                    return _setRawPointMethod;
+
+                // First call, construct everything and save the resulting method
+                _setRawPointMethod = (ref TPoint pointInt, byte[] byteIn) =>
+                {
+                    // Call all methods to recreate the point
+                    SetRawPositionMethod(ref pointInt, byteIn);
+                    SetRawIntensityMethod(ref pointInt, byteIn);
+                    SetRawNormalsMethod(ref pointInt, byteIn);
+                    SetRawRGBMethod(ref pointInt, byteIn);
+                    SetRawLabelMethod(ref pointInt, byteIn);
+                    SetRawCurvatureMethod(ref pointInt, byteIn);
+                    SetRawHitCountMethod(ref pointInt, byteIn);
+                    SetRawGPSTimeMethod(ref pointInt, byteIn);
+                };
+
+                return _setRawPointMethod;
+            }
+        }
+
+        /// <summary>
+        ///     Needed for correct array offsets during read
+        /// </summary>
+        internal struct ByteArrayOffsets
         {
             // XYZINormalRGBLCurvatureHitCountGPSTime
 
-            public int PositionOffset;
-            public int IntensityOffset;
-            public int NormalsOffset;
-            public int RGBOffset;
-            public int LabelOffset;
-            public int CurvatureOffset;
-            public int HitCountOffset;
-            public int GPSTimeOffset;
+            internal int PositionOffset;
+            internal int IntensityOffset;
+            internal int NormalsOffset;
+            internal int RGBOffset;
+            internal int LabelOffset;
+            internal int CurvatureOffset;
+            internal int HitCountOffset;
+            internal int GPSTimeOffset;
         }
 
         private bool OffsetsCalculated = false;
         private ByteArrayOffsets _offsets;
 
-        public ByteArrayOffsets Offsets
+        internal ByteArrayOffsets Offsets
         {
             get
             {
@@ -1265,7 +1294,7 @@ namespace Fusee.Pointcloud.Common
                 if (HasIntensityUInt_64)
                     _offsets.IntensityOffset = Marshal.SizeOf<ulong>();
 
-                if(HasIntensityFloat32)
+                if (HasIntensityFloat32)
                     _offsets.IntensityOffset = Marshal.SizeOf<float>();
 
                 if (HasIntensityFloat64)
@@ -1302,7 +1331,7 @@ namespace Fusee.Pointcloud.Common
                 if (HasColorFloat64)
                     _offsets.RGBOffset = Marshal.SizeOf<double>();
 
-                if(HasColorFloat3_32)
+                if (HasColorFloat3_32)
                     _offsets.RGBOffset = 3 * Marshal.SizeOf<float>();
 
                 if (HasColorFloat3_64)
@@ -1414,7 +1443,7 @@ namespace Fusee.Pointcloud.Common
                 return _offsets;
             }
         }
-        
+
         private DecodeRawPosition SetRawPositionMethod
         {
             get
@@ -1451,9 +1480,9 @@ namespace Fusee.Pointcloud.Common
         {
             get
             {
-                if (HasIntensityInt_8)                
-                    return (ref TPoint pointIn, byte[] byteIn) =>  SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);                
-                if(HasIntensityInt_16)
+                if (HasIntensityInt_8)
+                    return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_8(ref pointIn, (sbyte)byteIn[Offsets.PositionOffset]);
+                if (HasIntensityInt_16)
                     return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_16(ref pointIn, byteIn[Offsets.PositionOffset]);
                 if (HasIntensityInt_32)
                     return (ref TPoint pointIn, byte[] byteIn) => SetIntensityInt_32(ref pointIn, BitConverter.ToInt32(byteIn, Offsets.PositionOffset));
@@ -1473,7 +1502,7 @@ namespace Fusee.Pointcloud.Common
                     return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat32(ref pointIn, BitConverter.ToSingle(byteIn, Offsets.PositionOffset));
                 if (HasIntensityFloat64)
                     return (ref TPoint pointIn, byte[] byteIn) => SetIntensityFloat64(ref pointIn, BitConverter.ToDouble(byteIn, Offsets.PositionOffset));
-                
+
                 return (ref TPoint pointIn, byte[] byteIn) => { }; // Do nothing
             }
         }
@@ -1488,7 +1517,7 @@ namespace Fusee.Pointcloud.Common
                 {
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
-                        var dataOffset = Marshal.SizeOf<float>();                        
+                        var dataOffset = Marshal.SizeOf<float>();
                         var x = BitConverter.ToSingle(byteIn, offset);
                         var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
                         var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
@@ -1501,7 +1530,7 @@ namespace Fusee.Pointcloud.Common
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
                         var dataOffset = Marshal.SizeOf<double>();
-                       
+
                         var x = BitConverter.ToDouble(byteIn, offset);
                         var y = BitConverter.ToDouble(byteIn, offset + dataOffset);
                         var z = BitConverter.ToDouble(byteIn, offset + dataOffset * 2);
@@ -1548,7 +1577,7 @@ namespace Fusee.Pointcloud.Common
                     return (ref TPoint pointIn, byte[] byteIn) =>
                     {
                         var dataOffset = Marshal.SizeOf<float>();
-                        
+
                         var x = BitConverter.ToSingle(byteIn, offset);
                         var y = BitConverter.ToSingle(byteIn, offset + dataOffset);
                         var z = BitConverter.ToSingle(byteIn, offset + dataOffset * 2);
@@ -1717,7 +1746,7 @@ namespace Fusee.Pointcloud.Common
             if (point == null)
                 throw new NullReferenceException("Given point is null!");
 
-             return GetRawPointMethod(ref point);
+            return GetRawPointMethod(ref point);
         }
 
         public void SetRawPoint(ref TPoint pointIn, byte[] byteIn)
