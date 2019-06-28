@@ -5,22 +5,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Fusee.Pointcloud.OoCFileGen
+namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
-    public class PtOctant<TPoint> : Octant<TPoint>
+    public class PtOctantWrite<TPoint> : PtOctant<TPoint>
     {
-        //The Resolution of an Octant is defined by the minimum distance (spacing) between points.
-        //If the minimum distance between a point and its nearest neighbour is smaller then this distance, it will fall into a child octant.
-        public double Resolution;
-
         public PtGrid<TPoint> Grid;
 
-        public bool IsLeaf { get; internal set; }
-
-        public Guid Guid { get; private set; }
-
-
-        public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
+        public PtOctantWrite(double3 center, double size, Octant<TPoint>[] children = null)
         {
             Guid = Guid.NewGuid();
 
@@ -28,28 +19,113 @@ namespace Fusee.Pointcloud.OoCFileGen
             Size = size;
 
             if (children == null)
-                Children = new PtOctant<TPoint>[8];
+                Children = new Octant<TPoint>[8];
             else
                 Children = children;
 
             Payload = new List<TPoint>();
         }
+
+        public new PtOctantWrite<TPoint> CreateChild(int posInParent)
+        {
+            var childCenter = CalcCildCenterAtPos(posInParent);
+
+            var childRes = Size / 2d;
+            var child = new PtOctantWrite<TPoint>(childCenter, childRes)
+            {
+                Resolution = Resolution / 2d,
+                Level = Level + 1
+            };
+            return child;
+        }
+    }
+
+    public class PtOctant<TPoint> : Octant<TPoint>
+    {
+        //The Resolution of an Octant is defined by the minimum distance (spacing) between points.
+        //If the minimum distance between a point and its nearest neighbour is smaller then this distance, it will fall into a child octant.
+        public double Resolution;
+
+        public Guid Guid { get; set; }
+
+        public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
+        {
+            Center = center;
+            Size = size;
+
+            if (children == null)
+                Children = new Octant<TPoint>[8];
+            else
+                Children = children;
+
+            Payload = new List<TPoint>();
+        }
+        protected PtOctant() {}
+
+        public PtOctant<TPoint> CreateChild(int posInParent)
+        {
+            var childCenter = CalcCildCenterAtPos(posInParent);
+
+            var childRes = Size / 2d;
+            var child = new PtOctant<TPoint>(childCenter, childRes)
+            {
+                Resolution = Resolution / 2d,
+                Level = Level + 1
+            };
+            return child;
+        }
+
+        protected double3 CalcCildCenterAtPos(int posInParent)
+        {
+            double3 childCenter;
+            var childsHalfSize = Size / 4d;
+            switch (posInParent)
+            {
+                default:
+                case 0:
+                    childCenter = new double3(Center.x - childsHalfSize, Center.y - childsHalfSize, Center.z - childsHalfSize);
+                    break;
+                case 1:
+                    childCenter = new double3(Center.x + childsHalfSize, Center.y - childsHalfSize, Center.z - childsHalfSize);
+                    break;
+                case 2:
+                    childCenter = new double3(Center.x - childsHalfSize, Center.y - childsHalfSize, Center.z + childsHalfSize);
+                    break;
+                case 3:
+                    childCenter = new double3(Center.x + childsHalfSize, Center.y - childsHalfSize, Center.z + childsHalfSize);
+                    break;
+                case 4:
+                    childCenter = new double3(Center.x - childsHalfSize, Center.y + childsHalfSize, Center.z - childsHalfSize);
+                    break;
+                case 5:
+                    childCenter = new double3(Center.x + childsHalfSize, Center.y + childsHalfSize, Center.z - childsHalfSize);
+                    break;
+                case 6:
+                    childCenter = new double3(Center.x - childsHalfSize, Center.y + childsHalfSize, Center.z + childsHalfSize);
+                    break;
+                case 7:
+                    childCenter = new double3(Center.x + childsHalfSize, Center.y + childsHalfSize, Center.z + childsHalfSize);
+                    break;
+            }
+
+            return childCenter;
+        }
     }
 
     public class PtOctree<TPoint>
     {
-
         public int MaxNoOfPointsInBucket { get; private set; }
 
         public GridPtAccessor<TPoint> PtAccessor { get; private set; }
 
-        public PtOctant<TPoint> Root { get; set; }
-        
-        public int MaxLevel { get; private set; }
+        public Octant<TPoint> Root;
+
+        public int MaxLevel;
 
         private static BitArray _getChildIdxBitArray = new BitArray(3);
         private static int[] _getChildIdxResultArray = new int[1];
 
+        //Contructor for creating an Octree that is suitable for creating files from it. 
         public PtOctree(AABBd aabb, GridPtAccessor<TPoint> pa, List<TPoint> points, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
@@ -66,7 +142,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             aabbMaxLength += (aabbMaxLength / 100 * 0.01d); //add 1% of the size to it to ensure no point lies on the border of the aabb or the octant.
 
             var res = aabbMaxLength / 128d; //spacing            
-            var root = new PtOctant<TPoint>(aabb.Center, aabbMaxLength)
+            var root = new PtOctantWrite<TPoint>(aabb.Center, aabbMaxLength)
             {
                 Resolution = res
             };
@@ -78,11 +154,18 @@ namespace Fusee.Pointcloud.OoCFileGen
 
             if (Root.Payload.Count >= MaxNoOfPointsInBucket)
             {
-                Subdivide(Root);//Initial subdiv
+                Subdivide((PtOctantWrite<TPoint>)Root);//Initial subdiv
             }
         }
 
-        public void Subdivide(PtOctant<TPoint> octant)
+        public PtOctree(PtOctant<TPoint> root, GridPtAccessor<TPoint> pa, int maxNoOfPointsInBucket)
+        {
+            MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
+            PtAccessor = pa;
+            Root = root;
+        }
+
+        public void Subdivide(PtOctantWrite<TPoint> octant)
         {            
             for (int i = 0; i < octant.Payload.Count; i++) {            
                 var pt = octant.Payload[i];
@@ -95,7 +178,7 @@ namespace Fusee.Pointcloud.OoCFileGen
 
             for (int i = 0; i < octant.Children.Length; i++)
             {
-                var child = (PtOctant<TPoint>)octant.Children[i];
+                var child = (PtOctantWrite<TPoint>)octant.Children[i];
                 if (child == null) continue;
 
                 if (child.Payload.Count >= MaxNoOfPointsInBucket)
@@ -107,13 +190,17 @@ namespace Fusee.Pointcloud.OoCFileGen
             }
         }
                
-        private void CreateChildAndReadPtToGrid(int posInParent, PtOctant<TPoint> octant, TPoint point)
+        private void CreateChildAndReadPtToGrid(int posInParent, PtOctantWrite<TPoint> octant, TPoint point)
         {
-            PtOctant<TPoint> child;
+            PtOctantWrite<TPoint> child;
 
             if (octant.Children[posInParent] == null)
             {
-                child = CreateChild(octant, posInParent);
+                child = octant.CreateChild(posInParent) as PtOctantWrite<TPoint>;
+
+                if (MaxLevel < child.Level)
+                    MaxLevel = child.Level;
+
                 var childGrid = new PtGrid<TPoint>(PtAccessor, child, point);
                 child.Grid = childGrid;
                 octant.Children[posInParent] = child;                
@@ -121,7 +208,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             else
             {
                 var firstCenter = PtGrid<TPoint>.CalcCenterOfUpperLeftCell(octant);
-                child = (PtOctant<TPoint>)octant.Children[posInParent];
+                child = (PtOctantWrite<TPoint>)octant.Children[posInParent];
                 child.Grid.ReadPointToGrid(PtAccessor, child, point, firstCenter);
             } 
         }
@@ -146,61 +233,14 @@ namespace Fusee.Pointcloud.OoCFileGen
             _getChildIdxBitArray.CopyTo(_getChildIdxResultArray, 0);
 
             return _getChildIdxResultArray[0];           
-        }
+        }        
 
-        private PtOctant<TPoint> CreateChild(PtOctant<TPoint> parent, int posInParent)
-        {
-            double3 childCenter;
-            var childsHalfSize = parent.Size / 4d;
-            switch (posInParent)
-            {
-                default:
-                case 0:
-                    childCenter = new double3(parent.Center.x - childsHalfSize, parent.Center.y - childsHalfSize, parent.Center.z - childsHalfSize);
-                    break;
-                case 1:
-                    childCenter = new double3(parent.Center.x + childsHalfSize, parent.Center.y - childsHalfSize, parent.Center.z - childsHalfSize);
-                    break;
-                case 2:
-                    childCenter = new double3(parent.Center.x - childsHalfSize, parent.Center.y - childsHalfSize, parent.Center.z + childsHalfSize);
-                    break;
-                case 3:
-                    childCenter = new double3(parent.Center.x + childsHalfSize, parent.Center.y - childsHalfSize, parent.Center.z + childsHalfSize);
-                    break;
-                case 4:
-                    childCenter = new double3(parent.Center.x - childsHalfSize, parent.Center.y + childsHalfSize, parent.Center.z - childsHalfSize);
-                    break;
-                case 5:
-                    childCenter = new double3(parent.Center.x + childsHalfSize, parent.Center.y + childsHalfSize, parent.Center.z - childsHalfSize);
-                    break;
-                case 6:
-                    childCenter = new double3(parent.Center.x - childsHalfSize, parent.Center.y + childsHalfSize, parent.Center.z + childsHalfSize);
-                    break;
-                case 7:
-                    childCenter = new double3(parent.Center.x + childsHalfSize, parent.Center.y + childsHalfSize, parent.Center.z + childsHalfSize);
-                    break;
-            }
-
-            var childRes = parent.Size / 2d;
-            var child = new PtOctant<TPoint>(childCenter, childRes)
-            {
-                Resolution = parent.Resolution / 2d,
-                Level = parent.Level + 1
-            };
-
-            if (MaxLevel < child.Level)
-                MaxLevel = child.Level;
-
-            return child;
-        }
-
-        public static IEnumerable<TPoint> GetPointsFromGrid(PtOctant<TPoint> octant)
+        public static IEnumerable<TPoint> GetPointsFromGrid(PtOctantWrite<TPoint> octant)
         {
             foreach (var cell in octant.Grid.GridCells)
             { 
                 if (cell == null) continue;
-                if (cell.Occupant != null)
-                    yield return cell.Occupant;
+                yield return cell.Occupant;
             }
         }
 
@@ -220,14 +260,14 @@ namespace Fusee.Pointcloud.OoCFileGen
         /// <summary>
         /// Starts traversing from root. For starting from another node, use the static methods of <see cref="OctreeTraverser"/>.
         /// </summary>
-        public void Traverse(Action<PtOctant<TPoint>> callback)
+        public void Traverse(Action<PtOctantWrite<TPoint>> callback)
         {
-            DoTraverse(Root, callback);
+            DoTraverse((PtOctantWrite<TPoint>)Root, callback);
         }
 
-        private static void DoTraverse(PtOctant<TPoint> node, Action<PtOctant<TPoint>> callback)
+        private static void DoTraverse(PtOctantWrite<TPoint> node, Action<PtOctantWrite<TPoint>> callback)
         {
-            var candidates = new Stack<PtOctant<TPoint>>();
+            var candidates = new Stack<PtOctantWrite<TPoint>>();
             candidates.Push(node);
 
             while (candidates.Count > 0)
@@ -237,7 +277,7 @@ namespace Fusee.Pointcloud.OoCFileGen
 
                 // add children as candidates
 
-                IterateChildren(node, (PtOctant<TPoint> childNode) =>
+                IterateChildren(node, (PtOctantWrite<TPoint> childNode) =>
                 {
                     candidates.Push(childNode);
                 });
@@ -247,14 +287,14 @@ namespace Fusee.Pointcloud.OoCFileGen
         /// <summary>
         /// Iterates through the child node and calls for each child the given action.
         /// </summary>        
-        private static void IterateChildren(PtOctant<TPoint> parent, Action<PtOctant<TPoint>> iterateAction)
+        private static void IterateChildren(PtOctantWrite<TPoint> parent, Action<PtOctantWrite<TPoint>> iterateAction)
         {
             if (parent.Children != null)
             {                
                 foreach (var child in parent.Children)
                 {
                     if (child != null)
-                        iterateAction?.Invoke((PtOctant<TPoint>)child);
+                        iterateAction?.Invoke((PtOctantWrite<TPoint>)child);
                 }
                 
             }

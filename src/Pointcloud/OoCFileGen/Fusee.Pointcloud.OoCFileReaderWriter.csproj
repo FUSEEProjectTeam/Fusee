@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project>
 
   <PropertyGroup>
     <OutputType>Library</OutputType>
@@ -6,10 +6,16 @@
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
-
+  
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
   </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Math.Core">
@@ -20,10 +26,9 @@
     </Reference>
     <Reference Include="Fusee.Engine.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\..\..\..\..\..\..\Program Files\dotnet\sdk\NuGetFallbackFolder\newtonsoft.json\9.0.1\lib\netstandard1.0\Newtonsoft.Json.dll</HintPath>
-    </Reference>
+    </Reference>   
   </ItemGroup>
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" /> 
 
 </Project>

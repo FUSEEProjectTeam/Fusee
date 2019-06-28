@@ -30,6 +30,10 @@
     <Content Include="Assets\PointDepth.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>  
 
   <ItemGroup>
@@ -63,8 +67,8 @@
     <Reference Include="Fusee.Pointcloud.LASReader">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.LASReader.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Pointcloud.OocFileGen">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OocFileGen.dll</HintPath>
+    <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
     </Reference>
   </ItemGroup>
 

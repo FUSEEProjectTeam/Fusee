@@ -2,7 +2,7 @@
 using Fusee.Math.Core;
 using System.Collections.Generic;
 
-namespace Fusee.Pointcloud.OoCFileGen
+namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
     public class GridCell<T> : Bucket<T>
     {
@@ -21,7 +21,7 @@ namespace Fusee.Pointcloud.OoCFileGen
 
         private List<int3> _neighbouCellIdxOffsets;
 
-        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point)
+        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
@@ -31,7 +31,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
         }
 
-        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, List<TPoint> points)
+        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
@@ -46,7 +46,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             }
         }
 
-        public static double3 CalcCenterOfUpperLeftCell(PtOctant<TPoint> parentOctant)
+        public static double3 CalcCenterOfUpperLeftCell(PtOctantWrite<TPoint> parentOctant)
         {
             var parentHalfSize = parentOctant.Size / 2d;
             var parentHalfRes = parentOctant.Resolution / 2d;
@@ -55,7 +55,7 @@ namespace Fusee.Pointcloud.OoCFileGen
         }
 
         //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
-        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> parentOctant, TPoint point, double3 firstCenter)
+        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point, double3 firstCenter)
         {
             var halfSize = parentOctant.Size / 2d;
             var translationVec = new double3(parentOctant.Center.x - halfSize, parentOctant.Center.y - halfSize, parentOctant.Center.z - halfSize); //translate to zero
@@ -71,14 +71,6 @@ namespace Fusee.Pointcloud.OoCFileGen
             var indexZ = (int)((z * 128) / parentOctant.Size);
 
             var cell = GridCells[indexX, indexY, indexZ];
-
-            //create CridCell on demand
-            if(cell == null)
-            {
-                var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
-                cell = new GridCell<TPoint>(center, parentOctant.Resolution);
-                GridCells[indexX, indexY, indexZ] = cell;               
-            }
 
             //check if NN is too close            
             foreach (var idxOffset in _neighbouCellIdxOffsets)
@@ -99,9 +91,7 @@ namespace Fusee.Pointcloud.OoCFileGen
                 var neighbourCell = GridCells[nIndexX, nIndexY, nIndexZ];
 
                 if (neighbourCell == null)
-                    continue;
-                if (neighbourCell.Occupant == null)
-                    continue;
+                    continue;                
 
                 if ((tPointPos - ptAccessor.GetPositionFloat3_64(ref neighbourCell.Occupant)).Length < neighbourCell.Size) //neighbourCell.Size equals spacing/ resolution of the octant
                 { 
@@ -112,8 +102,19 @@ namespace Fusee.Pointcloud.OoCFileGen
                 }
             }
 
-            //set or change cell occupant if neccessary
-            if (cell.Occupant == null)
+            //create CridCell on demand
+            if (cell == null)
+            {
+                var center = new double3(firstCenter.x + parentOctant.Resolution * x, firstCenter.y + parentOctant.Resolution * y, firstCenter.z + parentOctant.Resolution * z);
+                cell = new GridCell<TPoint>(center, parentOctant.Resolution)
+                {
+                    Occupant = point
+                };
+                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+
+                GridCells[indexX, indexY, indexZ] = cell;
+            }            
+            else if (cell.Occupant == null) //set or change cell occupant if neccessary
             {
                 cell.Occupant = point;
                 ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
@@ -137,7 +138,8 @@ namespace Fusee.Pointcloud.OoCFileGen
                     ptAccessor.SetGridIdx(ref point, new int3(-1, -1, -1));
                     parentOctant.Payload.Add(point);                    
                 }
-            }            
+            }
+            
         }
 
         private static List<int3> GetGridNeighbourIndices(int dist)

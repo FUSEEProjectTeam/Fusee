@@ -1,6 +1,7 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -8,7 +9,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Fusee.Pointcloud.OoCFileGen
+namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
     public class GridPtAccessor<TPoint> : PointAccessor<TPoint>
     {
@@ -39,9 +40,21 @@ namespace Fusee.Pointcloud.OoCFileGen
             _fileFolderPath = pathToNodeFileFolder;
         }
 
+        public void WriteCompleteData(PtOctree<TPoint> octree, GridPtAccessor<TPoint> ptAccessor)
+        {
+            WriteMeta(octree, ptAccessor);
+            WriteHierarchy(octree);
+            octree.Traverse((PtOctantWrite<TPoint> node) =>
+            {
+                WriteNode(octree.PtAccessor, node);
+            });
+        }
+
+        #region Write .node files
+
         private void WritePos(BinaryWriter writer, GridPtAccessor<TPoint> ptAccessor, TPoint pt)
         {
-            if(ptAccessor.HasPositionFloat3_32)
+            if (ptAccessor.HasPositionFloat3_32)
             {
                 var ptPos = ptAccessor.GetPositionFloat3_32(ref pt);
                 writer.Write(ptPos.x);
@@ -82,7 +95,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             if (ptAccessor.HasIntensityInt_8)
             {
                 var ptIntensity = ptAccessor.GetIntensityInt_8(ref pt);
-                writer.Write(ptIntensity); 
+                writer.Write(ptIntensity);
             }
             else if (ptAccessor.HasIntensityInt_16)
             {
@@ -141,7 +154,7 @@ namespace Fusee.Pointcloud.OoCFileGen
             else if (ptAccessor.HasColorInt_16)
             {
                 var ptColor = ptAccessor.GetColorInt_16(ref pt);
-                writer.Write(ptColor);                
+                writer.Write(ptColor);
             }
             else if (ptAccessor.HasColorInt_32)
             {
@@ -153,9 +166,54 @@ namespace Fusee.Pointcloud.OoCFileGen
                 var ptColor = ptAccessor.GetColorInt_64(ref pt);
                 writer.Write(ptColor);
             }
+            else if (ptAccessor.HasColorUInt_8)
+            {
+                var ptColor = ptAccessor.GetColorUInt_8(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorUInt_16)
+            {
+                var ptColor = ptAccessor.GetColorUInt_16(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorUInt_32)
+            {
+                var ptColor = ptAccessor.GetColorUInt_32(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorUInt_64)
+            {
+                var ptColor = ptAccessor.GetColorUInt_64(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorFloat32)
+            {
+                var ptColor = ptAccessor.GetColorFloat32(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorFloat64)
+            {
+                var ptColor = ptAccessor.GetColorFloat64(ref pt);
+                writer.Write(ptColor);
+            }
+            else if (ptAccessor.HasColorFloat3_32)
+            {
+                var ptColor = ptAccessor.GetColorFloat3_32(ref pt);
+                writer.Write(ptColor.x);
+                writer.Write(ptColor.y);
+                writer.Write(ptColor.z);
+            }
+            else if (ptAccessor.HasColorFloat3_64)
+            {
+                var ptColor = ptAccessor.GetColorFloat3_64(ref pt);
+                writer.Write(ptColor.x);
+                writer.Write(ptColor.y);
+                writer.Write(ptColor.z);
+            }
+
         }
 
-        private IEnumerable<TPoint> GetPointsFromGrid(PtOctant<TPoint> node)
+        private IEnumerable<TPoint> GetPointsFromGrid(PtOctantWrite<TPoint> node)
         {
             foreach (var cell in node.Grid.GridCells)
             {
@@ -164,31 +222,34 @@ namespace Fusee.Pointcloud.OoCFileGen
             }
         }
 
-        private string GetPathToFile(PtOctant<TPoint> node)
+        private string GetPathToFile(PtOctantWrite<TPoint> node)
         {
-            return _fileFolderPath + "\\" + GetFilename(node);
+            var directoryInfo = Directory.CreateDirectory(_fileFolderPath + "\\Octants");
+            return directoryInfo.FullName + "\\" + GetFilename(node);
         }
 
-        private string GetFilename(PtOctant<TPoint> node)
-        {            
-            var fileName = node.Guid.ToString("N");            
+        private string GetFilename(PtOctantWrite<TPoint> node)
+        {
+            var fileName = node.Guid.ToString("N");
 
             fileName += ".node";
             return fileName;
         }
 
+        #endregion
+
         /// <summary>
         /// Writes the contents, i.e. points, into a single file of the nodes folder.
         /// </summary>
-        public void WriteNode(GridPtAccessor<TPoint> ptAccessor, PtOctant<TPoint> node)
+        public void WriteNode(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> node)
         {
             var points = GetPointsFromGrid(node).ToList();
 
             if (node.IsLeaf)
                 points.AddRange(node.Payload);
 
-            if (points.Count == 0)            
-                return;            
+            if (points.Count == 0)
+                return;
 
             var stream = File.Open(GetPathToFile(node), FileMode.OpenOrCreate);
 
@@ -200,6 +261,9 @@ namespace Fusee.Pointcloud.OoCFileGen
             foreach (var point in points)
             {
                 WritePos(writer, ptAccessor, point);
+                WriteNormal(writer, ptAccessor, point);
+                WriteIntensity(writer, ptAccessor, point);
+                WriteColor(writer, ptAccessor, point);
 
                 //Write other
             }
@@ -213,22 +277,23 @@ namespace Fusee.Pointcloud.OoCFileGen
         {
             using (BinaryWriter bw = new BinaryWriter(File.Open(_fileFolderPath + "\\octree.hierarchy", FileMode.OpenOrCreate)))
             {
-                octree.Traverse((PtOctant<TPoint> node) =>
+                octree.Traverse((PtOctantWrite<TPoint> node) =>
                 {
                     // write loadable properties (in which file the node's content - i.e. points - are stored)
-
                     bw.Write(node.Guid.ToByteArray()); // 16 bytes
                     bw.Write(node.Level);
+                    bw.Write(node.Resolution);
+                    bw.Write(node.IsLeaf);
                     //bw.Write(node.StreamPosition);
 
-                    // write child indices (1 byte)                    
+                    // write child indices (1 byte). For example: Octant has child 0 and 1: 2^0 + 2^1 = 3                   
                     byte childIndices = 0;
 
                     int exp = 0;
                     foreach (var childNode in node.Children)
                     {
-                        if (childNode != null)                        
-                            childIndices += (byte)System.Math.Pow(2, exp);                       
+                        if (childNode != null)
+                            childIndices += (byte)System.Math.Pow(2, exp);
 
                         exp++;
                     }
@@ -241,13 +306,16 @@ namespace Fusee.Pointcloud.OoCFileGen
         /// <summary>
         /// Writes some header information into a .json file.
         /// </summary>
-        public static void WriteMeta(string pathToJson, PtOctree<PtOctant<TPoint>> octree, GridPtAccessor<TPoint> ptAccessor)
+        public void WriteMeta(PtOctree<TPoint> octree, GridPtAccessor<TPoint> ptAccessor)
         {
             var rootCenter = octree.Root.Center;
             var rootSize = octree.Root.Size;
-            var spacing = octree.Root.Resolution;
 
-            JObject jsonObj = new JObject(
+            var ptOctant = (PtOctantWrite<TPoint>)octree.Root;
+
+            var spacing = ptOctant.Resolution;
+
+            var jsonObj = new JObject(
                 //new JProperty("numberOfPoints", octree.PointCount),
                 //new JProperty("boundingBox",
                 //    new JObject(
@@ -255,9 +323,11 @@ namespace Fusee.Pointcloud.OoCFileGen
                 //        new JProperty("size", new JArray(length.X, length.Y, length.Z))
                 //    )
                 //),
+
                 new JProperty("octree",
                     new JObject(
-                        //new JProperty("numberOfNodes", metrics.NodeCount),
+                        new JProperty("maxLevel", octree.MaxLevel),
+                        new JProperty("maxNoOfPointsInBucket", octree.MaxNoOfPointsInBucket),
                         new JProperty("spacingFactor", spacing),
                         new JProperty("rootNode",
                             new JObject(
@@ -279,12 +349,106 @@ namespace Fusee.Pointcloud.OoCFileGen
             jsonObj.Add(ptType);
 
             //Write file
-            using (StreamWriter file = File.CreateText(pathToJson))
+            using (StreamWriter file = File.CreateText(_fileFolderPath + "/meta.json"))
             {
                 file.Write(jsonObj.ToString());
             }
         }
+    }
 
-        
-    }    
+    public class PtOctreeFileReader<TPoint>
+    {
+        private string _fileFolderPath;
+
+        public PtOctreeFileReader(string pathToNodeFileFolder)
+        {
+            _fileFolderPath = pathToNodeFileFolder;
+        }
+
+        public PtOctree<TPoint> GetOctree(GridPtAccessor<TPoint> ptAccessor)
+        {
+            var pathToMetaJson = _fileFolderPath + "\\meta.json";
+            JObject jsonObj;
+
+            using (StreamReader sr = new StreamReader(pathToMetaJson))
+            {
+                jsonObj = (JObject)JToken.ReadFrom(new JsonTextReader(sr));
+            }
+
+            var jsonCenter = (JArray)jsonObj["octree"]["rootNode"]["center"];
+            var center = new double3((double)jsonCenter[0], (double)jsonCenter[1], (double)jsonCenter[2]);
+            var jsonSize = (JValue)jsonObj["octree"]["rootNode"]["size"];
+            var size = (double)jsonSize;
+            var jsonNoOfPts = (JValue)jsonObj["octree"]["maxNoOfPointsInBucket"];
+            var maxNoOfPointsInBucket = (int)jsonNoOfPts;
+            var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
+            var maxLvl = (int)jsonMaxLvl;
+
+            //TODO: get infos from meta.json
+            var root = new PtOctant<TPoint>(center, size);
+            var octree = new PtOctree<TPoint>(root, ptAccessor, maxNoOfPointsInBucket)
+            {
+                MaxLevel = maxLvl
+            };
+            ReadHierarchy(octree);
+            return octree;
+        }
+
+        /// <summary>
+        /// Creates the octree hierarchy structure by reading in the octree.info file.
+        /// </summary>
+        private void ReadHierarchy(PtOctree<TPoint> octree)
+        {
+            var pathToHierarchy = _fileFolderPath + "\\octree.hierarchy";
+
+            FileStream fileStream = File.Open(pathToHierarchy, FileMode.Open, FileAccess.Read);
+            long sizeInBytes = fileStream.Length;
+
+            using (BinaryReader br = new BinaryReader(fileStream))
+            {
+                ProcessNode((PtOctant<TPoint>)octree.Root, br);
+            }
+
+            fileStream.Dispose();
+        }
+
+        /// <summary>
+        /// Processes the current node with the given set of childs as bit set.
+        /// </summary>
+        /// <param name="node">The current node to process.</param>
+        /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's childs exist.</param>
+        private void ProcessNode(PtOctant<TPoint> node, BinaryReader binaryReader)
+        {
+            try
+            {
+                // loadable properties
+                byte[] guidBytes = new byte[16];
+                binaryReader.Read(guidBytes, 0, 16);
+                node.Guid = new Guid(guidBytes);
+                node.Level = binaryReader.ReadInt32();
+                node.Resolution = binaryReader.ReadDouble();
+                node.IsLeaf = binaryReader.ReadBoolean();
+                //node.StreamPosition = binaryReader.ReadInt64();
+
+                // create children
+                byte children = binaryReader.ReadByte();
+
+                for (byte index = 0; index < 8; index++)
+                {
+                    bool childExists = (children & (1 << index)) != 0;
+
+                    if (childExists)
+                    {
+                        PtOctant<TPoint> child = node.CreateChild(index);
+                        node.Children[index] = child;
+                        ProcessNode(child, binaryReader);
+                    }
+                }
+            }
+            catch (EndOfStreamException e)
+            {
+
+            }
+        }
+    }
 }
