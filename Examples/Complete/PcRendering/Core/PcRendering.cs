@@ -154,8 +154,6 @@ namespace Fusee.Examples.PcRendering.Core
             var gridPtAccessor = new MyPointAcessor();            
             var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 500);
 
-            
-
             var occFileWriter = new PtOctreeFileWriter<LAZPointType>("E:/HolbeinPferdOctree");
             occFileWriter.WriteCompleteData(octree, gridPtAccessor);
 
