@@ -313,16 +313,17 @@ namespace Fusee.Math.Core
 
         [Theory]
         [MemberData(nameof(GetAxisAngle))]
-        public void ToRotMat_Static(QuaternionD quat, double4 expected)
+        public void ToRotMat_Static_7DecimalsEqual(QuaternionD quat, double4 expected)
         {
             var actual = QuaternionD.ToRotMat(quat);
 
             var expectedAxis = new double3(expected.xyz);
             var expectedAngle = expected.w;
 
-            var expectedRotMat = double4x4.CreateRoation(expectedAxis, expectedAngle);
+            var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
 
-            Assert.Equal(expectedRotMat, actual);
+            for(var i = 0; i < expectedRotMat.AsArray.Length; i++)
+                Assert.Equal(expectedRotMat.AsArray[i], actual.AsArray[i], 7); 
         }
 
         #endregion

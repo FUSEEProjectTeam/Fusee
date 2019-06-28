@@ -572,10 +572,10 @@ namespace Fusee.Math.Core
         {
             return Diagonalizer(covarianceMatrix);
         }
-        
+
         /// <summary>
         ///     Diagonalizes a given covariance matrix with single precision
-        ///     
+        ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method. 
         ///     <para>
         ///         Credits to: https://github.com/melax/sandbox
         ///         http://melax.github.io/diag.html
@@ -588,7 +588,7 @@ namespace Fusee.Math.Core
         ///     </para>
         /// </summary>
         /// <param name="A">The covariance matrix</param>
-        /// <returns></returns>
+        /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
             const int maxsteps = 24; // certainly wont need that many.
@@ -617,10 +617,10 @@ namespace Fusee.Math.Core
 
                 if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
 
-                var jr = new Quaternion(0, 0, 0, 0)
+                var jr = new Quaternion(0, 0, 0, 0) // jacobi rotation for this iteration.
                 {
                     [k] = (float)(sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
-                }; // jacobi rotation for this iteration.
+                }; 
 
                 // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
                 jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
@@ -636,7 +636,7 @@ namespace Fusee.Math.Core
                 {
                     D.M11,
                     D.M22,
-                    D.M33
+                    D.M33                   
                 },
                 Vectors = Q
             };

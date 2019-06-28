@@ -157,6 +157,16 @@ namespace Fusee.Math.Core
             Assert.Equal(new float3x3(1, 2, 3, 1, 2, 3, 1, 2, 3), actual);
         }
 
+        [Fact]
+        public void AsArray_Instance()
+        {
+            var mat = new float3x3(1, 1, 1, 2, 2, 2, 3, 3, 3);
+
+            var actual = mat.AsArray;
+
+            Assert.Equal(new float[] { 1, 1, 1, 2, 2, 2, 3, 3, 3 }, actual);
+        }
+
         #endregion
 
         #region Arithmetic Functions

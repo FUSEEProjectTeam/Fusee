@@ -35,6 +35,19 @@ namespace Fusee.Math.Core
         [ProtoMember(4)] public double3 translation;
 
         /// <summary>
+        ///     Returns the center of the bounding box
+        /// </summary>
+        public double3 Center => (max + min) * 0.5f;
+
+        /// <summary>
+        ///     Returns the with, height and depth of the box in x, y and z
+        /// </summary>
+        public double3 Size
+        {
+            get { return (max - min); }
+        }
+
+        /// <summary>
         ///     Create a new oriented bounding box
         /// </summary>
         /// <param name="min_">the minimum x y and z values</param>

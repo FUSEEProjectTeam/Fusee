@@ -161,6 +161,20 @@ namespace Fusee.Math.Core
             }
         }
 
+        public double[] AsArray
+        {
+            get
+            {
+                return new double[]
+                {
+                    M11, M12, M13, M14,
+                    M21, M22, M23, M24,
+                    M31, M32, M33, M34,
+                    M41, M42, M43, M44
+                };
+            }
+        }
+
         /// <summary>
         /// The first column of this matrix
         /// </summary>
@@ -453,16 +467,16 @@ namespace Fusee.Math.Core
         {
             double4x4 result;
 
-            var cos = (double)System.Math.Cos(-angle);
-            var sin = (double)System.Math.Sin(-angle);
-            var t = 1.0f - cos;
+            var cos = System.Math.Cos(-angle);
+            var sin = System.Math.Sin(-angle);
+            var t = 1.0 - cos;
 
             axis = axis.Normalize();
 
-            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0f,
-                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0f,
-                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f);
+            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0,
+                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0,
+                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0,
+                0.0, 0.0, 0.0, 1.0);
 
             return result;
         }

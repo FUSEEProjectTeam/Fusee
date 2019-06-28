@@ -185,6 +185,16 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
+        public void AsArray_Instance()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.AsArray;
+
+            Assert.Equal(new float[] { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1 }, actual);
+        }
+
+        [Fact]
         public void Round_Instance()
         {
             var mat = new float4x4( 1.23456789f, 0, 0, 1.23456712f, 
@@ -350,7 +360,6 @@ namespace Fusee.Math.Core
 
             Assert.Equal(expected, actual);
         }
-
         #endregion
 
         #region CreateTranslation

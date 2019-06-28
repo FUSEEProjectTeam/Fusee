@@ -228,7 +228,7 @@ namespace Fusee.Math.Core
             return true;
 
         }
-
+        
         private float Classify(AABBf aabb, float4 plane)
         {
             // maximum extent in direction of plane normal (plane.xyz)

@@ -17,35 +17,38 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     The minimum values of the oriented bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(1)] public float3 min;
+        [ProtoMember(1)] public float3 Min;
 
         /// <summary>
         ///     The maximum values of the oriented bounding box in x, y and z direction
         /// </summary>
-        [ProtoMember(2)] public float3 max;
+        [ProtoMember(2)] public float3 Max;
 
         /// <summary>
         ///     The roation of the oriented bounding box
         /// </summary>
-        [ProtoMember(3)] public float4x4 rotation;
+        [ProtoMember(3)] public float4x4 Rotation;
 
         /// <summary>
         ///     The translation of the oriented bounding box
         /// </summary>
-        [ProtoMember(4)] public float3 translation;
+        [ProtoMember(4)] public float3 Translation;
 
         /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
-        public float3 Center => (max + min) * 0.5f;
+        public float3 Center => (Max + Min) * 0.5f;
 
         /// <summary>
         ///     Returns the with, height and depth of the box in x, y and z
         /// </summary>
         public float3 Size
         {
-            get { return (max - min); }
+            get { return (Max - Min); }
         }
+
+        //public List<float3> MinCubeVerts;           
+
 
         /// <summary>
         ///     Create a new axis aligned bounding box
@@ -56,47 +59,50 @@ namespace Fusee.Math.Core
         /// <param name="translation_">the translation of this box</param>
         public OBBf(float3 min_, float3 max_, float4x4 rotation_, float3 translation_)
         {
-            min = min_;
-            max = max_;
-            rotation = rotation_;
-            translation = translation_;
+            Min = min_;
+            Max = max_;
+            Rotation = rotation_;
+            Translation = translation_;            
         }
 
         /// <summary>
         ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
         /// <param name="meshVertices"></param>
-        public OBBf(IList<float3> vertices)
+        public OBBf(float3[] vertices)
         {
-            translation = M.CalculateCentroid(vertices);
-            var covarianceMatrix = M.CreateCovarianceMatrix(translation, vertices);
+            Translation = M.CalculateCentroid(vertices);
+            var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
             var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
 
-            rotation = eigen.Vectors;
+            Rotation = eigen.Vectors;
 
-            var changeBasis = rotation.Invert();
+            var changeBasis = Rotation.Invert();
 
-            min = vertices[0];
-            max = vertices[0];            
+            Min = vertices[0];
+            Max = vertices[0];
 
             for (var i = 0; i < vertices.Count(); i++)
             {
-                var currentPointTranslated = vertices[i] - translation;
+                var currentPointTranslated = vertices[i] - Translation;
                 var currentPointTranslatedAndRotated = changeBasis * currentPointTranslated;
 
                 this |= currentPointTranslatedAndRotated;
+                //vertices[i] = currentPointTranslatedAndRotated;
             }
+
+         
 
             //MinCubeVerts = new List<float3>
             //{
-            //    new Vector3(Min.x, Min.y, Min.z),
-            //    new Vector3(Max.x, Min.y, Min.z),
-            //    new Vector3(Max.x, Min.y, Max.z),
-            //    new Vector3(Min.x, Min.y, Max.z),
-            //    new Vector3(Min.x, Max.y, Min.z),
-            //    new Vector3(Max.x, Max.y, Min.z),
-            //    new Vector3(Max.x, Max.y, Max.z),
-            //    new Vector3(Min.x, Max.y, Max.z)
+            //    new float3(Min.x, Min.y, Min.z),
+            //    new float3(Max.x, Min.y, Min.z),
+            //    new float3(Max.x, Min.y, Max.z),
+            //    new float3(Min.x, Min.y, Max.z),
+            //    new float3(Min.x, Max.y, Min.z),
+            //    new float3(Max.x, Max.y, Min.z),
+            //    new float3(Max.x, Max.y, Max.z),
+            //    new float3(Min.x, Max.y, Max.z)
             //};
 
             //Dimensions = CalcCubeDimensionMin();
@@ -131,14 +137,14 @@ namespace Fusee.Math.Core
         public static OBBf Union(OBBf a, float3 p)
         {
             OBBf ret;
-            ret.translation = a.translation;
-            ret.rotation = a.rotation;
-            ret.min.x = (a.min.x < p.x) ? a.min.x : p.x;
-            ret.min.y = (a.min.y < p.y) ? a.min.y : p.y;
-            ret.min.z = (a.min.z < p.z) ? a.min.z : p.z;
-            ret.max.x = (a.max.x > p.x) ? a.max.x : p.x;
-            ret.max.y = (a.max.y > p.y) ? a.max.y : p.y;
-            ret.max.z = (a.max.z > p.z) ? a.max.z : p.z;
+            ret.Translation = a.Translation;
+            ret.Rotation = a.Rotation;
+            ret.Min.x = (a.Min.x < p.x) ? a.Min.x : p.x;
+            ret.Min.y = (a.Min.y < p.y) ? a.Min.y : p.y;
+            ret.Min.z = (a.Min.z < p.z) ? a.Min.z : p.z;
+            ret.Max.x = (a.Max.x > p.x) ? a.Max.x : p.x;
+            ret.Max.y = (a.Max.y > p.y) ? a.Max.y : p.y;
+            ret.Max.z = (a.Max.z > p.z) ? a.Max.z : p.z;
             return ret;
         }
 

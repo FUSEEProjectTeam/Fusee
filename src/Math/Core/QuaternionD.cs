@@ -412,13 +412,13 @@ namespace Fusee.Math.Core
             quat.w, quat.z, -quat.y, quat.x,
             -quat.z, quat.w, quat.x, quat.y,
             quat.y, -quat.x, quat.w, quat.z,
-            -quat.x, -quat.y, -quat.z, quat.w);
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
 
             var m2 = new double4x4(
             quat.w, quat.z, -quat.y, -quat.x,
             -quat.z, quat.w, quat.x, -quat.y,
             quat.y, -quat.x, quat.w, -quat.z,
-            quat.x, quat.y, quat.z, quat.w);
+            quat.x, quat.y, quat.z, quat.w).Transpose();
 
             return m1 * m2;
         }

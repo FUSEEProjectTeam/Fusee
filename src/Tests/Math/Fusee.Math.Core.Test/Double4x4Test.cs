@@ -168,6 +168,16 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
+        public void AsArray_Instance()
+        {
+            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.AsArray;
+
+            Assert.Equal(new double[] { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1 }, actual);
+        }
+
+        [Fact]
         public void Transpose_Instance()
         {
             var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);

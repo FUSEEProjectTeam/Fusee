@@ -440,7 +440,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Normalize(double3 vec)
         {
-            double scale = 1.0f / vec.Length;
+            double scale = 1.0 / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;

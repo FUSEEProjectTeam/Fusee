@@ -307,7 +307,7 @@ namespace Fusee.Math.Core
             var expectedAxis = new float3(expected.xyz);
             var expectedAngle = expected.w;
 
-            var expectedRotMat = float4x4.CreateRotation(expectedAxis, expectedAngle);
+            var expectedRotMat = float4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
 
             Assert.Equal(expectedRotMat, actual);
         }
