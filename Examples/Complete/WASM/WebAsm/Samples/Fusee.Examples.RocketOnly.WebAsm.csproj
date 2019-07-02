@@ -1,0 +1,105 @@
+﻿<!-- Project Sdk="Microsoft.NET.Sdk"-->
+<Project Sdk="Mono.WebAssembly.Sdk/0.1.0-preview1">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <NoWarn>NU1701;NU1604</NoWarn>
+    <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+   
+    <Reference Include="Fusee.SerializationSerializer">
+      <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+    </Reference>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\..\..\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
+    </Reference>
+    <ProjectReference Include="..\..\..\..\..\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="..\..\..\..\..\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="..\..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
+    <ProjectReference Include="..\WebGLDotNET\WebGLDotNET.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+   
+    <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
+   
+    <PackageReference Include="WebAssembly.Bindings" Version="0.1.0-preview1" />
+    <PackageReference Include="WebAssembly.Net.Http" Version="0.1.0-preview1" />
+    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.1.0-preview1" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Remove="Assets\FUSEERocket.fus" />
+    <None Remove="Assets\Lato-Black.ttf" />
+    <None Remove="Assets\Model.fus" />
+    <None Remove="Assets\nineSlice.vert" />
+    <None Remove="Assets\nineSliceTile.frag" />
+    <None Remove="Assets\PixelShader.frag" />
+    <None Remove="Assets\VertexShader.vert" />
+    <None Remove="canvaskit.js" />
+    <None Remove="index.html" />
+    <None Remove="Scripts\mono_support.js" />
+    <None Remove="Scripts\SkiaSharp.js" />
+
+    <None Remove="canvaskit.wasm" />
+
+    <Content Include="Assets\FUSEERocket.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\Lato-Black.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\Model.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\VertexShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\nineSlice.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\PixelShader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\nineSliceTile.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="canvaskit.wasm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+
+    <!-- TODO move into Content for best practice -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="server.py" />
+    <Content Include="server.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Assets\FuseeText.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Scripts\mono_support.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Scripts\SkiaSharp.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+</Project>
