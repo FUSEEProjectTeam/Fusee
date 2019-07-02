@@ -125,7 +125,7 @@ namespace Fusee.Math.Core
         /// <example>
         ///   Use this operator e.g. to calculate the bounding box for a given list of points.
         ///   <code>
-        ///     AABB box = new AABB(pointList.First());
+        ///     AABB box = new AABB(pointList.First(), pointList.First());
         ///     foreach (float3 p in pointList)
         ///         box |= p;
         ///   </code>
@@ -228,7 +228,7 @@ namespace Fusee.Math.Core
             return true;
 
         }
-
+        
         private float Classify(AABBf aabb, float4 plane)
         {
             // maximum extent in direction of plane normal (plane.xyz)

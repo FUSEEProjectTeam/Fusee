@@ -1241,6 +1241,7 @@ namespace Fusee.Engine.Core
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
+        
 
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
@@ -1263,6 +1264,11 @@ namespace Fusee.Engine.Core
             }
 
 
+        }
+
+        public void SetLineWidth(float width)
+        {
+            _rci.SetLineWidth(width);
         }
 
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)

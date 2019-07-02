@@ -212,6 +212,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
         }
     );
 
+    $.Method({ Static: false, Public: true }, "SetLineWidth",
+        new JSIL.MethodSignature(null, [$.Single]),
+        function SetLineWidth(width) {
+            this.gl.SetLineWidth(width);
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_Width",
         new JSIL.MethodSignature($.Int32, []),
         function get_Width() {

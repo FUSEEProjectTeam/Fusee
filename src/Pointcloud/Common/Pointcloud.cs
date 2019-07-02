@@ -1,5 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
@@ -879,6 +880,15 @@ namespace Fusee.Pointcloud.Common
 
         private EncodeRawPoint _getRawPointMethod = null;
 
+        private EncodeRawPosition _encodeRawPositionMethod;
+        private EncodeRawIntensity _encodeRawIntensityMethod;
+        private EncodeRawNormals _encodeRawNormalsMethod;
+        private EncodeRawRGB _encodeRawRGBMethod;
+        private EncodeRawLabel _encodeRawLabelMethod;
+        private EncodeRawCurvature _encodeRawCurvatureMethod;
+        private EncodeRawHitCount _encodeRawHitCountMethod;
+        private EncodeRawGPSTime _encodeRawGPSTimeMethod;
+
         private EncodeRawPoint GetRawPointMethod
         {
             get
@@ -886,21 +896,31 @@ namespace Fusee.Pointcloud.Common
                 if (_getRawPointMethod != null)
                     return _getRawPointMethod;
 
-                // First call, construct everything and save the resulting method
+                // First call, construct everything and save the resulting methods
+                _encodeRawPositionMethod = GetRawPositionMethod;
+                _encodeRawIntensityMethod = GetRawIntensityMethod;
+                _encodeRawNormalsMethod = GetRawNormalsMethod;
+                _encodeRawRGBMethod = GetRawRGBMethod;
+                _encodeRawLabelMethod = GetRawLabelMethod;
+                _encodeRawCurvatureMethod = GetRawCurvatureMethod;
+                _encodeRawHitCountMethod = GetRawHitCountMethod;
+                _encodeRawGPSTimeMethod = GetRawGPSTimeMethod;
+
                 _getRawPointMethod = (ref TPoint point) =>
                 {
-                    var position = GetRawPositionMethod(ref point);
-                    var intensity = GetRawIntensityMethod(ref point);
-                    var normals = GetRawNormalsMethod(ref point);
-                    var rgb = GetRawRGBMethod(ref point);
-                    var label = GetRawLabelMethod(ref point);
-                    var curvature = GetRawCurvatureMethod(ref point);
-                    var hitCount = GetRawHitCountMethod(ref point);
-                    var GPSTime = GetRawGPSTimeMethod(ref point);
+                    var position = _encodeRawPositionMethod(ref point);
+                    var intensity = _encodeRawIntensityMethod(ref point);
+                    var normals = _encodeRawNormalsMethod(ref point);
+                    var rgb = _encodeRawRGBMethod(ref point);
+                    var label = _encodeRawLabelMethod(ref point);
+                    var curvature = _encodeRawCurvatureMethod(ref point);
+                    var hitCount = _encodeRawHitCountMethod(ref point);
+                    var GPSTime = _encodeRawGPSTimeMethod(ref point);
 
                     // XYZINormalRGBLCurvatureHitCountGPSTime
                     return position.Concat(intensity).Concat(normals).Concat(rgb).Concat(label).Concat(curvature).Concat(hitCount).Concat(GPSTime).ToArray();
                 };
+
                 return _getRawPointMethod;
             }
         }
@@ -1213,6 +1233,15 @@ namespace Fusee.Pointcloud.Common
 
         private DecodeRawPoint _setRawPointMethod = null;
 
+        private DecodeRawPosition _decodeRawPositionMethod;
+        private DecodeRawIntensity _decodeRawIntensityMethod;
+        private DecodeRawNormals _decodeRawNormalsMethod;
+        private DecodeRawRGB _decodeRawRGBMethod;
+        private DecodeRawLabel _decodeRawLabelMethod;
+        private DecodeRawCurvature _decodeRawCurvatureMethod;
+        private DecodeRawHitCount _decodeRawHitCountMethod;
+        private DecodeRawGPSTime _decodeRawGPSTimeMethod;
+
         private DecodeRawPoint SetRawPointMethod
         {
             get
@@ -1221,17 +1250,26 @@ namespace Fusee.Pointcloud.Common
                     return _setRawPointMethod;
 
                 // First call, construct everything and save the resulting method
+                _decodeRawPositionMethod = SetRawPositionMethod;
+                _decodeRawIntensityMethod = SetRawIntensityMethod;
+                _decodeRawNormalsMethod = SetRawNormalsMethod;
+                _decodeRawRGBMethod = SetRawRGBMethod;
+                _decodeRawLabelMethod = SetRawLabelMethod;
+                _decodeRawCurvatureMethod = SetRawCurvatureMethod;
+                _decodeRawHitCountMethod = SetRawHitCountMethod;
+                _decodeRawGPSTimeMethod = SetRawGPSTimeMethod;
+
                 _setRawPointMethod = (ref TPoint pointInt, byte[] byteIn) =>
                 {
                     // Call all methods to recreate the point
-                    SetRawPositionMethod(ref pointInt, byteIn);
-                    SetRawIntensityMethod(ref pointInt, byteIn);
-                    SetRawNormalsMethod(ref pointInt, byteIn);
-                    SetRawRGBMethod(ref pointInt, byteIn);
-                    SetRawLabelMethod(ref pointInt, byteIn);
-                    SetRawCurvatureMethod(ref pointInt, byteIn);
-                    SetRawHitCountMethod(ref pointInt, byteIn);
-                    SetRawGPSTimeMethod(ref pointInt, byteIn);
+                    _decodeRawPositionMethod(ref pointInt, byteIn);
+                    _decodeRawIntensityMethod(ref pointInt, byteIn);
+                    _decodeRawNormalsMethod(ref pointInt, byteIn);
+                    _decodeRawRGBMethod(ref pointInt, byteIn);
+                    _decodeRawLabelMethod(ref pointInt, byteIn);
+                    _decodeRawCurvatureMethod(ref pointInt, byteIn);
+                    _decodeRawHitCountMethod(ref pointInt, byteIn);
+                    _decodeRawGPSTimeMethod(ref pointInt, byteIn);
                 };
 
                 return _setRawPointMethod;
@@ -1476,7 +1514,7 @@ namespace Fusee.Pointcloud.Common
             }
         }
 
-        private DecodeRawPosition SetRawIntensityMethod
+        private DecodeRawIntensity SetRawIntensityMethod
         {
             get
             {
@@ -1543,7 +1581,7 @@ namespace Fusee.Pointcloud.Common
             }
         }
 
-        private DecodeRawLabel SetRawRGBMethod
+        private DecodeRawRGB SetRawRGBMethod
         {
             get
             {
@@ -1604,7 +1642,7 @@ namespace Fusee.Pointcloud.Common
 
         }
 
-        private DecodeRawCurvature SetRawLabelMethod
+        private DecodeRawLabel SetRawLabelMethod
         {
             get
             {
@@ -1638,7 +1676,7 @@ namespace Fusee.Pointcloud.Common
 
         }
 
-        private DecodeRawHitCount SetRawCurvatureMethod
+        private DecodeRawCurvature SetRawCurvatureMethod
         {
             get
             {
@@ -1672,7 +1710,7 @@ namespace Fusee.Pointcloud.Common
 
         }
 
-        private DecodeRawGPSTime SetRawHitCountMethod
+        private DecodeRawHitCount SetRawHitCountMethod
         {
             get
             {
@@ -1706,7 +1744,7 @@ namespace Fusee.Pointcloud.Common
 
         }
 
-        private DecodeRawPosition SetRawGPSTimeMethod
+        private DecodeRawGPSTime SetRawGPSTimeMethod
         {
             get
             {
@@ -1761,7 +1799,8 @@ namespace Fusee.Pointcloud.Common
     }
 
     /// <summary>
-    ///     A pointcloud consists of a point accessor which enables access to the points as well as some information about the point type.
+    ///     A pointcloud consists of a point accessor which enables access to the 
+    ///     as well as some information about the point type.
     ///     Furthermore the data itself as well as some meta information like offset information.
     /// </summary>   
     /// <typeparam name="TPoint">Point type</typeparam>

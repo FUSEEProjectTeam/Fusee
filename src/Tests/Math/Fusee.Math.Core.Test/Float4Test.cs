@@ -196,6 +196,66 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new float4(3, 7, 8, 1);
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = new float4(0, 0, 0, 0);
+            actual[0] = 3;
+            actual[1] = 7;
+            actual[2] = 8;
+            actual[3] = 1;
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new float4(0, 0, 0, 0)[idx]);
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f4 = new float4(0, 0, 0, 0); f4[idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 7, "Index 7 not eligible for a float4 type" };
+            yield return new object[] { 6, "Index 6 not eligible for a float4 type" };
+        }
+
+        #endregion
+
         #region Methods
 
         #region Arithmetic Functions

@@ -520,6 +520,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.DeleteProgram(program);
         }
 
+        public void SetLineWidth(float width)
+        {
+            GL.LineWidth(width);
+        }
+
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
         /// </summary>

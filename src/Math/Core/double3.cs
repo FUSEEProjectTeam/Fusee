@@ -85,6 +85,43 @@ namespace Fusee.Math.Core
 
         #region Public Members
 
+        #region this
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double3 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double3 type");
+                }
+            }
+        }
+        #endregion
+
         #region Instance
 
         #region public double Length
@@ -403,7 +440,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double3 Normalize(double3 vec)
         {
-            double scale = 1.0f / vec.Length;
+            double scale = 1.0 / vec.Length;
             vec.x *= scale;
             vec.y *= scale;
             vec.z *= scale;

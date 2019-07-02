@@ -187,6 +187,23 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        ///     Returns this matrix as an array
+        /// </summary>
+        public float[] AsArray
+        {
+            get
+            {
+                return new float[]
+                {
+                    M11, M12, M13, M14,
+                    M21, M22, M23, M24,
+                    M31, M32, M33, M34,
+                    M41, M42, M43, M44
+                };
+            }
+        }
+
+        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public float4 Column0
@@ -378,6 +395,54 @@ namespace Fusee.Math.Core
 
         #region Instance
 
+        #region this
+        /// <summary>
+        ///     Sets/Gets value from given index
+        /// </summary>
+        /// <param name="i">The ROW index</param>
+        /// <param name="j">The COLUMN index</param>
+        /// <returns></returns>
+        public float this[int i, int j]
+        {
+            get
+            {
+                switch(i)
+                {
+                    case 0:
+                        return Row0[j];
+                    case 1:
+                        return Row1[j];
+                    case 2:
+                        return Row2[j];
+                    case 3:
+                        return Row3[j];
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
+                }     
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        Row0[j] = value;
+                        break;
+                    case 1:
+                        Row1[j] = value;
+                        break;
+                    case 2:
+                        Row2[j] = value;
+                        break;
+                    case 3:
+                        Row3[j] = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
+                }
+            }
+        }
+        #endregion
+
         #region public Invert()
 
         /// <summary>
@@ -514,27 +579,6 @@ namespace Fusee.Math.Core
             result.Row0 = new float4(cos, -sin, 0.0f, 0.0f);
             result.Row1 = new float4(sin, cos, 0.0f, 0.0f);
             result.Row2 = float4.UnitZ;
-            result.Row3 = float4.UnitW;
-
-            return result;
-        }
-
-        /// <summary>
-        /// Builds a rotation matrix for a rotation around an arbitrary axis.
-        /// </summary>
-        /// /// <param name="axis">Rotation axis.</param>
-        /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting float4x4 instance.</returns>
-        public static float4x4 CreateRotation(float3 axis, float angle)
-        {
-            float4x4 result = new float4x4();
-
-            var cos = (float)System.Math.Cos(angle);
-            var sin = (float)System.Math.Sin(angle);
-
-            result.Row0 = new float4(cos + (float)System.Math.Pow(axis.x, 2) * (1 - cos), axis.x * axis.y * (1 - cos) - axis.z * sin, axis.x * axis.z * (1 - cos) + axis.y * sin, 0.0f);
-            result.Row1 = new float4(axis.y * axis.x * (1 - cos) + axis.z * sin, cos + (float)System.Math.Pow(axis.y, 2) * (1 - cos), axis.y * axis.z * (1 - cos) - axis.x * sin, 0.0f);
-            result.Row2 = new float4(axis.z * axis.x * (1 - cos) - axis.y * sin, axis.z * axis.y * (1 - cos) + axis.x * sin, cos + (float)System.Math.Pow(axis.z, 2) * (1 - cos), 0.0f);
             result.Row3 = float4.UnitW;
 
             return result;
