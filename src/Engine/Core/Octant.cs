@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="vf">Viewing frustum / projection matrix</param>
         /// <returns>false if fully outside, true if inside or intersects</returns>
-        public bool Intersects(double4x4 vf)
+        public bool Intersects(float4x4 vf)
         {
             // split the viewing frustrum in 6 planes
             // plane equation = ax + by + cz + d = 0;

@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.Common;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -47,6 +48,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public double Resolution;
 
         public Guid Guid { get; set; }
+
+        public bool WasLoaded = false; //TODO: consider making a new Octant type? A Octant that gets written to the file does not need to contain this field.
 
         public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
         {
@@ -110,15 +113,27 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             return childCenter;
         }
+
+        /// <summary>
+        /// Computes the current screen projected size of a Octant.
+        /// </summary>
+        public double ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
+        {
+            var distance = (Center - camPos).Length;            
+            var slope = (float)System.Math.Tan(fov / 2f);
+            var projectedSize = screenHeight / 2d * Size / (slope * distance);
+
+            return projectedSize;
+        }
     }
 
     public class PtOctree<TPoint>
     {
         public int MaxNoOfPointsInBucket { get; private set; }
 
-        public GridPtAccessor<TPoint> PtAccessor { get; private set; }
+        public PointAccessor<TPoint> PtAccessor { get; private set; }
 
-        public Octant<TPoint> Root;
+        public PtOctant<TPoint> Root;
 
         public int MaxLevel;
 
@@ -126,7 +141,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private static int[] _getChildIdxResultArray = new int[1];
 
         //Contructor for creating an Octree that is suitable for creating files from it. 
-        public PtOctree(AABBd aabb, GridPtAccessor<TPoint> pa, List<TPoint> points, int maxNoOfPointsInBucket)
+        public PtOctree(AABBd aabb, PointAccessor<TPoint> pa, List<TPoint> points, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
 
@@ -158,7 +173,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        public PtOctree(PtOctant<TPoint> root, GridPtAccessor<TPoint> pa, int maxNoOfPointsInBucket)
+        public PtOctree(PtOctant<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
         {
             MaxNoOfPointsInBucket = maxNoOfPointsInBucket;
             PtAccessor = pa;
@@ -244,25 +259,20 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        //public void Traverse(Octant<TPoint>[] children, Action<Octant<TPoint>> DoAction)
-        //{
-        //    if (children == null)
-        //        return;
-
-        //    foreach (var node in children)
-        //    {
-        //        DoAction(node);
-        //        Traverse(node.Children, DoAction);
-        //    }          
-
-        //}
-
         /// <summary>
-        /// Starts traversing from root. For starting from another node, use the static methods of <see cref="OctreeTraverser"/>.
+        /// Starts traversing from root.>.
         /// </summary>
         public void Traverse(Action<PtOctantWrite<TPoint>> callback)
         {
             DoTraverse((PtOctantWrite<TPoint>)Root, callback);
+        }
+
+        /// <summary>
+        /// Starts traversing from a given node.>.
+        /// </summary>
+        public void Traverse(PtOctantWrite<TPoint>node, Action<PtOctantWrite<TPoint>> callback)
+        {
+            DoTraverse(node, callback);
         }
 
         private static void DoTraverse(PtOctantWrite<TPoint> node, Action<PtOctantWrite<TPoint>> callback)

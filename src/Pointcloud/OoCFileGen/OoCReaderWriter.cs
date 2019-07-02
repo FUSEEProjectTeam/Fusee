@@ -8,28 +8,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
-    public class GridPtAccessor<TPoint> : PointAccessor<TPoint>
-    {
-        public bool HasGridIdx = true;
-
-        public virtual ref int3 GetGridIdx(ref TPoint point)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support GetPositionFloat32");
-        }
-
-        public virtual void SetGridIdx(ref TPoint point, int3 val)
-        {
-            throw new NotSupportedException($"Point {typeof(TPoint).Name} does not support SetPositionFloat32");
-        }
-
-        public List<string> GetPointType()
-        {
-            return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
-        }
-    }
+    
 
     public class PtOctreeFileWriter<TPoint>
     {
@@ -40,7 +23,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             _fileFolderPath = pathToNodeFileFolder;
         }
 
-        public void WriteCompleteData(PtOctree<TPoint> octree, GridPtAccessor<TPoint> ptAccessor)
+        public void WriteCompleteData(PtOctree<TPoint> octree, PointAccessor<TPoint> ptAccessor)
         {
             WriteMeta(octree, ptAccessor);
             WriteHierarchy(octree);
@@ -80,7 +63,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Writes the contents, i.e. points, into a single file of the nodes folder.
         /// </summary>
-        public void WriteNode(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> node)
+        public void WriteNode(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> node)
         {
             var points = GetPointsFromGrid(node).ToList();
 
@@ -94,8 +77,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             var writer = new BinaryWriter(stream);
 
-            // first, write point count
-            writer.Write(node.Payload.Count);
+            // write point count
+            writer.Write(points.Count);
+
+            // write length of one point
+            var firstPt = points[0];
+            writer.Write(ptAccessor.GetRawPoint(ref firstPt).Length);
 
             foreach (var point in points)
             {
@@ -142,7 +129,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Writes some header information into a .json file.
         /// </summary>
-        public void WriteMeta(PtOctree<TPoint> octree, GridPtAccessor<TPoint> ptAccessor)
+        public void WriteMeta(PtOctree<TPoint> octree, PointAccessor<TPoint> ptAccessor)
         {
             var rootCenter = octree.Root.Center;
             var rootSize = octree.Root.Size;
@@ -201,7 +188,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             _fileFolderPath = pathToNodeFileFolder;
         }
 
-        public PtOctree<TPoint> GetOctree(GridPtAccessor<TPoint> ptAccessor)
+        public PtOctree<TPoint> GetOctree(PointAccessor<TPoint> ptAccessor)
         {
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -220,12 +207,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
             var maxLvl = (int)jsonMaxLvl;
 
-            //TODO: get infos from meta.json
+            
             var root = new PtOctant<TPoint>(center, size);
             var octree = new PtOctree<TPoint>(root, ptAccessor, maxNoOfPointsInBucket)
             {
                 MaxLevel = maxLvl
             };
+
             ReadHierarchy(octree);
             return octree;
         }
@@ -238,11 +226,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var pathToHierarchy = _fileFolderPath + "\\octree.hierarchy";
 
             FileStream fileStream = File.Open(pathToHierarchy, FileMode.Open, FileAccess.Read);
-            long sizeInBytes = fileStream.Length;
-
+            
             using (BinaryReader br = new BinaryReader(fileStream))
             {
-                ProcessNode((PtOctant<TPoint>)octree.Root, br);
+                CreateNode(octree.Root, br);
             }
 
             fileStream.Dispose();
@@ -253,7 +240,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         /// <param name="node">The current node to process.</param>
         /// <param name="binaryReader">The binary reader to read bytes from. A byte indicating which of the given node's childs exist.</param>
-        private void ProcessNode(PtOctant<TPoint> node, BinaryReader binaryReader)
+        private void CreateNode(PtOctant<TPoint> node, BinaryReader binaryReader)
         {
             try
             {
@@ -277,7 +264,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     {
                         PtOctant<TPoint> child = node.CreateChild(index);
                         node.Children[index] = child;
-                        ProcessNode(child, binaryReader);
+                        CreateNode(child, binaryReader);
                     }
                 }
             }
@@ -286,5 +273,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             }
         }
+
+        
     }
+
+    
 }

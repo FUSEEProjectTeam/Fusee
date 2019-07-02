@@ -17,7 +17,7 @@ namespace Fusee.Examples.PcRendering.Core
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
-        public static int Size = 50;
+        public static int Size = 10;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
@@ -81,6 +81,66 @@ namespace Fusee.Examples.PcRendering.Core
 
                 returnNodeContainer.Components.Add(currentMesh);
             }            
+
+            return returnNodeContainer;
+        }
+
+        public static SceneNodeContainer FromPointList<TPoint>(PointAccessor<TPoint> ptAccessor, List<TPoint> points, ShaderEffect effect)
+        {
+            var allPoints = new List<double3>();
+
+            //var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            var allColors = new List<float3>();
+
+            for (int i = 0; i < points.Count(); i++)
+            {
+                var pt = points[i];
+                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
+                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
+            }
+
+            var allMeshes = new List<Mesh>();
+
+            var maxVertCount = ushort.MaxValue - 1;
+
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
+            //var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
+
+            var returnNodeContainer = new SceneNodeContainer
+            {
+                Name = "PointCloud",
+                Components = new List<SceneComponentContainer>
+                {
+                    new TransformComponent
+                    {
+                        Rotation = float3.Zero,
+                        Scale = float3.One,
+                        Translation = new float3(0,0,0)
+                    },
+                    new ShaderEffectComponent
+                    {
+                        Effect = effect
+                    }
+                }
+            };
+
+            for (int i = 0; i < allPointsSplitted.Count; i++)
+            {
+                var pointSplit = allPointsSplitted[i];
+                var colorSplit = allColorsSplitted[i];
+
+                var currentMesh = new Mesh
+                {
+                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
+                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
+                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    Normals = new float3[pointSplit.Count],
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
+                };
+
+                returnNodeContainer.Components.Add(currentMesh);
+            }
 
             return returnNodeContainer;
         }
@@ -256,7 +316,7 @@ namespace Fusee.Examples.PcRendering.Core
         public int3 GridIndex;
     }
 
-    internal class MyPointAcessor : GridPtAccessor<LAZPointType>
+    internal class MyPointAcessor : PointAccessor<LAZPointType>
     {
         public override bool HasPositionFloat3_64 => true;
         public override bool HasColorFloat3_32 => true;
@@ -290,16 +350,6 @@ namespace Fusee.Examples.PcRendering.Core
         public override void SetIntensityUInt_16(ref LAZPointType point, ushort val)
         {
             point.Intensity = val;
-        }
-
-        public override ref int3 GetGridIdx(ref LAZPointType point)
-        {
-            return ref point.GridIndex;
-        }
-
-        public override void SetGridIdx(ref LAZPointType point, int3 val)
-        {
-            point.GridIndex = val;
         }
     }
 

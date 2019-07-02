@@ -1,5 +1,6 @@
 ﻿using Fusee.Engine.Core;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.Common;
 using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
@@ -21,7 +22,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private List<int3> _neighbouCellIdxOffsets;
 
-        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
+        public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
@@ -31,7 +32,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             ReadPointToGrid(ptAccessor, parentOctant, point, firstCenter);
         }
 
-        public PtGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
+        public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, List<TPoint> points)
         {
             _neighbouCellIdxOffsets = GetGridNeighbourIndices(1);
             GridCells = new GridCell<TPoint>[128, 128, 128];
@@ -55,7 +56,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         }
 
         //see https://math.stackexchange.com/questions/528501/how-to-determine-which-cell-in-a-grid-a-point-belongs-to
-        public void ReadPointToGrid(GridPtAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point, double3 firstCenter)
+        public void ReadPointToGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point, double3 firstCenter)
         {
             var halfSize = parentOctant.Size / 2d;
             var translationVec = new double3(parentOctant.Center.x - halfSize, parentOctant.Center.y - halfSize, parentOctant.Center.z - halfSize); //translate to zero
@@ -96,8 +97,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 if ((tPointPos - ptAccessor.GetPositionFloat3_64(ref neighbourCell.Occupant)).Length < neighbourCell.Size) //neighbourCell.Size equals spacing/ resolution of the octant
                 { 
                     parentOctant.Payload.Add(point);
-                    ptAccessor.SetGridIdx(ref point, new int3(-1, -1, -1));
-
                     return;
                 }
             }
@@ -110,14 +109,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 {
                     Occupant = point
                 };
-                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+                
 
                 GridCells[indexX, indexY, indexZ] = cell;
             }            
-            else if (cell.Occupant == null) //set or change cell occupant if neccessary
+            else if (cell.Occupant == null) //set or change cell occupant if neccessary            
             {
-                cell.Occupant = point;
-                ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
+                cell.Occupant = point;                
             }
             else
             {
@@ -126,18 +124,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                 if (pointDistToCenter < occupantDistToCenter)
                 {
-                    var occ = cell.Occupant;
-                    ptAccessor.SetGridIdx(ref occ, new int3(-1, -1, -1));
                     parentOctant.Payload.Add(cell.Occupant);
-
-                    ptAccessor.SetGridIdx(ref point, new int3(indexX, indexY, indexZ));
                     cell.Occupant = point; 
                 }
-                else
-                {
-                    ptAccessor.SetGridIdx(ref point, new int3(-1, -1, -1));
+                else                
                     parentOctant.Payload.Add(point);                    
-                }
+                
             }
             
         }

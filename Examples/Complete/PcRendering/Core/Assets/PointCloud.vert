@@ -40,9 +40,9 @@ void main(void)
 
 	clamp(pSize, 1, PointSize);
 
-	if(PointShape == 0 || PointShape == 1)
-		gl_PointSize = pSize;
-	else
+//	if(PointShape == 0 || PointShape == 1)
+//		gl_PointSize = pSize;
+//	else
 		gl_PointSize = PointSize;
 
 	gl_Position = vClipPos;	

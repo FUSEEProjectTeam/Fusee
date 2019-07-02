@@ -655,6 +655,36 @@ namespace Fusee.Math.Core
         /// </value>
         public double2 xy { get { return new double2(x, y); } set { x = value.x; y = value.y; } }
 
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, y and z components of this instance.
+        /// </summary>
+        public double3 xyz { get { return new double3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the x, z and y components of this instance.
+        /// </summary>
+        public double3 xzy { get { return new double3(x, z, y); } set { x = value.x; z = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the y, z and x components of this instance.
+        /// </summary>
+        public double3 yzx { get { return new double3(y, z, x); } set { y = value.x; z = value.y; x = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the y, x and z components of this instance.
+        /// </summary>
+        public double3 yxz { get { return new double3(y, x, z); } set { y = value.x; x = value.y; z = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the z, x and y components of this instance.
+        /// </summary>
+        public double3 zxy { get { return new double3(z, x, y); } set { z = value.x; x = value.y; y = value.z; } }
+
+        /// <summary>
+        /// Gets or sets an OpenTK.float3 with the z, y and x components of this instance.
+        /// </summary>
+        public double3 zyx { get { return new double3(z, y, x); } set { z = value.x; y = value.y; x = value.z; } }
+
         #endregion
 
         #region Operators

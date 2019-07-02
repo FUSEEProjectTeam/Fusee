@@ -64,6 +64,10 @@ namespace Fusee.Examples.PcRendering.Core
         private readonly WireframeCube wfc = new WireframeCube();
         private readonly ShaderEffect wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
 
+        private OoCOctantLoader<LAZPointType> _oocLoader;
+        private MyPointAcessor ptAccessor;
+
+        private ProjectionComponent projectionComponent;
 
         private void GetPointsFromOctreeLevel(int lvl, PtOctantWrite<LAZPointType> octant)
         {   
@@ -144,34 +148,36 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };           
 
-            var points = LAZtoSceneNode.ListFromLAZ("E:/HolbeinPferd.las");
+            //var points = LAZtoSceneNode.ListFromLAZ("E:/HolbeinPferd.las");
 
-            var aabb = new AABBd(points[0].Position, points[0].Position);
-            foreach (var pt in points)
-            {
-                aabb |= pt.Position;
-            }
-            var gridPtAccessor = new MyPointAcessor();            
-            var octree = new PtOctree<LAZPointType>(aabb, gridPtAccessor, points, 500);
+            //var aabb = new AABBd(points[0].Position, points[0].Position);
+            //foreach (var pt in points)
+            //{
+            //    aabb |= pt.Position;
+            //}
+            ptAccessor = new MyPointAcessor();            
+            //var octree = new PtOctree<LAZPointType>(aabb, ptAccessor, points, 500);
 
-            var occFileWriter = new PtOctreeFileWriter<LAZPointType>("E:/HolbeinPferdOctree");
-            occFileWriter.WriteCompleteData(octree, gridPtAccessor);
+            //var occFileWriter = new PtOctreeFileWriter<LAZPointType>("E:/HolbeinPferdOctree");
+            //occFileWriter.WriteCompleteData(octree, ptAccessor);
 
+            //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
             var oocFileReader = new PtOctreeFileReader<LAZPointType>("E:/HolbeinPferdOctree");
-            var readOctree = oocFileReader.GetOctree(gridPtAccessor);
+            var readOctree = oocFileReader.GetOctree(ptAccessor);
 
-            GetPointsFromOctreeLevel(3, (PtOctantWrite<LAZPointType>)octree.Root);
+            _oocLoader = new OoCOctantLoader<LAZPointType>(readOctree, "E:/HolbeinPferdOctree");
 
-            var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            _scene.Children[0].Components.Insert(0, pc);
+            projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
+            _scene.Children.Add(new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });
+            //_scene.Children[0].Components.Insert(0, projectionComponent);
 
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             //Add resize delegate
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            
+            AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
 
             //create depth tex and fbo
             _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
@@ -285,23 +291,44 @@ namespace Fusee.Examples.PcRendering.Core
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
+            //---------------------
+
+            _oocLoader.UpdateRC(RC);
+            _oocLoader.TraverseByProjectedSizeOrder(ptAccessor);
+            var projNode = _scene.Children[0];
+            _scene.Children.Clear();
+            foreach (var node in _oocLoader.VisibleNodes)
+            {
+                var snc = LAZtoSceneNode.FromPointList<LAZPointType>(ptAccessor, node.Payload, _depthPassEf);
+                snc.Name = "PointCloud";
+                _scene.Children.Add(snc);
+            }
+            _scene.Children.Insert(0, projNode);
+            _sceneRenderer = new SceneRenderer(_scene);
+            _scenePicker = new ScenePicker(_scene);
+
+            //----------------------------
+
+
             //Render Depth-only pass
             foreach (var sn in _scene.Children)
             {
-                sn.GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+                var shaderEffectComp = sn.GetComponent<ShaderEffectComponent>();
+                if(shaderEffectComp != null)
+                    shaderEffectComp.Effect = _depthPassEf;
             }            
             _sceneRenderer.Render(RC, _texHandle);
 
             //Render color pass
             foreach (var sn in _scene.Children)
-            {           
-                if(sn.Name.Contains("Cube"))
+            {
+                if (sn.Name.Contains("Cube"))
                     sn.GetComponent<ShaderEffectComponent>().Effect = _wireFrameMat;
-                else if(sn.Name.Contains("PointCloud"))
+                else if (sn.Name.Contains("PointCloud"))
                     sn.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
             }
 
-            _scene.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
+            //_scene.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
 
             //_pc.GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;            
             _sceneRenderer.Render(RC);

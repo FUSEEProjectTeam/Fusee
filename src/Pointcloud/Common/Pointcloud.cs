@@ -74,6 +74,15 @@ namespace Fusee.Pointcloud.Common
         public virtual bool HasColorFloat3_64 => false;
         #endregion
 
+        /// <summary>
+        /// Gets the type of the point as list of the HasXY methods.
+        /// </summary>
+        /// <returns></returns>
+        public List<string> GetPointType()
+        {
+            return GetType().GetProperties().Where(p => p.PropertyType == typeof(bool) && (bool)p.GetValue(this, null)).Select(p => p.Name).ToList();
+        }
+
         #region PointXYZINormalRGBL
         // PointXYZINormalRGBL
         public virtual bool HasLabelInt_8 => false;
