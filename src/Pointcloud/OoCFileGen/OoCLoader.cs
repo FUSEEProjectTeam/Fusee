@@ -19,9 +19,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         //public PtOctree<TPoint> Octree { get; private set; }
         public SceneNodeContainer RootNode { get; private set; }
         public List<SceneNodeContainer> VisibleNodes = new List<SceneNodeContainer>();
-        private Dictionary<Guid, IEnumerable<Mesh>> LoadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
+        private readonly Dictionary<Guid, IEnumerable<Mesh>> LoadedMeshs;
 
-        private SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size        
+        private readonly SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;        
         private List<PtOctant<TPoint>> _determinedAsVisible; // per traversal
         private int _numberOfVisiblePoints;
         private string _fileFolderPath;
@@ -41,6 +41,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public OoCOctantLoader(SceneNodeContainer rootNode, string fileFolderPath, RenderContext rc)
         {
             //Octree = octree;
+            LoadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
+            _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size;
             RC = rc;
             RootNode = rootNode;
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>();            
@@ -61,26 +63,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var fov = (float)RC.ViewportWidth / RC.ViewportHeight;
             var rootPtOctantComp = RootNode.GetComponent<PtOctantComponent>();
 
-            if (!rootPtOctantComp.WasLoaded)
-            {
-                var pts = LoadPointsForNode(ptAccessor, rootPtOctantComp);
-                rootPtOctantComp.NumberOfPointsInNode = pts.Count;
-                var meshes = GetMeshsForNode(ptAccessor, pts);
-                LoadedMeshs.Add(rootPtOctantComp.Guid, meshes);
-                rootPtOctantComp.WasLoaded = true;
-            }
-
-            if (rootPtOctantComp.Intersects(RC.ModelViewProjection))
-                VisibleNodes.Add(RootNode);
-            else
-            {
-                RootNode.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
-                RootNode.RemoveComponentsInChildren<Mesh>();
-                _numberOfVisiblePoints -= rootPtOctantComp.NumberOfPointsInNode;
-                if (_numberOfVisiblePoints < 0)
-                    _numberOfVisiblePoints = 0;
-            }
-
             ProcessNode(ptAccessor, RootNode, fov, GetMeshsForNode);          
 
             while (_nodesOrderedByProjectionSize.Count > 0 && _numberOfVisiblePoints <= PointThreshold)
@@ -89,7 +71,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var kvp = _nodesOrderedByProjectionSize.Last();
                 var biggestNode = kvp.Value;                
                 _nodesOrderedByProjectionSize.Remove(kvp.Key);                
-                ProcessNode(ptAccessor, biggestNode, fov, GetMeshsForNode);
+                ProcessChildren(ptAccessor, biggestNode, fov, GetMeshsForNode);
             }
         }
 
@@ -97,7 +79,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// Sub function which calculates the screen-projected-size and adds it to the heap of nodesOrdered by sps.        
         /// </summary>
         /// <param name="node">The node to compute the pss for.</param>
-        private void ProcessNode(PointAccessor<TPoint> ptAccessor, SceneNodeContainer node, float fov, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode)
+        private void ProcessChildren(PointAccessor<TPoint> ptAccessor, SceneNodeContainer node, float fov, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode)
         {
             var ptOctantComp = node.GetComponent<PtOctantComponent>();
 
@@ -109,43 +91,48 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 if (child == null)
                     continue;
 
-                var ptOctantChildComp = child.GetComponent<PtOctantComponent>();
+                ProcessNode(ptAccessor, child, fov, GetMeshsForNode);
+            }
+        }
 
-                if (!ptOctantChildComp.Intersects(RC.ModelViewProjection))
-                {
-                    child.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
-                    child.RemoveComponentsInChildren<Mesh>();
-                    _numberOfVisiblePoints -= ptOctantChildComp.NumberOfPointsInNode;
-                    if (_numberOfVisiblePoints < 0)
-                        _numberOfVisiblePoints = 0;
-                    continue;
-                }
-                               
-                var camPos = RC.View.Invert().Column3;
-                var camPosD = new double3(camPos.x, camPos.y, camPos.z);
+        private void ProcessNode(PointAccessor<TPoint> ptAccessor, SceneNodeContainer node, float fov, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode)
+        {
+            var ptOctantChildComp = node.GetComponent<PtOctantComponent>();
 
-                // gets pixel radius of the node
-                var projectedSize = ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+            if (!ptOctantChildComp.Intersects(RC.ModelViewProjection))
+            {
+                node.Components.RemoveAll(cmp => cmp.GetType() == typeof(Mesh));
+                node.RemoveComponentsInChildren<Mesh>();
+                _numberOfVisiblePoints -= ptOctantChildComp.NumberOfPointsInNode;
+                if (_numberOfVisiblePoints < 0)
+                    _numberOfVisiblePoints = 0;
+                return;
+            }
 
-                if (projectedSize < _minScreenProjectedSize)                
-                    continue;
+            var camPos = RC.View.Invert().Column3;
+            var camPosD = new double3(camPos.x, camPos.y, camPos.z);
 
-                if (!ptOctantChildComp.WasLoaded)
-                {
-                    var pts = LoadPointsForNode(ptAccessor, ptOctantChildComp);
-                    ptOctantChildComp.NumberOfPointsInNode = pts.Count;
-                    var meshes = GetMeshsForNode(ptAccessor, pts);
-                    LoadedMeshs.Add(ptOctantChildComp.Guid, meshes);
-                    ptOctantChildComp.WasLoaded = true;
-                }
+            // gets pixel radius of the node
+            var projectedSize = ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
 
-                // by chance two same nodes have the same screen-projected-size; it's such a pitty we can't add it (because it's not allowed to have the same key twice)
-                if (!_nodesOrderedByProjectionSize.ContainsKey(projectedSize))
-                {
-                    _nodesOrderedByProjectionSize.Add(projectedSize, child);
-                    _numberOfVisiblePoints += ptOctantChildComp.NumberOfPointsInNode;
-                    VisibleNodes.Add(child);
-                }
+            if (projectedSize < _minScreenProjectedSize)
+                return;
+
+            if (!ptOctantChildComp.WasLoaded)
+            {
+                var pts = LoadPointsForNode(ptAccessor, ptOctantChildComp);
+                ptOctantChildComp.NumberOfPointsInNode = pts.Count;
+                var meshes = GetMeshsForNode(ptAccessor, pts);
+                LoadedMeshs.Add(ptOctantChildComp.Guid, meshes);
+                ptOctantChildComp.WasLoaded = true;
+            }
+
+            // by chance two same nodes have the same screen-projected-size; it's such a pitty we can't add it (because it's not allowed to have the same key twice)
+            if (!_nodesOrderedByProjectionSize.ContainsKey(projectedSize))
+            {
+                _nodesOrderedByProjectionSize.Add(projectedSize, node);
+                _numberOfVisiblePoints += ptOctantChildComp.NumberOfPointsInNode;
+                VisibleNodes.Add(node);
             }
         }
 
@@ -235,9 +222,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             loadedMesh = 0;
             node.RemoveComponent<Mesh>();
             node.RemoveComponentsInChildren<Mesh>();
-
-            //foreach (var child in node.Children)            
-            //    TraverseAndRemoveMeshes(child);
         }
     }
 }

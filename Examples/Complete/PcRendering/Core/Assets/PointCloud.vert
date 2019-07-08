@@ -1,6 +1,8 @@
 #version 330 core 
 
 uniform vec2 ScreenParams;
+uniform int PointMode;
+uniform float ScreenProjectedOctantSize;
 uniform int PointSize;
 uniform int gridCellRes;
 uniform int PointShape;
@@ -44,6 +46,15 @@ void main(void)
 //	if(PointShape == 0 || PointShape == 1)
 //		gl_PointSize = pSize;
 //	else
-	gl_PointSize = PointSize;
+
+	switch (PointMode)
+	{
+		case 0: // default = fixed, user-given point size
+		default:
+			gl_PointSize = PointSize;
+		case 1:
+			gl_PointSize = PointSize;//ScreenProjectedOctantSize/128; //A grid cell (when creating the files with the octree) has the size "octant/128". This value is currently not adaptable.
+	}
+
 	gl_Position = vClipPos;	
 }

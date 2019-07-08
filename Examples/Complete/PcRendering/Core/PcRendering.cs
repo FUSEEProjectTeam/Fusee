@@ -120,7 +120,10 @@ namespace Fusee.Examples.PcRendering.Core
             
             //create Scene from octree structure
             _scene = oocFileReader.GetScene(_ptAccessor, _depthPassEf, out var readOctree);
-            _oocLoader = new OoCOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC);
+            _oocLoader = new OoCOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC)
+            {
+                PointThreshold = 100000
+            };
 
             projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             _scene.Children.Insert(0,new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });

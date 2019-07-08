@@ -16,6 +16,7 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
+        public static PointMode PtMode = PointMode.FIXED_SIZE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 10;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
@@ -84,8 +85,6 @@ namespace Fusee.Examples.PcRendering.Core
 
             return returnNodeContainer;
         }
-
-        
 
         public static SceneNodeContainer FromPointList<TPoint>(PointAccessor<TPoint> ptAccessor, List<TPoint> points, ShaderEffect effect)
         {
@@ -249,7 +248,10 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
 
                 new EffectParameterDeclaration {Name = "PointSize", Value = Size},
-                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape}
+                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
+                new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
+
+                new EffectParameterDeclaration {Name = "ScreenProjectedOctantSize", Value = 0f}
             });
 
             //return new ShaderEffect(new[]
@@ -320,6 +322,7 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
                 new EffectParameterDeclaration {Name = "Color", Value = SingleColor},
 
+                new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
                 new EffectParameterDeclaration {Name = "PointSize", Value = Size},
                 new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
                 new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode},
@@ -331,7 +334,9 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
                 new EffectParameterDeclaration {Name = "Shininess", Value = 200f},                
                 new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
-                
+
+                new EffectParameterDeclaration {Name = "ScreenProjectedOctantSize", Value = 0f}
+
             });
         }
 

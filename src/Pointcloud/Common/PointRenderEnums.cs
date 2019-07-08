@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Examples.PcRendering.Core
+﻿namespace Fusee.Pointcloud.Common
 {
 
     public enum PointShape
@@ -23,6 +19,12 @@ namespace Fusee.Examples.PcRendering.Core
         WEIGHT,
         DEPTH,
         INTENSITY
+    }
+
+    public enum PointMode
+    {
+        FIXED_SIZE,
+        ADAPTABLE_SIZE
     }
 
     public enum Lighting
