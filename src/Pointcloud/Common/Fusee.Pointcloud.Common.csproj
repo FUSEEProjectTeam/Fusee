@@ -20,5 +20,23 @@
     </Reference>
   </ItemGroup>
 
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="Assets\PointCloud.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\PointCloud.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\PointDepth.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

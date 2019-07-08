@@ -15,24 +15,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\PointCloud.frag" />
-    <None Remove="Assets\PointCloud.vert" />
-    <None Remove="Assets\PointDepth.frag" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\PointCloud.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PointCloud.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\PointDepth.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
   </ItemGroup>  
 
