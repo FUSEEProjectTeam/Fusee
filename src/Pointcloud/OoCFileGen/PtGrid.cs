@@ -110,12 +110,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     Occupant = point
                 };
                 
-
                 GridCells[indexX, indexY, indexZ] = cell;
             }            
             else if (cell.Occupant == null) //set or change cell occupant if neccessary            
             {
-                cell.Occupant = point;                
+                cell.Occupant = point;
             }
             else
             {

@@ -2,6 +2,7 @@
 
 uniform vec2 ScreenParams;
 uniform int PointSize;
+uniform int gridCellRes;
 uniform int PointShape;
 uniform mat4 FUSEE_ITMV;
 uniform mat4 FUSEE_MVP;
@@ -43,7 +44,6 @@ void main(void)
 //	if(PointShape == 0 || PointShape == 1)
 //		gl_PointSize = pSize;
 //	else
-		gl_PointSize = PointSize;
-
+	gl_PointSize = PointSize;
 	gl_Position = vClipPos;	
 }

@@ -49,8 +49,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         public Guid Guid { get; set; }
 
-        public bool WasLoaded = false; //TODO: consider making a new Octant type? A Octant that gets written to the file does not need to contain this field.
-
+        //public bool WasLoaded = false; //TODO: consider making a new Octant type? A Octant that gets written to the file does not need to contain this field.
+        
         public PtOctant(double3 center, double size, Octant<TPoint>[] children = null)
         {
             Center = center;
@@ -114,17 +114,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             return childCenter;
         }
 
-        /// <summary>
-        /// Computes the current screen projected size of a Octant.
-        /// </summary>
-        public double ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
-        {
-            var distance = (Center - camPos).Length;            
-            var slope = (float)System.Math.Tan(fov / 2f);
-            var projectedSize = screenHeight / 2d * Size / (slope * distance);
+        ///// <summary>
+        ///// Computes the current screen projected size of a Octant.
+        ///// </summary>
+        //public double ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
+        //{
+        //    var distance = (Center - camPos).Length;            
+        //    var slope = (float)System.Math.Tan(fov / 2f);
+        //    var projectedSize = screenHeight / 2d * Size / (slope * distance);
 
-            return projectedSize;
-        }
+        //    return projectedSize;
+        //}
     }
 
     public class PtOctree<TPoint>
@@ -200,8 +200,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 {
                     Subdivide(child);
                 }
-                else                
-                    child.IsLeaf = true;                
+                else
+                {
+                    child.IsLeaf = true;                    
+                }             
             }
         }
                
@@ -300,9 +302,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private static void IterateChildren(PtOctantWrite<TPoint> parent, Action<PtOctantWrite<TPoint>> iterateAction)
         {
             if (parent.Children != null)
-            {                
-                foreach (var child in parent.Children)
+            {
+                for (int i = parent.Children.Length-1; i >= 0; i--)
                 {
+                    Octant<TPoint> child = parent.Children[i];
                     if (child != null)
                         iterateAction?.Invoke((PtOctantWrite<TPoint>)child);
                 }

@@ -85,6 +85,8 @@ namespace Fusee.Examples.PcRendering.Core
             return returnNodeContainer;
         }
 
+        
+
         public static SceneNodeContainer FromPointList<TPoint>(PointAccessor<TPoint> ptAccessor, List<TPoint> points, ShaderEffect effect)
         {
             var allPoints = new List<double3>();
@@ -242,12 +244,52 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
 
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
-                
+
                 new EffectParameterDeclaration {Name = "PointSize", Value = Size},
-                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape}                
+                new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape}
             });
+
+            //return new ShaderEffect(new[]
+            //{
+            //    new EffectPassDeclaration
+            //    {
+            //        VS = AssetStorage.Get<string>("PointCloud.vert"),
+            //        PS = AssetStorage.Get<string>("PointCloud.frag"),
+            //        StateSet = new RenderStateSet
+            //        {
+            //            AlphaBlendEnable = true,
+            //            ZEnable = true,
+            //        }
+            //    }
+            //},
+            //new[]
+            //{
+            //    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+            //    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+            //    new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
+            //    new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+            //    new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+
+            //    //new EffectParameterDeclaration {Name = "ClipPlaneDist", Value = clipPlaneDist},
+            //    new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
+            //    new EffectParameterDeclaration {Name = "Color", Value = SingleColor},
+
+            //    new EffectParameterDeclaration {Name = "PointSize", Value = Size},
+            //    new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
+            //    new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.DEPTH},
+
+            //    new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting},
+            //    //new EffectParameterDeclaration{Name = "DepthTex", Value = depthTexHandle},
+            //    new EffectParameterDeclaration{Name = "EDLStrength", Value = EdlStrength},
+            //    new EffectParameterDeclaration{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
+            //    new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
+            //    new EffectParameterDeclaration {Name = "Shininess", Value = 200f},
+            //    new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
+
+            //});
         }
 
         internal static ShaderEffect StandardEffect(float2 screenParams, float2 clipPlaneDist, ITextureHandle depthTexHandle)
@@ -272,6 +314,7 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
 
                 new EffectParameterDeclaration {Name = "ClipPlaneDist", Value = clipPlaneDist},
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
@@ -304,6 +347,45 @@ namespace Fusee.Examples.PcRendering.Core
             for (var i = 0; i < locations.Count; i += nSize)
             {
                 yield return locations.GetRange(i, M.Min(nSize, locations.Count - i));
+            }
+        }
+
+        public static IEnumerable<Mesh> GetMeshsForNode(PointAccessor<LAZPointType> ptAccessor, List<LAZPointType> points)
+        {
+            var allPoints = new List<double3>();
+            //var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            var allColors = new List<float3>();
+
+            for (int i = 0; i < points.Count(); i++)
+            {
+                var pt = points[i];
+                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
+                allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
+            }
+
+            var allMeshes = new List<Mesh>();
+
+            var maxVertCount = ushort.MaxValue - 1;
+
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
+            //var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
+
+            for (int i = 0; i < allPointsSplitted.Count; i++)
+            {
+                var pointSplit = allPointsSplitted[i];
+                var colorSplit = allColorsSplitted[i];
+
+                var currentMesh = new Mesh
+                {
+                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
+                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
+                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    Normals = new float3[pointSplit.Count],
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
+                };
+
+                yield return currentMesh;                
             }
         }
     }
