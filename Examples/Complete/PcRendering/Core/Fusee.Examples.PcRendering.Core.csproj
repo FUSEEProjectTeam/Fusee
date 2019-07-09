@@ -4,7 +4,6 @@
     <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
@@ -55,4 +54,5 @@
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
 </Project>

@@ -7,21 +7,21 @@
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
-
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Desktop\</OutputPath>
+    <StartupObject>Fusee.Examples.PcRendering.Desktop.PcRendering</StartupObject>
   </PropertyGroup>
+
 
   <ItemGroup>
     <PackageReference Include="System.Drawing.Common" Version="4.5.1" />
   </ItemGroup>
 
+
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj">
-      <Name>Fusee.Examples.PcRendering.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -59,6 +59,6 @@
       <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
-
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
 </Project>

@@ -16,9 +16,9 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
-        public static PointMode PtMode = PointMode.FIXED_SIZE;
+        public static PointSizeMode PtMode = PointSizeMode.FIXED_PIXELSIZE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
-        public static int Size = 10;
+        public static int Size = 50;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
@@ -355,7 +355,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        public static IEnumerable<Mesh> GetMeshsForNode(PointAccessor<LAZPointType> ptAccessor, List<LAZPointType> points)
+        public static List<Mesh> GetMeshsForNode(PointAccessor<LAZPointType> ptAccessor, List<LAZPointType> points)
         {
             var allPoints = new List<double3>();
             //var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
@@ -390,8 +390,10 @@ namespace Fusee.Examples.PcRendering.Core
                     Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
                 };
 
-                yield return currentMesh;                
+                allMeshes.Add(currentMesh);                
             }
+
+            return allMeshes;
         }
     }
 

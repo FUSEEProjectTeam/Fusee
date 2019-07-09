@@ -678,6 +678,12 @@ namespace Fusee.Engine.Core
         }
 
         [VisitMethod]
+        public void RenderPtOctantComponent(PtOctantComponent ptOctant)
+        {
+            _state.Effect.SetEffectParam("ScreenProjectedOctantSize", (float)ptOctant.ProjectedScreenSize);
+        }
+
+        [VisitMethod]
         public void RenderShader(ShaderComponent shaderComponent)
         {
             var effect = BuildMaterialFromShaderComponent(shaderComponent);

@@ -113,9 +113,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var camPosD = new double3(camPos.x, camPos.y, camPos.z);
 
             // gets pixel radius of the node
-            var projectedSize = ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+            ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
 
-            if (projectedSize < _minScreenProjectedSize)
+            if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
                 return;
 
             if (!ptOctantChildComp.WasLoaded)
@@ -128,15 +128,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
 
             // by chance two same nodes have the same screen-projected-size; it's such a pitty we can't add it (because it's not allowed to have the same key twice)
-            if (!_nodesOrderedByProjectionSize.ContainsKey(projectedSize))
+            if (!_nodesOrderedByProjectionSize.ContainsKey(ptOctantChildComp.ProjectedScreenSize))
             {
-                _nodesOrderedByProjectionSize.Add(projectedSize, node);
+                _nodesOrderedByProjectionSize.Add(ptOctantChildComp.ProjectedScreenSize, node);
                 _numberOfVisiblePoints += ptOctantChildComp.NumberOfPointsInNode;
                 VisibleNodes.Add(node);
             }
         }
-
-        long loadedMesh = 0;
 
         public void SetMeshes(SceneContainer scene, WireframeCube wfc, ShaderEffect effect)
         {
@@ -218,10 +216,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         public void TraverseAndRemoveMeshes(SceneNodeContainer node)
         {
-            _numberOfVisiblePoints = 0;
-            loadedMesh = 0;
+            _numberOfVisiblePoints = 0;            
             node.RemoveComponent<Mesh>();
             node.RemoveComponentsInChildren<Mesh>();
         }
+        
     }
 }

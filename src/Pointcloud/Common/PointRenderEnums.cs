@@ -21,10 +21,11 @@
         INTENSITY
     }
 
-    public enum PointMode
+    public enum PointSizeMode
     {
-        FIXED_SIZE,
-        ADAPTABLE_SIZE
+        FIXED_PIXELSIZE,
+        FIXED_WORLDSIZE,
+        ADAPTIVE_SIZE
     }
 
     public enum Lighting

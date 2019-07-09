@@ -17,6 +17,8 @@ namespace Fusee.Serialization
         public bool WasLoaded;
 
         public int NumberOfPointsInNode;
+        public double ProjectedScreenSize { get; private set; }
+
 
         //TODO: duplicate code, clean up! The original is found in AABB.
         /// <summary>
@@ -95,13 +97,11 @@ namespace Fusee.Serialization
             return d - r;
         }
 
-        public double ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
+        public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
             var slope = (float)System.Math.Tan(fov / 2f);
-            var projectedSize = screenHeight / 2d * Size / (slope * distance);
-
-            return projectedSize;
+            ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
     }
 }

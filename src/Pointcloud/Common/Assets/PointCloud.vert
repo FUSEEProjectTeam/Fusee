@@ -34,7 +34,8 @@ void main(void)
 	vWorldPos = FUSEE_M * vec4(fuVertex.xyz, 1.0);
 
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
-	float projFactor = ((1.0 / tan(fov / 2.0))/ -vViewPos.z)* ScreenParams.y / 2.0;
+	float slope = tan(fov / 2.0);
+	float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
 	vWorldSpacePointRad = PointSize / projFactor;	
 
 	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
@@ -47,13 +48,17 @@ void main(void)
 //		gl_PointSize = pSize;
 //	else
 
+	
 	switch (PointMode)
 	{
-		case 0: // default = fixed, user-given point size
+		case 0: // default = fixed, user-given point size in px
 		default:
-			gl_PointSize = PointSize;
-		case 1:
-			gl_PointSize = PointSize;//ScreenProjectedOctantSize/128; //A grid cell (when creating the files with the octree) has the size "octant/128". This value is currently not adaptable.
+			gl_PointSize = 2;
+		case 1: 
+			gl_PointSize = 20;
+		case 2:
+			gl_PointSize = 200;
+		
 	}
 
 	gl_Position = vClipPos;	
