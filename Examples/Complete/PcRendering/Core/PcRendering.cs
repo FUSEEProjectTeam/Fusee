@@ -61,12 +61,12 @@ namespace Fusee.Examples.PcRendering.Core
 
         private readonly WireframeCube wfc = new WireframeCube();
 
-        private OoCOctantLoader<LAZPointType> _oocLoader;
-        private MyPointAcessor _ptAccessor;
+        private PtOctantLoader<LAZPointType> _oocLoader;
+        private PtRenderingAccessor _ptAccessor;
 
         private ProjectionComponent projectionComponent;
         
-        private void CreateFiles(MyPointAcessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
+        private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
         {
             var points = LAZtoSceneNode.ListFromLAZ(pathToFile);
 
@@ -105,22 +105,21 @@ namespace Fusee.Examples.PcRendering.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
             _scene = new SceneContainer
             {
                 Children = new List<SceneNodeContainer>()
             };
 
-            _ptAccessor = new MyPointAcessor();
+            _ptAccessor = new PtRenderingAccessor();
 
-            //CreateFiles(ptAccessor, "E:/HolbeinPferd.las", "E:/HolbeinPferdOctree", 500);
+            //CreateFiles(_ptAccessor, "E:/HolbeinPferd.las", "E:/HolbeinPferdOctree", 500);
 
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
             var oocFileReader = new PtOctreeFileReader<LAZPointType>("E:/HolbeinPferdOctree");
             
             //create Scene from octree structure
-            _scene = oocFileReader.GetScene(_ptAccessor, _depthPassEf, out var readOctree);
-            _oocLoader = new OoCOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC)
+            _scene = oocFileReader.GetScene(_depthPassEf);
+            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC)
             {
                 PointThreshold = 500000
             };
@@ -250,41 +249,11 @@ namespace Fusee.Examples.PcRendering.Core
             }
 
             //---------------------
-
             
             _oocLoader.TraverseByProjectedSizeOrder(_ptAccessor, LAZtoSceneNode.GetMeshsForNode);
             _oocLoader.TraverseAndRemoveMeshes(_scene.Children[1]);
             _oocLoader.SetMeshes(_scene, wfc, _wfcEffect);
-            //var projNode = _scene.Children[0];
             
-            //_scene.Children.Clear();
-            //foreach (var node in _oocLoader.VisibleNodes)
-            //{
-            //    //find corresponding scene
-
-            //    var wcSn = new SceneNodeContainer()
-            //    {
-            //        Name = "WireframeCube",
-            //        Components = new List<SceneComponentContainer>()
-            //        {
-            //            new TransformComponent()
-            //            {
-            //                Scale = float3.One * (float)node.Size,
-            //                Translation = (float3) node.Center
-            //            },
-            //            new ShaderEffectComponent()
-            //            {
-            //                Effect = _wfcEffect
-            //            },
-            //            wfc
-            //        }
-            //    };
-
-            //    _scene.Children.Add(snc);
-            //    _scene.Children.Add(wcSn);
-            //}
-            //_scene.Children.Insert(0, projNode);
-            //_sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
 
             //----------------------------

@@ -18,7 +18,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
     public class PtGrid<TPoint>
     {
-        public GridCell<TPoint>[,,] GridCells;        
+        public GridCell<TPoint>[,,] GridCells;
 
         private List<int3> _neighbouCellIdxOffsets;
 
@@ -92,10 +92,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var neighbourCell = GridCells[nIndexX, nIndexY, nIndexZ];
 
                 if (neighbourCell == null)
-                    continue;                
+                    continue;
 
                 if ((tPointPos - ptAccessor.GetPositionFloat3_64(ref neighbourCell.Occupant)).Length < neighbourCell.Size) //neighbourCell.Size equals spacing/ resolution of the octant
-                { 
+                {
                     parentOctant.Payload.Add(point);
                     return;
                 }
@@ -109,10 +109,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 {
                     Occupant = point
                 };
-                
+
                 GridCells[indexX, indexY, indexZ] = cell;
-            }            
-            else if (cell.Occupant == null) //set or change cell occupant if neccessary            
+            }
+            else if (cell.Occupant == null) //set or change cell occupant if necessary            
             {
                 cell.Occupant = point;
             }
@@ -124,13 +124,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 if (pointDistToCenter < occupantDistToCenter)
                 {
                     parentOctant.Payload.Add(cell.Occupant);
-                    cell.Occupant = point; 
+                    cell.Occupant = point;
                 }
-                else                
-                    parentOctant.Payload.Add(point);                    
-                
+                else
+                    parentOctant.Payload.Add(point);
+
             }
-            
+
         }
 
         private static List<int3> GetGridNeighbourIndices(int dist)

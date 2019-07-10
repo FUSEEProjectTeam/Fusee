@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Pointcloud.Common
 {
     /// <summary>
-    ///     Every pointcloud needs a point accessor
+    ///     Every point cloud needs a point accessor
     /// </summary>
     /// <example>
     /// 
@@ -1808,7 +1808,7 @@ namespace Fusee.Pointcloud.Common
     }
 
     /// <summary>
-    ///     A pointcloud consists of a point accessor which enables access to the 
+    ///     A point cloud consists of a point accessor which enables access to the 
     ///     as well as some information about the point type.
     ///     Furthermore the data itself as well as some meta information like offset information.
     /// </summary>   

@@ -24,25 +24,25 @@
     public enum PointSizeMode
     {
         /// <summary>
-        /// Given point size is interpreted as diamter of the point in px
+        /// Given point size is interpreted as diameter of the point in px
         /// </summary>
         FIXED_PIXELSIZE = 0,
 
         /// <summary>
-        /// Given point size is interpreted as diamter of the point in px for the initial camera position.
+        /// Given point size is interpreted as diameter of the point in px for the initial camera position.
         /// If the camera gets closer, the point size in px will increase.
         /// </summary>
         FIXED_WORLDSIZE = 1,
 
         /// <summary>
-        /// Given point size is interpreted as diamter of the point in px for the initial camera position.
+        /// Given point size is interpreted as diameter of the point in px for the initial camera position.
         /// If the camera gets closer, the point size in px will increase.
         /// Additionally the point size in px depends on the level and therefor the spacing of the octant a point lies in.
         /// </summary>
         NODELEVELDEPENDENT = 2,
 
         /// <summary>
-        /// Given point size is interpreted as diamter of the point in px for the initial camera position.
+        /// Given point size is interpreted as diameter of the point in px for the initial camera position.
         /// If the camera gets closer, the point size in px will increase.
         /// Additionally the size in px is adapted relative to the level and therefor the spacing of the octant a point lies in to allow the same point size in different octree levels.
         /// </summary>

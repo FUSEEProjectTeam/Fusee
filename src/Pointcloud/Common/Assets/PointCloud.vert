@@ -2,9 +2,7 @@
 
 uniform vec2 ScreenParams;
 uniform int PointMode;
-uniform float OctantRes;
 uniform int PointSize;
-uniform int gridCellRes;
 uniform int PointShape;
 uniform mat4 FUSEE_ITMV;
 uniform mat4 FUSEE_MVP;

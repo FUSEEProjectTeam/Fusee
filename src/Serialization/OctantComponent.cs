@@ -1,28 +1,62 @@
 ﻿using Fusee.Math.Core;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Serialization
 {
+    /// <summary>
+    /// Component that allows a SceneNode to save information usually associated with a "PtOctant".
+    /// </summary>
     public class PtOctantComponent : SceneComponentContainer
     {
+        /// <summary>
+        /// Defines the position in the parent octant.
+        /// </summary>
         public int PosInParent;
+
+        /// <summary>
+        /// The level of the octree the node lies in.
+        /// </summary>
         public int Level;
+
+        /// <summary>
+        /// Unique identifier of the node.
+        /// </summary>
         public Guid Guid;
-        public double Resolution;
+
+        /// <summary>
+        /// Center in world space.
+        /// </summary>
         public double3 Center;
+
+        /// <summary>
+        /// Length of on side of the cubical node.
+        /// </summary>
         public double Size;
+
+        /// <summary>
+        /// Defines if the node is a leaf node.
+        /// </summary>
         public bool IsLeaf;
+
+        /// <summary>
+        /// Defines if the node was loaded into memory.
+        /// </summary>
         public bool WasLoaded;
 
+        /// <summary>
+        /// Number of point cloud points, this node holds.
+        /// </summary>
         public int NumberOfPointsInNode;
+
+        /// <summary>
+        /// The size, projected into screen space. Set with <seealso cref="ComputeScreenProjectedSize(double3, int, float)"/>.
+        /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
 
         //TODO: duplicate code, clean up! The original is found in AABB.
         /// <summary>
-        ///     Checks if a viewing frustrum lies within this AABB.
+        ///     Checks if a viewing frustum lies within this AABB.
         ///     If feeded with a projection matrix, the result of the clipping planes is in view space
         ///     If feeded with a projection view matrix, the clipping planes are given in model space
         /// </summary>
@@ -30,7 +64,7 @@ namespace Fusee.Serialization
         /// <returns>false if fully outside, true if inside or intersects</returns>
         public bool Intersects(float4x4 vf)
         {
-            // split the viewing frustrum in 6 planes
+            // split the viewing frustum in 6 planes
             // plane equation = ax + by + cz + d = 0;
             // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3 
             var planes = new double4[6];
@@ -97,6 +131,13 @@ namespace Fusee.Serialization
             return d - r;
         }
 
+
+        /// <summary>
+        /// Calculates the size, projected into screen space.
+        /// </summary>
+        /// <param name="camPos">Position of the camera.</param>
+        /// <param name="screenHeight">Hight of the canvas.</param>
+        /// <param name="fov">Field of view.</param>
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
