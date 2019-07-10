@@ -85,7 +85,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _cameraPos = new float3(0.0f, 2, -10);
+            _cameraPos = new float3(10, 10, -30);
 
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -122,7 +122,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene = oocFileReader.GetScene(_ptAccessor, _depthPassEf, out var readOctree);
             _oocLoader = new OoCOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC)
             {
-                PointThreshold = 100000
+                PointThreshold = 500000
             };
 
             projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
@@ -141,8 +141,8 @@ namespace Fusee.Examples.PcRendering.Core
             _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
             _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
-            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
-            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
+            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z);
+            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -316,8 +316,8 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height));
-                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), new float2(ZNear, ZFar), _texHandle);
+                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z);
+                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle);
             }          
 
             _isTexInitialized = true;

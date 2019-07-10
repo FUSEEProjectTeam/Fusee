@@ -16,9 +16,9 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
-        public static PointSizeMode PtMode = PointSizeMode.FIXED_PIXELSIZE;
+        public static PointSizeMode PtMode = PointSizeMode.NODELEVELDEPENDENT;
         public static ColorMode ColorMode = ColorMode.SINGLE;
-        public static int Size = 50;
+        public static int Size = 7;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
@@ -222,7 +222,7 @@ namespace Fusee.Examples.PcRendering.Core
             return myPC.Points.ToArray().ToList();
         }
 
-        internal static ShaderEffect DepthPassEffect(float2 screenParams)
+        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ)
         {
             return new ShaderEffect(new[]
             {
@@ -243,58 +243,22 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
 
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
+                new EffectParameterDeclaration {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
 
                 new EffectParameterDeclaration {Name = "PointSize", Value = Size},
                 new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
                 new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
 
-                new EffectParameterDeclaration {Name = "ScreenProjectedOctantSize", Value = 0f}
-            });
-
-            //return new ShaderEffect(new[]
-            //{
-            //    new EffectPassDeclaration
-            //    {
-            //        VS = AssetStorage.Get<string>("PointCloud.vert"),
-            //        PS = AssetStorage.Get<string>("PointCloud.frag"),
-            //        StateSet = new RenderStateSet
-            //        {
-            //            AlphaBlendEnable = true,
-            //            ZEnable = true,
-            //        }
-            //    }
-            //},
-            //new[]
-            //{
-            //    new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
-            //    new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-            //    new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
-            //    new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
-            //    new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
-
-            //    //new EffectParameterDeclaration {Name = "ClipPlaneDist", Value = clipPlaneDist},
-            //    new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
-            //    new EffectParameterDeclaration {Name = "Color", Value = SingleColor},
-
-            //    new EffectParameterDeclaration {Name = "PointSize", Value = Size},
-            //    new EffectParameterDeclaration {Name = "PointShape", Value = (int)Shape},
-            //    new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode.DEPTH},
-
-            //    new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting},
-            //    //new EffectParameterDeclaration{Name = "DepthTex", Value = depthTexHandle},
-            //    new EffectParameterDeclaration{Name = "EDLStrength", Value = EdlStrength},
-            //    new EffectParameterDeclaration{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
-            //    new EffectParameterDeclaration {Name = "SpecularStrength", Value = 0.5f},
-            //    new EffectParameterDeclaration {Name = "Shininess", Value = 200f},
-            //    new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
-
-            //});
+                new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
+                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0}
+            });            
         }
 
-        internal static ShaderEffect StandardEffect(float2 screenParams, float2 clipPlaneDist, ITextureHandle depthTexHandle)
+        internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle)
         {
             return new ShaderEffect(new[]
             {
@@ -316,10 +280,12 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
 
                 new EffectParameterDeclaration {Name = "ClipPlaneDist", Value = clipPlaneDist},
                 new EffectParameterDeclaration {Name = "ScreenParams", Value = screenParams},
+                new EffectParameterDeclaration {Name = "InitCamPosZ", Value = System.Math.Abs(initCamPosZ)},
                 new EffectParameterDeclaration {Name = "Color", Value = SingleColor},
 
                 new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
@@ -335,7 +301,8 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "Shininess", Value = 200f},                
                 new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
 
-                new EffectParameterDeclaration {Name = "ScreenProjectedOctantSize", Value = 0f}
+                new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
+                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0}
 
             });
         }

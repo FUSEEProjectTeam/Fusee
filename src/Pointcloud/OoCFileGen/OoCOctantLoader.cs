@@ -7,8 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fusee.Xene;
-using Fusee.Engine.Common;
-using Fusee.Base.Core;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -24,7 +22,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private readonly SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;        
         private List<PtOctant<TPoint>> _determinedAsVisible; // per traversal
         private int _numberOfVisiblePoints;
-        private string _fileFolderPath;
+        private readonly string _fileFolderPath;
 
         #region Traversal Properties
 
@@ -34,7 +32,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public int PointThreshold = 100000;
 
         // ... of a node. Depends on spacing of the octree, see constructors.
-        private double _minScreenProjectedSize;
+        private readonly double _minScreenProjectedSize;
 
         #endregion
 
@@ -46,7 +44,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             RC = rc;
             RootNode = rootNode;
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>();            
-            _minScreenProjectedSize = RootNode.GetComponent<PtOctantComponent>().Resolution; // = number of points -> number of pixels
+            _minScreenProjectedSize = 128; // = number of points -> number of pixels
             _fileFolderPath = fileFolderPath;
         }
 
@@ -114,6 +112,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             // gets pixel radius of the node
             ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+
+            //_minScreenProjectedSize = ptOctantChildComp.Size;
 
             if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
                 return;

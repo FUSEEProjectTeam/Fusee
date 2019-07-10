@@ -679,8 +679,9 @@ namespace Fusee.Engine.Core
 
         [VisitMethod]
         public void RenderPtOctantComponent(PtOctantComponent ptOctant)
-        {
-            _state.Effect.SetEffectParam("ScreenProjectedOctantSize", (float)ptOctant.ProjectedScreenSize);
+        {          
+            _state.Effect.SetEffectParam("OctantRes", (float)ptOctant.Resolution);
+            _state.Effect.SetEffectParam("OctantLevel", ptOctant.Level);
         }
 
         [VisitMethod]

@@ -159,12 +159,13 @@ namespace Fusee.Engine.Core
         {
             // ReSharper disable InconsistentNaming
             public IShaderParam FUSEE_M;
-            public IShaderParam FUSEE_V;
+            public IShaderParam FUSEE_V;            
             public IShaderParam FUSEE_MV;
 
             public IShaderParam FUSEE_P;
             public IShaderParam FUSEE_MVP;
 
+            public IShaderParam FUSEE_IV;
             public IShaderParam FUSEE_IMV;
             public IShaderParam FUSEE_IP;
             public IShaderParam FUSEE_IMVP;
@@ -819,6 +820,9 @@ namespace Fusee.Engine.Core
             if (_currentShaderParams.FUSEE_V != null)
                 SetFXParam("FUSEE_V", View);
 
+            if (_currentShaderParams.FUSEE_IV != null)
+                SetFXParam("FUSEE_IV", InvView);
+
             if (_currentShaderParams.FUSEE_MV != null)
                 SetFXParam("FUSEE_MV", ModelView);
 
@@ -886,6 +890,7 @@ namespace Fusee.Engine.Core
             _currentShaderParams.FUSEE_IMV = _currentShader.GetShaderParam("FUSEE_IMV");
             _currentShaderParams.FUSEE_IP = _currentShader.GetShaderParam("FUSEE_IP");
             _currentShaderParams.FUSEE_IMVP = _currentShader.GetShaderParam("FUSEE_IMVP");
+            _currentShaderParams.FUSEE_IV = _currentShader.GetShaderParam("FUSEE_IV");
 
             // Transposed versions
             _currentShaderParams.FUSEE_TMV = _currentShader.GetShaderParam("FUSEE_TMV");

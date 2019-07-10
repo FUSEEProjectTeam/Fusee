@@ -5,11 +5,9 @@ using Fusee.Serialization;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using Fusee.Xene;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
@@ -245,11 +243,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var rootSnc = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>
-                {
-                    new PtOctantComponent
-                    {
-                        PosInParent = -1 //root!
-                    },
+                {                    
                     new TransformComponent
                     {
                         Scale = float3.One,
@@ -258,6 +252,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     new ShaderEffectComponent
                     {
                         Effect = effect
+                    },
+                    new PtOctantComponent
+                    {
+                        PosInParent = -1, //root!
+                        Resolution = size/128
                     }
 
                 }
@@ -331,7 +330,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 octantcomp.Resolution = node.Resolution;
                 octantcomp.Size = node.Size;
                 octantcomp.Center = node.Center;
-
+                
                 // create children
                 byte children = binaryReader.ReadByte();
 

@@ -2,7 +2,7 @@
 
 uniform vec2 ScreenParams;
 uniform int PointMode;
-uniform float ScreenProjectedOctantSize;
+uniform float OctantRes;
 uniform int PointSize;
 uniform int gridCellRes;
 uniform int PointShape;
@@ -11,7 +11,11 @@ uniform mat4 FUSEE_MVP;
 uniform mat4 FUSEE_M;
 uniform mat4 FUSEE_P;
 uniform mat4 FUSEE_V;
+uniform mat4 FUSEE_IV;
 uniform vec2 ClipPlaneDist;
+uniform float InitCamPosZ;
+
+uniform int OctantLevel;
 
 out vec3 vNormal;
 out vec4 vClipPos;
@@ -20,9 +24,13 @@ out vec4 vWorldPos;
 out float vWorldSpacePointRad;
 out vec3 vColor;
 
+out float vSpacing;
+out int vOctantLvl;
+
 in vec3 fuVertex;
 in vec3 fuNormal;
 in vec3 fuColor;
+
 
 void main(void)
 {	
@@ -40,26 +48,72 @@ void main(void)
 
 	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
 
-	float pSize = round(PointSize / vClipPos.w);	 
+	//float pSize = round(PointSize / vClipPos.w);	 
 
-	clamp(pSize, 1, PointSize);
+	//clamp(pSize, 1, PointSize);
 
-//	if(PointShape == 0 || PointShape == 1)
-//		gl_PointSize = pSize;
-//	else
+	//if(PointShape == 0 || PointShape == 1)
+	//gl_PointSize = pSize;
+	//	else
 
 	
-	switch (PointMode)
+	float minPtSize = 1;
+	float ptSize = minPtSize;
+	float maxPtSize = 100;
+
+
+	vec3 camPos = vec3(FUSEE_IV[3]);
+	vec3 cameraToPoint = vec3(vWorldPos) - camPos;
+
+	float viewDepth = dot(cameraToPoint, camPos);
+	
+	switch(PointMode)
 	{
-		case 0: // default = fixed, user-given point size in px
 		default:
-			gl_PointSize = 2;
-		case 1: 
-			gl_PointSize = 20;
+		case 0:
+		{		
+			ptSize = PointSize;			
+			break;
+		}
+		case 1:
+		{ 
+			//In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away
+
+			//Formula that relates to the given PointSie (in px) and the camera position
+			//ptSize = (PointSize / vClipPos.w) * InitCamPosZ;
+			
+			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
+			float worldPtSize = PointSize;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
+			break;
+		}
 		case 2:
-			gl_PointSize = 200;
-		
+		{	
+			vOctantLvl = OctantLevel;
+
+			float spacing = pow(0.5, OctantLevel);			
+			vSpacing = spacing;
+			
+			float worldPtSize = PointSize * spacing;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
+			break;
+		}
+		case 3:
+		{	
+			ptSize = PointSize;			
+			break;
+		}	
 	}
 
+	if(ptSize < minPtSize)
+		ptSize = minPtSize;
+	else if(ptSize > maxPtSize)
+		ptSize = maxPtSize;
+
+
+//	ptSize = max(minPtSize, ptSize);
+//	ptSize = min(maxPtSize, ptSize);	
+
+	gl_PointSize = ptSize;
 	gl_Position = vClipPos;	
 }
