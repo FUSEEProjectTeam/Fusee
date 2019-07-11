@@ -8,7 +8,7 @@
     <script defer src="Scripts/mono_support.js"></script>
     <script defer src="Scripts/SkiaSharp.js"></script>
     <script defer src="canvaskit.js"></script>
-    <script defer src="mono.js"></script>
+    <script async src="mono.js"></script>
     <style>
         html, body {
             width: 100%;
@@ -32,7 +32,8 @@
                         var feedback = document.getElementById("feedback-body");
                         if (feedback) {
                             feedback.parentElement.removeChild(feedback);
-                        }
+                }
+              
                          BINDING.call_static_method("[Fusee.Examples.RocketOnly.WebAsm] Samples.Program:Main", []);
                     },
             };

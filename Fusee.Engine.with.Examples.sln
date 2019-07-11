@@ -469,7 +469,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RocketOnly.C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RocketOnly.WebAsm", "Examples\Complete\WASM\WebAsm\Samples\Fusee.Examples.RocketOnly.WebAsm.csproj", "{7FBCAAAF-62CA-4873-B8D5-D2A3CB600452}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Engine.Imp.Graphics.Wasm", "src\Engine\Imp\Graphics\Wasm\Fusee.Engine.Imp.Graphics.Wasm\Fusee.Engine.Imp.Graphics.Wasm.csproj", "{23FCD3D5-31B0-4F94-9CF8-F8B8B099E493}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Graphics.Wasm", "src\Engine\Imp\Graphics\Wasm\Fusee.Engine.Imp.Graphics.Wasm\Fusee.Engine.Imp.Graphics.Wasm.csproj", "{23FCD3D5-31B0-4F94-9CF8-F8B8B099E493}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebGLDotNET", "Examples\Complete\WASM\WebAsm\WebGLDotNET\WebGLDotNET.csproj", "{03386050-7951-4C3A-AB94-9BD3B4B9BB6B}"
 EndProject
