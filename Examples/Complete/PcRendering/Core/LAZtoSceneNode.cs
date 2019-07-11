@@ -268,7 +268,10 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "PointMode", Value = (int)PtMode},
 
                 new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
-                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0}
+                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
+
+                new EffectParameterDeclaration {Name = "OctreeTex", Value = new Texture(new ImageData(1,1))},
+                new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
             });            
         }
 
@@ -316,7 +319,10 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "SpecularColor", Value = new float4(1,1,1,1)},
 
                 new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
-                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0}
+                new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
+
+                new EffectParameterDeclaration {Name = "OctreeTex", Value = new Texture(new ImageData(1,1))},
+                new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
 
             });
         }

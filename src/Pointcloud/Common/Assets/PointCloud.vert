@@ -13,6 +13,9 @@ uniform mat4 FUSEE_IV;
 uniform vec2 ClipPlaneDist;
 uniform float InitCamPosZ;
 
+uniform sampler2D OctreeTex;
+uniform int OctreeTexWidth;
+
 uniform int OctantLevel;
 
 out vec3 vNormal;

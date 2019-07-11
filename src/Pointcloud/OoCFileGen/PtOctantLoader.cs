@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Fusee.Xene;
+using Fusee.Base.Core;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -217,6 +218,31 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             node.RemoveComponent<Mesh>();
             node.RemoveComponentsInChildren<Mesh>();
         }
+
+        //traverse breadth first to create 1D tex
         
+        /// <summary>
+        /// Traverses in breadth-first order.
+        /// </summary>
+        private void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, ref Texture tex)
+        {
+            Queue<SceneNodeContainer> candidates = new Queue<SceneNodeContainer>();
+            candidates.Enqueue(node);
+
+            while (candidates.Count > 0)
+            {
+                node = candidates.Dequeue();
+
+                //check if octantcomp.guid is in VisibleNode
+                // no--> return
+                //yes --> write to 1D tex
+
+                foreach (var child in node.Children)
+                {
+                    candidates.Enqueue(child);                    
+                }
+            }
+        }
+
     }
 }
