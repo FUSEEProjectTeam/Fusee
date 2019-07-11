@@ -728,6 +728,55 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region TRS Decomposition
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationMtxs))]
+        public void TranslationDecompositionMtx(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.TranslationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationVecs))]
+        public void TranslationDecompositionVec(float4x4 mat, float3 expected)
+        {
+            var result = float4x4.GetTranslation(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionRotationMtxs))]
+        public void RotationDecomposition(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.RotationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleMtxs))]
+        public void ScaleDecompositionMtx(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.ScaleDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleVecs))]
+        public void ScaleDecompositionVec(float4x4 mat, float3 expected)
+        {
+            var result = float4x4.GetScale(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        #endregion
+
         #region Round
 
         [Fact]
@@ -883,6 +932,42 @@ namespace Fusee.Math.Core
         #endregion
 
         #region IEnumerables
+
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationVecs()
+        {
+            yield return new object[] { new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1), float3.Zero };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float3.Zero };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float3(5, 6, 7) };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float3(5, 6, 7) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionRotationMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float4x4(0.2672612f, 0.4850713f, 0.904534f, 0, 0.5345225f, 0.7276069f, 0.3015113f, 0, 0.8017837f, 0.4850713f, 0.3015113f, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float4x4(7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleVecs()
+        {
+            yield return new object[] { float4x4.Identity, float3.One };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float3(2, 4, 5) };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float3(2, 3, 4) };
+            yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float3(7, 7, 7) };
+        }
 
         public static IEnumerable<object[]> GetAxisAngle()
         {

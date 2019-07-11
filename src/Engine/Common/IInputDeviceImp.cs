@@ -151,6 +151,10 @@ namespace Fusee.Engine.Common
         /// In this case cast this value to integer before passing it to InputDevice methods.
         /// </summary>
         public float MaxValueOrAxis;
+        /// <summary>
+        /// The value at which the axis is assumed to be zero.
+        /// </summary>
+        public float Deadzone;
     }
 
     /// <summary>
