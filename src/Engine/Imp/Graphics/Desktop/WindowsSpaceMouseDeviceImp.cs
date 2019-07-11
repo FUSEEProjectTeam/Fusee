@@ -276,9 +276,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.TX,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };
@@ -290,9 +288,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.TY,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };
@@ -304,9 +300,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.TZ,
                     Direction = AxisDirection.Z,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };
@@ -318,9 +312,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.RX,
                     Direction = AxisDirection.Y,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };
@@ -332,9 +324,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.RY,
                     Direction = AxisDirection.X,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };
@@ -346,9 +336,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     Id = (int)SixDOFAxis.RZ,
                     Direction = AxisDirection.Z,
                     Nature = AxisNature.Position,
-                    Bounded = AxisBoundedType.Constant,
-                    MinValueOrAxis = -1,
-                    MaxValueOrAxis = 1
+                    Bounded = AxisBoundedType.Unbound
                 },
                 PollAxis = false
             };

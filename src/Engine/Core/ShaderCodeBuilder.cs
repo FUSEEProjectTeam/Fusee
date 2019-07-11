@@ -669,10 +669,8 @@ namespace Fusee.Engine.Core
             //TODO: Test alpha blending between diffuse and texture
             if (_materialProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"vec4 texCol = (texture({DiffuseTextureName}, vUV).rgba * {DiffuseMixName});" +
-                    $"vec4 matCol = {DiffuseColorName};" +
-                    $"vec4 blendedCol = matCol * matCol.a + texCol * (1.0-texCol.a);" +
-                    $"return blendedCol *  max(diffuseTerm, 0.0) * intensities;");
+                    $"vec4 blendedCol = mix({DiffuseColorName}, texture({DiffuseTextureName}, vUV), {DiffuseMixName});" +
+                    $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
             else
                 methodBody.Add($"return vec4({DiffuseColorName}.rgb * intensities.rgb * diffuseTerm, 1.0);");
 
