@@ -108,7 +108,7 @@ namespace Samples
             _app.VertexShader = await readerVert.ReadToEndAsync();
             _app.PixelShader = await readerFrag.ReadToEndAsync();
             
-            _app.CurrentTex = FileDecoder.LoadImage(img);
+            _app.CurrentTex = FileDecoder.LoadImage(img).Result;
 
             var stream = await WasmResourceLoader.LoadAsync("Assets/FUSEERocket.fus", WasmResourceLoader.GetLocalAddress());
             var seri = new Serializer();

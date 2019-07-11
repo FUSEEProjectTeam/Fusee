@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>

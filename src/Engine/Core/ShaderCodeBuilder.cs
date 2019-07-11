@@ -438,6 +438,8 @@ namespace Fusee.Engine.Core
             // Main
             _vertexShader.Add("void main() {");
 
+            _vertexShader.Add("gl_PointSize = 10.0;");
+
             if (_meshProbs.HasNormals && _meshProbs.HasWeightMap)
             {
                 _vertexShader.Add("vec4 newVertex;");

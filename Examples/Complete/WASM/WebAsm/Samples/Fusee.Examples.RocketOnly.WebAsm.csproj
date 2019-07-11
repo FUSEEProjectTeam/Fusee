@@ -5,11 +5,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU1701;NU1604</NoWarn>
     <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+    <StartupObject />
   </PropertyGroup>
 
-  
   <ItemGroup>
-   
     <Reference Include="Fusee.SerializationSerializer">
       <HintPath>..\..\..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
@@ -24,6 +23,11 @@
     <ProjectReference Include="..\..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
     <ProjectReference Include="..\WebGLDotNET\WebGLDotNET.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Include="$(FuseeBuildRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll" Link="Natives\SkiaSharp.Wasm.dll" />
+  </ItemGroup>
+
 
   <ItemGroup>
    

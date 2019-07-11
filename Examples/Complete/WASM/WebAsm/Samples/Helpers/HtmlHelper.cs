@@ -5,11 +5,22 @@ namespace Samples.Helpers
 {
     public static class HtmlHelper
     {
-        public static JSObject AddCanvas(string divId, string canvasId, int width, int height)
+        public static void GetBrowserWindowSize()
         {
             using (var document = (JSObject)Runtime.GetGlobalObject("document"))
             using (var body = (JSObject)document.GetObjectProperty("body"))
             {
+                Console.WriteLine($"Body width [{body.GetObjectProperty("width")}]");
+            }
+                
+        }
+
+        public static JSObject AddCanvas(string divId, string canvasId, int width = 800, int height = 600)
+        {
+            using (var document = (JSObject)Runtime.GetGlobalObject("document"))
+            using (var body = (JSObject)document.GetObjectProperty("body"))
+            {
+              
                 var canvas = (JSObject)document.Invoke("createElement", "canvas");
                 canvas.SetObjectProperty("width", width);
                 canvas.SetObjectProperty("height", height);
