@@ -46,6 +46,38 @@ namespace Fusee.Math.Core
 
         #region Public Members
 
+        #region this
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+        }
+        #endregion
+
         #region Instance
 
         #region public double Length

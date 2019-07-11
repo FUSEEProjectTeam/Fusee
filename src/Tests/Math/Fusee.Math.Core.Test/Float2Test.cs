@@ -44,6 +44,56 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new float2(3, 7);          
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = new float2(0, 0);
+            actual[0] = 3;
+            actual[1] = 7;
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {    
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new float2(10,0)[idx]);
+
+            Assert.Equal(expected, actual.ParamName);           
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f2 = new float2(10, 0); f2[idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 7, "Index 7 not eligible for a float2 type" };
+            yield return new object[] { 6, "Index 6 not eligible for a float2 type" };
+        }
+
+        #endregion
+
         #region Instance
 
         [Fact]

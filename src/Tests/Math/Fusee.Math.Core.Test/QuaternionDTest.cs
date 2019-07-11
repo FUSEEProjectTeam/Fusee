@@ -32,6 +32,66 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new QuaternionD(3, 7, 8, 1);
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = new QuaternionD(0, 0, 0, 0);
+            actual[0] = 3;
+            actual[1] = 7;
+            actual[2] = 8;
+            actual[3] = 1;
+
+            Assert.Equal(3, actual[0]);
+
+            Assert.Equal(7, actual[1]);
+
+            Assert.Equal(8, actual[2]);
+
+            Assert.Equal(1, actual[3]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => new QuaternionD(0, 0, 0, 0)[idx]);
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var qd4 = new QuaternionD(0, 0, 0, 0); qd4[idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 7, "Index 7 not eligible for a QuaternionD type" };
+            yield return new object[] { 6, "Index 6 not eligible for a QuaternionD type" };
+        }
+
+        #endregion
+
         #region Properties
 
         [Fact]
@@ -249,6 +309,21 @@ namespace Fusee.Math.Core
             Assert.Equal(expected.y, actual.y, 6);
             Assert.Equal(expected.z, actual.z, 6);
             Assert.Equal(expected.w, actual.w, 6);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetAxisAngle))]
+        public void ToRotMat_Static_7DecimalsEqual(QuaternionD quat, double4 expected)
+        {
+            var actual = QuaternionD.ToRotMat(quat);
+
+            var expectedAxis = new double3(expected.xyz);
+            var expectedAngle = expected.w;
+
+            var expectedRotMat = double4x4.CreateFromAxisAngle(expectedAxis, expectedAngle);
+
+            for(var i = 0; i < expectedRotMat.AsArray.Length; i++)
+                Assert.Equal(expectedRotMat.AsArray[i], actual.AsArray[i], 7); 
         }
 
         #endregion

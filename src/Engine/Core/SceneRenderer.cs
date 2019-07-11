@@ -214,17 +214,17 @@ namespace Fusee.Engine.Core
         #region Traversal information
 
 
-        private Dictionary<SceneNodeContainer, float4x4> _boneMap;
-        private Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
-        private Animation _animation;
-        private readonly SceneContainer _sc;
+        protected Dictionary<SceneNodeContainer, float4x4> _boneMap;
+        protected Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
+        protected Animation _animation;
+        protected readonly SceneContainer _sc;
 
-        private RenderContext _rc;
+        protected RenderContext _rc;
 
-        private Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
+        protected Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
 
         private string _scenePathDirectory;
-        private ShaderEffect _defaultEffect;
+        protected ShaderEffect _defaultEffect;
 
         #endregion
 
@@ -232,9 +232,9 @@ namespace Fusee.Engine.Core
 
         public class RendererState : VisitorState
         {
-            private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-            private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
-            private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
+            protected CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
+            protected CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
+            protected CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
 
             public float4x4 Model
             {
@@ -274,8 +274,8 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private RendererState _state;
-        private float4x4 _view;
+        protected RendererState _state;
+        protected float4x4 _view;
 
         #endregion
 

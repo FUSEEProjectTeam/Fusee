@@ -100,6 +100,53 @@ namespace Fusee.Math.Core
 
         #region Instance
 
+        #region this
+        /// <summary>
+        ///     Sets/Gets value from given idx
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    case 3:
+                        return w;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    case 3:
+                        w = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
+        }
+        #endregion
+
         #region ToAxisAngle
 
         /// <summary>
@@ -109,6 +156,11 @@ namespace Fusee.Math.Core
         public double4 ToAxisAngle()
         {
             return ToAxisAngle(this);
+        }
+
+        public double4x4 ToRotMat()
+        {
+            return ToRotMat(this);
         }
 
         #endregion
@@ -345,6 +397,30 @@ namespace Fusee.Math.Core
             result.w = System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        /// <summary>
+        ///     Constructs a rotation matrix from a given quaternion
+        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static double4x4 ToRotMat(QuaternionD quat)
+        {
+            var m1 = new double4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new double4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
         }
 
         /// <summary>
