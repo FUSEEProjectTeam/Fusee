@@ -16,7 +16,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public RenderContext RC;
 
         public SceneNodeContainer RootNode { get; private set; }
-        public List<SceneNodeContainer> VisibleNodes = new List<SceneNodeContainer>();
+        public Dictionary<Guid, SceneNodeContainer> VisibleNodes = new Dictionary<Guid, SceneNodeContainer>();
         private readonly Dictionary<Guid, IEnumerable<Mesh>> LoadedMeshs;
 
         private readonly SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;        
@@ -83,7 +83,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         {
             scene.Children.RemoveAll(node => node.Name == "WireframeCube");
 
-            foreach (var node in VisibleNodes)
+            foreach (var node in VisibleNodes.Values)
             {
                 var ptOctantComp = node.GetComponent<PtOctantComponent>();
 
@@ -173,7 +173,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             {
                 _nodesOrderedByProjectionSize.Add(ptOctantChildComp.ProjectedScreenSize, node);
                 _numberOfVisiblePoints += ptOctantChildComp.NumberOfPointsInNode;
-                VisibleNodes.Add(node);
+                VisibleNodes.Add(ptOctantChildComp.Guid, node);
             }
         }
 
@@ -214,9 +214,15 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         public void TraverseAndRemoveMeshes(SceneNodeContainer node)
         {
-            _numberOfVisiblePoints = 0;            
+            _numberOfVisiblePoints = 0;
+            node.GetComponent<PtOctantComponent>().VisibleChildIndices = 0;
             node.RemoveComponent<Mesh>();
-            node.RemoveComponentsInChildren<Mesh>();
+            //node.RemoveComponentsInChildren<Mesh>();
+
+            foreach (var child in node.Children)
+            {
+                TraverseAndRemoveMeshes(child);
+            }
         }
 
         //traverse breadth first to create 1D tex
@@ -224,24 +230,84 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Traverses in breadth-first order.
         /// </summary>
-        private void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, ref Texture tex)
+        public void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, Texture tex)
         {
+            if (VisibleNodes.Count == 0) return;
+
+            //clear texture
+            tex.Blt(0, 0, new ImageData(new byte[tex.PixelData.Length], tex.Width, tex.Height, tex.PixelFormat));
+
+            var visibleOctantsImgData = new ImageData(new byte[VisibleNodes.Count * tex.PixelFormat.BytesPerPixel], VisibleNodes.Count, 1, tex.PixelFormat);
+
             Queue<SceneNodeContainer> candidates = new Queue<SceneNodeContainer>();
             candidates.Enqueue(node);
 
+            //The nodes' position in the texture
+            byte nodePixelPos = 0;
+            var rootPtOctantComp = node.GetComponent<PtOctantComponent>();
+            rootPtOctantComp.PosInHierarchyTex = 0;
+
             while (candidates.Count > 0)
-            {
+            {                
                 node = candidates.Dequeue();
+                var ptOctantComp = node.GetComponent<PtOctantComponent>();
 
                 //check if octantcomp.guid is in VisibleNode
                 // no--> return
                 //yes --> write to 1D tex
+                if (VisibleNodes.ContainsKey(ptOctantComp.Guid))
+                {
+                    ptOctantComp.PosInHierarchyTex = nodePixelPos;
+
+                    var byteOffset = nodePixelPos * tex.PixelFormat.BytesPerPixel;
+
+                    byte childIndices = 0;
+                    int exp = 0;
+
+                    if (node.Children.Count != 0)
+                    {
+                        foreach (var childNode in node.Children)
+                        {
+                            if (childNode != null)
+                                childIndices += (byte)System.Math.Pow(2, exp);
+
+                            exp++;
+                        }
+                        visibleOctantsImgData.PixelData[byteOffset] = childIndices; //red
+                    }
+                    else                    
+                        visibleOctantsImgData.PixelData[byteOffset] = 0;    //red
+
+                    visibleOctantsImgData.PixelData[byteOffset + 1] = 0;
+                    visibleOctantsImgData.PixelData[byteOffset + 2] = 0;        //blue
+                    visibleOctantsImgData.PixelData[byteOffset + 3] = 0;        //alpha
+
+                    if (node.Parent != null)
+                    {
+                        var parentPtOctantComp = node.Parent.GetComponent<PtOctantComponent>();
+
+                        if(parentPtOctantComp.VisibleChildIndices == 0)
+                        {                         
+                            var parentBytePos = (parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel) + 1;
+                            visibleOctantsImgData.PixelData[parentBytePos] = (byte)(nodePixelPos - parentPtOctantComp.PosInHierarchyTex);      //parent green
+                        }
+
+                        byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.PosInParent);
+                        parentPtOctantComp.VisibleChildIndices += indexNumber;
+                    }
+
+                    nodePixelPos++;
+
+                }
 
                 foreach (var child in node.Children)
                 {
-                    candidates.Enqueue(child);                    
-                }
+                    candidates.Enqueue(child);
+                }                
             }
+
+            //replace PixelData with new contents
+            tex.Blt(0, 0, visibleOctantsImgData);
         }
 
     }

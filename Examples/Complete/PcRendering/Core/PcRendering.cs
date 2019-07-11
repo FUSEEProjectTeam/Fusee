@@ -35,7 +35,7 @@ namespace Fusee.Examples.PcRendering.Core
         private const float ZNear = 1f;
         private const float ZFar = 1000;
 
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
@@ -65,6 +65,8 @@ namespace Fusee.Examples.PcRendering.Core
         private PtRenderingAccessor _ptAccessor;
 
         private ProjectionComponent projectionComponent;
+
+        private Texture _octreeTex;
         
         private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
         {
@@ -139,9 +141,15 @@ namespace Fusee.Examples.PcRendering.Core
             //create depth tex and fbo
             _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
+            var octreeTexImgData = new ImageData(oocFileReader.NumberOfOctants, 1);
+            _octreeTex = new Texture(octreeTexImgData);
+
+            var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
+            octreeTexImgData.PixelData = new byte[byteSize];
+
             _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
-            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z);
-            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle);
+            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex);
+            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -251,7 +259,13 @@ namespace Fusee.Examples.PcRendering.Core
             //---------------------
             
             _oocLoader.TraverseByProjectedSizeOrder(_ptAccessor, LAZtoSceneNode.GetMeshsForNode);
+
+
             _oocLoader.TraverseAndRemoveMeshes(_scene.Children[1]);
+            _oocLoader.TraverseBreadthFirstToCreate1DTex(_scene.Children[1], _octreeTex);
+            _depthPassEf.SetEffectParam("OctreeTex", _octreeTex);
+            _colorPassEf.SetEffectParam("OctreeTex", _octreeTex);            
+
             _oocLoader.SetMeshes(_scene, wfc, _wfcEffect);
             
             _scenePicker = new ScenePicker(_scene);
@@ -285,8 +299,8 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z);
-                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle);
+                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex);
+                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex);
             }          
 
             _isTexInitialized = true;

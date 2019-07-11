@@ -236,7 +236,7 @@ namespace Fusee.Examples.PcRendering.Core
             return points.ToList();
         }
 
-        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ)
+        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex)
         {
             return new ShaderEffect(new[]
             {
@@ -270,12 +270,12 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
                 new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
 
-                new EffectParameterDeclaration {Name = "OctreeTex", Value = new Texture(new ImageData(1,1))},
+                new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
                 new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
             });            
         }
 
-        internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle)
+        internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex)
         {
             return new ShaderEffect(new[]
             {
@@ -321,7 +321,7 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctantRes", Value = 0f},
                 new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
 
-                new EffectParameterDeclaration {Name = "OctreeTex", Value = new Texture(new ImageData(1,1))},
+                new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
                 new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
 
             });

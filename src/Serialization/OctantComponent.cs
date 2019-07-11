@@ -53,6 +53,10 @@ namespace Fusee.Serialization
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
+        public byte PosInHierarchyTex;
+
+        public byte VisibleChildIndices;
+
 
         //TODO: duplicate code, clean up! The original is found in AABB.
         /// <summary>

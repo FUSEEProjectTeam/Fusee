@@ -15,6 +15,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     {
         private readonly string _fileFolderPath;
 
+        public int NumberOfOctants { get; private set; }
+
         /// <summary>
         /// Creates a new instance of type PtOctantFileReader.
         /// </summary>
@@ -110,6 +112,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 }
             };
             scene.Children.Add(rootSnc);
+            NumberOfOctants++;
 
             ReadHierarchyToScene(rootSnc, effect);
             return scene;
@@ -183,6 +186,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                         childOctantComp.Size = octantcomp.Size / 2;
                         childOctantComp.Center = PtOctant<TPoint>.CalcCildCenterAtPos(index, octantcomp.Size, octantcomp.Center);
                         nodeSnc.Children.Add(childSnc);
+                        NumberOfOctants++;
+
                         CreateSceneNode(childSnc, effect, binaryReader);
                     }
                 }
