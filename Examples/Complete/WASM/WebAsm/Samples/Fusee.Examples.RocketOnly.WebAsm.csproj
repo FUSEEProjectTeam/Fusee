@@ -1,5 +1,4 @@
-﻿<!--<Project Sdk="Microsoft.NET.Sdk">-->
-<Project>
+﻿<Project>
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU1701;NU1604</NoWarn>
@@ -13,7 +12,7 @@
   <Import Project="Sdk.props" Sdk="Mono.WebAssembly.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\WebAsm\WebAsm\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\RocketOnly\WebAsm\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -8,7 +8,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\WebAsm\Core\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\RocketOnly\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
