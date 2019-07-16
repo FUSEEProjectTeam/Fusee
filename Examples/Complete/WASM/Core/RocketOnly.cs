@@ -13,9 +13,6 @@ using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.RocketOnly.Core
 {
-
-    
-
     [FuseeApplication(Name = "FUSEE Rocket Only Example", Description = "An even simpler example.")]
     public class RocketOnly : RenderCanvas
     {
@@ -46,44 +43,7 @@ namespace Fusee.Examples.RocketOnly.Core
         public override void Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            /*
-            RC.ClearColor = new float4(0.5f, 1, 0.25f, 1);
-
-            _scene = new SceneContainer();
-            _scene.Children = new List<SceneNodeContainer>();
-
-            SceneNodeContainer cubeNode = new SceneNodeContainer();
-            _scene.Children.Add(cubeNode);
-
-            _cubeTransform = new TransformComponent
-            {
-                Scale = new float3(1, 1, 1),
-                Translation = new float3(0, 0, 0),
-                Rotation = new float3(0, 0, 0)
-            };
-
-            var cubeShader = new ShaderEffectComponent
-            {
-                Effect = SimpleMeshes.MakeShaderEffect(new float3(1, 0, 0), new float3(1, 1, 1), 4)
-            };
-            var cubeMesh = SimpleMeshes.CreateCuboid(new float3(10, 10, 10));
-
-            cubeNode.Components = new List<SceneComponentContainer>();
-            cubeNode.Components.Add(_cubeTransform);
-            cubeNode.Components.Add(cubeShader);
-            cubeNode.Components.Add(cubeMesh);
-
-            RC.View = float4x4.Invert(float4x4.CreateRotationY(0.4f) *  float4x4.CreateRotationX(0.3f) * float4x4.CreateTranslation(0, 0, -25));
-
-            _sceneRenderer = new SceneRenderer(_scene);
-            */
-
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
-
-            // Load the rocket model
-            // if (_rocketScene == null)
-            //   _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
         }
 
         public SceneContainer RocketScene
@@ -92,75 +52,6 @@ namespace Fusee.Examples.RocketOnly.Core
             set
             {
                 _rocketScene = value;
-
-
-                var mySFX = new ShaderEffect(new[]
-                    {
-                        new EffectPassDeclaration
-                        {
-                            VS = VertexShader,// AssetStorage.Get<string>("VertexShader.vert"),
-                            PS = PixelShader, //AssetStorage.Get<string>("PixelShader.frag"),
-                            StateSet = new RenderStateSet
-                            {
-                                ZEnable = true,
-                                AlphaBlendEnable = true
-                            }
-                        }
-                    },
-                    new List<EffectParameterDeclaration>
-                    {
-                        new EffectParameterDeclaration
-                        {
-                            Name = "FUSEE_MVP",
-                            Value = float4x4.Identity
-                        },
-                        new EffectParameterDeclaration
-                        {
-                            Name = "FUSEE_ITMV",
-                            Value = float4x4.Identity
-                        },
-                        new EffectParameterDeclaration
-                        {
-
-                            Name = "DiffuseTexture",
-                            Value = new Texture(CurrentTex)
-                        },
-                        new EffectParameterDeclaration
-                        {
-                            Name = "DiffuseColor",
-                            Value = new float4(.6f, .4f,.5f,1)
-                        },
-                        new EffectParameterDeclaration
-                        {
-                            Name = "DiffuseMix",
-                            Value = 0.75f
-                        }
-                    }) ;
-            
-
-                _rocketScene = new SceneContainer
-                {
-                    Children = new List<SceneNodeContainer>
-                    {
-                        new SceneNodeContainer
-                        {
-                            Components = new List<SceneComponentContainer>
-                            {
-                                new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 0.1f, 1000f, M.PiOver4),
-                                new TransformComponent
-                                {
-                                    Translation = float3.UnitY * 2,
-                                    Scale = float3.One * 2
-                                },
-                                new ShaderEffectComponent
-                                {
-                                    Effect = mySFX
-                                },
-                                new Cube()
-                            }
-                        }
-                    }
-                };
 
                 //Add resize delegate
                 var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
@@ -175,17 +66,6 @@ namespace Fusee.Examples.RocketOnly.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            /*
-            // Diagnostics.Log(Time.DeltaTime);
-            // Diagnostics.Log($"Windowsize: {Width} x {Height}");
-            Diagnostics.Log($"Active: {Touch.ActiveTouchpoints}. Pos[0]: {Touch.GetPosition(TouchPoints.Touchpoint_0)}");
-            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            _sceneRenderer.Render(RC);
-
-            Present();
-            */
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 

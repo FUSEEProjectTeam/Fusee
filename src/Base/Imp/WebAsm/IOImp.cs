@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Linq;
+using System.Reflection;
 using Fusee.Base.Common;
 
 namespace Fusee.Base.Imp.WebAsm
@@ -19,6 +21,23 @@ namespace Fusee.Base.Imp.WebAsm
         public Stream StreamFromFile(string path, Common.FileMode mode)
         {
             return new FileStream(path, (System.IO.FileMode) mode);
+        }
+    }
+
+    public static class EmbeddedResourceHelper
+    {
+        public static Stream Load(string resourceName, Assembly assembly = null)
+        {
+            if (assembly == null)
+            {
+                assembly = Assembly.GetExecutingAssembly();
+            }
+
+            var fullResourceName = assembly
+                .GetManifestResourceNames()
+                .First(resource => resource.EndsWith(resourceName));
+
+            return assembly.GetManifestResourceStream(fullResourceName);
         }
     }
 }
