@@ -1,5 +1,4 @@
 ﻿using System;
-using WebGLDotNET;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;

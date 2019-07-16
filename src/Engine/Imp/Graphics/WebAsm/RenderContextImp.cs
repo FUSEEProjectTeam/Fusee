@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-using WebGLDotNET;
-using static WebGLDotNET.WebGLRenderingContextBase;
+using static Fusee.Engine.Imp.Graphics.WebAsm.WebGLRenderingContextBase;
 using WebAssembly.Core;
 using System.Runtime.InteropServices;
+using Fusee.Engine.Imp.WebAsm;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
@@ -607,7 +606,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 var paramInfo = new ShaderParamInfo();
                 paramInfo.Name = activeInfo.Name;
                 paramInfo.Size = activeInfo.Size;
-                uint uType = activeInfo.GlType;
+                uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Fusee.Engine.Imp.Graphics.WebAsm;
+using System;
 using System.IO;
 using System.Threading.Tasks;
-using WebGLDotNET;
 
 namespace Samples
 {

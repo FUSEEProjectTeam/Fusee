@@ -1,5 +1,5 @@
 ﻿using Fusee.Engine.Common;
-using WebGLDotNET;
+using Fusee.Engine.Imp.Graphics.WebAsm;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {

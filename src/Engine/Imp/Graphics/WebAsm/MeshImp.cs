@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Common;
-using WebGLDotNET;
+using Fusee.Engine.Imp.Graphics.WebAsm;
 
-namespace Fusee.Engine.Imp.Graphics.WebAsm
+namespace Fusee.Engine.Imp.WebAsm
 {
     /// <summary>
     /// Contains a handle for any type of attribute buffer stored on GPU memory such as vertices, normals, uvs etc.

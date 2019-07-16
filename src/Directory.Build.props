@@ -9,6 +9,9 @@
     <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
+    <!-- Web Assembly Targets -->
+		<!--<MonoWasmIntermediateDir>$(IntermediateOutputPath)monowasm\</MonoWasmIntermediateDir>-->
+
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
     <Product>FUSEE</Product>

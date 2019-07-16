@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Fusee.Engine.Common;
 
-namespace Fusee.Engine.Imp.Graphics.WebAsm
+namespace Fusee.Engine.Imp.WebAsm
 {
     internal class Keymapper : Dictionary</* OpenTK.Input.Key*/ int, ButtonDescription>
     {

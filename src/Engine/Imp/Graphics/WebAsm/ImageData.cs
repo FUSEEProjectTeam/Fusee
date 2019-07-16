@@ -1,8 +1,9 @@
 ﻿using System;
-using WebAssembly;
+using WebAssembly.Core;
 using WebAssembly.Host;
 
-namespace Fusee.Engine.Imp.Graphics.Wasm
+
+namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
     public class ImageData : JSHandler
     {

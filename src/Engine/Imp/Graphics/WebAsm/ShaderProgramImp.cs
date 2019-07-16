@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Common;
-using WebGLDotNET;
+using Fusee.Engine.Imp.Graphics.WebAsm;
 
-namespace Fusee.Engine.Imp.Graphics.WebAsm
+namespace Fusee.Engine.Imp.WebAsm
 {
     /// <summary>
     /// Implementation of <see cref="IShaderProgramImp" /> within WebAsm for WebGL.

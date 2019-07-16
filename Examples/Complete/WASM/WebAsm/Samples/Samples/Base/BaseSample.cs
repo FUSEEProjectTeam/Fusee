@@ -1,7 +1,6 @@
+using Fusee.Engine.Imp.Graphics.WebAsm;
 using Fusee.Math.Core;
-using System;
 using WebAssembly;
-using WebGLDotNET;
 
 namespace Samples
 {
@@ -27,7 +26,7 @@ namespace Samples
 
             var webglContextAttrib = new JSObject();
             webglContextAttrib.SetObjectProperty("alpha", false);
-            gl = new WebGL2RenderingContext(canvas, webglContextAttrib);
+            gl = new Fusee.Engine.Imp.Graphics.WebAsm.WebGL2RenderingContext(canvas, webglContextAttrib);
         }
 
         public virtual void Run()

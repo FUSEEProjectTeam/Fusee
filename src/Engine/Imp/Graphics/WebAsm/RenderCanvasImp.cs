@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Drawing;
 using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Graphics.WebAsm;
 using WebAssembly;
-using WebGLDotNET;
 
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
-{
-
-    class RenderCanvasImp : IRenderCanvasImp
+{    public class RenderCanvasImp : IRenderCanvasImp
     {
         internal WebGLRenderingContextBase _gl;
         internal JSObject _canvas;
