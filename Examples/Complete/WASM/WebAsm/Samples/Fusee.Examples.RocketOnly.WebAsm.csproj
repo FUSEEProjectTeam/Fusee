@@ -23,12 +23,15 @@
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeRoot)ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
-    <ProjectReference Include="$(FuseeRoot)src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)src\Math\Core\Fusee.Math.Core.csproj" />
+    
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+
     <ProjectReference Include="..\..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
   </ItemGroup>
 
