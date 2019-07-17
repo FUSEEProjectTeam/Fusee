@@ -184,7 +184,7 @@ void main(void)
 	vec3 worldSpaceLightPos = worldSpaceCameraPos;
 
 	vec3 viewDir = normalize(worldSpaceCameraPos.xyz - vWorldPos.xyz);
-	vec3 lightDir = normalize( vec3(0, 0,-1f));
+	vec3 lightDir = normalize( vec3(0, 0,-1.0));
 	vec3 halfwayDir = reflect(-lightDir, normalDir);
 
 	float intensityDiff = max(dot(normalDir, lightDir), 0.0);

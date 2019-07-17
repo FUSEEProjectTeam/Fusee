@@ -97,6 +97,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.RGB:
                     format = PixelFormat.Bgr;
                     break;
+                case ColorFormat.iRGBA:
+                    format = PixelFormat.BgraInteger;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -120,10 +123,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
         }
 
         /// <summary>
@@ -151,6 +154,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     break;
+                case ColorFormat.iRGBA:
+                    internalFormat = PixelInternalFormat.Rgba8ui;
+                    format = PixelFormat.RgbaInteger;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
@@ -160,13 +167,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindTexture(TextureTarget.Texture2D, id);
             GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
 
-            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
 
             ITextureHandle texID = new TextureHandle { Handle = id };
 
@@ -609,17 +616,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case ActiveUniformType.FloatMat4:
                         paramInfo.Type = typeof(float4x4);
                         break;
-
                     case ActiveUniformType.Sampler2D:
-                        paramInfo.Type = typeof(ITexture);
-                        break;
-
+                    case ActiveUniformType.UnsignedIntSampler2D:
+                    case ActiveUniformType.IntSampler2D:
                     case ActiveUniformType.SamplerCube:
                         paramInfo.Type = typeof(ITexture);
                         break;
-
                     default:
-                        throw new ArgumentOutOfRangeException();
+                        throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
                 }
 
                 paramList.Add(paramInfo);

@@ -24,7 +24,7 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
-        public static PointSizeMode PtMode = PointSizeMode.NODELEVELDEPENDENT;
+        public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 5;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
@@ -236,7 +236,7 @@ namespace Fusee.Examples.PcRendering.Core
             return points.ToList();
         }
 
-        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex)
+        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             return new ShaderEffect(new[]
             {
@@ -271,11 +271,13 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
 
                 new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
-                new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
+                new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
+                new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
+                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength},
             });            
         }
 
-        internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex)
+        internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             return new ShaderEffect(new[]
             {
@@ -322,8 +324,9 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctantLevel", Value = 0},
 
                 new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
-                new EffectParameterDeclaration {Name = "OctreeWidth", Value = 0}, //Used to access a specific pixel in the tex
-
+                new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
+                new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
+                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength},
             });
         }
 

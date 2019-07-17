@@ -232,6 +232,21 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// </summary>
         public void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, Texture tex)
         {
+            //var pxData = new byte[tex.PixelData.Length];
+            //for (int i = 0; i < tex.PixelData.Length; i += tex.PixelFormat.BytesPerPixel)
+            //{
+            //    pxData[i] = 1;
+            //    pxData[i + 1] = 2;
+            //    pxData[i + 2] = 3;
+            //    pxData[i + 3] = 255;
+            //}
+
+
+            //tex.Blt(0, 0, new ImageData(pxData, tex.Width, tex.Height, tex.PixelFormat));
+
+
+            //return;
+
             if (VisibleNodes.Count == 0) return;
 
             //clear texture
@@ -259,28 +274,32 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 {
                     ptOctantComp.PosInHierarchyTex = nodePixelPos;
 
-                    var byteOffset = nodePixelPos * tex.PixelFormat.BytesPerPixel;
+                    //var byteOffset = nodePixelPos * tex.PixelFormat.BytesPerPixel;
 
-                    byte childIndices = 0;
-                    int exp = 0;
+                    //byte childIndices = 0;
+                    //int exp = 0;
 
-                    if (node.Children.Count != 0)
-                    {
-                        foreach (var childNode in node.Children)
-                        {
-                            if (childNode != null)
-                                childIndices += (byte)System.Math.Pow(2, exp);
+                    //if (node.Children.Count != 0)
+                    //{
+                    //    foreach (var childNode in node.Children)
+                    //    {
+                    //        var ptOctantChildComp = childNode.GetComponent<PtOctantComponent>();
+                    //        if (VisibleNodes.ContainsKey(ptOctantChildComp.Guid))
+                    //        {
+                    //            if (childNode != null)
+                    //                childIndices += (byte)System.Math.Pow(2, ptOctantChildComp.PosInParent);
+                    //        }
 
-                            exp++;
-                        }
-                        visibleOctantsImgData.PixelData[byteOffset] = childIndices; //red
-                    }
-                    else                    
-                        visibleOctantsImgData.PixelData[byteOffset] = 0;    //red
+                    //        //exp++;
+                    //    }
+                    //    visibleOctantsImgData.PixelData[byteOffset] = childIndices; //red
+                    //}
+                    //else                    
+                    //    visibleOctantsImgData.PixelData[byteOffset] = 0;    //red
 
-                    visibleOctantsImgData.PixelData[byteOffset + 1] = 0;
-                    visibleOctantsImgData.PixelData[byteOffset + 2] = 0;        //blue
-                    visibleOctantsImgData.PixelData[byteOffset + 3] = 0;        //alpha
+                    //visibleOctantsImgData.PixelData[byteOffset + 1] = 0;
+                    //visibleOctantsImgData.PixelData[byteOffset + 2] = 0;    //blue
+                    //visibleOctantsImgData.PixelData[byteOffset + 3] = 0;    //alpha
 
                     if (node.Parent != null)
                     {
@@ -294,7 +313,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                         byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.PosInParent);
                         parentPtOctantComp.VisibleChildIndices += indexNumber;
-                    }
+
+                        visibleOctantsImgData.PixelData[parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel] = parentPtOctantComp.VisibleChildIndices;
+                    }                    
 
                     nodePixelPos++;
 

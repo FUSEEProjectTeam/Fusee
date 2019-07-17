@@ -61,6 +61,7 @@ namespace Fusee.Base.Common
                     case ColorFormat.RGBA:
                         return 4;
                     case ColorFormat.RGB:
+                    case ColorFormat.iRGBA:
                         return 3;
                     case ColorFormat.Intensity:
                         return 1;
