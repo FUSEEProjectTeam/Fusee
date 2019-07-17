@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -28,39 +29,6 @@ namespace Fusee.Base.Imp.WebAsm
                 return address;
             }
         }
-
-        public static async Task<Stream> LoadAsync(string relativePath, string baseAddress)
-        {
-            Stream content;
-
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-
-#if DEBUG
-            Console.WriteLine($"Requesting '{relativePath}' at '{baseAddress}'...");
-#endif
-
-            try
-            {
-                var response = await httpClient.GetAsync(relativePath);
-                response.EnsureSuccessStatusCode();
-                content = await response.Content.ReadAsStreamAsync();
-            }
-            catch (Exception exception)
-            {
-                content = null;
-
-                Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(LoadAsync)}(): {exception}");
-            }
-
-#if DEBUG
-            if (content != null)
-            {
-                Console.WriteLine($"Content length: {content.Length} B");
-            }
-#endif
-
-            return content;
-        }
     }
 
     /// <summary>
@@ -78,7 +46,6 @@ namespace Fusee.Base.Imp.WebAsm
         /// <exception cref="System.ArgumentNullException"></exception>
         public AssetProvider(string baseDir = null) : base()
         {
-
             _baseDir = (string.IsNullOrEmpty(baseDir)) ? "Assets" : baseDir;
 
             if (_baseDir[_baseDir.Length - 1] != '/')
@@ -120,18 +87,13 @@ namespace Fusee.Base.Imp.WebAsm
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
-                Decoder = delegate (string id, object storage)
+                DecoderAsync = async (string id, object storage) =>
                 {
-                    var result = WasmResourceLoader.LoadAsync("Assets/" + id, WasmResourceLoader.GetLocalAddress());
-
-                    return result.ToString();
-                    //string ret;
-                    //using (var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true))
-                    //{
-                    //    ret = sr.ReadToEnd();
-                    //}
-                    //return ret;
-                    // return IO.StreamFromFile("Assets/" + id, Fusee.Base.Common.FileMode.Open);
+                    var storageStream = (Stream)storage;
+                    using (var streamReader = new StreamReader(storageStream, Encoding.ASCII))
+                    {
+                        return await streamReader.ReadToEndAsync();
+                    }                 
                 },
                 Checker = id => true // If it's there, we can handle it...
             });
@@ -145,14 +107,46 @@ namespace Fusee.Base.Imp.WebAsm
         /// A valid stream for reading if the asset ca be retrieved. null otherwise.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
+        [Obsolete("Use GetStreamAsync instead")]
         protected override Stream GetStream(string id)
         {
-            var task = WasmResourceLoader.LoadAsync(_baseDir + id, WasmResourceLoader.GetLocalAddress());
-            task.Wait();
-            return task.Result; 
+            var baseAddress = WasmResourceLoader.GetLocalAddress();
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            var response = httpClient.GetAsync(id);
+            return response.Result.Content.ReadAsStreamAsync().Result;
         }
-        
-        
+
+        /// <summary>
+        /// Creates an async stream for the asset identified by id using <see cref="FileStream"/>
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>
+        /// A valid stream for reading if the asset ca be retrieved. null otherwise.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
+        protected override async Task<Stream> GetStreamAsync(string id)
+        {
+            Console.WriteLine("Trying to get stream async");
+
+            var baseAddress = WasmResourceLoader.GetLocalAddress();
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+
+#if DEBUG
+            Console.WriteLine($"Requesting '{id}' at '{baseAddress}'...");
+#endif
+            try
+            {
+                var response = await httpClient.GetAsync(id);
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsStreamAsync();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(GetStreamAsync)}(): {exception}");
+                return null;
+            }
+        }
+
         /// <summary>
         /// Checks the existence of the identified asset using <see cref="File.Exists"/>
         /// </summary>
@@ -161,11 +155,18 @@ namespace Fusee.Base.Imp.WebAsm
         /// true if a stream can be created.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
+        [Obsolete("Use CheckExistsAsync() instead")]
         protected override bool CheckExists(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
-            
-            return true;
+
+            var baseAddress = WasmResourceLoader.GetLocalAddress();
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+
+            var response = httpClient.GetAsync(id);
+            return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
+
+      
             /*
             // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
             if (Path.IsPathRooted(id))
@@ -183,6 +184,17 @@ namespace Fusee.Base.Imp.WebAsm
             }
             return false;
             */
+        }
+
+        protected override async Task<bool> CheckExistsAsync(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            var baseAddress = WasmResourceLoader.GetLocalAddress();
+            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+
+            var response = await httpClient.GetAsync(id);
+            return response.StatusCode == System.Net.HttpStatusCode.OK;
         }
     }
 }

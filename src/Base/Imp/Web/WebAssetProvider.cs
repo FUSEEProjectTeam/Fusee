@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using JSIL.Meta;
@@ -191,6 +192,11 @@ namespace Fusee.Base.Imp.Web
         public void RegisterTypeHandler(AssetHandler handler)
         {
             _assetHandlers.Add(handler.ReturnedType, handler);
+        }
+
+        public Task<object> GetAssetAsync(string id, Type type)
+        {
+            throw new NotImplementedException();
         }
     }
 }

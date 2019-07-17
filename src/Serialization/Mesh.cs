@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     /// <summary>
-    /// Provides the abillity to create or interact directly with the point data.
+    /// Provides the ability to create or interact directly with the point data.
     /// </summary>
 
     [ProtoContract]

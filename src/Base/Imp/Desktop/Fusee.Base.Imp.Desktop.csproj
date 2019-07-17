@@ -29,6 +29,7 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="..\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
   </ItemGroup>
   
   <Import Project="$(FuseeBuildRoot)\src\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />

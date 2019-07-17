@@ -22,6 +22,9 @@
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeRoot)ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
+    <Reference Include="SkiaSharp.Wasm">
+      <HintPath>..\..\..\..\..\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
+    </Reference>
     <ProjectReference Include="$(FuseeRoot)src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeRoot)src\Base\Core\Fusee.Base.Core.csproj" />
     <ProjectReference Include="$(FuseeRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
@@ -55,6 +58,7 @@
     <None Remove="Assets\FUSEERocket.fus" />
     <None Remove="Assets\FuseeSpinning.gif" />
     <None Remove="Assets\Lato-Black.ttf" />
+    <None Remove="Assets\LoremIpsum.txt" />
     <None Remove="Assets\Model.fus" />
     <None Remove="Assets\nineSlice.vert" />
     <None Remove="Assets\nineSliceTile.frag" />
@@ -78,6 +82,10 @@
     </Content>
 
     <Content Include="Assets\Lato-Black.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="Assets\LoremIpsum.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 

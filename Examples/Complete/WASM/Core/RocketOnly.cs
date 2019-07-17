@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using System.Net.Http;
 using System.Threading.Tasks;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Base.Imp.WebAsm;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -40,11 +40,17 @@ namespace Fusee.Examples.RocketOnly.Core
         public ImageData CurrentTex;
 
         // Init is called on startup. 
-        public override void Init()
+        public async override void Init()
         {
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
+
+            Console.WriteLine("trying to get asset");
+            var readVar = await AssetStorage.GetAsync<string>("Assets/LoremIpsum.txt");
+            Console.WriteLine(readVar);
+
         }
+
 
         public SceneContainer RocketScene
         {
@@ -116,6 +122,9 @@ namespace Fusee.Examples.RocketOnly.Core
             {
                 _sceneRenderer.Render(RC);
             }
+
+            //var readVar = await FileAssetProvider.LoadMe("Assets/ReadEveryFrame.txt");
+            //Console.WriteLine(readVar);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

@@ -11,6 +11,8 @@ namespace Fusee.Base.Imp.WebAsm
     /// </summary>
     public static class FileDecoder
     {
+        
+
         /// <summary>
         /// Loads a new Bitmap-Object from the given stream.
         /// </summary>

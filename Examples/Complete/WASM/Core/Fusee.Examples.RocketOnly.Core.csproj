@@ -12,6 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\LoremIpsum.txt" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\LoremIpsum.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
@@ -26,6 +36,9 @@
     </Reference>
     <Reference Include="Fusee.Engine.GUI">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.GUI">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.WebAsm.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
