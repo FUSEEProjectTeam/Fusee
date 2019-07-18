@@ -8,13 +8,13 @@ using System.IO;
 using System.Linq;
 using Fusee.Xene;
 using Fusee.Base.Core;
+using System.Timers;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
     public class PtOctantLoader<TPoint> where TPoint : new()
     {
         public RenderContext RC;
-
         public Texture VisibleOctreeHierarchyTex;
 
         public SceneNodeContainer RootNode { get; private set; }
@@ -147,6 +147,18 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 _numberOfVisiblePoints -= ptOctantChildComp.NumberOfPointsInNode;
                 if (_numberOfVisiblePoints < 0)
                     _numberOfVisiblePoints = 0;
+
+                LoadedMeshs.TryGetValue(ptOctantChildComp.Guid, out var meshs);
+                if (meshs != null)
+                {
+                    foreach (var mesh in meshs)
+                    {
+                        mesh.Dispose();
+                    }
+                }
+                LoadedMeshs.Remove(ptOctantChildComp.Guid);
+                ptOctantChildComp.WasLoaded = false;
+
                 return;
             }
 
@@ -159,15 +171,28 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             //_minScreenProjectedSize = ptOctantChildComp.Size;
 
             if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
+            {              
+
+                LoadedMeshs.TryGetValue(ptOctantChildComp.Guid, out var meshs);
+                if (meshs != null)
+                {
+                    foreach (var mesh in meshs)
+                    {
+                        mesh.Dispose();
+                    }
+                }
+
+                LoadedMeshs.Remove(ptOctantChildComp.Guid);
+                ptOctantChildComp.WasLoaded = false;
                 return;
+            }
 
             if (!ptOctantChildComp.WasLoaded)
             {
                 var pts = LoadPointsForNode(ptAccessor, ptOctantChildComp);
                 ptOctantChildComp.NumberOfPointsInNode = pts.Count;
                 var meshes = GetMeshsForNode(ptAccessor, pts);
-                LoadedMeshs.Add(ptOctantChildComp.Guid, meshes);
-                ptOctantChildComp.WasLoaded = true;
+                LoadedMeshs.Add(ptOctantChildComp.Guid, meshes);                
             }
 
             // by chance two same nodes have the same screen-projected-size; it's a pity we can't add it (because it's not allowed to have the same key twice)
@@ -296,7 +321,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             tex.Blt(0, 0, visibleOctantsImgData);
         }
 
-        public void UpdateScene(ShaderEffect depthPassEf, ShaderEffect colorPassEf, ShaderEffect _wfcEffect, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor, SceneContainer _scene, WireframeCube wfc)
+        /// <summary>
+        /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
+        /// </summary>
+        /// <param name="depthPassEf">Shader effect used in the depth pass in eye dome lighting.</param>
+        /// <param name="colorPassEf">Shader effect that is accountable for rendering the color pass.</param>
+        /// <param name="wfcEffect">Only needed when rendering the octree cells. Shader effect for the wire cubes.</param>
+        /// <param name="GetMeshsForNode">User-given Function that defines how to create the mesh for a scene node.</param>
+        /// <param name="ptAccessor">PointAccessor, needed to load the actual points.</param>
+        /// <param name="scene">Only needed when rendering the octree cells. The scene that contains the wire cubes and the octree.</param>
+        /// <param name="wfc">Only needed when rendering the octree cells. The wire cube.</param>
+        public void UpdateScene(ShaderEffect depthPassEf, ShaderEffect colorPassEf, ShaderEffect wfcEffect, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor, SceneContainer scene, WireframeCube wfc)
         {
             TraverseByProjectedSizeOrder(ptAccessor, GetMeshsForNode);
             TraverseAndRemoveMeshes(RootNode);
@@ -304,7 +339,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             depthPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
             colorPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
 
-            SetMeshes(_scene, wfc, _wfcEffect);
+            SetMeshes(scene, wfc, wfcEffect);
         }
 
     }

@@ -23,10 +23,10 @@ namespace Fusee.Examples.PcRendering.Core
     internal static class LAZtoSceneNode
     {
         public static Lighting Lighting = Lighting.EDL;
-        public static PointShape Shape = PointShape.CIRCLE;
+        public static PointShape Shape = PointShape.PARABOLID;
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.POINT;
-        public static int Size = 15;
+        public static int Size = 20;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
