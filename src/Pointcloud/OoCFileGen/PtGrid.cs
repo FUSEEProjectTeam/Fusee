@@ -5,8 +5,15 @@ using System.Collections.Generic;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
+    /// <summary>
+    /// The cell of a <see cref="PtGrid{TPoint}"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class GridCell<T> : Bucket<T>
     {
+        /// <summary>
+        /// The point that occupies this cell.
+        /// </summary>
         public T Occupant;
 
         public GridCell(double3 center, double size)
@@ -16,6 +23,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         }
     }
 
+    /// <summary>
+    /// Data structure that filters points and determines which fall into the next octree level.
+    /// </summary>
+    /// <typeparam name="TPoint">Point type (<seealso cref="PointAccessor{TPoint}"/>)</typeparam>
     public class PtGrid<TPoint>
     {
         public GridCell<TPoint>[,,] GridCells;

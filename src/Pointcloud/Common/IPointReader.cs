@@ -9,7 +9,7 @@ namespace Fusee.Pointcloud.Common
     }
 
     /// <summary>
-    ///     This is the meta info about one pointcloud, normally stored in the header of a pointcloud 
+    ///     This is the meta info about one point cloud, normally stored in the header of a point cloud 
     /// </summary>
     public interface IMeta
     {
@@ -26,7 +26,7 @@ namespace Fusee.Pointcloud.Common
         IPointFormat Format { get; }
 
         /// <summary>
-        ///     Meta information about the pointcloud, usually saved in a header
+        ///     Meta information about the point cloud, usually saved in a header
         /// </summary>
         IMeta MetaInfo { get; }
 

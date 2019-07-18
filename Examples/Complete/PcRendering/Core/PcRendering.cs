@@ -51,6 +51,7 @@ namespace Fusee.Examples.PcRendering.Core
         private GamePadDevice _gamePad;
 
         private float3 _cameraPos;
+        private float3 _initCameraPos;
         private ITextureHandle _texHandle;
         
         private ShaderEffect _depthPassEf;
@@ -89,7 +90,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _cameraPos = new float3(10, 10, -30);
+            _cameraPos = _initCameraPos = new float3(10, 10, -30);
 
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -145,6 +146,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
             _octreeTex = new Texture(octreeTexImgData);
+            _oocLoader.VisibleOctreeHierarchyTex = _octreeTex;
 
             var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
@@ -263,16 +265,10 @@ namespace Fusee.Examples.PcRendering.Core
             }
 
             //---------------------
+
+            _oocLoader.UpdateScene(_depthPassEf, _colorPassEf, _wfcEffect, LAZtoSceneNode.GetMeshsForNode, _ptAccessor, _scene, wfc);
+
             
-            _oocLoader.TraverseByProjectedSizeOrder(_ptAccessor, LAZtoSceneNode.GetMeshsForNode);
-
-
-            _oocLoader.TraverseAndRemoveMeshes(_scene.Children[1]);
-            _oocLoader.TraverseBreadthFirstToCreate1DTex(_scene.Children[1], _octreeTex);
-            _depthPassEf.SetEffectParam("OctreeTex", _octreeTex);
-            _colorPassEf.SetEffectParam("OctreeTex", _octreeTex);            
-
-            _oocLoader.SetMeshes(_scene, wfc, _wfcEffect);
             
             _scenePicker = new ScenePicker(_scene);
 
@@ -305,8 +301,8 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
             }          
 
             _isTexInitialized = true;

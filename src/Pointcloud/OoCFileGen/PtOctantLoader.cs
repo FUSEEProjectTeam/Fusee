@@ -15,6 +15,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     {
         public RenderContext RC;
 
+        public Texture VisibleOctreeHierarchyTex;
+
         public SceneNodeContainer RootNode { get; private set; }
         public Dictionary<Guid, SceneNodeContainer> VisibleNodes = new Dictionary<Guid, SceneNodeContainer>();
         private readonly Dictionary<Guid, IEnumerable<Mesh>> LoadedMeshs;
@@ -79,7 +81,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>
         /// <param name="wfc">A wireframe cube. Only needed to visualize the octants.</param>
         /// <param name="effect">Shader effect for rendering the wireframe cubes.</param>
-        public void SetMeshes(SceneContainer scene, WireframeCube wfc, ShaderEffect effect)
+        private void SetMeshes(SceneContainer scene, WireframeCube wfc, ShaderEffect effect)
         {
             scene.Children.RemoveAll(node => node.Name == "WireframeCube");
 
@@ -212,7 +214,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         }
 
-        public void TraverseAndRemoveMeshes(SceneNodeContainer node)
+        /// <summary>
+        /// Traverse the scene (octree) and remove all meshes so the scene can be filled with the newly visible ones.
+        /// Does not check for differences in visibility between frames!
+        /// </summary>
+        /// <param name="node">The scene node the traversal starts with.</param>
+        private void TraverseAndRemoveMeshes(SceneNodeContainer node)
         {
             _numberOfVisiblePoints = 0;
             node.GetComponent<PtOctantComponent>().VisibleChildIndices = 0;
@@ -225,28 +232,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        //traverse breadth first to create 1D tex
-        
+        //Traverse breadth first to create 1D texture that contains the visible octree hierarchy.        
         /// <summary>
         /// Traverses in breadth-first order.
         /// </summary>
-        public void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, Texture tex)
+        private void TraverseBreadthFirstToCreate1DTex(SceneNodeContainer node, Texture tex)
         {
-            //var pxData = new byte[tex.PixelData.Length];
-            //for (int i = 0; i < tex.PixelData.Length; i += tex.PixelFormat.BytesPerPixel)
-            //{
-            //    pxData[i] = 1;
-            //    pxData[i + 1] = 2;
-            //    pxData[i + 2] = 3;
-            //    pxData[i + 3] = 255;
-            //}
-
-
-            //tex.Blt(0, 0, new ImageData(pxData, tex.Width, tex.Height, tex.PixelFormat));
-
-
-            //return;
-
             if (VisibleNodes.Count == 0) return;
 
             //clear texture
@@ -268,59 +259,33 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var ptOctantComp = node.GetComponent<PtOctantComponent>();
 
                 //check if octantcomp.guid is in VisibleNode
-                // no--> return
                 //yes --> write to 1D tex
                 if (VisibleNodes.ContainsKey(ptOctantComp.Guid))
                 {
                     ptOctantComp.PosInHierarchyTex = nodePixelPos;
 
-                    //var byteOffset = nodePixelPos * tex.PixelFormat.BytesPerPixel;
-
-                    //byte childIndices = 0;
-                    //int exp = 0;
-
-                    //if (node.Children.Count != 0)
-                    //{
-                    //    foreach (var childNode in node.Children)
-                    //    {
-                    //        var ptOctantChildComp = childNode.GetComponent<PtOctantComponent>();
-                    //        if (VisibleNodes.ContainsKey(ptOctantChildComp.Guid))
-                    //        {
-                    //            if (childNode != null)
-                    //                childIndices += (byte)System.Math.Pow(2, ptOctantChildComp.PosInParent);
-                    //        }
-
-                    //        //exp++;
-                    //    }
-                    //    visibleOctantsImgData.PixelData[byteOffset] = childIndices; //red
-                    //}
-                    //else                    
-                    //    visibleOctantsImgData.PixelData[byteOffset] = 0;    //red
-
-                    //visibleOctantsImgData.PixelData[byteOffset + 1] = 0;
-                    //visibleOctantsImgData.PixelData[byteOffset + 2] = 0;    //blue
-                    //visibleOctantsImgData.PixelData[byteOffset + 3] = 0;    //alpha
-
                     if (node.Parent != null)
                     {
                         var parentPtOctantComp = node.Parent.GetComponent<PtOctantComponent>();
 
-                        if(parentPtOctantComp.VisibleChildIndices == 0)
-                        {                         
+                        //If parentPtOctantComp.VisibleChildIndices == 0 this child is the first visible one.
+                        if (parentPtOctantComp.VisibleChildIndices == 0)
+                        {
+                            //Get the "green byte" (+1) and calculate the offset from the parent to this node (in px)
                             var parentBytePos = (parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel) + 1;
-                            visibleOctantsImgData.PixelData[parentBytePos] = (byte)(nodePixelPos - parentPtOctantComp.PosInHierarchyTex);      //parent green
+                            visibleOctantsImgData.PixelData[parentBytePos] = (byte)(nodePixelPos - parentPtOctantComp.PosInHierarchyTex);
                         }
 
+                        //add the index of this node to VisibleChildIndices
                         byte indexNumber = (byte)System.Math.Pow(2, ptOctantComp.PosInParent);
                         parentPtOctantComp.VisibleChildIndices += indexNumber;
-
                         visibleOctantsImgData.PixelData[parentPtOctantComp.PosInHierarchyTex * tex.PixelFormat.BytesPerPixel] = parentPtOctantComp.VisibleChildIndices;
-                    }                    
+                    }
 
                     nodePixelPos++;
-
                 }
 
+                //enqueue all children
                 foreach (var child in node.Children)
                 {
                     candidates.Enqueue(child);
@@ -329,6 +294,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             //replace PixelData with new contents
             tex.Blt(0, 0, visibleOctantsImgData);
+        }
+
+        public void UpdateScene(ShaderEffect depthPassEf, ShaderEffect colorPassEf, ShaderEffect _wfcEffect, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor, SceneContainer _scene, WireframeCube wfc)
+        {
+            TraverseByProjectedSizeOrder(ptAccessor, GetMeshsForNode);
+            TraverseAndRemoveMeshes(RootNode);
+            TraverseBreadthFirstToCreate1DTex(RootNode, VisibleOctreeHierarchyTex);
+            depthPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
+            colorPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
+
+            SetMeshes(_scene, wfc, _wfcEffect);
         }
 
     }

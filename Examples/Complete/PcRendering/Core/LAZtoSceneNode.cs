@@ -25,8 +25,8 @@ namespace Fusee.Examples.PcRendering.Core
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.CIRCLE;
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
-        public static ColorMode ColorMode = ColorMode.SINGLE;
-        public static int Size = 5;
+        public static ColorMode ColorMode = ColorMode.POINT;
+        public static int Size = 15;
         public static float4 SingleColor = new float4(0, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 3;
         public static float EdlStrength = 0.5f;
@@ -96,118 +96,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             return returnNodeContainer;
         }
-
-        //internal static SceneNodeContainer FromPointList<TPoint>(PointAccessor<TPoint> ptAccessor, List<TPoint> points, ShaderEffect effect)
-        //{
-        //    var allPoints = new List<double3>();
-
-        //    //var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-        //    var allColors = new List<float3>();
-
-        //    for (int i = 0; i < points.Count(); i++)
-        //    {
-        //        var pt = points[i];
-        //        allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
-        //        allColors.Add(ptAccessor.GetColorFloat3_32(ref pt));
-        //    }
-
-        //    var allMeshes = new List<Mesh>();
-
-        //    var maxVertCount = ushort.MaxValue - 1;
-
-        //    var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-        //    var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-        //    //var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-
-        //    var returnNodeContainer = new SceneNodeContainer
-        //    {
-        //        Name = "PointCloud",
-        //        Components = new List<SceneComponentContainer>
-        //        {
-        //            new TransformComponent
-        //            {
-        //                Rotation = float3.Zero,
-        //                Scale = float3.One,
-        //                Translation = new float3(0,0,0)
-        //            },
-        //            new ShaderEffectComponent
-        //            {
-        //                Effect = effect
-        //            }
-        //        }
-        //    };
-
-        //    for (int i = 0; i < allPointsSplitted.Count; i++)
-        //    {
-        //        var pointSplit = allPointsSplitted[i];
-        //        var colorSplit = allColorsSplitted[i];
-
-        //        var currentMesh = new Mesh
-        //        {
-        //            Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
-        //            Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-        //            MeshType = (int)OpenGLPrimitiveType.POINT,
-        //            Normals = new float3[pointSplit.Count],
-        //            Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
-        //        };
-
-        //        returnNodeContainer.Components.Add(currentMesh);
-        //    }
-
-        //    return returnNodeContainer;
-        //}
-
-        //internal static SceneNodeContainer FromPointList(List<LAZPointType> points, ShaderEffect effect)
-        //{
-        //    var allPoints = points.ToArray().Select(pt => new float3((float)pt.Position.x, (float)pt.Position.y, (float)pt.Position.z)).ToList();
-        //    var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
-        //    var allColors = points.ToArray().Select(pt => new float3(pt.Color.r / 256, pt.Color.g / 256, pt.Color.b / 256)).ToList();
-
-        //    var allMeshes = new List<Mesh>();
-
-        //    var maxVertCount = ushort.MaxValue - 1;
-
-        //    var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
-        //    var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-        //    var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
-
-        //    var returnNodeContainer = new SceneNodeContainer
-        //    {
-        //        Name = "PointCloud",
-        //        Components = new List<SceneComponentContainer>
-        //        {
-        //            new TransformComponent
-        //            {
-        //                Rotation = float3.Zero,
-        //                Scale = float3.One,
-        //                Translation = new float3(0,0,0)
-        //            },
-        //            new ShaderEffectComponent
-        //            {
-        //                Effect = effect
-        //            }
-        //        }
-        //    };
-
-        //    for (int i = 0; i < allPointsSplitted.Count; i++)
-        //    {
-        //        var pointSplit = allPointsSplitted[i];
-        //        var colorSplit = allColorsSplitted[i];
-
-        //        var currentMesh = new Mesh
-        //        {
-        //            Vertices = pointSplit.Select(pt => pt.xyz).ToArray(),
-        //            Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
-        //            MeshType = (int)OpenGLPrimitiveType.POINT,
-        //            Normals = new float3[pointSplit.Count],
-        //            Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
-        //        };
-
-        //        returnNodeContainer.Components.Add(currentMesh);
-        //    }
-
-        //    return returnNodeContainer;
-        //}
+               
 
         internal static List<LAZPointType> ListFromLAZ(string pathToPc)
         {
@@ -377,7 +266,7 @@ namespace Fusee.Examples.PcRendering.Core
                     Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
                     MeshType = (int)OpenGLPrimitiveType.POINT,
                     Normals = new float3[pointSplit.Count],
-                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r, (int)pt.g, (int)pt.b)).ToArray(),
+                    Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
                 };
 
                 allMeshes.Add(currentMesh);                

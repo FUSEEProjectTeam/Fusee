@@ -38,6 +38,7 @@ out uint vChildInfoB;
 out uint vChildInfoA;
 out int vChildIndex;
 out float vTexPos;
+out int vPxPos;
 
 
 in vec3 fuVertex;
@@ -46,7 +47,7 @@ in vec3 fuColor;
 
 
 /**
- * number of 1-bits up to inclusive index position
+ * number of 1-bits up to exclusive index position
  * number is treated as if it were an integer in the range 0-255
  * https://github.com/potree/potree/blob/develop/src/materials/shaders/pointcloud.vs
  */
@@ -69,7 +70,7 @@ int offsetFirstToGivenChild(uint uNumber, int index)
 		tmp = tmp / 2;
 	}
 
-	return numOnes;
+	return numOnes -1;
 }
 
 /**
@@ -173,7 +174,8 @@ int getLevelOfDetail()
 	int lod = 0;
 
 	float pixelSize = 1.0 / OctreeTexWidth;
-	float texPosition = 0.0;
+	float texPosition = 0;
+	int pxPosition = 0;
 	vec3 centerPos = OctreeRootCenter;
 	float sideLength = OctreeRootLength;
 
@@ -186,14 +188,17 @@ int getLevelOfDetail()
 	//2. check if the child from step 1. is visible == exists in the texture
 	bool childExists = isBitSet(nodeInfo.b, childIndexPointFallsInto);  //points needs to fall into one of the children of the root	
 
+	//3. jump to child
+	pxPosition += int(nodeInfo.g);
+	
 	while(childExists)
 	{	
 		lod++;
 
 		//3. jump to child and get the child info
-		texPosition += nodeInfo.g * pixelSize; //jump to first child of the node
-		texPosition += (offsetFirstToGivenChild(nodeInfo.b, childIndexPointFallsInto)) * pixelSize;
-		
+		pxPosition += int(nodeInfo.g) + offsetFirstToGivenChild(nodeInfo.b, childIndexPointFallsInto);
+		texPosition = pxPosition * pixelSize; //jump to first child of the node
+				
 		//0. Get node info
 		nodeInfo = texture2D(OctreeTex, vec2(texPosition, 0.5));		
 
@@ -214,6 +219,7 @@ int getLevelOfDetail()
 	vChildInfoB = nodeInfo.b;
 	vChildInfoA = nodeInfo.a;
 	vTexPos = texPosition;
+	vPxPos = pxPosition;
 
 	return lod;
 }
@@ -256,12 +262,14 @@ void main(void)
 	
 	switch(PointMode)
 	{
+		// Fixed pixel size
 		default:
 		case 0:
 		{		
 			ptSize = PointSize;			
 			break;
 		}
+		//Fixed world size
 		case 1:
 		{ 
 			//In this scenario the PointSize is the given point radius in world space - the point size in pixel will shrink if the camera moves farther away
@@ -274,23 +282,27 @@ void main(void)
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
 			break;
 		}
+		//Octree level-dependent
 		case 2:
 		{	
-			//vOctantLvl = OctantLevel;
-
-			float spacing = pow(0.5, OctantLevel);			
-			//vSpacing = spacing;
+			float spacing = pow(0.5, OctantLevel);
 			
 			float worldPtSize = PointSize * spacing;
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
 			break;
 		}
+		//level of detail
 		case 3:
 		{			
 			float worldPtSize = PointSize / (pow(2, getLevelOfDetail()));
-			ptSize = (((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ) ;
-			
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
+
+
+
+
 			break;
+			
+			
 		}	
 	}
 
