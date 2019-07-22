@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using System;

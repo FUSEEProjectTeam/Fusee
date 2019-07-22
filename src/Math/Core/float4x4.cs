@@ -17,7 +17,7 @@ namespace Fusee.Math.Core
     /// from left to right represent a transformation where the rightmost matrix is applied
     /// first and the leftmost matrix is applied last, for example in (M3 * M2 * M1) * v the vector
     /// v is first transformed by M1, then by M2 and finally by M3. The translation part of a 4x4
-    /// matrix used in homogeneus coordinate calculations can be found in the the leftmost column 
+    /// matrix used in homogeneous coordinate calculations can be found in the leftmost column 
     /// (M14 - x-translation, M24 - y-translation, M34 - z-translation).
     /// </para>
     /// <para>
@@ -34,7 +34,7 @@ namespace Fusee.Math.Core
     /// that the resulting matrices can be used in both, left-handed and right-handed coordinate systems.
     /// This does not hold for LookAt and Projection matrices where the viewing direction plays a role. In
     /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have 
-    /// bigger positive z-coordinates wheras in right-handed coordinate systems positions further away have smaller
+    /// bigger positive z-coordinates whereas in right-handed coordinate systems positions further away have smaller
     /// negative z-coordinates. By default, float4x4 will assume a left-handed coordinate system, but contains
     /// convenience construction methods to also create right-handed matrices if necessary. The right-handed versions
     /// of methods are postfixed with "RH".

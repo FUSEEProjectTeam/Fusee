@@ -1,4 +1,4 @@
-﻿using Fusee.Pointcloud.Common;
+using Fusee.Pointcloud.Common;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using System.IO;

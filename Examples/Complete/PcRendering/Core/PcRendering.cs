@@ -70,7 +70,10 @@ namespace Fusee.Examples.PcRendering.Core
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
-        
+
+        private string _pathToPc = "E:/HolbeinPferd.las";
+        private string _pathToOocFile = "E:/HolbeinPferdOctree";
+
         private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
         {
             var points = LAZtoSceneNode.ListFromLAZ(pathToFile);
@@ -117,16 +120,16 @@ namespace Fusee.Examples.PcRendering.Core
 
             _ptAccessor = new PtRenderingAccessor();
 
-            //CreateFiles(_ptAccessor, "E:/HolbeinPferd.las", "E:/HolbeinPferdOctree", 500);
+            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
 
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
-            var oocFileReader = new PtOctreeFileReader<LAZPointType>("E:/HolbeinPferdOctree");
+            var oocFileReader = new PtOctreeFileReader<LAZPointType>(_pathToOocFile);
             
             //create Scene from octree structure
             _scene = oocFileReader.GetScene(_depthPassEf);
-            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], "E:/HolbeinPferdOctree", RC)
+            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], _pathToOocFile, RC)
             {
-                PointThreshold = 500000
+                PointThreshold = 1000000
             };
 
             projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
@@ -172,11 +175,16 @@ namespace Fusee.Examples.PcRendering.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0)
+                _oocLoader.IsUserMoving = true;
+            else
+                _oocLoader.IsUserMoving = false;
+
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
                 _keys = true;
-            }
+            }            
 
             var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
             // Zoom & Roll
@@ -207,6 +215,7 @@ namespace Fusee.Examples.PcRendering.Core
             if (Mouse.LeftButton)
             {
                 _keys = false;
+                
                 _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
@@ -231,7 +240,6 @@ namespace Fusee.Examples.PcRendering.Core
                     _angleVelVert *= curDamp;
                 }
             }
-
             _zoom += _zoomVel;
             // Limit zoom
             if (_zoom < 1)
@@ -264,15 +272,10 @@ namespace Fusee.Examples.PcRendering.Core
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            //---------------------
-
-            _oocLoader.UpdateScene(_depthPassEf, _colorPassEf, _wfcEffect, LAZtoSceneNode.GetMeshsForNode, _ptAccessor, _scene, wfc);
-
             
-            
-            _scenePicker = new ScenePicker(_scene);
-
             //----------------------------
+
+            _scenePicker = new ScenePicker(_scene);            
 
             ////Render Depth-only pass
             _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;            
@@ -287,6 +290,10 @@ namespace Fusee.Examples.PcRendering.Core
             //Render GUI
             _sih.View = RC.View;
             _guiRenderer.Render(RC);
+
+            _oocLoader.RC = RC;            
+            _oocLoader.UpdateScene(LAZtoSceneNode.PtMode, _depthPassEf, _colorPassEf, LAZtoSceneNode.GetMeshsForNode, _ptAccessor);
+            _oocLoader.ShowOctants(_scene, wfc, _wfcEffect);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -307,7 +314,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _isTexInitialized = true;
 
-        }
+        }       
 
         private SceneContainer CreateGui()
         {

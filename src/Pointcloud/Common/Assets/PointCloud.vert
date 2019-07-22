@@ -296,10 +296,6 @@ void main(void)
 		{			
 			float worldPtSize = PointSize / (pow(2, getLevelOfDetail()));
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
-
-
-
-
 			break;
 			
 			
