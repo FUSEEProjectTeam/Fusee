@@ -129,7 +129,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene = oocFileReader.GetScene(_depthPassEf);
             _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], _pathToOocFile, RC)
             {
-                PointThreshold = 1000000
+                PointThreshold = 500000
             };
 
             projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
