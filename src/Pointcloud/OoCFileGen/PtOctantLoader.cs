@@ -85,11 +85,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 if (IsUserMoving) return;
 
                 TraverseByProjectedSizeOrder();
-
-                var nodesToRender = _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-
                 LoadNodesAsync(GetMeshsForNode, ptAccessor);
-                //LoadNodes(GetMeshsForNode, ptAccessor);
+
+                var nodesToRender = _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);                
                 TraverseToUpdateScene(nodesToRender, RootNode);
                 
                 if (ptSizeMode == PointSizeMode.ADAPTIVE_SIZE)
@@ -101,6 +99,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
+        //TODO: not compatible with async loading!
         /// <summary>
         /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
         /// </summary>
@@ -205,7 +204,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             var ptOctantChildComp = node.GetComponent<PtOctantComponent>();
 
             //If node does not intersect the viewing frustum, remove it from loaded meshs and return.
-            if (!ptOctantChildComp.Intersects(RC.Projection * RC.View)) 
+            if (!ptOctantChildComp.Intersects3D3(RC.Projection * RC.View)) 
                 return;            
 
             var camPos = RC.View.Invert().Column3;
