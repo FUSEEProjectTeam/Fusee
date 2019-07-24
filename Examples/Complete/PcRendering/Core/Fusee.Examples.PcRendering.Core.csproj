@@ -8,7 +8,7 @@
   <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Core\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
