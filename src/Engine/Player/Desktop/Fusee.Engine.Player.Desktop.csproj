@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Player.Desktop</PackageId>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>

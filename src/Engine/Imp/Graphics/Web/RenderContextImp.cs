@@ -88,6 +88,12 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        public void SetLineWidth(float width)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
             throw new System.NotImplementedException();
@@ -609,6 +615,5 @@ namespace Fusee.Engine.Imp.Graphics.Web
         {
             throw new System.NotImplementedException();
         }
-
     }
 }

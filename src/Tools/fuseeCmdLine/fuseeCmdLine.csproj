@@ -10,7 +10,7 @@
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
     <AssemblyName>fusee</AssemblyName>
     <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>

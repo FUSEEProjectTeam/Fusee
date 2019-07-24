@@ -551,7 +551,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     {
         private GameWindow _gameWindow;
         private Keymapper _keymapper;
-
+        
         /// <summary>
         /// Should be called by the driver only.
         /// </summary>
@@ -562,7 +562,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _keymapper = new Keymapper();
             _gameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
             _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
-
         }
 
         /// <summary>

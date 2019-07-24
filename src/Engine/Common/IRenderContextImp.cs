@@ -193,7 +193,6 @@ namespace Fusee.Engine.Common
         [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
 
-
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
@@ -250,6 +249,12 @@ namespace Fusee.Engine.Common
         /// </remarks>
         /// <param name="textureHandle">An TextureHandle object, containing necessary information for the upload to the graphics card.</param>
         void RemoveTextureHandle(ITextureHandle textureHandle);
+
+        /// <summary>
+        /// Sets the line width when drawing a mesh with primitive mode line
+        /// </summary>
+        /// <param name="width"></param>
+        void SetLineWidth(float width);
 
         /// <summary>
         /// 
@@ -605,6 +610,7 @@ namespace Fusee.Engine.Common
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="mr">The mesh that should be rendered.</param>
+        /// <param name="type">The OpenGL primitive type that should be renderer (triangle, quads, points, etc.)</param>
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -716,5 +722,22 @@ namespace Fusee.Engine.Common
         /// Returns the buffersize of the hardware
         /// </summary>
         Buffersize
+    }
+
+    /// <summary>
+    ///     This is the primitive type used by the RenderContext internally to distinguish between the different OpenGL primitives
+    /// </summary>
+    public enum OpenGLPrimitiveType
+    {
+        TRIANGLES = 0,
+        TRIANGLE_STRIP,
+        TRIANGLE_FAN,
+        QUADS,
+        QUAD_STRIP,
+        POINT,
+        LINES,
+        LINE_STRIP,
+        LINE_LOOP,
+        PATCHES
     }
 }

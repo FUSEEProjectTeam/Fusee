@@ -118,5 +118,10 @@ namespace Fusee.Engine.Common
         /// Implementation Tasks: Gets a value indicating wether [BiTangents Set].
         /// </summary>
         bool BiTangentsSet { get; }
+
+        /// <summary>
+        ///     Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
+        /// </summary>
+        OpenGLPrimitiveType MeshType { get; set; }
     }
 }

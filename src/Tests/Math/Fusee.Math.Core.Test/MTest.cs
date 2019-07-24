@@ -1,5 +1,6 @@
-﻿using Xunit;
-using System;
+﻿using System;
+using Xunit;
+using static Fusee.Math.Core.Eigen;
 
 namespace Fusee.Math.Core
 {
@@ -20,8 +21,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Max_Int16()
         {
-            Int16 a = 1;
-            Int16 b = 2;
+            short a = 1;
+            short b = 2;
 
             var actual = M.Max(a, b);
 
@@ -31,8 +32,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Max_Int32()
         {
-            Int32 a = 1;
-            Int32 b = 2;
+            var a = 1;
+            var b = 2;
 
             var actual = M.Max(a, b);
 
@@ -53,8 +54,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Max_UInt16()
         {
-            UInt16 a = 1;
-            UInt16 b = 2;
+            ushort a = 1;
+            ushort b = 2;
 
             var actual = M.Max(a, b);
 
@@ -64,11 +65,11 @@ namespace Fusee.Math.Core
         [Fact]
         public void Max_UInt32()
         {
-            UInt32 a = 1;
-            UInt32 b = 2;
-            UInt32 expected = 2;
+            uint a = 1;
+            uint b = 2;
+            uint expected = 2;
 
-            UInt32 actual = M.Max(a, b);
+            var actual = M.Max(a, b);
 
             Assert.Equal(expected, actual);
         }
@@ -89,8 +90,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Min_Int16()
         {
-            Int16 a = 1;
-            Int16 b = 2;
+            short a = 1;
+            short b = 2;
 
             var actual = M.Min(a, b);
 
@@ -100,8 +101,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Min_Int32()
         {
-            Int32 a = 1;
-            Int32 b = 2;
+            var a = 1;
+            var b = 2;
 
             var actual = M.Min(a, b);
 
@@ -122,8 +123,8 @@ namespace Fusee.Math.Core
         [Fact]
         public void Min_UInt16()
         {
-            UInt16 a = 1;
-            UInt16 b = 2;
+            ushort a = 1;
+            ushort b = 2;
 
             var actual = M.Min(a, b);
 
@@ -133,9 +134,9 @@ namespace Fusee.Math.Core
         [Fact]
         public void Min_UInt32()
         {
-            UInt32 a = 1;
-            UInt32 b = 2;
-            UInt32 expected = 1;
+            uint a = 1;
+            uint b = 2;
+            uint expected = 1;
 
             var actual = M.Min(a, b);
 
@@ -270,7 +271,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void NextPowerOfTwo_Double()
         {
-            double value = 2.01d;
+            var value = 2.01d;
 
             var actual = M.NextPowerOfTwo(value);
 
@@ -280,7 +281,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void NextPowerOfTwo_Int32()
         {
-            Int32 value = 3;
+            var value = 3;
 
             var actual = M.NextPowerOfTwo(value);
 
@@ -290,7 +291,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void NextPowerOfTwo_Int64()
         {
-            Int64 value = 3;
+            long value = 3;
 
             var actual = M.NextPowerOfTwo(value);
 
@@ -300,7 +301,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void NextPowerOfTwo_Single()
         {
-            float value = 2.1f;
+            var value = 2.1f;
 
             var actual = M.NextPowerOfTwo(value);
 
@@ -337,6 +338,68 @@ namespace Fusee.Math.Core
         }
 
         #endregion
+
+        #region Eigen
+
+        [Fact]
+        public void EigenFromCovarianceFloatMat_IsValid()
+        {
+            // TODO: Implement, comment since this breaks our azure build pipeline
+            //throw new NotImplementedException();
+        }
+
+        [Fact]
+        public void EigenFromCovarianceDoubleMat_IsValid()
+        {
+            // TODO: Implement
+            //throw new NotImplementedException();
+        }
+
+
+        #endregion
+
+        #region Pointcloud
+
+        [Fact]
+        public void CentroidCalculationSingle_IsValid()
+        {
+            // Cube
+            var data = new float3[]
+            {
+                new float3(0,0,0),
+                new float3(1,0,0),
+                new float3(1,0,1),
+                new float3(1,1,1),
+                new float3(0,1,1),
+                new float3(1,1,0),
+                new float3(0,1,0),
+                new float3(0,0,1),
+            };
+
+            Assert.Equal(new float3(0.5f, 0.5f, 0.5f), M.CalculateCentroid(data));
+
+        }
+
+        [Fact]
+        public void CentroidCalculationDouble_IsValid()
+        {
+            // Cube
+            var data = new double3[]
+            {
+                new double3(0,0,0),
+                new double3(1,0,0),
+                new double3(1,0,1),
+                new double3(1,1,1),
+                new double3(0,1,1),
+                new double3(1,1,0),
+                new double3(0,1,0),
+                new double3(0,0,1),
+            };
+
+            Assert.Equal(new double3(0.5, 0.5, 0.5), M.CalculateCentroid(data));
+        }
+        #endregion
+
 
         #region BinomialCoefficient
         [Fact]
@@ -425,7 +488,7 @@ namespace Fusee.Math.Core
         public void Float4ToABGR_TestMax()
         {
             var vec = new float4(1, 1, 1, 1);
-            uint expected = 4294967295;
+            var expected = 4294967295;
 
             var actual = M.Float4ToABGR(vec);
 

@@ -161,6 +161,20 @@ namespace Fusee.Math.Core
             }
         }
 
+        public double[] AsArray
+        {
+            get
+            {
+                return new double[]
+                {
+                    M11, M12, M13, M14,
+                    M21, M22, M23, M24,
+                    M31, M32, M33, M34,
+                    M41, M42, M43, M44
+                };
+            }
+        }
+
         /// <summary>
         /// The first column of this matrix
         /// </summary>
@@ -353,6 +367,54 @@ namespace Fusee.Math.Core
 
         #region Instance
 
+        #region this
+        /// <summary>
+        ///     Sets/Gets value from given index
+        /// </summary>
+        /// <param name="i">The ROW index</param>
+        /// <param name="j">The COLUMN index</param>
+        /// <returns></returns>
+        public double this[int i, int j]
+        {
+            get
+            {
+                switch (i)
+                {
+                    case 0:
+                        return Row0[j];
+                    case 1:
+                        return Row1[j];
+                    case 2:
+                        return Row2[j];
+                    case 3:
+                        return Row3[j];
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        Row0[j] = value;
+                        break;
+                    case 1:
+                        Row1[j] = value;
+                        break;
+                    case 2:
+                        Row2[j] = value;
+                        break;
+                    case 3:
+                        Row3[j] = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a double4x4 type");
+                }
+            }
+        }
+        #endregion
+
         #region public Invert()
 
         /// <summary>
@@ -405,16 +467,16 @@ namespace Fusee.Math.Core
         {
             double4x4 result;
 
-            var cos = (double)System.Math.Cos(-angle);
-            var sin = (double)System.Math.Sin(-angle);
-            var t = 1.0f - cos;
+            var cos = System.Math.Cos(-angle);
+            var sin = System.Math.Sin(-angle);
+            var t = 1.0 - cos;
 
             axis = axis.Normalize();
 
-            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0f,
-                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0f,
-                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0f,
-                0.0f, 0.0f, 0.0f, 1.0f);
+            result = new double4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0,
+                t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0,
+                t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0,
+                0.0, 0.0, 0.0, 1.0);
 
             return result;
         }
