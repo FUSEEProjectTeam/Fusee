@@ -11,33 +11,42 @@ namespace Fusee.Base.Core
     /// </summary>
     public class AsyncHttpAsset
     {
-        private static readonly Dictionary<Type, AsyncAssetHandler> _assetHandlers = new Dictionary<Type, AsyncAssetHandler>()
+        private static readonly Dictionary<Type, AsyncAssetDecoder> _assetHandlers = new Dictionary<Type, AsyncAssetDecoder>()
         {
+            // Default callback for byte[]
             {
                 typeof(byte[]),
-                new AsyncAssetHandler
-                {
-                    ReturnedType = typeof(byte[]),
-                    Decoder = (id, data, callback) => {
-                        callback(data);
-                    },
-                }
+                (id, data, callback) => { callback(data); }
+            },
+            // Default callback for string
+            {
+                typeof(string),
+                (id, data, callback) => { callback(System.Text.Encoding.Default.GetString((byte[])data)); }
             }
         };
 
         /// <summary>
         /// The async asset handlers.
         /// </summary>
-        public static Dictionary<Type, AsyncAssetHandler> AssetHandlers { get => _assetHandlers; }
+        public static Dictionary<Type, AsyncAssetDecoder> AssetHandlers { get => _assetHandlers; }
 
         /// <summary>
-        /// Register an AsyncAssetHandler for a certain Type.
+        /// Register an AsyncAssetHandler.
+        /// </summary>
+        /// <param name="assetHandler"></param>
+        public static void RegisterTypeHandler(AsyncAssetHandler assetHandler)
+        {
+            _assetHandlers.Add(assetHandler.ReturnedType, assetHandler.Decoder);
+        }
+
+        /// <summary>
+        /// Register an AsyncAssetDecoder for a certain Type.
         /// </summary>
         /// <param name="type"></param>
-        /// <param name="assetHandler"></param>
-        public static void RegisterTypeHandler(Type type, AsyncAssetHandler assetHandler)
+        /// <param name="asyncAssetDecoder"></param>
+        public static void RegisterTypeHandler(Type type, AsyncAssetDecoder asyncAssetDecoder)
         {
-            _assetHandlers.Add(type, assetHandler);
+            _assetHandlers.Add(type, asyncAssetDecoder);
         }
 
         /// <summary>
@@ -162,7 +171,7 @@ namespace Fusee.Base.Core
 
             if (_assetHandlers.ContainsKey(Type))
             {
-                _assetHandlers[Type].Decoder(Id, data, this.DoneCallback);
+                _assetHandlers[Type](Id, data, this.DoneCallback);
             }
         }
 
@@ -213,5 +222,5 @@ namespace Fusee.Base.Core
         public AsyncAssetDecoder Decoder;
     }
 
-    public delegate void AsyncAssetDecoder(string id, object storage, Action<object> returndata);
+    public delegate void AsyncAssetDecoder(string id, object data, Action<object> callback);
 }
