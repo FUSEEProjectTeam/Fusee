@@ -293,7 +293,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _oocLoader.RC = RC;            
             _oocLoader.UpdateScene(LAZtoSceneNode.PtMode, _depthPassEf, _colorPassEf, LAZtoSceneNode.GetMeshsForNode, _ptAccessor);
-            _oocLoader.ShowOctants(_scene, wfc, _wfcEffect);
+            //_oocLoader.ShowOctants(_scene, wfc, _wfcEffect);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

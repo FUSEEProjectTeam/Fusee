@@ -4,7 +4,6 @@ using Fusee.Engine.Core;
 using Fusee.LASReader;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using Fusee.Pointcloud.OoCFileReaderWriter;
 using Fusee.Serialization;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,9 +23,9 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public static Lighting Lighting = Lighting.EDL;
         public static PointShape Shape = PointShape.PARABOLID;
-        public static PointSizeMode PtMode = PointSizeMode.FIXED_PIXELSIZE;
+        public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.POINT;
-        public static int Size = 5;
+        public static int Size = 20;
         public static float4 SingleColor = new float4(1, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 5;
         public static float EdlStrength = 0.1f;
@@ -95,8 +94,7 @@ namespace Fusee.Examples.PcRendering.Core
             }            
 
             return returnNodeContainer;
-        }
-               
+        }               
 
         internal static List<LAZPointType> ListFromLAZ(string pathToPc)
         {
