@@ -8,6 +8,7 @@ using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
@@ -89,6 +90,9 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
+            var test1 = BitConverter.GetBytes(-1f);
+            var test2 = BitConverter.GetBytes(1f);
+
             _cameraPos = _initCameraPos = new float3(10, 10, -30);
 
             _initCanvasWidth = Width / 100f;
@@ -288,7 +292,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _oocLoader.RC = RC;            
             _oocLoader.UpdateScene(LAZtoSceneNode.PtMode, _depthPassEf, _colorPassEf, LAZtoSceneNode.GetMeshsForNode, _ptAccessor);
-            _oocLoader.ShowOctants(_scene);
+            //_oocLoader.ShowOctants(_scene);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

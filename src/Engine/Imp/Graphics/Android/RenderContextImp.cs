@@ -176,30 +176,43 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             int internalFormat;
             All format;
+
+            int id;
+            GL.GenTextures(1, out id);
+            GL.BindTexture(All.Texture2D, id);
+
             switch (imageData.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = (int) All.Rgba;
                     format = All.Rgba;
+                    GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0, format, All.UnsignedByte, imageData.PixelData);
                     break;
                 case ColorFormat.RGB:
                     internalFormat = (int) All.Rgb;
                     format = All.Rgb;
+                    GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0, format, All.UnsignedByte, imageData.PixelData);
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = (int) All.Alpha;
                     format = All.Alpha;
+                    GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0, format, All.UnsignedByte, imageData.PixelData);
+                    break;
+                case ColorFormat.iRGBA:
+                    internalFormat = (int) All.Rgb8ui;
+                    format = All.Rgb8ui;
+                    GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0, format, All.UnsignedByte, imageData.PixelData);
+                    break;
+                case ColorFormat.fRGB:
+                    internalFormat = (int) All.Rgb16f;
+                    format = All.Rgb16f;
+                    GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0, format, All.Float, imageData.PixelData);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
-            }
-
-            int id;
-            GL.GenTextures(1, out id);
-            GL.BindTexture(All.Texture2D, id);
-            GL.TexImage2D(All.Texture2D, 0, internalFormat, imageData.Width, imageData.Height, 0,
-                format, All.UnsignedByte, imageData.PixelData);
+            }          
+            
 
             GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int) All.Linear);
             GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int) All.Linear);

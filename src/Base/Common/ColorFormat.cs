@@ -20,6 +20,8 @@
         /// </summary>
         Intensity,
 
-        iRGBA
+        iRGBA,
+
+        fRGB
     }
 }

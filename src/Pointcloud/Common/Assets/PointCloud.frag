@@ -4,6 +4,10 @@ uniform mat4 FUSEE_P;
 uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_M;
 
+//SSAO
+uniform vec3[] ssaoKernel;
+uniform sampler2D noiseTex;
+
 uniform int PointShape;
 uniform int ColorMode;
 uniform int Lighting;
@@ -86,6 +90,13 @@ float EDLShadingFactor(float edlStrength, int pixelSize, float linearDepth, vec2
 		response = 1;
 
 	return exp(-response * 300 * edlStrength);
+}
+
+vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 ambient)
+{
+	float intensityDiff = max(dot(normalDir, lightDir), 0.0);
+	vec3 diffuse = intensityDiff * lightColor;
+	return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
 }
 
 void main(void)
@@ -177,6 +188,15 @@ void main(void)
 		break;
 	}
 
+	//Ambient Lighting
+	//-----------------------------
+	vec3 lightColor = vec3(1.0 ,1.0, 1.0);
+		
+	float ambientStrength = 0.1;	
+	vec3 ambient = ambientStrength * vec3(1.0,1.0,1.0);	
+	
+    //-------------------------------
+
 	vec3 normalDir = normalize(vNormal);
 	
 	mat4 invMv = inverse(FUSEE_V * FUSEE_M);
@@ -187,11 +207,8 @@ void main(void)
 	vec3 lightDir = normalize( vec3(0, 0,-1.0));
 	vec3 halfwayDir = reflect(-lightDir, normalDir);
 
-	float intensityDiff = max(dot(normalDir, lightDir), 0.0);
-
-	vec4 diffuseReflection = vec4((1.0,1.0,1.0) * oColor.rgb * intensityDiff, 1); //Diffuse component	
-
-	vec4 specularReflection = vec4(0, 0, 0, 1);
+	
+	vec4 specularReflection = vec4(0, 0, 0, 1);	
 
 	switch (Lighting)
 	{
@@ -213,7 +230,7 @@ void main(void)
 		}
 		case 2: //diffuse
 		{
-			oColor = diffuseReflection;		
+			oColor = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);		
 			break;
 		}
 
@@ -221,11 +238,16 @@ void main(void)
 		{
 			float specularAmmount = pow(max(dot(normalDir, halfwayDir), 0.0), Shininess);
 			specularReflection = SpecularColor * pow(specularAmmount, Shininess);
-
+			vec4 diffuseReflection = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);
 			oColor = diffuseReflection + (SpecularStrength * specularReflection);						
 			break;
 		}
-	}
+		case 4: //ambient only
+		{
+			oColor = oColor * vec4(ambient,1);
+		}
+
+	}	
 
 }
 

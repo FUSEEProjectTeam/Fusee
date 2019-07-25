@@ -882,26 +882,37 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
         function CreateTexture(img, repeat) {
             var ubyteView = new Uint8Array(img.PixelData);
             var format;
-            switch (img.PixelFormat.ColorFormat) {
-                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA:
-                    format = this.gl.RGBA;
-                    break;
-                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGB:
-                    format = this.gl.RGB;
-                    break;
-                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.Intensity:
-                    format = this.gl.ALPHA;
-                    break;
-                default:
-                    throw new Error("CreateTexture: Image pixel format not supported");
-            }
 
             var glTexOb = this.gl.createTexture();
             this.gl.bindTexture(this.gl.TEXTURE_2D, glTexOb);
             //this.gl.pixelStorei(this.gl.UNPACK_FLIP_Y_WEBGL, true);
-            this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0,
-                format, this.gl.UNSIGNED_BYTE, ubyteView);
+
+            switch (img.PixelFormat.ColorFormat) {
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGBA:
+                    format = this.gl.RGBA;
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0, format, this.gl.UNSIGNED_BYTE, ubyteView);
+                    break;
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.RGB:
+                    format = this.gl.RGB;
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0, format, this.gl.UNSIGNED_BYTE, ubyteView);
+                    break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.Intensity:
+                    format = this.gl.ALPHA;
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0, format, this.gl.UNSIGNED_BYTE, ubyteView);
+                    break;
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.iRGBA:
+                    format = this.gl.RGB;
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0, format, this.gl.UNSIGNED_BYTE, ubyteView);
+                    break;
+                case $WebBaseCommon.Fusee.Base.Common.ColorFormat.fRGB:
+                    format = this.gl.RGB;
+                    this.gl.texImage2D(this.gl.TEXTURE_2D, 0, format, img.Width, img.Height, 0, format, this.gl.FLOAT, ubyteView);
+                    break;
+                default:
+                    throw new Error("CreateTexture: Image pixel format not supported");
+            }           
+            
 
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MIN_FILTER, this.gl.LINEAR);
             this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_MAG_FILTER, this.gl.LINEAR);
