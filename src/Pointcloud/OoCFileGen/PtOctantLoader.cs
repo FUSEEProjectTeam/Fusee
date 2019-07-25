@@ -10,6 +10,7 @@ using Fusee.Xene;
 using Fusee.Base.Core;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Concurrent;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -19,12 +20,12 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public Texture VisibleOctreeHierarchyTex;
 
         public SceneNodeContainer RootNode { get; private set; }
-        public Dictionary<Guid, SceneNodeContainer> VisibleNodes                                                                            // Visible AND loaded nodes.
+        public ConcurrentDictionary<Guid, SceneNodeContainer> VisibleNodes                                                                            // Visible AND loaded nodes.
         {
             get;
             private set;
 
-        } = new Dictionary<Guid, SceneNodeContainer>();    
+        } = new ConcurrentDictionary<Guid, SceneNodeContainer>();    
         
         private readonly Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                                  // Visible AND loaded meshes.
 
@@ -41,7 +42,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public int PointThreshold = 1000000;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
-        public readonly float _minScreenProjectedSize = 80;
+        public readonly float _minScreenProjectedSize = 128;
 
         //Scene is only updated if the user is moving.
         public bool IsUserMoving;
@@ -252,12 +253,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                                 var pts = LoadPointsForNode(ptAccessor, ptOctantComp);
                                 ptOctantComp.NumberOfPointsInNode = pts.Count;
                                 var meshes = GetMeshsForNode(ptAccessor, pts);
-                                _loadedMeshs.Add(ptOctantComp.Guid, meshes);
-                                //_numberOfVisiblePoints += ptOctantComp.NumberOfPointsInNode;
+                                _loadedMeshs.Add(ptOctantComp.Guid, meshes);                                
                             }
 
-                            if (VisibleNodes.ContainsKey(ptOctantComp.Guid)) continue;
-                            VisibleNodes.Add(ptOctantComp.Guid, node);
+                            //if (VisibleNodes.ContainsKey(ptOctantComp.Guid)) continue;                            
+                            VisibleNodes.AddOrUpdate(ptOctantComp.Guid, node, (key, val) => val);
                         }                        
                     });
 
@@ -290,7 +290,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                     //_numberOfVisiblePoints += ptOctantComp.NumberOfPointsInNode;
                 }
-                VisibleNodes.Add(ptOctantComp.Guid, node);
+                VisibleNodes.TryAdd(ptOctantComp.Guid, node);
             }
 
         }
@@ -347,7 +347,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 }
             }
             _loadedMeshs.Remove(ptOctantComponent.Guid);
-            VisibleNodes.Remove(ptOctantComponent.Guid);
+            VisibleNodes.Remove(ptOctantComponent.Guid, out var val);
             ptOctantComponent.WasLoaded = false;
             ptOctantComponent.VisibleChildIndices = 0;
         }

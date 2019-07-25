@@ -195,6 +195,7 @@ namespace Fusee.Serialization
 
         }
 
+        //see: http://old.cescg.org/CESCG-2002/DSykoraJJelinek/
         private bool PlaneIntersects(double4[] planes)
         {
             var res = true;
