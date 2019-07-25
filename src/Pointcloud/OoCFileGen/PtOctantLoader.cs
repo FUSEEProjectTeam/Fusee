@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Core;
+using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Serialization;
@@ -20,7 +20,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public Texture VisibleOctreeHierarchyTex;
 
         public SceneNodeContainer RootNode { get; private set; }
-        public ConcurrentDictionary<Guid, SceneNodeContainer> VisibleNodes                                                                            // Visible AND loaded nodes.
+        public ConcurrentDictionary<Guid, SceneNodeContainer> VisibleNodes                                                                  // Visible AND loaded nodes.
         {
             get;
             private set;
@@ -32,7 +32,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private readonly SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;                                        // For traversal purposes only.
         private readonly Dictionary<Guid, SceneNodeContainer> _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();            // All visible nodes in screen projected size order - cleared in every traversal.
         private readonly Dictionary<Guid, SceneNodeContainer> _determinedAsVisibleAndUnloaded = new Dictionary<Guid, SceneNodeContainer>(); // Visible but unloaded nodes in screen projected size order - cleared in every traversal.
-         
+
+        private readonly WireframeCube wfc = new WireframeCube();
+        private readonly ShaderEffect _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 0, 1), new float4(1, 1, 1, 1), 10);
+
         private readonly string _fileFolderPath;
 
         #region Traversal Properties
@@ -83,7 +86,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             else
             {
                 _deltaTimeSinceLastUpdate = 0;
-                if (IsUserMoving) return;
+                //if (IsUserMoving) return;
 
                 TraverseByProjectedSizeOrder();
                 LoadNodesAsync(GetMeshsForNode, ptAccessor);
@@ -100,14 +103,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        //TODO: not compatible with async loading!
         /// <summary>
         /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
         /// </summary>
         /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>
         /// <param name="wfc">A wireframe cube. Only needed to visualize the octants.</param>
         /// <param name="effect">Shader effect for rendering the wireframe cubes.</param>
-        public void ShowOctants(SceneContainer scene, WireframeCube wfc, ShaderEffect effect)
+        public void ShowOctants(SceneContainer scene)
         {
             scene.Children.RemoveAll(node => node.Name == "WireframeCube");
 
@@ -129,7 +131,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = effect
+                                Effect = _wfcEffect
                             },
                             wfc
                         }
@@ -230,7 +232,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         {
             using (var cancellationTokenSource = new CancellationTokenSource())
             {
-                //Cancel may not be working yet
+                //Cancel may not be working yet (exception is thrown but not catched. Seems to depend on the positioning of "throw" and the await calls). 
+                //Using this condition, the cancellation serves only as a precaution that may or may not be useful when rendering a few million points at once - not tested yet.
                 var userMovingTask = Task.Run(() =>
                 {
                     if (IsUserMoving)// Cancel the task
@@ -286,10 +289,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     var pts = LoadPointsForNode(ptAccessor, ptOctantComp);
                     ptOctantComp.NumberOfPointsInNode = pts.Count;
                     var meshes = GetMeshsForNode(ptAccessor, pts);
-                    _loadedMeshs.Add(ptOctantComp.Guid, meshes);
-
-                    //_numberOfVisiblePoints += ptOctantComp.NumberOfPointsInNode;
+                    _loadedMeshs.Add(ptOctantComp.Guid, meshes);                    
                 }
+
                 VisibleNodes.TryAdd(ptOctantComp.Guid, node);
             }
 

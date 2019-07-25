@@ -21,7 +21,7 @@ namespace Fusee.Examples.PcRendering.Core
 
     internal static class LAZtoSceneNode
     {
-        public static Lighting Lighting = Lighting.EDL;
+        public static Lighting Lighting = Lighting.UNLIT;
         public static PointShape Shape = PointShape.PARABOLID;
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.POINT;
@@ -29,7 +29,6 @@ namespace Fusee.Examples.PcRendering.Core
         public static float4 SingleColor = new float4(1, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 5;
         public static float EdlStrength = 0.1f;
-
 
         private static uint ColorToUInt(int r, int g, int b)
         {

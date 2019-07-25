@@ -4,6 +4,7 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -47,20 +48,15 @@ namespace Fusee.Examples.PcRendering.Core
         private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
-        private SixDOFDevice _spaceMouse;
-        private GamePadDevice _gamePad;
 
         private float3 _cameraPos;
         private float3 _initCameraPos;
         private ITextureHandle _texHandle;
         
         private ShaderEffect _depthPassEf;
-        private ShaderEffect _colorPassEf;
-        private ShaderEffect _wfcEffect;
+        private ShaderEffect _colorPassEf;        
 
-        private bool _isTexInitialized = false;
-
-        private readonly WireframeCube wfc = new WireframeCube();
+        private bool _isTexInitialized = false;        
 
         private PtOctantLoader<LAZPointType> _oocLoader;
         private PtRenderingAccessor _ptAccessor;
@@ -129,7 +125,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene = oocFileReader.GetScene(_depthPassEf);
             _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], _pathToOocFile, RC)
             {
-                PointThreshold = 500000
+                PointThreshold = 1000000
             };
 
             projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
@@ -140,8 +136,7 @@ namespace Fusee.Examples.PcRendering.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-            //Add resize delegate
-            
+            //Add resize delegate            
             AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
 
             //create depth tex and fbo
@@ -157,8 +152,7 @@ namespace Fusee.Examples.PcRendering.Core
             var ptRootComponent = _scene.Children[1].GetComponent<PtOctantComponent>();
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
-
-            _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 0, 1), new float4(1, 1, 1, 1), 10);
+            
             _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
@@ -271,29 +265,30 @@ namespace Fusee.Examples.PcRendering.Core
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            
             //----------------------------
 
-            _scenePicker = new ScenePicker(_scene);            
+            _scenePicker = new ScenePicker(_scene);
 
-            ////Render Depth-only pass
-            _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;            
-            _sceneRenderer.Render(RC, _texHandle);
+            if (LAZtoSceneNode.Lighting == Lighting.EDL)
+            {
+                //Render Depth-only pass
+                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+                _sceneRenderer.Render(RC, _texHandle);
+            }
 
             //Render color pass
             //Change shader effect in complete scene
             _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
 
             _sceneRenderer.Render(RC);
-
+            
             //Render GUI
             _sih.View = RC.View;
             _guiRenderer.Render(RC);
 
             _oocLoader.RC = RC;            
             _oocLoader.UpdateScene(LAZtoSceneNode.PtMode, _depthPassEf, _colorPassEf, LAZtoSceneNode.GetMeshsForNode, _ptAccessor);
-            //_oocLoader.ShowOctants(_scene, wfc, _wfcEffect);
+            _oocLoader.ShowOctants(_scene);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -302,7 +297,9 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            //(re)create depth tex and fbo
+            if (LAZtoSceneNode.Lighting == Lighting.EDL) return;
+            
+                //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
                 RC.RemoveTextureHandle(_texHandle);
