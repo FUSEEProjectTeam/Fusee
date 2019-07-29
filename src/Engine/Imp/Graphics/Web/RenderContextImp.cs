@@ -604,6 +604,13 @@ namespace Fusee.Engine.Imp.Graphics.Web
         }
 
         [JSExternal]
+        [JSChangeName("SetShaderParamMtx3fArray")]
+        public void SetShaderParam(IShaderParam param, float3[] val)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        [JSExternal]
         [JSChangeName("SetShaderParam2f")]
         public void SetShaderParam(IShaderParam param, float2 val)
         {

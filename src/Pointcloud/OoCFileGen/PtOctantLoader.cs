@@ -230,25 +230,29 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private async void LoadNodesAsync(Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor)
         {
-            using (var cancellationTokenSource = new CancellationTokenSource())
-            {
-                //Cancel may not be working yet (exception is thrown but not catched. Seems to depend on the positioning of "throw" and the await calls). 
-                //Using this condition, the cancellation serves only as a precaution that may or may not be useful when rendering a few million points at once - not tested yet.
-                var userMovingTask = Task.Run(() =>
+            //using (var cancellationTokenSource = new CancellationTokenSource())
+            //{           
+            
+                //var userMovingTask = Task.Run(() =>
+                //{
+                //    if (IsUserMoving)// Cancel the task
+                //        cancellationTokenSource.Cancel();
+                //});               
+                    
+                await Task.Run(() =>
                 {
-                    if (IsUserMoving)// Cancel the task
-                        cancellationTokenSource.Cancel();
-                });
+                    //try
+                    //{
+                    //    // Were we already canceled?
+                    //    cancellationTokenSource.Token.ThrowIfCancellationRequested();
 
-                try
-                { 
-                    Task loadingTask = null;
-                    loadingTask = Task.Run(() =>
-                    {
                         var loopLength = _determinedAsVisibleAndUnloaded.Count < _noOfLoadedNodes ? _determinedAsVisibleAndUnloaded.Count : _noOfLoadedNodes;
 
                         for (int i = 0; i < loopLength; i++)
                         {
+                            //if (cancellationTokenSource.Token.IsCancellationRequested)
+                            //    cancellationTokenSource.Token.ThrowIfCancellationRequested();
+
                             var node = _determinedAsVisibleAndUnloaded.ElementAt(i).Value;
                             var ptOctantComp = node.GetComponent<PtOctantComponent>();
                             if (!ptOctantComp.WasLoaded)
@@ -256,26 +260,21 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                                 var pts = LoadPointsForNode(ptAccessor, ptOctantComp);
                                 ptOctantComp.NumberOfPointsInNode = pts.Count;
                                 var meshes = GetMeshsForNode(ptAccessor, pts);
-                                _loadedMeshs.Add(ptOctantComp.Guid, meshes);                                
+                                _loadedMeshs.Add(ptOctantComp.Guid, meshes);
                             }
 
                             //if (VisibleNodes.ContainsKey(ptOctantComp.Guid)) continue;                            
                             VisibleNodes.AddOrUpdate(ptOctantComp.Guid, node, (key, val) => val);
-                        }                        
-                    });
+                        }
+                    //}
+                    //catch (OperationCanceledException e)
+                    //{
+                    //    Diagnostics.Log("Loading was canceled!");
+                    //}                                       
+                }); 
 
-                    if (cancellationTokenSource.Token.IsCancellationRequested)
-                        throw new TaskCanceledException(loadingTask);
-
-                    await loadingTask;
-                }
-                catch (AggregateException e)
-                {
-                    Diagnostics.Log("Loading was canceled!");
-                }
-
-                await userMovingTask;
-            }
+                //await userMovingTask;
+            //}
         }
 
         private void LoadNodes(Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor)
@@ -309,9 +308,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             if (!_determinedAsVisible.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
             {
-                RemoveNode(node, ptOctantComp);
-                
-                
+                RemoveNode(node, ptOctantComp); 
             }
             else
             {

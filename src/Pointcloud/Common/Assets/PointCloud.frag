@@ -5,8 +5,9 @@ uniform mat4 FUSEE_V;
 uniform mat4 FUSEE_M;
 
 //SSAO
-uniform vec3[] ssaoKernel;
-uniform sampler2D noiseTex;
+uniform vec3[32] SSAOKernel;
+uniform sampler2D NoiseTex;
+uniform int CalcSSAO;
 
 uniform int PointShape;
 uniform int ColorMode;
@@ -99,6 +100,23 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 	return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
 }
 
+vec3 ViewNormalFromDepth(float depth, vec2 texcoords) {
+  
+  const vec2 offset1 = vec2(0.0,0.001);
+  const vec2 offset2 = vec2(0.001,0.0);
+  
+  float depth1 = texture(DepthTex, texcoords + offset1).r;
+  float depth2 = texture(DepthTex, texcoords + offset2).r;
+  
+  vec3 p1 = vec3(offset1, depth1 - depth);
+  vec3 p2 = vec3(offset2, depth2 - depth);
+  
+  vec3 normal = cross(p1, p2);
+  normal.z = -normal.z;
+  
+  return normalize(normal);
+}
+
 void main(void)
 {	
 	vec2 distanceVector = (2 * gl_PointCoord) - 1; //[-1,1]
@@ -188,49 +206,106 @@ void main(void)
 		break;
 	}
 
-	//Ambient Lighting
-	//-----------------------------
-	vec3 lightColor = vec3(1.0 ,1.0, 1.0);
+	// SSAO - kind of depth only. 
+	// See: 
+	// https://learnopengl.com/Advanced-Lighting/SSAO
+	// http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html 
+	// http://theorangeduck.com/page/pure-depth-ssao
+
+	float radius = 10;
+	float occlusion = 0.0;
+	float bias = 0.025;
+	float ambientStrength = 1.0; //Uniform?
+
+	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
+	float z = texture2D(DepthTex, uv).x;
+
+	vec3 ambient = vec3(1,1,1);
+
+	if(CalcSSAO == 1)
+	{
+		vec2 tiles = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);
+		vec3 viewNormal = ViewNormalFromDepth(z, uv);
 		
-	float ambientStrength = 0.1;	
-	vec3 ambient = ambientStrength * vec3(1.0,1.0,1.0);	
-	
-    //-------------------------------
+		vec3 rvec = texture(NoiseTex, uv * tiles ).xyz;
+		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));
+		vec3 bitangent = cross(viewNormal, tangent);
+		mat3 tbn = mat3(tangent, bitangent, viewNormal);
 
-	vec3 normalDir = normalize(vNormal);
-	
-	mat4 invMv = inverse(FUSEE_V * FUSEE_M);
-	vec3 worldSpaceCameraPos = invMv[3].xyz;
-	vec3 worldSpaceLightPos = worldSpaceCameraPos;
+		int kernelLength = 32;
 
-	vec3 viewDir = normalize(worldSpaceCameraPos.xyz - vWorldPos.xyz);
-	vec3 lightDir = normalize( vec3(0, 0,-1.0));
-	vec3 halfwayDir = reflect(-lightDir, normalDir);
+		for (int i = 0; i < kernelLength; ++i) {
+
+			// get sample position:
+			vec3 sampleVal = tbn * SSAOKernel[i];
+			sampleVal = sampleVal * radius + vViewPos.xyz;
+  
+			// project sample position:
+			vec4 offset = vec4(sampleVal, 1.0);
+			offset = FUSEE_P * offset;		
+			offset.xy /= offset.w;
+			offset.xy = offset.xy * 0.5 + 0.5;
+  
+			// get sample depth:
+			float sampleDepth = texture(DepthTex, offset.xy).z;
+			sampleDepth = LinearizeDepth(sampleDepth);
+  
+			// range check & accumulate:
+			float rangeCheck = smoothstep(0.0, 1.0, radius / abs(vViewPos.z - sampleDepth));
+			occlusion += (sampleDepth >= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
+		}
+
+		occlusion = 1-(occlusion / kernelLength);
+		ambient = vec3(occlusion, occlusion, occlusion) * ambientStrength;
+	}
+	//-------------------------------
+	vec3 normalDir = vec3(1,1,1);
+	vec3 lightDir = vec3(1,1,1);
+	vec3 halfwayDir = vec3(1,1,1);
+
+	vec3 lightColor = vec3(1,1,1);
+
+	if(Lighting == 2 || Lighting == 3)
+	{
+		normalDir = normalize(vNormal);
+	
+		mat4 invMv = inverse(FUSEE_V * FUSEE_M);
+		vec3 worldSpaceCameraPos = invMv[3].xyz;
+		vec3 worldSpaceLightPos = worldSpaceCameraPos;
+
+		vec3 viewDir = normalize(worldSpaceCameraPos.xyz - vWorldPos.xyz);
+		vec3 lightDir = normalize( vec3(0, 0,-1.0));
+		vec3 halfwayDir = reflect(-lightDir, normalDir);
+	}
 
 	
 	vec4 specularReflection = vec4(0, 0, 0, 1);	
 
 	switch (Lighting)
 	{
-		case 0: // default = unlit
 		default:
+		case 0: // default = unlit		
 		{
+			
 			break;
 		}
 		case 1:
-		{	
-			vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
-			float z = texture2D(DepthTex, uv).x;
+		{			
 			float linearDepth = LinearizeDepth(z);
 
 			if(linearDepth > 0.1)
 				oColor.xyz *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);
 			
+
+			oColor.xyz *= ambient;
+
 			break;
 		}
 		case 2: //diffuse
-		{
-			oColor = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);		
+		{	
+			vec4 diffuse = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);			
+			oColor = diffuse;		
+
 			break;
 		}
 
@@ -241,13 +316,14 @@ void main(void)
 			vec4 diffuseReflection = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);
 			oColor = diffuseReflection + (SpecularStrength * specularReflection);						
 			break;
-		}
+		}		
 		case 4: //ambient only
-		{
-			oColor = oColor * vec4(ambient,1);
-		}
+		{						
+			oColor = vec4(occlusion, occlusion, occlusion,1.0);									
+			break;
+		}	
 
-	}	
+	}
 
 }
 

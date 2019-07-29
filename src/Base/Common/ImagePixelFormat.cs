@@ -34,7 +34,9 @@ namespace Fusee.Base.Common
                         ? 3
                         : ColorFormat == ColorFormat.Intensity
                             ? 1
-                            : 0;
+                                : ColorFormat == ColorFormat.fRGB
+                                    ? 12
+                                        : 0;
             }
         }
 

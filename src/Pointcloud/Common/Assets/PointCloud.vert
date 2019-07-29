@@ -29,18 +29,6 @@ out vec4 vWorldPos;
 out float vWorldSpacePointRad;
 out vec3 vColor;
 
-//out float vSpacing;
-//out int vOctantLvl;
-out int vLod;
-out uint vChildInfoR;
-out uint vChildInfoG;
-out uint vChildInfoB;
-out uint vChildInfoA;
-out int vChildIndex;
-out float vTexPos;
-out int vPxPos;
-
-
 in vec3 fuVertex;
 in vec3 fuNormal;
 in vec3 fuColor;
@@ -206,20 +194,11 @@ int getLevelOfDetail()
 		sideLength = sideLength/2;
 
 		//1. get the child node the point falls into
-		childIndexPointFallsInto = getChildIndex(centerPos);
-		vChildIndex = childIndexPointFallsInto;	
+		childIndexPointFallsInto = getChildIndex(centerPos);			
 
 		//2. check if the child from step 1. is visible == exists in the texture
 		childExists = isBitSet(nodeInfo.b, childIndexPointFallsInto);
 	}
-	
-	vLod = lod;
-	vChildInfoR = nodeInfo.r;
-	vChildInfoG = nodeInfo.g;
-	vChildInfoB = nodeInfo.b;
-	vChildInfoA = nodeInfo.a;
-	vTexPos = texPosition;
-	vPxPos = pxPosition;
 
 	return lod;
 }

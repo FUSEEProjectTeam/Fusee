@@ -23,14 +23,15 @@ namespace Fusee.Examples.PcRendering.Core
 
     internal static class LAZtoSceneNode
     {
-        public static Lighting Lighting = Lighting.EDL;
+        public static Lighting Lighting = Lighting.SSAO_ONLY;
         public static PointShape Shape = PointShape.PARABOLID;
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
-        public static ColorMode ColorMode = ColorMode.POINT;
+        public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 20;
-        public static float4 SingleColor = new float4(1, 1, 0, 1);
+        public static float4 SingleColor = new float4(1, 1, 1, 1);
         public static int EdlNoOfNeighbourPx = 5;
         public static float EdlStrength = 0.1f;
+        public static bool CalcSSAO = true;
 
         private static uint ColorToUInt(int r, int g, int b)
         {
@@ -161,12 +162,17 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctreeTex", Value = octreeTex},
                 new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
                 new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
-                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength},
+                new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength} 
             });            
         }
 
         internal static ShaderEffect StandardEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
+            var kernelLength = 32;
+            var ssaoKernel = SSAOKernel(kernelLength);
+            var texSize = 4;
+            var ssaoNoiseTex = SSAONoiseTex(texSize, 16);           
+
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
@@ -215,6 +221,11 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "OctreeTexWidth", Value = octreeTex.Width}, //Used to access a specific pixel in the tex
                 new EffectParameterDeclaration {Name = "OctreeRootCenter", Value = (float3)octreeRootCenter},
                 new EffectParameterDeclaration {Name = "OctreeRootLength", Value = (float)octreeRootLength},
+
+                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
+                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
+                new EffectParameterDeclaration {Name = "CalcSSAO", Value = CalcSSAO ? 1 : 0}
+
             });
         }
 
@@ -285,7 +296,7 @@ namespace Fusee.Examples.PcRendering.Core
             {
                 kernel[i] = new float3
                 (
-                    RandomFloatBetween(-1f,1f, rnd),
+                    RandomFloatBetween(-1f, 1f, rnd),
                     RandomFloatBetween(-1f, 1f, rnd),
                     RandomFloatBetween(0f, 1f, rnd)
                 );
@@ -333,8 +344,9 @@ namespace Fusee.Examples.PcRendering.Core
             return noise;
         }
 
-        private static Texture SSAONoiseTex(float3[] ssaoNoise, int texSize)
+        private static Texture SSAONoiseTex(int texSize, int noiseSize)
         {
+            var ssaoNoise = SSAONoise(noiseSize);
             var pxData = new List<byte>(); //4 bytes per float, 3 floats per float3
 
             for (int i = 0; i < ssaoNoise.Length; i++)
@@ -348,15 +360,7 @@ namespace Fusee.Examples.PcRendering.Core
                 pxData.AddRange(bytesY);
                 pxData.AddRange(bytesZ);
 
-            }
-
-            /*
-            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, 4, 4, 0, GL_RGB, GL_FLOAT, &ssaoNoise[0]);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-            */
+            }           
 
             return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB)));
         }

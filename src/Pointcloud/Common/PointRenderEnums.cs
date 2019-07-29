@@ -54,6 +54,7 @@
         UNLIT = 0,
         EDL = 1,
         DIFFUSE = 2,
-        BLINN_PHONG = 3
+        BLINN_PHONG = 3,
+        SSAO_ONLY = 4
     }
 }

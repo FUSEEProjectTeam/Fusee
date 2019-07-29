@@ -635,6 +635,17 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        ///     Sets a <see cref="float3" /> array shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public unsafe void SetShaderParam(IShaderParam param, float3[] val)
+        {
+            fixed (float3* pFlt = &val[0])
+                GL.Uniform4(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+        }
+
+        /// <summary>
         /// Sets a <see cref="float4" /> shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>

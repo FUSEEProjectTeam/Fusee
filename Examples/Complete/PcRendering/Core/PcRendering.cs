@@ -137,7 +137,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene.Children[0].Components.Insert(0, projectionComponent);
 
             _gui = CreateGui();
-            // Create the interaction handler
+            //Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             //Add resize delegate            
@@ -273,7 +273,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _scenePicker = new ScenePicker(_scene);
 
-            if (LAZtoSceneNode.Lighting == Lighting.EDL)
+            if (LAZtoSceneNode.Lighting == Lighting.EDL || LAZtoSceneNode.Lighting == Lighting.SSAO_ONLY)
             {
                 //Render Depth-only pass
                 _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
@@ -285,7 +285,7 @@ namespace Fusee.Examples.PcRendering.Core
             _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
 
             _sceneRenderer.Render(RC);
-            
+
             //Render GUI
             _sih.View = RC.View;
             _guiRenderer.Render(RC);
@@ -301,7 +301,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (LAZtoSceneNode.Lighting == Lighting.EDL) return;
+            if (LAZtoSceneNode.Lighting != Lighting.EDL && LAZtoSceneNode.Lighting != Lighting.SSAO_ONLY) return;
             
                 //(re)create depth tex and fbo
             if (_isTexInitialized)

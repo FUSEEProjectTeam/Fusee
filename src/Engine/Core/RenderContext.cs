@@ -1362,7 +1362,7 @@ namespace Fusee.Engine.Core
                                 ||
                                 (paramNew_.Type.IsAssignableFrom(initValType))
                              ) 
-                            && !paramNew_.Name.Contains("BONES")
+                            && (!paramNew_.Name.Contains("BONES") && !paramNew_.Name.Contains("[0]"))
                         )
                         {
                             throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew_.Type.ToString() + " " + paramNew_.Name +
@@ -1495,6 +1495,22 @@ namespace Fusee.Engine.Core
         /// <seealso cref="GetShaderParamList"/>
         [JSChangeName("SetShaderParam3f")]
         public void SetShaderParam(IShaderParam param, float3 val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
+        /// <summary>
+        /// Sets the shader parameter to a float3 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float3 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>
+        [JSChangeName("SetShaderParam3fArray")]
+        public void SetShaderParam(IShaderParam param, float3[] val)
         {
             _rci.SetShaderParam(param, val);
         }
@@ -1715,6 +1731,11 @@ namespace Fusee.Engine.Core
         /// <param name="param"></param>
         internal void SetShaderParamT(EffectParam param)
         {
+            if(param.Info.Name == "SSAOKernel")
+            {
+                var t = 1;
+            }
+
             if (param.Info.Type == typeof(int))
             {
                 SetShaderParam(param.Info.Handle, (int)param.Value);
@@ -1729,6 +1750,13 @@ namespace Fusee.Engine.Core
             }
             else if (param.Info.Type == typeof(float3))
             {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float3[])param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
                 SetShaderParam(param.Info.Handle, (float3)param.Value);
             }
             else if (param.Info.Type == typeof(float4))
