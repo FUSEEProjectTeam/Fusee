@@ -160,5 +160,15 @@ namespace Fusee.Base.Imp.Desktop
             }
             return false;
         }
+
+        protected override Task<Stream> GetStreamAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<bool> CheckExistsAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

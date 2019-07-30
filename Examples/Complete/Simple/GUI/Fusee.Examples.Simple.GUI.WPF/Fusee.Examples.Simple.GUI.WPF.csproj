@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\Simple\GUI\</OutputPath>
+    <StartupObject>Fusee.Examples.Simple.GUI.WPF.App</StartupObject>
+    <ApplicationIcon />
+  </PropertyGroup>
+</Project>

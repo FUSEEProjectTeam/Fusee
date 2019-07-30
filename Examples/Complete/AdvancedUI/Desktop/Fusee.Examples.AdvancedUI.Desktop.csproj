@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.AdvancedUI.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.AdvancedUI.Desktop</PackageId>
@@ -7,8 +7,7 @@
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+  <Import Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Desktop\</OutputPath>
@@ -57,6 +56,4 @@
       <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

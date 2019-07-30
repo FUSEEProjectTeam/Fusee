@@ -76,7 +76,7 @@ namespace Fusee.Base.Core
                     return (T)assetProvider.GetAsset(id, typeof(T));
                 }
             }
-            return default;
+            return default(T);
         }
 
         /// <summary>
@@ -91,19 +91,14 @@ namespace Fusee.Base.Core
         /// </remarks>
         public async Task<T> GetAssetAsync<T>(string id)
         {
-            Console.WriteLine("Trying to get asset async");
-            Console.WriteLine($"My prodivers {_providers.Count}");
-
             foreach (var assetProvider in _providers)
             {
                 if (await assetProvider.CanGetAsync(id, typeof(T)))
                 {
-                    Console.WriteLine("Checking for asset providers");
                     return (T)await assetProvider.GetAssetAsync(id, typeof(T));
                 }
             }
-            Console.WriteLine("Nothing found!");
-
+            
             return default;
         }
 

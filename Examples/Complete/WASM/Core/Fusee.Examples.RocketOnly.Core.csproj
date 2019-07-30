@@ -1,21 +1,23 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.RocketOnly.Core</RootNamespace>
     <PackageId>Fusee.Examples.RocketOnly.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\RocketOnly\Core\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\FuseeText.png" />
     <None Remove="Assets\LoremIpsum.txt" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Assets\FuseeText.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Assets\LoremIpsum.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -50,6 +52,4 @@
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

@@ -7,6 +7,7 @@ using Fusee.Serialization;
 using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FileMode = Fusee.Base.Common.FileMode;
@@ -57,16 +58,18 @@ namespace Fusee.Examples.RocketOnly.Main
                         return Path.GetExtension(id).IndexOf("ttf", System.StringComparison.OrdinalIgnoreCase) >= 0;
                     }
                 });
+            
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = (string id, object storage) =>
+                    DecoderAsync = async (string id, object storage) => // ignore the lack of await
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
+                            var storageStream = (Stream)storage;
                             var ser = new Serializer();
-                            return new ConvertSceneGraph().Convert(ser.Deserialize(IO.StreamFromFile("Assets/" + id, FileMode.Open), null, typeof(SceneContainer)) as SceneContainer);
+                            return new ConvertSceneGraph().Convert(ser.Deserialize(storageStream, null, typeof(SceneContainer)) as SceneContainer);
                         }
                         return null;
                     },
@@ -75,6 +78,55 @@ namespace Fusee.Examples.RocketOnly.Main
                         return Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0;
                     }
                 });
+
+            // Image handler
+            fap.RegisterTypeHandler(new AssetHandler
+            {
+                ReturnedType = typeof(Base.Core.ImageData),
+                DecoderAsync = async (string id, object storage) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    switch (ext)
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                        case ".png":
+                        case ".bmp":
+                            // handle file
+                            Console.WriteLine("Found image, processing");
+                            using (var memStream = new MemoryStream())
+                            {
+                                var stream = (Stream)storage;
+                                await stream.CopyToAsync(memStream).ConfigureAwait(false);
+                                memStream.Seek(0, SeekOrigin.Begin);
+
+                                var bmp =  SkiaSharp.SKBitmap.Decode(stream);
+                                Console.WriteLine($"Found image, {bmp.Width}, {bmp.Height}");
+
+                                var data = new Base.Core.ImageData(bmp.Width, bmp.Height)
+                                {
+                                    PixelData = bmp.Bytes
+                                };
+                                return data;
+                            };                           
+                    }
+                    return null;
+                },
+                Checker = (string id) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    switch (ext)
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                        case ".png":
+                        case ".bmp":
+                            return true;
+                    }
+                    return false;
+                }
+            });
+
             AssetStorage.RegisterProvider(fap);
 
             _app = new Core.RocketOnly();

@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Physics.Desktop</PackageId>
     <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -22,5 +20,4 @@
     <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

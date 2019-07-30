@@ -1,12 +1,10 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
       <RootNamespace>Fusee.Engine.Imp.Graphics.WebAsm</RootNamespace>
       <PackageId>Fusee.Engine.Imp.Graphics.WebAsm</PackageId>
       <TargetFramework>netstandard2.0</TargetFramework>
       <DefineConstants>PLATFORM_WebAsm</DefineConstants>
   </PropertyGroup>
-  
-    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -17,8 +15,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
     <ItemGroup>
       <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />

@@ -198,6 +198,11 @@ namespace Fusee.Base.Imp.Web
         {
             throw new NotImplementedException();
         }
+
+        public Task<bool> CanGetAsync(string id, Type type)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
 

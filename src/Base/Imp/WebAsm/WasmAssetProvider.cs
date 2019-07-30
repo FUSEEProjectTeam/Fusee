@@ -50,38 +50,6 @@ namespace Fusee.Base.Imp.WebAsm
 
             if (_baseDir[_baseDir.Length - 1] != '/')
                 _baseDir += '/';
-  
-            // Image handler
-            RegisterTypeHandler(new AssetHandler
-            {
-                ReturnedType = typeof(ImageData),
-                Decoder = delegate (string id, object storage)
-                {
-                    string ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
-                    {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return FileDecoder.LoadImage((Stream)storage);
-                    }
-                    return null;
-                },
-                Checker = delegate (string id)
-                {
-                    string ext = Path.GetExtension(id).ToLower();
-                    switch (ext)
-                    {
-                        case ".jpg":
-                        case ".jpeg":
-                        case ".png":
-                        case ".bmp":
-                            return true;
-                    }
-                    return false;
-                }
-            });
 
             // Text file -> String handler. Keep this one the last entry as it doesn't check the extension
             RegisterTypeHandler(new AssetHandler
@@ -97,6 +65,8 @@ namespace Fusee.Base.Imp.WebAsm
                 },
                 Checker = id => true // If it's there, we can handle it...
             });
+
+          
         }
 
         /// <summary>
@@ -165,25 +135,6 @@ namespace Fusee.Base.Imp.WebAsm
 
             var response = httpClient.GetAsync(id);
             return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
-
-      
-            /*
-            // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
-            if (Path.IsPathRooted(id))
-                return File.Exists(id);
-
-            // Path seems relative. First see if the file exists at the current working directory
-            if (File.Exists(id))
-                return true;
-
-            foreach (var baseDir in _baseDirs)
-            {
-                string path = Path.Combine(baseDir, id);
-                if (File.Exists(path))
-                    return true;
-            }
-            return false;
-            */
         }
 
         protected override async Task<bool> CheckExistsAsync(string id)

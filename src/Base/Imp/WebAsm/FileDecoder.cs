@@ -20,6 +20,8 @@ namespace Fusee.Base.Imp.WebAsm
         /// <returns>An ImageData object with all necessary information.</returns>
         public static async Task<ImageData> LoadImage(Stream file)
         {
+          
+            
             //var ms = new MemoryStream();
             //await file.CopyToAsync(ms);
             //var byteImage = ms.ToArray();

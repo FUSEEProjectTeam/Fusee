@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Net.Http;
-using System.Threading.Tasks;
+using System.Linq;
 using Fusee.Base.Core;
-using Fusee.Base.Imp.WebAsm;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -49,8 +47,13 @@ namespace Fusee.Examples.RocketOnly.Core
             var readVar = await AssetStorage.GetAsync<string>("Assets/LoremIpsum.txt");
             Console.WriteLine(readVar);
 
-        }
+            RocketScene = await AssetStorage.GetAsync<SceneContainer>("Assets/FUSEERocket.fus");
+            Console.WriteLine(_rocketScene.Children[0].Components[0].Name);
+            Console.WriteLine(_rocketScene.Children.Count());
 
+            var x = await AssetStorage.GetAsync<ImageData>("Assets/FuseeText.png");
+            Console.WriteLine($"ImageData {x.Height}:{x.Width}");
+        }
 
         public SceneContainer RocketScene
         {
@@ -117,14 +120,9 @@ namespace Fusee.Examples.RocketOnly.Core
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
 
-            // Render the scene 
-            if (_sceneRenderer != null)
-            {
-                _sceneRenderer.Render(RC);
-            }
-
-            //var readVar = await FileAssetProvider.LoadMe("Assets/ReadEveryFrame.txt");
-            //Console.WriteLine(readVar);
+            // Render the scene   
+            if(_sceneRenderer != null)
+                _sceneRenderer.Render(RC);           
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

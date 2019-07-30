@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Mono.WebAssembly.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU1701;NU1604</NoWarn>
@@ -8,8 +8,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Mono.WebAssembly.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\RocketOnly\WebAsm\</OutputPath>
@@ -136,7 +134,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Mono.WebAssembly.Sdk" />
-
 </Project>

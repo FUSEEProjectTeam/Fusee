@@ -4,15 +4,8 @@
     <!-- Build into main FUSEE bin directory -->
     <FuseeBuildRoot>$(FuseeRoot)</FuseeBuildRoot>
     <!-- Build into local bin directory -->
-     <!--<FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
-    
+     <!--<FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->    
     <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
-
-    <!-- These intermediate paths are resulting in a false build!! TODO: Investigate how to fix -->
-    
-    <!--<BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>-->   
-    
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <Authors>FuseeProjectTeam</Authors>
