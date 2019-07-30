@@ -143,6 +143,9 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            //if (_gamePad != null)
+            //    Diagnostics.Log(_gamePad.LSX);
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -188,13 +191,12 @@ namespace Fusee.Engine.Player.Core
             }
 
             
-
-            
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton) {
+
                 _keys = false;
-                _angleVelHorz += -RotationSpeed * Mouse.XVel * DeltaTime * 0.00005f;
-                _angleVelVert += -RotationSpeed * Mouse.YVel * DeltaTime * 0.00005f;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
 
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
@@ -253,18 +255,11 @@ namespace Fusee.Engine.Player.Core
             }
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
-
-            _sceneRenderer.Render(RC);
-
-            var projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            RC.Projection = projection;
+            _sceneRenderer.Render(RC);            
             
             _sih.View = RC.View;
 
-            _guiRenderer.Render(RC);
-
-            projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            RC.Projection = projection;
+            _guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

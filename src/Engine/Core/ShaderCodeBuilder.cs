@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -170,6 +173,65 @@ namespace Fusee.Engine.Core
         {
         }
 
+        public static Dictionary<string, string> GetFieldValues(object obj)
+        {
+            return obj.GetType()
+                      .GetProperties(BindingFlags.Public | BindingFlags.Static)
+                      .Where(f => f.PropertyType == typeof(string))
+                      .ToDictionary(f => f.Name,
+                                    f => (string)f.GetValue(null));
+        }
+
+        private string ParseIncludes(string rawShaderString)
+        {
+            var fields = GetFieldValues(this);
+
+            var refinedShader = new List<string>();
+
+            var allLines = rawShaderString.Split(new[] { '\r', '\n' });
+            foreach (var line in allLines)
+            {
+                // if we have one or more includes we need to replace them                
+                if (line.Contains("#include"))
+                {
+                    var includeLine = line.Replace(@"#include ", string.Empty);
+                    includeLine = includeLine.Replace("\"", string.Empty);
+                    var fileFromInclude = includeLine;
+                    var foundFile = "";
+                    try
+                    {
+                        foundFile = AssetStorage.Get<string>("Assets/Shader/" + fileFromInclude);
+                        if (foundFile == null)
+                            throw new FileNotFoundException(foundFile);
+                    }
+                    catch (FileNotFoundException e)
+                    {
+                        Diagnostics.Log($"[ShaderCodeBuilder.cs] Error file #include {e.FileName} not found!");
+                    }
+                    refinedShader.Add(foundFile);
+                }
+                else
+                {
+                    refinedShader.Add(line);                   
+                }
+            }
+
+          
+            // replace all names
+            foreach (var field in fields)
+            {
+                for (var i = 0; i < refinedShader.Count; i++)
+                {
+                    if (refinedShader[i].Contains(field.Key))
+                    {
+                        refinedShader[i] = refinedShader[i].Replace(field.Key, field.Value);
+                    }
+                }
+            }
+            
+            return String.Join("\n", refinedShader);
+        }
+
         /// <summary>
         /// Creates vertex and pixel shader for given material, mesh, weight; light calculation is simple per default
         /// </summary>
@@ -188,6 +250,14 @@ namespace Fusee.Engine.Core
 
             _vertexShader = new List<string>();
             _pixelShader = new List<string>();
+            /* 
+                    // here we read and parse out vert and pixel shader
+                    var pixelShaderRaw = AssetStorage.Get<string>("Assets/Shader/PixelShader.frag"); 
+                    var vertexShaderRaw = AssetStorage.Get<string>("Assets/Shader/VertexShader.vert");
+
+                    VS = ParseIncludes(vertexShaderRaw);
+                    PS = ParseIncludes(pixelShaderRaw);
+                    */
 
             AnalyzeMaterialType(mc);
             AnalyzeMesh(mesh, wc);
@@ -196,11 +266,11 @@ namespace Fusee.Engine.Core
             VS = string.Join("\n", _vertexShader);
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
-
+            
             // Uber Shader - test purposes!
             //VS = AssetStorage.Get<string>("Shader/UberVertex.vert");
             //PS = AssetStorage.Get<string>("Shader/UberFragment.frag");
-            
+
             //Diagnostics.Log(PS);
             //Diagnostics.Log(VS);
         }
@@ -597,10 +667,8 @@ namespace Fusee.Engine.Core
             //TODO: Test alpha blending between diffuse and texture
             if (_materialProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"vec4 texCol = (texture({DiffuseTextureName}, vUV).rgba * {DiffuseMixName});" +
-                    $"vec4 matCol = {DiffuseColorName};" +
-                    $"vec4 blendedCol = matCol * matCol.a + texCol * (1.0-texCol.a);" +
-                    $"return blendedCol *  max(diffuseTerm, 0.0) * intensities;");
+                    $"vec4 blendedCol = mix({DiffuseColorName}, texture({DiffuseTextureName}, vUV), {DiffuseMixName});" +
+                    $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
             else
                 methodBody.Add($"return vec4({DiffuseColorName}.rgb * intensities.rgb * diffuseTerm, 1.0);");
 
@@ -1041,8 +1109,7 @@ namespace Fusee.Engine.Core
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
-                            AlphaBlendEnable = true,
-                            
+                            AlphaBlendEnable = true   
                         }
                     }
                 },
@@ -1245,6 +1312,11 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region StaticUniformVariablesNames
+
+        /// <summary>
+        /// The var name for the uniform DiffuseColor variable within the pixelshaders
+        /// </summary>
+        public static string AmbientStrengthName { get; } = "AmbientStrength";
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixelshaders

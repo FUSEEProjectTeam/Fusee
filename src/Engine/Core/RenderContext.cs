@@ -10,6 +10,8 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
+
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -20,6 +22,8 @@ namespace Fusee.Engine.Core
         #region Fields
 
         #region Private Fields
+
+        
 
         private readonly IRenderContextImp _rci;
         /// <summary>
@@ -767,6 +771,7 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+
             View = float4x4.Identity;
             Model = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -788,6 +793,8 @@ namespace Fusee.Engine.Core
 
             //_debugShader = Shaders.GetColorShader(this);
             //_debugColor = _debugShader.GetShaderParam("color");
+
+            
         }
 
         #endregion
@@ -1205,7 +1212,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                //Diagnostics.Log(ef.PixelShaderSrc[0]);
+                Diagnostics.Log(ef.PixelShaderSrc[0]);
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
@@ -1219,6 +1226,7 @@ namespace Fusee.Engine.Core
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
+        
 
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
@@ -1241,6 +1249,11 @@ namespace Fusee.Engine.Core
             }
 
 
+        }
+
+        public void SetLineWidth(float width)
+        {
+            _rci.SetLineWidth(width);
         }
 
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)
@@ -1538,7 +1551,6 @@ namespace Fusee.Engine.Core
         {
             _rci.SetShaderParam(param, val);
         }
-
         #endregion
 
         #region Render releated Members
@@ -1613,7 +1625,7 @@ namespace Fusee.Engine.Core
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.SetCubeMapRenderTarget(textureHandle, position);
         }
-        
+
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
@@ -1622,7 +1634,7 @@ namespace Fusee.Engine.Core
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="Mesh"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
         /// </remarks>
-        public void Render(Mesh m)
+        internal void Render(Mesh m)
         {
             if (_currentShaderEffect == null) return;
 
@@ -1632,7 +1644,6 @@ namespace Fusee.Engine.Core
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
 
             }
-
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
@@ -1655,17 +1666,18 @@ namespace Fusee.Engine.Core
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
-
-                    // After rendering always cleanup pending meshes
-                    _meshManager.Cleanup();
-                    _textureManager.Cleanup();
                 }
+
+                // After rendering always cleanup pending meshes
+                _meshManager.Cleanup();
+                _textureManager.Cleanup();
 
                 // After rendering all passes cleanup shadereffect
                 _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
             {
+              
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }

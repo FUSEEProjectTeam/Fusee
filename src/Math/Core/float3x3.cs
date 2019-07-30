@@ -220,6 +220,22 @@ namespace Fusee.Math.Core
         #endregion
 
         #region Instance
+        
+        /// <summary>
+        ///     Returns this matrix as an array
+        /// </summary>
+        public float[] AsArray
+        {
+            get
+            {
+                return new float[]
+                {
+                    M11, M12, M13,
+                    M21, M22, M23, 
+                    M31, M32, M33,
+                };
+            }
+        }
 
         #region public Transpose()
 

@@ -42,9 +42,9 @@ namespace Fusee.Math.Core
     /// </remarks> 
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-// ReSharper disable InconsistentNaming
+    // ReSharper disable InconsistentNaming
     public struct float4x4 : IEquatable<float4x4>
-// ReSharper restore InconsistentNaming
+    // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -171,18 +171,35 @@ namespace Fusee.Math.Core
             get
             {
                 return
-                    Row0.x*Row1.y*Row2.z*Row3.w - Row0.x*Row1.y*Row2.w*Row3.z + Row0.x*Row1.z*Row2.w*Row3.y -
-                    Row0.x*Row1.z*Row2.y*Row3.w
-                    + Row0.x*Row1.w*Row2.y*Row3.z - Row0.x*Row1.w*Row2.z*Row3.y - Row0.y*Row1.z*Row2.w*Row3.x +
-                    Row0.y*Row1.z*Row2.x*Row3.w
-                    - Row0.y*Row1.w*Row2.x*Row3.z + Row0.y*Row1.w*Row2.z*Row3.x - Row0.y*Row1.x*Row2.z*Row3.w +
-                    Row0.y*Row1.x*Row2.w*Row3.z
-                    + Row0.z*Row1.w*Row2.x*Row3.y - Row0.z*Row1.w*Row2.y*Row3.x + Row0.z*Row1.x*Row2.y*Row3.w -
-                    Row0.z*Row1.x*Row2.w*Row3.y
-                    + Row0.z*Row1.y*Row2.w*Row3.x - Row0.z*Row1.y*Row2.x*Row3.w - Row0.w*Row1.x*Row2.y*Row3.z +
-                    Row0.w*Row1.x*Row2.z*Row3.y
-                    - Row0.w*Row1.y*Row2.z*Row3.x + Row0.w*Row1.y*Row2.x*Row3.z - Row0.w*Row1.z*Row2.x*Row3.y +
-                    Row0.w*Row1.z*Row2.y*Row3.x;
+                    Row0.x * Row1.y * Row2.z * Row3.w - Row0.x * Row1.y * Row2.w * Row3.z + Row0.x * Row1.z * Row2.w * Row3.y -
+                    Row0.x * Row1.z * Row2.y * Row3.w
+                    + Row0.x * Row1.w * Row2.y * Row3.z - Row0.x * Row1.w * Row2.z * Row3.y - Row0.y * Row1.z * Row2.w * Row3.x +
+                    Row0.y * Row1.z * Row2.x * Row3.w
+                    - Row0.y * Row1.w * Row2.x * Row3.z + Row0.y * Row1.w * Row2.z * Row3.x - Row0.y * Row1.x * Row2.z * Row3.w +
+                    Row0.y * Row1.x * Row2.w * Row3.z
+                    + Row0.z * Row1.w * Row2.x * Row3.y - Row0.z * Row1.w * Row2.y * Row3.x + Row0.z * Row1.x * Row2.y * Row3.w -
+                    Row0.z * Row1.x * Row2.w * Row3.y
+                    + Row0.z * Row1.y * Row2.w * Row3.x - Row0.z * Row1.y * Row2.x * Row3.w - Row0.w * Row1.x * Row2.y * Row3.z +
+                    Row0.w * Row1.x * Row2.z * Row3.y
+                    - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
+                    Row0.w * Row1.z * Row2.y * Row3.x;
+            }
+        }
+
+        /// <summary>
+        ///     Returns this matrix as an array
+        /// </summary>
+        public float[] AsArray
+        {
+            get
+            {
+                return new float[]
+                {
+                    M11, M12, M13, M14,
+                    M21, M22, M23, M24,
+                    M31, M32, M33, M34,
+                    M41, M42, M43, M44
+                };
             }
         }
 
@@ -370,13 +387,61 @@ namespace Fusee.Math.Core
         /// </remarks>
         public float3 Offset
         {
-            get { return new float3(Row0.w, Row1.w, Row2.w); }
+            get { return GetTranslation(this); }
             // No setter here - might be too confusing
         }
 
         #endregion
 
         #region Instance
+
+        #region this
+        /// <summary>
+        ///     Sets/Gets value from given index
+        /// </summary>
+        /// <param name="i">The ROW index</param>
+        /// <param name="j">The COLUMN index</param>
+        /// <returns></returns>
+        public float this[int i, int j]
+        {
+            get
+            {
+                switch(i)
+                {
+                    case 0:
+                        return Row0[j];
+                    case 1:
+                        return Row1[j];
+                    case 2:
+                        return Row2[j];
+                    case 3:
+                        return Row3[j];
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
+                }     
+            }
+            set
+            {
+                switch (i)
+                {
+                    case 0:
+                        Row0[j] = value;
+                        break;
+                    case 1:
+                        Row1[j] = value;
+                        break;
+                    case 2:
+                        Row2[j] = value;
+                        break;
+                    case 3:
+                        Row3[j] = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
+                }
+            }
+        }
+        #endregion
 
         #region public Invert()
 
@@ -402,13 +467,13 @@ namespace Fusee.Math.Core
 
         #region float[] ToArray()
 
-// ReSharper disable UnusedMember.Local
+        // ReSharper disable UnusedMember.Local
         private float[] ToArray()
         {
-            return new[] {M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44};
+            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
             // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
         }
-// ReSharper restore UnusedMember.Local
+        // ReSharper restore UnusedMember.Local
 
         #endregion
 
@@ -422,6 +487,50 @@ namespace Fusee.Math.Core
         public float4x4 Round()
         {
             return Round(this);
+        }
+
+        #endregion
+
+        #region TRS Decomposition
+
+        /// <summary>
+        /// The translation component of this matrix.
+        /// </summary>
+        public float4x4 TranslationComponent()
+        {
+            return TranslationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The translation of this matrix.
+        /// </summary>
+        public float3 Translation()
+        {
+            return GetTranslation(this);
+        }
+
+        /// <summary>
+        /// The rotation component of this matrix.
+        /// </summary>
+        public float4x4 RotationComponent()
+        {
+            return RotationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale component of this matrix.
+        /// </summary>
+        public float4x4 ScaleComponent()
+        {
+            return ScaleDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale factors of this matrix.
+        /// </summary>
+        public float3 Scale()
+        {
+            return GetScale(this);
         }
 
         #endregion
@@ -447,10 +556,10 @@ namespace Fusee.Math.Core
 
             axis = axis.Normalize();
 
-            var result = new float4x4(t * axis.x * axis.x + cos,           t * axis.x * axis.y + sin * axis.z,  t * axis.x * axis.z - sin * axis.y,  0.0f,
-                                  t * axis.x * axis.y - sin * axis.z,  t * axis.y * axis.y + cos,           t * axis.y * axis.z + sin * axis.x,  0.0f,
-                                  t * axis.x * axis.z + sin * axis.y,  t * axis.y * axis.z - sin * axis.x,  t * axis.z * axis.z + cos,           0.0f,
-                                  0.0f,                                0.0f,                                0.0f,                                1.0f);
+            var result = new float4x4(t * axis.x * axis.x + cos, t * axis.x * axis.y + sin * axis.z, t * axis.x * axis.z - sin * axis.y, 0.0f,
+                                  t * axis.x * axis.y - sin * axis.z, t * axis.y * axis.y + cos, t * axis.y * axis.z + sin * axis.x, 0.0f,
+                                  t * axis.x * axis.z + sin * axis.y, t * axis.y * axis.z - sin * axis.x, t * axis.z * axis.z + cos, 0.0f,
+                                  0.0f, 0.0f, 0.0f, 1.0f);
 
             return result;
         }
@@ -517,6 +626,91 @@ namespace Fusee.Math.Core
             result.Row3 = float4.UnitW;
 
             return result;
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xy">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYX(float2 xy)
+        {
+            return CreateRotationYX(xy.x, xy.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYX(float x, float y)
+        {
+            return CreateRotationY(y) * CreateRotationX(x);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and z-axis.
+        /// </summary>
+        /// <param name="yz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYZ(float2 yz)
+        {
+            return CreateRotationYZ(yz.x, yz.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYZ(float y, float z)
+        {
+            return CreateRotationY(y) * CreateRotationZ(z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationXZ(float2 xz)
+        {
+            return CreateRotationXZ(xz.x, xz.y);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationXZ(float x, float z)
+        {
+            return CreateRotationX(x) * CreateRotationZ(z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="xyz">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYXZ(float3 xyz)
+        {
+            return CreateRotationYXZ(xyz.x, xyz.y, xyz.z);
+        }
+
+        /// <summary>
+        /// Builds a rotation matrix for a rotation around the y and x-axis.
+        /// </summary>
+        /// <param name="x">counter-clockwise angles in radiants.</param>
+        /// <param name="y">counter-clockwise angles in radiants.</param>
+        /// <param name="z">counter-clockwise angles in radiants.</param>
+        /// <returns></returns>
+        public static float4x4 CreateRotationYXZ(float x, float y, float z)
+        {
+            return CreateRotationY(y) * CreateRotationX(x) * CreateRotationZ(z);
         }
 
         #endregion
@@ -712,9 +906,9 @@ namespace Fusee.Math.Core
         {
             float4x4 result = new float4x4();
 
-            float invRL = 1/(right - left);
-            float invTB = 1/(top - bottom);
-            float invFN = 1/(zFar - zNear);
+            float invRL = 1 / (right - left);
+            float invTB = 1 / (top - bottom);
+            float invFN = 1 / (zFar - zNear);
 
             result.M11 = 2 * invRL;
             result.M22 = 2 * invTB;
@@ -729,7 +923,7 @@ namespace Fusee.Math.Core
 
         }
 
-      
+
         /// <summary>
         /// Creates a left handed orthographic projection matrix.
         /// </summary>
@@ -852,14 +1046,14 @@ namespace Fusee.Math.Core
             float x = (2.0f * zNear) / (right - left);
             float y = (2.0f * zNear) / (top - bottom);
             // Right handed
-            float a = (right + left)/(right - left);
-            float b = (top + bottom)/(top - bottom);
-            float c = -(zFar + zNear)/(zFar - zNear);
-            float d = -(2.0f*zFar*zNear)/(zFar - zNear);
+            float a = (right + left) / (right - left);
+            float b = (top + bottom) / (top - bottom);
+            float c = -(zFar + zNear) / (zFar - zNear);
+            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
 
-            result = new float4x4(x, 0,  a, 0,
-                                  0, y,  b, 0,
-                                  0, 0,  c, d,
+            result = new float4x4(x, 0, a, 0,
+                                  0, y, b, 0,
+                                  0, 0, c, d,
                                   0, 0, -1, 0);
 
             return result;
@@ -946,9 +1140,9 @@ namespace Fusee.Math.Core
         public static float4x4 Scale(float x, float y, float z)
         {
             float4x4 result;
-            result.Row0 = float4.UnitX*x;
-            result.Row1 = float4.UnitY*y;
-            result.Row2 = float4.UnitZ*z;
+            result.Row0 = float4.UnitX * x;
+            result.Row1 = float4.UnitY * y;
+            result.Row2 = float4.UnitZ * z;
             result.Row3 = float4.UnitW;
             return result;
         }
@@ -979,7 +1173,7 @@ namespace Fusee.Math.Core
             return new float4x4(x.x, x.y, x.z, -float3.Dot(x, eye),
                                 y.x, y.y, y.z, -float3.Dot(y, eye),
                                 z.x, z.y, z.z, -float3.Dot(z, eye),
-                                0,   0,   0,   1);
+                                0, 0, 0, 1);
         }
 
         /// <summary>
@@ -1007,7 +1201,7 @@ namespace Fusee.Math.Core
                                 z.x, z.y, z.z, -float3.Dot(z, eye),
                                 0, 0, 0, 1);
         }
-        
+
 
 
         /// <summary>
@@ -1028,7 +1222,7 @@ namespace Fusee.Math.Core
         {
             return LookAt(new float3(eyeX, eyeY, eyeZ), new float3(targetX, targetY, targetZ), new float3(upX, upY, upZ));
         }
-        
+
         #endregion
 
         #region Elementary Arithmetic Functions
@@ -1143,80 +1337,80 @@ namespace Fusee.Math.Core
 
             mat = mat.Transpose();
 
-            var tmp0 = mat.M33*mat.M44;
-            var tmp1 = mat.M34*mat.M43;
-            var tmp2 = mat.M32*mat.M44;
-            var tmp3 = mat.M34*mat.M42;
-            var tmp4 = mat.M32*mat.M43;
-            var tmp5 = mat.M33*mat.M42;
-            var tmp6 = mat.M31*mat.M44;
-            var tmp7 = mat.M34*mat.M41;
-            var tmp8 = mat.M31*mat.M43;
-            var tmp9 = mat.M33*mat.M41;
-            var tmp10 = mat.M31*mat.M42;
-            var tmp11 = mat.M32*mat.M41;
+            var tmp0 = mat.M33 * mat.M44;
+            var tmp1 = mat.M34 * mat.M43;
+            var tmp2 = mat.M32 * mat.M44;
+            var tmp3 = mat.M34 * mat.M42;
+            var tmp4 = mat.M32 * mat.M43;
+            var tmp5 = mat.M33 * mat.M42;
+            var tmp6 = mat.M31 * mat.M44;
+            var tmp7 = mat.M34 * mat.M41;
+            var tmp8 = mat.M31 * mat.M43;
+            var tmp9 = mat.M33 * mat.M41;
+            var tmp10 = mat.M31 * mat.M42;
+            var tmp11 = mat.M32 * mat.M41;
 
             // calculate first 8 elements (cofactors)
-            var m11 = tmp0*mat.M22 + tmp3*mat.M23 + tmp4*mat.M24;
-            m11 -= tmp1*mat.M22 + tmp2*mat.M23 + tmp5*mat.M24;
-            var m12 = tmp1*mat.M21 + tmp6*mat.M23 + tmp9*mat.M24;
-            m12 -= tmp0*mat.M21 + tmp7*mat.M23 + tmp8*mat.M24;
-            var m13 = tmp2*mat.M21 + tmp7*mat.M22 + tmp10*mat.M24;
-            m13 -= tmp3*mat.M21 + tmp6*mat.M22 + tmp11*mat.M24;
-            var m14 = tmp5*mat.M21 + tmp8*mat.M22 + tmp11*mat.M23;
-            m14 -= tmp4*mat.M21 + tmp9*mat.M22 + tmp10*mat.M23;
-            var m21 = tmp1*mat.M12 + tmp2*mat.M13 + tmp5*mat.M14;
-            m21 -= tmp0*mat.M12 + tmp3*mat.M13 + tmp4*mat.M14;
-            var m22 = tmp0*mat.M11 + tmp7*mat.M13 + tmp8*mat.M14;
-            m22 -= tmp1*mat.M11 + tmp6*mat.M13 + tmp9*mat.M14;
-            var m23 = tmp3*mat.M11 + tmp6*mat.M12 + tmp11*mat.M14;
-            m23 -= tmp2*mat.M11 + tmp7*mat.M12 + tmp10*mat.M14;
-            var m24 = tmp4*mat.M11 + tmp9*mat.M12 + tmp10*mat.M13;
-            m24 -= tmp5*mat.M11 + tmp8*mat.M12 + tmp11*mat.M13;
+            var m11 = tmp0 * mat.M22 + tmp3 * mat.M23 + tmp4 * mat.M24;
+            m11 -= tmp1 * mat.M22 + tmp2 * mat.M23 + tmp5 * mat.M24;
+            var m12 = tmp1 * mat.M21 + tmp6 * mat.M23 + tmp9 * mat.M24;
+            m12 -= tmp0 * mat.M21 + tmp7 * mat.M23 + tmp8 * mat.M24;
+            var m13 = tmp2 * mat.M21 + tmp7 * mat.M22 + tmp10 * mat.M24;
+            m13 -= tmp3 * mat.M21 + tmp6 * mat.M22 + tmp11 * mat.M24;
+            var m14 = tmp5 * mat.M21 + tmp8 * mat.M22 + tmp11 * mat.M23;
+            m14 -= tmp4 * mat.M21 + tmp9 * mat.M22 + tmp10 * mat.M23;
+            var m21 = tmp1 * mat.M12 + tmp2 * mat.M13 + tmp5 * mat.M14;
+            m21 -= tmp0 * mat.M12 + tmp3 * mat.M13 + tmp4 * mat.M14;
+            var m22 = tmp0 * mat.M11 + tmp7 * mat.M13 + tmp8 * mat.M14;
+            m22 -= tmp1 * mat.M11 + tmp6 * mat.M13 + tmp9 * mat.M14;
+            var m23 = tmp3 * mat.M11 + tmp6 * mat.M12 + tmp11 * mat.M14;
+            m23 -= tmp2 * mat.M11 + tmp7 * mat.M12 + tmp10 * mat.M14;
+            var m24 = tmp4 * mat.M11 + tmp9 * mat.M12 + tmp10 * mat.M13;
+            m24 -= tmp5 * mat.M11 + tmp8 * mat.M12 + tmp11 * mat.M13;
 
             // calculate pairs for second 8 elements (cofactors)
-            tmp0 = mat.M13*mat.M24;
-            tmp1 = mat.M14*mat.M23;
-            tmp2 = mat.M12*mat.M24;
-            tmp3 = mat.M14*mat.M22;
-            tmp4 = mat.M12*mat.M23;
-            tmp5 = mat.M13*mat.M22;
-            tmp6 = mat.M11*mat.M24;
-            tmp7 = mat.M14*mat.M21;
-            tmp8 = mat.M11*mat.M23;
-            tmp9 = mat.M13*mat.M21;
-            tmp10 = mat.M11*mat.M22;
-            tmp11 = mat.M12*mat.M21;
+            tmp0 = mat.M13 * mat.M24;
+            tmp1 = mat.M14 * mat.M23;
+            tmp2 = mat.M12 * mat.M24;
+            tmp3 = mat.M14 * mat.M22;
+            tmp4 = mat.M12 * mat.M23;
+            tmp5 = mat.M13 * mat.M22;
+            tmp6 = mat.M11 * mat.M24;
+            tmp7 = mat.M14 * mat.M21;
+            tmp8 = mat.M11 * mat.M23;
+            tmp9 = mat.M13 * mat.M21;
+            tmp10 = mat.M11 * mat.M22;
+            tmp11 = mat.M12 * mat.M21;
 
             // calculate second 8 elements (cofactors)
-            var m31 = tmp0*mat.M42 + tmp3*mat.M43 + tmp4*mat.M44;
-            m31 -= tmp1*mat.M42 + tmp2*mat.M43 + tmp5*mat.M44;
-            var m32 = tmp1*mat.M41 + tmp6*mat.M43 + tmp9*mat.M44;
-            m32 -= tmp0*mat.M41 + tmp7*mat.M43 + tmp8*mat.M44;
-            var m33 = tmp2*mat.M41 + tmp7*mat.M42 + tmp10*mat.M44;
-            m33 -= tmp3*mat.M41 + tmp6*mat.M42 + tmp11*mat.M44;
-            var m34 = tmp5*mat.M41 + tmp8*mat.M42 + tmp11*mat.M43;
-            m34 -= tmp4*mat.M41 + tmp9*mat.M42 + tmp10*mat.M43;
-            var m41 = tmp2*mat.M33 + tmp5*mat.M34 + tmp1*mat.M32;
-            m41 -= tmp4*mat.M34 + tmp0*mat.M32 + tmp3*mat.M33;
-            var m42 = tmp8*mat.M34 + tmp0*mat.M31 + tmp7*mat.M33;
-            m42 -= tmp6*mat.M33 + tmp9*mat.M34 + tmp1*mat.M31;
-            var m43 = tmp6*mat.M32 + tmp11*mat.M34 + tmp3*mat.M31;
-            m43 -= tmp10*mat.M34 + tmp2*mat.M31 + tmp7*mat.M32;
-            var m44 = tmp10*mat.M33 + tmp4*mat.M31 + tmp9*mat.M32;
-            m44 -= tmp8*mat.M32 + tmp11*mat.M33 + tmp5*mat.M31;
+            var m31 = tmp0 * mat.M42 + tmp3 * mat.M43 + tmp4 * mat.M44;
+            m31 -= tmp1 * mat.M42 + tmp2 * mat.M43 + tmp5 * mat.M44;
+            var m32 = tmp1 * mat.M41 + tmp6 * mat.M43 + tmp9 * mat.M44;
+            m32 -= tmp0 * mat.M41 + tmp7 * mat.M43 + tmp8 * mat.M44;
+            var m33 = tmp2 * mat.M41 + tmp7 * mat.M42 + tmp10 * mat.M44;
+            m33 -= tmp3 * mat.M41 + tmp6 * mat.M42 + tmp11 * mat.M44;
+            var m34 = tmp5 * mat.M41 + tmp8 * mat.M42 + tmp11 * mat.M43;
+            m34 -= tmp4 * mat.M41 + tmp9 * mat.M42 + tmp10 * mat.M43;
+            var m41 = tmp2 * mat.M33 + tmp5 * mat.M34 + tmp1 * mat.M32;
+            m41 -= tmp4 * mat.M34 + tmp0 * mat.M32 + tmp3 * mat.M33;
+            var m42 = tmp8 * mat.M34 + tmp0 * mat.M31 + tmp7 * mat.M33;
+            m42 -= tmp6 * mat.M33 + tmp9 * mat.M34 + tmp1 * mat.M31;
+            var m43 = tmp6 * mat.M32 + tmp11 * mat.M34 + tmp3 * mat.M31;
+            m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
+            var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
+            m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
 
             // calculate determinant
-            var det = mat.M11*m11 + mat.M12*m12 + mat.M13*m13 + mat.M14*m14;
+            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
 
             if (det > M.EpsilonFloat || det < -M.EpsilonFloat)
             {
-                det = 1/det;
+                det = 1 / det;
 
-                mat = new float4x4(det*m11, det*m12, det*m13, det*m14,
-                                   det*m21, det*m22, det*m23, det*m24,
-                                   det*m31, det*m32, det*m33, det*m34,
-                                   det*m41, det*m42, det*m43, det*m44);
+                mat = new float4x4(det * m11, det * m12, det * m13, det * m14,
+                                   det * m21, det * m22, det * m23, det * m24,
+                                   det * m31, det * m32, det * m33, det * m34,
+                                   det * m41, det * m42, det * m43, det * m44);
             }
             else
                 mat = mat.Transpose();
@@ -1287,10 +1481,10 @@ namespace Fusee.Math.Core
         public static float4 Transform(float4x4 matrix, float4 vector)
         {
             return new float4(
-                (matrix.M11*vector.x) + (matrix.M12*vector.y) + (matrix.M13*vector.z) + (matrix.M14*vector.w),
-                (matrix.M21*vector.x) + (matrix.M22*vector.y) + (matrix.M23*vector.z) + (matrix.M24*vector.w),
-                (matrix.M31*vector.x) + (matrix.M32*vector.y) + (matrix.M33*vector.z) + (matrix.M34*vector.w),
-                (matrix.M41*vector.x) + (matrix.M42*vector.y) + (matrix.M43*vector.z) + (matrix.M44*vector.w));
+                (matrix.M11 * vector.x) + (matrix.M12 * vector.y) + (matrix.M13 * vector.z) + (matrix.M14 * vector.w),
+                (matrix.M21 * vector.x) + (matrix.M22 * vector.y) + (matrix.M23 * vector.z) + (matrix.M24 * vector.w),
+                (matrix.M31 * vector.x) + (matrix.M32 * vector.y) + (matrix.M33 * vector.z) + (matrix.M34 * vector.w),
+                (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + (matrix.M44 * vector.w));
         }
 
         /// <summary>
@@ -1321,11 +1515,11 @@ namespace Fusee.Math.Core
         /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
         public static float3 Transform(float4x4 matrix, float3 vector)
         {
-            float w = (matrix.M41*vector.x) + (matrix.M42*vector.y) + (matrix.M43*vector.z) + matrix.M44;
+            float w = (matrix.M41 * vector.x) + (matrix.M42 * vector.y) + (matrix.M43 * vector.z) + matrix.M44;
             return new float3(
-                ((matrix.M11*vector.x) + (matrix.M12*vector.y) + (matrix.M13*vector.z) + matrix.M14)/w,
-                ((matrix.M21*vector.x) + (matrix.M22*vector.y) + (matrix.M23*vector.z) + matrix.M24)/w,
-                ((matrix.M31*vector.x) + (matrix.M32*vector.y) + (matrix.M33*vector.z) + matrix.M34)/w);
+                ((matrix.M11 * vector.x) + (matrix.M12 * vector.y) + (matrix.M13 * vector.z) + matrix.M14) / w,
+                ((matrix.M21 * vector.x) + (matrix.M22 * vector.y) + (matrix.M23 * vector.z) + matrix.M24) / w,
+                ((matrix.M31 * vector.x) + (matrix.M32 * vector.y) + (matrix.M33 * vector.z) + matrix.M34) / w);
         }
 
         /// <summary>
@@ -1339,7 +1533,7 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float3"/> instance.</param>
         /// <returns>A new <see cref="float3"/> instance containing the result.</returns>
-        public static float3 TransformPremult(float3 vector,float4x4 matrix)
+        public static float3 TransformPremult(float3 vector, float4x4 matrix)
         {
             float w = (matrix.M14 * vector.x) + (matrix.M24 * vector.y) + (matrix.M34 * vector.z) + matrix.M44;
             return new float3(
@@ -1384,6 +1578,95 @@ namespace Fusee.Math.Core
         {
             float4 tmp = mat * vec;
             return tmp /= tmp.w;
+        }
+
+        #endregion
+
+        #region TRS Decomposition
+
+        /// <summary>
+        /// Calculates translation of the given float4x4 matrix and returns it as a float3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float3 GetTranslation(float4x4 mat)
+        {
+            return new float3(mat.M14, mat.M24, mat.M34);
+        }
+
+        /// <summary>
+        /// Calculates and returns only the translation component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 TranslationDecomposition(float4x4 mat)
+        {
+            var translationVec = GetTranslation(mat);
+            var translationMtx = float4x4.Identity;
+
+            translationMtx.M14 = translationVec.x;
+            translationMtx.M24 = translationVec.y;
+            translationMtx.M34 = translationVec.z;
+
+            return translationMtx;
+        }
+
+        /// <summary>
+        /// Calculates and returns the rotation component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 RotationDecomposition(float4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var rotationMtx = float4x4.Identity;
+
+            rotationMtx.M11 = mat.M11 / scalevector.x;
+            rotationMtx.M21 = mat.M21 / scalevector.x;
+            rotationMtx.M31 = mat.M31 / scalevector.x;
+
+            rotationMtx.M12 = mat.M12 / scalevector.y;
+            rotationMtx.M22 = mat.M22 / scalevector.y;
+            rotationMtx.M32 = mat.M32 / scalevector.y;
+
+            rotationMtx.M13 = mat.M13 / scalevector.z;
+            rotationMtx.M23 = mat.M23 / scalevector.z;
+            rotationMtx.M33 = mat.M33 / scalevector.z;
+
+            return rotationMtx;
+        }
+
+        /// <summary>
+        /// Calculates the scale factor of the given float4x4 and returns it as a float3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float3 GetScale(float4x4 mat)
+        {
+            var scale = float3.One;
+
+            scale.x = mat.Column0.Length;
+            scale.y = mat.Column1.Length;
+            scale.z = mat.Column2.Length;
+
+            return scale;
+        }
+
+        /// <summary>
+        /// Calculates and returns the scale component of the given float4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static float4x4 ScaleDecomposition(float4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var scaleMtx = float4x4.Identity;
+
+            scaleMtx.M11 = scalevector.x;
+            scaleMtx.M22 = scalevector.y;
+            scaleMtx.M33 = scalevector.z;
+
+            return scaleMtx;
         }
 
         #endregion
@@ -1485,7 +1768,7 @@ namespace Fusee.Math.Core
         {
             return TransformPremult(vector, matrix);
         }
-       
+
         /// <summary>
         /// Transforms a given threedimensional vector by a matrix via matrix*vector (Postmultiplication of the vector).
         /// </summary>
@@ -1513,9 +1796,9 @@ namespace Fusee.Math.Core
         /// <param name="matrix">A <see cref="float4x4"/> instance.</param>
         /// <param name="vector">A <see cref="float3"/> instance.</param>
         /// <returns>A new <see cref="float4"/> instance containing the result.</returns>
-        public static float3 operator *(float3 vector,float4x4 matrix)
+        public static float3 operator *(float3 vector, float4x4 matrix)
         {
-            return TransformPremult(vector,matrix);
+            return TransformPremult(vector, matrix);
         }
 
         /// <summary>
@@ -1552,9 +1835,9 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-// ReSharper disable NonReadonlyFieldInGetHashCode
+            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
-// ReSharper restore NonReadonlyFieldInGetHashCode
+            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1571,7 +1854,7 @@ namespace Fusee.Math.Core
             if (!(obj is float4x4))
                 return false;
 
-            return Equals((float4x4) obj);
+            return Equals((float4x4)obj);
         }
 
         #endregion

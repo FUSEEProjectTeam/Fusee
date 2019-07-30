@@ -185,6 +185,16 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
+        public void AsArray_Instance()
+        {
+            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+
+            var actual = mat.AsArray;
+
+            Assert.Equal(new float[] { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1 }, actual);
+        }
+
+        [Fact]
         public void Round_Instance()
         {
             var mat = new float4x4( 1.23456789f, 0, 0, 1.23456712f, 
@@ -200,6 +210,106 @@ namespace Fusee.Math.Core
             var actual = mat.Round();
 
             Assert.Equal(expected, actual);
+        }
+
+        #endregion
+
+        #region this
+
+        [Fact]
+        public void This_GetWithIdx_IsValid()
+        {
+            var actual = new float4x4(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15);
+
+            Assert.Equal(0, actual[0, 0]);
+            Assert.Equal(1, actual[0, 1]);
+            Assert.Equal(2, actual[0, 2]);
+            Assert.Equal(3, actual[0, 3]);
+
+            Assert.Equal(4, actual[1, 0]);
+            Assert.Equal(5, actual[1, 1]);
+            Assert.Equal(6, actual[1, 2]);
+            Assert.Equal(7, actual[1, 3]);
+
+            Assert.Equal(8, actual[2, 0]);
+            Assert.Equal(9, actual[2, 1]);
+            Assert.Equal(10, actual[2, 2]);
+            Assert.Equal(11, actual[2, 3]);
+
+            Assert.Equal(12, actual[3, 0]);
+            Assert.Equal(13, actual[3, 1]);
+            Assert.Equal(14, actual[3, 2]);
+            Assert.Equal(15, actual[3, 3]);
+        }
+
+        [Fact]
+        public void This_SetWithIdx_IsValid()
+        {
+            var actual = float4x4.Zero;
+            actual[0, 0] = 0;
+            actual[0, 1] = 1;
+            actual[0, 2] = 2;
+            actual[0, 3] = 3;
+
+            actual[1, 0] = 4;
+            actual[1, 1] = 5;
+            actual[1, 2] = 6;
+            actual[1, 3] = 7;
+
+            actual[2, 0] = 8;
+            actual[2, 1] = 9;
+            actual[2, 2] = 10;
+            actual[2, 3] = 11;
+
+            actual[3, 0] = 12;
+            actual[3, 1] = 13;
+            actual[3, 2] = 14;
+            actual[3, 3] = 15;
+
+            Assert.Equal(0, actual[0, 0]);
+            Assert.Equal(1, actual[0, 1]);
+            Assert.Equal(2, actual[0, 2]);
+            Assert.Equal(3, actual[0, 3]);
+
+            Assert.Equal(4, actual[1, 0]);
+            Assert.Equal(5, actual[1, 1]);
+            Assert.Equal(6, actual[1, 2]);
+            Assert.Equal(7, actual[1, 3]);
+
+            Assert.Equal(8, actual[2, 0]);
+            Assert.Equal(9, actual[2, 1]);
+            Assert.Equal(10, actual[2, 2]);
+            Assert.Equal(11, actual[2, 3]);
+
+            Assert.Equal(12, actual[3, 0]);
+            Assert.Equal(13, actual[3, 1]);
+            Assert.Equal(14, actual[3, 2]);
+            Assert.Equal(15, actual[3, 3]);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_GetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => float4x4.Zero[idx, idx]);
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        [Theory]
+        [MemberData(nameof(ThisException))]
+        public void Invalid_SetWithIdx_Exception(int idx, string expected)
+        {
+            var actual = Assert.Throws<ArgumentOutOfRangeException>(() => { var f4 = float4x4.Zero; f4[idx, idx] = 10; });
+
+            Assert.Equal(expected, actual.ParamName);
+        }
+
+        public static IEnumerable<object[]> ThisException()
+        {
+            yield return new object[] { 4, "Index 4,4 not eligible for a float4x4 type" };
+            yield return new object[] { 5, "Index 5,5 not eligible for a float4x4 type" };
+            yield return new object[] { -1, "Index -1,-1 not eligible for a float4x4 type" };
         }
 
         #endregion
@@ -250,7 +360,6 @@ namespace Fusee.Math.Core
 
             Assert.Equal(expected, actual);
         }
-
         #endregion
 
         #region CreateTranslation
@@ -619,6 +728,55 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region TRS Decomposition
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationMtxs))]
+        public void TranslationDecompositionMtx(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.TranslationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionTranslationVecs))]
+        public void TranslationDecompositionVec(float4x4 mat, float3 expected)
+        {
+            var result = float4x4.GetTranslation(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionRotationMtxs))]
+        public void RotationDecomposition(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.RotationDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleMtxs))]
+        public void ScaleDecompositionMtx(float4x4 mat, float4x4 expected)
+        {
+            var result = float4x4.ScaleDecomposition(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [MemberData(nameof(GetTRSDecompositionScaleVecs))]
+        public void ScaleDecompositionVec(float4x4 mat, float3 expected)
+        {
+            var result = float4x4.GetScale(mat);
+
+            Assert.Equal(expected, result);
+        }
+
+        #endregion
+
         #region Round
 
         [Fact]
@@ -774,6 +932,42 @@ namespace Fusee.Math.Core
         #endregion
 
         #region IEnumerables
+
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float4x4(1, 0, 0, 5, 0, 1, 0, 6, 0, 0, 1, 7, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionTranslationVecs()
+        {
+            yield return new object[] { new float4x4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1), float3.Zero };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float3.Zero };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float3(5, 6, 7) };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float3(5, 6, 7) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionRotationMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), float4x4.Identity };
+            yield return new object[] { new float4x4(1, 2, 3, 5, 2, 3, 1, 6, 3, 2, 1, 7, 0, 0, 0, 1), new float4x4(0.2672612f, 0.4850713f, 0.904534f, 0, 0.5345225f, 0.7276069f, 0.3015113f, 0, 0.8017837f, 0.4850713f, 0.3015113f, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleMtxs()
+        {
+            yield return new object[] { float4x4.Identity, float4x4.Identity };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float4x4(2, 0, 0, 0, 0, 3, 0, 0, 0, 0, 4, 0, 0, 0, 0, 1) };
+            yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float4x4(7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 7, 0, 0, 0, 0, 1) };
+        }
+        public static IEnumerable<object[]> GetTRSDecompositionScaleVecs()
+        {
+            yield return new object[] { float4x4.Identity, float3.One };
+            yield return new object[] { new float4x4(2, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5, 0, 0, 0, 0, 1), new float3(2, 4, 5) };
+            yield return new object[] { new float4x4(2, 0, 0, 5, 0, 3, 0, 6, 0, 0, 4, 7, 0, 0, 0, 1), new float3(2, 3, 4) };
+            yield return new object[] { new float4x4(3, 6, 2, 5, 2, 3, 6, 6, 6, 2, 3, 7, 0, 0, 0, 1), new float3(7, 7, 7) };
+        }
 
         public static IEnumerable<object[]> GetAxisAngle()
         {
