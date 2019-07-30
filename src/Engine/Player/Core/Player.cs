@@ -53,11 +53,6 @@ namespace Fusee.Engine.Player.Core
 
         private float _maxPinchSpeed;
 
-        private GamePadDevice _gamePad;
-        private GamePadDevice _gamePad1;
-        private GamePadDevice _gamePad2;
-        private GamePadDevice _gamePad3;
-
 
 
         // Init is called on startup. 
@@ -95,10 +90,6 @@ namespace Fusee.Engine.Player.Core
 
            
             // Register the input devices that are not already given.
-            _gamePad = GetDevice<GamePadDevice>(2);
-            _gamePad1 = GetDevice<GamePadDevice>(1);
-            _gamePad2 = GetDevice<GamePadDevice>(2);
-            _gamePad3 = GetDevice<GamePadDevice>(3);
 
 
 
@@ -148,16 +139,6 @@ namespace Fusee.Engine.Player.Core
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            Diagnostics.Log($"{_gamePad.LSX}, {_gamePad.LSY}");
-            Diagnostics.Log($"{_gamePad.Id } ");
-            Diagnostics.Log($"{_gamePad1.LSX}, {_gamePad1.LSY}");
-            Diagnostics.Log($"{_gamePad1.Id } ");
-            //Diagnostics.Log($"{_gamePad2.LSX}, {_gamePad2.LSY}");
-            //Diagnostics.Log($"{_gamePad2.Id } ");
-            //Diagnostics.Log($"{_gamePad3.LSX}, {_gamePad3.LSY}");
-            //Diagnostics.Log($"{_gamePad3.Id } ");
-
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
