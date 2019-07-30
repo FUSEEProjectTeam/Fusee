@@ -53,6 +53,8 @@ namespace Fusee.Engine.Player.Core
 
         private float _maxPinchSpeed;
 
+        private GamePadDevice _gamePad;
+
 
 
         // Init is called on startup. 
@@ -90,6 +92,7 @@ namespace Fusee.Engine.Player.Core
 
            
             // Register the input devices that are not already given.
+            _gamePad = GetDevice<GamePadDevice>(0);
 
 
 
@@ -139,6 +142,7 @@ namespace Fusee.Engine.Player.Core
 
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
