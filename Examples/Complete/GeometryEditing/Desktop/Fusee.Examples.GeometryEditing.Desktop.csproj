@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.GeometryEditing.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.GeometryEditing.Desktop</PackageId>
@@ -7,8 +7,6 @@
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\GeometryEditing\Desktop\</OutputPath>
@@ -59,6 +57,4 @@
       <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

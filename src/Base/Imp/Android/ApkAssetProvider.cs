@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.Content;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -96,6 +97,16 @@ namespace Fusee.Base.Imp.Android
             string file = Path.GetFileName(id);
 
             return _androidContext.Assets.List(dir).Contains(file);
+        }
+
+        protected override Task<Stream> GetStreamAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<bool> CheckExistsAsync(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.Web</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Graphics.Web</PackageId>
     <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -23,6 +21,4 @@
       <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

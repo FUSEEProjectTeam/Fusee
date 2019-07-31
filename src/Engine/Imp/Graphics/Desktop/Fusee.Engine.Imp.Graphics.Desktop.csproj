@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Graphics.Desktop</PackageId>
@@ -6,8 +6,6 @@
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -34,6 +32,4 @@
   </ItemGroup>
 
   <Import Project="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

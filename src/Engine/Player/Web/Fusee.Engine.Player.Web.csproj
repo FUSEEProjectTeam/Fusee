@@ -1,12 +1,10 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Web</RootNamespace>
     <PackageId>Fusee.Engine.Player.Web</PackageId>
     <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
@@ -48,6 +46,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

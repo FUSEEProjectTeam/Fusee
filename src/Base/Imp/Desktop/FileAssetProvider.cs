@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
+using Fusee.Base.Imp.WebAsm;
 using FileMode = System.IO.FileMode;
 using Path = Fusee.Base.Common.Path;
 
@@ -156,6 +159,16 @@ namespace Fusee.Base.Imp.Desktop
                     return true;
             }
             return false;
+        }
+
+        protected override Task<Stream> GetStreamAsync(string id)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task<bool> CheckExistsAsync(string id)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿<Project>
 
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
@@ -46,4 +47,5 @@
   </ItemGroup>
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
+</Project>
 </Project>

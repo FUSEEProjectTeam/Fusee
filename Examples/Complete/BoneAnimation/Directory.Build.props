@@ -5,9 +5,7 @@
     <FuseeBuildRoot>$(FuseeRoot)</FuseeBuildRoot>
     <!-- Build into local bin directory -->
     <!-- <FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>
+    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>  
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <Authors>FuseeProjectTeam</Authors>

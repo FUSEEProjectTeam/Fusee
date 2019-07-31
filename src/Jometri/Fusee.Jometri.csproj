@@ -1,11 +1,10 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Jometri</RootNamespace>
     <PackageId>Fusee.Jometri</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
   
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -17,6 +16,4 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Serialization\Fusee.Serialization.csproj" />
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

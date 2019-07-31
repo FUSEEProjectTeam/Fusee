@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.UI.Core</RootNamespace>
     <PackageId>Fusee.Examples.UI.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\UI\Core\</OutputPath>
@@ -37,6 +35,4 @@
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
