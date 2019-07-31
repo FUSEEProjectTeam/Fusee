@@ -1,6 +1,8 @@
+using Fusee.Base.Core;
 using Fusee.Pointcloud.Common;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
@@ -26,12 +28,22 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="ptAccessor">point accessor to get the actual point information.</param>
         public void WriteCompleteData(PtOctree<TPoint> octree, PointAccessor<TPoint> ptAccessor)
         {
+            var watch = new Stopwatch();
+            watch.Restart();
+
             WriteMeta(octree, ptAccessor);
+            Diagnostics.Log("-------------- Write meta file: " + watch.ElapsedMilliseconds + "ms.");
+
+            watch.Restart();
             WriteHierarchy(octree);
+            Diagnostics.Log("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
+
+            watch.Restart();
             octree.Traverse((PtOctantWrite<TPoint> node) =>
             {
                 WriteNode(octree.PtAccessor, node);
             });
+            Diagnostics.Log("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
         }
 
         /// <summary>

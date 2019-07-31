@@ -17,8 +17,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         public int MaxLevel;
 
-        private static BitArray _getChildIdxBitArray = new BitArray(3);
-        private static int[] _getChildIdxResultArray = new int[1];
+        private static readonly BitArray _getChildIdxBitArray = new BitArray(3);
+        private static readonly int[] _getChildIdxResultArray = new int[1];
 
         //Constructor for creating an Octree that is suitable for creating files from it. 
         public PtOctree(AABBd aabb, PointAccessor<TPoint> pa, List<TPoint> points, int maxNoOfPointsInBucket)
@@ -27,7 +27,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             PtAccessor = pa;
 
-            //Aabb must not be a cube, therefor get the max length.
+            //Aabb must be a cube, therefor get the max length.
             var aabbMaxLength = aabb.Size.x;
             if (aabb.Size.y > aabbMaxLength)
                 aabbMaxLength = aabb.Size.y;
@@ -47,10 +47,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             Root = root;
 
-            if (Root.Payload.Count >= MaxNoOfPointsInBucket)
-            {
+            if (Root.Payload.Count >= MaxNoOfPointsInBucket)            
                 Subdivide((PtOctantWrite<TPoint>)Root); //Initial subdivision
-            }
+            
         }
 
         public PtOctree(PtOctant<TPoint> root, PointAccessor<TPoint> pa, int maxNoOfPointsInBucket)
@@ -76,14 +75,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 var child = (PtOctantWrite<TPoint>)octant.Children[i];
                 if (child == null) continue;
 
-                if (child.Payload.Count >= MaxNoOfPointsInBucket)
-                {
-                    Subdivide(child);
-                }
-                else
-                {
+                if (child.Payload.Count >= MaxNoOfPointsInBucket)                
+                    Subdivide(child);                
+                else                
                     child.IsLeaf = true;                    
-                }             
+                           
             }
         }
                

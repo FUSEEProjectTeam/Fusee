@@ -31,7 +31,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
     {
         public GridCell<TPoint>[,,] GridCells;
 
-        private List<int3> _neighbouCellIdxOffsets;
+        private readonly List<int3> _neighbouCellIdxOffsets;
 
         public PtGrid(PointAccessor<TPoint> ptAccessor, PtOctantWrite<TPoint> parentOctant, TPoint point)
         {
@@ -84,7 +84,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             var cell = GridCells[indexX, indexY, indexZ];
 
-            //check if NN is too close            
+            //Check if NN is too close - a point remains in the parent octant if the distance to the occupant of a neighbor cell is smaller than the neighbor cells' size.         
             foreach (var idxOffset in _neighbouCellIdxOffsets)
             {
                 //var neighbourCellIdx = new int3(indexX, indexY, indexZ) + idxOffset;

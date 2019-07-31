@@ -8,6 +8,7 @@ uniform mat4 FUSEE_M;
 uniform vec3[32] SSAOKernel;
 uniform sampler2D NoiseTex;
 uniform int CalcSSAO;
+uniform float SSAOStrength;
 
 uniform int PointShape;
 uniform int ColorMode;
@@ -100,7 +101,8 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 	return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
 }
 
-vec3 ViewNormalFromDepth(float depth, vec2 texcoords) {
+vec3 ViewNormalFromDepth(float depth, vec2 texcoords) 
+{
   
   const vec2 offset1 = vec2(0.0,0.001);
   const vec2 offset2 = vec2(0.001,0.0);
@@ -215,12 +217,12 @@ void main(void)
 	float radius = 10;
 	float occlusion = 0.0;
 	float bias = 0.025;
-	float ambientStrength = 1.0; //Uniform?
-
+	
 	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
 	float z = texture2D(DepthTex, uv).x;
 
 	vec3 ambient = vec3(1,1,1);
+	vec3 viewNormal = vec3(0,0,1);
 
 	if(CalcSSAO == 1)
 	{
@@ -234,7 +236,8 @@ void main(void)
 
 		int kernelLength = 32;
 
-		for (int i = 0; i < kernelLength; ++i) {
+		for (int i = 0; i < kernelLength; ++i) 
+		{
 
 			// get sample position:
 			vec3 sampleVal = tbn * SSAOKernel[i];
@@ -255,8 +258,8 @@ void main(void)
 			occlusion += (sampleDepth >= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
 		}
 
-		occlusion = 1-(occlusion / kernelLength);
-		ambient = vec3(occlusion, occlusion, occlusion) * ambientStrength;
+		occlusion = 1-((occlusion / kernelLength) * SSAOStrength);
+		ambient = vec3(occlusion, occlusion, occlusion);
 	}
 	//-------------------------------
 	vec3 normalDir = vec3(1,1,1);
@@ -277,7 +280,6 @@ void main(void)
 		vec3 lightDir = normalize( vec3(0, 0,-1.0));
 		vec3 halfwayDir = reflect(-lightDir, normalDir);
 	}
-
 	
 	vec4 specularReflection = vec4(0, 0, 0, 1);	
 
@@ -285,8 +287,7 @@ void main(void)
 	{
 		default:
 		case 0: // default = unlit		
-		{
-			
+		{			
 			break;
 		}
 		case 1:
@@ -296,8 +297,8 @@ void main(void)
 			if(linearDepth > 0.1)
 				oColor.xyz *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);
 			
-
-			oColor.xyz *= ambient;
+			if(CalcSSAO == 1)
+				oColor.xyz *= ambient;
 
 			break;
 		}
@@ -318,8 +319,10 @@ void main(void)
 			break;
 		}		
 		case 4: //ambient only
-		{						
-			oColor = vec4(occlusion, occlusion, occlusion,1.0);									
+		{	
+			if(CalcSSAO == 1)			
+				oColor.xyz *= ambient;
+
 			break;
 		}	
 

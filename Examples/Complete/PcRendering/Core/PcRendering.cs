@@ -10,6 +10,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -73,18 +74,24 @@ namespace Fusee.Examples.PcRendering.Core
 
         private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
         {
-            var points = LAZtoSceneNode.ListFromLAZ(pathToFile);
+            var points = FromLAZ.ToList(pathToFile);
 
             var aabb = new AABBd(points[0].Position, points[0].Position);
             foreach (var pt in points)
             {
                 aabb |= pt.Position;
             }
-            
-            var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
 
+            var watch = new Stopwatch();
+            watch.Restart();
+
+            var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
+            Diagnostics.Log("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
+
+            watch.Restart();
             var occFileWriter = new PtOctreeFileWriter<LAZPointType>(pathToFolder);
-            occFileWriter.WriteCompleteData(octree, ptAcc);            
+            occFileWriter.WriteCompleteData(octree, ptAcc);
+            Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
 
         // Init is called on startup. 
@@ -120,7 +127,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _ptAccessor = new PtRenderingAccessor();
 
-            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
+            CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
 
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
             var oocFileReader = new PtOctreeFileReader<LAZPointType>(_pathToOocFile);
@@ -157,8 +164,8 @@ namespace Fusee.Examples.PcRendering.Core
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
             
-            _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -273,7 +280,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _scenePicker = new ScenePicker(_scene);
 
-            if (LAZtoSceneNode.Lighting == Lighting.EDL || LAZtoSceneNode.Lighting == Lighting.SSAO_ONLY)
+            if (PtRenderingParams.Lighting == Lighting.EDL || PtRenderingParams.Lighting == Lighting.SSAO_ONLY)
             {
                 //Render Depth-only pass
                 _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
@@ -291,7 +298,7 @@ namespace Fusee.Examples.PcRendering.Core
             _guiRenderer.Render(RC);
 
             _oocLoader.RC = RC;            
-            _oocLoader.UpdateScene(LAZtoSceneNode.PtMode, _depthPassEf, _colorPassEf, LAZtoSceneNode.GetMeshsForNode, _ptAccessor);
+            _oocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
             //_oocLoader.ShowOctants(_scene);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -301,7 +308,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (LAZtoSceneNode.Lighting != Lighting.EDL && LAZtoSceneNode.Lighting != Lighting.SSAO_ONLY) return;
+            if (PtRenderingParams.Lighting != Lighting.EDL && PtRenderingParams.Lighting != Lighting.SSAO_ONLY) return;
             
                 //(re)create depth tex and fbo
             if (_isTexInitialized)
@@ -309,8 +316,8 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-                _depthPassEf = LAZtoSceneNode.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-                _colorPassEf = LAZtoSceneNode.StandardEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
             }          
 
             _isTexInitialized = true;

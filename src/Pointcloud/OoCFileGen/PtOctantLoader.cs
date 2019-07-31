@@ -86,7 +86,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             else
             {
                 _deltaTimeSinceLastUpdate = 0;
-                //if (IsUserMoving) return;
+                if (IsUserMoving) return;
 
                 TraverseByProjectedSizeOrder();
                 LoadNodesAsync(GetMeshsForNode, ptAccessor);
