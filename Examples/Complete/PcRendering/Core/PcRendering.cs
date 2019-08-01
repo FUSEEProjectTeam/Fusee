@@ -55,8 +55,9 @@ namespace Fusee.Examples.PcRendering.Core
         private float3 _initCameraPos;
         private ITextureHandle _texHandle;
         
-        private ShaderEffect _depthPassEf;
-        private ShaderEffect _colorPassEf;        
+        internal static ShaderEffect _depthPassEf;
+        internal static ShaderEffect _colorPassEf;
+        internal static RenderContext _pcRenderContext;
 
         private bool _isTexInitialized = false;        
 
@@ -71,6 +72,24 @@ namespace Fusee.Examples.PcRendering.Core
 
         private string _pathToPc = "E:/HolbeinPferd.las";
         private string _pathToOocFile = "E:/HolbeinPferdOctree";
+
+        public static bool IsSceneInitialized { get; private set; }
+
+
+        private void UpdateShaderParams()
+        {
+            RC.SetFXParam("Lighting", (int)PtRenderingParams.Lighting);
+            RC.SetFXParam("PointShape", (int)PtRenderingParams.Shape);
+            RC.SetFXParam("PointMode", (int)PtRenderingParams.PtMode);
+            RC.SetFXParam("ColorMode", (int)PtRenderingParams.ColorMode);
+
+            RC.SetFXParam("PointSize", PtRenderingParams.Size);
+            RC.SetFXParam("Color", PtRenderingParams.SingleColor);
+            RC.SetFXParam("CalcSSAO", PtRenderingParams.CalcSSAO ? 1 : 0);
+            RC.SetFXParam("SSAOStrength", PtRenderingParams.SSAOStrength);
+            RC.SetFXParam("EDLNeighbourPixels", PtRenderingParams.EdlNoOfNeighbourPx);
+            RC.SetFXParam("EDLStrength", PtRenderingParams.EdlStrength);
+        }
 
         private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
         {
@@ -97,6 +116,8 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
+            _pcRenderContext = RC;
+
             var test1 = BitConverter.GetBytes(-1f);
             var test2 = BitConverter.GetBytes(1f);
 
@@ -127,7 +148,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _ptAccessor = new PtRenderingAccessor();
 
-            CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
+            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
 
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
             var oocFileReader = new PtOctreeFileReader<LAZPointType>(_pathToOocFile);
@@ -170,7 +191,9 @@ namespace Fusee.Examples.PcRendering.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
-            _guiRenderer = new SceneRenderer(_gui);           
+            _guiRenderer = new SceneRenderer(_gui);
+
+            IsSceneInitialized = true;
         }
 
 
@@ -280,12 +303,14 @@ namespace Fusee.Examples.PcRendering.Core
 
             _scenePicker = new ScenePicker(_scene);
 
-            if (PtRenderingParams.Lighting == Lighting.EDL || PtRenderingParams.Lighting == Lighting.SSAO_ONLY)
+            if(PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)            
             {
                 //Render Depth-only pass
                 _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
                 _sceneRenderer.Render(RC, _texHandle);
             }
+
+            UpdateShaderParams();
 
             //Render color pass
             //Change shader effect in complete scene
@@ -308,9 +333,9 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (PtRenderingParams.Lighting != Lighting.EDL && PtRenderingParams.Lighting != Lighting.SSAO_ONLY) return;
+            if (!PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting == Lighting.UNLIT) return;
             
-                //(re)create depth tex and fbo
+            //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
                 RC.RemoveTextureHandle(_texHandle);

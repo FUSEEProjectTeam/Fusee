@@ -66,6 +66,8 @@
     <AssetDestinationFolder Condition=" '$(FuseeWebOutputPath)' != '' ">$(OutputPath)Assets\</AssetDestinationFolder>
     <!--DESKTOP-->
     <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
+    <!--GUI-->
+    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('WPF')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
   </PropertyGroup>
 
 

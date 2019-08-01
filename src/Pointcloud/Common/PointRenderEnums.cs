@@ -1,6 +1,5 @@
 ﻿namespace Fusee.Pointcloud.Common
 {
-
     public enum PointShape
     {
         RECT = 0,
@@ -50,11 +49,11 @@
     }
 
     public enum Lighting
-    {
-        UNLIT = 0,
-        EDL = 1,
-        DIFFUSE = 2,
-        BLINN_PHONG = 3,
+    {       
+        UNLIT = 0,       
+        EDL = 1,       
+        DIFFUSE = 2,       
+        BLINN_PHONG = 3,       
         SSAO_ONLY = 4
     }
 }

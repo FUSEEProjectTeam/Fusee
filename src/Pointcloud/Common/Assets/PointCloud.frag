@@ -98,7 +98,11 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 {
 	float intensityDiff = max(dot(normalDir, lightDir), 0.0);
 	vec3 diffuse = intensityDiff * lightColor;
-	return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
+
+	if(CalcSSAO == 1.0)
+		return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
+	else
+		return vec4(diffuse *  oColor.rgb, 1);
 }
 
 vec3 ViewNormalFromDepth(float depth, vec2 texcoords) 
@@ -222,12 +226,12 @@ void main(void)
 	float z = texture2D(DepthTex, uv).x;
 
 	vec3 ambient = vec3(1,1,1);
-	vec3 viewNormal = vec3(0,0,1);
+	vec3 viewNormal = ViewNormalFromDepth(z, uv);
 
 	if(CalcSSAO == 1)
 	{
 		vec2 tiles = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);
-		vec3 viewNormal = ViewNormalFromDepth(z, uv);
+		//vec3 viewNormal = ViewNormalFromDepth(z, uv);
 		
 		vec3 rvec = texture(NoiseTex, uv * tiles ).xyz;
 		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));
@@ -270,14 +274,14 @@ void main(void)
 
 	if(Lighting == 2 || Lighting == 3)
 	{
-		normalDir = normalize(vNormal);
+		normalDir = normalize((inverse(inverse(transpose( FUSEE_M))) * vec4(viewNormal,1.0)).xyz);
 	
-		mat4 invMv = inverse(FUSEE_V * FUSEE_M);
-		vec3 worldSpaceCameraPos = invMv[3].xyz;
-		vec3 worldSpaceLightPos = worldSpaceCameraPos;
+//		mat4 invMv = inverse(FUSEE_V * FUSEE_M);
+//		vec3 worldSpaceCameraPos = invMv[3].xyz;
+//		vec3 worldSpaceLightPos = worldSpaceCameraPos;
 
-		vec3 viewDir = normalize(worldSpaceCameraPos.xyz - vWorldPos.xyz);
-		vec3 lightDir = normalize( vec3(0, 0,-1.0));
+		vec3 viewDir = normalize( -vViewPos.xyz);
+		vec3 lightDir = normalize( vec3(0, 0,-.0));
 		vec3 halfwayDir = reflect(-lightDir, normalDir);
 	}
 	
@@ -304,8 +308,8 @@ void main(void)
 		}
 		case 2: //diffuse
 		{	
-			vec4 diffuse = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);			
-			oColor = diffuse;		
+			
+			oColor = GetDiffuseReflection(viewNormal, lightDir, lightColor, ambient);
 
 			break;
 		}
@@ -315,7 +319,8 @@ void main(void)
 			float specularAmmount = pow(max(dot(normalDir, halfwayDir), 0.0), Shininess);
 			specularReflection = SpecularColor * pow(specularAmmount, Shininess);
 			vec4 diffuseReflection = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);
-			oColor = diffuseReflection + (SpecularStrength * specularReflection);						
+			oColor = diffuseReflection + (SpecularStrength * specularReflection);
+
 			break;
 		}		
 		case 4: //ambient only

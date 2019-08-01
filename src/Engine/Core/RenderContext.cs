@@ -1685,7 +1685,6 @@ namespace Fusee.Engine.Core
             foreach (var fxParam in _allFXParams)
             {
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
-
             }
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;

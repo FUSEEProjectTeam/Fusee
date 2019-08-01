@@ -7,7 +7,6 @@
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
-  <Import Project="Sdk.props" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Desktop\</OutputPath>
