@@ -111,6 +111,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.Common", "
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.LASReader", "src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj", "{0A948947-93C2-4123-B2E8-674F0AEDD877}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Render", "Render", "{69F4D0BA-BC7E-4D3E-8268-EBED08BEF491}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.ImageGenerator.Desktop", "src\Tests\Render\ImageGenerator\Desktop\Fusee.Engine.Examples.ImageGenerator.Desktop.csproj", "{E01E24C2-516C-43B2-A801-CB5DB5706F22}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -548,6 +552,22 @@ Global
 		{0A948947-93C2-4123-B2E8-674F0AEDD877}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{0A948947-93C2-4123-B2E8-674F0AEDD877}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
 		{0A948947-93C2-4123-B2E8-674F0AEDD877}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Debug-Web|Any CPU.Build.0 = Debug|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22}.Release-Web|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -592,6 +612,8 @@ Global
 		{7BB75433-DF58-47AF-9592-81504E1C3470} = {8C47F1F4-295D-4E6F-8478-4D33DB4F4484}
 		{2D738255-B745-4C23-BD5F-EE2AC731BC93} = {8C47F1F4-295D-4E6F-8478-4D33DB4F4484}
 		{0A948947-93C2-4123-B2E8-674F0AEDD877} = {7BB75433-DF58-47AF-9592-81504E1C3470}
+		{69F4D0BA-BC7E-4D3E-8268-EBED08BEF491} = {F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}
+		{E01E24C2-516C-43B2-A801-CB5DB5706F22} = {69F4D0BA-BC7E-4D3E-8268-EBED08BEF491}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

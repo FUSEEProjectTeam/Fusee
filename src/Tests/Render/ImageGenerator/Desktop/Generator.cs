@@ -50,11 +50,12 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             // Load the rocket model
             _model = AssetStorage.Get<SceneContainer>("Model.fus");
 
+            var projComp = _model.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_model);
             _guiRenderer = new SceneRenderer(_gui);
-
-            SetWindowSize();
         }
 
 
@@ -129,29 +130,6 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Present();
         }
 
-        // Is called when the window was resized
-        public override void Resize()
-        {
-            SetWindowSize();
-        }
-
-        private void SetWindowSize()
-        {
-            // Set the new rendering area to the entire new windows size
-            RC.Viewport(0, 0, Width, Height);
-
-            // Create a new projection matrix generating undistorted images on the new aspect ratio.
-            var aspectRatio = Width / (float)Height;
-
-            // 0.25*PI Rad -> 45° Opening angle along the vertical direction. Horizontal opening angle is calculated based on the aspect ratio
-            // Front clipping happens at 1 (Objects nearer than 1 world unit get clipped)
-            // Back clipping happens at 2000 (Anything further away from the camera than 2000 world units gets clipped, polygons will be cut)
-            var projection = float4x4.CreatePerspectiveFieldOfView(M.PiOver4, aspectRatio, 1, 20000);
-            RC.Projection = projection;
-
-            _sih.Projection = projection;
-        }
-
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
@@ -221,7 +199,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 }
             )
             {
-                Children = new List<SceneNodeContainer>()
+                
+                Children = new ChildList()
                 {
                     //Simple Texture Node, contains the fusee logo.
                     fuseeLogo,
