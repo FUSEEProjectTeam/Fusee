@@ -20,6 +20,9 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class PcRendering : RenderCanvas
     {
+        public bool UseWPF = false;
+        public bool ShowOctants = false;
+
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
         private static float2 _offset;
@@ -56,8 +59,7 @@ namespace Fusee.Examples.PcRendering.Core
         private ITextureHandle _texHandle;
         
         internal static ShaderEffect _depthPassEf;
-        internal static ShaderEffect _colorPassEf;
-        internal static RenderContext _pcRenderContext;
+        internal static ShaderEffect _colorPassEf;       
 
         private bool _isTexInitialized = false;        
 
@@ -70,8 +72,22 @@ namespace Fusee.Examples.PcRendering.Core
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
 
-        private string _pathToPc = "E:/HolbeinPferd.las";
-        private string _pathToOocFile = "E:/HolbeinPferdOctree";
+        private string _pathToPc = "E:/ HolbeinPferd.las";
+
+        private string _pathToOocFile;
+        public string PathToOocFile
+        {
+            get
+            {
+                return _pathToOocFile;
+            }
+            set
+            {
+                IsSceneInitialized = false;
+                _pathToOocFile = value;
+                LoadFile();
+            }
+        } //"E:/HolbeinPferdOctree";
 
         public static bool IsSceneInitialized { get; private set; }
 
@@ -113,13 +129,59 @@ namespace Fusee.Examples.PcRendering.Core
             Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
 
+        private void LoadFile()
+        {           
+            //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
+            var oocFileReader = new PtOctreeFileReader<LAZPointType>(PathToOocFile);
+
+            //create Scene from octree structure
+            var root = oocFileReader.GetScene(_depthPassEf);
+            _scene.Children.Add(root);
+
+            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[1], PathToOocFile, RC)
+            {
+                PointThreshold = 1000000
+            };            
+
+            var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
+            _octreeTex = new Texture(octreeTexImgData);
+            _oocLoader.VisibleOctreeHierarchyTex = _octreeTex;
+
+            var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
+            octreeTexImgData.PixelData = new byte[byteSize];
+
+            var ptRootComponent = _scene.Children[1].GetComponent<PtOctantComponent>();
+            _octreeRootCenter = ptRootComponent.Center;
+            _octreeRootLength = ptRootComponent.Size;
+
+            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+             
+            IsSceneInitialized = true;
+        }        
+
         // Init is called on startup. 
         public override void Init()
         {
-            _pcRenderContext = RC;
+            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
 
-            var test1 = BitConverter.GetBytes(-1f);
-            var test2 = BitConverter.GetBytes(1f);
+            _scene = new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>()
+            };
+
+            if (projectionComponent != null)
+                RemoveResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
+
+            projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
+
+            _scene.Children.Insert(0, new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });
+            _scene.Children[0].Components[0] = projectionComponent;
+
+            AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
+
+            //create depth tex and fbo
+            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
             _cameraPos = _initCameraPos = new float3(10, 10, -30);
 
@@ -141,59 +203,22 @@ namespace Fusee.Examples.PcRendering.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            _scene = new SceneContainer
-            {
-                Children = new List<SceneNodeContainer>()
-            };
-
             _ptAccessor = new PtRenderingAccessor();
 
-            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
-
-            //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
-            var oocFileReader = new PtOctreeFileReader<LAZPointType>(_pathToOocFile);
-            
-            //create Scene from octree structure
-            _scene = oocFileReader.GetScene(_depthPassEf);
-            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[0], _pathToOocFile, RC)
-            {
-                PointThreshold = 1000000
-            };
-
-            projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            _scene.Children.Insert(0,new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });
-            _scene.Children[0].Components.Insert(0, projectionComponent);
+            if (!UseWPF)
+                PathToOocFile = "E:/HolbeinPferdOctree";
 
             _gui = CreateGui();
             //Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             //Add resize delegate            
-            AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
-
-            //create depth tex and fbo
-            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
-
-            var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
-            _octreeTex = new Texture(octreeTexImgData);
-            _oocLoader.VisibleOctreeHierarchyTex = _octreeTex;
-
-            var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
-            octreeTexImgData.PixelData = new byte[byteSize];
-
-            var ptRootComponent = _scene.Children[1].GetComponent<PtOctantComponent>();
-            _octreeRootCenter = ptRootComponent.Center;
-            _octreeRootLength = ptRootComponent.Size;
-            
-            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            //AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
-            _guiRenderer = new SceneRenderer(_gui);
-
-            IsSceneInitialized = true;
+            _guiRenderer = new SceneRenderer(_gui);            
         }
 
 
@@ -203,128 +228,132 @@ namespace Fusee.Examples.PcRendering.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0)
-                _oocLoader.IsUserMoving = true;
-            else
-                _oocLoader.IsUserMoving = false;
-
-            // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+            if (IsSceneInitialized)
             {
-                _keys = true;
-            }            
+                if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0)
+                    _oocLoader.IsUserMoving = true;
+                else
+                    _oocLoader.IsUserMoving = false;
 
-            var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-            // Zoom & Roll
-            if (Touch.TwoPoint)
-            {
-                if (!_twoTouchRepeated)
+                // Mouse and keyboard movement
+                if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
                 {
-                    _twoTouchRepeated = true;
-                    _angleRollInit = Touch.TwoPointAngle - _angleRoll;
-                    _offsetInit = Touch.TwoPointMidPoint - _offset;
-                    _maxPinchSpeed = 0;
+                    _keys = true;
                 }
-                _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
-                _angleRoll = Touch.TwoPointAngle - _angleRollInit;
-                _offset = Touch.TwoPointMidPoint - _offsetInit;
-                float pinchSpeed = Touch.TwoPointDistanceVel;
-                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
-            }
-            else
-            {
-                _twoTouchRepeated = false;
-                _zoomVel = Mouse.WheelVel * -0.5f;
-                _angleRoll *= curDamp * 0.8f;
-                _offset *= curDamp * 0.8f;
-            }
 
-            // UpDown / LeftRight rotation
-            if (Mouse.LeftButton)
-            {
-                _keys = false;
-                
-                _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _keys = false;
-                float2 touchVel;
-                touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
-            else
-            {
-                if (_keys)
+                var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                // Zoom & Roll
+                if (Touch.TwoPoint)
                 {
-                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    if (!_twoTouchRepeated)
+                    {
+                        _twoTouchRepeated = true;
+                        _angleRollInit = Touch.TwoPointAngle - _angleRoll;
+                        _offsetInit = Touch.TwoPointMidPoint - _offset;
+                        _maxPinchSpeed = 0;
+                    }
+                    _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
+                    _angleRoll = Touch.TwoPointAngle - _angleRollInit;
+                    _offset = Touch.TwoPointMidPoint - _offsetInit;
+                    float pinchSpeed = Touch.TwoPointDistanceVel;
+                    if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
                 }
                 else
                 {
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
+                    _twoTouchRepeated = false;
+                    _zoomVel = Mouse.WheelVel * -0.5f;
+                    _angleRoll *= curDamp * 0.8f;
+                    _offset *= curDamp * 0.8f;
                 }
+
+                // UpDown / LeftRight rotation
+                if (Mouse.LeftButton)
+                {
+                    _keys = false;
+
+                    _angleVelHorz = RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                    _angleVelVert = RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                }
+                else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                {
+                    _keys = false;
+                    float2 touchVel;
+                    touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                    _angleVelHorz = RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
+                    _angleVelVert = RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                }
+                else
+                {
+                    if (_keys)
+                    {
+                        _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                        _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                    }
+                    else
+                    {
+                        _angleVelHorz *= curDamp;
+                        _angleVelVert *= curDamp;
+                    }
+                }
+                _zoom += _zoomVel;
+                // Limit zoom
+                if (_zoom < 1)
+                    _zoom = 1;
+                if (_zoom > 1000)
+                    _zoom = 1000;
+
+                _angleHorz += _angleVelHorz;
+                _angleVert += _angleVelVert;
+
+                var twoPi = M.Pi * 2;
+
+                if ((_angleHorz > twoPi && _angleHorz > 0) || _angleHorz < -twoPi)
+                    _angleHorz = _angleHorz % twoPi;
+                if ((_angleVert > twoPi && _angleVert > 0) || _angleVert < -twoPi)
+                    _angleVert = _angleVert % twoPi;
+
+                _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
+                _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
+
+                RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
+                _scenePicker.View = RC.View;
+                
+
+                // Constantly check for interactive objects.
+                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+
+                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                {
+                    _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                }
+                //----------------------------                
+
+                if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
+                {
+                    //Render Depth-only pass
+                    _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+                    _sceneRenderer.Render(RC, _texHandle);
+                }
+
+                if(UseWPF)
+                    UpdateShaderParams();
+
+                //Render color pass
+                //Change shader effect in complete scene
+                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
+
+                _sceneRenderer.Render(RC);
+
+                _oocLoader.RC = RC;
+                _oocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
+
+                if(ShowOctants)
+                    _oocLoader.ShowOctants(_scene);
             }
-            _zoom += _zoomVel;
-            // Limit zoom
-            if (_zoom < 1)
-                _zoom = 1;
-            if (_zoom > 1000)
-                _zoom = 1000;
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            var twoPi = M.Pi * 2;
-
-            if ((_angleHorz > twoPi && _angleHorz > 0) || _angleHorz < -twoPi)
-                _angleHorz = _angleHorz % twoPi;
-            if ((_angleVert > twoPi && _angleVert > 0) || _angleVert < -twoPi)
-                _angleVert = _angleVert % twoPi;
-
-            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
-            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
-
-            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
-
-            _scenePicker.View = RC.View;
-
-            // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-            //----------------------------
-
-            _scenePicker = new ScenePicker(_scene);
-
-            if(PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)            
-            {
-                //Render Depth-only pass
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
-                _sceneRenderer.Render(RC, _texHandle);
-            }
-
-            UpdateShaderParams();
-
-            //Render color pass
-            //Change shader effect in complete scene
-            _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
-
-            _sceneRenderer.Render(RC);
 
             //Render GUI
             _sih.View = RC.View;
             _guiRenderer.Render(RC);
-
-            _oocLoader.RC = RC;            
-            _oocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
-            //_oocLoader.ShowOctants(_scene);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -333,7 +362,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            if (!PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting == Lighting.UNLIT) return;
+            if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.UNLIT) return;
             
             //(re)create depth tex and fbo
             if (_isTexInitialized)
@@ -378,7 +407,7 @@ namespace Fusee.Examples.PcRendering.Core
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             // Initialize the information text line.
-            var textToDisplay = "FUSEE 3D Scene";
+            var textToDisplay = "FUSEE Point Cloud Viewer";
             if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
             {
                 textToDisplay += " created";

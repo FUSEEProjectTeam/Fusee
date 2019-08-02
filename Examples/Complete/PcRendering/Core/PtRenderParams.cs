@@ -12,13 +12,13 @@ namespace Fusee.Examples.PcRendering.Core
 
     public static class PtRenderingParams
     {
-        public static Lighting Lighting = Lighting.BLINN_PHONG;
+        public static Lighting Lighting = Lighting.EDL;
 
         public static PointShape Shape = PointShape.PARABOLID;
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 20;        
-        public static float4 SingleColor = new float4(0f, 0.9f, 0.9f, 1);
+        public static float4 SingleColor = new float4(0.9f, 0.9f, 0.9f, 1);
 
         public static bool CalcSSAO = false;
         public static float SSAOStrength = 0.8f;

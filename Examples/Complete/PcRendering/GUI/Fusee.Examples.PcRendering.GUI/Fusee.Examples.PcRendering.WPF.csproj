@@ -1,20 +1,24 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
-  <PropertyGroup>
+  <PropertyGroup>    
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <UseWPF>true</UseWPF>
+    <UseWPF>true</UseWPF>    
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\PcRendering\GUI\</OutputPath>
     <StartupObject>Fusee.Examples.PcRendering.WPF.App</StartupObject>
-    <ApplicationIcon />
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Remove="Assets\**" />
-    <EmbeddedResource Remove="Assets\**" />
-    <None Remove="Assets\**" />
-    <Page Remove="Assets\**" />
+    <None Remove="Assets\color.png" />
+    <None Remove="Assets\color_w.png" />
+    <None Remove="Assets\lighting.png" />
+    <None Remove="Assets\lighting_w.png" />
+    <None Remove="Assets\ptMode.png" />
+    <None Remove="Assets\ptMode_w.png" />
+    <None Remove="Assets\size.png" />
+    <None Remove="Assets\size_w.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -72,5 +76,16 @@
     <None Update="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\color.png" />
+    <Resource Include="Assets\color_w.png" />
+    <Resource Include="Assets\lighting.png" />
+    <Resource Include="Assets\lighting_w.png" />
+    <Resource Include="Assets\ptMode.png" />
+    <Resource Include="Assets\ptMode_w.png" />
+    <Resource Include="Assets\size.png" />
+    <Resource Include="Assets\size_w.png" />
   </ItemGroup>
 </Project>

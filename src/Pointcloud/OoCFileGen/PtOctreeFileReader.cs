@@ -67,7 +67,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="effect">Shader effect the points shall be rendered with.</param>
         /// <param name="octree"></param>
         /// <returns></returns>
-        public SceneContainer GetScene(ShaderEffect effect)
+        public SceneNodeContainer GetScene(ShaderEffect effect)
         {
             var pathToMetaJson = _fileFolderPath + "\\meta.json";
             JObject jsonObj;
@@ -86,7 +86,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             //var jsonMaxLvl = (JValue)jsonObj["octree"]["maxLevel"];
             //var maxLvl = (int)jsonMaxLvl;
 
-            var scene = new SceneContainer();
+            
 
             var rootSnc = new SceneNodeContainer
             {
@@ -111,11 +111,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                 }
             };
-            scene.Children.Add(rootSnc);
+            //scene.Children.Add(rootSnc);
             NumberOfOctants++;
 
             ReadHierarchyToScene(rootSnc, effect);
-            return scene;
+            return rootSnc;
         }
 
         /// <summary>
