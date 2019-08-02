@@ -16,3 +16,7 @@
 # FUSEE Custom
 *.model	-diff
 *.fus	-text -diff
+
+# GitHub Linguist
+docs/* linguist-documentation
+ext/* linguist-vendored
