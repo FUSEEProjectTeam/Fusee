@@ -4,14 +4,9 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <OutputPath>$(FuseeBuildRoot)\bin\Debug\Examples\ImageGenerator\</OutputPath>
-    <DefineConstants>TRACE;PLATFORM_DESKTOP</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>$(FuseeBuildRoot)\bin\Release\Examples\ImageGenerator\</OutputPath>
+  
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Tests\Render\ImageGenerator\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
