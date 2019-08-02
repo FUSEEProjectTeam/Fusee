@@ -20,3 +20,4 @@
 # GitHub Linguist
 docs/* linguist-documentation
 ext/* linguist-vendored
+art/RocketModel/RocketFus.gcode linguist-generated
