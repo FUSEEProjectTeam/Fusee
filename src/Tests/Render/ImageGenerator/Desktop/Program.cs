@@ -112,6 +112,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 cimp.DoInit();
 
                 // Render a single frame and save it
+                cimp.DoResize(opts.Width, opts.Height);
                 cimp.DoRender();
                 var bmp = cimp.ShootCurrentFrame();
                 bmp.Save(opts.Output, System.Drawing.Imaging.ImageFormat.Png);
