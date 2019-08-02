@@ -415,6 +415,17 @@
     <Copy	SourceFiles="@(FuseeExtAssets)" DestinationFolder="$(MonoAndroidAssetsDirIntermediate)" />
   </Target>
 
+  <Target Name="FuseeModifyAndroidAssetItemGroup" BeforeTargets="Compile" Condition=" '$(MonoAndroidAssetsDirIntermediate)' != '' ">
+    <Message Importance="High" Text="Expanding AndroidAsset" />
+    <ItemGroup>
+      <AllAndroidAssets Include="$(MonoAndroidAssetsDirIntermediate)\*" />
+    </ItemGroup>
+
+    <CreateItem Include="@(AllAndroidAssets)">
+      <Output TaskParameter="Include" ItemName="AndroidAsset" />
+    </CreateItem>
+  </Target>
+  
   <!-- ################################################################
 	               TASKS TO PERFORM AT CLEAN 
 	     ################################################################ 	-->

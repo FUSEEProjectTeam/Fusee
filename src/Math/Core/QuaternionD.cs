@@ -50,7 +50,7 @@ namespace Fusee.Math.Core
         // ReSharper disable InconsistentNaming
 
         /// <summary>
-        ///     Gets or sets an Fusee.Math.double3 with the x, y and z components of this instance.
+        ///     Gets and sets an Fusee.Math.double3 with the x, y and z components of this instance.
         /// </summary>
         public double3 xyz
         {
@@ -59,7 +59,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the x component of this instance.
+        ///     Gets and sets the x component of this instance.
         /// </summary>
         public double x
         {
@@ -68,7 +68,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the y component of this instance.
+        ///     Gets and sets the y component of this instance.
         /// </summary>
         public double y
         {
@@ -77,7 +77,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the z component of this instance.
+        ///     Gets and sets the z component of this instance.
         /// </summary>
         public double z
         {
@@ -86,7 +86,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Gets or sets the w component of this instance.
+        ///     Gets and sets the w component of this instance.
         /// </summary>
         public double w
         {
@@ -100,19 +100,54 @@ namespace Fusee.Math.Core
 
         #region Instance
 
-        #region ToAxisAngle
-
+        #region this
         /// <summary>
-        ///     Convert the current QuaternionD to axis angle representation
+        ///     Sets/Gets value from given idx
         /// </summary>
-        /// <param name="axis">The resultant axis</param>
-        /// <param name="angle">The resultant angle</param>
-        public void ToAxisAngle(out double3 axis, out double angle)
+        /// <param name="idx"></param>
+        /// <returns></returns>
+        public double this[int idx]
         {
-            double4 result = ToAxisAngle();
-            axis = result.xyz;
-            angle = result.w;
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    case 2:
+                        return z;
+                    case 3:
+                        return w;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    case 2:
+                        z = value;
+                        break;
+                    case 3:
+                        w = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
+                }
+            }
         }
+        #endregion
+
+        #region ToAxisAngle
 
         /// <summary>
         ///     Convert this instance to an axis-angle representation.
@@ -120,28 +155,12 @@ namespace Fusee.Math.Core
         /// <returns>A double4 that is the axis-angle representation of this QuaternionD.</returns>
         public double4 ToAxisAngle()
         {
-            QuaternionD q = this;
+            return ToAxisAngle(this);
+        }
 
-            if (q.w > 1.0f)
-                q.Normalize();
-
-            var result = new double4 {w = 2.0f*System.Math.Acos(q.w)};
-
-            // angle
-            var den = System.Math.Sqrt(1.0 - q.w*q.w);
-
-            if (den > M.EpsilonDouble)
-            {
-                result.xyz = q.xyz/den;
-            }
-            else
-            {
-                // This occurs when the angle is zero. 
-                // Not a problem: just set an arbitrary normalized axis.
-                result.xyz = double3.UnitX;
-            }
-
-            return result;
+        public double4x4 ToRotMat()
+        {
+            return ToRotMat(this);
         }
 
         #endregion
@@ -171,29 +190,39 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         ///     Scales the QuaternionD to unit length.
         /// </summary>
-        public void Normalize()
+        public QuaternionD Normalize()
         {
-            if (!(Length > M.EpsilonDouble)) return;
-            var scale = 1.0f/Length;
-            xyz *= scale;
-            w *= scale;
+            return Normalize(this);
         }
 
         #endregion
 
-        #region public void Conjugate()
+        #region public Conjugate()
 
         /// <summary>
-        ///     Convert this QuaternionD to its conjugate
+        ///     Convert this QuaternionD to its conjugate.
         /// </summary>
-        public void Conjugate()
+        public QuaternionD Conjugate()
         {
-            xyz = -xyz;
+            return Conjugate(this);
+        }
+
+        #endregion
+
+        #region public Invert()
+
+        /// <summary>
+        /// Convert this QuaternionD to its inverse.
+        /// </summary>
+        /// <returns></returns>
+        public QuaternionD Invert()
+        {
+            return Invert(this);
         }
 
         #endregion
@@ -226,19 +255,6 @@ namespace Fusee.Math.Core
                 left.w + right.w);
         }
 
-        /// <summary>
-        ///     Add two QuaternionDs
-        /// </summary>
-        /// <param name="left">The first operand</param>
-        /// <param name="right">The second operand</param>
-        /// <param name="result">The result of the addition</param>
-        public static void Add(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
-        {
-            result = new QuaternionD(
-                left.xyz + right.xyz,
-                left.w + right.w);
-        }
-
         #endregion
 
         #region Sub
@@ -256,19 +272,6 @@ namespace Fusee.Math.Core
                 left.w - right.w);
         }
 
-        /// <summary>
-        ///     Subtracts two instances.
-        /// </summary>
-        /// <param name="left">The left instance.</param>
-        /// <param name="right">The right instance.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Sub(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
-        {
-            result = new QuaternionD(
-                left.xyz - right.xyz,
-                left.w - right.w);
-        }
-
         #endregion
 
         #region Mult
@@ -279,65 +282,15 @@ namespace Fusee.Math.Core
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
-        [Obsolete("Use Multiply instead.")]
-        public static QuaternionD Mult(QuaternionD left, QuaternionD right)
-        {
-            return new QuaternionD(
-                right.w*left.xyz + left.w*right.xyz + double3.Cross(left.xyz, right.xyz),
-                left.w*right.w - double3.Dot(left.xyz, right.xyz));
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        [Obsolete("Use Multiply instead.")]
-        public static void Mult(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
-        {
-            result = new QuaternionD(
-                right.w*left.xyz + left.w*right.xyz + double3.Cross(left.xyz, right.xyz),
-                left.w*right.w - double3.Dot(left.xyz, right.xyz));
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD Multiply(QuaternionD left, QuaternionD right)
         {
-            QuaternionD result;
-            Multiply(ref left, ref right, out result);
+            QuaternionD result = new QuaternionD(
+                left.w * right.x + left.x * right.w + left.y * right.z - left.z * right.y,
+                left.w * right.y + left.y * right.w + left.z * right.x - left.x * right.z,
+                left.w * right.z + left.z * right.w + left.x * right.y - left.y * right.x,
+                left.w * right.w - left.x * right.x - left.y * right.y - left.z * right.z);
+
             return result;
-        }
-
-        /// <summary>
-        ///     Multiplies two instances.
-        /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="right">The second instance.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(ref QuaternionD left, ref QuaternionD right, out QuaternionD result)
-        {
-            result = new QuaternionD(
-                left.w*right.x + left.x*right.w + left.y*right.z - left.z*right.y,
-                left.w*right.y + left.y*right.w + left.z*right.x - left.x*right.z,
-                left.w*right.z + left.z*right.w + left.x*right.y - left.y*right.x,
-                left.w*right.w - left.x*right.x - left.y*right.y - left.z*right.z);
-        }
-
-        /// <summary>
-        ///     Multiplies an instance by a scalar.
-        /// </summary>
-        /// <param name="quaternionD">The instance.</param>
-        /// <param name="scale">The scalar.</param>
-        /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(ref QuaternionD quaternionD, double scale, out QuaternionD result)
-        {
-            result = new QuaternionD(quaternionD.x*scale, quaternionD.y*scale, quaternionD.z*scale, quaternionD.w*scale);
         }
 
         /// <summary>
@@ -365,16 +318,6 @@ namespace Fusee.Math.Core
             return new QuaternionD(-q.xyz, q.w);
         }
 
-        /// <summary>
-        ///     Get the conjugate of the given QuaternionD
-        /// </summary>
-        /// <param name="q">The QuaternionD</param>
-        /// <param name="result">The conjugate of the given QuaternionD</param>
-        public static void Conjugate(ref QuaternionD q, out QuaternionD result)
-        {
-            result = new QuaternionD(-q.xyz, q.w);
-        }
-
         #endregion
 
         #region Invert
@@ -387,28 +330,20 @@ namespace Fusee.Math.Core
         public static QuaternionD Invert(QuaternionD q)
         {
             QuaternionD result;
-            Invert(ref q, out result);
-            return result;
-        }
 
-        /// <summary>
-        ///     Get the inverse of the given QuaternionD
-        /// </summary>
-        /// <param name="q">The QuaternionD to invert</param>
-        /// <param name="result">The inverse of the given QuaternionD</param>
-        public static void Invert(ref QuaternionD q, out QuaternionD result)
-        {
             double lengthSq = q.LengthSquared;
 
             if (lengthSq > M.EpsilonDouble)
             {
-                var i = 1.0f/lengthSq;
-                result = new QuaternionD(q.xyz*-i, q.w*i);
+                var i = 1.0f / lengthSq;
+                result = new QuaternionD(q.xyz * -i, q.w * i);
             }
             else
             {
                 result = q;
             }
+
+            return result;
         }
 
         #endregion
@@ -423,30 +358,22 @@ namespace Fusee.Math.Core
         public static QuaternionD Normalize(QuaternionD q)
         {
             QuaternionD result;
-            Normalize(ref q, out result);
-            return result;
-        }
 
-        /// <summary>
-        ///     Scale the given QuaternionD to unit length
-        /// </summary>
-        /// <param name="q">The QuaternionD to normalize</param>
-        /// <param name="result">The normalized QuaternionD</param>
-        public static void Normalize(ref QuaternionD q, out QuaternionD result)
-        {
             double scale;
 
             if (!(q.Length > M.EpsilonFloat))
                 scale = 0;
             else
-                scale = 1.0/q.Length;
+                scale = 1.0 / q.Length;
 
-            result = new QuaternionD(q.xyz*scale, q.w*scale);
+            result = new QuaternionD(q.xyz * scale, q.w * scale);
+
+            return result;
         }
 
         #endregion
 
-        #region FromAxisAngle
+        #region AxisAngle
 
         /// <summary>
         ///     Build a QuaternionD from the given axis and angle
@@ -465,11 +392,64 @@ namespace Fusee.Math.Core
             var result = Identity;
 
             angle *= 0.5f;
-            axis.Normalize();
+            axis = axis.Normalize();
             result.xyz = axis*System.Math.Sin(angle);
             result.w = System.Math.Cos(angle);
 
             return Normalize(result);
+        }
+
+        /// <summary>
+        ///     Constructs a rotation matrix from a given quaternion
+        ///     This uses some geometric algebra magic https://en.wikipedia.org/wiki/Geometric_algebra
+        ///     From: https://sourceforge.net/p/mjbworld/discussion/122133/thread/c59339da/#62ce
+        /// </summary>
+        /// <param name="quat">Input quaternion</param>
+        /// <returns></returns>
+        public static double4x4 ToRotMat(QuaternionD quat)
+        {
+            var m1 = new double4x4(
+            quat.w, quat.z, -quat.y, quat.x,
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
+            -quat.x, -quat.y, -quat.z, quat.w).Transpose();
+
+            var m2 = new double4x4(
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
+            quat.x, quat.y, quat.z, quat.w).Transpose();
+
+            return m1 * m2;
+        }
+
+        /// <summary>
+        /// Output an axis-angle representation of the given Quaternion.
+        /// </summary>
+        /// <param name="q">The given Quaternion.</param>
+        /// <returns>The resulting axis-angle representation.</returns>
+        public static double4 ToAxisAngle(QuaternionD q)
+        {
+            if (q.w > 1.0f)
+                q = q.Normalize();
+
+            var result = new double4 { w = 2.0f * System.Math.Acos(q.w) };
+
+            // angle
+            var den = System.Math.Sqrt(1.0 - q.w * q.w);
+
+            if (den > M.EpsilonDouble)
+            {
+                result.xyz = q.xyz / den;
+            }
+            else
+            {
+                // This occurs when the angle is zero. 
+                // Not a problem: just set an arbitrary normalized axis.
+                result.xyz = double3.UnitX;
+            }
+
+            return result;
         }
 
         #endregion
@@ -532,6 +512,32 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Transform
+
+        /// <summary>
+        /// Transforms a vector by a QuaternionD rotation.
+        /// </summary>
+        /// <param name="vec">The vector to transform.</param>
+        /// <param name="quat">The QuaternionD to rotate the vector by.</param>
+        /// <returns>
+        /// The result of the operation.
+        /// </returns>
+        public static double4 Transform(double4 vec, QuaternionD quat)
+        {
+            double4 result;
+
+            QuaternionD v = new QuaternionD(vec.x, vec.y, vec.z, vec.w), i, t;
+            i = QuaternionD.Invert(quat);
+            t = Multiply(quat, v);
+            v = Multiply(t, i);
+
+            result = new double4(v.x, v.y, v.z, v.w);
+
+            return result;
+        }
+
+        #endregion
+
         #endregion
 
         #region Operators
@@ -544,9 +550,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static QuaternionD operator +(QuaternionD left, QuaternionD right)
         {
-            left.xyz += right.xyz;
-            left.w += right.w;
-            return left;
+            return Add(left, right);
         }
 
         /// <summary>
@@ -557,9 +561,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static QuaternionD operator -(QuaternionD left, QuaternionD right)
         {
-            left.xyz -= right.xyz;
-            left.w -= right.w;
-            return left;
+            return Sub(left, right);
         }
 
         /// <summary>
@@ -570,8 +572,7 @@ namespace Fusee.Math.Core
         /// <returns>The result of the calculation.</returns>
         public static QuaternionD operator *(QuaternionD left, QuaternionD right)
         {
-            Multiply(ref left, ref right, out left);
-            return left;
+            return Multiply(left, right);
         }
 
         /// <summary>
@@ -582,8 +583,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD operator *(QuaternionD quaternionD, double scale)
         {
-            Multiply(ref quaternionD, scale, out quaternionD);
-            return quaternionD;
+            return Multiply(quaternionD, scale);
         }
 
         /// <summary>
@@ -594,7 +594,7 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD operator *(double scale, QuaternionD quaternionD)
         {
-            return new QuaternionD(quaternionD.x*scale, quaternionD.y*scale, quaternionD.z*scale, quaternionD.w*scale);
+            return Multiply(quaternionD, scale);
         }
 
         /// <summary>

@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
 
         internal List<double3> _normals;
         /// <summary>
-        /// Gets or sets the normals.
+        /// Gets and sets the normals.
         /// </summary>
         /// <value>
         /// The normals.
@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core
 
         internal List<double2> _texCoords;
         /// <summary>
-        /// Gets or sets the texture coordinates.
+        /// Gets and sets the texture coordinates.
         /// </summary>
         /// <value>
         /// The texture coordinates.
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core
 
         internal List<Face> _faces;
         /// <summary>
-        /// Gets or sets the faces.
+        /// Gets and sets the faces.
         /// </summary>
         /// <value>
         /// The faces.

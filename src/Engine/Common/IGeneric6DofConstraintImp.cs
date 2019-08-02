@@ -8,14 +8,14 @@ namespace Fusee.Engine.Common
     public interface IGeneric6DofConstraintImp : IConstraintImp
     {
         /// <summary>
-        /// Gets or sets the angular lower limit.
+        /// Gets and sets the angular lower limit.
         /// </summary>
         /// <value>
         /// The angular lower limit.
         /// </value>
         float3 AngularLowerLimit { get; set; }
         /// <summary>
-        /// Gets or sets the angular upper limit.
+        /// Gets and sets the angular upper limit.
         /// </summary>
         /// <value>
         /// The angular upper limit.
@@ -53,14 +53,14 @@ namespace Fusee.Engine.Common
         float4x4 CalculatedTransformB { get; }
 
         /// <summary>
-        /// Gets or sets the frame offset a.
+        /// Gets and sets the frame offset a.
         /// </summary>
         /// <value>
         /// The frame offset a.
         /// </value>
         float4x4 FrameOffsetA { get; set; }
         /// <summary>
-        /// Gets or sets the frame offset b.
+        /// Gets and sets the frame offset b.
         /// </summary>
         /// <value>
         /// The frame offset b.
@@ -95,14 +95,14 @@ namespace Fusee.Engine.Common
         /// <returns></returns>
         bool IsLimited(int limitIndex);
         /// <summary>
-        /// Gets or sets the linear lower limit.
+        /// Gets and sets the linear lower limit.
         /// </summary>
         /// <value>
         /// The linear lower limit.
         /// </value>
         float3 LinearLowerLimit { get; set; }
         /// <summary>
-        /// Gets or sets the linear upper limit.
+        /// Gets and sets the linear upper limit.
         /// </summary>
         /// <value>
         /// The linear upper limit.
@@ -138,7 +138,7 @@ namespace Fusee.Engine.Common
         //Todo: TranslationalLimitMotor
 
         /// <summary>
-        /// Gets or sets a value indicating whether [use frame offset].
+        /// Gets and sets a value indicating whether [use frame offset].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [use frame offset]; otherwise, <c>false</c>.

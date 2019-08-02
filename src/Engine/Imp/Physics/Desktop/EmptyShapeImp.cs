@@ -11,7 +11,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal EmptyShape BtEmptyShape;
         //Inherited
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.

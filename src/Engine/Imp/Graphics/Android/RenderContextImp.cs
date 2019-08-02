@@ -520,6 +520,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.DeleteProgram(program);
         }
 
+        public void SetLineWidth(float width)
+        {
+            GL.LineWidth(width);
+        }
+
         /// <summary>
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
         /// </summary>
@@ -706,13 +711,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(All.Texture0 + texUnit);
             GL.BindTexture(All.Texture2D, ((TextureHandle)texId).Handle);
-        }
+        }       
+
         #endregion
 
         #region Clear Fields
 
         /// <summary>
-        /// Gets or sets the color of the background.
+        /// Gets and sets the color of the background.
         /// </summary>
         /// <value>
         /// The color of the clear.
@@ -729,7 +735,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Gets or sets the clear depth value which is used to clear the depth buffer.
+        /// Gets and sets the clear depth value which is used to clear the depth buffer.
         /// </summary>
         /// <value>
         /// Specifies the depth value used when the depth buffer is cleared. The initial value is 1. This value is clamped to the range [0,1].
@@ -1376,6 +1382,43 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.DrawElements(All.Triangles, ((MeshImp) mr).NElements, All.UnsignedShort,
                     IntPtr.Zero);
                 //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
+
+                switch (((MeshImp)mr).MeshType)
+                {
+                    case OpenGLPrimitiveType.TRIANGLES:
+                    default:
+                        GL.DrawElements(All.Triangles, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.POINT:
+                        // enable gl_PointSize to set the point size
+                        GL.Enable(All.DepthTest);
+                        //GL.Enable(EnableCap.DepthTest);
+                        //GL.DepthMask(true);
+                        //GL.Enable(All.VertexProgramPointSize);
+                        GL.DrawElements(All.Points, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINES:
+                        GL.DrawElements(All.Lines, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINE_LOOP:
+                        GL.DrawElements(All.LineLoop, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.LINE_STRIP:
+                        GL.DrawElements(All.LineStrip, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.PATCHES:
+                        throw new NotSupportedException("Pathes is no valid primitive type within OpenGL ES 3.0");
+                        break;
+                    case OpenGLPrimitiveType.QUAD_STRIP:
+                        throw new NotSupportedException("Quad strip is no valid primitive type within OpenGL ES 3.0");
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                        GL.DrawElements(All.TriangleFan, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                        GL.DrawElements(All.TriangleStrip, ((MeshImp)mr).NElements, All.UnsignedShort, IntPtr.Zero);
+                        break;
+                }
             }
             if (((MeshImp) mr).VertexBufferObject != 0)
             {

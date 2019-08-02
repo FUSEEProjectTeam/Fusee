@@ -416,7 +416,7 @@ namespace Fusee.Engine.Core
             if (_meshProbs.HasNormals)
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
 
-            if (_materialProbs.HasSpecular)
+            if (_materialProbs.HasSpecular && !_meshProbs.HasWeightMap)
                 _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
 
             if (_meshProbs.HasWeightMap)
@@ -616,7 +616,7 @@ namespace Fusee.Engine.Core
             {
                 _pixelShader.Add(GLSL.CreateUniform(Type.Float, SpecularShininessName));
                 _pixelShader.Add(GLSL.CreateUniform(Type.Float, SpecularIntensityName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, SpecularColorName));
+                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, SpecularColorName));
             }
 
             if (_materialProbs.HasBump)
@@ -626,7 +626,7 @@ namespace Fusee.Engine.Core
             }
 
             if (_materialProbs.HasDiffuse)
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, DiffuseColorName));
+                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, DiffuseColorName));
 
             if (_materialProbs.HasDiffuseTexture)
             {
@@ -635,7 +635,7 @@ namespace Fusee.Engine.Core
             }
 
             if (_materialProbs.HasEmissive)
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec3, EmissiveColorName));
+                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, EmissiveColorName));
 
             if (_materialProbs.HasEmissiveTexture)
             {
@@ -649,11 +649,11 @@ namespace Fusee.Engine.Core
             var methodBody = new List<string>
             {
                 _materialProbs.HasEmissive
-                    ? $"return vec3({EmissiveColorName} * ambientCoefficient);"
-                    : "return vec3(ambientCoefficient);"
+                    ? $"return vec4({EmissiveColorName} * ambientCoefficient);"
+                    : "return vec4(ambientCoefficient);"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "ambientLighting",
+            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "ambientLighting",
                 new[] { GLSL.CreateVar(Type.Float, "ambientCoefficient") }, methodBody));
         }
 
@@ -664,21 +664,23 @@ namespace Fusee.Engine.Core
                 "float diffuseTerm = dot(N, L);"
             };
 
+            //TODO: Test alpha blending between diffuse and texture
             if (_materialProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"return texture({DiffuseTextureName}, vUV).rgb * {DiffuseMixName} *  max(diffuseTerm, 0.0) * intensities;");
+                    $"vec4 blendedCol = mix({DiffuseColorName}, texture({DiffuseTextureName}, vUV), {DiffuseMixName});" +
+                    $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
             else
-                methodBody.Add($"return ({DiffuseColorName} * intensities * diffuseTerm);");
+                methodBody.Add($"return vec4({DiffuseColorName}.rgb * intensities.rgb * diffuseTerm, 1.0);");
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "diffuseLighting",
+            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "diffuseLighting",
                 new[]
                 {
                     GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"),
-                    GLSL.CreateVar(Type.Vec3, "intensities")
+                    GLSL.CreateVar(Type.Vec4, "intensities")
                 }, methodBody));
 
         }
-
+        
         private void AddSpecularLightMethod()
         {
 
@@ -691,14 +693,14 @@ namespace Fusee.Engine.Core
                 "   vec3 H = normalize(V + L);",
                 $"  specularTerm = pow(max(0.0, dot(H, N)), {SpecularShininessName});",
                 "}",
-                $"return ({SpecularColorName} * {SpecularIntensityName} * intensities) * specularTerm;"
+                $"return vec4(({SpecularColorName}.rgb * {SpecularIntensityName} * intensities.rgb) * specularTerm, 1.0);"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "specularLighting",
+            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "specularLighting",
                 new[]
                 {
                     GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"), GLSL.CreateVar(Type.Vec3, "V"),
-                    GLSL.CreateVar(Type.Vec3, "intensities")
+                    GLSL.CreateVar(Type.Vec4, "intensities")
                 }, methodBody));
 
         }
@@ -764,8 +766,8 @@ namespace Fusee.Engine.Core
                 "",
                 _renderWithShadows ? "float shadowFactor = CalcShadowFactor(shadowLight);" : "",
                 "",
-                "vec3 Idif = vec3(0);",
-                "vec3 Ispe = vec3(0);",
+                "vec4 Idif = vec4(0);",
+                "vec4 Ispe = vec4(0);",
                 ""
             };
 
@@ -782,7 +784,7 @@ namespace Fusee.Engine.Core
             if (_materialProbs.HasSpecular)
                 applyLightParams.Add("Ispe = specularLighting(N, L, V, intensities);");
 
-            applyLightParams.Add("vec3 Iamb = ambientLighting(ambientCoefficient);");
+            applyLightParams.Add("vec4 Iamb = ambientLighting(ambientCoefficient);");
 
 
             var attenuation = new List<string>
@@ -832,7 +834,7 @@ namespace Fusee.Engine.Core
 
             var methodBody = new List<string>();
             methodBody.AddRange(applyLightParams);
-            methodBody.Add("vec3 result = vec3(0);");
+            methodBody.Add("vec4 result = vec4(0);");
             methodBody.Add("");
             methodBody.AddRange(attenuation);
             methodBody.Add("if(lightType == 0) // PointLight");
@@ -852,10 +854,10 @@ namespace Fusee.Engine.Core
             methodBody.Add("");
             methodBody.Add("return result;");
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "ApplyLight",
+            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "ApplyLight",
                 new[]
                 {
-                    GLSL.CreateVar(Type.Vec3, "position"), GLSL.CreateVar(Type.Vec3, "intensities"),
+                    GLSL.CreateVar(Type.Vec3, "position"), GLSL.CreateVar(Type.Vec4, "intensities"),
                     GLSL.CreateVar(Type.Vec3, "coneDirection"), GLSL.CreateVar(Type.Float, "attenuation"),
                     GLSL.CreateVar(Type.Float, "ambientCoefficient"), GLSL.CreateVar(Type.Float, "coneAngle"),
                     GLSL.CreateVar(Type.Int, "lightType")
@@ -943,11 +945,11 @@ namespace Fusee.Engine.Core
                 $"return intensities * {SpecularColorName} * (k + specular * (1.0-k));"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec3, "specularLighting",
+            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "specularLighting",
                 new[]
                 {
                     GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"), GLSL.CreateVar(Type.Vec3, "V"),
-                    GLSL.CreateVar(Type.Vec3, "intensities")
+                    GLSL.CreateVar(Type.Vec4, "intensities")
                 }, methodBody));
         }
 
@@ -955,11 +957,11 @@ namespace Fusee.Engine.Core
         {
             var methodBody = new List<string>
             {
-                "vec3 result = vec3(0.0);",
+                "vec4 result = vec4(0.0);",
                 "for(int i = 0; i < MAX_LIGHTS;i++)",
                 "{",
                 "vec3 currentPosition = allLights[i].position;",
-                "vec3 currentIntensities = allLights[i].intensities;",
+                "vec4 currentIntensities = allLights[i].intensities;",
                 "vec3 currentConeDirection = allLights[i].coneDirection;",
                 "float currentAttenuation = allLights[i].attenuation;",
                 "float currentAmbientCoefficient = allLights[i].ambientCoefficient;",
@@ -968,7 +970,7 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
                 "}",
-                $"fragmentColor = vec4(result, 1.0);"
+                 _materialProbs.HasDiffuseTexture ? $"fragmentColor = result;" : $"fragmentColor = vec4(result.rgb, {DiffuseColorName}.w);"
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
@@ -990,7 +992,7 @@ namespace Fusee.Engine.Core
             struct Light 
             {
                 vec3 position;
-                vec3 intensities;
+                vec4 intensities;
                 vec3 coneDirection;
                 float attenuation;
                 float ambientCoefficient;
@@ -1016,8 +1018,9 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float3 diffuseColor, float3 specularColor, float shininess)
+        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -1028,15 +1031,45 @@ namespace Fusee.Engine.Core
                 Specular = new SpecularChannelContainer
                 {
                     Color = specularColor,
-                    Shininess = shininess
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
+                }
+            };
+            
+            return MakeShaderEffectFromMatComp(temp);
+        }
+
+        /// <summary>
+        ///     Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="texName">Name of the texture you want to use.</param>
+        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the thexture are mixed.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        {
+            MaterialComponent temp = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = diffuseColor,
+                    Texture = texName,
+                    Mix = diffuseMix
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = specularColor,
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
                 }
             };
 
             return MakeShaderEffectFromMatComp(temp);
         }
-
-
-
+        
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
@@ -1076,7 +1109,7 @@ namespace Fusee.Engine.Core
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
-                            AlphaBlendEnable = false
+                            AlphaBlendEnable = true   
                         }
                     }
                 },
@@ -1188,7 +1221,7 @@ namespace Fusee.Engine.Core
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "allLights[" + 0 + "].intensities",
-                Value = float3.Zero
+                Value = float4.Zero
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
@@ -1266,7 +1299,14 @@ namespace Fusee.Engine.Core
         private static Texture LoadTexture(string path)
         {
             var image = AssetStorage.Get<ImageData>(path);
-            return new Texture(image);
+            if (image != null)
+                return new Texture(image);
+
+            image = AssetStorage.Get<ImageData>("DefaultTexture.png");
+            if (image != null)
+                return new Texture(image);
+
+            return new Texture(new ImageData());
         }
 
         #endregion
@@ -1366,4 +1406,3 @@ namespace Fusee.Engine.Core
               
     }
 }
-

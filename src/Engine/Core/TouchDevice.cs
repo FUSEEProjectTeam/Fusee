@@ -21,13 +21,13 @@ namespace Fusee.Engine.Core
         Pinch,
         /// <summary>
         /// The user moves the first two active touchpoints into similar directions maintaining their distance and relative position. 
-        /// Use <see cref = "TouchDevice.TwoPointMidPoint" /> or < see cref = "TouchDevice.TwoPointMidPointVel" /> to retrieve
+        /// Use <see cref = "TouchDevice.TwoPointMidPoint" /> or <see cref = "TouchDevice.TwoPointMidPointVel" /> to retrieve
         /// values for derived actions based on two-point move-gestures.     
         /// </summary>
         Move,
         /// <summary>
         /// The user rotates the first two active touchpoints around a common rotation center while maintaining their distance.
-        /// Use <see cref = "TouchDevice.TwoPointAngle" /> or < see cref = "TouchDevice.TwoPointAngleVel" /> to retrieve
+        /// Use <see cref = "TouchDevice.TwoPointAngle" /> or <see cref = "TouchDevice.TwoPointAngleVel" /> to retrieve
         /// values for derived actions based on rotation gestures.     
         /// </summary>
         Rotate

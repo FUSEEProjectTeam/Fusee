@@ -1,7 +1,4 @@
-﻿var $fuseBaseCore = JSIL.GetAssembly("Fusee.Base.Core");
-
-
-JSIL.DeclareNamespace("Fusee");
+﻿JSIL.DeclareNamespace("Fusee");
 JSIL.DeclareNamespace("Fusee.Base");
 JSIL.DeclareNamespace("Fusee.Base.Core");
 
@@ -9,7 +6,7 @@ JSIL.ImplementExternals("Fusee.Base.Core.Diagnostics", function ($) {
     $.Method({ Static: true, Public: true }, "Log",
         new JSIL.MethodSignature(null, [$.Object]),
         function Log(o) {
-            if (typeof window.console != 'undefined') {
+            if (typeof window.console !== 'undefined') {
                 console.log(o);
             }
         }
@@ -37,3 +34,22 @@ JSIL.ImplementExternals("Fusee.Base.Core.Diagnostics", function ($) {
     );
 });
 
+JSIL.ImplementExternals("Fusee.Base.Core.AsyncHttpAsset", function ($) {
+
+	$.Method({ Static: false, Public: false }, "DoGetAsset",
+		new JSIL.MethodSignature(null, null),
+		function DoGetAsset() {
+
+			var oReq = new XMLHttpRequest();
+
+			oReq.onload = () => this.ProcessAsset(new Uint8Array(oReq.response));
+			oReq.onerror = () => this.FailCallback();
+
+			oReq.open("GET", this.Id);
+			oReq.responseType = "arraybuffer";
+			oReq.send();
+		}
+	);
+
+	return function (newThisType) { $thisType = newThisType; };
+});

@@ -212,6 +212,13 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
         }
     );
 
+    $.Method({ Static: false, Public: true }, "SetLineWidth",
+        new JSIL.MethodSignature(null, [$.Single]),
+        function SetLineWidth(width) {
+            this.gl.SetLineWidth(width);
+        }
+    );
+
     $.Method({ Static: false, Public: true }, "get_Width",
         new JSIL.MethodSignature($.Int32, []),
         function get_Width() {
@@ -277,10 +284,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
     );
 
     $.Method({ Static: false, Public: true }, "DoResize",
-        new JSIL.MethodSignature(null, []),
-        function DoResize() {
+        new JSIL.MethodSignature(null, [$.Int32, $.Int32]),
+        function DoResize(width, height) {
             if (this.Resize !== null) {
-                this.Resize(this, (new $fuseeCommon.Fusee.Engine.Common.ResizeEventArgs()).__Initialize__({}));
+                this.Resize(this, (new $fuseeCommon.Fusee.Engine.Common.ResizeEventArgs(width, height)).__Initialize__({}));
             }
         }
     );
@@ -1361,7 +1368,8 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
                         this.gl.drawElements(this.gl.TRIANGLES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
                         break;
                     case "POINT":
-                        this.gl.drawElements(this.gl.POINTS, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
+                        this.gl.enable(this.gl.VERTEX_PROGRAM_POINT_SIZE);
+                        this.gl.drawElements(this.gl.POINTS, mr.NElements, this.gl.UNSIGNED_SHORT, 0);                        
                         break;
                     case "LINES":
                         this.gl.drawElements(this.gl.LINES, mr.NElements, this.gl.UNSIGNED_SHORT, 0);
@@ -1551,7 +1559,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
             this.gl.activeTexture(this.gl.TEXTURE0 + texUnit);
             this.gl.bindTexture(this.gl.TEXTURE_2D, texId.handle);
         }
-    );
+    );    
 
     $.Method({ Static: false, Public: false }, "BlendOperationToOgl",
         new JSIL.MethodSignature($.Int32, [$fuseeCommon.TypeRef("Fusee.Engine.Common.BlendOperation")]),

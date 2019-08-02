@@ -26,8 +26,13 @@ namespace Fusee.Engine.Core
         
 
         private readonly IRenderContextImp _rci;
-
+        /// <summary>
+        /// Gets and sets the viewport width.
+        /// </summary>
         public int ViewportWidth { get; private set; }
+        /// <summary>
+        /// Gets and sets the viewport heigth.
+        /// </summary>
         public int ViewportHeight { get; private set; }
 
         private ShaderProgram _currentShader;
@@ -754,7 +759,9 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Constructors
-
+        /// <summary>
+        /// The color value.
+        /// </summary>
         protected float3 _col;
 
         /// <summary>
@@ -764,6 +771,7 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+
             View = float4x4.Identity;
             Model = float4x4.Identity;
             Projection = float4x4.Identity;
@@ -785,6 +793,8 @@ namespace Fusee.Engine.Core
 
             //_debugShader = Shaders.GetColorShader(this);
             //_debugColor = _debugShader.GetShaderParam("color");
+
+            
         }
 
         #endregion
@@ -1216,6 +1226,7 @@ namespace Fusee.Engine.Core
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
+        
 
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
@@ -1238,6 +1249,11 @@ namespace Fusee.Engine.Core
             }
 
 
+        }
+
+        public void SetLineWidth(float width)
+        {
+            _rci.SetLineWidth(width);
         }
 
         internal void CreateAllShaderEffectVariables(ShaderEffect ef)
@@ -1288,6 +1304,9 @@ namespace Fusee.Engine.Core
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
+                        if (initValue == null)
+                            continue;
+
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
                         object globalFXValue;
                         if (_allFXParams.TryGetValue(paramNew.Name, out globalFXValue))
@@ -1532,7 +1551,6 @@ namespace Fusee.Engine.Core
         {
             _rci.SetShaderParam(param, val);
         }
-
         #endregion
 
         #region Render releated Members
@@ -1569,7 +1587,11 @@ namespace Fusee.Engine.Core
                 _rci.SetRenderState(theKey, theValue);
             }
         }
-
+        /// <summary>
+        /// Returns the current render state.
+        /// </summary>
+        /// <param name="renderState"></param>
+        /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
             return _rci.GetRenderState(renderState);
@@ -1644,17 +1666,18 @@ namespace Fusee.Engine.Core
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
-
-                    // After rendering always cleanup pending meshes
-                    _meshManager.Cleanup();
-                    _textureManager.Cleanup();
                 }
+
+                // After rendering always cleanup pending meshes
+                _meshManager.Cleanup();
+                _textureManager.Cleanup();
 
                 // After rendering all passes cleanup shadereffect
                 _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
             {
+              
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }
@@ -1663,7 +1686,6 @@ namespace Fusee.Engine.Core
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
-        /// <param name="value"></param>
         internal void SetShaderParamT(EffectParam param)
         {
             if (param.Info.Type == typeof(int))
@@ -1706,7 +1728,11 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
         }
-      
+        /// <summary>
+        /// Returns the hardware capabilities.
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns></returns>
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
@@ -1741,7 +1767,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [debug lines enabled].
+        /// Gets and sets a value indicating whether [debug lines enabled].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.

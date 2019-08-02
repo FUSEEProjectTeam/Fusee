@@ -220,7 +220,7 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Gets or sets the font displayed on this font map.
+        /// Gets and sets the font displayed on this font map.
         /// </summary>
         /// <value>
         /// The font.
@@ -236,7 +236,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the pixel height of each character on this font. This setting will affect the 
+        /// Gets and sets the pixel height of each character on this font. This setting will affect the 
         /// size of the font <see cref="Image"/> , so be careful with this setting.
         /// </summary>
         /// <value>
@@ -253,7 +253,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the list of characters that should be present on the font <see cref="Image"/>.
+        /// Gets and sets the list of characters that should be present on the font <see cref="Image"/>.
         /// </summary>
         /// <value>
         /// The alphabet.

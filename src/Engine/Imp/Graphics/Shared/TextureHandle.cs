@@ -27,8 +27,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
         internal int IntermediateToTextureBufferHandle = -1;
         internal bool Toggle = false;
         internal int DepthHandle = -1;
-
+        /// <summary>
+        /// The textures width.
+        /// </summary>
         internal int TextureWidth;
+        /// <summary>
+        /// The textures height
+        /// </summary>
         internal int TextureHeight;
     }
 

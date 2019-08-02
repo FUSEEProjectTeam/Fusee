@@ -1,10 +1,58 @@
-﻿using Fusee.Math.Core;
+﻿using Fusee.Engine.Common;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Creates a simple cube geomentry straight from the code.
+    /// Creates a simple wireframe cube geometry straight from the code.
+    /// For line width use RC.LineWidth();
+    /// </summary>
+    public class WireframeCube : Mesh
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WireframeCube" /> class.
+        /// The default cube is 1 unit big.
+        /// </summary>
+        public WireframeCube()
+        {
+            MeshType = (int)OpenGLPrimitiveType.LINES;
+            Vertices = new float3[]
+            {
+                new float3(+0.5f, +0.5f, +0.5f),
+                new float3(+0.5f, -0.5f, +0.5f),
+                new float3(+0.5f, +0.5f, -0.5f),
+                new float3(+0.5f, -0.5f, -0.5f),
+                new float3(-0.5f, +0.5f, +0.5f),
+                new float3(-0.5f, -0.5f, +0.5f),
+                new float3(-0.5f, +0.5f, -0.5f),
+                new float3(-0.5f, -0.5f, -0.5f)
+            };
+            Triangles = new ushort[] // these are our lines
+            {
+                0,4, // back
+                4,5,
+                5,1,
+                1,0,
+
+                0,2, // right, the back one can be discarded
+                2,3,
+                3,1,
+
+                2,6, // front, the right one can be discarded
+                6,7,
+                7,3,
+
+                6,4, // left, the rest
+                7,5
+            };
+        }
+    }
+
+
+
+    /// <summary>
+    /// Creates a simple cube geometry straight from the code.
     /// </summary>
     public class Cube : Mesh
     {

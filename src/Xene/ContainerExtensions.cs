@@ -1,15 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+
 
 namespace Fusee.Xene
 {
     /// <summary>
-    /// Static quick-hack helpers to access components within nodes.
+    /// Static quick-hack helpers to access components within nodes and get local and global transformation matrices.
     /// </summary>
-    static public class ContainerExtensions
+    public static class ContainerExtensions
     {
+        /// <summary>
+        /// Calculates the appropriate projection matrix for the given projection method.
+        /// </summary>
+        /// <param name="pc">The projection component.</param>        
+        public static float4x4 Matrix(this ProjectionComponent pc)
+        {
+            switch (pc.ProjectionMethod)
+            {
+                default:
+                case ProjectionMethod.PERSPECTIVE:
+                    var aspect = pc.Width / (float)pc.Height;
+                    return float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
+                case ProjectionMethod.ORTHOGRAPHIC:
+                    return float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);
+            }
+        }
+
         /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>
@@ -20,6 +39,135 @@ namespace Fusee.Xene
             return float4x4.CreateTranslation(tcThis.Translation) * float4x4.CreateRotationY(tcThis.Rotation.y) *
                    float4x4.CreateRotationX(tcThis.Rotation.x) * float4x4.CreateRotationZ(tcThis.Rotation.z) *
                    float4x4.CreateScale(tcThis.Scale);
+        }
+
+        /// <summary>
+        /// Returns the global transformation matrix as the product of all transformations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalTransformation(this SceneNodeContainer snc)
+        {
+            var res = GetLocalTransformation(snc.GetComponent<TransformComponent>());
+            if (snc.Parent == null)
+                return snc.GetComponent<TransformComponent>().Matrix();
+
+            snc.AccumulateGlobalTransform(ref res);
+            return res;
+        }
+
+        /// <summary>
+        /// Returns the global rotation matrix as the product of all rotations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float4x4 GetGlobalRotation(this SceneNodeContainer snc)
+        {
+            var transform = GetGlobalTransformation(snc);
+            return transform.RotationComponent();
+        }
+
+        /// <summary>
+        /// Returns the global translation as the product of all translations along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float3 GetGlobalTranslation(this SceneNodeContainer snc)
+        {
+            var transform = GetGlobalTransformation(snc);
+            return transform.Translation();
+        }
+
+        /// <summary>
+        /// Returns the global scale as the product of all scaling along the scene graph branch this SceneNodeContainer is a part of. 
+        /// </summary>
+        public static float3 GetGlobalScale(this SceneNodeContainer snc)
+        {
+            var transform = GetGlobalTransformation(snc);
+            return transform.Scale();
+        }
+
+        private static void AccumulateGlobalTransform(this SceneNodeContainer snc, ref float4x4 res)
+        {
+            while (true)
+            {
+                if (snc.Parent == null)
+                {
+                    return;
+                }
+
+                var tcp = snc.Parent.GetComponent<TransformComponent>();
+
+                if (tcp == null)
+                {
+                    snc = snc.Parent;
+                    continue;
+                }
+
+                res = GetLocalTransformation(tcp)* res;
+                snc = snc.Parent;
+            }
+        }
+
+        /// <summary>
+        /// Get the local transformation matrix from this TransformationComponent. 
+        /// </summary>
+        public static float4x4 GetLocalTransformation(this TransformComponent tc)
+        {
+            return tc == null ? float4x4.Identity : tc.Matrix();
+        }
+        
+        /// <summary>
+        /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
+        /// </summary>
+        public static float4x4 GetParentProjection(this SceneNodeContainer snc)
+        {
+            var res = float4x4.Identity;
+
+            if (snc.Parent == null)
+                return snc.GetComponent<ProjectionComponent>().Matrix();
+
+            var parent = snc.Parent;
+            while (true)
+            {
+                if (parent.Parent == null || res != float4x4.Identity)
+                {
+                    return res;
+                }
+
+                res = parent.GetComponent<ProjectionComponent>().Matrix();
+                parent = parent.Parent;
+            }
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type and the sub-types in the children of this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="type">The type of the components to look for.</param>
+        /// <returns>A List of components of the specified type, if contained within the given container.</returns>
+        public static IEnumerable<SceneComponentContainer> GetComponentsInChildren(this SceneNodeContainer sncThis, Type type)
+        {
+            if (sncThis == null || type == null)
+                throw new ArgumentException("SceneNodeContainer or type is null!");
+
+            foreach (var child in sncThis.Children)
+            {
+                foreach (var comp in child.Components)
+                {
+                    if (comp.GetType().IsAssignableFrom(type) || comp.GetType().IsSubclassOf(type))
+                        yield return comp;
+                }
+
+                foreach (var gChild in GetComponentsInChildren(child, type))
+                    yield return gChild;
+            }
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type in the children of this scene node container.
+        /// </summary>
+        /// <typeparam name="TComp">The type of the components to look for.</typeparam>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        public static IEnumerable<TComp> GetComponentsInChildren<TComp>(this SceneNodeContainer sncThis)
+            where TComp : SceneComponentContainer
+        {
+            return GetComponentsInChildren(sncThis, typeof(TComp)).Cast<TComp>();
         }
 
         /// <summary>
@@ -163,6 +311,86 @@ namespace Fusee.Xene
             }
 
             return sc;
+        }
+
+        /// <summary>
+        /// Translate this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translation">Translation amount as float3.</param>
+        public static void Translate(this TransformComponent tc, float3 xyz)
+        {
+            tc.Translation += xyz;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="translationMtx">Translation amount as represented in float4x4.</param>
+        public static void Translate(this TransformComponent tc, float4x4 translationMtx)
+        {
+            tc.Translation += translationMtx.Translation();
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="xyz">Rotation amount as float3.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, float3 xyz, Space space = Space.Model)
+        {
+            Rotate(tc, float4x4.CreateRotationYXZ(xyz), space);
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="quaternion">Rotation amount in Quaternion.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, Quaternion quaternion, Space space = Space.Model)
+        {
+            Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+        }
+
+        /// <summary>
+        /// Rotates this node.
+        /// </summary>
+        /// <param name="tc"></param>
+        /// <param name="rotationMtx">Rotation amount as represented in float4x4.</param>
+        /// <param name="space">Rotation in reference to model or world space.</param>
+        public static void Rotate(this TransformComponent tc, float4x4 rotationMtx, Space space = Space.Model)
+        {
+            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+            var addRotationMtx = rotationMtx.RotationComponent();
+
+            if (space == Space.Model)
+            {
+                tc.Rotation = float4x4.RotMatToEuler(currentRotationMtx * addRotationMtx);
+            }
+            else
+            {
+                var euler = float4x4.RotMatToEuler(currentRotationMtx);
+
+                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            }
+        }
+
+        /// <summary>
+        /// Reference space for rotation.
+        /// </summary>
+        public enum Space
+        {
+            /// <summary>
+            /// World space
+            /// </summary>
+            World,
+            /// <summary>
+            /// Model space
+            /// </summary>
+            Model
         }
     }
 }

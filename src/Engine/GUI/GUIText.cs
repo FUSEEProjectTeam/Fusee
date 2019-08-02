@@ -6,12 +6,20 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.GUI
-{
+{   
+    /// <summary>
+    /// Creates a text mesh for the GUI.
+    /// </summary>
     public class GUIText: Mesh
     {
         private readonly FontMap _fontMap;
         private readonly string _text;
 
+        /// <summary>
+        /// Returns the text mesh.
+        /// </summary>
+        /// <param name="fontMap"></param>
+        /// <param name="text"></param>
         public GUIText(FontMap fontMap, string text)
         {
             _fontMap = fontMap;

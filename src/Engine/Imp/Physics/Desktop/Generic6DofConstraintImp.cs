@@ -12,7 +12,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal Generic6DofConstraint _g6dofci;
 
         /// <summary>
-        /// Gets or sets the angular lower limit.
+        /// Gets and sets the angular lower limit.
         /// </summary>
         /// <value>
         /// The angular lower limit.
@@ -31,7 +31,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the angular upper limit.
+        /// Gets and sets the angular upper limit.
         /// </summary>
         /// <value>
         /// The angular upper limit.
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the frame offset a.
+        /// Gets and sets the frame offset a.
         /// </summary>
         /// <value>
         /// The frame offset a.
@@ -123,7 +123,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the frame offset b.
+        /// Gets and sets the frame offset b.
         /// </summary>
         /// <value>
         /// The frame offset b.
@@ -185,7 +185,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             return retval;
         }
         /// <summary>
-        /// Gets or sets the linear lower limit.
+        /// Gets and sets the linear lower limit.
         /// </summary>
         /// <value>
         /// The linear lower limit.
@@ -204,7 +204,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
             }
         }
         /// <summary>
-        /// Gets or sets the linear upper limit.
+        /// Gets and sets the linear upper limit.
         /// </summary>
         /// <value>
         /// The linear upper limit.
@@ -264,7 +264,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [use frame offset].
+        /// Gets and sets a value indicating whether [use frame offset].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [use frame offset]; otherwise, <c>false</c>.
@@ -332,7 +332,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.

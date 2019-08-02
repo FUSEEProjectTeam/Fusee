@@ -176,7 +176,7 @@ namespace Fusee.Base.Common
         public byte A;
 
         /// <summary>
-        /// Gets or sets the component at the specified index.
+        /// Gets and sets the component at the specified index.
         /// </summary>
         /// <value>
         /// The value of the alpha, red, green, or blue component, depending on the index.

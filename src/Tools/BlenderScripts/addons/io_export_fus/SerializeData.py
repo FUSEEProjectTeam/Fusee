@@ -18,13 +18,24 @@ dir_path = os.path.join(dir_path, 'proto\\')
 sys.path.append(dir_path)
 import Scene_pb2 as Scene
 
+# Not possible because of pythons broken reference system
+# var class = new Class()
+# list.add(class)
+# take object 2 and change it; result = you change everything within this list and therefore all classes because this is no new instance
+class VertexWeight:
+    JointIndex = 0
+    Weight = 0.0
+
+    def __init__(self, jointIdx, weight):
+        self.JointIndex = jointIdx
+        self.Weight = weight
 
 # returns a serialized object, that can be saved to a file
 def SerializeData(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
     # init sceneContainer
     sceneContainer = Scene.SceneContainer()
     # write sceneHeader
-    sceneHeader = sceneContainer.Header;
+    sceneHeader = sceneContainer.Header
     sceneHeader.Version = 0
     sceneHeader.Generator = 'Blender FUSEE Exporter AddOn'
     sceneHeader.CreatedBy = getpass.getuser()
@@ -241,7 +252,74 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
 
         # </CM's Checks
 
+        # <Export for completely smooth shaded models.>
+        # Does NOT export redundant vertices. Not in use because a mesh can have both, smooth and flat shaded faces.
+        # Therefore the optimal solution would be mixture of both, the above and the following method to support the export of meshes with the minimal number of vertices.
 
+        '''
+        class AddVert:
+            pass
+        
+        mesh = rootmesh.Mesh
+        bm.from_mesh(damesh)
+        uv_lay = bm.loops.layers.uv.active       
+
+        vertList = list()
+
+        for i, vert in enumerate(bm.verts):
+            addVert = AddVert()
+            addVert.thisVert = vert
+            addVert.wasAdded = False
+            vertList.append(addVert)            
+
+        vertices = [None]*len(bm.verts)
+        normals = [None]*len(bm.verts)
+        uvs = [None]*len(bm.verts)
+
+        for face in bm.faces:
+                
+            for loop in face.loops:
+        
+                vertIndex = loop.vert.index                       
+        
+                mesh.Triangles.append(vertIndex)               
+
+                value = vertList[vertIndex]
+        
+                if uv_lay is not None:
+                    uv = loop[uv_lay].uv
+            
+                if(value.wasAdded == False):
+
+                    vertices[vertIndex] = value.thisVert.co 
+
+                    normals[vertIndex] = loop.vert.normal                                    
+                
+                    if uv_lay is not None:
+                        uvs[vertIndex] = uv           
+            
+                    value.wasAdded = True
+                    vertList[vertIndex] = value 
+
+        # fill output mesh
+        for i, vert in enumerate(vertices):            
+            outVert = mesh.Vertices.add()                    
+            outVert.x = vert.x
+            outVert.y = vert.z
+            outVert.z = vert.y
+    
+            outNormal = mesh.Normals.add()            
+            outNormal.x = normals[i].x
+            outNormal.y = normals[i].z
+            outNormal.z = normals[i].y           
+    
+            if len(uvs) != 0:
+                outUv = mesh.UVs.add()
+                outUv.x = uvs[i].x
+                outUv.y = uvs[i].y
+ 
+        '''
+        # </Export for completely smooth shaded models>
 
         '''
         #count faces
@@ -329,7 +407,7 @@ def GetNode(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smo
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
-        rootMaterialComponent = None;
+        rootMaterialComponent = None
         rootMaterialComponent, textures = GetMaterial(obj, isWeb)       
 
         rootComponent1.payload = rootTransformComponent.SerializePartialToString()
@@ -417,6 +495,10 @@ def create_bone_payload(boneNode, obj, bone):
 
     return boneNode.SerializePartialToString()
 
+def PrintVertList(bla):
+      for i in range(0, len(bla)):
+            for j in range(0, len(bla[i])):
+                print("VertexIdx: " + str(i) + " Joint idx: " + str(bla[i][j].JointIndex) + " and a weight of: " + str(bla[i][j].Weight))
 
 def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothingDist, smoothingAngle):
         serializedData = namedtuple('serializedData', ['obj', 'tex'])
@@ -435,7 +517,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
 
         for bone in obj.pose.bones:
             rootChildren = root.Children.add()
-            rootChildren.payload =  create_bone_payload(rootChildren, obj, bone);
+            rootChildren.payload =  create_bone_payload(rootChildren, obj, bone)
 
 
         ##Hierarchy 1 (root = obj)
@@ -486,6 +568,98 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         transformComponent.Scale.y = scale.z
         transformComponent.Scale.z = scale.y
 
+        # ----- Collect bones and weights
+
+        # WEIGHT COMPONENT
+        rootWeightComponent = Scene.SceneComponentContainer()
+        weightComponent = rootWeightComponent.WeightComponent
+        # vWeight = Scene.VertexWeight
+
+       
+        # get binding matrices (init of bones)
+        bindingMatricesList = []
+        
+
+        activeObj = bpy.context.active_object.children[0]
+
+        for n in activeObj.vertex_groups:
+            print("vertex_grpup name :" + str(n.name))
+
+        obj_group_names = [g.name for g in activeObj.vertex_groups]
+        obj_verts = activeObj.data.vertices
+
+        # vertexWeightList = [[[0]] * len(obj.pose.bones) ] * len(obj_verts) # consits of: VertexWeight
+
+        vertexWeightList = []       
+
+        for i in range(0, len(obj_verts)):
+            vertexWeightList.append([])          
+            # fill the list with empty elements with current bone idx
+            for j in range(0, len(obj.pose.bones)):                           
+                emptyVWeight = VertexWeight(j, 0)
+                #print(emptyVWeight.Weight)
+                vertexWeightList[i].append(emptyVWeight)       
+
+        # PrintVertList(vertexWeightList)
+
+        print("vertexWeightList length:" + str(len(vertexWeightList)))       
+
+        # TODO: change rotation order???! --> to euler(YXZ) --> matrix
+        
+        for i, bone in enumerate(obj.pose.bones):         
+
+            if obj.parent is None:
+                obj_mtx_clean = obj.matrix_world.copy()
+            else:
+                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
+
+            # change rotation order to YXZ
+            boneRot_eul = bone.matrix.to_euler('YXZ')
+            print(str(boneRot_eul))
+
+            boneRot_mat_x = Matrix.Rotation(-boneRot_eul.x, 4, 'X')
+            boneRot_mat_y = Matrix.Rotation(-boneRot_eul.z, 4, 'Y')
+            boneRot_mat_z = Matrix.Rotation(-boneRot_eul.y, 4, 'Z')
+            boneRot_mat = boneRot_mat_y @ boneRot_mat_x @ boneRot_mat_z
+
+            print(str(boneRot_mat))
+
+            obj_mtx = obj_mtx_clean.inverted() @ boneRot_mat            
+
+            # convert obj_mxt to float4x4 
+            tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
+
+            # add matrix to binding matrices:
+            bindingMatricesList.append(tmpMat)
+
+            if bone.name not in obj_group_names:
+                continue
+           
+            gidx = activeObj.vertex_groups[bone.name].index
+            
+            bone_verts = [v for v in obj_verts if gidx in [g.group for g in v.groups]]
+
+            for v in bone_verts:     
+                for grp in v.groups:
+                    if grp.group == gidx:                        
+                        w = grp.weight
+                        vertexWeightList[v.index][i].JointIndex = i
+                        vertexWeightList[v.index][i].Weight = w
+                        # print("Saving Vertex at position " + str(v.index) + " with joint idx: " + str(i) + " and a weight of: " + str(w))
+                        # print("Saved: " + str(vertexWeightList[v.index][i].Weight))
+                        # print("Saved: " + str(vertexWeightList[v.index][i].JointIndex))
+                        
+                        # print('Vertex',v.index,'has a weight of',w,'for bone',bone.name)
+        print(" ")
+        print(" --------------- PRINT WEIGHT FOR EACH VERTEX ----------------")
+        PrintVertList(vertexWeightList)
+
+        # append all found bindingMatrices
+        weightComponent.BindingMatrices.extend(bindingMatricesList)
+
+        #----------------------------------
+
+
         # convert the mesh again to a bmesh, after splitting the edges
         bm = bmesh.new()
         # bm.from_mesh(bpy.context.scene.objects.active.data)
@@ -497,16 +671,46 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         if uvActive is not None:
             uv_layer = bm.loops.layers.uv.active
 
+        outputVertexWeightList = [[VertexWeight] * len(obj.pose.bones) ] * (len(bm.faces) * 3) # consits of: VertexWeight
+
         mesh = rootmesh.Mesh
         i = 0
         for face in bm.faces: 
             # TODO: assert that len(face.loops) == 3!
             add_vertex(0, face, i, mesh, uv_layer)
+            vertIdx = face.loops[0].vert.index
+            outVertWeight = vertexWeightList[vertIdx]
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
-            add_vertex(1, face, i, mesh, uv_layer)
+
+            add_vertex(1, face, i, mesh, uv_layer)            
+            vertIdx = face.loops[1].vert.index            
+            outVertWeight = vertexWeightList[vertIdx]
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
+
             add_vertex(2, face, i, mesh, uv_layer)
+            vertIdx = face.loops[2].vert.index
+            outVertWeight = vertexWeightList[vertIdx] 
+            outputVertexWeightList[i] = outVertWeight            
             i += 1
+
+        # PrintVertList(outputVertexWeightList)
+
+
+        # iterate output, convert to protobuf
+        for vWeightList in outputVertexWeightList:
+            # create new vertexWeight, one vertWeight consits of 2 or more bones with their weights
+            VertexWeightList = weightComponent.WeightMap.add() # per vertex
+            perVertexList = []
+
+            for vWeight in vWeightList:
+                v = VertexWeightList.VertexWeights.add()
+                v.JointIndex = vWeight.JointIndex
+                v.Weight = vWeight.Weight
+                perVertexList.append(v)
+
+            VertexWeightList = perVertexList
 
         # BoundingBox
         bbox = obj.bound_box
@@ -530,38 +734,7 @@ def GetArmaturePayload(objects, isWeb, isOnlySelected, smoothing, lamps, smoothi
         # check, if a material is set, otherwise use default material
         # also check if the material uses nodes -> cycles rendering, otherwise use default material
         textures = []
-        rootMaterialComponent, textures = GetMaterial(obj.children[0], isWeb)
-         
-        # WEIGHT COMPONENT
-        rootWeightComponent = Scene.SceneComponentContainer()
-        weightComponent = rootWeightComponent.WeightComponent
-
-        # get binding matrices (init of bones)
-        bindingMatricesList = []
-
-        for bone in obj.pose.bones:       
-            if obj.parent is None:
-                obj_mtx_clean = obj.matrix_world.copy()
-            else:
-                obj_mtx_clean = obj.parent.matrix_world.inverted() @ obj.matrix_world
-
-            obj_mtx = obj_mtx_clean.inverted() @ bone.matrix
-
-            # convert obj_mxt to float4x4 
-            tmpMat = ConvertMatrixToFloat4x4(obj_mtx)
-
-            # add matrix to binding matrices:
-            bindingMatricesList.append(tmpMat)
-
-        # get weight map, where???
-        print(obj)
-        vertexWeightList = [] # consits of: VertexWeight    
-       
-        weightComponent.WeightMap.extend(vertexWeightList)
-
-        # append all found bindingMatrices
-        weightComponent.BindingMatrices.extend(bindingMatricesList)
-
+        rootMaterialComponent, textures = GetMaterial(obj.children[0], isWeb)     
 
         # SCENE NODE CONTAINER
         # write rootComponents to rootNode        
@@ -657,6 +830,7 @@ def GetMaterial(obj, isWeb):
                         diffuse.Color.x = diffCol[0]
                         diffuse.Color.y = diffCol[1]
                         diffuse.Color.z = diffCol[2]
+                        diffuse.Color.w = diffCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -677,6 +851,7 @@ def GetMaterial(obj, isWeb):
                         specular.Color.x = specCol[0]
                         specular.Color.y = specCol[1]
                         specular.Color.z = specCol[2]
+                        specular.Color.w = specCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -702,6 +877,7 @@ def GetMaterial(obj, isWeb):
                         emissive.Color.x = emissiveCol[0]
                         emissive.Color.y = emissiveCol[1]
                         emissive.Color.z = emissiveCol[2]
+                        emissive.Color.w = emissiveCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Color'].links
                         if len(links) > 0:
@@ -760,6 +936,7 @@ def GetMaterial(obj, isWeb):
                         diffuse.Color.x = diffCol[0]
                         diffuse.Color.y = diffCol[1]
                         diffuse.Color.z = diffCol[2]
+                        diffuse.Color.w = diffCol[3]
                         # check, if material has got textures. If so, get texture filepath
                         links = node.inputs['Base Color'].links
                         if len(links) > 0:
@@ -777,6 +954,7 @@ def GetMaterial(obj, isWeb):
                         spec.Color.x = specCol[0]
                         spec.Color.y = specCol[1]
                         spec.Color.z = specCol[2]
+                        spec.Color.w = specCol[3]
                         ## check, if material has got textures. If so, get texture filepath
                         #links = subsurfaceColor.links
                         #if len(links) > 0:
@@ -814,6 +992,7 @@ def SetDefaultMaterial(isWeb):
     diffuse.Color.x = 0.6
     diffuse.Color.y = 0.6
     diffuse.Color.z = 0.6
+    diffuse.Color.w = 1.0
 
     # Webviewer had problems with specular channel, therefore it was deactivated when exporting to web
     # if isWeb == False: (indent folloing if uncommenting this)
@@ -822,6 +1001,7 @@ def SetDefaultMaterial(isWeb):
     specular.Color.x = 0.6
     specular.Color.y = 0.6
     specular.Color.z = 0.6
+    specular.Color.w = 1.0
 
     specular.SpecularChannelContainer.Intensity = 0.2
     specular.SpecularChannelContainer.Shininess = 0.2
@@ -850,7 +1030,21 @@ def GetParents(obj):
 
 def prepare_mesh(obj):
     # This applies all the modifiers (without altering the scene)
-    mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
+    # mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
+    # depsgraph = bpy.context.evaluated_depsgraph_get()
+    # Invoke to_mesh() for original object.
+    # mesh_from_orig = obj.to_mesh()
+    # self.report({'INFO'}, f"{len(mesh_from_orig.vertices)} in new mesh without modifiers.")
+    # Remove temporary mesh.
+    # obj.to_mesh_clear()
+    # Invoke to_mesh() for evaluated object.
+    # object_eval = obj.evaluated_get(depsgraph)
+    # mesh = object_eval.to_mesh()
+    #self.report({'INFO'}, f"{len(mesh.vertices)} in new mesh with modifiers.")
+    # Remove temporary mesh.
+    # object_eval.to_mesh_clear()
+
+    mesh = obj.to_mesh()
 
     # Triangulate for web export
     bm = bmesh.new()

@@ -110,9 +110,13 @@ namespace Fusee.Engine.Common
         ///   <c>true</c> if BoneIndicesBufferObject is not 0; otherwise, <c>false</c>.
         /// </value>
         bool BoneIndicesSet { get; }
-
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating wether [Tangents Set].
+        /// </summary>
         bool TangentsSet { get; }
-
+        /// <summary>
+        /// Implementation Tasks: Gets a value indicating wether [BiTangents Set].
+        /// </summary>
         bool BiTangentsSet { get; }
 
         /// <summary>

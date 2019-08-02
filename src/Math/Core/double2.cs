@@ -1,6 +1,7 @@
 #pragma warning disable 1591
 
 using System;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -41,127 +42,43 @@ namespace Fusee.Math.Core
             this.y = y;
         }
 
-        /// <summary>
-        /// Constructs a new double2 from the given double2.
-        /// </summary>
-        /// <param name="v">The double2 to copy components from.</param>
-        [Obsolete]
-        public double2(double2 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new double2 from the given double3.
-        /// </summary>
-        /// <param name="v">The double3 to copy components from. Z is discarded.</param>
-        [Obsolete]
-        public double2(double3 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
-        /// <summary>
-        /// Constructs a new double2 from the given double4.
-        /// </summary>
-        /// <param name="v">The double4 to copy components from. Z and W are discarded.</param>
-        [Obsolete]
-        public double2(double4 v)
-        {
-            x = v.x;
-            y = v.y;
-        }
-
         #endregion
 
         #region Public Members
 
+        #region this
+        public double this[int idx]
+        {
+            get
+            {
+                switch (idx)
+                {
+                    case 0:
+                        return x;
+                    case 1:
+                        return y;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+            set
+            {
+                switch (idx)
+                {
+                    case 0:
+                        x = value;
+                        break;
+                    case 1:
+                        y = value;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double2 type");
+                }
+            }
+        }
+        #endregion
+
         #region Instance
-
-        #region public void Add()
-
-        /// <summary>
-        /// Add the Vector passed as parameter to this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Add() method instead.")]
-        public void Add(double2 right)
-        {
-            this.x += right.x;
-            this.y += right.y;
-        }
-
-        /// <summary>
-        /// Add the Vector passed as parameter to this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Add() method instead.")]
-        public void Add(ref double2 right)
-        {
-            this.x += right.x;
-            this.y += right.y;
-        }
-
-        #endregion public void Add()
-
-        #region public void Sub()
-
-        /// <summary>
-        /// Subtract the Vector passed as parameter from this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public void Sub(double2 right)
-        {
-            this.x -= right.x;
-            this.y -= right.y;
-        }
-
-        /// <summary>
-        /// Subtract the Vector passed as parameter from this instance.
-        /// </summary>
-        /// <param name="right">Right operand. This parameter is only read from.</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public void Sub(ref double2 right)
-        {
-            this.x -= right.x;
-            this.y -= right.y;
-        }
-
-        #endregion public void Sub()
-
-        #region public void Mult()
-
-        /// <summary>
-        /// Multiply this instance by a scalar.
-        /// </summary>
-        /// <param name="f">Scalar operand.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Mult(double f)
-        {
-            this.x *= f;
-            this.y *= f;
-        }
-
-        #endregion public void Mult()
-
-        #region public void Div()
-
-        /// <summary>
-        /// Divide this instance by a scalar.
-        /// </summary>
-        /// <param name="f">Scalar operand.</param>
-        [Obsolete("Use static Divide() method instead.")]
-        public void Div(double f)
-        {
-            double mult = 1.0f / f;
-            this.x *= mult;
-            this.y *= mult;
-        }
-
-        #endregion public void Div()
 
         #region public double Length
 
@@ -177,31 +94,7 @@ namespace Fusee.Math.Core
         {
             get
             {
-                return (double)System.Math.Sqrt(x * x + y * y);
-            }
-        }
-
-        #endregion
-
-        #region public double LengthFast
-
-        /// <summary>
-        /// Gets an approximation of the vector length (magnitude).
-        /// </summary>
-        /// <value>
-        /// The length fast.
-        /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthSquared" />
-        /// <remarks>
-        /// This property uses an approximation of the square root function to calculate vector magnitude, with
-        /// an upper error bound of 0.001.
-        /// </remarks>
-        public double LengthFast
-        {
-            get
-            {
-                return 1.0f / M.InverseSqrtFast(x * x + y * y);
+                return (double)System.Math.Sqrt(LengthSquared);
             }
         }
 
@@ -267,71 +160,29 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region public void Normalize()
+        #region public Normalize()
 
         /// <summary>
         /// Scales the double2 to unit length.
         /// </summary>
-        public void Normalize()
+        public double2 Normalize()
         {
-            double scale = 1.0f / this.Length;
-            x *= scale;
-            y *= scale;
+            return Normalize(this);
         }
 
         #endregion
 
-        #region public void NormalizeFast()
+        #region public NormalizeFast()
 
         /// <summary>
         /// Scales the double2 to approximately unit length.
         /// </summary>
-        public void NormalizeFast()
+        public double2 NormalizeFast()
         {
-            double scale = M.InverseSqrtFast(x * x + y * y);
-            x *= scale;
-            y *= scale;
+            return NormalizeFast(this);
         }
 
         #endregion
-
-        #region public void Scale()
-
-        /// <summary>
-        /// Scales the current double2 by the given amounts.
-        /// </summary>
-        /// <param name="sx">The scale of the x component.</param>
-        /// <param name="sy">The scale of the y component.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(double sx, double sy)
-        {
-            this.x = x * sx;
-            this.y = y * sy;
-        }
-
-        /// <summary>
-        /// Scales this instance by the given parameter.
-        /// </summary>
-        /// <param name="scale">The scaling of the individual components.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(double2 scale)
-        {
-            this.x *= scale.x;
-            this.y *= scale.y;
-        }
-
-        /// <summary>
-        /// Scales this instance by the given parameter.
-        /// </summary>
-        /// <param name="scale">The scaling of the individual components.</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public void Scale(ref double2 scale)
-        {
-            this.x *= scale.x;
-            this.y *= scale.y;
-        }
-
-        #endregion public void Scale()
 
         /// <summary>
         /// Returns an array of doubles with the two components of the vector.
@@ -376,111 +227,6 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Obsolete
-
-        #region Sub
-
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <returns>
-        /// Result of subtraction
-        /// </returns>
-        [Obsolete("Use static Subtract() method instead.")]
-        public static double2 Sub(double2 a, double2 b)
-        {
-            a.x -= b.x;
-            a.y -= b.y;
-            return a;
-        }
-
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">Result of subtraction</param>
-        [Obsolete("Use static Subtract() method instead.")]
-        public static void Sub(ref double2 a, ref double2 b, out double2 result)
-        {
-            result.x = a.x - b.x;
-            result.y = a.y - b.y;
-        }
-
-        #endregion
-
-        #region Mult
-
-        /// <summary>
-        /// Multiply a vector and a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <returns>
-        /// Result of the multiplication
-        /// </returns>
-        [Obsolete("Use static Multiply() method instead.")]
-        public static double2 Mult(double2 a, double f)
-        {
-            a.x *= f;
-            a.y *= f;
-            return a;
-        }
-
-        /// <summary>
-        /// Multiply a vector and a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <param name="result">Result of the multiplication</param>
-        [Obsolete("Use static Multiply() method instead.")]
-        public static void Mult(ref double2 a, double f, out double2 result)
-        {
-            result.x = a.x * f;
-            result.y = a.y * f;
-        }
-
-        #endregion
-
-        #region Div
-
-        /// <summary>
-        /// Divide a vector by a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <returns>
-        /// Result of the division
-        /// </returns>
-        [Obsolete("Use static Divide() method instead.")]
-        public static double2 Div(double2 a, double f)
-        {
-            double mult = 1.0f / f;
-            a.x *= mult;
-            a.y *= mult;
-            return a;
-        }
-
-        /// <summary>
-        /// Divide a vector by a scalar
-        /// </summary>
-        /// <param name="a">Vector operand</param>
-        /// <param name="f">Scalar operand</param>
-        /// <param name="result">Result of the division</param>
-        [Obsolete("Use static Divide() method instead.")]
-        public static void Div(ref double2 a, double f, out double2 result)
-        {
-            double mult = 1.0f / f;
-            result.x = a.x * mult;
-            result.y = a.y * mult;
-        }
-
-        #endregion
-
-        #endregion
-
         #region Add
 
         /// <summary>
@@ -493,19 +239,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Add(double2 a, double2 b)
         {
-            Add(ref a, ref b, out a);
-            return a;
-        }
-
-        /// <summary>
-        /// Adds two vectors.
-        /// </summary>
-        /// <param name="a">Left operand.</param>
-        /// <param name="b">Right operand.</param>
-        /// <param name="result">Result of operation.</param>
-        public static void Add(ref double2 a, ref double2 b, out double2 result)
-        {
-            result = new double2(a.x + b.x, a.y + b.y);
+            return new double2(a.x + b.x, a.y + b.y);
         }
 
         #endregion
@@ -522,19 +256,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Subtract(double2 a, double2 b)
         {
-            Subtract(ref a, ref b, out a);
-            return a;
-        }
-
-        /// <summary>
-        /// Subtract one Vector from another
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">Result of subtraction</param>
-        public static void Subtract(ref double2 a, ref double2 b, out double2 result)
-        {
-            result = new double2(a.x - b.x, a.y - b.y);
+            return new double2(a.x - b.x, a.y - b.y);
         }
 
         #endregion
@@ -551,23 +273,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Multiply(double2 vector, double scale)
         {
-            Multiply(ref vector, scale, out vector);
-            return vector;
+            return new double2(vector.x * scale, vector.y * scale);
         }
 
-        /// <summary>
-        /// Multiplies a vector by a scalar.
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Multiply(ref double2 vector, double scale, out double2 result)
-        {
-            result = new double2(vector.x * scale, vector.y * scale);
-        }
 
         /// <summary>
-        /// Multiplies a vector by the components a vector (scale).
+        /// Multiplies a vector by the components of a vector (scale).
         /// </summary>
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
@@ -576,19 +287,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Multiply(double2 vector, double2 scale)
         {
-            Multiply(ref vector, ref scale, out vector);
-            return vector;
-        }
-
-        /// <summary>
-        /// Multiplies a vector by the components of a vector (scale).
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Multiply(ref double2 vector, ref double2 scale, out double2 result)
-        {
-            result = new double2(vector.x * scale.x, vector.y * scale.y);
+            return new double2(vector.x * scale.x, vector.y * scale.y);
         }
 
         #endregion
@@ -605,19 +304,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Divide(double2 vector, double scale)
         {
-            Divide(ref vector, scale, out vector);
-            return vector;
-        }
-
-        /// <summary>
-        /// Divides a vector by a scalar.
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Divide(ref double2 vector, double scale, out double2 result)
-        {
-            Multiply(ref vector, 1 / scale, out result);
+            return Multiply(vector, 1 / scale);
         }
 
         /// <summary>
@@ -630,19 +317,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 Divide(double2 vector, double2 scale)
         {
-            Divide(ref vector, ref scale, out vector);
-            return vector;
-        }
-
-        /// <summary>
-        /// Divide a vector by the components of a vector (scale).
-        /// </summary>
-        /// <param name="vector">Left operand.</param>
-        /// <param name="scale">Right operand.</param>
-        /// <param name="result">Result of the operation.</param>
-        public static void Divide(ref double2 vector, ref double2 scale, out double2 result)
-        {
-            result = new double2(vector.x / scale.x, vector.y / scale.y);
+            return new double2(vector.x / scale.x, vector.y / scale.y);
         }
 
         #endregion
@@ -664,18 +339,6 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        /// <summary>
-        /// Calculate the component-wise minimum of two vectors
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">The component-wise minimum</param>
-        public static void ComponentMin(ref double2 a, ref double2 b, out double2 result)
-        {
-            result.x = a.x < b.x ? a.x : b.x;
-            result.y = a.y < b.y ? a.y : b.y;
-        }
-
         #endregion
 
         #region ComponentMax
@@ -693,18 +356,6 @@ namespace Fusee.Math.Core
             a.x = a.x > b.x ? a.x : b.x;
             a.y = a.y > b.y ? a.y : b.y;
             return a;
-        }
-
-        /// <summary>
-        /// Calculate the component-wise maximum of two vectors
-        /// </summary>
-        /// <param name="a">First operand</param>
-        /// <param name="b">Second operand</param>
-        /// <param name="result">The component-wise maximum</param>
-        public static void ComponentMax(ref double2 a, ref double2 b, out double2 result)
-        {
-            result.x = a.x > b.x ? a.x : b.x;
-            result.y = a.y > b.y ? a.y : b.y;
         }
 
         #endregion
@@ -761,19 +412,6 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        /// <summary>
-        /// Clamp a vector to the given minimum and maximum vectors
-        /// </summary>
-        /// <param name="vec">Input vector</param>
-        /// <param name="min">Minimum vector</param>
-        /// <param name="max">Maximum vector</param>
-        /// <param name="result">The clamped vector</param>
-        public static void Clamp(ref double2 vec, ref double2 min, ref double2 max, out double2 result)
-        {
-            result.x = vec.x < min.x ? min.x : vec.x > max.x ? max.x : vec.x;
-            result.y = vec.y < min.y ? min.y : vec.y > max.y ? max.y : vec.y;
-        }
-
         #endregion
 
         #region Normalize
@@ -791,18 +429,6 @@ namespace Fusee.Math.Core
             vec.x *= scale;
             vec.y *= scale;
             return vec;
-        }
-
-        /// <summary>
-        /// Scale a vector to unit length
-        /// </summary>
-        /// <param name="vec">The input vector</param>
-        /// <param name="result">The normalized vector</param>
-        public static void Normalize(ref double2 vec, out double2 result)
-        {
-            double scale = 1.0f / vec.Length;
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
         }
 
         #endregion
@@ -824,18 +450,6 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        /// <summary>
-        /// Scale a vector to approximately unit length
-        /// </summary>
-        /// <param name="vec">The input vector</param>
-        /// <param name="result">The normalized vector</param>
-        public static void NormalizeFast(ref double2 vec, out double2 result)
-        {
-            double scale = M.InverseSqrtFast(vec.x * vec.x + vec.y * vec.y);
-            result.x = vec.x * scale;
-            result.y = vec.y * scale;
-        }
-
         #endregion
 
         #region Dot
@@ -851,17 +465,6 @@ namespace Fusee.Math.Core
         public static double Dot(double2 left, double2 right)
         {
             return left.x * right.x + left.y * right.y;
-        }
-
-        /// <summary>
-        /// Calculate the dot (scalar) product of two vectors
-        /// </summary>
-        /// <param name="left">First operand</param>
-        /// <param name="right">Second operand</param>
-        /// <param name="result">The dot product of the two inputs</param>
-        public static void Dot(ref double2 left, ref double2 right, out double result)
-        {
-            result = left.x * right.x + left.y * right.y;
         }
 
         #endregion
@@ -882,19 +485,6 @@ namespace Fusee.Math.Core
             a.x = blend * (b.x - a.x) + a.x;
             a.y = blend * (b.y - a.y) + a.y;
             return a;
-        }
-
-        /// <summary>
-        /// Returns a new Vector that is the linear blend of the 2 given Vectors
-        /// </summary>
-        /// <param name="a">First input vector</param>
-        /// <param name="b">Second input vector</param>
-        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
-        /// <param name="result">a when blend=0, b when blend=1, and a linear combination otherwise</param>
-        public static void Lerp(ref double2 a, ref double2 b, double blend, out double2 result)
-        {
-            result.x = blend * (b.x - a.x) + a.x;
-            result.y = blend * (b.y - a.y) + a.y;
         }
 
         #endregion
@@ -953,41 +543,6 @@ namespace Fusee.Math.Core
         }
         #endregion
 
-        #region Transform
-
-        /// <summary>
-        /// Transforms a vector by a QuaternionD rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The QuaternionD to rotate the vector by.</param>
-        /// <returns>
-        /// The result of the operation.
-        /// </returns>
-        public static double2 Transform(double2 vec, QuaternionD quat)
-        {
-            double2 result;
-            Transform(ref vec, ref quat, out result);
-            return result;
-        }
-
-        /// <summary>
-        /// Transforms a vector by a QuaternionD rotation.
-        /// </summary>
-        /// <param name="vec">The vector to transform.</param>
-        /// <param name="quat">The QuaternionD to rotate the vector by.</param>
-        /// <param name="result">The result of the operation.</param>
-        public static void Transform(ref double2 vec, ref QuaternionD quat, out double2 result)
-        {
-            QuaternionD v = new QuaternionD(vec.x, vec.y, 0, 0), i, t;
-            QuaternionD.Invert(ref quat, out i);
-            QuaternionD.Multiply(ref quat, ref v, out t);
-            QuaternionD.Multiply(ref t, ref i, out v);
-
-            result = new double2(v.x, v.y);
-        }
-
-        #endregion
-
         #endregion
 
         #region Operators
@@ -1002,9 +557,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 operator +(double2 left, double2 right)
         {
-            left.x += right.x;
-            left.y += right.y;
-            return left;
+            return Add(left, right);
         }
 
         /// <summary>
@@ -1017,9 +570,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 operator -(double2 left, double2 right)
         {
-            left.x -= right.x;
-            left.y -= right.y;
-            return left;
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -1046,9 +597,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 operator *(double2 vec, double scale)
         {
-            vec.x *= scale;
-            vec.y *= scale;
-            return vec;
+            return Multiply(vec, scale);
         }
 
         /// <summary>
@@ -1061,9 +610,20 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 operator *(double scale, double2 vec)
         {
-            vec.x *= scale;
-            vec.y *= scale;
-            return vec;
+            return Multiply(vec, scale);
+        }
+
+        /// <summary>
+        /// Multiplies a vector by the components of a vector (scale).
+        /// </summary>
+        /// <param name="vector">Left operand.</param>
+        /// <param name="scale">Right operand.</param>
+        /// <returns>
+        /// Result of the operation.
+        /// </returns>
+        public static double2 operator *(double2 vector, double2 scale)
+        {
+            return Multiply(vector, scale);
         }
 
         /// <summary>
@@ -1076,10 +636,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double2 operator /(double2 vec, double scale)
         {
-            double mult = 1.0f / scale;
-            vec.x *= mult;
-            vec.y *= mult;
-            return vec;
+            return Divide(vec, scale);
         }
 
         /// <summary>
@@ -1184,7 +741,7 @@ namespace Fusee.Math.Core
         #endregion
 
         /// <summary>
-        /// Gets or sets the Converter object. Has the ability to convert a string to a double2.
+        /// Gets and sets the Converter object. Has the ability to convert a string to a double2.
         /// </summary>
         /// <value>
         /// The parse property.

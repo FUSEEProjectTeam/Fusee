@@ -116,7 +116,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets the heading string.
+        /// Gets and sets the heading string.
         /// You can directly assign a <see cref="CommandLine.Text.HeadingInfo"/> instance.
         /// </summary>
         public string Heading
@@ -131,7 +131,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets the copyright string.
+        /// Gets and sets the copyright string.
         /// You can directly assign a <see cref="CommandLine.Text.CopyrightInfo"/> instance.
         /// </summary>
         public string Copyright
@@ -146,7 +146,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets the maximum width of the display.  This determines word wrap when displaying the text.
+        /// Gets and sets the maximum width of the display.  This determines word wrap when displaying the text.
         /// </summary>
         /// <value>The maximum width of the display.</value>
         public int MaximumDisplayWidth
@@ -156,7 +156,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the format of options should contain dashes.
+        /// Gets and sets a value indicating whether the format of options should contain dashes.
         /// It modifies behavior of <see cref="AddOptions{T}(ParserResult{T})"/> method.
         /// </summary>
         public bool AddDashesToOption
@@ -166,7 +166,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to add an additional line after the description of the specification.
+        /// Gets and sets a value indicating whether to add an additional line after the description of the specification.
         /// </summary>
         public bool AdditionalNewLineAfterOption
         {
@@ -175,7 +175,7 @@ namespace CommandLine.Text
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to add the values of an enum after the description of the specification.
+        /// Gets and sets a value indicating whether to add the values of an enum after the description of the specification.
         /// </summary>
         public bool AddEnumValuesToHelpText
         {

@@ -7,6 +7,141 @@ using Fusee.Serialization;
 namespace Fusee.Engine.GUI
 {
     /// <summary>
+    /// Used when positioning UI elements. Each entry corresponds to a commonly used anchor point setup.
+    /// </summary>
+    public enum AnchorPos
+    {
+        DOWN_DOWN_LEFT,     //Min = Max = 0,0
+        DOWN_DOWN_RIGHT,    //Min = Max = 1,0
+        TOP_TOP_LEFT,       //Min = Max = 0,1
+        TOP_TOP_RIGHT,      //Min = Max = 1,1
+        STRETCH_ALL,        //Min = 0, 0 and Max = 1, 1
+        STRETCH_HORIZONTAL, //Min = 0,0 and Max = 1,0
+        STRETCH_VERTICAL,   //Min = 0,0 and Max = 0,1
+        MIDDLE              //Min = Max = 0.5, 0.5
+    }
+
+    /// <summary>
+    /// Contains convenience functions to position a UI element on its parent element.
+    /// </summary>
+    public static class UIElementPosition
+    {
+        public static MinMaxRect GetAnchors(AnchorPos anchorPos)
+        {
+            switch (anchorPos)
+            {
+                case AnchorPos.DOWN_DOWN_LEFT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(0, 0)
+                    };
+                case AnchorPos.DOWN_DOWN_RIGHT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(1, 0),
+                        Max = new float2(1, 0)
+                    };
+                case AnchorPos.TOP_TOP_LEFT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 1),
+                        Max = new float2(0, 1)
+                    };
+                case AnchorPos.TOP_TOP_RIGHT:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(1, 1),
+                        Max = new float2(1, 1)
+                    };
+                case AnchorPos.STRETCH_ALL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(1, 1)
+                    };
+                case AnchorPos.STRETCH_HORIZONTAL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(1, 0)
+                    };
+                case AnchorPos.STRETCH_VERTICAL:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0, 0),
+                        Max = new float2(0, 1)
+                    };
+                default:
+                case AnchorPos.MIDDLE:
+                    return new MinMaxRect()
+                    {
+                        Min = new float2(0.5f, 0.5f),
+                        Max = new float2(0.5f, 0.5f)
+                    };
+            }
+        }
+
+        public static MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
+        {
+            switch (anchorPos)
+            {
+                default:
+                case AnchorPos.MIDDLE:
+                    var middle = new float2(parentWidth / 2f, parentHeight / 2f);
+                    return new MinMaxRect
+                    {
+                        Min = posOnParent - middle,
+                        Max = posOnParent - middle + guiElementDim
+                    };
+
+                case AnchorPos.STRETCH_ALL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), -(parentHeight - posOnParent.y - guiElementDim.y))
+                    };
+                case AnchorPos.STRETCH_HORIZONTAL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(-(parentWidth - (posOnParent.x + guiElementDim.x)), posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.STRETCH_VERTICAL:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - (posOnParent.y + guiElementDim.y)))
+                    };
+                case AnchorPos.DOWN_DOWN_LEFT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, posOnParent.y),
+                        Max = new float2(posOnParent.x + guiElementDim.x, posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.DOWN_DOWN_RIGHT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(-(parentWidth - posOnParent.x), posOnParent.y),
+                        Max = new float2(-(parentWidth - posOnParent.x - guiElementDim.x), posOnParent.y + guiElementDim.y)
+                    };
+                case AnchorPos.TOP_TOP_LEFT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(posOnParent.x, -(parentHeight - posOnParent.y)),
+                        Max = new float2(posOnParent.x + guiElementDim.x, -(parentHeight - guiElementDim.y - posOnParent.y))
+                    };
+                case AnchorPos.TOP_TOP_RIGHT:
+                    return new MinMaxRect
+                    {
+                        Min = new float2(-(parentWidth - posOnParent.x), -(parentHeight - posOnParent.y)),
+                        Max = new float2(-(parentWidth - guiElementDim.x - posOnParent.x), -(parentHeight - guiElementDim.y - posOnParent.y))
+                    };
+            }
+        }
+    }
+
+    /// <summary>
     /// Building block to create suitable hierarchies for creating a UI canvas.
     /// </summary>
     public class CanvasNodeContainer : SceneNodeContainer
@@ -17,14 +152,13 @@ namespace Fusee.Engine.GUI
         /// <param name="name">The name of the canvas.</param>
         /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
         /// <param name="size">The size of the canvas.</param>
-        /// <param name="scale">Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.
         /// By default Scale in SCREEN mode is set to 0.1.</param>
-        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size, float scale = 0.1f)
+        public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
         {
             Name = name;
             Components = new List<SceneComponentContainer>
             {
-                new CanvasTransformComponent(canvasRenderMode, scale)
+                new CanvasTransformComponent(canvasRenderMode)
                 {
                     Name = name + "_CanvasTransform",
                     Size = size
@@ -36,8 +170,8 @@ namespace Fusee.Engine.GUI
             };
         }
     }
-    
-    
+
+
     /// <summary>
     /// Building block to create suitable hierarchies for using textures in the UI.
     /// </summary>
@@ -45,6 +179,7 @@ namespace Fusee.Engine.GUI
     {
         /// <summary>
         /// Creates a SceneNodeContainer with the proper components and children for rendering a nine sliced texture.
+        /// By default the border thickness is calculated relative to a unit plane. For a thicker border set the border thickness to the desired value, 2 means a twice as thick border.
         /// </summary>
         /// <param name="name">Name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use.</param>
@@ -54,12 +189,17 @@ namespace Fusee.Engine.GUI
         /// <param name="offsets">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
         /// <param name="tiles">Defines the tiling of the inner rectangle of the texture. Use float2.one if you do not desire tiling.</param>
         /// <param name="borders">Defines the nine tiles of the texture. Order: left, right, top, bottom. Value is measured in percent from the respective edge of texture.</param>
-        /// <param name="borderthickness">By default the border thickness is calculated relative to a unit plane. If you scale your object you may want to choose a higher value. 2 means a twice as thick border.</param>
+        /// <param name="borderThicknessBottom">Border thickness for the bottom border.</param>
         /// <param name="borderScaleFactor">Default value is 1. Set this to scale the border thickness if you use canvas render mode SCREEN.</param>
+        /// <param name="borderThicknessLeft">Border thickness for the left border.</param>
+        /// <param name="borderThicknessRight">Border thickness for the right border.</param>
+        /// <param name="borderThicknessTop">Border thickness for the top border.</param>
         /// <returns></returns>
         public TextureNodeContainer(string name, string vs, string ps, Texture tex, MinMaxRect anchors,
-            MinMaxRect offsets, float2 tiles, float4 borders, float borderthickness = 1, float borderScaleFactor = 1)
+            MinMaxRect offsets, float2 tiles, float4 borders, float borderThicknessLeft = 1, float borderThicknessRight = 1, float borderThicknessTop = 1, float borderThicknessBottom = 1, float borderScaleFactor = 1)
         {
+            var borderThickness = new float4(borderThicknessLeft, borderThicknessRight, borderThicknessTop,
+                borderThicknessBottom);
             Name = name;
             Components = new List<SceneComponentContainer>
             {
@@ -106,7 +246,7 @@ namespace Fusee.Engine.GUI
                                 Name = "borders",
                                 Value = borders
                             },
-                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderthickness * borderScaleFactor},
+                            new EffectParameterDeclaration {Name = "borderThickness", Value = borderThickness * borderScaleFactor},
                             new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                             new EffectParameterDeclaration {Name = "FUSEE_V", Value = float4x4.Identity},
@@ -214,7 +354,7 @@ namespace Fusee.Engine.GUI
                 }
             };
 
-            Children = new List<SceneNodeContainer>()
+            Children = new ChildList()
             {
                 new SceneNodeContainer()
                 {
