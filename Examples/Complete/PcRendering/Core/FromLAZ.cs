@@ -124,7 +124,7 @@ namespace Fusee.Examples.PcRendering.Core
         internal static List<Mesh> GetMeshsForNode(PointAccessor<LAZPointType> ptAccessor, List<LAZPointType> points)
         {
             var allPoints = new List<double3>();
-            //var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
+            var allIntensities = points.ToArray().Select(pt => (float)pt.Intensity).ToList();
             var allColors = new List<float3>();
 
             for (int i = 0; i < points.Count(); i++)
@@ -140,12 +140,13 @@ namespace Fusee.Examples.PcRendering.Core
 
             var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
             var allColorsSplitted = SplitList(allColors, maxVertCount).ToList();
-            //var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
+            var allIntensitiesSplitted = SplitList(allIntensities, maxVertCount).ToList();
 
             for (int i = 0; i < allPointsSplitted.Count; i++)
             {
                 var pointSplit = allPointsSplitted[i];
                 var colorSplit = allColorsSplitted[i];
+                var intentsitySplit = allIntensitiesSplitted[i];
 
                 var currentMesh = new Mesh
                 {
@@ -154,7 +155,8 @@ namespace Fusee.Examples.PcRendering.Core
                     MeshType = (int)OpenGLPrimitiveType.POINT,
                     Normals = new float3[pointSplit.Count],
                     Colors = colorSplit.Select(pt => ColorToUInt((int)pt.r / 256, (int)pt.g / 256, (int)pt.b / 256)).ToArray(),
-                };
+                    //Colors = intentsitySplit.Select(pt => ColorToUInt((int)(pt/4096f * 256), (int)(pt / 4096f * 256), (int)(pt / 4096f * 256))).ToArray(),
+                };                
 
                 allMeshes.Add(currentMesh);
             }

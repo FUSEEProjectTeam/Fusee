@@ -1,10 +1,12 @@
 using Fusee.Base.Core;
 using Fusee.Pointcloud.Common;
 using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
@@ -19,7 +21,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public PtOctreeFileWriter(string pathToNodeFileFolder)
         {
             _fileFolderPath = pathToNodeFileFolder;
+
+            if (!Directory.Exists(_fileFolderPath)) Directory.CreateDirectory(_fileFolderPath);
         }
+
+        public Dictionary<Guid, FileStream> fileStreams = new Dictionary<Guid, FileStream>();
 
         /// <summary>
         /// Creates all files (meta.json, .hierarchy and .node).
@@ -39,11 +45,25 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             Diagnostics.Log("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
 
             watch.Restart();
+
+            var nodesToWrite = new List<PtOctantWrite<TPoint>>();
+
+            
             octree.Traverse((PtOctantWrite<TPoint> node) =>
+            {
+                //WriteNode(octree.PtAccessor, node);
+                nodesToWrite.Add(node);
+                fileStreams.Add(node.Guid, File.Create(GetPathToFile(node)));
+            });
+            Diagnostics.Log("-------------- Traverse tree: " + watch.ElapsedMilliseconds + "ms.");
+
+            watch.Restart();
+            Parallel.ForEach(nodesToWrite, new ParallelOptions { MaxDegreeOfParallelism = nodesToWrite.Count / 3 } ,(node) => 
             {
                 WriteNode(octree.PtAccessor, node);
             });
-            Diagnostics.Log("-------------- Write hierarchy file: " + watch.ElapsedMilliseconds + "ms.");
+
+            Diagnostics.Log("-------------- Write hierarchy files: " + watch.ElapsedMilliseconds + "ms.");
         }
 
         /// <summary>
@@ -148,24 +168,33 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             if (points.Count == 0)
                 return;
 
-            var stream = File.Open(GetPathToFile(node), FileMode.OpenOrCreate);
+            var stream = fileStreams[node.Guid];
 
-            var writer = new BinaryWriter(stream);
-
-            // write point count
-            writer.Write(points.Count);
-
-            // write length of one point
-            var firstPt = points[0];
-            writer.Write(ptAccessor.GetRawPoint(ref firstPt).Length);
-
-            foreach (var point in points)
+            using (stream)
             {
-                var pt = point;
-                var rawPt = ptAccessor.GetRawPoint(ref pt);
-                writer.Write(rawPt);
+                var writer = new BinaryWriter(stream);
+
+                // write point count
+                writer.Write(points.Count);
+
+                // write length of one point
+                var firstPt = points[0];
+                var length = ptAccessor.GetRawPoint(ref firstPt).Length;
+                writer.Write(length);
+
+                //List<byte> ptBytes = new List<byte>(length * points.Count);
+                byte[] ptBytes = new byte[length * points.Count];
+                for (int i = 0; i < points.Count; i++)
+                {
+                    TPoint point = points[i];
+                    var pt = point;
+                    var rawPt = ptAccessor.GetRawPoint(ref pt);
+                    for (var j = 0; j < rawPt.Length; j++)
+                        ptBytes[i * length + j] = rawPt[j];
+                }
+
+                writer.Write(ptBytes);
             }
-            stream.Dispose();
         }
 
         #region Write .node files

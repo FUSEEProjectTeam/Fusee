@@ -96,7 +96,7 @@ float EDLShadingFactor(float edlStrength, int pixelSize, float linearDepth, vec2
 
 vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 ambient)
 {
-	float intensityDiff = max(dot(normalDir, lightDir), 0.0);
+	float intensityDiff = dot(normalDir, lightDir);
 	vec3 diffuse = intensityDiff * lightColor;
 
 	if(CalcSSAO == 1.0)
@@ -280,13 +280,11 @@ void main(void)
 //		vec3 worldSpaceCameraPos = invMv[3].xyz;
 //		vec3 worldSpaceLightPos = worldSpaceCameraPos;
 
-		vec3 viewDir = normalize( -vViewPos.xyz);
-		vec3 lightDir = normalize( vec3(0, 0,-.0));
-		vec3 halfwayDir = reflect(-lightDir, normalDir);
+		vec3 viewDir =  -vViewPos.xyz;
+		vec3 lightDir = normalize( vec3(0, 0, -1.0));
+		vec3 halfwayDir = normalize(viewDir+lightDir);
 	}
 	
-	vec4 specularReflection = vec4(0, 0, 0, 1);	
-
 	switch (Lighting)
 	{
 		default:
@@ -307,20 +305,38 @@ void main(void)
 			break;
 		}
 		case 2: //diffuse
-		{	
-			
-			oColor = GetDiffuseReflection(viewNormal, lightDir, lightColor, ambient);
+		{
+			lightDir = vec3(0,0,+1);
+			float intensityDiff = dot(viewNormal, lightDir);
+			vec3 diffuse = intensityDiff * lightColor;
 
+			vec3 ambientCol = oColor.xyz * ambient;
+			vec3 diffuseColor = (CalcSSAO == 1) ? intensityDiff * ambientCol : intensityDiff * oColor.xyz;
+			oColor = vec4(diffuseColor, oColor.a);
 			break;
 		}
 
 		case 3: //blinn phong
 		{
-			float specularAmmount = pow(max(dot(normalDir, halfwayDir), 0.0), Shininess);
-			specularReflection = SpecularColor * pow(specularAmmount, Shininess);
-			vec4 diffuseReflection = GetDiffuseReflection(normalDir, lightDir, lightColor, ambient);
-			oColor = diffuseReflection + (SpecularStrength * specularReflection);
 
+			lightDir = vec3(0,0,+1);
+			float intensityDiff = dot(viewNormal, lightDir);
+			vec3 diffuse = intensityDiff * lightColor;
+			
+			float intensitySpec = 0.0;
+			if (intensityDiff > 0.0)
+			{
+				vec3 viewdir = vViewPos.xyz;
+				vec3 h = normalize(viewdir+lightDir);
+				intensitySpec = pow(max(0.0, dot(h, viewNormal)), Shininess);
+			}
+
+			vec3 ambientCol = oColor.xyz * ambient;
+			vec3 diffuseColor = (CalcSSAO == 1) ? intensityDiff * ambientCol : intensityDiff * oColor.xyz;
+			vec3 colorResult = diffuseColor + ((intensitySpec * SpecularColor.xyz) * SpecularStrength);
+
+			oColor = vec4(colorResult, oColor.a);
+			
 			break;
 		}		
 		case 4: //ambient only

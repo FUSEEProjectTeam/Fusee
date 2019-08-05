@@ -258,27 +258,30 @@ namespace Fusee.Examples.PcRendering.WPF
         private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
         {
             var fbd = new FolderBrowserDialog();
-            fbd.ShowDialog();
-
-            if (app.OocLoader.RootNode != null) //if RootNode == null no scene was ever initialized
+            if (fbd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
-                app.DeletePc();
 
-                while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated)
+                if (app.OocLoader.RootNode != null) //if RootNode == null no scene was ever initialized
                 {
-                    //app.IsSceneLoaded = false;
-                    continue;
+                    app.DeletePointCloud();
+
+                    while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated)
+                    {
+                        //app.IsSceneLoaded = false;
+                        continue;
+                    }
                 }
+
+                app.PathToOocFile = fbd.SelectedPath;
+                app.LoadPointCloudFromFile();
+                InnerGrid.IsEnabled = true;
             }
-        
-            app.PathToOocFile = fbd.SelectedPath;
-            InnerGrid.IsEnabled = true;
 
         }
 
         private void DeleteFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            app.DeletePc();
+            app.DeletePointCloud();
         }
     }
 }

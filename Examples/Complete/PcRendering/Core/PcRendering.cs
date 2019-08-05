@@ -20,7 +20,7 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class PcRendering : RenderCanvas
     {
-        private string _pathToPc = "E:/ HolbeinPferd.las";
+        private string _pathToPc = "E:/LAS/BunnyBunny.las";
 
         public bool UseWPF = false;
         public bool ShowOctants = false;
@@ -29,19 +29,8 @@ namespace Fusee.Examples.PcRendering.Core
 
         public PtOctantLoader<LAZPointType> OocLoader { get; private set; }
 
-        private string _pathToOocFile;
-        public string PathToOocFile
-        {
-            get
-            {
-                return _pathToOocFile;
-            }
-            set
-            {
-                _pathToOocFile = value;
-                LoadFile();
-            }
-        } //"E:/HolbeinPferdOctree";              
+
+        public string PathToOocFile;   //"E:/HolbeinPferdOctree";              
 
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
@@ -126,7 +115,7 @@ namespace Fusee.Examples.PcRendering.Core
             Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
         }
 
-        private void LoadFile()
+        public void LoadPointCloudFromFile()
         {           
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
             var oocFileReader = new PtOctreeFileReader<LAZPointType>(PathToOocFile);
@@ -155,7 +144,7 @@ namespace Fusee.Examples.PcRendering.Core
             IsSceneLoaded = true;
         }
         
-        public void DeletePc()
+        public void DeletePointCloud()
         {
             IsSceneLoaded = false;
 
@@ -172,7 +161,9 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
-            //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
+            PathToOocFile = "E:/BunnyOctree";
+            _ptAccessor = new PtRenderingAccessor();
+            //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 10);
 
             OocLoader = new PtOctantLoader<LAZPointType>(PathToOocFile, RC)
             {
@@ -217,10 +208,10 @@ namespace Fusee.Examples.PcRendering.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            _ptAccessor = new PtRenderingAccessor();
-
             if (!UseWPF)
-                PathToOocFile = "E:/HolbeinPferdOctree";
+            {                
+                LoadPointCloudFromFile();
+            }
 
             _gui = CreateGui();
             //Create the interaction handler

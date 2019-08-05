@@ -29,10 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="Fusee.Examples.PcRendering.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Examples\PcRendering\Core\Fusee.Examples.PcRendering.Core.dll</HintPath>
     </Reference>
@@ -69,7 +65,9 @@
     <Reference Include="Fusee.Pointcloud.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
     </Reference>
-
+    <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
+    </Reference>
 
   </ItemGroup>
 
