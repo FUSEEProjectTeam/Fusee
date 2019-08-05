@@ -10,7 +10,7 @@ namespace Fusee.Xene
     /// Use this attribute to identify visitor methods. Visitor methods are called during traversal on 
     /// nodes or components with the specified type.
     /// WARNING: Currently no component or node type inheritance matching is done: A Visitor method is
-    /// only called if it exaclty matches the type - TODO: fix this...
+    /// only called if it exactly matches the type - TODO: fix this...
     /// </summary>
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
     public class VisitMethodAttribute : Attribute
@@ -31,7 +31,7 @@ namespace Fusee.Xene
         /// but only one single node needs to be passed.
         /// </summary>
         /// <param name="root">The root to enumerate.</param>
-        /// <returns>An enumerator yielding only only one element: the node passed as root.</returns>
+        /// <returns>An enumerator yielding only one element: the node passed as root.</returns>
         public static IEnumerator<SceneNodeContainer> SingleRootEnumerator(SceneNodeContainer root)
         {
             yield return root;
@@ -43,7 +43,7 @@ namespace Fusee.Xene
         /// but only one single node needs to be passed.
         /// </summary>
         /// <param name="root">The root to enumerate.</param>
-        /// <returns>An enumerable yielding only only one element: the node passed as root.</returns>
+        /// <returns>An enumerable yielding only one element: the node passed as root.</returns>
         public static IEnumerable<SceneNodeContainer> SingleRootEnumerable(SceneNodeContainer root)
         {
             yield return root;
@@ -104,7 +104,7 @@ namespace Fusee.Xene
         #region Public Traversal Methods
         /// <summary>
         /// Start traversing a scene graph starting with the given root node. Performs a recursive depth-first 
-        /// traversal from the speciefiedd root.
+        /// traversal from the specified root.
         /// </summary>
         /// <param name="rootNode">The root node where to start the traversal.</param>
         public void Traverse(SceneNodeContainer rootNode)
@@ -340,9 +340,9 @@ namespace Fusee.Xene
 
         /// <summary>
         /// Continue a currently active enumeration. Call all registered Visit methods. Visitor methods may set <see cref="YieldOnCurrentComponent"/>
-        /// or <see cref="YieldOnCurrentNode"/> to true to signal the enumration to yield.
+        /// or <see cref="YieldOnCurrentNode"/> to true to signal the enumeration to yield.
         /// </summary>
-        /// <returns>true if the enumeration is not finnished yet (i.e. if components/nodes are still unvisited). false otherwise.</returns>
+        /// <returns>true if the enumeration is not finished yet (i.e. if components/nodes are still unvisited). false otherwise.</returns>
         protected bool EnumMoveNextNoComponent()
         {
             YieldOnCurrentNode = false;
@@ -440,7 +440,7 @@ namespace Fusee.Xene
         /// Use this method in initialization code to add Visit
         /// </summary>
         /// <param name="paramType">The concrete component subtype to register the given method for.</param>
-        /// <param name="visitComponentMethod">The method to call when a component of the specified type ist traversed.</param>
+        /// <param name="visitComponentMethod">The method to call when a component of the specified type is traversed.</param>
         protected void AddComponentVisitor(Type paramType, VisitComponentMethod visitComponentMethod)
         {
             _visitors.Components.Add(paramType, visitComponentMethod);

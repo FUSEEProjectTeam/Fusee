@@ -160,7 +160,12 @@ namespace Fusee.Examples.PcRendering.WPF
             {
                 SSAOStrength.IsEnabled = true;
                 Lighting.SelectedItem = Pointcloud.Common.Lighting.SSAO_ONLY;
-            }          
+            }     
+            
+            if(Core.PtRenderingParams.Lighting != Pointcloud.Common.Lighting.UNLIT && Core.PtRenderingParams.Lighting != Pointcloud.Common.Lighting.SSAO_ONLY)
+            {
+                SSAOStrength.IsEnabled = Core.PtRenderingParams.CalcSSAO;
+            }
 
         }
 
@@ -186,7 +191,7 @@ namespace Fusee.Examples.PcRendering.WPF
         private void SingleColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
 
-            if (!_isAppInizialized || !Core.PcRendering.IsSceneInitialized) return;
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             var col = e.NewValue.Value;
             Core.PtRenderingParams.SingleColor = new float4(col.ScR, col.ScG, col.ScB, col.ScA); 
             
@@ -254,9 +259,26 @@ namespace Fusee.Examples.PcRendering.WPF
         {
             var fbd = new FolderBrowserDialog();
             fbd.ShowDialog();
+
+            if (app.OocLoader.RootNode != null) //if RootNode == null no scene was ever initialized
+            {
+                app.DeletePc();
+
+                while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated)
+                {
+                    //app.IsSceneLoaded = false;
+                    continue;
+                }
+            }
+        
             app.PathToOocFile = fbd.SelectedPath;
             InnerGrid.IsEnabled = true;
 
+        }
+
+        private void DeleteFile_Button_Click(object sender, RoutedEventArgs e)
+        {
+            app.DeletePc();
         }
     }
 }

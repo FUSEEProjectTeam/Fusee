@@ -13,7 +13,7 @@ namespace Fusee.Examples.PcRendering.Core
     /// <summary>
     /// User-given class that defines the data a point consists of.
     /// </summary>
-    internal class LAZPointType
+    public class LAZPointType
     {
         public double3 Position;
         public float3 Color;

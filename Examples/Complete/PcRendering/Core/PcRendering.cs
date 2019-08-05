@@ -20,8 +20,28 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class PcRendering : RenderCanvas
     {
+        private string _pathToPc = "E:/ HolbeinPferd.las";
+
         public bool UseWPF = false;
         public bool ShowOctants = false;
+        public bool IsSceneLoaded { get; private set; }
+        public bool ReadyToLoadNewFile { get; private set; }
+
+        public PtOctantLoader<LAZPointType> OocLoader { get; private set; }
+
+        private string _pathToOocFile;
+        public string PathToOocFile
+        {
+            get
+            {
+                return _pathToOocFile;
+            }
+            set
+            {
+                _pathToOocFile = value;
+                LoadFile();
+            }
+        } //"E:/HolbeinPferdOctree";              
 
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
@@ -62,35 +82,12 @@ namespace Fusee.Examples.PcRendering.Core
         internal static ShaderEffect _colorPassEf;       
 
         private bool _isTexInitialized = false;        
-
-        private PtOctantLoader<LAZPointType> _oocLoader;
         private PtRenderingAccessor _ptAccessor;
-
         private ProjectionComponent projectionComponent;
 
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
-
-        private string _pathToPc = "E:/ HolbeinPferd.las";
-
-        private string _pathToOocFile;
-        public string PathToOocFile
-        {
-            get
-            {
-                return _pathToOocFile;
-            }
-            set
-            {
-                IsSceneInitialized = false;
-                _pathToOocFile = value;
-                LoadFile();
-            }
-        } //"E:/HolbeinPferdOctree";
-
-        public static bool IsSceneInitialized { get; private set; }
-
 
         private void UpdateShaderParams()
         {
@@ -138,14 +135,12 @@ namespace Fusee.Examples.PcRendering.Core
             var root = oocFileReader.GetScene(_depthPassEf);
             _scene.Children.Add(root);
 
-            _oocLoader = new PtOctantLoader<LAZPointType>(_scene.Children[1], PathToOocFile, RC)
-            {
-                PointThreshold = 1000000
-            };            
+            OocLoader.RootNode = _scene.Children[1];
+            OocLoader.FileFolderPath = PathToOocFile;
 
             var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
             _octreeTex = new Texture(octreeTexImgData);
-            _oocLoader.VisibleOctreeHierarchyTex = _octreeTex;
+            OocLoader.VisibleOctreeHierarchyTex = _octreeTex;
 
             var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
@@ -154,16 +149,35 @@ namespace Fusee.Examples.PcRendering.Core
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
 
-            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _cameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _cameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
              
-            IsSceneInitialized = true;
-        }        
+            IsSceneLoaded = true;
+        }
+        
+        public void DeletePc()
+        {
+            IsSceneLoaded = false;
+
+            while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
+            {
+                continue;
+            }
+
+            if (OocLoader.RootNode != null)
+                _scene.Children.Remove(OocLoader.RootNode);
+
+        }
 
         // Init is called on startup. 
         public override void Init()
         {
             //CreateFiles(_ptAccessor, _pathToPc, _pathToOocFile, 1000);
+
+            OocLoader = new PtOctantLoader<LAZPointType>(PathToOocFile, RC)
+            {
+                PointThreshold = 500000
+            };
 
             _scene = new SceneContainer
             {
@@ -225,15 +239,17 @@ namespace Fusee.Examples.PcRendering.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+            ReadyToLoadNewFile = false;
+
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            if (IsSceneInitialized)
+            if (IsSceneLoaded)
             {
                 if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0)
-                    _oocLoader.IsUserMoving = true;
+                    OocLoader.IsUserMoving = true;
                 else
-                    _oocLoader.IsUserMoving = false;
+                    OocLoader.IsUserMoving = false;
 
                 // Mouse and keyboard movement
                 if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -344,11 +360,13 @@ namespace Fusee.Examples.PcRendering.Core
 
                 _sceneRenderer.Render(RC);
 
-                _oocLoader.RC = RC;
-                _oocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
+                OocLoader.RC = RC;
+                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
 
-                if(ShowOctants)
-                    _oocLoader.ShowOctants(_scene);
+                Diagnostics.Log(Time.FramePerSecond);
+
+                if (ShowOctants)
+                    OocLoader.ShowOctants(_scene);
             }
 
             //Render GUI
@@ -357,6 +375,9 @@ namespace Fusee.Examples.PcRendering.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
+
+            ReadyToLoadNewFile = true;
+            
         }
 
         // Is called when the window was resized

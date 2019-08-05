@@ -16,10 +16,29 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 {
     public class PtOctantLoader<TPoint> where TPoint : new()
     {
+        public bool WasSceneUpdated { get; private set; }
+
         public RenderContext RC;
         public Texture VisibleOctreeHierarchyTex;
 
-        public SceneNodeContainer RootNode { get; private set; }
+        private SceneNodeContainer _rootNode;
+
+        public SceneNodeContainer RootNode
+        {
+            get
+            {
+                return _rootNode;
+            }
+
+            set
+            {
+                _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
+                _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size
+                _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();
+                _rootNode = value;
+            } 
+        }
+
         public ConcurrentDictionary<Guid, SceneNodeContainer> VisibleNodes                                                                  // Visible AND loaded nodes.
         {
             get;
@@ -27,16 +46,16 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         } = new ConcurrentDictionary<Guid, SceneNodeContainer>();    
         
-        private readonly Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                                  // Visible AND loaded meshes.
+        private Dictionary<Guid, IEnumerable<Mesh>> _loadedMeshs;                                                                  // Visible AND loaded meshes.
 
-        private readonly SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;                                        // For traversal purposes only.
-        private readonly Dictionary<Guid, SceneNodeContainer> _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();            // All visible nodes in screen projected size order - cleared in every traversal.
+        private SortedDictionary<double, SceneNodeContainer> _nodesOrderedByProjectionSize;                                        // For traversal purposes only.
+        private Dictionary<Guid, SceneNodeContainer> _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();            // All visible nodes in screen projected size order - cleared in every traversal.
         private readonly Dictionary<Guid, SceneNodeContainer> _determinedAsVisibleAndUnloaded = new Dictionary<Guid, SceneNodeContainer>(); // Visible but unloaded nodes in screen projected size order - cleared in every traversal.
 
         private readonly WireframeCube wfc = new WireframeCube();
         private readonly ShaderEffect _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 0, 1), new float4(1, 1, 1, 1), 10);
 
-        private readonly string _fileFolderPath;
+        public string FileFolderPath;
 
         #region Traversal Properties
         public int NumberOfVisiblePoints { get; private set; }
@@ -59,13 +78,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         #endregion
 
-        public PtOctantLoader(SceneNodeContainer rootNode, string fileFolderPath, RenderContext rc)
+        public PtOctantLoader(/*SceneNodeContainer rootNode,*/ string fileFolderPath, RenderContext rc)
         {
             _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size;
             RC = rc;
-            RootNode = rootNode;                        
-            _fileFolderPath = fileFolderPath;
+            //RootNode = rootNode;                        
+            FileFolderPath = fileFolderPath;
         }
 
         /// <summary>
@@ -77,9 +96,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="ptAccessor">PointAccessor, needed to load the actual point data.</param>       
         public void UpdateScene(PointSizeMode ptSizeMode, ShaderEffect depthPassEf, ShaderEffect colorPassEf, Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode, PointAccessor<TPoint> ptAccessor)
         {
-            //Diagnostics.Log(NumberOfVisiblePoints);
-            Diagnostics.Log(Time.FramePerSecond);
+            WasSceneUpdated = false;
 
+            //Diagnostics.Log(NumberOfVisiblePoints);
+            
             if (_deltaTimeSinceLastUpdate < SceneUpdateTime )
                 _deltaTimeSinceLastUpdate += Time.RealDeltaTimeMs * 1000;
             
@@ -92,15 +112,17 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 LoadNodesAsync(GetMeshsForNode, ptAccessor);
 
                 var nodesToRender = _determinedAsVisible.Except(_determinedAsVisibleAndUnloaded).ToDictionary(kvp => kvp.Key, kvp => kvp.Value);                
-                TraverseToUpdateScene(nodesToRender, RootNode);
+                TraverseToUpdateScene(nodesToRender, _rootNode);
                 
                 if (ptSizeMode == PointSizeMode.ADAPTIVE_SIZE)
                 {
-                    TraverseBreadthFirstToCreate1DTex(RootNode, VisibleOctreeHierarchyTex);
+                    TraverseBreadthFirstToCreate1DTex(_rootNode, VisibleOctreeHierarchyTex);
                     depthPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
                     colorPassEf.SetEffectParam("OctreeTex", VisibleOctreeHierarchyTex);
                 }
             }
+
+            WasSceneUpdated = true;
         }
 
         /// <summary>
@@ -159,7 +181,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             var fov = (float)RC.ViewportWidth / RC.ViewportHeight;            
 
-            ProcessNode(RootNode, fov);          
+            ProcessNode(_rootNode, fov);          
 
             while (_nodesOrderedByProjectionSize.Count > 0 && NumberOfVisiblePoints <= PointThreshold)
             {
@@ -353,7 +375,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private List<TPoint> LoadPointsForNode(PointAccessor<TPoint> ptAccessor, PtOctantComponent ptOctantComponent)
         {
-            var pathToFile = _fileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
+            var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
 
             if (!File.Exists(pathToFile))
                 throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
@@ -388,7 +410,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private int GetPtCountFromFile(PtOctantComponent ptOctantComponent)
         {
-            var pathToFile = _fileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
+            var pathToFile = FileFolderPath + "/Octants/" + ptOctantComponent.Guid.ToString("N") + ".node";
 
             if (!File.Exists(pathToFile))
                 throw new ArgumentException("File: " + ptOctantComponent.Guid + ".node does not exist!");
