@@ -618,7 +618,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void OpenLink(string link)
         {
             if (link.StartsWith("http://"))
-                Process.Start(link);
+            {
+                //UseShellExecute needs to be set to true in .net 3.0. See:https://github.com/dotnet/corefx/issues/33714
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = link,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
         }
 
         /// <summary>
