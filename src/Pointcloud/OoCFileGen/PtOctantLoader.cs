@@ -35,7 +35,16 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
                 _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size
                 _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();
+
+                var fov = (float)RC.ViewportWidth / RC.ViewportHeight;
+                var camPos = RC.View.Invert().Column3;
+                var camPosD = new double3(10, 10, -30);
+
                 _rootNode = value;
+
+                // gets pixel radius of the node
+                RootNode.GetComponent<PtOctantComponent>().ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
+                _minScreenProjectedSize = (float)RootNode.GetComponent<PtOctantComponent>().ProjectedScreenSize * 1/2f;
             } 
         }
 
@@ -64,7 +73,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public int PointThreshold = 1000000;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
-        public readonly float _minScreenProjectedSize = 128;
+        public float _minScreenProjectedSize;
 
         //Scene is only updated if the user is moving.
         public bool IsUserMoving;
@@ -78,7 +87,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         #endregion
 
-        public PtOctantLoader(/*SceneNodeContainer rootNode,*/ string fileFolderPath, RenderContext rc)
+        public PtOctantLoader(float3 initialCamPos, string fileFolderPath, RenderContext rc)
         {
             _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size;

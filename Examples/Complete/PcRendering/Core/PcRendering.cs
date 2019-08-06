@@ -20,7 +20,7 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class PcRendering : RenderCanvas
     {
-        private string _pathToPc = "E:/LAS/BunnyBunny.las";
+        private string _pathToPc = "E:/LAS/17350_IRIS12.las";
 
         public bool UseWPF = false;
         public bool ShowOctants = false;
@@ -63,8 +63,10 @@ namespace Fusee.Examples.PcRendering.Core
 
         private float _maxPinchSpeed;
 
-        private float3 _cameraPos;
-        private float3 _initCameraPos;
+        private float3 _cameraPos;       
+
+        public static float3 InitCameraPos { get; private set; }
+
         private ITextureHandle _texHandle;
         
         internal static ShaderEffect _depthPassEf;
@@ -91,6 +93,9 @@ namespace Fusee.Examples.PcRendering.Core
             RC.SetFXParam("SSAOStrength", PtRenderingParams.SSAOStrength);
             RC.SetFXParam("EDLNeighbourPixels", PtRenderingParams.EdlNoOfNeighbourPx);
             RC.SetFXParam("EDLStrength", PtRenderingParams.EdlStrength);
+
+            RC.SetFXParam("SpecularStrength", PtRenderingParams.SpecularStrength);
+            RC.SetFXParam("Shininess", PtRenderingParams.Shininess);
         }
 
         private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
@@ -138,8 +143,8 @@ namespace Fusee.Examples.PcRendering.Core
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
 
-            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
              
             IsSceneLoaded = true;
         }
@@ -158,14 +163,21 @@ namespace Fusee.Examples.PcRendering.Core
 
         }
 
+        public void ResetCamera()
+        {
+            _cameraPos = InitCameraPos;
+            _angleHorz = _angleVert = 0;
+        }
+
         // Init is called on startup. 
         public override void Init()
         {
-            PathToOocFile = "E:/BunnyOctree";
+            PathToOocFile = "E:/17350_IRIS12Octree";
             _ptAccessor = new PtRenderingAccessor();
-            //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 10);
+            _cameraPos = InitCameraPos = new float3(10, 10, -30);
+            //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 2500);
 
-            OocLoader = new PtOctantLoader<LAZPointType>(PathToOocFile, RC)
+            OocLoader = new PtOctantLoader<LAZPointType>(InitCameraPos, PathToOocFile, RC)
             {
                 PointThreshold = 500000
             };
@@ -188,7 +200,7 @@ namespace Fusee.Examples.PcRendering.Core
             //create depth tex and fbo
             _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-            _cameraPos = _initCameraPos = new float3(10, 10, -30);
+            
 
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -382,8 +394,8 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.RemoveTextureHandle(_texHandle);
                 _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
-                _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), _initCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-                _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), _initCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
             }          
 
             _isTexInitialized = true;

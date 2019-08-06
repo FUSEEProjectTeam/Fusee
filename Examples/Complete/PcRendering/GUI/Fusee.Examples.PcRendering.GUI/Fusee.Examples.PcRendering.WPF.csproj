@@ -11,8 +11,10 @@
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="Assets\camera.png" />
     <None Remove="Assets\color.png" />
     <None Remove="Assets\color_w.png" />
+    <None Remove="Assets\folder.png" />
     <None Remove="Assets\lighting.png" />
     <None Remove="Assets\lighting_w.png" />
     <None Remove="Assets\ptMode.png" />
@@ -81,8 +83,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\camera.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\color.png" />
     <Resource Include="Assets\color_w.png" />
+    <Resource Include="Assets\folder.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\lighting.png" />
     <Resource Include="Assets\lighting_w.png" />
     <Resource Include="Assets\ptMode.png" />
