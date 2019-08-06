@@ -1,12 +1,10 @@
-<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -33,5 +31,4 @@
   
   <Import Project="$(FuseeBuildRoot)\src\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
