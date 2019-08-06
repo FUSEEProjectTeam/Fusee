@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Xirkit</RootNamespace>
     <PackageId>Fusee.Xirkit</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -17,4 +15,9 @@
   </ItemGroup>
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+  <ItemGroup>
+    <Reference Include="JSIL.Meta">
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

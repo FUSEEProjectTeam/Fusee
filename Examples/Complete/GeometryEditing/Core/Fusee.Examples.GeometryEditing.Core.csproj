@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.GeometryEditing.Core</RootNamespace>
     <PackageId>Fusee.Examples.GeometryEditing.Core</PackageId>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netstandard2.1</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\GeometryEditing\Core\</OutputPath>
@@ -40,6 +38,4 @@
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.jometri.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

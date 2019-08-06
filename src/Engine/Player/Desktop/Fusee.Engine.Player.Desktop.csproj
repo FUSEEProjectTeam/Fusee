@@ -1,14 +1,11 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Player.Desktop</PackageId>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>WinExe</OutputType>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>
   </PropertyGroup>
@@ -35,5 +32,4 @@
     <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
