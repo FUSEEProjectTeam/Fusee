@@ -128,7 +128,7 @@ namespace Fusee.Examples.PcRendering.Core
             var root = oocFileReader.GetScene(_depthPassEf);
             _scene.Children.Add(root);
 
-            OocLoader.RootNode = _scene.Children[1];
+            OocLoader.RootNode = root;
             OocLoader.FileFolderPath = PathToOocFile;
 
             var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
@@ -138,7 +138,7 @@ namespace Fusee.Examples.PcRendering.Core
             var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
 
-            var ptRootComponent = _scene.Children[1].GetComponent<PtOctantComponent>();
+            var ptRootComponent = root.GetComponent<PtOctantComponent>();
             _octreeRootCenter = ptRootComponent.Center;
             _octreeRootLength = ptRootComponent.Size;
 
@@ -212,8 +212,6 @@ namespace Fusee.Examples.PcRendering.Core
 
             //create depth tex and fbo
             _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
-
-            
 
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -379,7 +377,7 @@ namespace Fusee.Examples.PcRendering.Core
                 OocLoader.RC = RC;
                 OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
 
-                Diagnostics.Log(Time.FramePerSecond);
+                Diagnostics.Log(FramePerSecond);
 
                 if (DoShowOctants)
                     OocLoader.ShowOctants(_scene);
