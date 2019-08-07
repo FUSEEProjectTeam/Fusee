@@ -1,6 +1,0 @@
-*.user
-.vs/
-bin/
-obj/
-node_modules/
-tools/
