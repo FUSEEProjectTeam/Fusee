@@ -6,7 +6,6 @@
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_WEB</DefineConstants>
   </PropertyGroup>
-  <Import Project="Sdk.props" />
 
   <PropertyGroup>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
