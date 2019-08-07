@@ -4,13 +4,9 @@
     <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
     
     <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
-    <!--<BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)</IntermediateOutputPath>-->
+    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath> 
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
-    <!-- Web Assembly Targets -->
-		<!--<MonoWasmIntermediateDir>$(IntermediateOutputPath)monowasm\</MonoWasmIntermediateDir>-->
 
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
