@@ -21,9 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="WebAssembly.Bindings" Version="3.0.2" />
-    <PackageReference Include="WebAssembly.Net.Http" Version="3.0.2" />
-    <PackageReference Include="WebAssembly.Net.WebSockets" Version="3.0.2" />  
+    <PackageReference Include="WebAssembly.Bindings" Version="0.1.0-preview1" />
+    <PackageReference Include="WebAssembly.Net.Http" Version="0.1.0-preview1" />
+    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.1.0-preview1" />  
   </ItemGroup>
   
   
