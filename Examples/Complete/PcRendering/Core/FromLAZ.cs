@@ -99,14 +99,14 @@ namespace Fusee.Examples.PcRendering.Core
 
             for (int i = 0; i < points.Length; i++)
             {
-                var pt = points[i];
-
+                var pt = points[i];                
                 pt.Position -= firstPoint.Position;
                 pt.Position = new double3(pt.Position.x, pt.Position.z, pt.Position.y);
 
                 points[i] = pt;
             }
 
+            reader.Dispose();
             return points.ToList();
         }
 

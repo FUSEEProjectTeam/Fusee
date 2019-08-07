@@ -142,8 +142,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <param name="effect">Shader effect for rendering the wireframe cubes.</param>
         public void ShowOctants(SceneContainer scene)
         {
-            scene.Children.RemoveAll(node => node.Name == "WireframeCube");
-
+            WasSceneUpdated = false;
+            DeleteOctants(scene);
             foreach (var node in VisibleNodes.Values)
             {
                 var ptOctantComp = node.GetComponent<PtOctantComponent>();
@@ -167,12 +167,15 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                             wfc
                         }
                     });
-                }
-                else
-                {
-                    throw new ArgumentException("Trying to set octant for node that is not loaded yet!");
-                }
+                }                
             }
+
+            WasSceneUpdated = true;
+        }
+
+        public void DeleteOctants(SceneContainer scene)
+        {
+            scene.Children.RemoveAll(node => node.Name == "WireframeCube");
         }
 
         /// <summary>

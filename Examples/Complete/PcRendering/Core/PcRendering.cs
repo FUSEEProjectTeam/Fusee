@@ -20,16 +20,15 @@ namespace Fusee.Examples.PcRendering.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class PcRendering : RenderCanvas
     {
-        private string _pathToPc = "E:/LAS/17350_IRIS12.las";
+        private string _pathToPc = "E:/LAS/HolbeinPferd.las";
 
         public bool UseWPF = false;
-        public bool ShowOctants = false;
+        public bool DoShowOctants = false;
         public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
 
         public PtOctantLoader<LAZPointType> OocLoader { get; private set; }
-
-
+        
         public string PathToOocFile;   //"E:/HolbeinPferdOctree";              
 
         // angle variables
@@ -169,10 +168,24 @@ namespace Fusee.Examples.PcRendering.Core
             _angleHorz = _angleVert = 0;
         }
 
+        public void DeleteOctants()
+        {
+            IsSceneLoaded = false;
+
+            while (!OocLoader.WasSceneUpdated || !ReadyToLoadNewFile)
+            {
+                continue;
+            }
+
+            DoShowOctants = false;
+            OocLoader.DeleteOctants(_scene);
+            IsSceneLoaded = true;
+        }
+
         // Init is called on startup. 
         public override void Init()
         {
-            PathToOocFile = "E:/17350_IRIS12Octree";
+            PathToOocFile = "E:/HolbeinPferdOctree";
             _ptAccessor = new PtRenderingAccessor();
             _cameraPos = InitCameraPos = new float3(10, 10, -30);
             //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 2500);
@@ -368,7 +381,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                 Diagnostics.Log(Time.FramePerSecond);
 
-                if (ShowOctants)
+                if (DoShowOctants)
                     OocLoader.ShowOctants(_scene);
             }
 

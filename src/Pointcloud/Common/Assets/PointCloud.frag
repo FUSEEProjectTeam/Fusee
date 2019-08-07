@@ -242,7 +242,6 @@ void main(void)
 
 		for (int i = 0; i < kernelLength; ++i) 
 		{
-
 			// get sample position:
 			vec3 sampleVal = tbn * SSAOKernel[i];
 			sampleVal = sampleVal * radius + vViewPos.xyz;
@@ -266,25 +265,9 @@ void main(void)
 		ambient = vec3(occlusion, occlusion, occlusion);
 	}
 	//-------------------------------
-	vec3 normalDir = vec3(1,1,1);
-	vec3 lightDir = vec3(1,1,1);
-	vec3 halfwayDir = vec3(1,1,1);
-
+	
 	vec3 lightColor = vec3(1,1,1);
 
-	if(Lighting == 2 || Lighting == 3)
-	{
-		normalDir = normalize((inverse(inverse(transpose( FUSEE_M))) * vec4(viewNormal,1.0)).xyz);
-	
-//		mat4 invMv = inverse(FUSEE_V * FUSEE_M);
-//		vec3 worldSpaceCameraPos = invMv[3].xyz;
-//		vec3 worldSpaceLightPos = worldSpaceCameraPos;
-
-		vec3 viewDir =  -vViewPos.xyz;
-		vec3 lightDir = normalize( vec3(0, 0, -1.0));
-		vec3 halfwayDir = normalize(viewDir+lightDir);
-	}
-	
 	switch (Lighting)
 	{
 		default:
@@ -306,7 +289,7 @@ void main(void)
 		}
 		case 2: //diffuse
 		{
-			lightDir = vec3(0,0,+1);
+			vec3 lightDir = vec3(0,0, 1.0);
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
 
@@ -319,7 +302,7 @@ void main(void)
 		case 3: //blinn phong
 		{
 
-			lightDir = vec3(0,0,+1);
+			vec3 lightDir = vec3(0,0, 1.0);
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
 			

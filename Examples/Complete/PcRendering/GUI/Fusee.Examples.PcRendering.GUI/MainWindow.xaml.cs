@@ -4,17 +4,15 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Microsoft.Win32;
 using System;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows;
-using System.Windows.Forms;
-using System.Windows.Markup;
+using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 
 namespace Fusee.Examples.PcRendering.WPF
@@ -303,8 +301,12 @@ namespace Fusee.Examples.PcRendering.WPF
             var ofd = new OpenFileDialog {
                 Filter = "Meta json (*.json)|*.json"
             };
-            if (ofd.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
+
+            var sd = ofd.ShowDialog();
+            if (sd == null) return;
+
+            if ((bool)sd)
+            {                
                 if (!ofd.SafeFileName.Contains("meta.json"))
                 {
                     System.Windows.MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
@@ -328,6 +330,8 @@ namespace Fusee.Examples.PcRendering.WPF
                 app.ResetCamera();
                 app.LoadPointCloudFromFile();
                 InnerGrid.IsEnabled = true;
+                ShowOctants_Button.IsEnabled = true;
+                ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
                 inactiveBorder.Visibility = Visibility.Collapsed;
             }
 
@@ -399,6 +403,32 @@ namespace Fusee.Examples.PcRendering.WPF
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
             VisPoints.Text = app.OocLoader.PointThreshold.ToString();
+        }
+
+        private bool _areOctantsShown;
+
+        private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
+        {            
+            while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated || !app.IsSceneLoaded)
+            {
+                //app.IsSceneLoaded = false;
+                continue;
+            }
+
+            if (!_areOctantsShown)
+            {
+                app.DoShowOctants = true;
+                _areOctantsShown = true;
+                ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants_on.png", UriKind.Relative));
+            }
+            else
+            {
+                app.DeleteOctants();
+                _areOctantsShown = false;
+                ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
+            }
+            
+                
         }
     }
 }

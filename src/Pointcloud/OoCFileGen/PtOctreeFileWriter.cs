@@ -47,7 +47,6 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             watch.Restart();
 
             var nodesToWrite = new List<PtOctantWrite<TPoint>>();
-
             
             octree.Traverse((PtOctantWrite<TPoint> node) =>
             {

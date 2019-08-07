@@ -17,6 +17,9 @@
     <None Remove="Assets\folder.png" />
     <None Remove="Assets\lighting.png" />
     <None Remove="Assets\lighting_w.png" />
+    <None Remove="Assets\octants.png" />
+    <None Remove="Assets\octants_inactive.png" />
+    <None Remove="Assets\octants_on.png" />
     <None Remove="Assets\ptMode.png" />
     <None Remove="Assets\ptMode_w.png" />
     <None Remove="Assets\size.png" />
@@ -93,6 +96,15 @@
     </Resource>
     <Resource Include="Assets\lighting.png" />
     <Resource Include="Assets\lighting_w.png" />
+    <Resource Include="Assets\octants.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\octants_inactive.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Assets\octants_on.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Assets\ptMode.png" />
     <Resource Include="Assets\ptMode_w.png" />
     <Resource Include="Assets\size.png" />
