@@ -68,6 +68,8 @@
     <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
     <!--GUI-->
     <AssetDestinationFolder Condition="  $(AssemblyName.Contains('WPF')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
+    <!--WASM-->
+    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('WebAsm')) And '$(OutputType)' == 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
   </PropertyGroup>
 
 

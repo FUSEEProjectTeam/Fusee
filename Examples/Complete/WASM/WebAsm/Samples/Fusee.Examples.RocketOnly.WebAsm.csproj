@@ -53,13 +53,7 @@
   
   <ItemGroup>
     <None Remove="Assets\FuseeAnim.gif" />
-    <None Remove="Assets\FUSEERocket.fus" />
     <None Remove="Assets\FuseeSpinning.gif" />
-    <None Remove="Assets\Lato-Black.ttf" />
-    <None Remove="Assets\LoremIpsum.txt" />
-    <None Remove="Assets\Model.fus" />
-    <None Remove="Assets\nineSlice.vert" />
-    <None Remove="Assets\nineSliceTile.frag" />
     <None Remove="canvaskit.js" />
     <None Remove="index.html" />
     <None Remove="Scripts\mono_support.js" />
@@ -71,31 +65,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
 
-    <Content Include="Assets\FUSEERocket.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
     <Content Include="Assets\FuseeSpinning.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="Assets\LoremIpsum.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="Assets\Model.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="Assets\nineSlice.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-
-    <Content Include="Assets\nineSliceTile.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="canvaskit.wasm">
@@ -115,12 +85,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <Content Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Update="Scripts\mono_support.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
