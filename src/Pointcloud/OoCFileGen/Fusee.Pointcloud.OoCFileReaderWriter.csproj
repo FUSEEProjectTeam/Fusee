@@ -1,13 +1,12 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <!--<OutputType>Library</OutputType>-->
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <RootNamespace>Fusee.Pointcloud.OoCFileReaderWriter</RootNamespace>
     <PackageId>Fusee.Pointcloud.OoCFileReaderWriter</PackageId>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries\</OutputPath>
@@ -43,7 +42,5 @@
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
 </Project>
 

@@ -3,7 +3,7 @@ using Fusee.Pointcloud.Common;
 
 namespace Fusee.Examples.PcRendering.Core
 {
-    internal class PtRenderingAccessor : PointAccessor<LAZPointType>
+    public class PtRenderingAccessor : PointAccessor<LAZPointType>
     {
         public override bool HasPositionFloat3_64 => true;
         public override bool HasColorFloat3_32 => true;

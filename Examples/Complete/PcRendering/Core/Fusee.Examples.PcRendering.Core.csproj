@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
     <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Core\</OutputPath>
@@ -43,15 +41,10 @@
     </Reference>
     <Reference Include="Fusee.Pointcloud.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Pointcloud.LASReader">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.LASReader.dll</HintPath>
-    </Reference>
+    </Reference>   
     <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 
 </Project>

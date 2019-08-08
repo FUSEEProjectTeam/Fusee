@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Mono.WebAssembly.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <NoWarn>NU1701;NU1604;NU1605</NoWarn>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <NoWarn>NU1701;NU1604;NU1605</NoWarn> 
     <MonoWasmLinkMode>None</MonoWasmLinkMode>
     <StartupObject />
   </PropertyGroup>
@@ -12,6 +12,11 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\PcRendering\WebAsm\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.SerializationSerializer">
@@ -31,7 +36,7 @@
     <ProjectReference Include="$(FuseeRoot)src\Math\Core\Fusee.Math.Core.csproj" />
     
     <ProjectReference Include="$(FuseeRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
-    
+        
     <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj" />
 
     

@@ -97,27 +97,27 @@ namespace Fusee.Examples.PcRendering.Core
             RC.SetFXParam("Shininess", PtRenderingParams.Shininess);
         }
 
-        private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
-        {
-            var points = FromLAZ.ToList(pathToFile);
+        //private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
+        //{
+        //    var points = FromLAZ.ToList(pathToFile);
 
-            var aabb = new AABBd(points[0].Position, points[0].Position);
-            foreach (var pt in points)
-            {
-                aabb |= pt.Position;
-            }
+        //    var aabb = new AABBd(points[0].Position, points[0].Position);
+        //    foreach (var pt in points)
+        //    {
+        //        aabb |= pt.Position;
+        //    }
 
-            var watch = new Stopwatch();
-            watch.Restart();
+        //    var watch = new Stopwatch();
+        //    watch.Restart();
 
-            var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
-            Diagnostics.Log("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
+        //    var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
+        //    Diagnostics.Log("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
 
-            watch.Restart();
-            var occFileWriter = new PtOctreeFileWriter<LAZPointType>(pathToFolder);
-            occFileWriter.WriteCompleteData(octree, ptAcc);
-            Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
-        }
+        //    watch.Restart();
+        //    var occFileWriter = new PtOctreeFileWriter<LAZPointType>(pathToFolder);
+        //    occFileWriter.WriteCompleteData(octree, ptAcc);
+        //    Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
+        //}
 
         public void LoadPointCloudFromFile()
         {           
@@ -375,7 +375,7 @@ namespace Fusee.Examples.PcRendering.Core
                 _sceneRenderer.Render(RC);
 
                 OocLoader.RC = RC;
-                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, FromLAZ.GetMeshsForNode, _ptAccessor);
+                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, MeshFromOocFile.GetMeshsForNode, _ptAccessor);
 
                 Diagnostics.Log(FramePerSecond);
 
