@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Fusee.Examples.PcRendering.Core;
+using System.IO;
 
 namespace Fusee.Pointcloud.Converter.LasToOoc
 {
@@ -13,36 +14,76 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
     {
         static void Main(string[] args)
         {
-            string pathToFile;
-            string pathToFolder;
+            string pathToFile = "";
+            string pathToFolder = "";
             int maxNoOfPointsInBucket = 0;
 
             var ptAcc = new PtRenderingAccessor();
 
-            if (args.Length != 3) {
-
+            if (args.Length != 3)
+            {           
                 Console.WriteLine("Enter Path to .las/laz.");
-                pathToFile = Console.ReadLine();
-                Console.WriteLine("Enter Path to destination folder.");
-                pathToFolder = Console.ReadLine();
+                GetPathToFile(ref pathToFile);
 
+                Console.WriteLine("Enter Path to destination folder.");
+                GetPathToFolder(ref pathToFolder);
+
+                Console.WriteLine("Enter max. number of points in Octree bucket.");
                 EnterMaxNoOfPts(pathToFile, pathToFolder, ref maxNoOfPointsInBucket);                
             }
             else
             {
                 pathToFile = args[0];
+                GetPathToFile(ref pathToFile);                
+
                 pathToFolder = args[1];
+                GetPathToFolder(ref pathToFolder);
+
                 Int32.TryParse(args[2], out maxNoOfPointsInBucket);
+                EnterMaxNoOfPts(pathToFile, pathToFolder, ref maxNoOfPointsInBucket);
             }
 
             CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
-        }        
+        }    
+        
+        private static void GetPathToFolder(ref string pathToFolder)
+        {
+           
+            pathToFolder = Console.ReadLine();
+
+            try
+            {
+                var path = Path.GetFullPath(pathToFolder);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+                Console.WriteLine();
+                Console.WriteLine("Enter Path to destination folder.");
+                pathToFolder = "";
+                GetPathToFolder(ref pathToFolder);
+            }
+        }
+
+        private static void GetPathToFile(ref string pathToFile)
+        {  
+            pathToFile = Console.ReadLine();
+            var extension = Path.GetExtension(pathToFile);
+
+            if(extension == null || (extension!= ".las" && extension != ".laz"))
+            {               
+                Console.WriteLine("Path is not valid!");
+                Console.WriteLine("Enter Path to .las/laz.");
+                pathToFile = "";
+                GetPathToFile(ref pathToFile);                
+            }
+            return;
+        }
 
         private static void EnterMaxNoOfPts(string pathToFile, string pathToFolder, ref int mxNo)
         {
-            Console.WriteLine("Enter max. number of points in Octree bucket.");
-            var maxNoOfPointsInBucket_str = Console.ReadLine();
             
+            var maxNoOfPointsInBucket_str = Console.ReadLine();            
 
             if (Int32.TryParse(maxNoOfPointsInBucket_str, out var maxNoOfPointsInBucket))
             {
@@ -54,15 +95,15 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
                 else
                 {
                     Console.WriteLine("Number of Points must be > 0");
-                    EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);
-                    
+                    Console.WriteLine("Enter max. number of points in Octree bucket.");
+                    EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);                    
                 }
             }
             else
             {
-                Console.WriteLine("Number of Points must be a number");
-                EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);
-                
+                Console.WriteLine("Number of Points must be a number!");
+                Console.WriteLine("Enter max. number of points in Octree bucket.");
+                EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);                
             }
         }
 
