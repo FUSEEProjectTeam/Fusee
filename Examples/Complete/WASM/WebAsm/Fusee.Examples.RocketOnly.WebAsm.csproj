@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU1701;NU1604;NU1605</NoWarn>
-    <MonoWasmLinkMode>None</MonoWasmLinkMode>
+    <MonoWasmLinkMode>Full</MonoWasmLinkMode>
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,7 +32,7 @@
     
     <ProjectReference Include="$(FuseeRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
 
-    <ProjectReference Include="..\..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
+    <ProjectReference Include="..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
