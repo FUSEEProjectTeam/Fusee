@@ -385,8 +385,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LASlibNet", "Examples\Compl
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.LASReader.Core", "Examples\Complete\LASReader\Core\Fusee.Examples.LASReader.Core.csproj", "{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.LASReader.Android", "Examples\Complete\LASReader\Android\Fusee.Examples.LASReader.Android.csproj", "{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -2538,6 +2536,12 @@ Global
 		{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02}.Release-Desktop|x86.Deploy.0 = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|x64.ActiveCfg = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|x64.Build.0 = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|x86.ActiveCfg = Release|Any CPU
+		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F}.Release-Web|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2617,7 +2621,6 @@ Global
 		{C2811943-EA22-4152-918C-6061A076C56C} = {74D585F2-3C49-4ED1-A0BF-2973F21ABDED}
 		{EB1E0DDD-9040-48F2-8B05-ABF7B41C363E} = {74D585F2-3C49-4ED1-A0BF-2973F21ABDED}
 		{5EE46C71-C184-4EE8-9EC0-A89AD5B9007F} = {74D585F2-3C49-4ED1-A0BF-2973F21ABDED}
-		{918E3027-3B41-4D85-8E6D-BB5EB5D5AF02} = {74D585F2-3C49-4ED1-A0BF-2973F21ABDED}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
@@ -29,7 +33,6 @@
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
 
 </Project>

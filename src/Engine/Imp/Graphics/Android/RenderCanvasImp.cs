@@ -425,7 +425,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         // prior to context creation
         protected override void CreateFrameBuffer()
         {
-            //GLContextVersion = GLContextVersion.Gles3_0;
             ContextRenderingApi = GLVersion.ES3;
 
             // the default GraphicsMode that is set consists of (16, 16, 0, 0, 2, false)
