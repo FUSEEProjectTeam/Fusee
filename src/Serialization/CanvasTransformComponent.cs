@@ -14,12 +14,31 @@ namespace Fusee.Serialization
         public CanvasRenderMode CanvasRenderMode;
 
         /// <summary>
-        /// Absolute size of the Canvas. First element in the interface hierarchy .
+        /// Absolute size of the Canvas. First element in the interface hierarchy.
         /// </summary>
         [ProtoMember(2)]
         public MinMaxRect Size;
-    }
 
+        /// <summary>
+        /// Absolute size of the Canvas. First element in the interface hierarchy.
+        /// </summary>
+        [ProtoMember(3)]
+        public MinMaxRect ScreenSpaceSize;
+
+        /// <summary>
+        /// Scale factor for the user given offsets that define the sizes if the canvas' child elements. This becomes important when rendering in SCREEN mode.        
+        /// </summary>
+        [ProtoMember(4)] public float2 Scale;
+
+        public CanvasTransformComponent(CanvasRenderMode canvasRenderMode)
+        {
+            CanvasRenderMode = canvasRenderMode;
+            Size = ScreenSpaceSize;
+        }
+    }
+    ///<summary>
+    ///The rendermodes available.
+    ///</summary>
     [ProtoContract]
     public enum CanvasRenderMode
     {

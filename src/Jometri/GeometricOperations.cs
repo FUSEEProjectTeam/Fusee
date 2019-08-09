@@ -17,7 +17,7 @@ namespace Fusee.Jometri
         /// <returns></returns>
         internal static float3 Reduce2D(this float3 vertPos, float3 normal)
         {
-            normal.Normalize(); //New z axis
+            normal = normal.Normalize(); //New z axis
 
             //If the normal equals the z axis of the world coodrinate system: reflect the point on the y axis.
             if (normal == float3.UnitZ)
@@ -34,9 +34,9 @@ namespace Fusee.Jometri
 
             var v2 = float3.Cross(normal, float3.UnitZ); //rotation axis - new x axis
 
-            v2.Normalize();
+            v2 = v2.Normalize();
             var v3 = float3.Cross(normal, v2); //new y axis
-            v3.Normalize();
+            v3 = v3.Normalize();
 
             //Calculate change-of-basis matrix (orthonormal matrix).
             var row1 = new float3(v3.x, v2.x, normal.x);
@@ -48,7 +48,7 @@ namespace Fusee.Jometri
 
             //In an orthonomal matrix the inverse equals the transpose, thus the transpose can be used to calculate vector in new basis (transpose * vector = vector in new basis).
             var transposeMat = new float3x3(changeOfBasisMat.Row0, changeOfBasisMat.Row1, changeOfBasisMat.Row2);
-            transposeMat.Transpose();
+            transposeMat = transposeMat.Transpose();
 
             var newVert = transposeMat * vertPos;
 
@@ -83,7 +83,7 @@ namespace Fusee.Jometri
                 normal.z += (vCur.x - vNext.x) * (vCur.y + vNext.y);
             }
             normal = normal * -1;
-            normal.Normalize();
+            normal = normal.Normalize();
 
             return normal;
 
@@ -302,14 +302,17 @@ namespace Fusee.Jometri
         /// <param name="p2">Second control point of the first line.</param>
         /// <param name="p3">First point of the second line.</param>
         /// <param name="p4">Second point of the secornd line.</param>
+        /// <param name="intersectionPoint">The intersection point, if the lines do not intersect this will be float3 Infinity.</param>
         /// <returns></returns>
-        public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4)
+        public static bool IsLineIntersectingLine(float3 p1, float3 p2, float3 p3, float3 p4, out float3 intersectionPoint)
         {
+            intersectionPoint = new float3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+
             var a = p2 - p1;
             var b = p3 - p4;
             var c = p1 - p3;
 
-            var tNumerator = b.y * b.x - b.x * c.y;
+            var tNumerator = b.y * c.x - b.x * c.y;
             var iNumerator = a.x * c.y - a.y * c.x;
 
             var denominator = a.y * b.x - a.x * b.y;
@@ -336,6 +339,9 @@ namespace Fusee.Jometri
                     return false;
             }
 
+            var alpha = tNumerator / denominator;
+
+            intersectionPoint = p1 + alpha*(p2-p1);
             return true;
         }
 

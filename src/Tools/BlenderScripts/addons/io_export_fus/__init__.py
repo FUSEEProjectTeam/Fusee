@@ -16,7 +16,7 @@ bl_info = {
     "name": ".fus format",
     "author": "Christoph Mueller, Moritz Roetner, Jonas Conrad, Patrick Foerster",
     "version": (0, 7, 0),
-    "blender": (2, 79, 0),
+    "blender": (2, 80, 0),
     "location": "File > Import-Export",
     "description": "Export to the FUSEE .fus format/as a FUSEE Web application",
     "warning":"",
@@ -78,47 +78,47 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     filename_ext = ".fus"
 
     filename_ext = ".fus"
-    filter_glob = StringProperty(default="*.fus", options={'HIDDEN'})
-    isOnlySelected = BoolProperty(
+    filter_glob : StringProperty(default="*.fus", options={'HIDDEN'})
+    isOnlySelected : BoolProperty(
             name="Only selected Objects",
             description="Export only selected objects",
             default=False,
             )
-    isWeb = BoolProperty(
+    isWeb : BoolProperty(
         name="Create FUSEE Web-Application",
         description="Export HTML-Viewer around the scene and run in Web Browser after export",
         default=False,
     )
-    isSaveFile = BoolProperty(
+    isSaveFile : BoolProperty(
         name="Save File",
         description="Save this file before exporting it",
         default=True,
     )
-    isExportTex = BoolProperty(
+    isExportTex : BoolProperty(
         name="Export Textures",
         description="Export the textures used in this scene as well",
         default=True,
     )
-    isLamps = BoolProperty(
+    isLamps : BoolProperty(
         name="Export Lamps",
         description="Export lamps in the scene (not supported yet)",
         default=False,
     )
 
     #Smoothing is not working correctly
-    isSmooth = BoolProperty(
+    isSmooth : BoolProperty(
         name="Smooth Normals",
         description="Smooth display of normals (not working correctly)",
         default=False,
     )
-    smoothingDist = FloatProperty(
+    smoothingDist : FloatProperty(
         name="Smoothing Distance",
         description="Maximum distance between two points",
         min=0.0,
         max=100.0,
         default=0.0,
     )
-    smoothingAngle = FloatProperty(
+    smoothingAngle : FloatProperty(
         name="Smoothing Angle",
         description="Maximum angle between two normals",
         min=0.0,
@@ -127,7 +127,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     )
 
     #Operator Properties
-    filepath = StringProperty(subtype='FILE_PATH')
+    filepath : StringProperty(subtype='FILE_PATH')
 
     #get FuseeRoot environment variable
     fusee_Root = os.environ['FuseeRoot']
@@ -164,7 +164,7 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
                     bpy.ops.wm.save_mainfile()
                 else:
                     # get the temporary path of blender, to write a temporary version of the scene
-                    temp_Path = bpy.context.user_preferences.filepaths.temporary_directory
+                    temp_Path = bpy.context.preferences.filepaths.temporary_directory
                     # concatenate to get the full path
                     temp_Path = os.path.join(temp_Path, 'blender_fus_export_temp.blend')
                     print('File not saved before, saving a temporary tempfile in:\n' + temp_Path)
@@ -278,15 +278,21 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
 def menu_func_export(self, context):
     self.layout.operator(ExportFUS.bl_idname, text="FUS (.fus)")
 
+classes =(
+    ExportFUS,
+)
+
 def register():
-    bpy.utils.register_module(__name__)
-    bpy.types.INFO_MT_file_export.append(menu_func_export)
+    from bpy.utils import register_class
+    for cls in classes:
+        register_class(cls)
+    bpy.types.TOPBAR_MT_file_export.append(menu_func_export)
+
 def unregister():
-    bpy.utils.unregister_module(__name__)
-    bpy.types.INFO_MT_file_export.remove(menu_func_export)
+    from bpy.utils import unregister_class
+    for cls in reversed(classes):
+        unregister_class(cls)
+    bpy.types.TOPBAR_MT_file_export.remove(menu_func_export)
 
 if __name__ == "__main__":
         register()
-
-
-

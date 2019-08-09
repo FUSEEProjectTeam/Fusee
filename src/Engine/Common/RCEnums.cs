@@ -517,6 +517,69 @@ namespace Fusee.Engine.Common
 
 
     /// <summary>
+    /// The different axes a SixDOF device e.g. spacemouse exposes.
+    /// </summary>
+    public enum SixDOFAxis
+    {
+        /// <summary>
+        /// Translation axis in x direction.
+        /// </summary>
+        TX = 0,
+        /// <summary>
+        /// Translation axis in y direction.
+        /// </summary>
+        TY = 1,
+        /// <summary>
+        /// Translation axis in z direction. 
+        /// </summary>
+        TZ = 2,
+        /// <summary>
+        /// Rotation around the x axis.
+        /// </summary>
+        RX = 3,
+        /// <summary>
+        /// Rotation around the y axis.
+        /// </summary>
+        RY = 4,
+        /// <summary>
+        /// Rotation around the z axis.
+        /// </summary>
+        RZ = 5
+    }
+
+
+    /// <summary>
+    /// The buttons and axes a gamecontroller exposes.
+    /// </summary>
+    public enum Gamepad : int
+    {
+#pragma warning disable 1591
+        A = 0,
+        X = 1,
+        Y = 2,
+        B = 3,
+        Start = 4,
+        Back = 5,
+        LeftShoulder = 6,
+        RightShoulder = 7,
+        L3 = 8,
+        R3 = 9,
+        DPadUp = 10,
+        DPadDown = 11,
+        DPadLeft = 12,
+        DPadRight = 13,
+        LeftStickX = 0,
+        LeftStickY = 1,
+        RightStickX = 2,
+        RightStickY = 3,
+        LeftTrigger = 4,
+        RightTrigger = 5
+
+#pragma warning restore 1591
+    }
+
+
+    /// <summary>
     /// Game controller button Ids.
     /// </summary>
     public enum ControllerButton

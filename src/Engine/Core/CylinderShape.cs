@@ -3,6 +3,9 @@ using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements a cylindric collision shape
+    /// </summary>
     public class CylinderShape : CollisionShape
     {
         internal ICylinderShapeImp _cylinderShapeImp;
@@ -20,7 +23,9 @@ namespace Fusee.Engine.Core
                 o._cylinderShapeImp.Margin = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the local scaling of the cylinder shape.
+        /// </summary>
         public override float3 LocalScaling
         {
             get
@@ -43,7 +48,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Returns the radius of the cylinder shape.
+        /// </summary>
         public float Radius
         {
             get
@@ -52,7 +59,9 @@ namespace Fusee.Engine.Core
                 return retval;
             }
         }
-
+        /// <summary>
+        /// Returns the up axis of the cylinder shape.
+        /// </summary>
         public float UpAxis
         {
             get

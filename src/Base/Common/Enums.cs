@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Fusee.Base.Common
+﻿namespace Fusee.Base.Common
 {
     /// <summary>
     /// Keep this binary compatible with System.IO.FileMode (unsupported on portable libraries).

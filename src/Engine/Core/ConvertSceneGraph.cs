@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using Fusee.Jometri;
 using Fusee.Serialization;
 using Fusee.Xene;
+using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
-        private SceneContainer _convertedScene;
+        private SceneContainer _convertedScene;        
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
 
@@ -20,6 +20,16 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
+
+        //private IEnumerable<System.Type> _codeComponentSubClasses;
+
+        //public ConvertSceneGraph()
+        //{
+        //  _codeComponentSubClasses = 
+        //    Assembly.GetExecutingAssembly()
+        //    .GetTypes()
+        //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
+        //}
 
         protected override void PopState()
         {
@@ -35,27 +45,37 @@ namespace Fusee.Engine.Core
         {
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
-
+                        
             _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
             _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
             _boneContainers = new Stack<SceneNodeContainer>();
 
             Traverse(sc.Children);
+
+            //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
+            if (_convertedScene.Children[0].GetComponent<ProjectionComponent>() == null)
+            {
+                var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
+                _convertedScene.Children[0].Components.Insert(0, pc);
+            }
+            
             return _convertedScene;
-        }
-
+        }        
         #region Visitors
-
+        /// <summary>
+        /// Converts the scene node container.
+        /// </summary>
+        /// <param name="snc"></param>
         [VisitMethod]
-        public void ConvScneNodeContainer(SceneNodeContainer snc)
+        public void ConvSceneNodeContainer(SceneNodeContainer snc)
         {
             if (_predecessors.Count != 0)
             {
                 var parent = _predecessors.Peek();
 
                 if (parent.Children == null)
-                    parent.Children = new List<SceneNodeContainer>();
+                    parent.Children = new ChildList();
 
                 _currentNode = new SceneNodeContainer { Name = snc.Name };
                 parent.Children.Add(_currentNode);
@@ -70,9 +90,23 @@ namespace Fusee.Engine.Core
                 else
                     _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
-        }
 
+            ////WIP!
+            ////If the SceneNodeContainers' name contains the name of some CodeComponent subclass,
+            ////create CodeComponent of this type and add it to the currentNode
+            //foreach (var type in _codeComponentSubClasses)
+            //{
+            //    if (!snc.Name.Contains(type.ToString())) continue;
+                
+            //    var codeComp = Activator.CreateInstance(type);
+            //    //_currentNode.AddComponent(codeComp);
+            //}
+        }
+        ///<summary>
+        ///Converts the transform component.
+        ///</summary>
         [VisitMethod]
+        
         public void ConvTransform(TransformComponent transform)
         {
             if (_currentNode.Components == null)
@@ -80,41 +114,58 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(transform);
         }
-
+        /// <summary>
+        /// Converts the material.
+        /// </summary>
+        /// <param name="matComp"></param>
         [VisitMethod]
         public void ConvMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
         }
-
+        /// <summary>
+        /// Converts the materials light component.
+        /// </summary>
+        /// <param name="matComp"></param>
         [VisitMethod]
         public void ConvMaterial(MaterialLightComponent matComp)
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
-
+        /// <summary>
+        /// Converts the physically based rendering component
+        /// </summary>
+        /// <param name="matComp"></param>
         [VisitMethod]
         public void ConvMaterial(MaterialPBRComponent matComp)
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
-
+        /// <summary>
+        /// Converts the shader.
+        /// </summary>
+        /// <param name="shaderComponent"></param>
         [VisitMethod]
         public void ConvShader(ShaderComponent shaderComponent)
         {
 
         }
 
-
+        /// <summary>
+        /// Converts the shader.
+        /// </summary>
         [VisitMethod]
         public void ConvShaderEffect(ShaderEffectComponent shaderComponent)
         {
 
         }
-
+        /// <summary>
+        /// Converts the mesh.
+        /// </summary>
+        /// <param name="mesh">The mesh to convert.</param>
         [VisitMethod]
         public void ConvMesh(Mesh mesh)
         {
@@ -131,13 +182,19 @@ namespace Fusee.Engine.Core
 
             _currentNode.Components.Add(mesh);
         }
-
+        /// <summary>
+        /// Adds the light component.
+        /// </summary>
+        /// <param name="lightComponent"></param>
         [VisitMethod]
         public void ConvLight(LightComponent lightComponent)
         {
             _currentNode.Components.Add(lightComponent);
         }
-
+        /// <summary>
+        /// Adds the bone component.
+        /// </summary>
+        /// <param name="bone"></param>
         [VisitMethod]
         public void ConvBone(BoneComponent bone)
         {
@@ -149,12 +206,15 @@ namespace Fusee.Engine.Core
             // Collect all bones, later, when a WeightComponent is found, we can set all Joints
             _boneContainers.Push(_currentNode);
         }
-
+        /// <summary>
+        /// Converts the weight component.
+        /// </summary>
+        /// <param name="weight"></param>
         [VisitMethod]
         public void ConVWeight(WeightComponent weight)
         {
             // check if we have bones
-            if (_boneContainers.Count > 1)
+            if (_boneContainers.Count >= 1)
             {
                 
                 if(weight.Joints == null) // initialize joint container

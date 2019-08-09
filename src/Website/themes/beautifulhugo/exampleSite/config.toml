@@ -4,12 +4,17 @@ DefaultContentLanguage = "en"
 title = "Beautiful Hugo"
 theme = "beautifulhugo"
 metaDataFormat = "yaml"
+pygmentsStyle = "trac"
 pygmentsUseClasses = true
-pygmentCodeFences = true
+pygmentsCodeFences = true
+pygmentsCodefencesGuessSyntax = true
+#pygmentsUseClassic = true
+#pygmentOptions = "linenos=inline"
 #disqusShortname = "XXX"
 #googleAnalytics = "XXX"
 
 [Params]
+#  homeTitle = "Beautiful Hugo Theme" # Set a different text for the header on the home page
   subtitle = "Build a beautiful and simple website in minutes"
   logo = "img/avatar-icon.png"
   favicon = "img/favicon.ico"
@@ -17,6 +22,9 @@ pygmentCodeFences = true
   commit = false
   rss = true
   comments = true
+  readingTime = true
+  useHLJS = true
+  socialShare = true
 #  gcse = "012345678901234567890:abcdefghijk" # Get your code from google.com/cse. Make sure to go to "Look and Feel" and change Layout to "Full Width" and Theme to "Classic"
 
 #[[Params.bigimg]]
@@ -25,6 +33,8 @@ pygmentCodeFences = true
 #[[Params.bigimg]]
 #  src = "img/sphere.jpg"
 #  desc = "Sphere"
+#  # position: see values of CSS background-position.
+#  position = "center top"
 #[[Params.bigimg]]
 #  src = "img/hexagon.jpg"
 #  desc = "Hexagon"
@@ -37,6 +47,7 @@ pygmentCodeFences = true
   googleplus = "+username" # or xxxxxxxxxxxxxxxxxxxxx
   github = "username"
   gitlab = "username"
+  bitbucket = "username"
   twitter = "username"
   reddit = "username"
   linkedin = "username"

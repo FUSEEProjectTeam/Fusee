@@ -39,7 +39,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         //Inherited
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.

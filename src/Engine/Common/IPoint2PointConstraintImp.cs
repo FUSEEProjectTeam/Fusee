@@ -1,5 +1,4 @@
-﻿using System;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
 {
@@ -22,14 +21,14 @@ namespace Fusee.Engine.Common
     public interface IPoint2PointConstraintImp : IConstraintImp
     {
         /// <summary>
-        /// Gets or sets the pivot in a.
+        /// Gets and sets the pivot in a.
         /// </summary>
         /// <value>
         /// The pivot in a.
         /// </value>
         float3 PivotInA { get; set; }
         /// <summary>
-        /// Gets or sets the pivot in b.
+        /// Gets and sets the pivot in b.
         /// </summary>
         /// <value>
         /// The pivot in b.

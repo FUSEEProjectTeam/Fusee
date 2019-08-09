@@ -23,7 +23,7 @@ namespace Fusee.Base.Core
 
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the kerning definition of a font should be used.
+        ///     Gets and sets a value indicating whether the kerning definition of a font should be used.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the kerning definition of a font should be used; otherwise, <c>false</c>.
@@ -35,7 +35,7 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        /// Gets or sets the size in pixels.
+        /// Gets and sets the size in pixels.
         /// </summary>
         /// <value>
         /// The vertical size of the font in pixels.
@@ -43,7 +43,11 @@ namespace Fusee.Base.Core
         public uint PixelHeight
         {
             get { return _fontImp.PixelHeight; }
-            set { _fontImp.PixelHeight = value; }
+            set
+            {
+                _fontImp.PixelHeight = value;
+                _glyphInfoCache.Clear();
+            }
         }
 
         /// <summary>

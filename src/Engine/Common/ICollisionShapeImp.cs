@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
 {
@@ -26,7 +22,7 @@ namespace Fusee.Engine.Common
         /// </value>
         float3 LocalScaling { get; set; }
         /// <summary>
-        /// Gets or sets a user object.
+        /// Gets and sets a user object.
         /// </summary>
         /// <value>
         /// The user object.

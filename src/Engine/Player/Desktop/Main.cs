@@ -10,6 +10,7 @@ using Fusee.Engine.Core;
 using Fusee.Serialization;
 using Path = Fusee.Base.Common.Path;
 
+
 namespace Fusee.Engine.Player.Desktop
 {
     public class Simple
@@ -19,7 +20,6 @@ namespace Fusee.Engine.Player.Desktop
             if (Directory.Exists(dir))
                 dirList.Add(dir);
         }
-
 
         public static void Main(string[] args)
         {
@@ -97,7 +97,7 @@ namespace Fusee.Engine.Player.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                 });
@@ -109,7 +109,12 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                         var ser = new Serializer();
-                        return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+
+                        var scene = ser.Deserialize((Stream) storage, null, typeof(SceneContainer)) ;
+
+                        var container = scene as SceneContainer;
+
+                        return new ConvertSceneGraph().Convert(container);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
@@ -125,19 +130,18 @@ namespace Fusee.Engine.Player.Desktop
             else
             {
                 // invoke the first public constructor with no parameters.
-                RenderCanvas app = (RenderCanvas) ctor.Invoke(new object[] { });
+                RenderCanvas app = (RenderCanvas)ctor.Invoke(new object[] { });
 
                 if (!string.IsNullOrEmpty(modelFile) && app is Fusee.Engine.Player.Core.Player)
-                    ((Fusee.Engine.Player.Core.Player) app).ModelFile = modelFile;
+                    ((Fusee.Engine.Player.Core.Player)app).ModelFile = modelFile;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
                 app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-                Input.AddDriverImp(
-                    new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-                Input.AddDriverImp(
-                    new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsSpaceMouseDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
                 // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
                 // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();

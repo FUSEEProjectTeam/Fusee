@@ -1,100 +1,25 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Xirkit</RootNamespace>
-    <AssemblyName>Fusee.Xirkit</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..</FuseeBuildRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{F091790C-ED62-44D2-8622-966030A98E0B}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Xirkit</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+  
   <ItemGroup>
-    <Reference Include="JSIL.Meta, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="JSIL.Meta">
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Animation.cs" />
-    <Compile Include="ChainedMemberAccessor.cs" />
-    <Compile Include="Channel.cs" />
-    <Compile Include="ChannelBase.cs" />
-    <Compile Include="Circuit.cs" />
-    <Compile Include="FieldAccessor.cs" />
-    <Compile Include="ICalculationPerformer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="IInPin.cs" />
-    <Compile Include="IMemberAccessor.cs" />
-    <Compile Include="InPin.cs" />
-    <Compile Include="IOutPin.cs" />
-    <Compile Include="Keyframe.cs" />
-    <Compile Include="Lerp.cs" />
-    <Compile Include="ListSort.cs" />
-    <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="OutPin.cs" />
-    <Compile Include="Pin.cs" />
-    <Compile Include="PinFactory.cs" />
-    <Compile Include="PropertyAccessor.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
-      <Name>Fusee.Math.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <FUSEE_External_JavaScript Include="Scripts\Fusee.Xirkit.Ext.js" />
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <ItemGroup>
-    <AvailableItemName Include="Atest">
-      <InProject>false</InProject>
-    </AvailableItemName>
-  </ItemGroup>
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-    <Message Importance="High" Text="Jetz gehts los" />
-    <Message Importance="High" Text="AfterBuild: processing @(Atest)" />
-  </Target>
-  -->
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

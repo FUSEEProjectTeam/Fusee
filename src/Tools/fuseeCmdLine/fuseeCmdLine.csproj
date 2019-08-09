@@ -44,14 +44,13 @@
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\bin\Debug\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>..\..\..\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\bin\Debug\Libraries\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>..\..\..\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -212,11 +211,11 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
@@ -234,7 +233,7 @@
   <!-- END OF BUILD THE BLENDER ADDON -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
-  <Import Project="$(FuseeRoot)ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
+  <Import Project="$(FuseeBuildRoot)\ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

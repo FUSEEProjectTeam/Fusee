@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using Fusee.Engine.Common;
 
@@ -20,7 +19,17 @@ namespace Fusee.Engine.Core
 
     // Two-phased creation. First check if a match is given, then create.
     // This allows for preparing steps if a match is detected before the creation occurs.
+    /// <summary>
+    /// Checks if there is a matching device available.
+    /// </summary>
+    /// <param name="device"></param>
+    /// <returns></returns>
     public delegate bool MatchFunc(IInputDeviceImp device);
+    /// <summary>
+    /// Creates the input device.
+    /// </summary>
+    /// <param name="device"></param>
+    /// <returns></returns>
     public delegate InputDevice CreatorFunc(IInputDeviceImp device);
 
     class SpecialDeviceCreator
@@ -38,7 +47,7 @@ namespace Fusee.Engine.Core
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
-    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/> and <see cref="Touch"/>
+    /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>, 
     /// without even typing a namespace or classname.
     /// </remarks>
     public class Input
@@ -62,16 +71,23 @@ namespace Fusee.Engine.Core
         /// The input driver implmementations.
         /// </value>
         /// <remarks>
-        /// This is a static method. Use <see cref="InputDrivers"/> for an insatnce method 
+        /// This is a static method. Use <see cref="InputDrivers"/> for an instance method 
         /// to the same functionality.
         /// </remarks>
         public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
 
         private readonly Dictionary<string, InputDevice> _inputDevices;
+        /// <summary>
+        /// Returns the values of an input device.
+        /// </summary>
         public IEnumerable<InputDevice> InputDevices => _inputDevices.Values;
+        /// <summary>
+        /// Returns the input device values.
+        /// </summary>
         public static IEnumerable<InputDevice> Devices => Instance._inputDevices.Values;
 
         private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
+        public readonly SixDOFDevice spaceMouseInput;
 
         /// <summary>
         /// Gets the input devices of a certain type. Shortcut for
@@ -137,7 +153,7 @@ namespace Fusee.Engine.Core
         /// The mouse (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="MouseInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="MouseInput"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static MouseDevice Mouse => Instance.MouseInput;
@@ -160,7 +176,7 @@ namespace Fusee.Engine.Core
         /// The keyboard (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="KeyboardInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="KeyboardInput"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static KeyboardDevice Keyboard => Instance.KeyboardInput;
@@ -183,7 +199,7 @@ namespace Fusee.Engine.Core
         /// The touch device (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="TouchInput}"/> for an insatnce property 
+        /// This is a static property. Use <see cref="TouchInput"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static TouchDevice Touch => Instance.TouchInput;
@@ -201,7 +217,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceConnected
@@ -234,7 +250,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected}"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
@@ -263,14 +279,13 @@ namespace Fusee.Engine.Core
             _specialDeviceCreators = new List<SpecialDeviceCreator>();
 
             // Register devices usually present.
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Mouse, imp => new MouseDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch, imp => new TouchDevice(imp));
             // Users can register additional devices.
-            RegisterInputDeviceType(new MatchFunc(delegate(IInputDeviceImp imp) { return imp.Category == DeviceCategory.Mouse; }),  new CreatorFunc(delegate(IInputDeviceImp imp) { return new MouseDevice(imp);}));
-            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Keyboard; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new KeyboardDevice(imp); }));
-            RegisterInputDeviceType(new MatchFunc(delegate (IInputDeviceImp imp) { return imp.Category == DeviceCategory.Touch; }), new CreatorFunc(delegate (IInputDeviceImp imp) { return new TouchDevice(imp); }));
-            // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Keyboard, imp => new KeyboardDevice(imp));
-            // RegisterInputDeviceType(imp => imp.Category == DeviceCategory.Touch,    imp => new TouchDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.SixDOF, imp => new SixDOFDevice(imp));
+            RegisterInputDeviceType(imp => imp.Category == DeviceCategory.GameController, imp => new GamePadDevice(imp));
         }
-
 
         private static Input _instance;
 
@@ -278,7 +293,11 @@ namespace Fusee.Engine.Core
         ///     Provides the singleton Instance of the Input Class.
         /// </summary>
         public static Input Instance => _instance ?? (_instance = new Input());
-
+        /// <summary>
+        /// Registers the type of input device available.
+        /// </summary>
+        /// <param name="match"></param>
+        /// <param name="creator"></param>
         public void RegisterInputDeviceType(MatchFunc match, CreatorFunc creator) 
         {
             if (match == null) throw new ArgumentNullException(nameof(match));
@@ -368,7 +387,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="inputDriver">The new input driver to add.</param>
         /// <remarks>
-        /// This is a static method. Use <see cref="AddInputDriverImp}"/> for an insatnce property 
+        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an insatnce property 
         /// to the same functionality.
         /// </remarks>
         public static void AddDriverImp(IInputDriverImp inputDriver) => Instance.AddInputDriverImp(inputDriver);
@@ -517,7 +536,7 @@ namespace Fusee.Engine.Core
         private HashSet<int> _buttonsPressed;
 
         /// <summary>
-        ///     Gets or sets a value indicating whether to fix mouse at center.
+        ///     Gets and sets a value indicating whether to fix mouse at center.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the mouse is fixed at center; otherwise, <c>false</c>.
@@ -525,7 +544,7 @@ namespace Fusee.Engine.Core
         public bool FixMouseAtCenter { get; set; }
 
         /// <summary>
-        ///     Gets or sets a value indicating whether the cursor is visible.
+        ///     Gets and sets a value indicating whether the cursor is visible.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the cursor is visible; otherwise, <c>false</c>.

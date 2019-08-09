@@ -16,11 +16,16 @@ namespace Fusee.Engine.Core
         public float Rotation;
         public float Transparency;
     }
-
+    /// <summary>
+    /// Implements a particle emitter
+    /// </summary>
     public class ParticleEmitter
     {
         #region Shader
         // At first we have to define the shader.
+        /// <summary>
+        /// The vertex shader.
+        /// </summary>
         public string VsSimpleTexture = @"
             /* Copies incoming vertex color without change.
              * Applies the transformation matrix to vertex position.
@@ -92,7 +97,9 @@ namespace Fusee.Engine.Core
         /// The entire particle system consists of one mesh.
         /// </summary>
         public Mesh ParticleMesh = new Mesh();
-
+        /// <summary>
+        /// Returns the particle mesh.
+        /// </summary>
         public Mesh PMesh
         {
             get { return ParticleMesh; }

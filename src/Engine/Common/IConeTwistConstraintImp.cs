@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
 {
@@ -44,7 +40,7 @@ namespace Fusee.Engine.Common
         /// <param name="b">if set to <c>true</c> [b].</param>
         void EnableMotor(bool b);
         /// <summary>
-        /// Gets or sets the fix threshold.
+        /// Gets and sets the fix threshold.
         /// </summary>
         /// <value>
         /// The fix threshold.

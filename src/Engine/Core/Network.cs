@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the status of the network. <see cref="NetStatusValues"/>.
+        /// Gets and sets the status of the network. <see cref="NetStatusValues"/>.
         /// </summary>
         /// <value>
         /// The status.
@@ -47,7 +47,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets the configuration. <see cref="NetConfigValues"/>
+        /// Gets and sets the configuration. <see cref="NetConfigValues"/>
         /// </summary>
         /// <value>
         /// The configuration.
@@ -270,14 +270,14 @@ namespace Fusee.Engine.Core
     internal class DummyNetworkImp : INetworkImp
     {
         /// <summary>
-        /// Gets or sets the configuration.
+        /// Gets and sets the configuration.
         /// </summary>
         /// <value>
         /// The configuration.
         /// </value>
         public NetConfigValues Config { get; set; }
         /// <summary>
-        /// Gets or sets the status.
+        /// Gets and sets the status.
         /// </summary>
         /// <value>
         /// The status.

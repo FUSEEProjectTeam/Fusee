@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
-using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -150,26 +147,27 @@ namespace Fusee.Engine.Core
         /// <param name="value">Value of the uniform variable</param>
         public void SetEffectParam(string name, object value)
         {
-                object param;
+            object param;
 
-                if (ParamDecl != null)
+            if (ParamDecl != null)
+            {
+                if (ParamDecl.TryGetValue(name, out param))
                 {
-                    if (ParamDecl.TryGetValue(name, out param))
-                    {
-                        // do nothing if new value = old value
+                    if (param != null)
+                    {// do nothing if new value = old value
                         if (param.Equals(value)) return; // TODO: Write a better compare method! 
-
-                        ParamDecl[name] = value;
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED, name, value));
-
-                }
-                    else
-                    {
-                        // not in Parameters yet, add it and call uniform_var_changed!
-                        ParamDecl.Add(name, value);
-                        ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_ADDED));
                     }
+
+                    ParamDecl[name] = value;
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED, name, value));
                 }
+                else
+                {
+                    // not in Parameters yet, add it and call uniform_var_changed!
+                    ParamDecl.Add(name, value);
+                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_ADDED));
+                }
+            }
         }
 
         /// <summary>
@@ -185,7 +183,7 @@ namespace Fusee.Engine.Core
                 {
                     return pa;
                 }
-                return new object();
+                return null;
         }
      
         // This property returns the number of elements

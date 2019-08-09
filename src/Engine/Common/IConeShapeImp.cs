@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a cone-shaped collision shape
@@ -11,7 +6,7 @@ namespace Fusee.Engine.Common
     public interface IConeShapeImp : ICollisionShapeImp
     {
         /// <summary>
-        /// Gets or sets the index of the cone up.
+        /// Gets and sets the index of the cone up.
         /// </summary>
         /// <value>
         /// The index of the cone up.

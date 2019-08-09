@@ -8,8 +8,6 @@ using OpenTK.Platform;
 using Fusee.Engine.Common;
 using System.Windows.Forms;
 
-
-
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
     /// <summary>
@@ -32,7 +30,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #region Fields
         /// <summary>
-        /// Gets or sets the width.
+        /// Gets and sets the width.
         /// </summary>
         /// <value>
         /// The width.
@@ -44,7 +42,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the height.
+        /// Gets and sets the height.
         /// </summary>
         /// <value>
         /// The height.
@@ -56,7 +54,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the left position.
+        /// Gets and sets the left position.
         /// </summary>
         /// <value>
         /// The left position.
@@ -68,7 +66,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the top position.
+        /// Gets and sets the top position.
         /// </summary>
         /// <value>
         /// The top position.
@@ -80,7 +78,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the caption(title of the window).
+        /// Gets and sets the caption(title of the window).
         /// </summary>
         /// <value>
         /// The caption.
@@ -108,7 +106,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [vertical synchronize].
+        /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
         /// <value>
@@ -121,7 +119,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [enable blending].
+        /// Gets and sets a value indicating whether [enable blending].
         /// Blending is used to display transparent graphics.
         /// </summary>
         /// <value>
@@ -129,7 +127,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </value>
         public bool EnableBlending { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether [fullscreen] is enabled.
+        /// Gets and sets a value indicating whether [fullscreen] is enabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
@@ -331,7 +329,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private bool _windowBorderHidden = false;
 
         /// <summary>
-        /// Implementation Tasks: Gets or sets the width(pixel units) of the Canvas.
+        /// Implementation Tasks: Gets and sets the width(pixel units) of the Canvas.
         /// </summary>
         /// <value>
         /// The width.
@@ -348,7 +346,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the height in pixel units.
+        /// Gets and sets the height in pixel units.
         /// </summary>
         /// <value>
         /// The height.
@@ -365,7 +363,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the caption(title of the window).
+        /// Gets and sets the caption(title of the window).
         /// </summary>
         /// <value>
         /// The caption.
@@ -395,7 +393,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [vertical synchronize].
+        /// Gets and sets a value indicating whether [vertical synchronize].
         /// This option is used to reduce "Glitches" during rendering.
         /// </summary>
         /// <value>
@@ -408,7 +406,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [enable blending].
+        /// Gets and sets a value indicating whether [enable blending].
         /// Blending is used to render transparent objects.
         /// </summary>
         /// <value>
@@ -421,7 +419,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [fullscreen] is enabled.
+        /// Gets and sets a value indicating whether [fullscreen] is enabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if [fullscreen]; otherwise, <c>false</c>.
@@ -717,10 +715,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Does the resize on this instance.
         /// </summary>
-        internal protected void DoResize()
+        internal protected void DoResize(int width, int height)
         {
             if (Resize != null)
-                Resize(this, new ResizeEventArgs());
+                Resize(this, new ResizeEventArgs(width, height));
         }
 
         #endregion
@@ -747,7 +745,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether [blending].
+        /// Gets and sets a value indicating whether [blending].
         /// Blending is used to render transparent objects.
         /// </summary>
         /// <value>
@@ -829,7 +827,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 _renderCanvasImp.BaseWidth = Width;
                 _renderCanvasImp.BaseHeight = Height;
-                _renderCanvasImp.DoResize();
+                _renderCanvasImp.DoResize(Width, Height);
             }
 
             /*

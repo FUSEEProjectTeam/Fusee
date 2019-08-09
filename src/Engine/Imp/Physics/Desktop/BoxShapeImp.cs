@@ -12,7 +12,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal BoxShape BtBoxShape;
 
         /// <summary>
-        /// Gets or sets the local scaling.
+        /// Gets and sets the local scaling.
         /// </summary>
         /// <value>
         /// The local scaling.
@@ -51,7 +51,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         //Inherited
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.

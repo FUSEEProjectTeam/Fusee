@@ -1,87 +1,28 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Graphics.Web</RootNamespace>
-    <AssemblyName>Fusee.Engine.Imp.Graphics.Web</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{82A2D997-B7AC-41D9-A166-65FCFED2114D}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Engine.Imp.Graphics.Web</PackageId>
+    <TargetFramework>net462</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;PLATFORM_WEB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <UseVSHostingProcess>true</UseVSHostingProcess>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE;PLATFORM_WEB</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Compile Include="InputImp.cs" />
-    <Compile Include="MeshImp.cs" />
-    <Compile Include="RenderCanvasImp.cs" />
-    <Compile Include="RenderContextImp.cs" />
-    <Compile Include="ShaderParam.cs" />
-    <Compile Include="ShaderProgramImp.cs" />
-    <Compile Include="TextureHandle.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <FUSEE_External_JavaScript Include="Scripts\Fusee.Engine.Imp.Graphics.Web.Ext.js" />
-    <FUSEE_External_JavaScript Include="Scripts\SystemExternals.js" />
-  </ItemGroup>
-  <ItemGroup>
-    <FUSEE_External_JavaScript Include="$(FuseeBuildRoot)\ext\opentypejs\opentype.js">
-      <Link>ExternalScripts\opentype.js</Link>
-    </FUSEE_External_JavaScript>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Base\Common\Fusee.Base.Common.csproj">
-      <Project>{5906abe0-1d62-4f9a-9aba-b7d301615bb0}</Project>
-      <Name>Fusee.Base.Common</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
-      <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
-      <Name>Fusee.Math.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj">
-      <Project>{dfd770f6-4222-4255-aae0-dcacdc7b21eb}</Project>
-      <Name>Fusee.Engine.Common</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="JSIL.Meta">
-      <HintPath>..\..\..\..\..\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeBuildRoot)\src\FuseeBuildActions.target.xml" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

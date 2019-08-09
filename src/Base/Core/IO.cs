@@ -33,7 +33,7 @@ namespace Fusee.Base.Core
         /// Exceptions thrown by this method depend on the underlying 
         /// platform dependent implementation.
         /// </exception>
-        public static Stream StreamFromFile(string path, FileMode mode)
+        public static Stream StreamFromFile(string path, Common.FileMode mode)
         {
             return IOImp.StreamFromFile(path, mode);
         }

@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Returns the Sin of the given value as float.
+        /// Returns the Cos of the given value as float.
         /// </summary>
         /// <param name="val">The value.</param>
         /// <returns></returns>
@@ -415,10 +415,30 @@ namespace Fusee.Math.Core
             return radians * radToDeg;
         }
 
+        /// <summary>
+        /// Convert degrees to radians
+        /// </summary>
+        /// <param name="degrees">An angle in degrees</param>
+        /// <returns>The angle expressed in radians</returns>
+        public static double DegreesToRadiansD(double degrees)
+        {
+            const double degToRad = System.Math.PI / 180.0f;
+            return degrees * degToRad;
+        }
+
+        /// <summary>
+        /// Convert radians to degrees
+        /// </summary>
+        /// <param name="radians">An angle in radians</param>
+        /// <returns>The angle expressed in degrees</returns>
+        public static double RadiansToDegreesD(double radians)
+        {
+            const double radToDeg = 180.0f / System.Math.PI;
+            return radians * radToDeg;
+        }
+
         #endregion
-
-
-
+        
 
         #region MinAngle
         /// <summary>
@@ -565,6 +585,21 @@ namespace Fusee.Math.Core
             return 0.5f + (Sin((2 * t - 1) * (Pi / 2)) / 2);
         }
 
+        /// <summary>
+        /// Returns a new float value that is the linear blend of the 2 given floats
+        /// </summary>
+        /// <param name="a">First input float</param>
+        /// <param name="b">Second input float</param>
+        /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
+        /// <returns>
+        /// a when blend=0, b when blend=1, and a linear combination otherwise
+        /// </returns>
+        public static float Lerp(float a, float b, float blend)
+        {
+            blend = Clamp(blend, 0, 1);
+            return (a * (1f - blend)) + (b * blend);
+        }
+
         #endregion
 
         #region Equals
@@ -594,17 +629,5 @@ namespace Fusee.Math.Core
         #endregion
 
         #endregion
-    }
-
-    /// <summary>
-    /// DEPRECATED!!!! Use <see cref="M"/> instead.
-    /// </summary>
-    [Obsolete]
-    public static class MathHelper
-    {
-        /// <summary>
-        /// DEPRECATED!!!! Use <see cref="M.PiOver4"/> instead.
-        /// </summary>
-        [Obsolete] public const float PiOver4 = M.PiOver4;
     }
 }

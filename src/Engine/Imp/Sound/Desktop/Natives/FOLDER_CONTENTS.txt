@@ -1,6 +1,0 @@
-This Folder is empty by design. Its only purpose is to enable Visual Studio to show the
-"Natives" folder below the .csproj contents.
-The DLLs shown in Visual Studio's Solution Explorer below Natives are directly
-listed in the respective .csproj file. DLL files listed here are typically located
-under [FUSEE root]\ext. 
-To edit the list of native DLLs a project depends upon, directly edit the .cspoj file!

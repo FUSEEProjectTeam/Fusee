@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
     /// Implementation agnostic Base representation of a constraint.
@@ -33,7 +28,7 @@ namespace Fusee.Engine.Common
         /// <returns>The uid.</returns>
         int GetUid();
         /// <summary>
-        /// Gets or sets a user object.
+        /// Gets and sets a user object.
         /// </summary>
         /// <value>
         /// The user object.

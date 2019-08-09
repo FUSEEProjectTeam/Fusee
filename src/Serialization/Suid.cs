@@ -1,6 +1,4 @@
-﻿using System.Threading;
-
-namespace Fusee.Serialization
+﻿namespace Fusee.Serialization
 {
     /// <summary>
     /// Session unique Id.

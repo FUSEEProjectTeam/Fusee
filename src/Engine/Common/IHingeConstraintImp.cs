@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
@@ -27,14 +24,14 @@ namespace Fusee.Engine.Common
     {
 
         /// <summary>
-        /// Gets or sets a value indicating whether [angular only].
+        /// Gets and sets a value indicating whether [angular only].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [angular only]; otherwise, <c>false</c>.
         /// </value>
         bool AngularOnly { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether [enable motor].
+        /// Gets and sets a value indicating whether [enable motor].
         /// </summary>
         /// <value>
         ///   <c>true</c> if [enable motor]; otherwise, <c>false</c>.
@@ -62,7 +59,7 @@ namespace Fusee.Engine.Common
         void SetMotorTarget(float targetAngle, float dt);
 
         /// <summary>
-        /// Gets or sets the maximum motor impulse.
+        /// Gets and sets the maximum motor impulse.
         /// </summary>
         /// <value>
         /// The maximum motor impulse.

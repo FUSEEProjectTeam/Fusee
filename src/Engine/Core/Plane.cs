@@ -4,7 +4,7 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Creates a simple plane geomentry straight from the code.
+    /// Creates a simple plane geometry straight from the code.
     /// </summary>
     public class Plane : Mesh
     {
@@ -47,8 +47,9 @@ namespace Fusee.Engine.Core
                 new float2(1, 0),
                 
             };
+            #endregion
         }
-        #endregion
+
     }
 }
 

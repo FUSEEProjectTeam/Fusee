@@ -1,9 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using Fusee.Math.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -20,7 +18,7 @@ namespace Fusee.Engine.Core
         private IInputDeviceImp _inpDevImp;
         internal IInputDeviceImp DeviceImp => _inpDevImp;
 
-        private readonly Dictionary<int, AxisDescription> _axes;        // All axes provided by this device. Includes polled, listened and calulated axes
+        private readonly Dictionary<int, AxisDescription> _axes;        // All axes provided by this device. Includes polled, listened and calculated axes
         private readonly Dictionary<int, float> _axesToPoll;            // Axes that need to be polled 
         private readonly Dictionary<int, float> _axesToListen;          // Axes changed by event from the underlying implementation
 
@@ -184,7 +182,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether this device is connected.
+        /// Gets and sets a value indicating whether this device is connected.
         /// </summary>
         /// <value>
         ///   <c>true</c> if this device is connected; otherwise, <c>false</c>.
@@ -251,7 +249,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        ///     Gets the value currently present at the given axis.
+        ///     Gets the value currently present at the given axis. In respect to the axis deadzone.
         /// </summary>
         /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
         /// <returns>The value currently set on the axis.</returns>
@@ -261,15 +259,69 @@ namespace Fusee.Engine.Core
         ///  </remarks>
         public float GetAxis(int axisId)
         {
+            float value = GetAxisRaw(axisId);
+
+            if (_axes.ContainsKey(axisId))
+            {
+                if (System.Math.Abs(value) >= _axes[axisId].Deadzone)
+                {
+                    value -= _axes[axisId].Deadzone * System.Math.Sign(value);
+                }
+                else
+                {
+                    value = 0;
+                }
+            }
+
+            return value;
+        }        
+        
+        /// <summary>
+        ///     Gets the value currently present at the given axis. Without considering the deadzone.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <returns>The value currently set on the axis.</returns>
+        /// <remarks>
+        ///     See <see cref="AxisDescription"/> to get information about how to interpret the
+        ///     values returned by a given axis.
+        ///  </remarks>
+        public float GetAxisRaw(int axisId)
+        {
             if (!_isConnected)
                 return 0;
 
             float value;
+
             if (TryGetPolledAxis(axisId, out value))
                 return value;
 
             if (_axesToListen.TryGetValue(axisId, out value))
                 return value;
+
+            throw new InvalidOperationException($"Axis Id {axisId} not supported by device {_inpDevImp.Desc}.");
+        }
+
+        /// <summary>
+        /// Sets the deadzone for the given axis.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <param name="value"></param>
+        public void SetAxisDeadzone(int axisId, float value)
+        {
+            AxisDescription desc = GetAxisDescription(axisId);
+            desc.Deadzone = value;
+            _axes[axisId] = desc;
+        }
+
+        /// <summary>
+        /// Gets the value currently set for the axis deadzone.
+        /// </summary>
+        /// <param name="axisId">The axis' Id as specified in <see cref="AxisDesc"/>.</param>
+        /// <returns></returns>
+        public float GetAxisDeadzone(int axisId)
+        {
+            if (_axes.ContainsKey(axisId))
+                return _axes[axisId].Deadzone;
 
             throw new InvalidOperationException($"Axis Id {axisId} not supported by device {_inpDevImp.Desc}.");
         }
@@ -817,123 +869,13 @@ namespace Fusee.Engine.Core
             }
             _buttonsToListenJustChanged.Clear();
         }
-
+        /// <summary>
+        /// Clears the button presses after rendering an image.
+        /// </summary>
         public void PostRender()
         {
             _buttonsDown.Clear();
             _buttonsUp.Clear();
         }
     }
-
-    /*
-    /// <summary>
-    /// Represents one instance of an input device other than keyboard or mouse
-    /// </summary>
-    public class InputDeviceOld
-    {
-        public enum Axis
-        {
-            Horizontal,
-            Vertical,
-            Z
-        }
-
-        private readonly IInputDeviceImp _inputDeviceImp;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="InputDevice"/> class.
-        /// </summary>
-        /// <param name="inputDeviceImp">The input device imp.</param>
-        public InputDevice(IInputDeviceImp inputDeviceImp)
-        {
-            _inputDeviceImp = inputDeviceImp;
-        }
-
-        public InputDevice()
-        {
-
-        }
-
-        /// <summary>
-        /// Gets the current value of one axis (i.e. joystick or trigger).
-        /// </summary>
-        /// <param name="axis">Specifies the desired axis, can be "horizontal", "vertical" or "z".</param>
-        /// <returns>
-        /// The current value (between -1.0 and +1.0) for the specified axis.
-        /// </returns>
-        public float GetAxis(Axis axis)
-        {
-            switch (axis)
-            {
-                case Axis.Horizontal:
-                    return _inputDeviceImp.GetXAxis();
-
-                case Axis.Vertical:
-                    return _inputDeviceImp.GetYAxis();
-
-                case Axis.Z:
-                    return _inputDeviceImp.GetZAxis();
-
-                default:
-                    return 0.0f;
-            }
-        }
-
-        /// <summary>
-        /// Gets the name of the instance 
-        /// </summary>
-        /// <returns>The product name of the queried input device.</returns>
-        public string Name()
-        {
-            return _inputDeviceImp.GetName();
-        }
-
-        /// <summary>
-        /// Gets the index of the currently pressed button on the input device.
-        /// </summary>
-        /// <returns>The index of the currently pressed button</returns>
-        public int GetPressedButton()
-        {
-            return _inputDeviceImp.GetPressedButton();
-        }
-
-        /// <summary>
-        /// Checks if a specified button is pressed in the current frame on the input device.
-        /// </summary>
-        /// <param name="buttonIndex">The index of the button that is checked.</param>
-        /// <returns>True if the button at the specified index is pressed in the current frame and false if not.</returns>
-        public bool IsButtonDown(int buttonIndex)
-        {
-            return _inputDeviceImp.IsButtonDown(buttonIndex);
-        }
-
-        /// <summary>
-        /// Checks if a specified button is held down for more than one frame.
-        /// </summary>
-        /// <param name="buttonIndex">The index of the button that is checked.</param>
-        /// <returns>True if the button at the specified index is held down for more than one frame and false if not.</returns>
-        public bool IsButtonPressed(int buttonIndex)
-        {
-            return _inputDeviceImp.IsButtonPressed(buttonIndex);
-        }
-
-        /// <summary>
-        /// Counts the buttons on the input device.
-        /// </summary>
-        /// <returns>The amount of buttons on the device.</returns>
-        public int GetButtonCount()
-        {
-            return _inputDeviceImp.GetButtonCount();
-        }
-
-        /// <summary>
-        /// Gets the category of the input device.
-        /// </summary>
-        /// <returns>The name of the Device Category.</returns>
-        public String GetCategory()
-        {
-            return _inputDeviceImp.GetCategory();
-        }
-    }
-    */
 }

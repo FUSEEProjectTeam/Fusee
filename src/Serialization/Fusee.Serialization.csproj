@@ -1,101 +1,44 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Serialization</RootNamespace>
-    <AssemblyName>Fusee.Serialization</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..</FuseeBuildRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B7FAC89A-4E75-4EAC-BBC3-BBDB89C94B8A}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Serialization</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeBuildRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\ext\protobuf\protobuf-net.dll</HintPath>
+    <Reference Include="protobuf-net">
+      <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="AnimationComponent.cs" />
-    <Compile Include="AnimationTrackContainer.cs" />
-    <Compile Include="BoneComponent.cs" />
-    <Compile Include="CanvasTransformComponent.cs" />
-    <Compile Include="LightComponent.cs" />
-    <Compile Include="MaterialComponent.cs" />
-    <Compile Include="MaterialLightComponent.cs" />
-    <Compile Include="MaterialPBRComponent.cs" />
-    <Compile Include="Mesh.cs" />
-    <Compile Include="MeshChangedEnum.cs" />
-    <Compile Include="MeshDataEventArgs.cs" />
-    <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="RectTransformComponent.cs" />
-    <Compile Include="SceneComponentContainer.cs" />
-    <Compile Include="SceneContainer.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SceneNodeContainer.cs" />
-    <Compile Include="SimpleType.cs" />
-    <Compile Include="ShaderComponent.cs" />
-    <Compile Include="Suid.cs" />
-    <Compile Include="TypeContainer.cs" />
-    <Compile Include="WeightComponent.cs" />
-    <Compile Include="TransformComponent.cs" />
-    <Compile Include="XFormComponent.cs" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Fusee.Math.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
-  </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
   <PropertyGroup>
     <BuildDependsOn>
-      <!-- SerializationBeforeBuild; -->
       $(BuildDependsOn);
       SerializationCompileSerializer
     </BuildDependsOn>
   </PropertyGroup>
+
   <!-- This target calls the protobuf precompiler. Note that the filename is hardwired and no item list is taken -->
   <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll">
-    <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer" />
-    <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" />
+    <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Message Importance="High" Text="$(AssemblyName).dll -&gt; $(OutputPath)SerializationSerializer.dll" />
   </Target>
   <PropertyGroup>
     <CleanDependsOn>
-      <!-- SerializationBeforeClean; -->
       $(CleanDependsOn);
       SerializationCompileClean
     </CleanDependsOn>
@@ -104,11 +47,4 @@
     <Message Importance="High" Text="Deleting $(OutputPath)SerializationSerializer.dll" />
     <Delete Files="$(OutputPath)SerializationSerializer.dll" />
   </Target>
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

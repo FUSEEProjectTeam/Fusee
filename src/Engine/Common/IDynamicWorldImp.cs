@@ -1,7 +1,4 @@
-﻿using System;
-using Fusee.Math.Core;
-using Fusee.Engine;
-
+﻿using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
 {
@@ -12,7 +9,7 @@ namespace Fusee.Engine.Common
     public interface IDynamicWorldImp
     {
         /// <summary>
-        /// Gets or sets the gravity.
+        /// Gets and sets the gravity.
         /// </summary>
         /// <value>
         /// The gravity.

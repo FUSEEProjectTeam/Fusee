@@ -999,11 +999,6 @@
             The amount of time to wait if there are concurrent metadata access operations
             </summary>
         </member>
-        <member name="P:ProtoBuf.Meta.RuntimeTypeModel.LockCount">
-            <summary>
-            Gets how many times a model lock was taken
-            </summary>
-        </member>
         <member name="E:ProtoBuf.Meta.RuntimeTypeModel.LockContended">
             <summary>
             If a lock-contention is detected, this event signals the *owner* of the lock responsible for the blockage, indicating
@@ -1451,11 +1446,6 @@
             </summary>
             <returns>A new IFormatter to be used during [de]serialization.</returns>
             <param name="type">The type of object to be [de]deserialized by the formatter.</param>
-        </member>
-        <member name="P:ProtoBuf.Meta.TypeModel.ForwardsOnly">
-            <summary>
-            If true, buffering of nested objects is disabled
-            </summary>
         </member>
         <member name="T:ProtoBuf.Meta.ValueMember">
             <summary>

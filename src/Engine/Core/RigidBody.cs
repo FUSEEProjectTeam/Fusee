@@ -15,7 +15,9 @@ namespace Fusee.Engine.Core
         internal IRigidBodyImp _iRigidBodyImp;
 
        // public Mesh Mesh { get; set; }
-
+       /// <summary>
+       /// Gets and sets the gravity for a rigid body.
+       /// </summary>
         public float3 Gravity
         {
             get
@@ -29,7 +31,9 @@ namespace Fusee.Engine.Core
                 _iRigidBodyImp.Gravity = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the mass of a rigid body.
+        /// </summary>
         public float Mass
         {
             get
@@ -41,7 +45,9 @@ namespace Fusee.Engine.Core
                 _iRigidBodyImp.Mass = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the inertia for a rigid body.
+        /// </summary>
         public float3 Inertia
         {
             get
@@ -68,7 +74,9 @@ namespace Fusee.Engine.Core
                 
             }
         }
-
+        /// <summary>
+        /// Gets and sets the position for a rigid body.
+        /// </summary>
         public float3 Position
         {
             get
@@ -111,19 +119,29 @@ namespace Fusee.Engine.Core
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyTorque(torque);
         }
-
+        /// <summary>
+        /// Applies an impulse to a rigid body.
+        /// </summary>
+        /// <param name="impulse"></param>
+        /// <param name="relPos"></param>
         public void ApplyImpulse(float3 impulse, float3 relPos)
         {
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyImpulse(impulse, relPos);
         }
-
+        /// <summary>
+        /// Applies a torgue impulse to a rigid body.
+        /// </summary>
+        /// <param name="torqueImpulse"></param>
         public void ApplyTorqueImpulse(float3 torqueImpulse)
         {
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyTorqueImpulse(torqueImpulse);
         }
-
+        /// <summary>
+        /// Applies a central force to a rigid body.
+        /// </summary>
+        /// <param name="centralForce"></param>
         public void ApplyCentralForce(float3 centralForce)
         {
             var o = (RigidBody)_iRigidBodyImp.UserObject;
@@ -138,7 +156,9 @@ namespace Fusee.Engine.Core
             var o = (RigidBody)_iRigidBodyImp.UserObject;
             o._iRigidBodyImp.ApplyCentralImpulse(centralImpulse);
         }
-
+        /// <summary>
+        /// Gets and sets the linear velocity for a rigid body.
+        /// </summary>
         public float3 LinearVelocity
         {
             get
@@ -151,7 +171,9 @@ namespace Fusee.Engine.Core
                 o._iRigidBodyImp.LinearVelocity = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the angualr velocity for a rigid body.
+        /// </summary>
         public float3 AngularVelocity
         {
             get
@@ -165,7 +187,9 @@ namespace Fusee.Engine.Core
             }
         }
 
-
+        /// <summary>
+        /// Gets and sets the linear factor of a rigid body.
+        /// </summary>
         public float3 LinearFactor
         {
             get
@@ -178,7 +202,9 @@ namespace Fusee.Engine.Core
                 o._iRigidBodyImp.LinearFactor = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the angular factor of a rigid body.
+        /// </summary>
         public float3 AngularFactor
         {
             get
@@ -191,7 +217,9 @@ namespace Fusee.Engine.Core
                 o._iRigidBodyImp.AngularFactor = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the restitution of a rigid body
+        /// </summary>
         public float Restitution
         {
             get
@@ -204,7 +232,9 @@ namespace Fusee.Engine.Core
                 o._iRigidBodyImp.Restitution = value;
             }
         }
-
+        /// <summary>
+        /// Gets and sets the friction of rigid body.
+        /// </summary>
         public float Friction
         {
             get { return _iRigidBodyImp.Friction; }
@@ -214,18 +244,27 @@ namespace Fusee.Engine.Core
                 o._iRigidBodyImp.Friction = value;
             }
         }
-
+        /// <summary>
+        /// Sets the drag of a rigd body.
+        /// </summary>
+        /// <param name="linearDrag"></param>
+        /// <param name="anglularDrag"></param>
         public void SetDrag(float linearDrag, float anglularDrag)
         {
             var o = (RigidBody) _iRigidBodyImp.UserObject;
             o._iRigidBodyImp.SetDrag(linearDrag, anglularDrag);
         }
+        /// <summary>
+        /// Returns the linear drag of a rigid body
+        /// </summary>
         public float LinearDrag
         {
             get { return _iRigidBodyImp.LinearDrag; }
 
         }
-
+        /// <summary>
+        /// Returns the angular drag of a rigid body.
+        /// </summary>
         public float AngularDrag
         {
             get { return _iRigidBodyImp.AngularDrag; }

@@ -1,79 +1,26 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Common</RootNamespace>
-    <AssemblyName>Fusee.Base.Common</AssemblyName>
-    <FuseeRoot>..\..\..</FuseeRoot>
-    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{5906ABE0-1D62-4F9A-9ABA-B7D301615BB0}</ProjectGuid>
-    <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <DefaultLanguage>en-US</DefaultLanguage>
-    <FileAlignment>512</FileAlignment>
-    <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <TargetFrameworkProfile>Profile5</TargetFrameworkProfile>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <PackageId>Fusee.Base.Common</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
+
+  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <DocumentationFile>$(FuseeRoot)\bin\$(Configuration)\Libraries\$(AssemblyName).xml</DocumentationFile>
-  </PropertyGroup>
+
   <ItemGroup>
-    <!-- A reference to the entire .NET Framework is automatically included -->
-    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{e95fa1c8-6491-4b4b-bbe1-eda6b16b2c6a}</Project>
-      <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <Compile Include="Attributes.cs" />
-    <Compile Include="ColorFormat.cs" />
-    <Compile Include="ColorUint.cs" />
-    <Compile Include="Enums.cs" />
-    <Compile Include="IFontImp.cs" />
-    <Compile Include="IImageData.cs" />
-    <Compile Include="ImagePixelChannel.cs" />
-    <Compile Include="ImagePixelFormat.cs" />
-    <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="PixelEncoding.cs" />
-    <Compile Include="ScanLine.cs" />
-    <Compile Include="SplitToCurveSegmentHelper.cs" />
-    <Compile Include="StreamAssetProvider.cs" />
-    <Compile Include="IAssetProvider.cs" />
-    <Compile Include="IIOImp.cs" />
-    <Compile Include="ImageDataOld.cs" />
-    <Compile Include="Path.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Reference Include="JSIL.Meta">
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
   </ItemGroup>
-  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
-  <Import Project="$(FuseeRoot)\src\FuseeBuildActions.target.xml" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+  
+  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

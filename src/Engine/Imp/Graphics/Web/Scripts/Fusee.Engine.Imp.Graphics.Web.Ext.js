@@ -277,10 +277,10 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderCanvasImp", functio
     );
 
     $.Method({ Static: false, Public: true }, "DoResize",
-        new JSIL.MethodSignature(null, []),
-        function DoResize() {
+        new JSIL.MethodSignature(null, [$.Int32, $.Int32]),
+        function DoResize(width, height) {
             if (this.Resize !== null) {
-                this.Resize(this, (new $fuseeCommon.Fusee.Engine.Common.ResizeEventArgs()).__Initialize__({}));
+                this.Resize(this, (new $fuseeCommon.Fusee.Engine.Common.ResizeEventArgs(width, height)).__Initialize__({}));
             }
         }
     );
@@ -1132,6 +1132,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.RenderContextImp", functi
 
             statusCode = this.gl.getShaderParameter(fragmentObject, this.gl.COMPILE_STATUS);
       
+
 
 
             if (statusCode != true)
@@ -2596,7 +2597,7 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.MouseDeviceImp", function
                 event.preventDefault();
             };
             this._canvas.onmousemove = function (event) {
-                var pt = new $fuseeMath.Fusee.Math.Core.float2().__Initialize__({ x: event.clientX, y: event.clientY });
+                var pt = new $fuseeMath.Fusee.Math.Core.float2().__Initialize__({ x: event.offsetX, y: event.offsetY });
                 callbackClosure.OnCanvasMouseMove.call(callbackClosure, pt);
                 event.preventDefault();
             };
@@ -2645,34 +2646,34 @@ JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.TouchDeviceImp", function
         function ConnectCanvasEvents() {
             var callbackClosure = this;
 
-            this._canvas.ontouchstart = function (event) {
+            this._canvas.addEventListener("touchstart", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchStart.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchmove = function (event) {
+            });
+            this._canvas.addEventListener("touchmove", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchMove.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchend = function (event) {
+            });
+            this._canvas.addEventListener("touchend", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchEnd.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
-            this._canvas.ontouchcancel = function (event) {
+            });
+            this._canvas.addEventListener("touchcancel", function (event) {
                 event.preventDefault();
                 var touches = event.changedTouches;
                 for (var i = 0; i < touches.length; i++) {
                     callbackClosure.OnCanvasTouchCancel.call(callbackClosure, touches[i].identifier, touches[i].pageX, touches[i].pageY);
                 }
-            };
+            });
         }
     );
 

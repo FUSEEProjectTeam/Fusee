@@ -188,21 +188,21 @@ namespace Fusee.Engine.Core
     internal class DummyAudioStreamImp : IAudioStreamImp
     {
         /// <summary>
-        /// Gets or sets the volume.
+        /// Gets and sets the volume.
         /// </summary>
         /// <value>
         /// The volume.
         /// </value>
         public float Volume { get; set; }
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="DummyAudioStreamImp"/> is loop.
+        /// Gets and sets a value indicating whether this <see cref="DummyAudioStreamImp"/> is loop.
         /// </summary>
         /// <value>
         ///   <c>true</c> if loop; otherwise, <c>false</c>.
         /// </value>
         public bool Loop { get; set; }
         /// <summary>
-        /// Gets or sets the panning.
+        /// Gets and sets the panning.
         /// </summary>
         /// <value>
         /// The panning.

@@ -12,7 +12,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         internal CollisionShape BtCollisionShape;
 
         /// <summary>
-        /// Gets or sets the margin.
+        /// Gets and sets the margin.
         /// </summary>
         /// <value>
         /// The margin.
@@ -32,7 +32,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
         }
 
         /// <summary>
-        /// Gets or sets the local scaling.
+        /// Gets and sets the local scaling.
         /// </summary>
         /// <value>
         /// The local scaling.
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Imp.Physics.Desktop
 
         private object _userObject;
         /// <summary>
-        /// Gets or sets the user object.
+        /// Gets and sets the user object.
         /// </summary>
         /// <value>
         /// The user object.
