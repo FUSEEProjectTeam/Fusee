@@ -2530,7 +2530,32 @@ JSIL.MakeClass($jsilcore.TypeRef("System.Object"), "Fusee.Engine.VideoStreamImp"
     return function (newThisType) { $thisType = newThisType; };
 });
 
+JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.GamePadDeviceImp", function ($) {
 
+    $.Method({ Static: false, Public: false }, "GetButton",
+        JSIL.MethodSignature.Boolean,
+        function GetButton(iButtonID, DeviceID) {
+            var controller = controllers(DeviceID);
+            var val = controller.buttons[iButtonID];
+            pressed = val == 1.0;
+            if (pressed == 1.0)
+                return true;
+            else
+                return false;
+        }
+    )
+
+    $.Method({ Static: false, Public: false }, "GetAxis",
+        JSIL.MethodSignature.Double,
+        function GetAxis(iAxisID,DeviceId) {
+            var controller = Controllers(DeviceID)
+            var val = controller.axes(iAxisID)
+            return val;
+        }
+    )
+
+    return function (newThisType) { $thisType = newThisType; };
+});
 
 JSIL.ImplementExternals("Fusee.Engine.Imp.Graphics.Web.KeyboardDeviceImp", function ($) {
 

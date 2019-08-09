@@ -121,6 +121,362 @@ namespace Fusee.Engine.Imp.Graphics.Web
         #endregion
     }
 
+    public class GamePadDeviceImp : IInputDeviceImp
+    {
+        private object _canvas;
+        private int DeviceID;
+        private ButtonImpDescription _btnADesc, _btnXDesc, _btnYDesc, _btnBDesc, _btnStartDesc, _btnSelectDesc, _dpadUpDesc, _dpadDownDesc, _dpadLeftDesc, _dpadRightDesc, _btnLeftDesc, _btnRightDesc, _btnL3Desc, _btnR3Desc;
+        #region JSExternals
+
+        [JSExternal]
+        private Boolean GetButton(int iButtonId, int DeviceID)
+        {
+            throw new NotImplementedException();
+        }
+
+        [JSExternal]
+        private Double GetAxis(int iAxisID, int DeviceID)
+        {
+            throw new NotImplementedException();
+        }
+
+        //[JSExternal]
+
+
+        #endregion
+        internal GamePadDeviceImp(object canvas, int deviceID = 0)
+        {
+            _canvas = canvas;
+            DeviceID = deviceID;
+
+
+        #region Button descriptions
+        _btnADesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP A",
+                    Id = 0
+                },
+                PollButton = true
+            };
+            _btnXDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP X",
+                    Id = 1
+                },
+                PollButton = true
+            };
+            _btnYDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Y",
+                    Id = 2
+                },
+                PollButton = true
+            };
+            _btnBDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP B",
+                    Id = 3
+                },
+                PollButton = true
+            };
+            _btnStartDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Start",
+                    Id = 4
+                },
+                PollButton = true
+            };
+            _btnSelectDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Back",
+                    Id = 5
+                },
+                PollButton = true
+            };
+            _btnLeftDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP left button",
+                    Id = 6
+                },
+                PollButton = true
+            };
+            _btnRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP right button",
+                    Id = 7
+                },
+                PollButton = true
+            };
+            _btnL3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP L3 button",
+                    Id = 8
+                },
+                PollButton = true
+            };
+            _btnR3Desc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP R3 button",
+                    Id = 9
+                },
+                PollButton = true
+            };
+            _dpadUpDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad up",
+                    Id = 10
+                },
+                PollButton = true
+            };
+            _dpadDownDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Down",
+                    Id = 11
+                },
+                PollButton = true
+            };
+            _dpadLeftDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Left",
+                    Id = 12
+                },
+                PollButton = true
+            };
+            _dpadRightDesc = new ButtonImpDescription
+            {
+                ButtonDesc = new ButtonDescription
+                {
+                    Name = "GP Dpad Right",
+                    Id = 13
+                },
+                PollButton = true
+            };
+            #endregion
+        
+    }
+
+    /// <summary>
+    /// Returns Name of Device.
+    /// </summary>
+    public string Id
+        {
+
+            get
+            {
+                return GetType().FullName;
+            }
+        }
+        /// <summary>
+        /// Description.
+        /// </summary>
+        public string Desc
+        {
+            get
+            {
+                return "Standard web browser gamepad implementation.";
+            }
+        }
+
+        /// <summary>
+        /// Returns Type of ínput device.
+        /// </summary>
+        public DeviceCategory Category
+        {
+            get
+            {
+                return DeviceCategory.GameController;
+            }
+        }
+        /// <summary>
+        /// Returns Number of Axes.
+        /// </summary>
+        public int AxesCount => 6;
+
+        /// <summary>
+        /// Returns description information for all axes.
+        /// </summary>
+        public IEnumerable<AxisImpDescription> AxisImpDesc
+        {
+            get
+            {
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Stick X",
+                        Id = 0,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Stick Y",
+                        Id = 1,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Stick X",
+                        Id = 2,
+                        Direction = AxisDirection.X,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Stick Y",
+                        Id = 3,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = -1,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Left Trigger",
+                        Id = 4,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = 0,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+                yield return new AxisImpDescription
+                {
+                    AxisDesc = new AxisDescription
+                    {
+                        Name = "Right Trigger",
+                        Id = 5,
+                        Direction = AxisDirection.Y,
+                        Nature = AxisNature.Position,
+                        Bounded = AxisBoundedType.Constant,
+                        MinValueOrAxis = 0,
+                        MaxValueOrAxis = 1
+                    },
+                    PollAxis = true
+                };
+            }
+        }
+        /// <summary>
+        /// Returns Number of Buttons.
+        /// </summary>
+        public int ButtonCount
+        {
+            get
+            {
+                return 14;
+            }
+
+        }
+
+        /// <summary>
+        /// A gamepad exposes 14 buttons.
+        /// </summary>
+        public IEnumerable<ButtonImpDescription> ButtonImpDesc
+        {
+            get
+            {
+                yield return _btnADesc;
+                yield return _btnXDesc;
+                yield return _btnYDesc;
+                yield return _btnBDesc;
+                yield return _btnStartDesc;
+                yield return _btnSelectDesc;
+                yield return _btnRightDesc;
+                yield return _btnLeftDesc;
+                yield return _btnR3Desc;
+                yield return _btnL3Desc;
+                yield return _dpadUpDesc;
+                yield return _dpadDownDesc;
+                yield return _dpadLeftDesc;
+                yield return _dpadRightDesc;
+
+            }
+        }
+        ///<summary>
+        /// All axes are Poll based see GetAxis.
+        ///</summary>
+#pragma warning disable 0067
+        public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
+
+        /// <summary>
+        /// All buttons are poll based see GetButton.
+        /// </summary>
+        public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
+#pragma warning restore 0067
+
+        /// <summary>
+        /// Retrieves values for the X, Y and Trigger axes. No other axes are supported by this device.
+        /// </summary>
+        /// <param name="iAxisId">The axis to retrieve information for.</param>
+        /// <returns>The value at the given axis.</returns>
+        public float GetAxis(int iAxisId)
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Returns a Boolean Value for Controller Input.
+        /// </summary>
+        public bool GetButton(int iButtonId)
+        {
+            throw new NotImplementedException();    
+        }
+    }
 
     /// <summary>
     /// Keyboard input device implementation for Desktop an Android platforms.
