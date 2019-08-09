@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Math.Core</RootNamespace>
     <PackageId>Fusee.Math.Core</PackageId>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <Description>Core Math implementation for the Fusee Project</Description>
   </PropertyGroup>
 

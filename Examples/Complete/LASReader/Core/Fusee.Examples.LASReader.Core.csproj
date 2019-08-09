@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" >
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.LASReader.Core</RootNamespace>
     <PackageId>Fusee.Examples.LASReader.Core</PackageId>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>

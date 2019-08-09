@@ -170,6 +170,7 @@ namespace Fusee.Engine.Core
             }
         }
 
+
         /// <summary>
         /// Returns the value of a given shadereffect variable
         /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>

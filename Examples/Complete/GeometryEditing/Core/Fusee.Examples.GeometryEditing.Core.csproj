@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.GeometryEditing.Core</RootNamespace>
     <PackageId>Fusee.Examples.GeometryEditing.Core</PackageId>
-    <TargetFramework>netstandard2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>

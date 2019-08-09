@@ -44,6 +44,7 @@
       FuseeJSILClean;
       FuseeCleanDependingJavaScript;
       FuseeCleanExternalJavaScript;
+      FuseeCleanAllObjFolder;
       $(CleanDependsOn);
     </CleanDependsOn>
   </PropertyGroup>
@@ -469,5 +470,11 @@
     <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
     <Message Text="[external JavaScript] Deleting $(OutputPath)$(AssemblyName).Scripts\ and all of its contents" />
     <RemoveDir Directories="$(OutputPath)$(AssemblyName).Scripts\" />
+  </Target>
+
+  <Target Name="FuseeCleanAllObjFolder">
+    <!-- NOTE: Importance not High(!) output only in verbose msbuild -->
+    <Message Text="[obj folder] Deleting $(BaseIntermediateOutputPath) and all of its contents" />
+    <RemoveDir Directories="$(ProjectDir)$(BaseIntermediateOutputPath)" />
   </Target>
 </Project>
