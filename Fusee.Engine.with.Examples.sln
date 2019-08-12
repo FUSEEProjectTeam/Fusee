@@ -527,6 +527,10 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{6D209F64-9803-4380-BDF0-247F46D441C5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.GUI.WPF", "Examples\Complete\Simple\GUI\Fusee.Examples.Simple.GUI.WPF\Fusee.Examples.Simple.GUI.WPF.csproj", "{ED08B5CC-36B0-4531-BBA1-6E2FD539A555}"
+	ProjectSection(ProjectDependencies) = postProject
+		{427EF482-D453-4772-8FE2-8D7BEA766C2D} = {427EF482-D453-4772-8FE2-8D7BEA766C2D}
+		{E23994A2-8DA9-408A-877A-71E7168FE25D} = {E23994A2-8DA9-408A-877A-71E7168FE25D}
+	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.WPF", "Examples\Complete\PcRendering\GUI\Fusee.Examples.PcRendering.GUI\Fusee.Examples.PcRendering.WPF.csproj", "{F86E92C3-C683-44DF-9355-822C85B6D4ED}"
 	ProjectSection(ProjectDependencies) = postProject
