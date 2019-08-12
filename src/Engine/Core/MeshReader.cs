@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Fusee.Math.Core;
-using JSIL.Meta;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -22,7 +21,6 @@ namespace Fusee.Engine.Core
         /// <param name="s">string to parse</param>
         /// <returns>A double number</returns>
         // TODO: Get rid of this hack
-        [JSExternal]
         public static double Double_Parse(string s)
         {
             return double.Parse(s, CultureInfo.InvariantCulture);
@@ -229,7 +227,6 @@ namespace Fusee.Engine.Core
                 }
             }
             return ret.ToArray();
-            // JSIL crashes with that... sigh.. .return strIn.Split(separator).Where(str => str.Length > 0).ToArray();
         }
 
         #endregion

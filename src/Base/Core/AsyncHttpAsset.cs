@@ -1,5 +1,4 @@
-﻿using JSIL.Meta;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Text;
@@ -147,7 +146,6 @@ namespace Fusee.Base.Core
             DoGetAsset();
         }
 
-        [JSExternal]
         private async void DoGetAsset()
         {
             using (HttpClient client = new HttpClient())
