@@ -1,6 +1,8 @@
-#version 330 core
+#version 300 es
 
-#extension GL_EXT_gpu_shader4 : enable
+#ifdef GL_ES
+precision highp float;
+#endif
 
 uniform vec2 ScreenParams;
 uniform int PointMode;
@@ -70,10 +72,10 @@ int offsetFirstToGivenChild(uint uNumber, int index)
 bool isBitSet(uint uNumber, int index)
 {    
 	int number = int(uNumber);
-	float exponentiation = pow(2.0, index);
+	int exponentiation = int(pow(2.0, float(index)));
 	
 	int times = int(number / exponentiation);
-	return mod(times, 2) != 0;
+	return mod(float(times), 2.0) != 0.0;
 }
 
 
@@ -161,14 +163,14 @@ int getLevelOfDetail()
 {
 	int lod = 0;
 
-	float pixelSize = 1.0 / OctreeTexWidth;
-	float texPosition = 0;
+	float pixelSize = 1.0 / float(OctreeTexWidth);
+	float texPosition = 0.0;
 	int pxPosition = 0;
 	vec3 centerPos = OctreeRootCenter;
 	float sideLength = OctreeRootLength;
 
 	//0. Get node info
-	uvec4 nodeInfo = texture2D(OctreeTex, vec2(texPosition, 0.5));	
+	uvec4 nodeInfo = texture(OctreeTex, vec2(texPosition, 0.5));	
 
 	//1. get the child node the point falls into
 	int childIndexPointFallsInto = getChildIndex(centerPos);
@@ -185,13 +187,13 @@ int getLevelOfDetail()
 
 		//3. jump to child and get the child info
 		pxPosition += int(nodeInfo.g) + offsetFirstToGivenChild(nodeInfo.b, childIndexPointFallsInto);
-		texPosition = pxPosition * pixelSize; //jump to first child of the node
+		texPosition = float(pxPosition) * pixelSize; //jump to first child of the node
 				
 		//0. Get node info
-		nodeInfo = texture2D(OctreeTex, vec2(texPosition, 0.5));		
+		nodeInfo = texture(OctreeTex, vec2(texPosition, 0.5));		
 
 		centerPos = getChildNodeCenter(childIndexPointFallsInto, centerPos, sideLength);
-		sideLength = sideLength/2;
+		sideLength = sideLength/2.0;
 
 		//1. get the child node the point falls into
 		childIndexPointFallsInto = getChildIndex(centerPos);			
@@ -216,7 +218,7 @@ void main(void)
 	float fov = 2.0 * atan(1.0 / FUSEE_P[1][1]);
 	float slope = tan(fov / 2.0);
 	float projFactor = ((1.0 / slope)/ -vViewPos.z)* ScreenParams.y / 2.0;
-	vWorldSpacePointRad = PointSize / projFactor;	
+	vWorldSpacePointRad = float(PointSize) / projFactor;	
 
 	vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz; //FUSEE_ITMV - normal matrix for transformation into world space;
 
@@ -228,9 +230,9 @@ void main(void)
 	//gl_PointSize = pSize;
 	//	else
 	
-	float minPtSize = 1;
+	float minPtSize = 1.0;
 	float ptSize = minPtSize;
-	float maxPtSize = 100;
+	float maxPtSize = 100.0;
 
 	vec3 camPos = vec3(FUSEE_IV[3]);
 	vec3 cameraToPoint = vec3(vWorldPos) - camPos;
@@ -245,7 +247,7 @@ void main(void)
 		default:
 		case 0:
 		{		
-			ptSize = PointSize;			
+			ptSize = float(PointSize);			
 			break;
 		}
 		//Fixed world size
@@ -257,23 +259,23 @@ void main(void)
 			//ptSize = (PointSize / vClipPos.w) * InitCamPosZ;
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
-			float worldPtSize = PointSize;
+			float worldPtSize = float(PointSize);
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
 			break;
 		}
 		//Octree level-dependent
 		case 2:
 		{	
-			float spacing = pow(0.5, OctantLevel);
+			float spacing = pow(0.5, float(OctantLevel));
 			
-			float worldPtSize = PointSize * spacing;
+			float worldPtSize = float(PointSize) * spacing;
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
 			break;
 		}
 		//level of detail
 		case 3:
 		{			
-			float worldPtSize = PointSize / (pow(2, getLevelOfDetail()));
+			float worldPtSize = float(PointSize) / (pow(2.0, float(getLevelOfDetail())));
 			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
 			break;
 			

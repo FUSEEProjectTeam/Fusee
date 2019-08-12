@@ -342,7 +342,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
             if (!_determinedAsVisible.ContainsKey(ptOctantComp.Guid)) //Node isn't visible
             {
-                RemoveNode(node, ptOctantComp); 
+                RemoveNode(node, ptOctantComp); //TODO: RemoveMeshes
             }
             else
             {
@@ -380,7 +380,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 }
             }
             _loadedMeshs.Remove(ptOctantComponent.Guid);
-            VisibleNodes.Remove(ptOctantComponent.Guid, out var val);
+            VisibleNodes.TryRemove(ptOctantComponent.Guid, out var val);
             ptOctantComponent.WasLoaded = false;
             ptOctantComponent.VisibleChildIndices = 0;
         }

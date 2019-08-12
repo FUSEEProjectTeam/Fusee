@@ -1,4 +1,8 @@
-#version 330 core
+#version 300 es
+
+#ifdef GL_ES
+precision highp float;
+#endif
 
 uniform mat4 FUSEE_P;
 uniform int PointShape;
@@ -12,7 +16,7 @@ out vec4 oColor;
 
 void main(void)
 {	
-	vec2 distanceVector = (2 * gl_PointCoord) - 1; //[-1,1]
+	vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]
 	vec4 position;
 	float weight;
 
@@ -62,8 +66,8 @@ void main(void)
 
 		//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
 		float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
-		if (zwerg < 0)
-			weight = -1;
+		if (zwerg < 0.0)
+			weight = -1.0;
 		else
 			weight = sqrt(zwerg);
 

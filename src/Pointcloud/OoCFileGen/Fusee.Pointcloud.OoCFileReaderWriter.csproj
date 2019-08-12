@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <!--<OutputType>Library</OutputType>-->
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <OutputType>Library</OutputType>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Fusee.Pointcloud.OoCFileReaderWriter</RootNamespace>
     <PackageId>Fusee.Pointcloud.OoCFileReaderWriter</PackageId>
     <ApplicationIcon />
@@ -14,6 +14,10 @@
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
   </ItemGroup>
 
   <ItemGroup>

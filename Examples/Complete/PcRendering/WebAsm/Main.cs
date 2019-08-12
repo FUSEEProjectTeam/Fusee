@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.RocketOnly.Main
+namespace Fusee.Examples.PcRendering.Main
 {
     internal static class Program
     {
@@ -27,7 +27,7 @@ namespace Fusee.Examples.RocketOnly.Main
     public class Main : WebAsmBase
     {
         private RenderCanvasImp _canvasImp;
-        //private PcRendering.Core.PcRendering _app;
+        private PcRendering.Core.PcRendering _app;
 
         public override void Run()
         {
@@ -129,16 +129,16 @@ namespace Fusee.Examples.RocketOnly.Main
 
             AssetStorage.RegisterProvider(fap);
 
-            //_app = new PcRendering.Core.PcRendering();
+            _app = new PcRendering.Core.PcRendering();
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             _canvasImp = new RenderCanvasImp(canvas, gl, canvasWidth, canvasHeight);
-            //_app.CanvasImplementor = _canvasImp;
-            //_app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
-            //Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor));
+            _app.CanvasImplementor = _canvasImp;
+            _app.ContextImplementor = new RenderContextImp(_app.CanvasImplementor);
+            Input.AddDriverImp(new RenderCanvasInputDriverImp(_app.CanvasImplementor));
 
-            // Start the app
-            //_app.Run();
+            // Start the app            
+            _app.Run();
 
             LoadRocket();
 

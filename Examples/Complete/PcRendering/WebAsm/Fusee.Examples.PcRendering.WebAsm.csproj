@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Mono.WebAssembly.Sdk">
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>NU1701;NU1604;NU1605</NoWarn> 
     <MonoWasmLinkMode>None</MonoWasmLinkMode>
     <StartupObject />
@@ -16,6 +16,7 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
+   
   </ItemGroup>
 
   <ItemGroup>
@@ -28,6 +29,7 @@
     <Reference Include="SkiaSharp.Wasm">
       <HintPath>..\..\..\..\..\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
     </Reference>
+
     <ProjectReference Include="$(FuseeRoot)src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeRoot)src\Base\Core\Fusee.Base.Core.csproj" />
     <ProjectReference Include="$(FuseeRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />

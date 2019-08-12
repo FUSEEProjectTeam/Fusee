@@ -34,9 +34,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Fusee.Examples.PcRendering.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Examples\PcRendering\Core\Fusee.Examples.PcRendering.Core.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\Core\Fusee.Examples.PcRendering.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>

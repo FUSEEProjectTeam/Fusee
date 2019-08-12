@@ -1,4 +1,8 @@
-#version 330 core
+#version 300 es
+
+#ifdef GL_ES
+precision highp float;
+#endif
 
 uniform mat4 FUSEE_P;
 uniform mat4 FUSEE_V;
@@ -69,29 +73,29 @@ float EDLResponse(float pixelSize, float linearDepth, vec2 thisUv)
 		neighbourDepth = LinearizeDepth(neighbourDepth);
 
 		if(neighbourDepth == 0.0)
-			neighbourDepth = 1.0 / 0.0; //infinity!
+			neighbourDepth = 1.0/0.0; //infinity!
 			
-		response += max(0,log2(linearDepth) - log2(neighbourDepth));
-		neighbourCount += 1;
+		response += max(0.0, log2(linearDepth) - log2(neighbourDepth));
+		neighbourCount += 1; 
 	}	
 
 	if(neighbourCount == 0)
 		return 1.0;
 
-	return response /= neighbourCount;	
+	return response = response / float(neighbourCount);	
 }
 
 float EDLShadingFactor(float edlStrength, int pixelSize, float linearDepth, vec2 thisUv)
 {
-	float response = EDLResponse(pixelSize, linearDepth, thisUv);
+	float response = EDLResponse(float(pixelSize), linearDepth, thisUv);
 
 	if(linearDepth == 0.0 && response == 0.0)	
 		discard;
 
-	if(response > 1)
-		response = 1;
+	if(response > 1.0)
+		response = 1.0;
 
-	return exp(-response * 300 * edlStrength);
+	return exp(-response * 300.0 * edlStrength);
 }
 
 vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 ambient)
@@ -99,7 +103,7 @@ vec4 GetDiffuseReflection(vec3 normalDir, vec3 lightDir, vec3 lightColor, vec3 a
 	float intensityDiff = dot(normalDir, lightDir);
 	vec3 diffuse = intensityDiff * lightColor;
 
-	if(CalcSSAO == 1.0)
+	if(CalcSSAO == 1)
 		return vec4((diffuse + ambient) *  oColor.rgb, 1); //Diffuse component
 	else
 		return vec4(diffuse *  oColor.rgb, 1);
@@ -125,7 +129,7 @@ vec3 ViewNormalFromDepth(float depth, vec2 texcoords)
 
 void main(void)
 {	
-	vec2 distanceVector = (2 * gl_PointCoord) - 1; //[-1,1]
+	vec2 distanceVector = (2.0 * gl_PointCoord) - 1.0; //[-1,1]
 	vec4 position;
 	float weight;
 
@@ -175,8 +179,8 @@ void main(void)
 
 		//prevent sqrt(x < 0) - z values can (and should, in this case) become negative 
 		float zwerg = 1.0 - (pow(distanceVector.x, 2.0) + pow(distanceVector.y, 2.0));
-		if (zwerg < 0)
-			weight = -1;
+		if (zwerg < 0.0)
+			weight = -1.0;
 		else
 			weight = sqrt(zwerg);
 
@@ -218,12 +222,12 @@ void main(void)
 	// http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html 
 	// http://theorangeduck.com/page/pure-depth-ssao
 
-	float radius = 10;
+	float radius = 10.0;
 	float occlusion = 0.0;
 	float bias = 0.025;
 	
 	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
-	float z = texture2D(DepthTex, uv).x;
+	float z = texture(DepthTex, uv).x;
 
 	vec3 ambient = vec3(1,1,1);
 	vec3 viewNormal = ViewNormalFromDepth(z, uv);
@@ -261,7 +265,7 @@ void main(void)
 			occlusion += (sampleDepth >= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
 		}
 
-		occlusion = 1-((occlusion / kernelLength) * SSAOStrength);
+		occlusion = 1.0 - ((occlusion / float(kernelLength)) * SSAOStrength);
 		ambient = vec3(occlusion, occlusion, occlusion);
 	}
 	//-------------------------------
