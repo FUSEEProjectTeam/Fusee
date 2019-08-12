@@ -1,4 +1,4 @@
-<Project>
+﻿<Project>
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
@@ -30,8 +30,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
-  
-  <Import Project="$(FuseeBuildRoot)\src\Base\Imp\Shared\Fusee.Base.Imp.Shared.projitems" Label="Shared" />
 
   <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
