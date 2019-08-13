@@ -136,13 +136,19 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 )
             );
 
-            //Add JProperty for "pointType" that contains all bools from the point accessor that are set to true.
-            var ptTypeObj = new JObject();
+            //Add JProperty for "pointAccessorBools" that contains all bools from the point accessor that are set to true.
+            var ptAccessorObj = new JObject();
+            
             foreach (var propertyName in ptAccessor.GetPointType())
             {
-                ptTypeObj.Add(propertyName, true);
+                ptAccessorObj.Add(propertyName, true);
             }
-            var ptType = new JProperty("pointType", ptTypeObj);
+            var ptAccessorBools = new JProperty("ptAccessorBools", ptAccessorObj);
+            jsonObj.Add(ptAccessorBools);
+            
+            //Add JPorperty for "pointType"
+            var pointType = typeof(TPoint);            
+            var ptType = new JProperty("pointType", pointType.Name);
             jsonObj.Add(ptType);
 
             //Write file
