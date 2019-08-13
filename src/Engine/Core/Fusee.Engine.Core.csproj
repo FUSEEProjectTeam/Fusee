@@ -11,28 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
-    <None Remove="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
-    <None Remove="Assets\Shader\Blinn\PixelShader.frag" />
-    <None Remove="Assets\Shader\Blinn\VertexShader.vert" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Shader\PixelShader.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Shader\VertexShader.vert">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
-  <ItemGroup>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
@@ -48,6 +26,17 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Shader\PBR\" />
+    <None Update="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\PixelShader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\VertexShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
