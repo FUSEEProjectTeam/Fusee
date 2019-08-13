@@ -6,6 +6,7 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
+using Fusee.Pointcloud.PointAccessorCollection;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System;
@@ -27,7 +28,7 @@ namespace Fusee.Examples.PcRendering.Core
         public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
 
-        public PtOctantLoader<LAZPointType> OocLoader { get; private set; }
+        public PtOctantLoader<Pos64Col32IShort> OocLoader { get; private set; }
         
         public string PathToOocFile;   //"E:/HolbeinPferdOctree";              
 
@@ -72,7 +73,7 @@ namespace Fusee.Examples.PcRendering.Core
         internal static ShaderEffect _colorPassEf;       
 
         private bool _isTexInitialized = false;        
-        private PtRenderingAccessor _ptAccessor;
+        private Pos64Col32IShort_Accessor _ptAccessor;
         private ProjectionComponent projectionComponent;
 
         private Texture _octreeTex;
@@ -97,32 +98,10 @@ namespace Fusee.Examples.PcRendering.Core
             RC.SetFXParam("Shininess", PtRenderingParams.Shininess);
         }
 
-        //private void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
-        //{
-        //    var points = FromLAZ.ToList(pathToFile);
-
-        //    var aabb = new AABBd(points[0].Position, points[0].Position);
-        //    foreach (var pt in points)
-        //    {
-        //        aabb |= pt.Position;
-        //    }
-
-        //    var watch = new Stopwatch();
-        //    watch.Restart();
-
-        //    var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
-        //    Diagnostics.Log("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
-
-        //    watch.Restart();
-        //    var occFileWriter = new PtOctreeFileWriter<LAZPointType>(pathToFolder);
-        //    occFileWriter.WriteCompleteData(octree, ptAcc);
-        //    Diagnostics.Log("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
-        //}
-
         public void LoadPointCloudFromFile()
         {           
             //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
-            var oocFileReader = new PtOctreeFileReader<LAZPointType>(PathToOocFile);
+            var oocFileReader = new PtOctreeFileReader<Pos64Col32IShort>(PathToOocFile);
 
             //create Scene from octree structure
             var root = oocFileReader.GetScene(_depthPassEf);
@@ -186,11 +165,11 @@ namespace Fusee.Examples.PcRendering.Core
         public override void Init()
         {
             PathToOocFile = "E:/HolbeinPferdOctree";
-            _ptAccessor = new PtRenderingAccessor();
+            _ptAccessor = new Pos64Col32IShort_Accessor();
             _cameraPos = InitCameraPos = new float3(10, 10, -30);
             //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 2500);
 
-            OocLoader = new PtOctantLoader<LAZPointType>(InitCameraPos, PathToOocFile, RC)
+            OocLoader = new PtOctantLoader<Pos64Col32IShort>(InitCameraPos, PathToOocFile, RC)
             {
                 PointThreshold = 500000
             };
@@ -375,7 +354,7 @@ namespace Fusee.Examples.PcRendering.Core
                 _sceneRenderer.Render(RC);
 
                 OocLoader.RC = RC;
-                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, MeshFromOocFile.GetMeshsForNode, _ptAccessor);
+                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort, _ptAccessor);
 
                 Diagnostics.Log(FramePerSecond);
 

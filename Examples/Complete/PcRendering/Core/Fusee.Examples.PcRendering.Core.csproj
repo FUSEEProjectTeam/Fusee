@@ -12,7 +12,9 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
     <PackageReference Include="System.Memory" Version="4.5.3" />
-  </ItemGroup>  
+  </ItemGroup>
+
+  
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
@@ -44,6 +46,9 @@
     </Reference>   
     <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.PointAccessorCollection">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.PointAccessorCollection.dll</HintPath>
     </Reference>
   </ItemGroup>
 

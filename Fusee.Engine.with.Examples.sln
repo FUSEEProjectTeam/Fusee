@@ -544,12 +544,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Converter", "Converter", "{040E040E-6211-4F33-B193-E665B1A8FA54}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LasToOocCmdLine", "src\Pointcloud\Converter\LasToOocCmdLine.csproj", "{28FDBF64-6CA3-43DA-8640-B0C2C70964BB}"
-	ProjectSection(ProjectDependencies) = postProject
-		{B59411F3-5A6A-4839-ABEF-E5026A393CD8} = {B59411F3-5A6A-4839-ABEF-E5026A393CD8}
-	EndProjectSection
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToOocFileCmdLine", "src\Pointcloud\Converter\ToOocFileCmdLine.csproj", "{28FDBF64-6CA3-43DA-8640-B0C2C70964BB}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RocketOnly.WebAsm", "Examples\Complete\WASM\WebAsm\Fusee.Examples.RocketOnly.WebAsm.csproj", "{4147D0BF-211D-4125-BE94-5B681FA10D39}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.PointAccessorCollection", "src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollection.csproj", "{F4D1A422-99A5-4278-A5EB-1062774FF08C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -4301,6 +4300,54 @@ Global
 		{4147D0BF-211D-4125-BE94-5B681FA10D39}.Release-Web|x64.Build.0 = Release|Any CPU
 		{4147D0BF-211D-4125-BE94-5B681FA10D39}.Release-Web|x86.ActiveCfg = Release|Any CPU
 		{4147D0BF-211D-4125-BE94-5B681FA10D39}.Release-Web|x86.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|x64.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug|x86.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|x64.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Android|x86.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|Any CPU.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|x64.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|x64.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|x86.ActiveCfg = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Debug-Web|x86.Build.0 = Debug|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|x64.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|x64.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|x86.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release|x86.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|x64.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|x64.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|x86.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Android|x86.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|x64.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|x64.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|Any CPU.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|Any CPU.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|x64.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|x64.Build.0 = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|x86.ActiveCfg = Release|Any CPU
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C}.Release-Web|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -4406,6 +4453,7 @@ Global
 		{040E040E-6211-4F33-B193-E665B1A8FA54} = {688CFD9D-CB59-4BFD-842B-5320AA4BC443}
 		{28FDBF64-6CA3-43DA-8640-B0C2C70964BB} = {040E040E-6211-4F33-B193-E665B1A8FA54}
 		{4147D0BF-211D-4125-BE94-5B681FA10D39} = {E1FCFF7E-1496-4A1C-AECD-E47DF60E01EC}
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C} = {688CFD9D-CB59-4BFD-842B-5320AA4BC443}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

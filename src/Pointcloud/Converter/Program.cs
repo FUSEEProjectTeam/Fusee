@@ -1,158 +1,158 @@
-﻿using Fusee.LASReader;
-using Fusee.Math.Core;
-using Fusee.Pointcloud.OoCFileReaderWriter;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using Fusee.Examples.PcRendering.Core;
 using System.IO;
+using Fusee.Pointcloud.PointAccessorCollection;
 
 namespace Fusee.Pointcloud.Converter.LasToOoc
 {
-    class Program
+    static class Program
     {
         static void Main(string[] args)
         {
-            string pathToFile = "";
-            string pathToFolder = "";
-            int maxNoOfPointsInBucket = 0;
+            PointType ptType;
+            string pathToFile;
+            string pathToFolder;
+            int maxNoOfPointsInBucket;
 
-            var ptAcc = new PtRenderingAccessor();
-
-            if (args.Length != 3)
-            {           
+            if (args.Length != 4)
+            {
                 Console.WriteLine("Enter Path to .las/laz.");
-                GetPathToFile(ref pathToFile);
+                var input = Console.ReadLine();
+                pathToFile = GetPathToFile(input);
 
                 Console.WriteLine("Enter Path to destination folder.");
-                GetPathToFolder(ref pathToFolder);
+                input = Console.ReadLine();
+                pathToFolder = GetPathToFolder(input);
 
                 Console.WriteLine("Enter max. number of points in Octree bucket.");
-                EnterMaxNoOfPts(pathToFile, pathToFolder, ref maxNoOfPointsInBucket);                
+                input = Console.ReadLine();
+                maxNoOfPointsInBucket = EnterMaxNoOfPts(pathToFile, pathToFolder, input, args);
+
+                Console.WriteLine("Enter point type (int).");
+                input = Console.ReadLine();
+                CheckForHelp(input);
+                ptType = GetPointType(input);
             }
             else
             {
-                pathToFile = args[0];
-                GetPathToFile(ref pathToFile);                
+                pathToFile = GetPathToFile(args[0]);
+                pathToFolder = GetPathToFolder(args[1]);
 
-                pathToFolder = args[1];
-                GetPathToFolder(ref pathToFolder);
+                maxNoOfPointsInBucket = EnterMaxNoOfPts(pathToFile, pathToFolder, args[2], args);
 
-                Int32.TryParse(args[2], out maxNoOfPointsInBucket);
-                EnterMaxNoOfPts(pathToFile, pathToFolder, ref maxNoOfPointsInBucket);
+                ptType = GetPointType(args[3]);
             }
 
-            CreateFiles(ptAcc, pathToFile, pathToFolder, maxNoOfPointsInBucket);
-        }    
-        
-        private static void GetPathToFolder(ref string pathToFolder)
+            Console.WriteLine("Conversion is starting ... ");
+            OocFileFromLas.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
+        }
+
+        private static void CheckForHelp(string input)
         {
-           
-            pathToFolder = Console.ReadLine();
+            if (input == "help")
+            {
+                Console.Write("Expected args: \n Path to las/laz file \n Path to destination folder. \n Maximal number of points in octant. \n Point type as int. \nEnter 'ptType' command to see available types.\n");
+                Console.WriteLine();
+            }
+            else if (input == "ptType")
+            {
+                var values = Enum.GetValues(typeof(PointType));
+                System.Collections.IList list = values;
+                for (int i = 0; i < list.Count; i++)                
+                    Console.WriteLine(" "+ i + ":\t" + list[i]);
+                
+                Console.WriteLine();
+                Console.WriteLine("Abbreviations:");
+                Console.Write(" 64:\t double\n 32:\t float\n Pos:\t has position\n Col:\t has rgb color\n I:\t has intensity\n Nor:\t has Normal\n");
+                Console.WriteLine();
+            }
+        }
+
+        private static PointType GetPointType(string input)
+        {
+            CheckForHelp(input);
+
+            if (int.TryParse(input, out var ptTypeInt))
+            {
+                
+                if (Enum.IsDefined(typeof(PointType), ptTypeInt))
+                    return (PointType)ptTypeInt;                
+                else
+                {
+                    Console.WriteLine("Point Type must be a valid integer!");
+                    Console.WriteLine("Enter point type (int).");
+                    input = Console.ReadLine();
+                    return GetPointType(input);
+                }
+            }
+            else
+            {
+                Console.WriteLine("Point Type must be a valid integer!");
+                Console.WriteLine("Enter point type (int).");
+                input = Console.ReadLine();
+                return GetPointType(input);
+            }
+        }
+
+        private static string GetPathToFolder(string pathToFolder)
+        {
+            CheckForHelp(pathToFolder);
 
             try
             {
                 var path = Path.GetFullPath(pathToFolder);
+                return path;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 Console.WriteLine(e);
                 Console.WriteLine();
                 Console.WriteLine("Enter Path to destination folder.");
-                pathToFolder = "";
-                GetPathToFolder(ref pathToFolder);
+                pathToFolder = Console.ReadLine();
+                return GetPathToFolder(pathToFolder);
             }
         }
 
-        private static void GetPathToFile(ref string pathToFile)
-        {  
-            pathToFile = Console.ReadLine();
+        private static string GetPathToFile(string pathToFile)
+        {
+            CheckForHelp(pathToFile);
+
             var extension = Path.GetExtension(pathToFile);
 
-            if(extension == null || (extension!= ".las" && extension != ".laz"))
-            {               
+            if (extension == null || (extension != ".las" && extension != ".laz"))
+            {
                 Console.WriteLine("Path is not valid!");
                 Console.WriteLine("Enter Path to .las/laz.");
-                pathToFile = "";
-                GetPathToFile(ref pathToFile);                
+                pathToFile = Console.ReadLine();
+                return GetPathToFile(pathToFile);
             }
-            return;
+            return pathToFile;
         }
 
-        private static void EnterMaxNoOfPts(string pathToFile, string pathToFolder, ref int mxNo)
+        private static int EnterMaxNoOfPts(string pathToFile, string pathToFolder, string mxNo, string[] args)
         {
-            
-            var maxNoOfPointsInBucket_str = Console.ReadLine();            
+            CheckForHelp(mxNo);
 
-            if (Int32.TryParse(maxNoOfPointsInBucket_str, out var maxNoOfPointsInBucket))
+            if (int.TryParse(mxNo, out var maxNoOfPointsInBucket))
             {
                 if (maxNoOfPointsInBucket > 1)
-                {                    
-                    mxNo = maxNoOfPointsInBucket;
-                    return;
+                {
+                    return maxNoOfPointsInBucket;
                 }
                 else
                 {
                     Console.WriteLine("Number of Points must be > 0");
                     Console.WriteLine("Enter max. number of points in Octree bucket.");
-                    EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);                    
+                    return EnterMaxNoOfPts(pathToFile, pathToFolder, mxNo, args);
                 }
             }
             else
             {
                 Console.WriteLine("Number of Points must be a number!");
                 Console.WriteLine("Enter max. number of points in Octree bucket.");
-                EnterMaxNoOfPts(pathToFile, pathToFolder, ref mxNo);                
+                mxNo = Console.ReadLine();
+                return EnterMaxNoOfPts(pathToFile, pathToFolder, mxNo, args);
             }
         }
-
-        private static void CreateFiles(PtRenderingAccessor ptAcc, string pathToFile, string pathToFolder, int maxNoOfPointsInBucket)
-        {
-            var points = FromLasToList(pathToFile);
-
-            var aabb = new AABBd(points[0].Position, points[0].Position);
-            foreach (var pt in points)
-            {
-                aabb |= pt.Position;
-            }
-
-            var watch = new Stopwatch();
-            watch.Restart();
-
-            var octree = new PtOctree<LAZPointType>(aabb, ptAcc, points, maxNoOfPointsInBucket);
-            Console.WriteLine("Octree creation took: " + watch.ElapsedMilliseconds + "ms.");
-
-            watch.Restart();
-            var occFileWriter = new PtOctreeFileWriter<LAZPointType>(pathToFolder);
-            occFileWriter.WriteCompleteData(octree, ptAcc);
-            Console.WriteLine("Writing files took: " + watch.ElapsedMilliseconds + "ms.");
-        }
-
-        internal static List<LAZPointType> FromLasToList(string pathToPc)
-        {
-            var reader = new LASPointReader(pathToPc);
-            var pointCnt = (MetaInfo)reader.MetaInfo;
-            var pa = new PtRenderingAccessor();
-            var points = new LAZPointType[(int)pointCnt.PointCnt];
-            points = points.Select(pt => new LAZPointType()).ToArray();
-
-            for (var i = 0; i < points.Length; i++)
-                if (!reader.ReadNextPoint(ref points[i], pa)) break;
-
-            var firstPoint = points[0];
-
-            for (int i = 0; i < points.Length; i++)
-            {
-                var pt = points[i];
-                pt.Position -= firstPoint.Position;
-                pt.Position = new double3(pt.Position.x, pt.Position.z, pt.Position.y);
-
-                points[i] = pt;
-            }
-
-            reader.Dispose();
-            return points.ToList();
-        }
+        
     }
 }

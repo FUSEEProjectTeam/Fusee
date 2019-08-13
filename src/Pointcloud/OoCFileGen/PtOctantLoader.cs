@@ -9,7 +9,6 @@ using System.Linq;
 using Fusee.Xene;
 using Fusee.Base.Core;
 using System.Threading.Tasks;
-using System.Threading;
 using System.Collections.Concurrent;
 
 namespace Fusee.Pointcloud.OoCFileReaderWriter
@@ -22,6 +21,8 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public Texture VisibleOctreeHierarchyTex;
 
         private SceneNodeContainer _rootNode;
+
+        private float3 _initCamPos;
 
         public SceneNodeContainer RootNode
         {
@@ -37,14 +38,13 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 _determinedAsVisible = new Dictionary<Guid, SceneNodeContainer>();
 
                 var fov = (float)RC.ViewportWidth / RC.ViewportHeight;
-                var camPos = RC.View.Invert().Column3;
-                var camPosD = new double3(10, 10, -30);
+                var camPosD = new double3(_initCamPos.x, _initCamPos.y, _initCamPos.z);
 
                 _rootNode = value;
 
                 // gets pixel radius of the node
                 RootNode.GetComponent<PtOctantComponent>().ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
-                _minScreenProjectedSize = (float)RootNode.GetComponent<PtOctantComponent>().ProjectedScreenSize * 1/2f;
+                _minScreenProjectedSize = (float)RootNode.GetComponent<PtOctantComponent>().ProjectedScreenSize * 1/3f;
             } 
         }
 
@@ -90,6 +90,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public PtOctantLoader(float3 initialCamPos, string fileFolderPath, RenderContext rc)
         {
             _loadedMeshs = new Dictionary<Guid, IEnumerable<Mesh>>();
+            _initCamPos = initialCamPos;
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size;
             RC = rc;
             //RootNode = rootNode;                        
