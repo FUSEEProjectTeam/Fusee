@@ -44,7 +44,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public double3 Size
         {
-            get { return (max - min); }
+            get { return max - min; }
         }
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
-        /// <param name="meshVertices"></param>
+        /// <param name="vertices"></param>
         public OBBd(double3[] vertices)
         {
             translation = M.CalculateCentroid(vertices);
@@ -79,7 +79,7 @@ namespace Fusee.Math.Core
             min = vertices[0];
             max = vertices[0];
 
-            for (var i = 0; i < vertices.Count(); i++)
+            for (var i = 0; i < vertices.Length; i++)
             {
                 var currentPointTranslated = vertices[i] - translation;
                 var currentPointTranslatedAndRotated = changeBasis * currentPointTranslated;
