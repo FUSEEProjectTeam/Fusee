@@ -44,11 +44,8 @@ namespace Fusee.Math.Core
         /// </summary>
         public float3 Size
         {
-            get { return (Max - Min); }
+            get { return Max - Min; }
         }
-
-        //public List<float3> MinCubeVerts;           
-
 
         /// <summary>
         ///     Create a new axis aligned bounding box
@@ -62,13 +59,13 @@ namespace Fusee.Math.Core
             Min = min_;
             Max = max_;
             Rotation = rotation_;
-            Translation = translation_;            
+            Translation = translation_;          
         }
 
         /// <summary>
         ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
-        /// <param name="meshVertices"></param>
+        /// <param name="vertices"></param>
         public OBBf(float3[] vertices)
         {
             Translation = M.CalculateCentroid(vertices);
@@ -82,50 +79,13 @@ namespace Fusee.Math.Core
             Min = vertices[0];
             Max = vertices[0];
 
-            for (var i = 0; i < vertices.Count(); i++)
+            for (var i = 0; i < vertices.Length; i++)
             {
                 var currentPointTranslated = vertices[i] - Translation;
                 var currentPointTranslatedAndRotated = changeBasis * currentPointTranslated;
 
                 this |= currentPointTranslatedAndRotated;
-                //vertices[i] = currentPointTranslatedAndRotated;
             }
-
-         
-
-            //MinCubeVerts = new List<float3>
-            //{
-            //    new float3(Min.x, Min.y, Min.z),
-            //    new float3(Max.x, Min.y, Min.z),
-            //    new float3(Max.x, Min.y, Max.z),
-            //    new float3(Min.x, Min.y, Max.z),
-            //    new float3(Min.x, Max.y, Min.z),
-            //    new float3(Max.x, Max.y, Min.z),
-            //    new float3(Max.x, Max.y, Max.z),
-            //    new float3(Min.x, Max.y, Max.z)
-            //};
-
-            //Dimensions = CalcCubeDimensionMin();
-            //CornerVerts = CalcCubeVertsFromCenter();
-
-            //if (rotateBack)
-            //{
-            //    for (var i = 0; i < CornerVerts.Length; i++)
-            //    {
-            //        var vertex = CornerVerts[i];
-            //        vertex = Rotation * vertex;
-            //        vertex += Translation;
-            //        CornerVerts[i] = vertex;
-            //    }
-
-            //    CalcCubeCenter(CornerVerts);
-
-            //    for (var i = 0; i < vertices.Count; i++)
-            //    {
-            //        vertices[i] = Rotation * vertices[i];
-            //        vertices[i] += Translation;
-            //    }
-            //}
         }
 
         /// <summary>
