@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Fusee.Serialization;
-using JSIL.Meta;
 
 namespace Fusee.Xene
 {
@@ -53,13 +52,11 @@ namespace Fusee.Xene
 
     internal class VisitorCallerFactory
     {
-        [JSExternal]
         public static VisitComponentMethod MakeComponentVisitor(MethodInfo info)
         {
             return delegate (SceneVisitor visitor, SceneComponentContainer component) { info.Invoke(visitor, new object[] { component }); };
         }
 
-        [JSExternal]
         public static VisitNodeMethod MakeNodeVistor(MethodInfo info)
         {
             return delegate (SceneVisitor visitor, SceneNodeContainer node) { info.Invoke(visitor, new object[] { node }); };

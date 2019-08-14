@@ -4,7 +4,6 @@ using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using JSIL.Meta;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
@@ -1434,7 +1433,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam1f")]
         public void SetShaderParam(IShaderParam param, float val)
         {
             _rci.SetShaderParam(param, val);
@@ -1450,7 +1448,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam2f")]
         public void SetShaderParam(IShaderParam param, float2 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1466,7 +1463,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam3f")]
         public void SetShaderParam(IShaderParam param, float3 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1482,7 +1478,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam4f")]
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1498,7 +1493,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam4fArray")]
         public void SetShaderParam(IShaderParam param, float4[] val)
         {
             _rci.SetShaderParam(param, val);
@@ -1514,7 +1508,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamfloat4x4")]
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             _rci.SetShaderParam(param, val);
@@ -1530,7 +1523,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamMtx4fArray")]
         public void SetShaderParam(IShaderParam param, float4x4[] val)
         {
             _rci.SetShaderParam(param, val);
@@ -1546,7 +1538,6 @@ namespace Fusee.Engine.Core
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamI")]
         public void SetShaderParam(IShaderParam param, int val)
         {
             _rci.SetShaderParam(param, val);
