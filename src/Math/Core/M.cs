@@ -498,8 +498,8 @@ namespace Fusee.Math.Core
                 res.M22 += Covariance(vec.y, vec.y, centroid.y, centroid.y, numPoints);
                 res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
 
-                res.M31 += Covariance(vec.z, vec.x, centroid.z, centroid.x, numPoints);
-                res.M32 += Covariance(vec.z, vec.y, centroid.z, centroid.y, numPoints);
+                res.M31 += Covariance(vec.x, vec.z, centroid.x, centroid.z, numPoints);
+                res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
                 res.M33 += Covariance(vec.z, vec.z, centroid.z, centroid.z, numPoints);
             }
 
@@ -528,8 +528,8 @@ namespace Fusee.Math.Core
                 res.M22 += Covariance(vec.y, vec.y, centroid.y, centroid.y, numPoints);
                 res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
 
-                res.M31 += Covariance(vec.z, vec.x, centroid.z, centroid.x, numPoints);
-                res.M32 += Covariance(vec.z, vec.y, centroid.z, centroid.y, numPoints);
+                res.M31 += Covariance(vec.x, vec.z, centroid.x, centroid.z, numPoints);
+                res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
                 res.M33 += Covariance(vec.z, vec.z, centroid.z, centroid.z, numPoints);
             }
 
@@ -636,7 +636,7 @@ namespace Fusee.Math.Core
                 {
                     D.M11,
                     D.M22,
-                    D.M33                   
+                    D.M33
                 },
                 Vectors = Q
             };
