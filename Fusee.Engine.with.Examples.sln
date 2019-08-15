@@ -534,7 +534,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.GUI.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.WPF", "Examples\Complete\PcRendering\GUI\Fusee.Examples.PcRendering.GUI\Fusee.Examples.PcRendering.WPF.csproj", "{F86E92C3-C683-44DF-9355-822C85B6D4ED}"
 	ProjectSection(ProjectDependencies) = postProject
-		{3D4D2A38-959A-489D-A69D-A7DD9834B4D1} = {3D4D2A38-959A-489D-A69D-A7DD9834B4D1}
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C} = {F4D1A422-99A5-4278-A5EB-1062774FF08C}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.WebAsm", "Examples\Complete\PcRendering\WebAsm\Fusee.Examples.PcRendering.WebAsm.csproj", "{4BA66419-A144-4053-B354-73B3AFCEB1DB}"
@@ -548,7 +548,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ToOocFileCmdLine", "src\Poi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RocketOnly.WebAsm", "Examples\Complete\WASM\WebAsm\Fusee.Examples.RocketOnly.WebAsm.csproj", "{4147D0BF-211D-4125-BE94-5B681FA10D39}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.PointAccessorCollection", "src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollection.csproj", "{F4D1A422-99A5-4278-A5EB-1062774FF08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.PointAccessorCollections", "src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollections.csproj", "{F4D1A422-99A5-4278-A5EB-1062774FF08C}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

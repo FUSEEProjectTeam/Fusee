@@ -12,6 +12,10 @@ namespace Fusee.Examples.PcRendering.Core
 
     public static class PtRenderingParams
     {
+        public static int MaxNoOfVisiblePoints = 500000;
+
+        public static string PathToOocFile = "E://HolbeinPferdOctree";
+
         public static Lighting Lighting = Lighting.EDL;
 
         public static PointShape Shape = PointShape.PARABOLID;

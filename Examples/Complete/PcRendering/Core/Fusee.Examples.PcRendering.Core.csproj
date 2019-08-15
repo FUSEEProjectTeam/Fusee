@@ -47,8 +47,8 @@
     <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.Pointcloud.PointAccessorCollection">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.PointAccessorCollection.dll</HintPath>
+    <Reference Include="Fusee.Pointcloud.PointAccessorCollections">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.PointAccessorCollections.dll</HintPath>
     </Reference>
   </ItemGroup>
 

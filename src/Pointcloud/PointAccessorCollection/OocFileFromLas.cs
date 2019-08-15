@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-namespace Fusee.Pointcloud.PointAccessorCollection
+namespace Fusee.Pointcloud.PointAccessorCollections
 {
     /// <summary>
     /// Provides methods for the Pointcloud.Converter to create the ooc files according to the user-given point type.

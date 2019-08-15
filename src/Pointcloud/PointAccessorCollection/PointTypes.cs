@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 
-namespace Fusee.Pointcloud.PointAccessorCollection
+namespace Fusee.Pointcloud.PointAccessorCollections
 {    
     /// <summary>
     /// Enum that contains all available point types.

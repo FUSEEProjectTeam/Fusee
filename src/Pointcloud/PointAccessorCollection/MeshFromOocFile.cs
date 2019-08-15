@@ -6,13 +6,51 @@ using System.Collections.Generic;
 using System.Linq;
 
 
-namespace Fusee.Pointcloud.PointAccessorCollection
+namespace Fusee.Pointcloud.PointAccessorCollections
 {
     /// <summary>
     /// Fore every point type: Define a Method that returns a Mesh.
     /// </summary>
     public static class MeshFromOocFile
-    {  
+    {    
+        public static List<Mesh> GetMeshsForNode_Pos64(PointAccessor<Pos64> ptAccessor, List<Pos64> points)
+        {
+            var allPoints = new List<double3>();
+            
+
+            for (int i = 0; i < points.Count(); i++)
+            {
+                var pt = points[i];
+                allPoints.Add(ptAccessor.GetPositionFloat3_64(ref pt));
+                
+            }
+
+            var allMeshes = new List<Mesh>();
+
+            var maxVertCount = ushort.MaxValue - 1;
+
+            var allPointsSplitted = SplitList(allPoints, maxVertCount).ToList();
+            
+
+            for (int i = 0; i < allPointsSplitted.Count; i++)
+            {
+                var pointSplit = allPointsSplitted[i];
+                
+                var currentMesh = new Mesh
+                {
+                    Vertices = pointSplit.Select(pt => new float3(pt.xyz)).ToArray(),
+                    Triangles = Enumerable.Range(0, pointSplit.Count).Select(num => (ushort)num).ToArray(),
+                    MeshType = (int)OpenGLPrimitiveType.POINT,
+                    Normals = new float3[pointSplit.Count],
+                    Colors = new uint[pointSplit.Count]
+                };
+
+                allMeshes.Add(currentMesh);
+            }
+
+            return allMeshes;
+        }
+
         public static List<Mesh> GetMeshsForNode_Pos64Col32IShort(PointAccessor<Pos64Col32IShort> ptAccessor, List<Pos64Col32IShort> points)
         {
             var allPoints = new List<double3>();

@@ -3,8 +3,8 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>Fusee.Pointcloud.PointAccessorCollection</RootNamespace>
-    <PackageId>Fusee.Pointcloud.PointAccessorCollection</PackageId>
+    <RootNamespace>Fusee.Pointcloud.PointAccessorCollections</RootNamespace>
+    <PackageId>Fusee.Pointcloud.PointAccessorCollections</PackageId>
     <ApplicationIcon />
     <StartupObject />
   </PropertyGroup>
@@ -21,6 +21,9 @@
   <ItemGroup>
     <Reference Include="Fusee.Engine.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Pointcloud.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>

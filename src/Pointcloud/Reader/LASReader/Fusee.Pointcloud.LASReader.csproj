@@ -10,7 +10,6 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
   </ItemGroup>
   
@@ -19,10 +18,7 @@
     <None Include="$(FuseeBuildRoot)\ext\LASlib\libLASlib.so" Link="Natives\libLASlib.so" />
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Pointcloud.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
-    </Reference>
+    </Reference>    
   </ItemGroup>
 
 </Project>

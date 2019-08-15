@@ -38,6 +38,10 @@
     <ProjectReference Include="$(FuseeRoot)src\Math\Core\Fusee.Math.Core.csproj" />
     
     <ProjectReference Include="$(FuseeRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+    
+    <ProjectReference Include="..\..\..\..\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    
+    <ProjectReference Include="..\..\..\..\src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollections.csproj" />
         
     <ProjectReference Include="..\Core\Fusee.Examples.PcRendering.Core.csproj" />
 

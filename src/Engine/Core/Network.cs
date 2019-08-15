@@ -221,7 +221,7 @@ namespace Fusee.Engine.Core
 
         internal void OnUpdateFrame()
         {
-            _networkImp.OnUpdateFrame();
+            _networkImp?.OnUpdateFrame();
         }
 
         /// <summary>

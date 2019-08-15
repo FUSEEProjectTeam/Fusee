@@ -1,11 +1,13 @@
 using System;
 using System.IO;
-using Fusee.Pointcloud.PointAccessorCollection;
+using Fusee.Pointcloud.PointAccessorCollections;
 
-namespace Fusee.Pointcloud.Converter.LasToOoc
+namespace Fusee.Pointcloud.Converter.ToOocFileCmdLine
 {
     static class Program
     {
+        private static bool _fromHelp;
+
         static void Main(string[] args)
         {
             PointType ptType;
@@ -29,53 +31,70 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
 
                 Console.WriteLine("Enter point type (int).");
                 input = Console.ReadLine();
-                CheckForHelp(input);
+                CheckForHelp(ref input);
                 ptType = GetPointType(input);
             }
             else
             {
                 pathToFile = GetPathToFile(args[0]);
                 pathToFolder = GetPathToFolder(args[1]);
-
                 maxNoOfPointsInBucket = EnterMaxNoOfPts(pathToFile, pathToFolder, args[2], args);
-
                 ptType = GetPointType(args[3]);
             }
 
             Console.WriteLine("Conversion is starting ... ");
-            OocFileFromLas.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
+
+            try
+            {
+                OocFileFromLas.CreateFilesForPtType(ptType, pathToFile, pathToFolder, maxNoOfPointsInBucket, true);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
-        private static void CheckForHelp(string input)
+        private static void CheckForHelp(ref string input)
         {
             if (input == "help")
             {
                 Console.Write("Expected args: \n Path to las/laz file \n Path to destination folder. \n Maximal number of points in octant. \n Point type as int. \nEnter 'ptType' command to see available types.\n");
                 Console.WriteLine();
+                input = "";
+                _fromHelp = true;
             }
             else if (input == "ptType")
             {
                 var values = Enum.GetValues(typeof(PointType));
                 System.Collections.IList list = values;
-                for (int i = 0; i < list.Count; i++)                
-                    Console.WriteLine(" "+ i + ":\t" + list[i]);
-                
+                for (int i = 0; i < list.Count; i++)
+                    Console.WriteLine(" " + i + ":\t" + list[i]);
+
                 Console.WriteLine();
                 Console.WriteLine("Abbreviations:");
                 Console.Write(" 64:\t double\n 32:\t float\n Pos:\t has position\n Col:\t has rgb color\n I:\t has intensity\n Nor:\t has Normal\n");
                 Console.WriteLine();
+                input = "";
+                _fromHelp = true;
             }
         }
 
         private static PointType GetPointType(string input)
         {
-            CheckForHelp(input);
+            CheckForHelp(ref input);
+
+            if (_fromHelp)
+            {
+                _fromHelp = false;
+                Console.WriteLine("Enter point type (int).");
+                input = Console.ReadLine();
+                return GetPointType(input);
+            }
 
             if (int.TryParse(input, out var ptTypeInt))
             {
-                
                 if (Enum.IsDefined(typeof(PointType), ptTypeInt))
-                    return (PointType)ptTypeInt;                
+                    return (PointType)ptTypeInt;
                 else
                 {
                     Console.WriteLine("Point Type must be a valid integer!");
@@ -95,7 +114,15 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
 
         private static string GetPathToFolder(string pathToFolder)
         {
-            CheckForHelp(pathToFolder);
+            CheckForHelp(ref pathToFolder);
+
+            if (_fromHelp)
+            {
+                _fromHelp = false;
+                Console.WriteLine("Enter Path to destination folder.");
+                pathToFolder = Console.ReadLine();
+                return GetPathToFolder(pathToFolder);
+            }
 
             try
             {
@@ -114,7 +141,15 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
 
         private static string GetPathToFile(string pathToFile)
         {
-            CheckForHelp(pathToFile);
+            CheckForHelp(ref pathToFile);
+
+            if (_fromHelp)
+            {
+                _fromHelp = false;
+                Console.WriteLine("Enter Path to .las/laz.");
+                pathToFile = Console.ReadLine();
+                return GetPathToFile(pathToFile);
+            }
 
             var extension = Path.GetExtension(pathToFile);
 
@@ -130,11 +165,19 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
 
         private static int EnterMaxNoOfPts(string pathToFile, string pathToFolder, string mxNo, string[] args)
         {
-            CheckForHelp(mxNo);
+            CheckForHelp(ref mxNo);
+
+            if (_fromHelp)
+            {
+                _fromHelp = false;
+                Console.WriteLine("Enter max. number of points in Octree bucket.");
+                mxNo = Console.ReadLine();
+                return EnterMaxNoOfPts(pathToFile, pathToFolder, mxNo, args);
+            }
 
             if (int.TryParse(mxNo, out var maxNoOfPointsInBucket))
             {
-                if (maxNoOfPointsInBucket > 1)
+                if (maxNoOfPointsInBucket >= 1)
                 {
                     return maxNoOfPointsInBucket;
                 }
@@ -142,6 +185,7 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
                 {
                     Console.WriteLine("Number of Points must be > 0");
                     Console.WriteLine("Enter max. number of points in Octree bucket.");
+                    mxNo = Console.ReadLine();
                     return EnterMaxNoOfPts(pathToFile, pathToFolder, mxNo, args);
                 }
             }
@@ -153,6 +197,6 @@ namespace Fusee.Pointcloud.Converter.LasToOoc
                 return EnterMaxNoOfPts(pathToFile, pathToFolder, mxNo, args);
             }
         }
-        
+
     }
 }

@@ -54,6 +54,12 @@
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
+    <Reference Include="Fusee.Pointcloud.PointAccessorCollections">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.PointAccessorCollections.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
+    </Reference>
     <Reference Include="protobuf-net">
       <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>

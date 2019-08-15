@@ -15,6 +15,15 @@
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 

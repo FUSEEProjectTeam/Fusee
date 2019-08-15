@@ -2,15 +2,20 @@
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Examples.PcRendering.Core;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.PointAccessorCollections;
 using Fusee.Serialization;
 using Microsoft.Win32;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
@@ -22,80 +27,15 @@ namespace Fusee.Examples.PcRendering.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Fusee.Examples.PcRendering.Core.PcRendering app;
         private bool _isAppInizialized = false;
+
+        private Thread FUSThread;
+
+        public Pointcloud.Common.IPcRendering app;
 
         public MainWindow()
         {
             InitializeComponent();
-
-            
-
-            var fusThread = new Thread(() =>
-            {
-
-                // Inject Fusee.Engine.Base InjectMe dependencies
-                IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
-
-                var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
-                fap.RegisterTypeHandler(
-                    new AssetHandler
-                    {
-                        ReturnedType = typeof(Font),
-                        Decoder = delegate (string id, object storage)
-                        {
-                            if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                            return new Font { _fontImp = new FontImp((Stream)storage) };
-                        },
-                        Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
-                    });
-                fap.RegisterTypeHandler(
-                    new AssetHandler
-                    {
-                        ReturnedType = typeof(SceneContainer),
-                        Decoder = delegate (string id, object storage)
-                        {
-                            if (!System.IO.Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                            var ser = new Serializer();
-                            return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
-                            return null;
-                        },
-                        Checker = id => System.IO.Path.GetExtension(id).ToLower().Contains("fus")
-                    });
-
-                AssetStorage.RegisterProvider(fap);
-
-                app = new Fusee.Examples.PcRendering.Core.PcRendering();
-
-                // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-                app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
-                app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
-                // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-                // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
-                // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
-                // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
-
-                app.CanvasImplementor.Init += MainWindow_Initialized;
-                app.CanvasImplementor.UnLoad += (o, s) => App.Current?.Dispatcher.Invoke(() => 
-                {
-                    System.Windows.Application.Current.Shutdown();
-                });
-
-                app.UseWPF = true;
-
-                // Start the app
-                app.Run();
-
-            });
-
-
-            fusThread.Start();
-
-            Closed += (s, e) => app?.CloseGameWindow();
 
             Lighting.SelectedValue = Core.PtRenderingParams.Lighting;
             PtShape.SelectedValue = Core.PtRenderingParams.Shape;
@@ -132,36 +72,13 @@ namespace Fusee.Examples.PcRendering.WPF
 
         }
 
-        private void MainWindow_Initialized(object sender, System.EventArgs e)
-        {
-            // find window handle of the Fusee window
-            var fuseeWinHandle = FindWindow(null, app.CanvasImplementor.Caption);
-            IntPtr wpfHandle = IntPtr.Zero;
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                wpfHandle = FindWindow(null, Name);
-            });
-
-            if (fuseeWinHandle == IntPtr.Zero)
-                throw new Exception("Error: Fusee window not found!");
-
-            if (wpfHandle == IntPtr.Zero)
-                throw new Exception("Error: WPF window not found!");
-
-            // sets the Fusee window as a child of the given parent form
-            App.Current.Dispatcher.Invoke(() =>
-            {
-                SetParent(fuseeWinHandle, wpfHandle);
-            });
-
-            _isAppInizialized = true;
-        }
-
         [DllImport("user32.dll", SetLastError = true)]
         static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
 
         [DllImport("user32.dll")]
         static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
+
+        #region UI Handler
 
         private void SSAOCheckBox_Checked(object sender, RoutedEventArgs e)
         {
@@ -219,7 +136,6 @@ namespace Fusee.Examples.PcRendering.WPF
             PtSizeVal.Content = e.NewValue.ToString("0");
             Core.PtRenderingParams.Size = (int)e.NewValue;
         }
-
 
         private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
@@ -296,9 +212,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 SingleColor.IsEnabled = true;
         }
 
-        private void LoadFile_Button_Click(object sender, RoutedEventArgs e)
+        private async void LoadFile_Button_Click(object sender, RoutedEventArgs e)
         {
-            var ofd = new OpenFileDialog {
+            string fullPath;
+            string path;
+            var ofd = new OpenFileDialog
+            {
                 Filter = "Meta json (*.json)|*.json"
             };
 
@@ -306,27 +225,32 @@ namespace Fusee.Examples.PcRendering.WPF
             if (sd == null) return;
 
             if ((bool)sd)
-            {                
+            {
                 if (!ofd.SafeFileName.Contains("meta.json"))
                 {
-                    System.Windows.MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
                 }
 
-                if (app.OocLoader.RootNode != null) //if RootNode == null no scene was ever initialized
+                fullPath = ofd.FileName;
+                path = fullPath.Replace(ofd.SafeFileName, "");
+
+                app?.CloseGameWindow();
+                app = null;
+                await OpenFusThread(path);
+
+                if (app.GetOocLoaderRootNode() != null) //if RootNode == null no scene was ever initialized
                 {
                     app.DeletePointCloud();
 
-                    while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated)
+                    while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !_isAppInizialized)
                     {
-                        //app.IsSceneLoaded = false;
+                        app.IsSceneLoaded = false;
                         continue;
                     }
                 }
 
-                string fullPath = ofd.FileName;
-                string path = fullPath.Replace(ofd.SafeFileName, "");
-                app.PathToOocFile = path;
+                PtRenderingParams.PathToOocFile = path;
                 app.ResetCamera();
                 app.LoadPointCloudFromFile();
                 InnerGrid.IsEnabled = true;
@@ -355,16 +279,16 @@ namespace Fusee.Examples.PcRendering.WPF
             if (!e.Handled)
             {
                 if (!Int32.TryParse(VisPoints.Text, out var ptThreshold)) return;
-                if(ptThreshold < 0)
+                if (ptThreshold < 0)
                 {
-                    VisPoints.Text = app.OocLoader.PointThreshold.ToString();
+                    VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
                     return;
                 }
-                app.OocLoader.PointThreshold = ptThreshold;
+                app.SetOocLoaderPointThreshold(ptThreshold);
             }
             else
             {
-                VisPoints.Text = app.OocLoader.PointThreshold.ToString();
+                VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
             }
         }
 
@@ -402,14 +326,14 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
-            VisPoints.Text = app.OocLoader.PointThreshold.ToString();
+            VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
         }
 
         private bool _areOctantsShown;
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
-        {            
-            while (!app.ReadyToLoadNewFile || !app.OocLoader.WasSceneUpdated || !app.IsSceneLoaded)
+        {
+            while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !app.IsSceneLoaded)
             {
                 //app.IsSceneLoaded = false;
                 continue;
@@ -427,8 +351,256 @@ namespace Fusee.Examples.PcRendering.WPF
                 _areOctantsShown = false;
                 ShowOctants_Img.Source = new BitmapImage(new Uri("Assets/octants.png", UriKind.Relative));
             }
-            
-                
         }
+
+        #endregion 
+
+        private async Task OpenFusThread(string pathToFile)
+        {
+            InnerGrid.IsEnabled = false;
+            _isAppInizialized = false;
+
+            if (app != null)
+                while (!app.ReadyToLoadNewFile || !app.IsSceneLoaded) continue;
+
+            if (FUSThread != null && FUSThread.IsAlive)
+            {
+                //At a few occasions the fusee app will throw a null reference at different stages, e.g. Keyboard in RenderAFrame or _networkImp in Network.OnUpdateFrame.
+                //Flaw in Fusee shut down process or multi threading in this wpf app? (in a normal app the debugger will be terminated on shutdown...)
+                try
+                {
+                    app?.CloseGameWindow(); //UI Thread
+                    app = null;
+                }
+                catch (NullReferenceException nre)
+                {
+
+                }
+
+                FUSThread.Join();
+            }
+
+            await Task.Run(() =>
+            {
+                FUSThread = new Thread(() =>
+                {
+                    // Inject Fusee.Engine.Base InjectMe dependencies
+                    IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+
+                    var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+                    fap.RegisterTypeHandler(
+                        new AssetHandler
+                        {
+                            ReturnedType = typeof(Font),
+                            Decoder = delegate (string id, object storage)
+                            {
+                                if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                                return new Font { _fontImp = new FontImp((Stream)storage) };
+                            },
+                            Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
+                        });
+                    fap.RegisterTypeHandler(
+                        new AssetHandler
+                        {
+                            ReturnedType = typeof(SceneContainer),
+                            Decoder = delegate (string id, object storage)
+                            {
+                                if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
+                                var ser = new Serializer();
+                                return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                            },
+                            Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
+                        });
+
+                    AssetStorage.RegisterProvider(fap);
+
+                    int th = 0;
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        int.TryParse(VisPoints.Text, out th);
+                    });                   
+
+                    var ptType = AppSetupHelper.GetPtType(pathToFile);
+                    var ptEnumName = Enum.GetName(typeof(PointType), ptType);
+
+                    var genericType = Type.GetType("Fusee.Pointcloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.Pointcloud.PointAccessorCollections");
+
+                    var objectType = typeof(PcRendering<>);
+                    var objWithGenType = objectType.MakeGenericType(genericType);
+
+                    app = (Pointcloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);
+                    app.UseWPF = true;
+                    AppSetup.DoSetup(app, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);
+
+                    // Inject Fusee.Engine InjectMe dependencies (hard coded)
+                    System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
+                    app.CanvasImplementor = new Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
+                    app.ContextImplementor = new Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
+                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                    Input.AddDriverImp(new Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+
+                    app.Run();
+
+                });
+
+                FUSThread.Start();
+
+                while (app == null || app.IsInitialized == false) continue;
+                Closed += (s, e) => app?.CloseGameWindow();
+
+            });
+
+            _isAppInizialized = true;
+            InnerGrid.IsEnabled = true;
+        }
+
+        //private void SetupApp(PointType ptType, int pointThreshold, string pathToFile)
+        //{
+        //    switch (ptType)
+        //    {
+        //        case PointType.Pos64:
+        //            {
+        //                var appImp = (PcRendering<Pos64>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64Col32IShort:
+        //            {
+        //                var appImp = (PcRendering<Pos64Col32IShort>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64Col32IShort_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Col32IShort>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64IShort:
+        //            {
+        //                var appImp = (PcRendering<Pos64IShort>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64IShort_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64IShort;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64IShort>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64Col32:
+        //            {
+        //                var appImp = (PcRendering<Pos64Col32>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64Col32_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Col32>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64Nor32Col32IShort:
+        //            {
+        //                var appImp = (PcRendering<Pos64Nor32Col32IShort>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64Nor32Col32IShort_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32Col32IShort>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64Nor32IShort:
+        //            {
+        //                var appImp = (PcRendering<Pos64Nor32IShort>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64Nor32IShort_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32IShort>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        case PointType.Pos64Nor32Col32:
+        //            {
+        //                var appImp = (PcRendering<Pos64Nor32Col32>)app;
+
+        //                appImp.AppSetup = () =>
+        //                {
+        //                    var ptAcc = new Pos64Nor32Col32_Accessor();
+        //                    appImp.PtAccessor = ptAcc;
+        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32;
+
+        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+        //                    {
+        //                        PointThreshold = pointThreshold
+        //                    };
+        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32Col32>(pathToFile);
+        //                };
+
+        //                app = appImp;
+        //                break;
+        //            }
+        //        default:
+        //            break;
+        //    }
+        //}
     }
 }

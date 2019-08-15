@@ -6,12 +6,11 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
-using Fusee.Pointcloud.PointAccessorCollection;
+using Fusee.Pointcloud.PointAccessorCollections;
 using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
@@ -19,18 +18,22 @@ using static Fusee.Engine.Core.Time;
 namespace Fusee.Examples.PcRendering.Core
 {
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
-    public class PcRendering : RenderCanvas
+    public class PcRendering<TPoint> : RenderCanvas, IPcRendering where TPoint : new()
     {
-        private string _pathToPc = "E:/LAS/HolbeinPferd.las";
-
-        public bool UseWPF = false;
-        public bool DoShowOctants = false;
-        public bool IsSceneLoaded { get; private set; }
-        public bool ReadyToLoadNewFile { get; private set; }
-
-        public PtOctantLoader<Pos64Col32IShort> OocLoader { get; private set; }
+        public AppSetupHelper.AppSetupDelegate AppSetup;
         
-        public string PathToOocFile;   //"E:/HolbeinPferdOctree";              
+        public Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode;
+        public PointAccessor<TPoint> PtAccessor { get; set; }
+        public PtOctantLoader<TPoint> OocLoader { get; set; }
+
+        public PtOctreeFileReader<TPoint> OocFileReader { get; set; }
+
+        public bool UseWPF { get; set; }
+        public bool DoShowOctants { get; set; }
+        public bool IsSceneLoaded { get; set; }
+        public bool ReadyToLoadNewFile { get; set; }
+
+        public bool IsInitialized { get; set; } = false;        
 
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
@@ -65,7 +68,8 @@ namespace Fusee.Examples.PcRendering.Core
 
         private float3 _cameraPos;       
 
-        public static float3 InitCameraPos { get; private set; }
+        public float3 InitCameraPos { get; private set; } =
+        new float3(10, 10, -30);
 
         private ITextureHandle _texHandle;
         
@@ -73,12 +77,37 @@ namespace Fusee.Examples.PcRendering.Core
         internal static ShaderEffect _colorPassEf;       
 
         private bool _isTexInitialized = false;        
-        private Pos64Col32IShort_Accessor _ptAccessor;
+        
         private ProjectionComponent projectionComponent;
 
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
+
+        public RenderContext GetRc()
+        {
+            return RC;
+        }
+
+        public SceneNodeContainer GetOocLoaderRootNode()
+        {
+            return OocLoader.RootNode;
+        }
+
+        public bool GetOocLoaderWasSceneUpdated()
+        {
+            return OocLoader.WasSceneUpdated;
+        }
+
+        public int GetOocLoaderPointThreshold()
+        {
+            return OocLoader.PointThreshold;
+        }
+
+        public void SetOocLoaderPointThreshold(int value)
+        {
+            OocLoader.PointThreshold = value;
+        }        
 
         private void UpdateShaderParams()
         {
@@ -100,21 +129,19 @@ namespace Fusee.Examples.PcRendering.Core
 
         public void LoadPointCloudFromFile()
         {           
-            //At the moment a user needs to manually define the point type (LAZPointType) and the PointAccessor he needs by reading it from the meta.json of the point cloud.
-            var oocFileReader = new PtOctreeFileReader<Pos64Col32IShort>(PathToOocFile);
-
             //create Scene from octree structure
-            var root = oocFileReader.GetScene(_depthPassEf);
+            var root = OocFileReader.GetScene(_depthPassEf);
+                
             _scene.Children.Add(root);
 
             OocLoader.RootNode = root;
-            OocLoader.FileFolderPath = PathToOocFile;
+            OocLoader.FileFolderPath = PtRenderingParams.PathToOocFile;
 
-            var octreeTexImgData = new ImageData(ColorFormat.iRGBA, oocFileReader.NumberOfOctants, 1);
+            var octreeTexImgData = new ImageData(ColorFormat.iRGBA, OocFileReader.NumberOfOctants, 1);
             _octreeTex = new Texture(octreeTexImgData);
             OocLoader.VisibleOctreeHierarchyTex = _octreeTex;
 
-            var byteSize = oocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
+            var byteSize = OocFileReader.NumberOfOctants * octreeTexImgData.PixelFormat.BytesPerPixel;
             octreeTexImgData.PixelData = new byte[byteSize];
 
             var ptRootComponent = root.GetComponent<PtOctantComponent>();
@@ -164,20 +191,15 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
-            PathToOocFile = "E:/HolbeinPferdOctree";
-            _ptAccessor = new Pos64Col32IShort_Accessor();
-            _cameraPos = InitCameraPos = new float3(10, 10, -30);
-            //CreateFiles(_ptAccessor, _pathToPc, PathToOocFile, 2500);
-
-            OocLoader = new PtOctantLoader<Pos64Col32IShort>(InitCameraPos, PathToOocFile, RC)
-            {
-                PointThreshold = 500000
-            };
+            _cameraPos = InitCameraPos;
+            
+            AppSetup();
 
             _scene = new SceneContainer
             {
                 Children = new List<SceneNodeContainer>()
             };
+            
 
             if (projectionComponent != null)
                 RemoveResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
@@ -225,9 +247,10 @@ namespace Fusee.Examples.PcRendering.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
             _scenePicker = new ScenePicker(_scene);
-            _guiRenderer = new SceneRenderer(_gui);            
-        }
+            _guiRenderer = new SceneRenderer(_gui);
 
+            IsInitialized = true;
+        }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -354,7 +377,7 @@ namespace Fusee.Examples.PcRendering.Core
                 _sceneRenderer.Render(RC);
 
                 OocLoader.RC = RC;
-                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort, _ptAccessor);
+                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, GetMeshsForNode, PtAccessor);
 
                 Diagnostics.Log(FramePerSecond);
 
@@ -511,7 +534,6 @@ namespace Fusee.Examples.PcRendering.Core
 
             return viewMatrix;
 
-        }
-
+        }        
     }
 }

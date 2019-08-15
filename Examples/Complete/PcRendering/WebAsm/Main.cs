@@ -3,6 +3,8 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.WebAsm;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.WebAsm;
+using Fusee.Examples.PcRendering.Core;
+using Fusee.Pointcloud.PointAccessorCollections;
 using Fusee.Serialization;
 using System;
 using System.IO;
@@ -27,7 +29,7 @@ namespace Fusee.Examples.PcRendering.Main
     public class Main : WebAsmBase
     {
         private RenderCanvasImp _canvasImp;
-        private PcRendering.Core.PcRendering _app;
+        private Pointcloud.Common.IPcRendering _app;
 
         public override void Run()
         {
@@ -129,7 +131,16 @@ namespace Fusee.Examples.PcRendering.Main
 
             AssetStorage.RegisterProvider(fap);
 
-            _app = new PcRendering.Core.PcRendering();
+            var ptType = AppSetupHelper.GetPtType(PtRenderingParams.PathToOocFile);
+            var ptEnumName = Enum.GetName(typeof(PointType), ptType);
+
+            var genericType = Type.GetType("Fusee.Pointcloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.Pointcloud.PointAccessorCollections");
+
+            var objectType = typeof(PcRendering<>);
+            var objWithGenType = objectType.MakeGenericType(genericType);
+
+            _app = (Pointcloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);
+            AppSetup.DoSetup(_app, ptType, PtRenderingParams.MaxNoOfVisiblePoints, PtRenderingParams.PathToOocFile);
 
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             _canvasImp = new RenderCanvasImp(canvas, gl, canvasWidth, canvasHeight);
@@ -139,18 +150,8 @@ namespace Fusee.Examples.PcRendering.Main
 
             // Start the app            
             _app.Run();
-
-            LoadRocket();
-
         }
-
-        private async void LoadRocket()
-        {
-            //var stream = await WasmResourceLoader.LoadAsync("Assets/FUSEERocket.fus", WasmResourceLoader.GetLocalAddress());
-           // var seri = new Serializer();
-           // _app.RocketScene = new ConvertSceneGraph().Convert(seri.Deserialize(stream, null, typeof(SceneContainer)) as SceneContainer);
-
-        }
+        
 
         public override void Update(double elapsedMilliseconds)
         {

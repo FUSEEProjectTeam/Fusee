@@ -1,8 +1,7 @@
 {
   "profiles": {
     "LasToOocCmdLine": {
-      "commandName": "Project",
-      "commandLineArgs": "E:\\LAS\\HolbeinPferd.las E:\\HolbeinPferdOctree 5000 -2"
+      "commandName": "Project"
     }
   }
 }

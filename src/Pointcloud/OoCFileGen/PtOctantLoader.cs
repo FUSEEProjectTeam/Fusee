@@ -434,8 +434,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                 //br.BaseStream.Position = node.StreamPosition;
 
                 // read number of points
-                return br.ReadInt32();
-                
+                return br.ReadInt32();                
             }
 
         }

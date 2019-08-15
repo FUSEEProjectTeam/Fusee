@@ -7,6 +7,8 @@ using Fusee.Serialization;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
 using System;
+using Fusee.Pointcloud.PointAccessorCollections;
+using Fusee.Examples.PcRendering.Core;
 
 namespace Fusee.Examples.PcRendering.Desktop
 {
@@ -46,8 +48,17 @@ namespace Fusee.Examples.PcRendering.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            var app = new Core.PcRendering();
-            
+            var ptType = AppSetupHelper.GetPtType(PtRenderingParams.PathToOocFile);
+            var ptEnumName = Enum.GetName(typeof(PointType), ptType);
+
+            var genericType = Type.GetType("Fusee.Pointcloud.PointAccessorCollections." + ptEnumName + ", " + "Fusee.Pointcloud.PointAccessorCollections");
+
+            var objectType = typeof(PcRendering<>);
+            var objWithGenType = objectType.MakeGenericType(genericType);
+
+            var app = (Pointcloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);            
+            AppSetup.DoSetup(app, ptType, PtRenderingParams.MaxNoOfVisiblePoints, PtRenderingParams.PathToOocFile);
+
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
 			app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);            
