@@ -37,33 +37,29 @@ namespace Fusee.Examples.PcRendering.WPF
         {
             InitializeComponent();
 
-            Lighting.SelectedValue = Core.PtRenderingParams.Lighting;
-            PtShape.SelectedValue = Core.PtRenderingParams.Shape;
-            PtSizeMode.SelectedValue = Core.PtRenderingParams.PtMode;
-            ColorMode.SelectedValue = Core.PtRenderingParams.ColorMode;
+            Lighting.SelectedValue = PtRenderingParams.Lighting;
+            PtShape.SelectedValue = PtRenderingParams.Shape;
+            PtSizeMode.SelectedValue = PtRenderingParams.PtMode;
+            ColorMode.SelectedValue = PtRenderingParams.ColorMode;
 
-            PtSize.Value = Core.PtRenderingParams.Size;
+            PtSize.Value = PtRenderingParams.Size;
 
-            SSAOCheckbox.IsChecked = Core.PtRenderingParams.CalcSSAO;
-            SSAOStrength.Value = Core.PtRenderingParams.SSAOStrength;
+            SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO;
+            SSAOStrength.Value = PtRenderingParams.SSAOStrength;
 
             EDLStrengthVal.Content = EDLStrength.Value;
-            EDLStrength.Value = Core.PtRenderingParams.EdlStrength;
+            EDLStrength.Value = PtRenderingParams.EdlStrength;
             EDLNeighbourPxVal.Content = EDLNeighbourPx.Value;
-            EDLNeighbourPx.Value = Core.PtRenderingParams.EdlNoOfNeighbourPx;
+            EDLNeighbourPx.Value = PtRenderingParams.EdlNoOfNeighbourPx;
 
-            ShininessVal.Text = Core.PtRenderingParams.Shininess.ToString();
-            SpecStrength.Value = Core.PtRenderingParams.SpecularStrength;
+            ShininessVal.Text = PtRenderingParams.Shininess.ToString();
+            SpecStrength.Value = PtRenderingParams.SpecularStrength;
 
-            var col = Core.PtRenderingParams.SingleColor;
+            var col = PtRenderingParams.SingleColor;
             SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
+                     
 
-            if ((bool)SSAOCheckbox.IsChecked)
-                SSAOStrength.IsEnabled = true;
-            else
-                SSAOStrength.IsEnabled = false;
-
-            if (Core.PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
+            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;
@@ -82,23 +78,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void SSAOCheckBox_Checked(object sender, RoutedEventArgs e)
         {
-            Core.PtRenderingParams.CalcSSAO = !Core.PtRenderingParams.CalcSSAO;
-            if (!(bool)SSAOCheckbox.IsChecked && Core.PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY)
-            {
-                SSAOStrength.IsEnabled = false;
-                Lighting.SelectedItem = Pointcloud.Common.Lighting.UNLIT;
-            }
-
-            if ((bool)SSAOCheckbox.IsChecked && Core.PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
-            {
-                SSAOStrength.IsEnabled = true;
-                Lighting.SelectedItem = Pointcloud.Common.Lighting.SSAO_ONLY;
-            }
-
-            if (Core.PtRenderingParams.Lighting != Pointcloud.Common.Lighting.UNLIT && Core.PtRenderingParams.Lighting != Pointcloud.Common.Lighting.SSAO_ONLY)
-            {
-                SSAOStrength.IsEnabled = Core.PtRenderingParams.CalcSSAO;
-            }
+            PtRenderingParams.CalcSSAO = !PtRenderingParams.CalcSSAO;
         }
 
         private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -143,25 +123,27 @@ namespace Fusee.Examples.PcRendering.WPF
         }
         private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Core.PtRenderingParams.Lighting = (Pointcloud.Common.Lighting)e.AddedItems[0];
+            PtRenderingParams.Lighting = (Pointcloud.Common.Lighting)e.AddedItems[0];
 
-            if ((Pointcloud.Common.Lighting)e.AddedItems[0] == Pointcloud.Common.Lighting.SSAO_ONLY && !(bool)SSAOCheckbox.IsChecked)
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
             {
-                SSAOStrength.IsEnabled = true;
-                SSAOStrengthLabel.IsEnabled = true;
-                SSAOCheckbox.IsChecked = true;
-                Core.PtRenderingParams.CalcSSAO = true;
-            }
-
-            if ((Pointcloud.Common.Lighting)e.AddedItems[0] == Pointcloud.Common.Lighting.UNLIT && (bool)SSAOCheckbox.IsChecked)
-            {
-                SSAOStrength.IsEnabled = false;
+                SSAOCheckbox.IsEnabled = false;
                 SSAOStrengthLabel.IsEnabled = false;
-                SSAOCheckbox.IsChecked = false;
-                Core.PtRenderingParams.CalcSSAO = false;
+                SSAOStrength.IsEnabled = false;
+            }
+            else
+            {
+                SSAOCheckbox.IsEnabled = true;
+                SSAOStrengthLabel.IsEnabled = true;
+                SSAOStrength.IsEnabled = true;
             }
 
-            if ((Pointcloud.Common.Lighting)e.AddedItems[0] != Pointcloud.Common.Lighting.BLINN_PHONG)
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY)           
+                SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = true; 
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
+                SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = false;
+
+            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.BLINN_PHONG)
             {
                 SpecStrength.IsEnabled = false;
                 SpecStrengthLabel.IsEnabled = false;
@@ -176,7 +158,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 ShininessVal.IsEnabled = true;
             }
 
-            if ((Pointcloud.Common.Lighting)e.AddedItems[0] != Pointcloud.Common.Lighting.EDL)
+            if (PtRenderingParams.Lighting != Pointcloud.Common.Lighting.EDL)
             {
                 EDLNeighbourPx.IsEnabled = false;
                 EDLNeighbourPxLabel.IsEnabled = false;
@@ -385,9 +367,9 @@ namespace Fusee.Examples.PcRendering.WPF
                 FUSThread = new Thread(() =>
                 {
                     // Inject Fusee.Engine.Base InjectMe dependencies
-                    IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
+                    IO.IOImp = new IOImp();
 
-                    var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
+                    var fap = new FileAssetProvider("Assets");
                     fap.RegisterTypeHandler(
                         new AssetHandler
                         {
@@ -452,155 +434,6 @@ namespace Fusee.Examples.PcRendering.WPF
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;
-        }
-
-        //private void SetupApp(PointType ptType, int pointThreshold, string pathToFile)
-        //{
-        //    switch (ptType)
-        //    {
-        //        case PointType.Pos64:
-        //            {
-        //                var appImp = (PcRendering<Pos64>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64Col32IShort:
-        //            {
-        //                var appImp = (PcRendering<Pos64Col32IShort>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64Col32IShort_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32IShort;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Col32IShort>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64IShort:
-        //            {
-        //                var appImp = (PcRendering<Pos64IShort>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64IShort_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64IShort;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64IShort>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64Col32:
-        //            {
-        //                var appImp = (PcRendering<Pos64Col32>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64Col32_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Col32;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Col32>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64Nor32Col32IShort:
-        //            {
-        //                var appImp = (PcRendering<Pos64Nor32Col32IShort>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64Nor32Col32IShort_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32IShort;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32Col32IShort>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64Nor32IShort:
-        //            {
-        //                var appImp = (PcRendering<Pos64Nor32IShort>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64Nor32IShort_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32IShort;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32IShort>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        case PointType.Pos64Nor32Col32:
-        //            {
-        //                var appImp = (PcRendering<Pos64Nor32Col32>)app;
-
-        //                appImp.AppSetup = () =>
-        //                {
-        //                    var ptAcc = new Pos64Nor32Col32_Accessor();
-        //                    appImp.PtAccessor = ptAcc;
-        //                    appImp.GetMeshsForNode = MeshFromOocFile.GetMeshsForNode_Pos64Nor32Col32;
-
-        //                    appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
-        //                    {
-        //                        PointThreshold = pointThreshold
-        //                    };
-        //                    appImp.OocFileReader = new Pointcloud.OoCFileReaderWriter.PtOctreeFileReader<Pos64Nor32Col32>(pathToFile);
-        //                };
-
-        //                app = appImp;
-        //                break;
-        //            }
-        //        default:
-        //            break;
-        //    }
-        //}
+        }       
     }
 }

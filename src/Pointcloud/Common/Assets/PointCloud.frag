@@ -122,7 +122,7 @@ vec3 ViewNormalFromDepth(float depth, vec2 texcoords)
   vec3 p2 = vec3(offset2, depth2 - depth);
   
   vec3 normal = cross(p1, p2);
-  normal.z = -normal.z;
+  normal.z = normal.z;
   
   return normalize(normal);
 }
@@ -222,24 +222,23 @@ void main(void)
 	// http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html 
 	// http://theorangeduck.com/page/pure-depth-ssao
 
-	float radius = 10.0;
+	float radius = 20.0;
 	float occlusion = 0.0;
-	float bias = 0.0125;
+	float bias = 0.025;
 	
 	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
 	float z = texture(DepthTex, uv).x;
-
 	
 	vec3 viewNormal = ViewNormalFromDepth(z, uv);
 
+	//Optimizations: http://developer.download.nvidia.com/presentations/2009/SIGGRAPH/Bavoil_MultiLayerDualResolutionSSAO.pdf
 	if(CalcSSAO == 1)
 	{
 		vec2 tiles = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);
-		//vec3 viewNormal = ViewNormalFromDepth(z, uv);
 		
-		vec3 rvec = texture(NoiseTex, uv * tiles ).xyz * 2.0 - 1.0;
+		vec3 rvec = normalize(texture(NoiseTex, uv * tiles ).xyz);
 		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));
-		vec3 bitangent = cross(viewNormal, tangent);
+		vec3 bitangent = normalize(cross(viewNormal, tangent));
 		mat3 tbn = mat3(tangent, bitangent, viewNormal);
 
 		int kernelLength = 32;
@@ -255,19 +254,19 @@ void main(void)
 			offset = FUSEE_P * offset;		
 			offset.xy /= offset.w;
 			offset.xy = offset.xy * 0.5 + 0.5;
-  
+			
 			// get sample depth:
+			// ----- EXPENSIVE TEXTURE LOOKUP - graphics card workload goes up and frame rate goes down the nearer the camera is to the model.
+			// keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
 			float sampleDepth = texture(DepthTex, offset.xy).r;
 			sampleDepth = LinearizeDepth(sampleDepth);
   
 			// range check & accumulate:
 			float rangeCheck = smoothstep(0.0, 1.0, radius / abs(vViewPos.z - sampleDepth));
-//			float rangeCheck= abs(vViewPos.z - sampleDepth) < radius ? 1.0 : 0.0;
 			occlusion += (sampleDepth <= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
 		}
 
-		occlusion = 1.0 - (occlusion / float(kernelLength));
-		
+		occlusion = clamp(1.0 - (occlusion / float(kernelLength)), 0.0, 1.0);		
 	}	
 	
 	vec3 lightColor = vec3(1,1,1);
@@ -288,16 +287,15 @@ void main(void)
 			
 			if(CalcSSAO == 1)
 			{
-				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
-				vec3 lighting  = ambient;
-				oColor.xyz += lighting;
+				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+				oColor.xyz = ambient + oColor.xyz;
 			}
 
 			break;
 		}
 		case 2: //diffuse
 		{
-			vec3 lightDir = vec3(0,0, 1.0);
+			vec3 lightDir = vec3(0, 0, -1.0);
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
 
@@ -306,13 +304,11 @@ void main(void)
 
 			if(CalcSSAO == 1)
 			{				
-				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
-				vec3 lighting  = ambient;
-				oColor = vec4(lighting + diffuseColor, oColor.a);
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+				oColor = vec4(ambient + diffuseColor, oColor.a);
 			}
 			else			
-				oColor = vec4(diffuseColor, oColor.a);
-			
+				oColor = vec4(diffuseColor, oColor.a);		
 			
 			break;
 		}
@@ -320,14 +316,14 @@ void main(void)
 		case 3: //blinn phong
 		{
 
-			vec3 lightDir = vec3(0,0, 1.0);
+			vec3 lightDir = vec3(0,0, -1.0);
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
 			
 			float intensitySpec = 0.0;
 			if (intensityDiff > 0.0)
 			{
-				vec3 viewdir = vViewPos.xyz;
+				vec3 viewdir = -vViewPos.xyz;
 				vec3 h = normalize(viewdir+lightDir);
 				intensitySpec = pow(max(0.0, dot(h, viewNormal)), Shininess);
 			}
@@ -337,9 +333,8 @@ void main(void)
 
 			if(CalcSSAO == 1)
 			{				
-				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
-				vec3 lighting  = ambient;
-				oColor = vec4(lighting + colorResult, oColor.a);
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;				
+				oColor = vec4(ambient + colorResult, oColor.a);
 			}
 			else			
 				oColor = vec4(colorResult, oColor.a);

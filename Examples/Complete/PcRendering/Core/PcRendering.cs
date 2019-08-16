@@ -36,13 +36,12 @@ namespace Fusee.Examples.PcRendering.Core
         public bool IsInitialized { get; set; } = false;        
 
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
         private static float2 _offset;
         private static float2 _offsetInit;
 
         private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
-
+        
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
         private ScenePicker _scenePicker;
@@ -69,7 +68,7 @@ namespace Fusee.Examples.PcRendering.Core
         private float3 _cameraPos;       
 
         public float3 InitCameraPos { get; private set; } =
-        new float3(10, 10, -30);
+        new float3(10, 0, -30);
 
         private ITextureHandle _texHandle;
         
@@ -220,9 +219,6 @@ namespace Fusee.Examples.PcRendering.Core
             _canvasHeight = _initCanvasHeight;
             _canvasWidth = _initCanvasWidth;
 
-            // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
-            _zoom = 1;       
-
             _angleRoll = 0;
             _angleRollInit = 0;
             _twoTouchRepeated = false;
@@ -239,10 +235,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             _gui = CreateGui();
             //Create the interaction handler
-            _sih = new SceneInteractionHandler(_gui);
-
-            //Add resize delegate            
-            //AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
+            _sih = new SceneInteractionHandler(_gui);           
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRenderer(_scene);
@@ -272,8 +265,7 @@ namespace Fusee.Examples.PcRendering.Core
                 {
                     _keys = true;
                 }
-
-                var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+                
                 // Zoom & Roll
                 if (Touch.TwoPoint)
                 {
@@ -284,7 +276,7 @@ namespace Fusee.Examples.PcRendering.Core
                         _offsetInit = Touch.TwoPointMidPoint - _offset;
                         _maxPinchSpeed = 0;
                     }
-                    _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
+                    
                     _angleRoll = Touch.TwoPointAngle - _angleRollInit;
                     _offset = Touch.TwoPointMidPoint - _offsetInit;
                     float pinchSpeed = Touch.TwoPointDistanceVel;
@@ -293,9 +285,6 @@ namespace Fusee.Examples.PcRendering.Core
                 else
                 {
                     _twoTouchRepeated = false;
-                    _zoomVel = Mouse.WheelVel * -0.5f;
-                    _angleRoll *= curDamp * 0.8f;
-                    _offset *= curDamp * 0.8f;
                 }
 
                 // UpDown / LeftRight rotation
@@ -320,29 +309,21 @@ namespace Fusee.Examples.PcRendering.Core
                     {
                         _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                         _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                    }
-                    else
-                    {
-                        _angleVelHorz *= curDamp;
-                        _angleVelVert *= curDamp;
-                    }
+                    }                    
                 }
-                _zoom += _zoomVel;
-                // Limit zoom
-                if (_zoom < 1)
-                    _zoom = 1;
-                if (_zoom > 1000)
-                    _zoom = 1000;
+                
 
                 _angleHorz += _angleVelHorz;
                 _angleVert += _angleVelVert;
+                _angleVelHorz = 0;
+                _angleVelVert = 0;
 
-                var twoPi = M.Pi * 2;
+                var twoPi = M.Pi * 2f;
 
-                if ((_angleHorz > twoPi && _angleHorz > 0) || _angleHorz < -twoPi)
-                    _angleHorz = _angleHorz % twoPi;
-                if ((_angleVert > twoPi && _angleVert > 0) || _angleVert < -twoPi)
-                    _angleVert = _angleVert % twoPi;
+                if ((_angleHorz > twoPi && _angleHorz > 0f) || _angleHorz < -twoPi)
+                    _angleHorz %= twoPi;
+                if ((_angleVert > twoPi && _angleVert > 0f) || _angleVert < -twoPi)
+                    _angleVert %= twoPi;
 
                 _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
                 _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;

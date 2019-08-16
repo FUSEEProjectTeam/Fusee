@@ -25,12 +25,12 @@ namespace Fusee.Examples.PcRendering.Core
         public static float4 SingleColor = new float4(0.8f, 0.8f, 0.8f, 1);
 
         public static bool CalcSSAO = false;
-        public static float SSAOStrength = 0.3f;
+        public static float SSAOStrength = 0.2f;
 
-        public static int EdlNoOfNeighbourPx = 5;
+        public static int EdlNoOfNeighbourPx = 2;
         public static float EdlStrength = 0.1f;
 
-        public static float SpecularStrength = 0.5f;
+        public static float SpecularStrength = 0.2f;
         public static float Shininess = 2000;
 
         internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)

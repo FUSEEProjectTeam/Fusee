@@ -70,7 +70,7 @@ namespace Fusee.Engine.Core
             return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB)));
         }
 
-        public static float RandomFloatBetween(double minValue, double maxValue, Random random)
+        private static float RandomFloatBetween(double minValue, double maxValue, Random random)
         {
             var next = random.NextDouble();            
             return (float)(minValue + (next * (maxValue - minValue)));
