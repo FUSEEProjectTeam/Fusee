@@ -473,6 +473,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.OoCFileRea
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.Core", "Examples\Complete\PcRendering\Core\Fusee.Examples.PcRendering.Core.csproj", "{B59411F3-5A6A-4839-ABEF-E5026A393CD8}"
 	ProjectSection(ProjectDependencies) = postProject
+		{F4D1A422-99A5-4278-A5EB-1062774FF08C} = {F4D1A422-99A5-4278-A5EB-1062774FF08C}
 		{489DFD35-95C4-4A8A-BA60-C761F278476A} = {489DFD35-95C4-4A8A-BA60-C761F278476A}
 		{7E0C9336-7A38-4C87-97E2-A8D2A90AA29D} = {7E0C9336-7A38-4C87-97E2-A8D2A90AA29D}
 		{793C7C38-AE40-4C37-B832-2ECECE903D0B} = {793C7C38-AE40-4C37-B832-2ECECE903D0B}
@@ -535,6 +536,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.WPF", "Examples\Complete\PcRendering\GUI\Fusee.Examples.PcRendering.GUI\Fusee.Examples.PcRendering.WPF.csproj", "{F86E92C3-C683-44DF-9355-822C85B6D4ED}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F4D1A422-99A5-4278-A5EB-1062774FF08C} = {F4D1A422-99A5-4278-A5EB-1062774FF08C}
+		{489DFD35-95C4-4A8A-BA60-C761F278476A} = {489DFD35-95C4-4A8A-BA60-C761F278476A}
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.PcRendering.WebAsm", "Examples\Complete\PcRendering\WebAsm\Fusee.Examples.PcRendering.WebAsm.csproj", "{4BA66419-A144-4053-B354-73B3AFCEB1DB}"

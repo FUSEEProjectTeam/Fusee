@@ -224,12 +224,12 @@ void main(void)
 
 	float radius = 10.0;
 	float occlusion = 0.0;
-	float bias = 0.025;
+	float bias = 0.0125;
 	
 	vec2 uv = vec2(gl_FragCoord.x/ScreenParams.x, gl_FragCoord.y/ScreenParams.y);
 	float z = texture(DepthTex, uv).x;
 
-	vec3 ambient = vec3(1,1,1);
+	
 	vec3 viewNormal = ViewNormalFromDepth(z, uv);
 
 	if(CalcSSAO == 1)
@@ -237,7 +237,7 @@ void main(void)
 		vec2 tiles = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);
 		//vec3 viewNormal = ViewNormalFromDepth(z, uv);
 		
-		vec3 rvec = texture(NoiseTex, uv * tiles ).xyz;
+		vec3 rvec = texture(NoiseTex, uv * tiles ).xyz * 2.0 - 1.0;
 		vec3 tangent = normalize(rvec - viewNormal * dot(rvec, viewNormal));
 		vec3 bitangent = cross(viewNormal, tangent);
 		mat3 tbn = mat3(tangent, bitangent, viewNormal);
@@ -257,18 +257,18 @@ void main(void)
 			offset.xy = offset.xy * 0.5 + 0.5;
   
 			// get sample depth:
-			float sampleDepth = texture(DepthTex, offset.xy).z;
+			float sampleDepth = texture(DepthTex, offset.xy).r;
 			sampleDepth = LinearizeDepth(sampleDepth);
   
 			// range check & accumulate:
 			float rangeCheck = smoothstep(0.0, 1.0, radius / abs(vViewPos.z - sampleDepth));
-			occlusion += (sampleDepth >= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
+//			float rangeCheck= abs(vViewPos.z - sampleDepth) < radius ? 1.0 : 0.0;
+			occlusion += (sampleDepth <= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
 		}
 
-		occlusion = 1.0 - ((occlusion / float(kernelLength)) * SSAOStrength);
-		ambient = vec3(occlusion, occlusion, occlusion);
-	}
-	//-------------------------------
+		occlusion = 1.0 - (occlusion / float(kernelLength));
+		
+	}	
 	
 	vec3 lightColor = vec3(1,1,1);
 
@@ -287,7 +287,11 @@ void main(void)
 				oColor.xyz *= EDLShadingFactor(EDLStrength, EDLNeighbourPixels, linearDepth, uv);
 			
 			if(CalcSSAO == 1)
-				oColor.xyz *= ambient;
+			{
+				vec3 ambient = oColor.xyz * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
+				vec3 lighting  = ambient;
+				oColor.xyz += lighting;
+			}
 
 			break;
 		}
@@ -297,9 +301,19 @@ void main(void)
 			float intensityDiff = dot(viewNormal, lightDir);
 			vec3 diffuse = intensityDiff * lightColor;
 
-			vec3 ambientCol = oColor.xyz * ambient;
-			vec3 diffuseColor = (CalcSSAO == 1) ? intensityDiff * ambientCol : intensityDiff * oColor.xyz;
-			oColor = vec4(diffuseColor, oColor.a);
+			//vec3 ambientCol = oColor.xyz * ambient;
+			vec3 diffuseColor = intensityDiff * oColor.xyz;
+
+			if(CalcSSAO == 1)
+			{				
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
+				vec3 lighting  = ambient;
+				oColor = vec4(lighting + diffuseColor, oColor.a);
+			}
+			else			
+				oColor = vec4(diffuseColor, oColor.a);
+			
+			
 			break;
 		}
 
@@ -317,20 +331,24 @@ void main(void)
 				vec3 h = normalize(viewdir+lightDir);
 				intensitySpec = pow(max(0.0, dot(h, viewNormal)), Shininess);
 			}
-
-			vec3 ambientCol = oColor.xyz * ambient;
-			vec3 diffuseColor = (CalcSSAO == 1) ? intensityDiff * ambientCol : intensityDiff * oColor.xyz;
+			
+			vec3 diffuseColor = intensityDiff * oColor.xyz;
 			vec3 colorResult = diffuseColor + ((intensitySpec * SpecularColor.xyz) * SpecularStrength);
 
-			oColor = vec4(colorResult, oColor.a);
+			if(CalcSSAO == 1)
+			{				
+				vec3 ambient = diffuse * vec3(occlusion, occlusion, occlusion) * SSAOStrength;
+				vec3 lighting  = ambient;
+				oColor = vec4(lighting + colorResult, oColor.a);
+			}
+			else			
+				oColor = vec4(colorResult, oColor.a);
 			
 			break;
 		}		
 		case 4: //ambient only
-		{	
-			if(CalcSSAO == 1)			
-				oColor.xyz *= ambient;
-
+		{
+			oColor = vec4(occlusion, occlusion, occlusion, 1.0);
 			break;
 		}	
 

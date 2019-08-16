@@ -22,10 +22,10 @@ namespace Fusee.Examples.PcRendering.Core
         public static PointSizeMode PtMode = PointSizeMode.ADAPTIVE_SIZE;
         public static ColorMode ColorMode = ColorMode.SINGLE;
         public static int Size = 20;        
-        public static float4 SingleColor = new float4(0.9f, 0.9f, 0.9f, 1);
+        public static float4 SingleColor = new float4(0.8f, 0.8f, 0.8f, 1);
 
         public static bool CalcSSAO = false;
-        public static float SSAOStrength = 0.8f;
+        public static float SSAOStrength = 0.3f;
 
         public static int EdlNoOfNeighbourPx = 5;
         public static float EdlStrength = 0.1f;
@@ -77,9 +77,8 @@ namespace Fusee.Examples.PcRendering.Core
         internal static ShaderEffect ColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             var kernelLength = 32;
-            var ssaoKernel = SSAOKernel(kernelLength);
-            var texSize = 4;
-            var ssaoNoiseTex = SSAONoiseTex(texSize, 16);
+            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);            
+            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(32);
 
             return new ShaderEffect(new[]
             {
@@ -139,85 +138,7 @@ namespace Fusee.Examples.PcRendering.Core
             });
         }
 
-        //http://john-chapman-graphics.blogspot.com/2013/01/ssao-tutorial.html
-        private static float3[] SSAOKernel(int kernelSize)
-        {
-            var rnd = new Random();
-
-            var kernel = new float3[kernelSize];
-
-            for (int i = 0; i < kernelSize; ++i)
-            {
-                kernel[i] = new float3
-                (
-                    RandomFloatBetween(-1f, 1f, rnd),
-                    RandomFloatBetween(-1f, 1f, rnd),
-                    RandomFloatBetween(0f, 1f, rnd)
-                );
-
-                kernel[i].Normalize();
-
-                kernel[i] *= RandomFloatBetween(0f, 1f, rnd);
-
-                float scale = i / kernelSize;
-                scale = Lerp(0.1f, 1.0f, scale * scale);
-                kernel[i] *= scale;
-            }
-
-            return kernel;
-        }
-
-        private static float RandomFloatBetween(double minValue, double maxValue, Random random)
-        {
-            var next = random.NextDouble();
-
-            return (float)(minValue + (next * (maxValue - minValue)));
-        }
-
-        private static float Lerp(float a, float b, float w)
-        {
-            return a + w * (b - a);
-        }
-
-        private static float3[] SSAONoise(int noiseSize) //should be a multiple of 4...
-        {
-            var rnd = new Random();
-
-            var noise = new float3[noiseSize];
-
-            for (int i = 0; i < noiseSize; ++i)
-            {
-                noise[i] = new float3
-                (
-                    RandomFloatBetween(-1f, 1f, rnd),
-                    RandomFloatBetween(-1f, 1f, rnd),
-                    0.0f
-                );
-            }
-
-            return noise;
-        }
-
-        private static Texture SSAONoiseTex(int texSize, int noiseSize)
-        {
-            var ssaoNoise = SSAONoise(noiseSize);
-            var pxData = new List<byte>(); //4 bytes per float, 3 floats per float3
-
-            for (int i = 0; i < ssaoNoise.Length; i++)
-            {
-                var noise = ssaoNoise[i];
-                var bytesX = BitConverter.GetBytes(noise.x);
-                var bytesY = BitConverter.GetBytes(noise.y);
-                var bytesZ = BitConverter.GetBytes(noise.z);
-
-                pxData.AddRange(bytesX);
-                pxData.AddRange(bytesY);
-                pxData.AddRange(bytesZ);
-
-            }
-
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB)));
-        }
+       
     }
 
 
