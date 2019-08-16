@@ -6,7 +6,7 @@
     public enum TextureChangedEnum
     {
         /// <summary>
-        /// The texture has been dispoed.
+        /// The texture has been disposed.
         /// </summary>
         Disposed = 0,
         /// <summary>

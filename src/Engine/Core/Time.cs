@@ -5,7 +5,7 @@
     /// static interface). 
     /// </summary>
     /// <remarks>
-    /// Use the input instanmce in cases where you actually need an 
+    /// Use the input instance in cases where you actually need an 
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Time</code> to

@@ -10,8 +10,6 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-
-
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -21,9 +19,7 @@ namespace Fusee.Engine.Core
     {
         #region Fields
 
-        #region Private Fields
-
-        
+        #region Private Fields        
 
         private readonly IRenderContextImp _rci;
         /// <summary>

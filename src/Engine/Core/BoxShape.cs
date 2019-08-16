@@ -51,7 +51,6 @@ namespace Fusee.Engine.Core
         /// </value>
         public override float Margin
         {
-
             get
             {
                 var retval = _boxShapeImp.Margin;
