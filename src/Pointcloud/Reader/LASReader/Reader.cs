@@ -4,7 +4,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 
-namespace Fusee.LASReader
+namespace Fusee.Pointcloud.Reader.LASReader
 {
     public struct PointFormat : IPointFormat
     {

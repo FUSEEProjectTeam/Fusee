@@ -1,6 +1,7 @@
 ﻿using ProtoBuf;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -35,17 +36,19 @@ namespace Fusee.Math.Core
         [ProtoMember(4)] public float3 Translation;
 
         /// <summary>
+        ///     Returns the with, height and depth of the box in x, y and z
+        /// </summary>
+        [ProtoMember(5)] public float3 Size;
+
+        /// <summary>
         ///     Returns the center of the bounding box
         /// </summary>
         public float3 Center => (Max + Min) * 0.5f;
 
         /// <summary>
-        ///     Returns the with, height and depth of the box in x, y and z
+        ///     Returns the rotation as euler angles
         /// </summary>
-        public float3 Size
-        {
-            get { return Max - Min; }
-        }
+        public float3 EulerRotation => float4x4.RotMatToEuler(Rotation);
 
         /// <summary>
         ///     Create a new axis aligned bounding box
@@ -54,12 +57,14 @@ namespace Fusee.Math.Core
         /// <param name="max_">the maximum x y and z values</param>
         /// <param name="rotation_">the rotation of this box</param>
         /// <param name="translation_">the translation of this box</param>
-        public OBBf(float3 min_, float3 max_, float4x4 rotation_, float3 translation_)
+        /// <param name="translation_">the size of this box</param>
+        public OBBf(float3 min_, float3 max_, float4x4 rotation_, float3 translation_, float3 size_)
         {
             Min = min_;
             Max = max_;
+            Size = size_;
             Rotation = rotation_;
-            Translation = translation_;          
+            Translation = translation_;
         }
 
         /// <summary>
@@ -76,54 +81,35 @@ namespace Fusee.Math.Core
 
             var changeBasis = Rotation.Invert();
 
-            Min = vertices[0];
-            Max = vertices[0];
+            Min = float3.One * float.MaxValue;
+            Max = float3.One * float.MinValue;
+            Size = float3.One;
 
             for (var i = 0; i < vertices.Length; i++)
             {
+                // translate every point in first quadrant of [0, 0, 0] coordinate system
                 var currentPointTranslated = vertices[i] - Translation;
                 var currentPointTranslatedAndRotated = changeBasis * currentPointTranslated;
 
-                this |= currentPointTranslatedAndRotated;
+                var pt = currentPointTranslatedAndRotated;
+
+                // check min and max points                
+                Min = new float3(
+                    Min.x > pt.x ? pt.x : Min.x,
+                    Min.y > pt.y ? pt.y : Min.y,
+                    Min.z > pt.z ? pt.z : Min.z);
+
+                Max = new float3(
+                   Max.x < pt.x ? pt.x : Max.x,
+                   Max.y < pt.y ? pt.y : Max.y,
+                   Max.z < pt.z ? pt.z : Max.z);
             }
-        }
 
-        /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
-        /// </summary>
-        /// <param name="a">The bounding boxes to build the union from.</param>
-        /// <param name="p">The point to be enclosed by the resulting bounding box</param>
-        /// <returns>The smallest axis aligned bounding box containing the input box and the point.</returns>
-        public static OBBf Union(OBBf a, float3 p)
-        {
-            OBBf ret;
-            ret.Translation = a.Translation;
-            ret.Rotation = a.Rotation;
-            ret.Min.x = (a.Min.x < p.x) ? a.Min.x : p.x;
-            ret.Min.y = (a.Min.y < p.y) ? a.Min.y : p.y;
-            ret.Min.z = (a.Min.z < p.z) ? a.Min.z : p.z;
-            ret.Max.x = (a.Max.x > p.x) ? a.Max.x : p.x;
-            ret.Max.y = (a.Max.y > p.y) ? a.Max.y : p.y;
-            ret.Max.z = (a.Max.z > p.z) ? a.Max.z : p.z;
-            return ret;
-        }
+            // Get size of box before translating back
+            Size = Max - Min; 
 
-        /// <summary>
-        ///     Calculates the oriented bounding box around an existing oriented bounding box and a single point.
-        /// </summary>
-        /// <param name="a">The bounding boxes to build the union from.</param>
-        /// <param name="p">The point to be enclosed by the resulting bounding box</param>
-        /// <returns>The smallest axis aligned bounding box containing the input box and the point.</returns>
-        /// <example>
-        ///   Use this operator e.g. to calculate the bounding box for a given list of points.
-        ///   <code>
-        ///     OBBf box = new OOB(pointList.First(), pointList.First());
-        ///     foreach (float3 p in pointList)
-        ///         box |= p;
-        ///   </code>
-        /// </example>
-        public static OBBf operator |(OBBf a, float3 p) => Union(a, p);
+            Max = (Rotation * Max) + Translation;
+            Min = (Rotation * Min) + Translation;
+        }
     }
-
-
 }
