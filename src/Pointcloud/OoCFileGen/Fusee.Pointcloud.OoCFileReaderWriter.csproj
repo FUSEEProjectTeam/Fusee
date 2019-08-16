@@ -17,16 +17,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+    <ProjectReference Include="..\Common\Fusee.Pointcloud.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Pointcloud.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
-    </Reference>
+    </Reference>    
     <Reference Include="Fusee.Engine.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
