@@ -16,7 +16,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="..\..\..\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 </Project>

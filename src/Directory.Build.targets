@@ -15,12 +15,6 @@
       FuseeCollectAndCopyAssets;
       FuseeResolveAssetDependencies;
 
-      FuseeJSILCompile;
-      FuseeCopyJSILJavaScript;
-      FuseeCopyExternalJavaScript;
-      FuseeResolveJavaScriptDependencies;
-      FuseeCopyWebAssetsStylesNHtml;
-      FuseeWebTools;
       FuseeCopyNativeLibrary;
       FuseeResolveNativeDependencies
     </BuildDependsOn>
@@ -62,9 +56,7 @@
     -->
   <PropertyGroup>
     <!--LIBRARY-->
-    <AssetDestinationFolder Condition=" '$(OutputType)' == 'Library' And '$(FuseeWebOutputPath)' == '' ">$(OutputPath)$(AssemblyName).Assets\</AssetDestinationFolder>
-    <!--WEB-->
-    <AssetDestinationFolder Condition=" '$(FuseeWebOutputPath)' != '' ">$(OutputPath)Assets\</AssetDestinationFolder>
+    <AssetDestinationFolder Condition=" '$(OutputType)' == 'Library' ">$(OutputPath)$(AssemblyName).Assets\</AssetDestinationFolder>
     <!--DESKTOP-->
     <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
   </PropertyGroup>
@@ -150,7 +142,7 @@
   </Target>
 
   <!--LIBRARIES: Collect and copy Assets from this dll into the AssetDestinationFolder-->
-  <Target Name="FuseeCollectAndCopyAssets" Condition="'$(OutputType)' == 'Library' and '$(FuseeWebOutputPath)' == ''">
+  <Target Name="FuseeCollectAndCopyAssets" Condition="'$(OutputType)' == 'Library'">
     <ItemGroup>
       <_CopyAssetsItems Include="$(ProjectDir)Assets\*.*" />
     </ItemGroup>
@@ -171,85 +163,6 @@
     <Message Condition="Exists('%(FuseeAssetDependency.FullPath)')" Importance="High" Text="[external asset dependency] %(FuseeAssetDependency.FullPath) -> $(AssetDestinationFolder)%(Filename)%(Extension)" />
   </Target>
 
-  <!-- ================================================================================================================
-	Run the JSIL cross compiler on any assembly created from a .csproj where the FuseeWebOutputPath is set.
-	-->
-  <Target Name="FuseeJSILCompile" Condition=" '$(FuseeWebOutputPath)' != '' ">
-    <Message Importance="High" Text="[JSILc x-compile] $(TargetPath)" />
-    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)\ext\JSIL\Compiler\JSILc.exe" -o "$(FuseeWebOutputPath)Assets\Scripts" "$(TargetPath)"' />
-  </Target>
-
-  <!-- ================================================================================================================
-	Copy the JavaScript files shipped with JSIL (probably modified for FUSEE purposes) to the FuseeWebOutputPath (if set)
-	-->
-  <Target Name="FuseeCopyJSILJavaScript" Condition=" '$(FuseeWebOutputPath)' != '' ">
-    <ItemGroup>
-      <FuseeJsilScript Include="$(FuseeRoot)\ext\JSIL\Scripts\**\*.js" />
-    </ItemGroup>
-    <Copy SourceFiles="%(FuseeJsilScript.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeJsilScript.FullPath)')" Importance="High" Text="[JSIL built-in script] %(FuseeJsilScript.FullPath) -> $(FuseeWebOutputPath)\Assets\Scripts\%(RecursiveDir)%(Filename)%(Extension)" />
-  </Target>
-
-  <!-- ================================================================================================================
-	FuseeCopyExternalJavaScript: copies items in the "Script"-Folder of an project, if a web-build is defined.
-	-->
-  <Target Name="FuseeCopyExternalJavaScript" DependsOnTargets="FuseeSetScriptDestination" Condition=" '$(FuseeWebOutputPath)' == '' ">
-    <ItemGroup>
-      <_CopyScriptsItems Include="$(ProjectDir)Scripts\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(_CopyScriptsItems)" DestinationFolder="$(FuseeScriptDestination)" />
-    <Message Importance="High" Text="[copied external JavaScript] @(_CopyScriptsItems) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
-  </Target>
-
-  <!-- Helper Task to define the destination directory of script copying tasks. 
-	-->
-  <Target Name="FuseeSetScriptDestination">
-    <!-- define a destination where the dependent scripts should go. If FuseeWebOutputPath is defined, this is a web project and we want the
-			 scripts to go into an Assets\Scripts subfolder. If FUseeWebOutputPath is not defined, this project itself is some dll (possibly referencing other dlls).
-			 Then the scripts of all depending dlls should go to subfolder called "<dll-name>.Scripts" -->
-    <PropertyGroup>
-      <FuseeScriptDestination Condition=" '$(FuseeWebOutputPath)' == '' ">$(OutputPath)$(AssemblyName).Scripts\</FuseeScriptDestination>
-      <FuseeScriptDestination Condition=" '$(FuseeWebOutputPath)' != '' ">$(FuseeWebOutputPath)Assets\Scripts\</FuseeScriptDestination>
-    </PropertyGroup>
-    <Message Text="FuseeScriptDestination = $(FuseeScriptDestination)" />
-  </Target>
-
-  <!-- ================================================================================================================
-	FuseeResolveJavaScriptDependencies: Checks for any referenced managed dll if there is a <dllname>.Scripts folder below Libraries
-	containing any JavaScript containing implementation attributed with [JSExternal] in the managed reference.
-	If so, copy the contents of the .Scripts folder to the output path.
-	NOTE: This is a four-step task. Some of these pre-tasks are re-used in other tasks...
-		1. Set the script destination output (FuseeSetScriptDestination)
-		2. Get a list of referenced assemblies (FuseeGetReferencedAssemblies)
-		3. Generate the list of .js files to copy (FuseeAssembleFuseeJavaScriptDependency) 
-		4. Actually copy the files incrementally using Input and Output lists  (FuseeResolveJavaScriptDependencies)
-	NOTE: The task is only performed for projects creating a dll OR for projects with the FuseeWebOutputPath set. This keeps
-	   output directories for normal .exe files free from unnecessary *.Scripts subfolders
-	TODO: expand this to ordinary file references - currently only ProjectReferences are supported. A first try was buggy due to
-	%(Reference.Filename) containing NOT the filename but filename+version.
-	NOTE: The above TODO seems to be solved by using the @(ReferencePath) list instead of handling @(ProjectReference) and @(Reference) by hand.
-	-->
-  <Target Name="FuseeResolveJavaScriptDependencies"
-	    		DependsOnTargets="FuseeSetScriptDestination;FuseeAssembleFuseeJavaScriptDependency"
-			    Inputs="@(FuseeJavaScriptDependency -> %(FuseeJavaScriptDependency.FullPath))"
-			    Outputs="@(FuseeJavaScriptDependency -> $(FuseeScriptDestination)%(FuseeJavaScriptDependency.Filename)%(FuseeJavaScriptDependency.Extension))"
-			    Condition=" '$(OutputType)' == 'Library' Or '$(FuseeWebOutputPath)' != '' ">
-    <!-- Copy all referenced scripts to the "<dll-name>.Scripts" or the Assets.Scripts subfolder of this assembly -->
-    <Copy SourceFiles="%(FuseeJavaScriptDependency.FullPath)" DestinationFolder="$(FuseeScriptDestination)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeJavaScriptDependency.FullPath)')" Importance="High" Text="[external JavaScript dependency] %(FuseeJavaScriptDependency.FullPath) -> $(FuseeScriptDestination)%(Filename)%(Extension)" />
-  </Target>
-
-  <Target Name="FuseeAssembleFuseeJavaScriptDependency"
-          DependsOnTargets="FuseeGetReferencedAssemblies">
-    <Message Text="Checking if reference %(ProjectReference.Filename)%(ProjectReference.Extension) has external JavaScript implementations." />
-    <Message Importance="High" Condition="Exists('%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts')"
-		                                        Text="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts has external JavaScript implementations." />
-    <!-- Now gather all referenced scripts below any (existing) "<referenced-dll-name>.Scripts" subfolder for all referenced projects -->
-    <ItemGroup>
-      <FuseeJavaScriptDependency  Include="%(FuseeReferencedAssemblies.RootDir)%(FuseeReferencedAssemblies.Directory)%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
-    </ItemGroup>
-  </Target>
-
   <Target Name="FuseeGetReferencedAssemblies">
     <!-- FIRST TRY - HANDLES ONLY PROJECT REFERENCES -->
     <!-- Ask the referenced .csproj to reveal the name of the generated output. Undefined $(Platform) (such that (Platform == '') is true) to have the .csproj choose its default platform. 
@@ -266,58 +179,6 @@
     <!--Message Importance="High" Text="Referenced Assemblies: %(FuseeReferencedAssemblies.Filename)" /-->
     <!--Message Importance="High" Text="Referenced Assembly: %(Reference.FullPath)" / -->
     <!-- Message Importance="High" Text="Referenced Assembly: %(ReferencePath.Filename)" / -->
-  </Target>
-
-  <!-- ================================================================================================================
-	Copy the assets and styles and any html (TODO) (everything under "Assets") to the web output for web projects 
-	(FuseeWebOutputPath is set)
-	-->
-  <Target Name="FuseeCopyWebAssetsStylesNHtml" Condition=" '$(FuseeWebOutputPath)' != '' ">
-    <!--Collect Assets from \temp\etc.-->
-    <ItemGroup>
-      <FuseeWebAsset Include="$(OutputPath)Assets\**\*" />
-    </ItemGroup>
-    <Copy SourceFiles="%(FuseeWebAsset.FullPath)" DestinationFolder="$(FuseeWebOutputPath)\Assets\%(RecursiveDir)" ContinueOnError="true"/>
-    <Message Condition="Exists('%(FuseeWebAsset.FullPath)')" Importance="High" Text="[web asset] %(FuseeWebAsset.FullPath) -> $(FuseeWebOutputPath)Assets\%(RecursiveDir)%(Filename)%(Extension)" />
-  </Target>
-
-  <!-- ================================================================================================================
-	Run the FUSEE web tools generating necessary .js manifests, html file etc. for web projects (FuseeWebOutputPath is set)
-  First we need to get the assembly names of the referenced dlls (FuseeGetReferencedAssemblies)
-  From there we look into all <dll-name>.Scripts subdirectories and gather the scripts found there
-  After that we strip off the directory names. Since the depending JavaScript scripts are copied "recursively" we might
-  end up with a list containing a lot of duplicates. So we need to remove duplicate entries (RemoveDuplicates).
-	-->
-  <Target Name="FuseeWebTools"
-			    Condition=" '$(FuseeWebOutputPath)' != '' "
-			    DependsOnTargets="FuseeGetReferencedAssemblies">
-    <ItemGroup>
-      <FuseeScriptAddToManifest Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\%(FuseeReferencedAssemblies.Filename).Scripts\*.*"/>
-    </ItemGroup>
-    <!-- Message Importance="High" Text="     FuseeScriptAddToManifest: @(FuseeScriptAddToManifest)" /-->
-    <ItemGroup>
-      <FuseeScriptAddToManifestName Include="@(FuseeScriptAddToManifest->'%(filename)')"/>
-    </ItemGroup>
-    <!-- Message Importance="High" Text="     FuseeScriptAddToManifestName: @(FuseeScriptAddToManifestName)" / -->
-    <RemoveDuplicates
-			Inputs="@(FuseeScriptAddToManifestName)">
-      <Output
-				TaskParameter="Filtered"
-				ItemName="FuseeScriptAddToManifestNameFiltered"/>
-    </RemoveDuplicates>
-    <!-- Message Importance="High" Text="     FuseeScriptAddToManifestNameFiltered: @(FuseeScriptAddToManifestNameFiltered)" / -->
-    <PropertyGroup>
-      <FuseeScriptListToAdd>@(FuseeScriptAddToManifestNameFiltered)</FuseeScriptListToAdd>
-    </PropertyGroup>
-
-    <Copy SourceFiles="$(ProjectDir)$(AssemblyName).html" DestinationFolder="$(FuseeWebOutputPath)" ContinueOnError="true" />
-
-    <Message Importance="High" Text="[fusee web tool] Creating default $(AssemblyName).html, $(AssemblyName).contentproj.manifest.js and Config/jsil_config.js "/>
-    <Message Importance="High" Text="                 command line: &quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; generate &quot;$(TargetDir)\&quot; &quot;$(FuseeWebOutputPath)\&quot; &quot;$(TargetPath)&quot; &quot;$(FuseeScriptListToAdd)&quot;" />
-
-    <!-- Message Importance="High" Text="     External Scripts to add: @(FuseeScriptAddToManifest->'%(filename)%(extension)')" /-->
-    <!-- Message Importance="High" Text="     External Scripts to add: %(FuseeScriptAddToManifest.directory)%(FuseeScriptAddToManifest.filename)%(FuseeScriptAddToManifest.extension)" /-->
-    <Exec ContinueOnError="true" Timeout="120000" Command='"$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe" generate "$(TargetDir)\" "$(FuseeWebOutputPath)\" "$(TargetPath)" "$(FuseeScriptListToAdd)"' />
   </Target>
 
   <!-- ================================================================================================================

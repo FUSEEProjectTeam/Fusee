@@ -44,7 +44,6 @@ namespace Fusee.Pointcloud.Reader.LASReader
         public double OffsetX;
         public double OffsetY;
         public double OffsetZ;
-
     }
 
     internal struct InternalPoint

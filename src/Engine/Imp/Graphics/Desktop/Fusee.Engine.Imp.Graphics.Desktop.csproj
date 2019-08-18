@@ -32,5 +32,4 @@
   </ItemGroup>
 
   <Import Project="$(FuseeBuildRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
-
 </Project>
