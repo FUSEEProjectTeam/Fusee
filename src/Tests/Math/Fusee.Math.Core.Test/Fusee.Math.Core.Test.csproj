@@ -2,7 +2,7 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Math.Core.Test</RootNamespace>
     <PackageId>Fusee.Math.Core.Test</PackageId>
-    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>WinExe</OutputType>
   </PropertyGroup>
 
