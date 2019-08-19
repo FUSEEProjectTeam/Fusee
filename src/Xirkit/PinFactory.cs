@@ -2,7 +2,6 @@
 using System.Reflection;
 using System.Collections.Generic;
 using Fusee.Math.Core;
-using JSIL.Meta;
 
 namespace Fusee.Xirkit
 {
@@ -13,7 +12,6 @@ namespace Fusee.Xirkit
 
     static class PinFactory
     {
-        [JSExternal]
         public static IOutPin CreateOutPin(Node n, String member)
         {
             // The code below mainly does something like a
@@ -34,7 +32,6 @@ namespace Fusee.Xirkit
             return (IOutPin)Activator.CreateInstance(outPinGeneric, new object[] { n, member, elementAccessor });
         }
 
-        [JSExternal]
         public static IInPin CreateInPin(Node n, string member, Type targetType)
         {
             // The code below mainly does something like a
@@ -59,7 +56,6 @@ namespace Fusee.Xirkit
         }
 
 
-        [JSExternal]
         public static void ReAttachInPin(Node n, IInPin ip)
         {
             string member = ip.Member;
@@ -73,7 +69,6 @@ namespace Fusee.Xirkit
             pi.SetValue(ip, elementAccessor, null);
         }
 
-       [JSExternal]
         public static void ReAttachOutPin(Node n, IOutPin op)
         {
             string member = op.Member;
@@ -84,14 +79,12 @@ namespace Fusee.Xirkit
             op.GetType().GetProperty("MemberAccessor").SetValue(op, elementAccessor, null);
         }
 
-        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, out object elementAccessor)
         {
             return GetMemberTypeAndAccessor(n, member, null, out elementAccessor);
         }
 
 
-        [JSIgnore]
         private static Type GetMemberTypeAndAccessor(Node n, string member, Type pinType, out object elementAccessor)
         {
             Type t = n.O.GetType();
@@ -174,7 +167,6 @@ namespace Fusee.Xirkit
         // To toy around with different element accessor implementations, create your own versions of 
         // IMemberAccessor<T> derivatives and change the instantiation code below.
 
-        [JSIgnore]
         private static object InstantiatePropertyAccessor(PropertyInfo propertyInfo, Type memberType)
         {
             // Perform  <code> return new PropertyAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -185,7 +177,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-        [JSIgnore]
         private static object InstantiateFieldAccessor(FieldInfo fieldInfo, Type memberType)
         {
             // Perform  <code> return new FieldAccessor<t>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -199,7 +190,6 @@ namespace Fusee.Xirkit
         // [JSIgnore] (ignoring it will generate an exception in JSIl-generated PinFactory constructor)
         private static Dictionary<Type, Dictionary<Type, Delegate>> _convMap = null;
 
-        [JSIgnore]
         private static void InitConvMap()
         {
             // Look at http://msdn.microsoft.com/de-de/library/bb882516.aspx or 
@@ -405,7 +395,6 @@ namespace Fusee.Xirkit
             AddConverter<double4x4, float4x4>(v => new float4x4((float)v.M11, (float)v.M12, (float)v.M13, (float)v.M14, (float)v.M21, (float)v.M22, (float)v.M23, (float)v.M24, (float)v.M31, (float)v.M32, (float)v.M33, (float)v.M34, (float)v.M41, (float)v.M42, (float)v.M43, (float)v.M44));
         }
 
-       [JSIgnore]
         private static void AddConverter<TParm, TRet>(Math.Core.Converter<TParm, TRet> c)
         {
             Delegate d = (Delegate)c;
@@ -417,7 +406,6 @@ namespace Fusee.Xirkit
             _convMap[typeof(TParm)][typeof(TRet)] = d;
         }
 
-       [JSIgnore]
         private static Delegate LookupConverter(Type from, Type to)
         {
             if (_convMap == null)
@@ -426,7 +414,6 @@ namespace Fusee.Xirkit
             return _convMap[from][to];
         }
 
-       [JSIgnore]
         private static bool CanConvert(Type from, Type to)
         {
             if (_convMap == null)
@@ -443,7 +430,6 @@ namespace Fusee.Xirkit
             return del != null;
         }
 
-       [JSIgnore]
         private static object InstantiateConvertingPropertyAccessor(PropertyInfo propertyInfo, Type pinType, Type memberType)
         {
             // Perform  <code> return new ConvertingPropertyAccessor<pinType, memberType>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -454,7 +440,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-       [JSIgnore]
         private static object InstantiateConvertingFieldAccessor(FieldInfo fieldInfo, Type pinType, Type memberType)
         {
             // Perform  <code> return new FieldAccessor<pinType, memberType>(fieldInfo); </code> with a dynamic t (t known at runtime, not at compile time) 
@@ -463,7 +448,6 @@ namespace Fusee.Xirkit
             return elementAccessor;
         }
 
-       [JSIgnore]
         private static object InstantiateChainedMemberAccessor(MemberInfo[] miList, Type pinType, Type memberType)
         {
             // Perform  <code> return new ChainedMemberAccessor<pinType, memberType>(miList, converter, converter); </code> with a dynamic t (t known at runtime, not at compile time) 

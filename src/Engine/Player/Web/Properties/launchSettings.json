@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Fusee.Engine.Player.Web": {
-        "commandName": "Executable",
-        "executablePath": "$(FuseeBuildRoot)\\bin\\$(Configuration)\\Tools\\fusee.exe",
-        "commandLineArgs": "server \"$(FuseeWebOutputPath)$(RootNamespace).html\""
-    }
-  }
-}

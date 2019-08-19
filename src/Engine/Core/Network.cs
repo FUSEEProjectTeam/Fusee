@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
-using JSIL.Meta;
 
 namespace Fusee.Engine.Core
 {
@@ -255,7 +254,6 @@ namespace Fusee.Engine.Core
         /// Firsts the message.
         /// </summary>
         /// <returns></returns>
-        [JSExternal]
         private INetworkMsg FirstMessage()
         {
             return _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
