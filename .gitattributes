@@ -16,3 +16,7 @@
 # FUSEE Custom
 *.model	-diff
 *.fus	-text -diff
+
+# GitHub Linguist
+ext/* linguist-vendored
+art/RocketModel/RocketFus.gcode linguist-generated

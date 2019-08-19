@@ -11,6 +11,8 @@ don't support C#, like Content-Creation-Software C++ Plug-In-APIs
 and native HTML5/WebGL Javascript code.
 
 
- * Desktop Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=4)
- * Web Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Web)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=6)
- * Android Build: [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=8)
+|  | develop | master |
+| --- | --- | --- |
+| Desktop | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-VS2019?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=10&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Desktop-VS2019?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=10&branchName=master) |
+| Android | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android-VS2019?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=9&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-Android-VS2019?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=9&branchName=master) |
+| WASM | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-WASM?branchName=develop)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=11&branchName=develop) | [![Build Status](https://dev.azure.com/FUSEEProjectTeam/Fusee/_apis/build/status/Release-WASM?branchName=master)](https://dev.azure.com/FUSEEProjectTeam/Fusee/_build/latest?definitionId=11&branchName=master) |

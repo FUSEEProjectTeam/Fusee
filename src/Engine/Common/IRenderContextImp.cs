@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using Fusee.Base.Common;
 using Fusee.Math.Core;
-using JSIL.Meta;
 
 namespace Fusee.Engine.Common
 {
@@ -97,7 +96,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam1f")]
         void SetShaderParam(IShaderParam param, float val);
 
         /// <summary>
@@ -110,7 +108,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam2f")]
         void SetShaderParam(IShaderParam param, float2 val);
 
         /// <summary>
@@ -123,7 +120,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam3f")]
         void SetShaderParam(IShaderParam param, float3 val);
 
         /// <summary>
@@ -136,7 +132,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam4f")]
         void SetShaderParam(IShaderParam param, float4 val);
 
         /// <summary>
@@ -149,7 +144,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam4fArray")]
         void SetShaderParam(IShaderParam param, float4[] val);
 
         /// <summary>
@@ -162,7 +156,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamfloat4x4")]
         void SetShaderParam(IShaderParam param, float4x4 val);
 
 
@@ -176,7 +169,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamMtx4fArray")]
         void SetShaderParam(IShaderParam param, float4x4[] val);
 
 
@@ -190,7 +182,6 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParamI")]
         void SetShaderParam(IShaderParam param, int val);
 
         /// <summary>
@@ -198,7 +189,6 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        [JSChangeName("SetShaderParamTexture")]
         void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>

@@ -1,5 +1,4 @@
 ﻿using System;
-using JSIL.Meta;
 
 namespace Fusee.Engine.Common
 {
@@ -101,7 +100,6 @@ namespace Fusee.Engine.Common
         /// <param name="posx">The x position of the window.</param>
         /// <param name="posy">The y position of the window.</param>
         /// <param name="borderHidden">Show the window border or not.</param>
-        [JSExternal]
         void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false);
 
         /// <summary>

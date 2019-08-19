@@ -52,9 +52,10 @@ namespace Fusee.Engine.Player.Core
         private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
-        private SixDOFDevice _spaceMouse;
+
         private GamePadDevice _gamePad;
-      
+
+
 
         // Init is called on startup. 
         public override void Init()
@@ -89,13 +90,11 @@ namespace Fusee.Engine.Player.Core
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
-
+           
             // Register the input devices that are not already given.
+            _gamePad = GetDevice<GamePadDevice>(0);
 
-            _spaceMouse = GetDevice<SixDOFDevice>();
-            _gamePad = GetDevice<GamePadDevice>();
- 
- 
+
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -144,6 +143,7 @@ namespace Fusee.Engine.Player.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {
@@ -183,19 +183,6 @@ namespace Fusee.Engine.Player.Core
                 _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
             }
-
-            // TODO: fixme I'm broken.
-            //else if (_spaceMouse != null)
-            //{
-            //    _angleVelHorz += _spaceMouse.Rotation.y * -0.00005f * DeltaTime;
-            //    _angleVelVert += _spaceMouse.Rotation.x * -0.00005f * DeltaTime;
-            //}
-
-            //else if (_gamePad != null)
-            //{
-            //    _angleVelHorz -= -RotationSpeed * _gamePad.LSX * DeltaTime;
-            //    _angleVelVert -= -RotationSpeed * _gamePad.LSY * DeltaTime;
-            //}
 
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
