@@ -18,10 +18,7 @@
       <HintPath>$(FuseeBuildRoot)\ext\SFML\sfmlnet-system-2.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-  </ItemGroup>
-  
+    
   <ItemGroup>
     <None Include="$(FuseeBuildRoot)\ext\SFML\Windows\csfml-audio-2.dll" Link="csfml-audio-2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -44,5 +41,9 @@
     <None Include="$(FuseeBuildRoot)\ext\SFML\Windows\sfml-system-2.dll" Link="sfml-system-2.dll">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+    
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 </Project>

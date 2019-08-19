@@ -14,9 +14,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Fusee.Pointcloud.Common.csproj" />
-    <ProjectReference Include="..\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" />
-    <ProjectReference Include="..\Reader\LASReader\Fusee.Pointcloud.LASReader.csproj" />
+    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" />
+    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj" />
   </ItemGroup>
 
   <ItemGroup>

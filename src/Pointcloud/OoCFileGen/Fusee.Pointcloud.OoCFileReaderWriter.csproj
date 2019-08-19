@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

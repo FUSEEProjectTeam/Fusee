@@ -19,7 +19,7 @@ namespace Fusee.Examples.Simple.GUI.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Fusee.Examples.Simple.Core.Simple app;
+        public Core.Simple app;
 
         public MainWindow()
         {

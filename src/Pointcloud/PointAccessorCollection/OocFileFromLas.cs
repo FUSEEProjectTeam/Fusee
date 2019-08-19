@@ -1,7 +1,7 @@
-﻿using Fusee.LASReader;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.OoCFileReaderWriter;
+using Fusee.Pointcloud.Reader.LASReader;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;

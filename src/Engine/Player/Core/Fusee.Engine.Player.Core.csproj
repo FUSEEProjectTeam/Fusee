@@ -19,6 +19,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.LASReader.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj" />
   </ItemGroup>
 </Project>

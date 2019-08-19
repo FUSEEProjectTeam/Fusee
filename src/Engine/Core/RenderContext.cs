@@ -1500,8 +1500,7 @@ namespace Fusee.Engine.Core
         /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        [JSChangeName("SetShaderParam3fArray")]
+        /// <seealso cref="GetShaderParamList"/>        
         public void SetShaderParam(IShaderParam param, float3[] val)
         {
             _rci.SetShaderParam(param, val);
