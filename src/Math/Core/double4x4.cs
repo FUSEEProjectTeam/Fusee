@@ -585,6 +585,72 @@ namespace Fusee.Math.Core
 
         #endregion
 
+        #region Rotation matrix to euler representation
+
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        private static void RotMatToEuler2(double[][] mat, ref double[] eul1, ref double[] eul2)
+        {
+            var axis = new double3(1, 0, 2); //for rotation order YXZ, see Blender mathutils and Graphic Gems IV for other configurations
+            var parity = 1; //parity of axis permutation (even=0, odd=1) - 'n' in original code
+
+            int i = (int)axis.x, j = (int)axis.y, k = (int)axis.z;
+            var cy = System.Math.Sqrt(System.Math.Pow(mat[i][i], 2.0) + System.Math.Pow(mat[i][j], 2.0));
+
+            var FLT_EPSILON = 1.192092896e-07F;
+
+            if (cy > 16.0f * FLT_EPSILON)
+            {
+                eul1[i] = System.Math.Atan2(mat[j][k], mat[k][k]);
+                eul1[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = System.Math.Atan2(mat[i][j], mat[i][i]);
+
+                eul2[i] = System.Math.Atan2(-mat[j][k], -mat[k][k]);
+                eul2[j] = System.Math.Atan2(-mat[i][k], -cy);
+                eul2[k] = System.Math.Atan2(-mat[i][j], -mat[i][i]);
+            }
+            else
+            {
+                eul1[i] = System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul1[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul1[k] = 0;
+
+                eul2[i] = System.Math.Atan2(-mat[k][j], mat[j][j]);
+                eul2[j] = System.Math.Atan2(-mat[i][k], cy);
+                eul2[k] = 0;
+            }
+
+            if (parity == 1)
+            {
+                for (var l = 0; l < eul1.Length; l++)
+                {
+                    eul1[l] *= -1;
+                    eul1[l] *= -1;
+                }
+            }
+        }
+
+        //see Blender mathutils and Graphic Gems IV p. 222-229
+        public static double3 RotMatToEuler(double4x4 rotMat)
+        {
+            //Matrix is beeing handled as a multidimentional array to ensure that the rotation order can be changed easily in the future.
+            var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
+
+            var eul1 = new double[3];
+            var eul2 = new double[3];
+            double d1, d2;
+
+            RotMatToEuler2(m, ref eul1, ref eul2);
+
+            d1 = System.Math.Abs(eul1[0]) + System.Math.Abs(eul1[1]) + System.Math.Abs(eul1[2]);
+            d2 = System.Math.Abs(eul2[0]) + System.Math.Abs(eul2[1]) + System.Math.Abs(eul2[2]);
+
+            /* return best, which is just the one with lowest values it in */
+            return d1 > d2 ? new double3(eul2[0], eul2[1], eul2[2]) : new double3(eul1[0], eul1[1], eul1[2]);
+        }
+
+        #endregion
+
+
         #region CreateOrthographic
 
         /// <summary>

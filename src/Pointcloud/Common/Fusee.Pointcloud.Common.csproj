@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Pointcloud.Common</RootNamespace>
     <PackageId>Fusee.Pointcloud.Common</PackageId>
@@ -6,20 +6,16 @@
     <OutputType>Library</OutputType>
   </PropertyGroup>
 
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

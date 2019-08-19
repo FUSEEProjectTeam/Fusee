@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Common</RootNamespace>
     <PackageId>Fusee.Engine.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -23,6 +21,4 @@
       <HintPath>$(FuseeBuildRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

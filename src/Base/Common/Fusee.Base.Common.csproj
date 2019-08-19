@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Common</RootNamespace>
     <PackageId>Fusee.Base.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -15,6 +13,10 @@
   <ItemGroup>
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
-  
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+
+  <ItemGroup>
+    <Reference Include="JSIL.Meta">
+      <HintPath>$(FuseeBuildRoot)\ext\JSIL\Compiler\JSIL.Meta.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

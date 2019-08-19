@@ -529,7 +529,7 @@ namespace Fusee.Math.Core
                 res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
 
                 res.M31 += Covariance(vec.x, vec.z, centroid.x, centroid.z, numPoints);
-                res.M23 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
+                res.M32 += Covariance(vec.y, vec.z, centroid.y, centroid.z, numPoints);
                 res.M33 += Covariance(vec.z, vec.z, centroid.z, centroid.z, numPoints);
             }
 

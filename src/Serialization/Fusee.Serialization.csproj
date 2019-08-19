@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Serialization</RootNamespace>
     <PackageId>Fusee.Serialization</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -22,8 +20,6 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
 
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-
   <PropertyGroup>
     <BuildDependsOn>
       $(BuildDependsOn);
@@ -32,9 +28,9 @@
   </PropertyGroup>
 
   <!-- This target calls the protobuf precompiler. Note that the filename is hardwired and no item list is taken -->
-  <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll">
+  <Target Name="SerializationCompileSerializer" Inputs="$(OutputPath)$(AssemblyName).dll" Outputs="$(OutputPath)Fusee.SerializationSerializer.dll" AfterTargets="AfterBuild">
     <Message Importance="High" Text="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" />
-    <Exec Command="$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="&quot;$(FuseeBuildRoot)\ext\protobuf\PrecompileTool\precompile&quot; &quot;$(OutputPath)$(AssemblyName).dll&quot; -o:&quot;$(OutputPath)Fusee.SerializationSerializer.dll&quot; -t:Fusee.Serialization.Serializer -f:&quot;C:\Program Files\dotnet\sdk\NuGetFallbackFolder\netstandard.library\2.0.3\build\netstandard2.0\ref&quot;" WorkingDirectory="$(MSBuildProjectDirectory)" />
     <Message Importance="High" Text="$(AssemblyName).dll -&gt; $(OutputPath)SerializationSerializer.dll" />
   </Target>
   <PropertyGroup>

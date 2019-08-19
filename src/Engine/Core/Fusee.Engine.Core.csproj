@@ -1,11 +1,9 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Core</RootNamespace>
     <PackageId>Fusee.Engine.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -50,8 +48,17 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Assets\Shader\PBR\" />
+    <None Update="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\PixelShader.frag">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Shader\VertexShader.vert">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>
