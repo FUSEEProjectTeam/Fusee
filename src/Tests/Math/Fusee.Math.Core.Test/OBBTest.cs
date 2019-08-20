@@ -10,7 +10,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void ConstructorSingle_MinMax()
         {
-            var actual = new OBBf(new float3(0, 0, 0), new float3(1, 1, 1), float4x4.Identity, float3.Zero);
+            var actual = new OBBf(new float3(0, 0, 0), new float3(1, 1, 1), float4x4.Identity, float3.Zero, float3.One);
 
             Assert.Equal(new float3(0, 0, 0), actual.Min);
             Assert.Equal(new float3(1, 1, 1), actual.Max);
@@ -19,16 +19,16 @@ namespace Fusee.Math.Core
         [Fact]
         public void ConstructorDouble_MinMax()
         {
-            var actual = new OBBd(new double3(0, 0, 0), new double3(1, 1, 1), double4x4.Identity, double3.Zero);
+            var actual = new OBBd(new double3(0, 0, 0), new double3(1, 1, 1), double4x4.Identity, double3.Zero, double3.One);
 
-            Assert.Equal(new double3(0, 0, 0), actual.min);
-            Assert.Equal(new double3(1, 1, 1), actual.max);
+            Assert.Equal(new double3(0, 0, 0), actual.Min);
+            Assert.Equal(new double3(1, 1, 1), actual.Max);
         }
 
         [Fact]
         public void CenterSingle_Is1()
         {
-            var obbf = new OBBf(new float3(0, 0, 0), new float3(2, 2, 2), float4x4.Identity, float3.Zero);
+            var obbf = new OBBf(new float3(0, 0, 0), new float3(2, 2, 2), float4x4.Identity, float3.Zero, float3.One);
 
             var actual = obbf.Center;
 
@@ -38,7 +38,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void SizeSingle_Is1()
         {
-            var obbf = new OBBf(new float3(0, 0, 0), new float3(1, 1, 1), float4x4.Identity, float3.Zero);
+            var obbf = new OBBf(new float3(0, 0, 0), new float3(1, 1, 1), float4x4.Identity, float3.Zero, float3.One);
 
             var actual = obbf.Size;
 
@@ -48,7 +48,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void CenterDouble_Is1()
         {
-            var obbd = new OBBd(new double3(0, 0, 0), new double3(2, 2, 2), double4x4.Identity, double3.Zero);
+            var obbd = new OBBd(new double3(0, 0, 0), new double3(2, 2, 2), double4x4.Identity, double3.Zero, double3.One);
 
             var actual = obbd.Center;
 
@@ -58,7 +58,7 @@ namespace Fusee.Math.Core
         [Fact]
         public void SizeDouble_Is1()
         {
-            var obbd = new OBBd(new double3(0, 0, 0), new double3(1, 1, 1), double4x4.Identity, double3.Zero);
+            var obbd = new OBBd(new double3(0, 0, 0), new double3(1, 1, 1), double4x4.Identity, double3.Zero, double3.One);
 
             var actual = obbd.Size;
 

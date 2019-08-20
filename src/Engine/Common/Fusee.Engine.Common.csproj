@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" >
+<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Common</RootNamespace>
     <PackageId>Fusee.Engine.Common</PackageId>

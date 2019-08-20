@@ -4,7 +4,7 @@
     <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
     
     <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath> 
+    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>    
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
 

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.MeshingAround.Core</RootNamespace>
     <PackageId>Fusee.Examples.MeshingAround.Core</PackageId>

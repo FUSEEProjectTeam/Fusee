@@ -1,8 +1,8 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" >
+<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
-    <TargetFramework>net462</TargetFramework>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
   <PropertyGroup>

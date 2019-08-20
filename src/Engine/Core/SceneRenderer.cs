@@ -12,6 +12,128 @@ using Fusee.Xirkit;
 namespace Fusee.Engine.Core
 {
     /// <summary>
+    /// Object-Oriented Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
+    /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
+    /// </summary>
+    // ReSharper disable once InconsistentNaming
+    public class OBBCalculator : SceneVisitor
+    {
+        // ReSharper disable once InconsistentNaming
+        public class OBBState : VisitorState
+        {
+            private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
+
+
+            public float4x4 ModelView
+            {
+                set { _modelView.Tos = value; }
+                get { return _modelView.Tos; }
+            }
+
+            public OBBState()
+            {
+                RegisterState(_modelView);
+            }
+        }
+
+        //private SceneContainer _sc;
+        private IEnumerable<SceneNodeContainer> _sncList;
+        private OBBState _state = new OBBState();
+        private bool _boxValid;
+        private OBBf _result;
+        private List<float3> _allVerticesOfCurrentScene = new List<float3>();
+
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
+        /// </summary>
+        /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
+        public OBBCalculator(SceneContainer sc)
+        {
+            _sncList = sc.Children;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
+        /// </summary>
+        /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
+        public OBBCalculator(IEnumerable<SceneNodeContainer> sncList)
+        {
+            _sncList = sncList;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
+        /// </summary>
+        /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
+        public OBBCalculator(SceneNodeContainer snc)
+        {
+            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
+        }
+
+        /// <summary>
+        /// Performs the calculation and returns the resulting box on the object(s) passed in the constructor. Any calculation
+        /// always includes a full traversal over all child nodes.
+        /// </summary>
+        /// <returns>The resulting axis-aligned bounding box.</returns>
+        public OBBf GetBox()
+        {
+            Traverse(_sncList);
+
+            //if (_boxValid)
+            //    return _result;
+            return new OBBf(_allVerticesOfCurrentScene.ToArray());
+        }
+
+        #region Visitors
+
+        /// <summary>
+        /// Do not call. Used for internal traversal purposes only
+        /// </summary>
+        /// <param name="transform">The transform component.</param>
+        [VisitMethod]
+        public void OnTransform(TransformComponent transform)
+        {
+            _state.ModelView *= transform.Matrix();
+        }
+
+        /// <summary>
+        /// Do not call. Used for internal traversal purposes only
+        /// </summary>
+        /// <param name="mesh">The mesh component.</param>
+        [VisitMethod]
+        public void OnMesh(Mesh mesh)
+        {
+            // modify mesh
+            for(var i = 0; i < mesh.Vertices.Length; i++)
+                _allVerticesOfCurrentScene.Add(_state.ModelView * mesh.Vertices[i]);
+        }
+
+        #endregion
+
+        #region HierarchyLevel
+
+        protected override void InitState()
+        {
+            _boxValid = false;
+            _state.Clear();
+            _state.ModelView = float4x4.Identity;
+        }
+
+        protected override void PushState()
+        {
+            _state.Push();
+        }
+
+        protected override void PopState()
+        {
+            _state.Pop();
+        }
+
+        #endregion
+    }
+
+    /// <summary>
     /// Axis-Aligned Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
     /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
     /// </summary>

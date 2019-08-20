@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Base.Common</RootNamespace>
     <PackageId>Fusee.Base.Common</PackageId>
@@ -14,5 +14,4 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
 </Project>
-  
-  
+ 

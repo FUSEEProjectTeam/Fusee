@@ -21,4 +21,16 @@
     <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
     <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\FuseeText.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Lato-Black.ttf">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\Model.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 </Project>
