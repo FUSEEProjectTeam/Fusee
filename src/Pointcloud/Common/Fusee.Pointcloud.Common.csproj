@@ -4,9 +4,7 @@
     <PackageId>Fusee.Pointcloud.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-  </PropertyGroup>
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries\</OutputPath>
+  </PropertyGroup> 
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -26,14 +24,12 @@
     </Reference>
     <Reference Include="Fusee.Serialization">
       <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
-    </Reference>
+    </Reference>    
   </ItemGroup>
-
 
   <ItemGroup>
     <Folder Include="Assets\" />
   </ItemGroup>
-
 
   <ItemGroup>
     <None Update="Assets\PointCloud.frag">
@@ -45,8 +41,5 @@
     <None Update="Assets\PointDepth.frag">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-  </ItemGroup>
+  </ItemGroup>   
 </Project>
