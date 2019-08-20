@@ -83,7 +83,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Core.PtRenderingParams.SSAOStrength = (float)e.NewValue;
+            PtRenderingParams.SSAOStrength = (float)e.NewValue;
         }
 
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)

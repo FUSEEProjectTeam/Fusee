@@ -53,7 +53,7 @@ namespace Fusee.Serialization
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
-        public byte PosInHierarchyTex;
+        public int PosInHierarchyTex;
 
         public byte VisibleChildIndices; 
 

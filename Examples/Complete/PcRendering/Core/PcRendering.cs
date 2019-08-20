@@ -12,6 +12,7 @@ using Fusee.Xene;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -22,8 +23,6 @@ namespace Fusee.Examples.PcRendering.Core
     {
         public AppSetupHelper.AppSetupDelegate AppSetup;
         
-        public Func<PointAccessor<TPoint>, List<TPoint>, IEnumerable<Mesh>> GetMeshsForNode;
-        public PointAccessor<TPoint> PtAccessor { get; set; }
         public PtOctantLoader<TPoint> OocLoader { get; set; }
 
         public PtOctreeFileReader<TPoint> OocFileReader { get; set; }
@@ -82,6 +81,8 @@ namespace Fusee.Examples.PcRendering.Core
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
+
+        private const float twoPi = M.Pi * 2f;
 
         public RenderContext GetRc()
         {
@@ -199,7 +200,6 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };
             
-
             if (projectionComponent != null)
                 RemoveResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
 
@@ -247,7 +247,7 @@ namespace Fusee.Examples.PcRendering.Core
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
-        {
+        {           
             ReadyToLoadNewFile = false;
 
             // Clear the backbuffer
@@ -255,7 +255,7 @@ namespace Fusee.Examples.PcRendering.Core
 
             if (IsSceneLoaded)
             {
-                if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0)
+                if (Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint))
                     OocLoader.IsUserMoving = true;
                 else
                     OocLoader.IsUserMoving = false;
@@ -318,19 +318,19 @@ namespace Fusee.Examples.PcRendering.Core
                 _angleVelHorz = 0;
                 _angleVelVert = 0;
 
-                var twoPi = M.Pi * 2f;
+                if (HasUserMoved()) //User has moved, RC.View must be recalculated.
+                {
+                    if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+                        _angleHorz %= twoPi;
+                    if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+                        _angleVert %= twoPi;
 
-                if ((_angleHorz > twoPi && _angleHorz > 0f) || _angleHorz < -twoPi)
-                    _angleHorz %= twoPi;
-                if ((_angleVert > twoPi && _angleVert > 0f) || _angleVert < -twoPi)
-                    _angleVert %= twoPi;
+                    _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
+                    _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
 
-                _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
-                _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
-
-                RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
-                _scenePicker.View = RC.View;
-                
+                    RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
+                    _scenePicker.View = RC.View;
+                }               
 
                 // Constantly check for interactive objects.
                 _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
@@ -354,16 +354,15 @@ namespace Fusee.Examples.PcRendering.Core
                 //Render color pass
                 //Change shader effect in complete scene
                 _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
-
-                _sceneRenderer.Render(RC);
-
+                
                 OocLoader.RC = RC;
-                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf, GetMeshsForNode, PtAccessor);
-
-                Diagnostics.Log(FramePerSecond);
+                OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf);
+                             
 
                 if (DoShowOctants)
                     OocLoader.ShowOctants(_scene);
+
+                _sceneRenderer.Render(RC);
             }
 
             //Render GUI
@@ -374,7 +373,13 @@ namespace Fusee.Examples.PcRendering.Core
             Present();
 
             ReadyToLoadNewFile = true;
-            
+
+            Diagnostics.Log(Time.FramePerSecond);
+        }
+
+        private bool HasUserMoved()
+        {
+            return RC.View == float4x4.Identity || OocLoader.IsUserMoving || Mouse.LeftButton;
         }
 
         // Is called when the window was resized
