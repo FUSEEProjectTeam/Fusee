@@ -48,7 +48,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
                 // gets pixel radius of the node
                 RootNode.GetComponent<PtOctantComponent>().ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
-                _minScreenProjectedSize = (float)RootNode.GetComponent<PtOctantComponent>().ProjectedScreenSize * 1 / 3f;
+                MinScreenProjectedSize = (float)RootNode.GetComponent<PtOctantComponent>().ProjectedScreenSize * 1/3f;
             }
         }        
             
@@ -72,7 +72,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         public int PointThreshold = 1000000;
 
         // Minimal screen projected size of a node. Depends on spacing of the octree.
-        public float _minScreenProjectedSize;
+        public float MinScreenProjectedSize;
 
         //Scene is only updated if the user is moving.
         public bool IsUserMoving;
@@ -252,7 +252,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
 
         private void ProcessNode(SceneNodeContainer node, float fov)
         {
-            var ptOctantChildComp = node.GetComponent<PtOctantComponent>();
+            var ptOctantChildComp = node.GetComponent<PtOctantComponent>();            
 
             //If node does not intersect the viewing frustum, remove it from loaded meshs and return.
             if (!ptOctantChildComp.Intersects(RC.Projection * RC.View))
@@ -268,7 +268,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
 
             //If the nodes screen projected size is too small, remove it from loaded meshs and return.
-            if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
+            if (ptOctantChildComp.ProjectedScreenSize < MinScreenProjectedSize)
             {
                 _determinedAsVisibleAndUnloaded.TryRemove(ptOctantChildComp.Guid, out var val);
                 return;

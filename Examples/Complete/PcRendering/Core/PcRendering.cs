@@ -44,8 +44,8 @@ namespace Fusee.Examples.PcRendering.Core
         private SceneContainer _scene;
         private SceneRenderer _sceneRenderer;
         private ScenePicker _scenePicker;
-        private bool _twoTouchRepeated;
 
+        private bool _twoTouchRepeated;
         private bool _keys;
 
         private const float ZNear = 1f;
@@ -109,24 +109,6 @@ namespace Fusee.Examples.PcRendering.Core
             OocLoader.PointThreshold = value;
         }        
 
-        private void UpdateShaderParams()
-        {
-            RC.SetFXParam("Lighting", (int)PtRenderingParams.Lighting);
-            RC.SetFXParam("PointShape", (int)PtRenderingParams.Shape);
-            RC.SetFXParam("PointMode", (int)PtRenderingParams.PtMode);
-            RC.SetFXParam("ColorMode", (int)PtRenderingParams.ColorMode);
-
-            RC.SetFXParam("PointSize", PtRenderingParams.Size);
-            RC.SetFXParam("Color", PtRenderingParams.SingleColor);
-            RC.SetFXParam("CalcSSAO", PtRenderingParams.CalcSSAO ? 1 : 0);
-            RC.SetFXParam("SSAOStrength", PtRenderingParams.SSAOStrength);
-            RC.SetFXParam("EDLNeighbourPixels", PtRenderingParams.EdlNoOfNeighbourPx);
-            RC.SetFXParam("EDLStrength", PtRenderingParams.EdlStrength);
-
-            RC.SetFXParam("SpecularStrength", PtRenderingParams.SpecularStrength);
-            RC.SetFXParam("Shininess", PtRenderingParams.Shininess);
-        }
-
         public void LoadPointCloudFromFile()
         {           
             //create Scene from octree structure
@@ -171,7 +153,21 @@ namespace Fusee.Examples.PcRendering.Core
         public void ResetCamera()
         {
             _cameraPos = InitCameraPos;
-            _angleHorz = _angleVert = 0;
+            _angleHorz = _angleVert = 0;            
+        }
+        
+        private void CalcAndSetViewMat()
+        {
+            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+                _angleHorz %= twoPi;
+            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+                _angleVert %= twoPi;
+
+            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
+            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
+
+            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
+            _scenePicker.View = RC.View;
         }
 
         public void DeleteOctants()
@@ -188,11 +184,19 @@ namespace Fusee.Examples.PcRendering.Core
             IsSceneLoaded = true;
         }
 
+        private void UpdateShaderParams()
+        {
+            foreach (var param in PtRenderingParams.ShaderParamsToUpdate)
+            {
+                RC.SetFXParam(param.Key, param.Value);
+            }
+            PtRenderingParams.ShaderParamsToUpdate.Clear();
+        }
+
         // Init is called on startup. 
         public override void Init()
         {
-            _cameraPos = InitCameraPos;
-            
+            _cameraPos = InitCameraPos;                        
             AppSetup();
 
             _scene = new SceneContainer
@@ -245,6 +249,8 @@ namespace Fusee.Examples.PcRendering.Core
             IsInitialized = true;
         }
 
+        public bool IsBeforeRender;
+        
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {           
@@ -318,18 +324,9 @@ namespace Fusee.Examples.PcRendering.Core
                 _angleVelHorz = 0;
                 _angleVelVert = 0;
 
-                if (HasUserMoved()) //User has moved, RC.View must be recalculated.
+                if (HasUserMoved() || _cameraPos == InitCameraPos) //User has moved, RC.View must be recalculated.
                 {
-                    if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                        _angleHorz %= twoPi;
-                    if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                        _angleVert %= twoPi;
-
-                    _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 10;
-                    _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 10;
-
-                    RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
-                    _scenePicker.View = RC.View;
+                    CalcAndSetViewMat();
                 }               
 
                 // Constantly check for interactive objects.
@@ -348,8 +345,11 @@ namespace Fusee.Examples.PcRendering.Core
                     _sceneRenderer.Render(RC, _texHandle);
                 }
 
-                if(UseWPF)
-                    UpdateShaderParams();
+                if (UseWPF)
+                {
+                    if(PtRenderingParams.ShaderParamsToUpdate.Count != 0)
+                        UpdateShaderParams();
+                }
 
                 //Render color pass
                 //Change shader effect in complete scene
@@ -361,7 +361,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (DoShowOctants)
                     OocLoader.ShowOctants(_scene);
-
+                
                 _sceneRenderer.Render(RC);
             }
 
@@ -379,7 +379,10 @@ namespace Fusee.Examples.PcRendering.Core
 
         private bool HasUserMoved()
         {
-            return RC.View == float4x4.Identity || OocLoader.IsUserMoving || Mouse.LeftButton;
+            return RC.View == float4x4.Identity 
+                || Mouse.LeftButton 
+                || Keyboard.WSAxis != 0 || Keyboard.ADAxis != 0 
+                || (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint);
         }
 
         // Is called when the window was resized

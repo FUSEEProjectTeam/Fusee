@@ -4,11 +4,10 @@ using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Examples.PcRendering.Core;
 using Fusee.Math.Core;
+using Fusee.Pointcloud.Common;
 using Fusee.Pointcloud.PointAccessorCollections;
 using Fusee.Serialization;
 using Microsoft.Win32;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.IO;
 using System.Reflection;
@@ -57,7 +56,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
             var col = PtRenderingParams.SingleColor;
             SingleColor.SelectedColor = System.Windows.Media.Color.FromScRgb(col.a, col.r, col.g, col.b);
-                     
+            SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
 
             if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
                 SingleColor.IsEnabled = false;
@@ -79,6 +78,7 @@ namespace Fusee.Examples.PcRendering.WPF
         private void SSAOCheckBox_Checked(object sender, RoutedEventArgs e)
         {
             PtRenderingParams.CalcSSAO = !PtRenderingParams.CalcSSAO;
+            SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
         }
 
         private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -89,7 +89,7 @@ namespace Fusee.Examples.PcRendering.WPF
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             EDLStrengthVal.Content = e.NewValue.ToString("0.000");
-            Core.PtRenderingParams.EdlStrength = (float)e.NewValue;
+            PtRenderingParams.EdlStrength = (float)e.NewValue;
         }
 
         private void EDLNeighbourPxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -97,16 +97,15 @@ namespace Fusee.Examples.PcRendering.WPF
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
-            Core.PtRenderingParams.EdlNoOfNeighbourPx = (int)e.NewValue;
+            PtRenderingParams.EdlNoOfNeighbourPx = (int)e.NewValue;
         }
 
         private void SingleColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
-
             if (!_isAppInizialized || !app.IsSceneLoaded) return;
             var col = e.NewValue.Value;
-            Core.PtRenderingParams.SingleColor = new float4(col.ScR, col.ScG, col.ScB, col.ScA);
 
+            PtRenderingParams.SingleColor = new float4(col.ScR, col.ScG, col.ScB, col.ScA);
         }
 
         private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -114,16 +113,17 @@ namespace Fusee.Examples.PcRendering.WPF
             if (PtSizeVal == null) return;
 
             PtSizeVal.Content = e.NewValue.ToString("0");
-            Core.PtRenderingParams.Size = (int)e.NewValue;
+            PtRenderingParams.Size = (int)e.NewValue;
         }
 
         private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
-            Core.PtRenderingParams.SpecularStrength = (float)e.NewValue;
+            PtRenderingParams.SpecularStrength = (float)e.NewValue;
         }
+
         private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            PtRenderingParams.Lighting = (Pointcloud.Common.Lighting)e.AddedItems[0];
+            PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];            
 
             if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
             {
@@ -135,11 +135,11 @@ namespace Fusee.Examples.PcRendering.WPF
             {
                 SSAOCheckbox.IsEnabled = true;
                 SSAOStrengthLabel.IsEnabled = true;
-                SSAOStrength.IsEnabled = true;
+                SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
             }
 
-            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY)           
-                SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = true; 
+            if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY)
+                SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = true;
             if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
                 SSAOCheckbox.IsChecked = PtRenderingParams.CalcSSAO = false;
 
@@ -176,19 +176,19 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void PtShape_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Core.PtRenderingParams.Shape = (Pointcloud.Common.PointShape)e.AddedItems[0];
+            PtRenderingParams.Shape = (PointShape)e.AddedItems[0];
         }
 
         private void PtSizeMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Core.PtRenderingParams.PtMode = (Pointcloud.Common.PointSizeMode)e.AddedItems[0];
+            PtRenderingParams.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
         private void ColorMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            Core.PtRenderingParams.ColorMode = (Pointcloud.Common.ColorMode)e.AddedItems[0];
+            PtRenderingParams.ColorMode = (ColorMode)e.AddedItems[0];
 
-            if (Core.PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
+            if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)
                 SingleColor.IsEnabled = false;
             else
                 SingleColor.IsEnabled = true;
@@ -260,7 +260,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
             if (!e.Handled)
             {
-                if (!Int32.TryParse(VisPoints.Text, out var ptThreshold)) return;
+                if (!int.TryParse(VisPoints.Text, out var ptThreshold)) return;
                 if (ptThreshold < 0)
                 {
                     VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
@@ -287,23 +287,22 @@ namespace Fusee.Examples.PcRendering.WPF
 
             if (!e.Handled)
             {
-                if (!Int32.TryParse(ShininessVal.Text, out var shininess)) return;
+                if (!int.TryParse(ShininessVal.Text, out var shininess)) return;
                 if (shininess < 0)
                 {
                     ShininessVal.Text = Core.PtRenderingParams.Shininess.ToString();
                     return;
                 }
-                Core.PtRenderingParams.Shininess = shininess;
+
+                PtRenderingParams.Shininess = shininess;
             }
-            else
-            {
-                ShininessVal.Text = Core.PtRenderingParams.Shininess.ToString();
-            }
+            else            
+                ShininessVal.Text = PtRenderingParams.Shininess.ToString();
         }
 
         private void ShininessVal_LostFocus(object sender, RoutedEventArgs e)
         {
-            ShininessVal.Text = Core.PtRenderingParams.Shininess.ToString();
+            ShininessVal.Text = PtRenderingParams.Shininess.ToString();
         }
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
@@ -400,7 +399,7 @@ namespace Fusee.Examples.PcRendering.WPF
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         int.TryParse(VisPoints.Text, out th);
-                    });                   
+                    });
 
                     var ptType = AppSetupHelper.GetPtType(pathToFile);
                     var ptEnumName = Enum.GetName(typeof(PointType), ptType);
@@ -434,6 +433,6 @@ namespace Fusee.Examples.PcRendering.WPF
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;
-        }       
+        }
     }
 }
