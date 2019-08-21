@@ -23,14 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Lato-Black.ttf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Model.fus">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    <None Update="Assets\FuseeText.png" />
+    <None Update="Assets\Lato-Black.ttf" />
+    <None Update="Assets\Model.fus" />
   </ItemGroup>
 </Project>
