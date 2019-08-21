@@ -123,7 +123,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-            PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];            
+            PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];
 
             if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
             {
@@ -217,8 +217,6 @@ namespace Fusee.Examples.PcRendering.WPF
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
 
-                app?.CloseGameWindow();
-                app = null;
                 await OpenFusThread(path);
 
                 if (app.GetOocLoaderRootNode() != null) //if RootNode == null no scene was ever initialized
@@ -296,7 +294,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 PtRenderingParams.Shininess = shininess;
             }
-            else            
+            else
                 ShininessVal.Text = PtRenderingParams.Shininess.ToString();
         }
 
@@ -341,22 +339,17 @@ namespace Fusee.Examples.PcRendering.WPF
             InnerGrid.IsEnabled = false;
             _isAppInizialized = false;
 
-            if (app != null)
-                while (!app.ReadyToLoadNewFile || !app.IsSceneLoaded) continue;
+            if (app != null && !app.IsAlive)
+                app = null;
 
             if (FUSThread != null && FUSThread.IsAlive)
             {
-                //At a few occasions the fusee app will throw a null reference at different stages, e.g. Keyboard in RenderAFrame or _networkImp in Network.OnUpdateFrame.
-                //Flaw in Fusee shut down process or multi threading in this wpf app? (in a normal app the debugger will be terminated on shutdown...)
                 try
                 {
                     app?.CloseGameWindow(); //UI Thread
                     app = null;
                 }
-                catch (NullReferenceException nre)
-                {
-
-                }
+                catch (NullReferenceException) { }
 
                 FUSThread.Join();
             }

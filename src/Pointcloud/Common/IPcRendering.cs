@@ -12,6 +12,8 @@ namespace Fusee.Pointcloud.Common
     /// </summary>
     public interface IPcRendering
     {
+        bool IsAlive { get; set; }
+
         bool ReadyToLoadNewFile { get; set; }
 
         bool DoShowOctants { get; set; }

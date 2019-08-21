@@ -32,7 +32,9 @@ namespace Fusee.Examples.PcRendering.Core
         public bool IsSceneLoaded { get; set; }
         public bool ReadyToLoadNewFile { get; set; }
 
-        public bool IsInitialized { get; set; } = false;        
+        public bool IsInitialized { get; set; } = false;
+
+        public bool IsAlive { get; set; }
 
         // angle variables
         private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit;
@@ -196,6 +198,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override void Init()
         {
+            IsAlive = true;
             _cameraPos = InitCameraPos;                        
             AppSetup();
 
@@ -400,9 +403,15 @@ namespace Fusee.Examples.PcRendering.Core
                 _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
             }          
 
-            _isTexInitialized = true;
+            _isTexInitialized = true;            
+        }
 
-        }       
+        public override void DeInit()
+        {
+            IsAlive = false;
+            base.DeInit();
+
+        }
 
         private SceneContainer CreateGui()
         {
