@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)bin\Debug\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
   </ItemGroup>
 
