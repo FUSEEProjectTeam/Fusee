@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" />
+    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,12 +20,12 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpFont">
-      <HintPath>$(FuseeBuildRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
 </Project>

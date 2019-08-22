@@ -10,21 +10,21 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Serialization\Fusee.Serialization.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Xene\Fusee.Xene.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Reader\LASReader\Fusee.LASReader.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\FuseeText.png" />
-    <None Update="Assets\Lato-Black.ttf" />
-    <None Update="Assets\Model.fus" />
+    <None Include="Assets\FuseeText.png" />
+    <None Include="Assets\Lato-Black.ttf" />
+    <None Include="Assets\Model.fus" />
   </ItemGroup>
 </Project>
