@@ -1,10 +1,18 @@
 ﻿using Fusee.Pointcloud.PointAccessorCollections;
+using Fusee.Pointcloud.Common;
 
 namespace Fusee.Examples.PcRendering.Core
 {
     public static class AppSetup
     {
-        public static void DoSetup(Pointcloud.Common.IPcRendering app, PointType ptType, int pointThreshold, string pathToFile)
+        /// <summary>
+        /// Contains the Setup methods for all point types that are supported.
+        /// </summary>
+        /// <param name="app">The application.</param>
+        /// <param name="ptType">The point type.</param>
+        /// <param name="pointThreshold">Initial point threshold.</param>
+        /// <param name="pathToFile">Path to the ooc file.</param>
+        public static void DoSetup(IPcRendering app, PointType ptType, int pointThreshold, string pathToFile)
         {
             switch (ptType)
             {
@@ -15,7 +23,7 @@ namespace Fusee.Examples.PcRendering.Core
                         appImp.AppSetup = () =>
                         {
 
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64_Accessor(),
@@ -34,7 +42,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32IShort>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64Col32IShort_Accessor(),
@@ -52,7 +60,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64IShort>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64IShort_Accessor(),
@@ -70,7 +78,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         { 
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Col32>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64Col32_Accessor(),
@@ -88,7 +96,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         { 
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32IShort>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64Nor32Col32IShort_Accessor(),
@@ -106,7 +114,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32IShort>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32IShort>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64Nor32IShort_Accessor(),
@@ -124,7 +132,7 @@ namespace Fusee.Examples.PcRendering.Core
 
                         appImp.AppSetup = () =>
                         {
-                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32>(appImp.InitCameraPos, pathToFile, appImp.GetRc())
+                            appImp.OocLoader = new Pointcloud.OoCFileReaderWriter.PtOctantLoader<Pos64Nor32Col32>(pathToFile, appImp.GetRc())
                             {
                                 PointThreshold = pointThreshold,
                                 PtAcc = new Pos64Nor32Col32_Accessor(),

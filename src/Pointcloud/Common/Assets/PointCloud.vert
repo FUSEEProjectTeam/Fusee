@@ -234,13 +234,6 @@ void main(void)
 	float ptSize = minPtSize;
 	float maxPtSize = 100.0;
 
-	vec3 camPos = vec3(FUSEE_IV[3]);
-	vec3 cameraToPoint = vec3(vWorldPos) - camPos;
-
-	float depth = length(cameraToPoint);
-
-	float viewDepth = dot(cameraToPoint, camPos);
-	
 	switch(PointMode)
 	{
 		// Fixed pixel size
@@ -260,7 +253,7 @@ void main(void)
 			
 			//Formula as given (without division at the end) in Schuetz' thesis - produces points that are to big without the division!
 			float worldPtSize = float(PointSize);
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
 			break;
 		}
 		//Octree level-dependent
@@ -269,17 +262,15 @@ void main(void)
 			float spacing = pow(0.5, float(OctantLevel));
 			
 			float worldPtSize = float(PointSize) * spacing;
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
 			break;
 		}
 		//level of detail
 		case 3:
 		{			
 			float worldPtSize = float(PointSize) / (pow(2.0, float(getLevelOfDetail())));
-			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vClipPos.w))) / InitCamPosZ;
-			break;
-			
-			
+			ptSize = ((ScreenParams.y / 2.0) * (worldPtSize / ( slope * vViewPos.z))) / 30.0;
+			break;			
 		}	
 	}
 
@@ -287,7 +278,6 @@ void main(void)
 		ptSize = minPtSize;
 	else if(ptSize > maxPtSize)
 		ptSize = maxPtSize;
-
 
 //	ptSize = max(minPtSize, ptSize);
 //	ptSize = min(maxPtSize, ptSize);	

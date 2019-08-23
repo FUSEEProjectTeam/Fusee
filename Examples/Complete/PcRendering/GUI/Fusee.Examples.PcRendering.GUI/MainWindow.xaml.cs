@@ -16,6 +16,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media.Imaging;
 using Path = System.IO.Path;
 
@@ -26,11 +27,21 @@ namespace Fusee.Examples.PcRendering.WPF
     /// </summary>
     public partial class MainWindow : Window
     {
-        private bool _isAppInizialized = false;
+        public IPcRendering app;
 
-        private Thread FUSThread;
+        private bool _isAppInizialized = false;        
+        private bool _areOctantsShown;
 
-        public Pointcloud.Common.IPcRendering app;
+        private bool _ptSizeDragStarted;
+        private bool _projSizeModDragStarted;
+        private bool _edlStrengthDragStarted;
+        private bool _edlNeighbourPxDragStarted;
+        private bool _ssaoStrengthDragStarted;
+        private bool _specularStrengthPxDragStarted;
+
+        private Thread _fusThread;
+
+        private static readonly Regex numRegex = new Regex("[^0-9.-]+");
 
         public MainWindow()
         {
@@ -64,7 +75,6 @@ namespace Fusee.Examples.PcRendering.WPF
                 SingleColor.IsEnabled = true;
 
             InnerGrid.IsEnabled = false;
-
         }
 
         [DllImport("user32.dll", SetLastError = true)]
@@ -81,15 +91,61 @@ namespace Fusee.Examples.PcRendering.WPF
             SSAOStrength.IsEnabled = PtRenderingParams.CalcSSAO;
         }
 
+        #region ssao strength
+        private void SSAOStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _ssaoStrengthDragStarted = true;
+        }
+
+        private void SSAOStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {            
+            PtRenderingParams.SSAOStrength = (float)((Slider)sender).Value;
+            _ssaoStrengthDragStarted = false;
+        }
+
         private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (_ssaoStrengthDragStarted) return;
             PtRenderingParams.SSAOStrength = (float)e.NewValue;
+        }
+        #endregion
+
+        #region edl strength
+        private void EDLStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _edlStrengthDragStarted = true;
+        }
+
+        private void EDLStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            PtRenderingParams.EdlStrength = (float)((Slider)sender).Value;
+            _edlStrengthDragStarted = false;
         }
 
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
             EDLStrengthVal.Content = e.NewValue.ToString("0.000");
+
+            if (_edlStrengthDragStarted) return;
             PtRenderingParams.EdlStrength = (float)e.NewValue;
+        }
+        #endregion
+
+        #region edl neighbor px
+
+        private void EDLNeighbourPx_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _edlNeighbourPxDragStarted = true;
+        }
+
+        private void EDLNeighbourPx_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (EDLNeighbourPxVal == null) return;
+
+            EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");            
+            PtRenderingParams.EdlNoOfNeighbourPx = (int)((Slider)sender).Value;
+
+            _edlNeighbourPxDragStarted = false;
         }
 
         private void EDLNeighbourPxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -97,8 +153,82 @@ namespace Fusee.Examples.PcRendering.WPF
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
+
+            if (_edlNeighbourPxDragStarted) return;
             PtRenderingParams.EdlNoOfNeighbourPx = (int)e.NewValue;
         }
+
+        #endregion       
+
+        #region point size
+        private void PtSize_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _ptSizeDragStarted = true;
+        }
+
+        private void PtSize_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (PtSizeVal == null) return;
+
+            PtSizeVal.Content = ((Slider)sender).Value.ToString("0");
+            PtRenderingParams.Size = (int)((Slider)sender).Value;
+        }
+
+        private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (PtSizeVal == null) return;
+            PtSizeVal.Content = e.NewValue.ToString("0");
+
+            if (_ptSizeDragStarted) return;
+            PtRenderingParams.Size = (int)e.NewValue;
+        }
+
+        #endregion
+
+        #region specular strength
+        private void SpecStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _specularStrengthPxDragStarted = true;
+        }
+
+        private void SpecStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            PtRenderingParams.SpecularStrength = (float)((Slider)sender).Value;
+            _specularStrengthPxDragStarted = false;
+        }
+
+        private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_specularStrengthPxDragStarted) return;
+            PtRenderingParams.SpecularStrength = (float)e.NewValue;
+        }
+        #endregion
+
+        #region min. proj. size modifier
+
+        private void MinProjSize_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
+        {
+            _projSizeModDragStarted = true;
+        }
+
+        private void MinProjSize_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
+        {
+            if (_isAppInizialized)
+                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
+            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
+
+            _projSizeModDragStarted = false;
+        }
+
+        private void MinProjSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (_isAppInizialized)
+                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
+
+            if (_projSizeModDragStarted) return;
+            app?.SetOocLoaderMinProjSizeMod((float)MinProjSize.Value);
+        }
+        #endregion
 
         private void SingleColor_SelectedColorChanged(object sender, RoutedPropertyChangedEventArgs<System.Windows.Media.Color?> e)
         {
@@ -106,19 +236,6 @@ namespace Fusee.Examples.PcRendering.WPF
             var col = e.NewValue.Value;
 
             PtRenderingParams.SingleColor = new float4(col.ScR, col.ScG, col.ScB, col.ScA);
-        }
-
-        private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (PtSizeVal == null) return;
-
-            PtSizeVal.Content = e.NewValue.ToString("0");
-            PtRenderingParams.Size = (int)e.NewValue;
-        }
-
-        private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            PtRenderingParams.SpecularStrength = (float)e.NewValue;
         }
 
         private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -219,13 +336,15 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 await OpenFusThread(path);
 
+                MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
+                MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
+
                 if (app.GetOocLoaderRootNode() != null) //if RootNode == null no scene was ever initialized
                 {
                     app.DeletePointCloud();
 
                     while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !_isAppInizialized)
-                    {
-                        app.IsSceneLoaded = false;
+                    {                        
                         continue;
                     }
                 }
@@ -248,34 +367,28 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void ResetCam_Button_Click(object sender, RoutedEventArgs e)
         {
-            app.ResetCamera();
+            app?.ResetCamera();
         }
 
         private void VisPoints_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
         {
             if (!_isAppInizialized) return;
-            e.Handled = !IsTextAllowed(VisPoints.Text);
+            e.Handled = !IsTextAllowed(PtThreshold.Text);
 
             if (!e.Handled)
             {
-                if (!int.TryParse(VisPoints.Text, out var ptThreshold)) return;
+                if (!int.TryParse(PtThreshold.Text, out var ptThreshold)) return;
                 if (ptThreshold < 0)
                 {
-                    VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
+                    PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
                     return;
                 }
                 app.SetOocLoaderPointThreshold(ptThreshold);
             }
             else
             {
-                VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
+                PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
             }
-        }
-
-        private static readonly Regex numRegex = new Regex("[^0-9.-]+"); //regex that matches disallowed text
-        private static bool IsTextAllowed(string text)
-        {
-            return !numRegex.IsMatch(text);
         }
 
         private void ShininessVal_TextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
@@ -305,18 +418,13 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void VisPoints_LostFocus(object sender, RoutedEventArgs e)
         {
-            VisPoints.Text = app.GetOocLoaderPointThreshold().ToString();
-        }
-
-        private bool _areOctantsShown;
+            PtThreshold.Text = app.GetOocLoaderPointThreshold().ToString();
+        }        
 
         private void ShowOctants_Button_Click(object sender, RoutedEventArgs e)
         {
-            while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !app.IsSceneLoaded)
-            {
-                //app.IsSceneLoaded = false;
-                continue;
-            }
+            while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !app.IsSceneLoaded)            
+                continue;           
 
             if (!_areOctantsShown)
             {
@@ -332,7 +440,12 @@ namespace Fusee.Examples.PcRendering.WPF
             }
         }
 
-        #endregion 
+        #endregion
+
+        private static bool IsTextAllowed(string text)
+        {
+            return !numRegex.IsMatch(text);
+        }
 
         private async Task OpenFusThread(string pathToFile)
         {
@@ -342,7 +455,7 @@ namespace Fusee.Examples.PcRendering.WPF
             if (app != null && !app.IsAlive)
                 app = null;
 
-            if (FUSThread != null && FUSThread.IsAlive)
+            if (_fusThread != null && _fusThread.IsAlive)
             {
                 try
                 {
@@ -351,12 +464,12 @@ namespace Fusee.Examples.PcRendering.WPF
                 }
                 catch (NullReferenceException) { }
 
-                FUSThread.Join();
+                _fusThread.Join();
             }
 
             await Task.Run(() =>
             {
-                FUSThread = new Thread(() =>
+                _fusThread = new Thread(() =>
                 {
                     // Inject Fusee.Engine.Base InjectMe dependencies
                     IO.IOImp = new IOImp();
@@ -391,7 +504,7 @@ namespace Fusee.Examples.PcRendering.WPF
                     int th = 0;
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        int.TryParse(VisPoints.Text, out th);
+                        int.TryParse(PtThreshold.Text, out th);
                     });
 
                     var ptType = AppSetupHelper.GetPtType(pathToFile);
@@ -402,7 +515,7 @@ namespace Fusee.Examples.PcRendering.WPF
                     var objectType = typeof(PcRendering<>);
                     var objWithGenType = objectType.MakeGenericType(genericType);
 
-                    app = (Pointcloud.Common.IPcRendering)Activator.CreateInstance(objWithGenType);
+                    app = (IPcRendering)Activator.CreateInstance(objWithGenType);
                     app.UseWPF = true;
                     AppSetup.DoSetup(app, AppSetupHelper.GetPtType(pathToFile), th, pathToFile);
 
@@ -417,12 +530,12 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 });
 
-                FUSThread.Start();
+                _fusThread.Start();
 
                 while (app == null || app.IsInitialized == false) continue;
                 Closed += (s, e) => app?.CloseGameWindow();
 
-            });
+            }); 
 
             _isAppInizialized = true;
             InnerGrid.IsEnabled = true;

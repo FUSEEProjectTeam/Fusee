@@ -11,16 +11,16 @@ namespace Fusee.Pointcloud.Common
     /// </summary>
     /// <example>
     /// 
-    /// internal class ExamplePoint
+    /// internal class PointType
     /// {
     ///     public float3 Position;
     ///     public float3 Normal;
     /// }
     /// 
-    /// internal class ExamplePointAccessor : PointAccessor<ExamplePoint>
+    /// internal class MyPointAccessor : PointAccessor<PointType>
     /// {     
     ///     public override bool HasNormalFloat3_32 => true;
-    ///     public override ref float3 GetNormalFloat3_32(ExamplePoint point)
+    ///     public override ref float3 GetNormalFloat3_32(PointType point)
     ///     {
     ///         return ref point.Normal;
     ///     }

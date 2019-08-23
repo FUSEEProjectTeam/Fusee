@@ -1,25 +1,67 @@
 ﻿namespace Fusee.Pointcloud.Common
 {
+    /// <summary>
+    /// Available point shapes.
+    /// </summary>
     public enum PointShape
     {
+        /// <summary>
+        /// Every point appears as a rectangle.
+        /// </summary>
         RECT = 0,
+        /// <summary>
+        /// Every point appears as a circle.
+        /// </summary>
         CIRCLE = 1,
+        /// <summary>
+        /// Every point appears as a rectangle with weighted Z-Buffer values to generate a paraboloid.
+        /// </summary>
         PARABOLID = 2,
+        /// <summary>
+        /// Every point appears as a rectangle with weighted Z-Buffer values to generate a cone.
+        /// </summary>
         CONE = 3,
-        SPHERE = 4
+        /// <summary>
+        /// Every point appears as a rectangle with weighted Z-Buffer values to generate a hemisphere.
+        /// </summary>
+        HEMISPHERE = 4
 
     }
 
+    /// <summary>
+    /// Available color modes.
+    /// </summary>
     public enum ColorMode
     {
+        /// <summary>
+        /// RGB value of the point.
+        /// </summary>
         POINT,
+        /// <summary>
+        /// Every point has a single color.
+        /// </summary>
         SINGLE,
+        /// <summary>
+        /// Color coded normals, if available, else every point is black.
+        /// </summary>
         NORMAL,
+        /// <summary>
+        /// Weight in gray scale, if a point shape is used, that uses a weight function.
+        /// </summary>
         WEIGHT,
+        /// <summary>
+        /// Non linear depth.
+        /// </summary>
         DEPTH,
+        /// <summary>
+        /// Intensity, if available from the source point cloud, else every point is black.
+        /// </summary>
         INTENSITY
     }
 
+    /// <summary>
+    /// Available point size modes.
+    /// </summary>
     public enum PointSizeMode
     {
         /// <summary>
@@ -48,12 +90,30 @@
         ADAPTIVE_SIZE = 3
     }
 
+    /// <summary>
+    /// Available Lighting methods.
+    /// </summary>
     public enum Lighting
-    {       
-        UNLIT = 0,       
-        EDL = 1,       
-        DIFFUSE = 2,       
-        BLINN_PHONG = 3,       
+    {      
+        /// <summary>
+        /// Albedo only - no lighting is calculated.
+        /// </summary>
+        UNLIT = 0,
+        /// <summary>
+        /// Eye dome lighting
+        /// </summary>
+        EDL = 1,
+        /// <summary>
+        /// Diffuse lighting
+        /// </summary>
+        DIFFUSE = 2,
+        /// <summary>
+        /// Diffuse lighting with specular highlights.
+        /// </summary>
+        BLINN_PHONG = 3,   
+        /// <summary>
+        /// Only occlusion, calculated in screen space.
+        /// </summary>
         SSAO_ONLY = 4
     }
 }

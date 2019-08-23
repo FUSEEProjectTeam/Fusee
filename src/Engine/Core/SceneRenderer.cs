@@ -969,7 +969,6 @@ namespace Fusee.Engine.Core
                 UpdateLightParamsInPixelShader(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], effect);
                 _rc.Render(rm);
             }
-
         }
 
         private void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)

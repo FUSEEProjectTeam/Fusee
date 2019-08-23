@@ -3,31 +3,14 @@ using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
-using System;
 using System.Collections.Concurrent;
 
 namespace Fusee.Examples.PcRendering.Core
 {
-    public class UpdateShaderParamEventArgs : EventArgs
-    {
-        public string UniformName;
-        public object Value;
-    }
-
     public static class PtRenderingParams
     {
-        public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
-
-        private static int _maxNoOfVisiblePoints = 500000;
-        public static int MaxNoOfVisiblePoints
-        {
-            get { return _maxNoOfVisiblePoints; }
-            set
-            {
-                _maxNoOfVisiblePoints = value;
-            }
-        }
-
+        public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();       
+        public static int MaxNoOfVisiblePoints = 500000;
         public static string PathToOocFile = "E://HolbeinPferdOctree";
 
         private static Lighting _lighting = Lighting.EDL;
@@ -261,14 +244,8 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
                 new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
                 new EffectParameterDeclaration {Name = "CalcSSAO", Value = CalcSSAO ? 1 : 0},
-                new EffectParameterDeclaration {Name = "SSAOStrength", Value = SSAOStrength},
-
-
+                new EffectParameterDeclaration {Name = "SSAOStrength", Value = SSAOStrength}
             });
         }
-
-
     }
-
-
 }

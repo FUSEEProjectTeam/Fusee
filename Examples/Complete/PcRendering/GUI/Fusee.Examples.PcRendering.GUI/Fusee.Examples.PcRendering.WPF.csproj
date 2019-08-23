@@ -24,6 +24,7 @@
     <None Remove="Assets\ptMode_w.png" />
     <None Remove="Assets\size.png" />
     <None Remove="Assets\size_w.png" />
+    <None Remove="Assets\vis_w.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -112,5 +113,8 @@
     <Resource Include="Assets\ptMode_w.png" />
     <Resource Include="Assets\size.png" />
     <Resource Include="Assets\size_w.png" />
+    <Resource Include="Assets\vis_w.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

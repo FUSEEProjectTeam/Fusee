@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Pointcloud.Common
+﻿namespace Fusee.Pointcloud.Common
 {
+    /// <summary>
+    /// Interface for point types or formats. Eg. xyzirgb
+    /// </summary>
     public interface IPointFormat
     {
+
     }
 
     /// <summary>
@@ -17,6 +17,9 @@ namespace Fusee.Pointcloud.Common
         // AABBd AABB { get; }
     }
 
+    /// <summary>
+    /// Implement this into any Point Cloud Reader.
+    /// </summary>
     public interface IPointReader
     {
         /// <summary>

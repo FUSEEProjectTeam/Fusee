@@ -2,8 +2,8 @@
 using System.Diagnostics.Contracts;
 using System.Windows.Markup;
 
-namespace Fusee.Examples.PcRendering.WPF {
-
+namespace Fusee.Examples.PcRendering.WPF
+{
     public class EnumBindingSourceExtension : MarkupExtension
     {
         private Type _enumType;
