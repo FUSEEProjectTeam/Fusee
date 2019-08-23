@@ -101,11 +101,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _noOfLoadedNodes = 5;
 
-        public PtOctantLoader(/*float3 initialCamPos,*/ string fileFolderPath, RenderContext rc)
+        public PtOctantLoader(string fileFolderPath, RenderContext rc)
         {
             _nodesToRender = new Dictionary<Guid, SceneNodeContainer>();
-            _loadedMeshs = new ConcurrentDictionary<Guid, IEnumerable<Mesh>>();
-            //_initCamPos = initialCamPos;
+            _loadedMeshs = new ConcurrentDictionary<Guid, IEnumerable<Mesh>>();            
             _nodesOrderedByProjectionSize = new SortedDictionary<double, SceneNodeContainer>(); // visible nodes ordered by screen-projected-size;
             RC = rc;
 
