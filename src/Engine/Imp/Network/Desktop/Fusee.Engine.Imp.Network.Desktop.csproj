@@ -12,10 +12,10 @@
 
   <ItemGroup>
     <Reference Include="Lidgren.Network">
-      <HintPath>$(FuseeBuildRoot)\ext\Lidgren.Network.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\Lidgren.Network.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 </Project>

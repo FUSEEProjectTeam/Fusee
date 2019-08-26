@@ -11,28 +11,45 @@
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Base.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.GUI">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Xene">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Assets\check-circle.png" />
+    <None Include="Assets\check-circle_filled.png" />
+    <None Include="Assets\crumpled-paper-free.jpg" />
+    <None Include="Assets\frame_gray.png" />
+    <None Include="Assets\frame_green.png" />
+    <None Include="Assets\frame_yellow.png" />
+    <None Include="Assets\FUSEERocket.fus" />
+    <None Include="Assets\FuseeText.png" />
+    <None Include="Assets\Lato-Black.ttf" />
+    <None Include="Assets\lightbulb.png" />
+    <None Include="Assets\minus-oktagon.png" />
+    <None Include="Assets\Monkey.fus" />
+    <None Include="Assets\Raleway-Light.ttf" />
+    <None Include="Assets\Raleway-Regular.ttf" />
   </ItemGroup>
 </Project>

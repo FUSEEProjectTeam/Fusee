@@ -5,6 +5,10 @@
     
     <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
     <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>   
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
+    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
+   
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
     <Authors>FuseeProjectTeam</Authors>
