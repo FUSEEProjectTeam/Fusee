@@ -3,7 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
-using Fusee.LASReader;
+using Fusee.Pointcloud.Reader.LASReader;
 using Fusee.Math.Core;
 using Fusee.Pointcloud.Common;
 using Fusee.Serialization;
