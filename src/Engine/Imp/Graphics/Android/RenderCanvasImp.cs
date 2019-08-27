@@ -399,8 +399,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         protected override void OnUnload(EventArgs e)
         {
-            _renderCanvasImp.DoUnLoad();
-            _renderCanvasImp.Dispose();
         }
 
         protected override void OnResize(EventArgs e)
