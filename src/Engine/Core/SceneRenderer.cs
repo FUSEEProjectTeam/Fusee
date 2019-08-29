@@ -437,8 +437,7 @@ namespace Fusee.Engine.Core
                 // if there is no light in scene then add one (legacyMode)
                 AllLightResults.Add(new LightComponent(), new LightResult
                 {
-                    PositionWorldSpace = float3.UnitZ,
-                    Position = float3.UnitZ,
+                    PositionWorldSpace = float3.UnitZ,                    
                     Active = true,
                     AmbientCoefficient = 0.0f,
                     Attenuation = 0.0f,
@@ -931,12 +930,9 @@ namespace Fusee.Engine.Core
 
                 // Multiply LightPosition with modelview
                 light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
-                light.PositionWorldSpace = _rc.Model.Column3.xyz;
-                light.Position = light.PositionWorldSpace; //TODO: difference between PosInWorldspace and Pos?
 
                 // float4 is really needed
-                var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
-                                          0.0f);
+                var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z, 0.0f);
                 lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
                 lightConeDirectionFloat4.Normalize();
                 light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);
@@ -992,8 +988,8 @@ namespace Fusee.Engine.Core
             if (!light.Active) return;
 
             // Set params in modelview space since the lightning calculation is in modelview space
-
-            _rc.SetFXParam($"allLights[{position}].position", light.PositionWorldSpace);
+            _rc.SetFXParam($"allLights[{position}].position", light.PositionModelViewSpace);
+            _rc.SetFXParam($"allLights[{position}].positionWorldSpace", light.PositionWorldSpace);
             _rc.SetFXParam($"allLights[{position}].intensities", light.Color);
             _rc.SetFXParam($"allLights[{position}].attenuation", light.Attenuation);
             _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
@@ -1135,10 +1131,10 @@ namespace Fusee.Engine.Core
         /// Represents the light status.
         /// </summary>
         public bool Active;
-        /// <summary>
-        /// Represents the position of the light.
-        /// </summary>
-        public float3 Position;
+        ///// <summary>
+        ///// Represents the position of the light.
+        ///// </summary>
+        //public float3 Position;
         /// <summary>
         /// Represents the color.
         /// </summary>
@@ -1240,8 +1236,8 @@ namespace Fusee.Engine.Core
                 ConeDirection = lightComponent.ConeDirection,
                 AmbientCoefficient = lightComponent.AmbientCoefficient,
                 ModelMatrix = State.Model,
-                Position = lightComponent.Position,
-                PositionWorldSpace = State.Model * lightComponent.Position,
+                //Position = lightComponent.Position,
+                PositionWorldSpace = State.Model.Column3.xyz,
                 ConeDirectionWorldSpace = State.Model * lightComponent.ConeDirection,
                 Active = lightComponent.Active,
                 Attenuation = lightComponent.Attenuation

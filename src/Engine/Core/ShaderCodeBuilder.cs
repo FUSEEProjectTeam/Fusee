@@ -994,6 +994,7 @@ namespace Fusee.Engine.Core
             struct Light 
             {
                 vec3 position;
+                vec3 positionWorldSpace;
                 vec4 intensities;
                 vec3 coneDirection;
                 float attenuation;
@@ -1181,22 +1182,7 @@ namespace Fusee.Engine.Core
                 texCount++;
             }
 
-            frag.Append(@"
-                
-            struct Light 
-            {
-                vec3 position;
-                vec4 intensities;
-                vec3 coneDirection;
-                vec4 color;
-                float attenuation;
-                float ambientCoefficient;
-                float coneAngle;
-                int lightType;
-            };
-            
-            uniform Light allLights[MAX_LIGHTS];
-            ");
+            frag.Append(LightStructDeclaration());
 
             frag.Append($"uniform vec2 ScreenParams;\n");
             frag.Append($"uniform mat4 FUSEE_IV;\n");
@@ -1224,10 +1210,10 @@ namespace Fusee.Engine.Core
             vec3 camPos = FUSEE_IV[3].xyz;
             vec3 viewDir = normalize(camPos - FragPos);
 
-            //for(int i = 0; i < MAX_LIGHTS; ++i)
-            //{
-                vec3 lightColor = vec3(1.0,1.0,1.0);//allLights[i].color.xyz;
-                vec3 lightPosition = camPos;//allLights[i].position;
+            for(int i = 0; i < MAX_LIGHTS; ++i)
+            {
+                vec3 lightColor = allLights[i].intensities.xyz;
+                vec3 lightPosition = allLights[i].positionWorldSpace;
 
                 // diffuse
                 vec3 lightDir = normalize(lightPosition - FragPos);
@@ -1239,14 +1225,15 @@ namespace Fusee.Engine.Core
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec *lightColor;
                 lighting += specular;
-            //}
+            }
     
             oColor = vec4(lighting, 1.0);
+            
             
             ");
             frag.Append("}");
 
-            return new ShaderEffect(new[]
+            return  new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
@@ -1264,10 +1251,17 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration {Name = "ScreenParams", Value = ScreenParams},               
-
+                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "ScreenParams", Value = ScreenParams},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].attenuation", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].ambientCoefficient", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneDirection", Value = float3.Zero},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1}
 
             });
         }

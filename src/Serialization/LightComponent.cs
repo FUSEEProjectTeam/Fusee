@@ -43,40 +43,40 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(2)]
         public float4 Color;
-        /// <summary>
-        /// Represents the position of the light.
-        /// </summary>
-        [ProtoMember(3)]
-        public float3 Position;
+        ///// <summary>
+        ///// Represents the position of the light.
+        ///// </summary>
+        //[ProtoMember(3)]
+        //public float3 Position;
         /// <summary>
         /// Represents the attenuation of the light.
         /// </summary>
-        [ProtoMember(4)]
+        [ProtoMember(3)]
         public float Attenuation;
         /// <summary>
         /// Represents the ambient coefficient of the light.
         /// </summary>
-        [ProtoMember(5)]
+        [ProtoMember(4)]
         public float AmbientCoefficient;
         /// <summary>
         /// Represents the type of the light.
         /// </summary>
-        [ProtoMember(6)]
+        [ProtoMember(5)]
         public LightType Type;
         /// <summary>
         /// Represents the spot angle of the light.
         /// </summary>
-        [ProtoMember(7)]
+        [ProtoMember(6)]
         public float ConeAngle;
         /// <summary>
         /// Represents the cone direction of the light.
         /// </summary>
-        [ProtoMember(8)]
+        [ProtoMember(7)]
         public float3 ConeDirection;
-        /// <summary>
-        /// Represents the position in world coordinates.
-        /// </summary>
-        [ProtoMember(9)]
-        public float3 PositionWorldSpace;
+        ///// <summary>
+        ///// Represents the position in world coordinates.
+        ///// </summary>
+        //[ProtoMember(8)]
+        //public float3 PositionWorldSpace;
     }
 }

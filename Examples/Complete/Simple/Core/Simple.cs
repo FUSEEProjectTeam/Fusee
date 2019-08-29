@@ -29,7 +29,7 @@ namespace Fusee.Examples.Simple.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _fovy = M.PiOver4;
+        private readonly float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
@@ -59,7 +59,7 @@ namespace Fusee.Examples.Simple.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            _renderTarget = new RenderTarget(TexRes.HIGH_RES);
+            _renderTarget = new RenderTarget(TexRes.MID_RES);
             _renderTarget.CreatePositionTex();
             _renderTarget.CreateAlbedoSpecularTex();
             _renderTarget.CreateNormalTex();
@@ -98,48 +98,17 @@ namespace Fusee.Examples.Simple.Core
                 renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
             }
 
-            var whiteLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 1, 1), Attenuation = 0.7f, Active = true};
+            var yellowLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true};
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true };
             var blueLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true };
-            _rocketScene.Children.Add(new SceneNodeContainer()
-            {
-                Name = "LightContainer",
-                Children = new ChildList()
-                {
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(-2,0,0) },
-                            whiteLight                           
-                        }
-                    },
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(2,0,0) },
-                            redLight
-                        }
-                    },
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(0,-5,0) },
-                            blueLight
-                        }
-                    }
-                }
-            });           
-
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true };
 
             // Wrap a SceneRenderer around the model.
             _textureRenderer = new SceneRenderer(_rocketScene);
 
             var plane = new Plane() { Normals = null };
 
-            _sceneRenderer = new SceneRenderer(new SceneContainer()
+            var planeScene = new SceneContainer()
             {
                 Children = new List<SceneNodeContainer>()
                 {
@@ -161,7 +130,58 @@ namespace Fusee.Examples.Simple.Core
                         }
                     }
                 }
-            }); 
+            };
+            var aLotOfLights = new ChildList();
+
+            var rnd = new Random();
+            
+
+            for (int i = 0; i < 40; i++)
+            {
+                var rndVal = (float)rnd.NextDouble() * 10;
+
+                aLotOfLights.Add(new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent(){ Translation = new float3(-rndVal,0,0) },
+                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true}
+            }
+                });
+                aLotOfLights.Add(new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent(){ Translation = new float3(rndVal,rndVal,0) },
+                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true }
+        }
+                
+                });
+                aLotOfLights.Add(new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent(){ Translation = new float3(0,rndVal,0) },
+                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true }
+    }
+                });
+                aLotOfLights.Add(new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent(){ Translation = new float3(0,-rndVal,rndVal) },
+                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true }
+}
+                });
+            }
+
+            planeScene.Children.Add(new SceneNodeContainer()
+            {
+                Name = "LightContainer",
+                Children = aLotOfLights
+            });
+
+            _sceneRenderer = new SceneRenderer(planeScene); 
 
             //_guiRenderer = new SceneRenderer(_gui);            
         }
