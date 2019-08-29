@@ -57,6 +57,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             throw new NotImplementedException();
         }
 
+        public void SetShaderParamWritableTexture(IShaderParam param, int texId)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Updates a texture with images obtained from a Video.
         /// </summary>

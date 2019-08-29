@@ -70,7 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (img.PixelData != null)
             {
                 if (tex == null)
-                    tex = CreateTexture(img, false, img.Width, img.Height);
+                    tex = CreateTexture(img, false);
 
                 GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height, format, PixelType.UnsignedByte, img.PixelData);
@@ -136,7 +136,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
         /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(ITexture img, bool repeat, int width, int height)
+        public ITextureHandle CreateTexture(ITexture img, bool repeat)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
@@ -149,7 +149,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Bgra;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, PixelType.UnsignedByte, img.PixelData);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -157,7 +157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Bgr;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, PixelType.UnsignedByte, img.PixelData);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -166,7 +166,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Intensity;
                     format = PixelFormat.Alpha;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, PixelType.UnsignedByte, img.PixelData);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
@@ -178,19 +178,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);                   
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);                  
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToBorder);
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);                   
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);                   
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, PixelType.UnsignedByte, img.PixelData);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                     break;                
                 case ColorFormat.fRGB:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, width, height, 0, format, PixelType.Float, img.PixelData);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
                     repeat = true;
@@ -2167,7 +2167,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureHandle == -1)
                 {
-                    var iTexHandle = CreateTexture(tex, false, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
+                    var iTexHandle = CreateTexture(tex, false);
                     tex.TextureHandle = ((TextureHandle)iTexHandle).Handle;
                 }
 

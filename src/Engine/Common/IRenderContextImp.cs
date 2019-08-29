@@ -248,7 +248,7 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An ITexture that can be used for texturing in the shader.
         /// </returns>
-        ITextureHandle CreateTexture(ITexture imageData, bool repeat, int width, int height);
+        ITextureHandle CreateTexture(ITexture imageData, bool repeat);
 
         /// <summary>
         /// Removes the TextureHandle's buffers and textures from the graphics card's memory

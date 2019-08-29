@@ -781,6 +781,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).Handle);
         }
 
+        public void SetShaderParamWritableTexture(IShaderParam param, int texId)
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
