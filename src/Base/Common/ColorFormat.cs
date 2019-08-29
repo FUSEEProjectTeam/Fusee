@@ -22,6 +22,8 @@
 
         iRGBA,
 
-        fRGB
+        fRGB,
+
+        Depth,
     }
 }

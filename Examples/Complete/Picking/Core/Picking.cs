@@ -85,7 +85,11 @@ namespace Fusee.Examples.Picking.Core
             _scenePicker = new ScenePicker(_scene);
 
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
 #if GUI_SIMPLE
             _gui = CreateGui();
@@ -294,7 +298,11 @@ namespace Fusee.Examples.Picking.Core
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                canvasProjComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
 
             return new SceneContainer

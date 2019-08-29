@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\Monkey.fus" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
@@ -34,5 +38,11 @@
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Monkey.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>

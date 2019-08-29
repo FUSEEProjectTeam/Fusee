@@ -212,11 +212,11 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    refinedShader.Add(line);                   
+                    refinedShader.Add(line);
                 }
             }
 
-          
+
             // replace all names
             foreach (var field in fields)
             {
@@ -228,7 +228,7 @@ namespace Fusee.Engine.Core
                     }
                 }
             }
-            
+
             return String.Join("\n", refinedShader);
         }
 
@@ -266,7 +266,7 @@ namespace Fusee.Engine.Core
             VS = string.Join("\n", _vertexShader);
             CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
-            
+
             // Uber Shader - test purposes!
             //VS = AssetStorage.Get<string>("Shader/UberVertex.vert");
             //PS = AssetStorage.Get<string>("Shader/UberFragment.frag");
@@ -308,7 +308,7 @@ namespace Fusee.Engine.Core
                 HasBump = mc.HasBump,
                 HasApplyLightString = _materialType == MaterialType.MaterialLightComponent &&
                                       (string.IsNullOrEmpty((mc as MaterialLightComponent)?.ApplyLightString))
-                                    
+
             };
         }
 
@@ -372,7 +372,7 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vT"));
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vB"));
             }
-              
+
 
             if (_materialProbs.HasSpecular)
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
@@ -493,9 +493,9 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add($"vB = {Helper.BitangentAttribName};");
             }
 
-                _vertexShader.Add(_meshProbs.HasWeightMap
-                ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
-                : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
+            _vertexShader.Add(_meshProbs.HasWeightMap
+            ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
+            : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
 
             // End of main
             _vertexShader.Add("}");
@@ -602,7 +602,7 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
             _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IV"));
 
-            if(_materialProbs.HasBump)
+            if (_materialProbs.HasBump)
                 _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
 
             // Multipass
@@ -682,7 +682,7 @@ namespace Fusee.Engine.Core
                 }, methodBody));
 
         }
-        
+
         private void AddSpecularLightMethod()
         {
 
@@ -733,7 +733,7 @@ namespace Fusee.Engine.Core
         {
             if (_materialProbs.HasApplyLightString)
                 _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
-            
+
 
             /*  var bumpNormals = new List<string>
               {
@@ -1012,8 +1012,268 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Make ShaderEffect 
+        #region Deferred
+        
+        /// <summary>
+        /// ShaderEffect for rendering into the textures given in a RenderTarget (Geometry Pass).
+        /// </summary>
+        /// <param name="rt">The RenderTarget</param>
+        /// <returns></returns>
+        public static ShaderEffect RenderTargetTextureEffect(RenderTarget rt)
+        {
+            var textures = rt.RenderTextures;
 
+            //------------ vertex shader ------------------//
+            var vert = new StringBuilder();
+
+            vert.Append(Version());
+            vert.Append(EsPrecision());
+
+            vert.Append(@"
+                uniform mat4 FUSEE_M;
+                uniform mat4 FUSEE_MV;
+                uniform mat4 FUSEE_MVP;
+                uniform mat4 FUSEE_ITM;
+                uniform mat4 FUSEE_ITMV;
+                uniform vec4 DiffuseColor;
+
+                in vec3 fuVertex;
+                in vec3 fuNormal;
+                in vec4 fuColor;
+                
+                out vec4 vWorldPos;
+                out vec3 vNormal;
+                out vec4 vColor;               
+
+                ");
+
+            vert.Append(@"
+                void main() 
+                {
+                    vWorldPos = FUSEE_M * vec4(fuVertex.xyz, 1.0);
+                    vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz;
+                    vColor = DiffuseColor;
+
+                    gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
+
+                }");
+
+            //--------- Fragment shader ----------- //
+            var frag = new StringBuilder();
+            frag.Append(Version());
+            frag.Append(EsPrecision());
+
+            var texCount = 0;
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                var tex = textures[i];
+                if (tex == null) continue;
+
+                frag.Append($"layout (location = {texCount}) out vec4 {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
+                texCount++;
+            }
+
+            frag.Append(@"
+                in vec4 vWorldPos;
+                in vec3 vNormal;
+                in vec4 vColor;"
+            );
+
+            frag.Append("void main() {");
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                var tex = textures[i];
+                if (tex == null) continue;
+
+                switch (i)
+                {
+                    case 0: //POSITION
+                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vWorldPos.xyz, vWorldPos.w);");
+                        break;
+                    case 1: //ALBEDO_SPECULAR
+                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
+                        break;
+                    case 2: //NORMAL
+                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(normalize(vNormal.xyz), 1.0);");
+                        break;
+                    case 3: //DEPTH
+                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
+                        break;
+                    case 4: //SSAO
+                        break;
+                }
+            }
+            frag.Append("}");
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration {Name = "FUSEE_ITMV", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_ITM", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_MV", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "DiffuseColor", Value = new float4(1.0f, 0, 1.0f, 1.0f)},
+            });
+
+        }
+
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary>
+        /// <param name="rt"></param>
+        /// <param name="ScreenParams"></param>
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt, float2 ScreenParams)
+        {
+            var textures = rt.RenderTextures;
+
+            var vert = new StringBuilder();
+            vert.Append(Version());
+            vert.Append(EsPrecision());
+
+            vert.Append(@"
+                
+            uniform mat4 FUSEE_MVP;
+            in vec3 fuVertex;
+            out vec2 vTexCoords;
+
+            ");
+
+            vert.Append(@"
+            void main() 
+            {
+
+                vTexCoords = fuVertex.xy * 2.0 * 0.5 + 0.5;
+                gl_Position = vec4(fuVertex.xy * 2.0, 0.0 ,1.0);
+
+            }");
+
+            var frag = new StringBuilder();
+            frag.Append(Version());
+            frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
+            frag.Append(EsPrecision());
+            frag.Append("#define MAX_LIGHTS 3\n");
+
+            var texCount = 0;
+
+            for (int i = 0; i < textures.Length; i++)
+            {
+                var tex = textures[i];
+                if (tex == null) continue;
+
+                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
+                texCount++;
+            }
+
+            frag.Append(@"
+                
+            struct Light 
+            {
+                vec3 position;
+                vec4 intensities;
+                vec3 coneDirection;
+                vec4 color;
+                float attenuation;
+                float ambientCoefficient;
+                float coneAngle;
+                int lightType;
+            };
+            
+            uniform Light allLights[MAX_LIGHTS];
+            ");
+
+            frag.Append($"uniform vec2 ScreenParams;\n");
+            frag.Append($"uniform mat4 FUSEE_IV;\n");
+            frag.Append($"in vec2 vTexCoords;\n");
+            frag.Append($"out vec4 oColor;\n");
+
+            frag.Append(@"void main()
+            {
+            ");
+
+            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+
+            frag.Append(@"
+
+
+            if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
+                discard;
+
+            // then calculate lighting as usual
+            vec3 lighting = DiffuseColor * 0.8; // hard-coded ambient component
+
+            vec3 camPos = FUSEE_IV[3].xyz;
+            vec3 viewDir = normalize(camPos - FragPos);
+
+            //for(int i = 0; i < MAX_LIGHTS; ++i)
+            //{
+                vec3 lightColor = vec3(1.0,1.0,1.0);//allLights[i].color.xyz;
+                vec3 lightPosition = camPos;//allLights[i].position;
+
+                // diffuse
+                vec3 lightDir = normalize(lightPosition - FragPos);
+                vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
+                lighting += diffuse;
+            
+                // specular
+                vec3 reflectDir = reflect(-lightDir, Normal);  
+                float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
+                vec3 specular = SpecularStrength * spec *lightColor;
+                lighting += specular;
+            //}
+    
+            oColor = vec4(lighting, 1.0);
+            
+            ");
+            frag.Append("}");
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "FUSEE_IV", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = "ScreenParams", Value = ScreenParams},               
+
+
+            });
+        }
+        #endregion
+
+        #region Make ShaderEffect
         /// <summary>
         ///     Builds a simple shader effect with diffuse and specular color.
         /// </summary>
@@ -1037,7 +1297,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            
+
             return MakeShaderEffectFromMatComp(temp);
         }
 
@@ -1071,7 +1331,7 @@ namespace Fusee.Engine.Core
 
             return MakeShaderEffectFromMatComp(temp);
         }
-        
+
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
@@ -1111,7 +1371,7 @@ namespace Fusee.Engine.Core
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
-                            AlphaBlendEnable = true   
+                            AlphaBlendEnable = true
                         }
                     }
                 },
@@ -1119,7 +1379,7 @@ namespace Fusee.Engine.Core
             );
             return ret;
         }
-        
+
 
         private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
         {
@@ -1273,7 +1533,7 @@ namespace Fusee.Engine.Core
                 Name = "FUSEE_ITMV",
                 Value = float4x4.Identity
             });
-            
+
             effectParameters.Add(new EffectParameterDeclaration
             {
                 Name = "FUSEE_IMV",
@@ -1291,8 +1551,8 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                    Name = "FUSEE_BONES",
-                    Value = new [] { float4x4.Identity }
+                Name = "FUSEE_BONES",
+                Value = new[] { float4x4.Identity }
             });
 
             return effectParameters;
@@ -1405,6 +1665,6 @@ namespace Fusee.Engine.Core
         public static string LightIntensityName { get; } = "LightIntensity";
 
         #endregion
-              
+
     }
 }

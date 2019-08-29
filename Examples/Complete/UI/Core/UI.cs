@@ -227,7 +227,11 @@ namespace Fusee.Examples.UI.Core
 
             var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
             var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate 
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
             canvas.Components.Insert(0,projComp);
             canvas.AddComponent(canvasMat);

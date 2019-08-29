@@ -83,10 +83,15 @@ namespace Fusee.Examples.PcRendering.Core
         private double _octreeRootLength;
 
         private const float twoPi = M.Pi * 2f;
+
+        private RenderTarget _renderTarget = new RenderTarget();
          
         // Init is called on startup. 
         public override void Init()
         {
+
+            _renderTarget.CreateDepthTex(Width, Height);
+
             IsAlive = true;
                                     
             AppSetup();
@@ -104,10 +109,14 @@ namespace Fusee.Examples.PcRendering.Core
             _scene.Children.Insert(0, new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });
             _scene.Children[0].Components[0] = projectionComponent;
 
-            AddResizeDelegate(delegate { projectionComponent.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projectionComponent.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
             //create depth tex and fbo
-            _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+            //_texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
 
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
@@ -233,10 +242,9 @@ namespace Fusee.Examples.PcRendering.Core
                 {
                     //Render Depth-only pass
                     _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
-                    _sceneRenderer.Render(RC, _texHandle);
+                    _sceneRenderer.Render(RC, _renderTarget);
+                    //_sceneRenderer.Render(RC, _texHandle);
                 }
-
-                
 
                 //Render color pass
                 //Change shader effect in complete scene
@@ -273,15 +281,17 @@ namespace Fusee.Examples.PcRendering.Core
         public override void Resize(ResizeEventArgs e)
         {
             if (!PtRenderingParams.CalcSSAO && PtRenderingParams.Lighting == Lighting.UNLIT) return;
-            
+
             //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
                 RC.RemoveTextureHandle(_texHandle);
-                _texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+                //_texHandle = RC.CreateWritableTexture(Width, Height, WritableTextureFormat.Depth);
+
+                //TODO: resize writable textures?
 
                 _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-                _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+                _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), (WritableTexture)_renderTarget.RenderTextures[3], _octreeTex, _octreeRootCenter, _octreeRootLength);
             }          
 
             _isTexInitialized = true;            
@@ -362,7 +372,7 @@ namespace Fusee.Examples.PcRendering.Core
             _octreeRootLength = ptRootComponent.Size;
 
             _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
-            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _texHandle, _octreeTex, _octreeRootCenter, _octreeRootLength);
+            _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), (WritableTexture)_renderTarget.RenderTextures[3]/*_texHandle*/, _octreeTex, _octreeRootCenter, _octreeRootLength);
 
             IsSceneLoaded = true;
         }
@@ -520,7 +530,11 @@ namespace Fusee.Examples.PcRendering.Core
             //Create canvas projection component and add resize delegate
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                canvasProjComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
             return new SceneContainer
             {

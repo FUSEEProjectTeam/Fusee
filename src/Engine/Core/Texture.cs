@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
         #endregion
 
-        private readonly ImageData _imageData;
+        protected ImageData _imageData;
 
         #region Properties
 
@@ -70,6 +70,8 @@ namespace Fusee.Engine.Core
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
         #endregion
+
+        protected Texture() { }
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.

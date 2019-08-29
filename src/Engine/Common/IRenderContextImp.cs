@@ -204,6 +204,13 @@ namespace Fusee.Engine.Common
         void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>
+        /// Sets a Shader Parameter to a created writable texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texId">An int probably returned from CreateTexture() method.</param>
+        void SetShaderParamWritableTexture(IShaderParam param, int texId);
+
+        /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
@@ -241,7 +248,7 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An ITexture that can be used for texturing in the shader.
         /// </returns>
-        ITextureHandle CreateTexture(ITexture imageData, bool repeat);
+        ITextureHandle CreateTexture(ITexture imageData, bool repeat, int width, int height);
 
         /// <summary>
         /// Removes the TextureHandle's buffers and textures from the graphics card's memory
@@ -276,7 +283,7 @@ namespace Fusee.Engine.Common
         /// <returns>
         /// An <see cref="ITextureHandle"/>ITextureHandle that can be used for of screen rendering
         /// </returns>
-        ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
+        //ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
 
         /*
         /// <summary>
@@ -659,6 +666,9 @@ namespace Fusee.Engine.Common
         /// <param name="textureHandle">The textureHandle as target</param>
         ///// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
         void SetRenderTarget(ITextureHandle textureHandle);
+
+
+        void SetRenderTarget(IRenderTarget renderTarget);
 
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture

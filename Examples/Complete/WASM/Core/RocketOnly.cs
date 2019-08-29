@@ -64,7 +64,11 @@ namespace Fusee.Examples.RocketOnly.Core
 
                 //Add resize delegate
                 var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-                AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+                AddResizeDelegate(delegate
+                {
+                    projComp.Resize(Width, Height);
+                    RC.Viewport(0, 0, Width, Height);
+                });
                 _sceneRenderer = new SceneRenderer(_rocketScene);
                 Diagnostics.Log("Rocket Set");
                 projComp.Resize(Width, Height);

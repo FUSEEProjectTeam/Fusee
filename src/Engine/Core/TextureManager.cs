@@ -11,6 +11,7 @@ namespace Fusee.Engine.Core
         private Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
 
         private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
+        private Dictionary<Suid, int> _identifierToWritableTextureHandleDictionary = new Dictionary<Suid, int>();
 
         private void Remove(ITextureHandle textureHandle)
         {
@@ -46,10 +47,22 @@ namespace Fusee.Engine.Core
             }
         }
 
+
+        private int RegisterNewWritableTexture(WritableTexture texture)
+        {            
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToWritableTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
+
+            return texture.TextureHandle;
+            
+        }
+
         private ITextureHandle RegisterNewTexture(Texture texture, bool repeat)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
-            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture, repeat);
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture, repeat, texture.Width, texture.Height);
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -74,6 +87,15 @@ namespace Fusee.Engine.Core
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out foundTextureHandle))
             {
                 return RegisterNewTexture(texture, repeat);
+            }
+            return foundTextureHandle;
+        }
+
+        public int GetWritableTextureHandleFromTexture(WritableTexture texture)
+        {    
+            if (!_identifierToWritableTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            {
+                return RegisterNewWritableTexture(texture);
             }
             return foundTextureHandle;
         }

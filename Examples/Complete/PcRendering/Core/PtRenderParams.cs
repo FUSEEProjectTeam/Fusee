@@ -186,7 +186,7 @@ namespace Fusee.Examples.PcRendering.Core
             });
         }
 
-        internal static ShaderEffect ColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, ITextureHandle depthTexHandle, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
+        internal static ShaderEffect ColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex/*ITextureHandle depthTexHandle*/, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             var kernelLength = 32;
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
@@ -226,7 +226,7 @@ namespace Fusee.Examples.PcRendering.Core
                 new EffectParameterDeclaration {Name = "ColorMode", Value = (int)ColorMode},
 
                 new EffectParameterDeclaration {Name = "Lighting", Value = (int)Lighting},
-                new EffectParameterDeclaration{Name = "DepthTex", Value = depthTexHandle},
+                new EffectParameterDeclaration{Name = "DepthTex", Value = depthTex},
                 new EffectParameterDeclaration{Name = "EDLStrength", Value = EdlStrength},
                 new EffectParameterDeclaration{Name = "EDLNeighbourPixels", Value = EdlNoOfNeighbourPx},
                 new EffectParameterDeclaration {Name = "SpecularStrength", Value = SpecularStrength},

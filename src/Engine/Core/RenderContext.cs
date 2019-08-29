@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core
             {
                 if (tmpFXParam.Equals(value)) return; // no new value
 
-               _allFXParams[name] = value;
+                _allFXParams[name] = value;
 
                 // Update ShaderEffect
                 _currentShaderEffect.SetEffectParam(name, value);
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
             _allFXParams.Add(name, value);
 
             // Update ShaderEffect
-           _currentShaderEffect.SetEffectParam(name, value);
+            _currentShaderEffect.SetEffectParam(name, value);
         }
 
         // Settable matrices
@@ -154,7 +154,7 @@ namespace Fusee.Engine.Core
         {
             // ReSharper disable InconsistentNaming
             public IShaderParam FUSEE_M;
-            public IShaderParam FUSEE_V;            
+            public IShaderParam FUSEE_V;
             public IShaderParam FUSEE_MV;
 
             public IShaderParam FUSEE_P;
@@ -790,7 +790,7 @@ namespace Fusee.Engine.Core
             //_debugShader = Shaders.GetColorShader(this);
             //_debugColor = _debugShader.GetShaderParam("color");
 
-            
+
         }
 
         #endregion
@@ -810,7 +810,7 @@ namespace Fusee.Engine.Core
 
             // Normal versions of MV and P
             if (_currentShaderParams.FUSEE_M != null)
-               SetFXParam("FUSEE_M", Model);
+                SetFXParam("FUSEE_M", Model);
 
             if (_currentShaderParams.FUSEE_V != null)
                 SetFXParam("FUSEE_V", View);
@@ -1004,10 +1004,10 @@ namespace Fusee.Engine.Core
         /// <returns>
         /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
         /// </returns>
-        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
-        {
-            return _rci.CreateWritableTexture(width, height, textureFormat);
-        }
+        //public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
+        //{
+        //    return _rci.CreateWritableTexture(width, height, textureFormat);
+        //}
 
         /// <summary>
         /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
@@ -1028,6 +1028,28 @@ namespace Fusee.Engine.Core
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle);
         }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
+        public void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
+        {
+            int textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
+            _rci.SetShaderParamWritableTexture(param, textureHandle);
+        }
+
+        ///// <summary>
+        ///// Sets a Shader Parameter to a created texture.
+        ///// </summary>
+        ///// <param name="param">Shader Parameter used for texture binding.</param>
+        ///// <param name="texture">An ITexture.</param>
+        //public void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
+        //{
+        //    ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+        //    _rci.SetShaderParamTexture(param, texture.TextureHandle);
+        //}
 
         //  // TEXHANDLE_BYPASS
         public void SetShaderParamTextureHandle(IShaderParam param, ITextureHandle textureHandle)
@@ -1168,7 +1190,7 @@ namespace Fusee.Engine.Core
             }
 
         }
-        
+
 
         /// <summary>
         /// Activates the passed shader program as the current shader for geometry rendering.
@@ -1198,10 +1220,10 @@ namespace Fusee.Engine.Core
         public void SetShaderEffect(ShaderEffect ef)
         {
             if (_rci == null)
-               throw new ArgumentNullException("rc", "must pass a valid render context.");
+                throw new ArgumentNullException("rc", "must pass a valid render context.");
 
             if (ef == null)
-                return;          
+                return;
 
             // Is this shadereffect already built?
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
@@ -1241,7 +1263,7 @@ namespace Fusee.Engine.Core
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
-        
+
 
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
@@ -1296,7 +1318,7 @@ namespace Fusee.Engine.Core
                     currentShaderParamInfo.Name = trimmed;
                     shaderParamInfos[j] = currentShaderParamInfo;
                 }*/
- 
+
 
                 // check for variables which exists in ParamDecl but not in paramList
                 /* TODO: Disabled - fail @ Webbuild!
@@ -1356,7 +1378,7 @@ namespace Fusee.Engine.Core
                                 )
                                 ||
                                 (paramNew_.Type.IsAssignableFrom(initValType))
-                             ) 
+                             )
                             && (!paramNew_.Name.Contains("BONES") && !paramNew_.Name.Contains("[0]"))
                         )
                         {
@@ -1627,21 +1649,26 @@ namespace Fusee.Engine.Core
         }
 
 
+        ///// <summary>
+        ///// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        ///// </summary>
+        ///// <param name="texture">The texture as target</param>
+        //public void SetRenderTarget(ITextureHandle textureHandle = null)
+        //{
+        //    if (textureHandle != null)
+        //    {
+        //        //ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
+        //        _rci.SetRenderTarget(textureHandle);
+        //    }            
+        //}
+
         /// <summary>
         /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITextureHandle textureHandle = null)
+        public void SetRenderTarget(RenderTarget renderTarget = null)
         {
-            if (textureHandle != null)
-            {
-                //ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
-                _rci.SetRenderTarget(textureHandle);
-            }
-            else
-            {
-                _rci.SetRenderTarget(null);
-            }
+            _rci.SetRenderTarget(renderTarget);
         }
 
         /// <summary>
@@ -1686,7 +1713,7 @@ namespace Fusee.Engine.Core
                     SetShader(sFxParam.CompiledShaders[i]);
 
                     foreach (var param in sFxParam.ParamsPerPass[i])
-                    {                       
+                    {
                         SetShaderParamT(param);
                     }
 
@@ -1705,7 +1732,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-              
+
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }
@@ -1716,11 +1743,6 @@ namespace Fusee.Engine.Core
         /// <param name="param"></param>
         internal void SetShaderParamT(EffectParam param)
         {
-            if(param.Info.Name == "SSAOKernel")
-            {
-                var t = 1;
-            }
-
             if (param.Info.Type == typeof(int))
             {
                 SetShaderParam(param.Info.Handle, (int)param.Value);
@@ -1753,7 +1775,7 @@ namespace Fusee.Engine.Core
                 if (param.Info.Size > 1)
                 {
                     // param is an array
-                    var paramArray = (float4x4[]) param.Value;
+                    var paramArray = (float4x4[])param.Value;
                     SetShaderParam(param.Info.Handle, paramArray);
                     return;
                 }
@@ -1763,10 +1785,14 @@ namespace Fusee.Engine.Core
             {
                 SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
+            else if (param.Value is IWritableTexture)
+            {
+                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
+            }
             else if (param.Info.Type == typeof(ITexture))
             {
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
-            }
+            }            
             else if (param.Info.Type == typeof(ITextureHandle))  //  // TEXHANDLE_BYPASS
             {
                 SetShaderParamTextureHandle(param.Info.Handle, (ITextureHandle)param.Value);

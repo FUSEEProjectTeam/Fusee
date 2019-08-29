@@ -606,13 +606,27 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc"></param>
         /// <param name="texHandle">Optional parameter: set this if you want to render to a texture that has the given handle.</param>
-        public void Render(RenderContext rc, ITextureHandle texHandle = null)
+        //public void Render(RenderContext rc, ITextureHandle texHandle = null)
+        //{
+        //    SetContext(rc);
+
+        //    rc.SetRenderTarget(texHandle);
+        //    Traverse(_sc.Children);
+        //}
+
+        public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
             SetContext(rc);
 
-            rc.SetRenderTarget(texHandle);
+            rc.SetRenderTarget(renderTarget);
             Traverse(_sc.Children);
         }
+
+        //public void Render(RenderContext rc)
+        //{
+        //    SetContext(rc);            
+        //    Traverse(_sc.Children);
+        //}
 
 
         #region Visitors
@@ -624,7 +638,7 @@ namespace Fusee.Engine.Core
         public void RenderProjection(ProjectionComponent pc)
         {
             _rc.Projection = pc.Matrix();
-            _rc.Viewport(0, 0, pc.Width, pc.Height);
+            //_rc.Viewport(0, 0, pc.Width, pc.Height);
         }
 
         [VisitMethod]
@@ -917,6 +931,8 @@ namespace Fusee.Engine.Core
 
                 // Multiply LightPosition with modelview
                 light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
+                light.PositionWorldSpace = _rc.Model.Column3.xyz;
+                light.Position = light.PositionWorldSpace; //TODO: difference between PosInWorldspace and Pos?
 
                 // float4 is really needed
                 var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z,
@@ -977,7 +993,7 @@ namespace Fusee.Engine.Core
 
             // Set params in modelview space since the lightning calculation is in modelview space
 
-            _rc.SetFXParam($"allLights[{position}].position", light.PositionModelViewSpace);
+            _rc.SetFXParam($"allLights[{position}].position", light.PositionWorldSpace);
             _rc.SetFXParam($"allLights[{position}].intensities", light.Color);
             _rc.SetFXParam($"allLights[{position}].attenuation", light.Attenuation);
             _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);

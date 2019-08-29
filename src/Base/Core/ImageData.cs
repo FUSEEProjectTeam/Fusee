@@ -63,13 +63,14 @@ namespace Fusee.Base.Core
 
             PixelData = new byte[byteSize];
 
-            for (int i = 0; i < byteSize; i += PixelFormat.BytesPerPixel)
-            {
-                PixelData[i] = 255;
-                PixelData[i + 1] = 127;
-                PixelData[i + 2] = 127;
-                PixelData[i + 3] = 255;
-            }
+            //TODO: fill? Does not work with ColorFormat.Intensity
+            //for (int i = 0; i < byteSize; i += PixelFormat.BytesPerPixel)
+            //{
+            //    PixelData[i] = 255;
+            //    PixelData[i + 1] = 127;
+            //    PixelData[i + 2] = 127;
+            //    PixelData[i + 3] = 255;
+            //}
         }
 
         /// <summary>

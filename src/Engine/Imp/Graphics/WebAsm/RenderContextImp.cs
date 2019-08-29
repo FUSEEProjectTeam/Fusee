@@ -2072,6 +2072,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             */
         }
 
+        public void SetRenderTarget(IRenderTarget renderTarget)
+        {
+            throw new NotImplementedException("Render to Framebuffer is not yet implemented in web context");
+        }
+
+
         /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
         /// The Viewport is the portion of the final image window.

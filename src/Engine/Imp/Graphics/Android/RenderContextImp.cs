@@ -1948,6 +1948,37 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new NotImplementedException();
         }
 
+        public void SetRenderTarget(IRenderTarget renderTarget)
+        {
+            int gBuffer;
+            if (renderTarget.GBufferHandle == -1)
+            {
+                GL.GenFramebuffers(1, out gBuffer);
+                renderTarget.GBufferHandle = gBuffer;
+            }
+            else
+            {
+                gBuffer = renderTarget.GBufferHandle;
+            }
+
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
+            var bufferTexCount = 0;
+
+            for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+            {
+                var tex = renderTarget.RenderTextures[i];
+                if (tex == null) continue;
+
+                bufferTexCount++;
+
+                var id = CreateTexture(tex, false);
+                tex.TextureHandle = ((TextureHandle)id).Handle;
+
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + i, TextureTarget.Texture2D, ((TextureHandle)id).Handle, 0);
+            }
+        }
+
+
         public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
         {
             throw new NotImplementedException();
