@@ -1,16 +1,15 @@
-﻿using Fusee.Base.Common;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
-using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
+using Fusee.Engine.GUI;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -18,171 +17,46 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz,  _angleVert , _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRenderer _textureRenderer;
         private SceneRenderer _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private readonly float _fovy = M.PiOver4;
+        private float _fovy = M.PiOver4;
 
         private SceneRenderer _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        private RenderTarget _renderTarget;      
-        
         private bool _keys;
-
-        private EventHandler<ResizeEventArgs> _resizeDelLightingPass;
-
-        private float4 _texClearColor = new float4(1, 1, 1, 1);
-        private float4 _backgroundColor = new float4(0, 0, 0, 1);
 
         // Init is called on startup. 
         public override void Init()
         {
             _gui = CreateGui();
-            
+            Resize(new ResizeEventArgs(Width, Height));
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = _backgroundColor;
+            RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            _renderTarget = new RenderTarget(TexRes.MID_RES);
-            _renderTarget.CreatePositionTex();
-            _renderTarget.CreateAlbedoSpecularTex();
-            _renderTarget.CreateNormalTex();
-            _renderTarget.CreateDepthTex();
-            _renderTarget.CreateSSAOTex();
-            //_renderTarget.CreateStencilTex();
-
             //Add resize delegate
-            var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-
-            _resizeDelLightingPass = delegate 
-            {
-                perspectiveProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            };
-
-            AddResizeDelegate(_resizeDelLightingPass);           
-
-            foreach (var child in _rocketScene.Children)
-            {
-                var renderTargetMat = new ShaderEffectComponent()
-                {
-                    Effect = ShaderCodeBuilder.RenderTargetTextureEffect(_renderTarget),
-                };
-
-                var oldEffect = child.GetComponent<ShaderEffectComponent>().Effect;
-
-                var col = (float4)oldEffect.GetEffectParam("DiffuseColor");
-                var specStrength = (float)oldEffect.GetEffectParam("SpecularIntensity");
-                
-                col.a = specStrength; 
-
-                child.RemoveComponent<ShaderEffectComponent>();
-
-                child.Components.Insert(1, renderTargetMat);               
-                renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
-            }
-
-            var yellowLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true};
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true };
-            var blueLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true };
+            var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
+            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
-            _textureRenderer = new SceneRenderer(_rocketScene);
-
-            var plane = new Plane() { Normals = null };
-            var lightMultiplier = 1;
-            var planeScene = new SceneContainer()
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            perspectiveProjComp,
-                            new TransformComponent()
-                            {
-                                Scale = new float3(1,1,1)
-                            },
-                            new ShaderEffectComponent()
-                            {
-                                Effect = ShaderCodeBuilder.DeferredLightingPassEffect(_renderTarget, lightMultiplier*4)
-                            },
-                            plane
-
-                        }
-                    }
-                }
-            };
-            var aLotOfLights = new ChildList();
-
-            var rnd = new Random();
-            
-
-            for (int i = 0; i < lightMultiplier; i++)
-            {
-                var rndVal = (float)rnd.NextDouble() * 10;
-
-                aLotOfLights.Add(new SceneNodeContainer()
-                {
-                    Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(-rndVal,0,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true}
-            }
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
-                {
-                    Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(rndVal,rndVal,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true }
-        }
-                
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
-                {
-                    Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(0,rndVal,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true }
-    }
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
-                {
-                    Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(0,-rndVal,rndVal) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true }
-}
-                });
-            }
-
-            planeScene.Children.Add(new SceneNodeContainer()
-            {
-                Name = "LightContainer",
-                Children = aLotOfLights
-            });
-
-            _sceneRenderer = new SceneRenderer(planeScene);
-            _guiRenderer = new SceneRenderer(_gui);            
+            _sceneRenderer = new SceneRenderer(_rocketScene);
+            _guiRenderer = new SceneRenderer(_gui);
         }
 
 
@@ -231,7 +105,6 @@ namespace Fusee.Examples.Simple.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot;
 
@@ -239,33 +112,20 @@ namespace Fusee.Examples.Simple.Core
             _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            if (!Mouse.Desc.Contains("Android"))
+            if(!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            RC.ClearColor = _texClearColor;
-            RC.Viewport(0, 0, (int)_renderTarget.TextureResolution, (int)_renderTarget.TextureResolution);
+               
             // Render the scene loaded in Init()
-            _textureRenderer.Render(RC, _renderTarget);
-
-            RC.ClearColor = _backgroundColor;
-            RC.Viewport(0, 0, Width, Height);
-            RC.View = mtxCam;
             _sceneRenderer.Render(RC);
-
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-       
-        public override void Resize(ResizeEventArgs e)
-        {
-                           
         }
 
         private SceneContainer CreateGui()
@@ -332,11 +192,7 @@ namespace Fusee.Examples.Simple.Core
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate
-            {
-                canvasProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
             return new SceneContainer
             {

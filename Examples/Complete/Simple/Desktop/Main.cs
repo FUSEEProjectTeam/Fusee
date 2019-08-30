@@ -8,7 +8,6 @@ using Fusee.Serialization;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
-using System;
 
 namespace Fusee.Examples.Simple.Desktop
 {
@@ -16,8 +15,6 @@ namespace Fusee.Examples.Simple.Desktop
     {
         public static void Main()
         {
-            Console.ReadKey();
-
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 

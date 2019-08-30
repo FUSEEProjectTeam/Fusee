@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Scene.proto',
   package='',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bScene.proto\x1a\tbcl.proto\"3\n\x05\x41\x41\x42\x42\x66\x12\x14\n\x03min\x18\x01 \x01(\x0b\x32\x07.float3\x12\x14\n\x03max\x18\x02 \x01(\x0b\x32\x07.float3\"B\n\x12\x41nimationComponent\x12,\n\x0f\x41nimationTracks\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"\xb6\x03\n\x19\x41nimationKeyContainerBase\x12\x0f\n\x04Time\x18\x01 \x01(\x02:\x01\x30\x12\x41\n\x1b\x41nimationKeyContainerDouble\x18\x64 \x01(\x0b\x32\x1c.AnimationKeyContainerDouble\x12;\n\x18\x41nimationKeyContainerInt\x18\x65 \x01(\x0b\x32\x19.AnimationKeyContainerInt\x12?\n\x1a\x41nimationKeyContainerFloat\x18\x66 \x01(\x0b\x32\x1b.AnimationKeyContainerFloat\x12\x41\n\x1b\x41nimationKeyContainerFloat2\x18g \x01(\x0b\x32\x1c.AnimationKeyContainerFloat2\x12\x41\n\x1b\x41nimationKeyContainerFloat3\x18h \x01(\x0b\x32\x1c.AnimationKeyContainerFloat3\x12\x41\n\x1b\x41nimationKeyContainerFloat4\x18i \x01(\x0b\x32\x1c.AnimationKeyContainerFloat4\"/\n\x1b\x41nimationKeyContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\".\n\x1a\x41nimationKeyContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"5\n\x1b\x41nimationKeyContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"5\n\x1b\x41nimationKeyContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"5\n\x1b\x41nimationKeyContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\",\n\x18\x41nimationKeyContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"\xc4\x01\n\x17\x41nimationTrackContainer\x12+\n\x0eSceneComponent\x18\x01 \x01(\x0b\x32\x13.bcl.NetObjectProxy\x12\x10\n\x08Property\x18\x02 \x01(\t\x12\x1f\n\x06TypeId\x18\x03 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12&\n\tKeyFrames\x18\x04 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12!\n\x08LerpType\x18\x05 \x01(\x0e\x32\t.LerpType:\x04Lerp\"\x1d\n\rBoneComponent\x12\x0c\n\x04Name\x18\x01 \x01(\t\"=\n\x14\x42umpChannelContainer\x12\x0f\n\x07Texture\x18\x01 \x01(\t\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"8\n\x1aKeyValuePair_UInt32_UInt32\x12\x0b\n\x03Key\x18\x01 \x01(\r\x12\r\n\x05Value\x18\x02 \x01(\r\"\x8d\x02\n\x0eLightComponent\x12\x15\n\x06\x41\x63tive\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x16\n\x05\x43olor\x18\x02 \x01(\x0b\x32\x07.float4\x12\x19\n\x08Position\x18\x03 \x01(\x0b\x32\x07.float3\x12\x16\n\x0b\x41ttenuation\x18\x04 \x01(\x02:\x01\x30\x12\x1d\n\x12\x41mbientCoefficient\x18\x05 \x01(\x02:\x01\x30\x12\x1f\n\x04Type\x18\x06 \x01(\x0e\x32\n.LightType:\x05Point\x12\x14\n\tConeAngle\x18\x07 \x01(\x02:\x01\x30\x12\x1e\n\rConeDirection\x18\x08 \x01(\x0b\x32\x07.float3\x12#\n\x12PositionWorldSpace\x18\t \x01(\x0b\x32\x07.float3\"\x8b\x01\n\x13MatChannelContainer\x12\x16\n\x05\x43olor\x18\x01 \x01(\x0b\x32\x07.float4\x12\x0f\n\x07Texture\x18\x02 \x01(\t\x12\x0e\n\x03Mix\x18\x03 \x01(\x02:\x01\x30\x12;\n\x18SpecularChannelContainer\x18\x64 \x01(\x0b\x32\x19.SpecularChannelContainer\"\x9f\x02\n\x11MaterialComponent\x12%\n\x07\x44iffuse\x18\x01 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08Specular\x18\x02 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08\x45missive\x18\x03 \x01(\x0b\x32\x14.MatChannelContainer\x12#\n\x04\x42ump\x18\x04 \x01(\x0b\x32\x15.BumpChannelContainer\x12\x38\n\x16MaterialLightComponent\x18\xc8\x01 \x01(\x0b\x32\x17.MaterialLightComponent\x12\x34\n\x14MaterialPBRComponent\x18\xc9\x01 \x01(\x0b\x32\x15.MaterialPBRComponent\"P\n\x16MaterialLightComponent\x12\x18\n\x10\x41pplyLightString\x18\x01 \x01(\t\x12\x1c\n\x14\x46ragmentShaderString\x18\x02 \x01(\t\"l\n\x14MaterialPBRComponent\x12\x19\n\x0eRoughnessValue\x18\x01 \x01(\x02:\x01\x30\x12\x1d\n\x12\x46resnelReflectance\x18\x02 \x01(\x02:\x01\x30\x12\x1a\n\x0f\x44iffuseFraction\x18\x03 \x01(\x02:\x01\x30\"\x9a\x02\n\x04Mesh\x12\x19\n\x08Vertices\x18\x01 \x03(\x0b\x32\x07.float3\x12\x0e\n\x06\x43olors\x18\x02 \x03(\r\x12\x18\n\x07Normals\x18\x03 \x03(\x0b\x32\x07.float3\x12\x14\n\x03UVs\x18\x04 \x03(\x0b\x32\x07.float2\x12\x1c\n\x0b\x42oneWeights\x18\x05 \x03(\x0b\x32\x07.float4\x12\x1c\n\x0b\x42oneIndices\x18\x06 \x03(\x0b\x32\x07.float4\x12\x11\n\tTriangles\x18\x07 \x03(\r\x12\x1b\n\x0b\x42oundingBox\x18\x08 \x01(\x0b\x32\x06.AABBf\x12\x19\n\x08Tangents\x18\t \x03(\x0b\x32\x07.float4\x12\x1b\n\nBiTangents\x18\n \x03(\x0b\x32\x07.float3\x12\x13\n\x08MeshType\x18\x0b \x01(\x05:\x01\x30\"_\n\nRenderPass\x12\n\n\x02VS\x18\x01 \x01(\t\x12\n\n\x02PS\x18\x02 \x01(\t\x12\x39\n\x14RenderStateContainer\x18\x03 \x03(\x0b\x32\x1b.KeyValuePair_UInt32_UInt32\"\xf3\x02\n\x17SceneComponentContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12/\n\x12TransformComponent\x18\x64 \x01(\x0b\x32\x13.TransformComponent\x12\x13\n\x04Mesh\x18\x65 \x01(\x0b\x32\x05.Mesh\x12-\n\x11MaterialComponent\x18\x66 \x01(\x0b\x32\x12.MaterialComponent\x12\'\n\x0eLightComponent\x18g \x01(\x0b\x32\x0f.LightComponent\x12)\n\x0fWeightComponent\x18h \x01(\x0b\x32\x10.WeightComponent\x12/\n\x12\x41nimationComponent\x18i \x01(\x0b\x32\x13.AnimationComponent\x12%\n\rBoneComponent\x18j \x01(\x0b\x32\x0e.BoneComponent\x12)\n\x0fShaderComponent\x18k \x01(\x0b\x32\x10.ShaderComponent\"U\n\x0eSceneContainer\x12\x1c\n\x06Header\x18\x01 \x01(\x0b\x32\x0c.SceneHeader\x12%\n\x08\x43hildren\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"]\n\x0bSceneHeader\x12\x12\n\x07Version\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\tGenerator\x18\x02 \x01(\t\x12\x11\n\tCreatedBy\x18\x03 \x01(\t\x12\x14\n\x0c\x43reationDate\x18\x04 \x01(\t\"r\n\x12SceneNodeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\'\n\nComponents\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12%\n\x08\x43hildren\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"b\n\x0fShaderComponent\x12!\n\x0c\x45\x66\x66\x65\x63tPasses\x18\x01 \x03(\x0b\x32\x0b.RenderPass\x12,\n\x0f\x45\x66\x66\x65\x63tParameter\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"F\n\x18SpecularChannelContainer\x12\x14\n\tShininess\x18\x01 \x01(\x02:\x01\x30\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"e\n\x12TransformComponent\x12\x1c\n\x0bTranslation\x18\x01 \x01(\x0b\x32\x07.float3\x12\x19\n\x08Rotation\x18\x02 \x01(\x0b\x32\x07.float3\x12\x16\n\x05Scale\x18\x03 \x01(\x0b\x32\x07.float3\"\x97\x03\n\rTypeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\x1f\n\x06TypeId\x18\x02 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12\x31\n\x13TypeContainerDouble\x18\x64 \x01(\x0b\x32\x14.TypeContainerDouble\x12+\n\x10TypeContainerInt\x18\x65 \x01(\x0b\x32\x11.TypeContainerInt\x12/\n\x12TypeContainerFloat\x18\x66 \x01(\x0b\x32\x13.TypeContainerFloat\x12\x31\n\x13TypeContainerFloat2\x18g \x01(\x0b\x32\x14.TypeContainerFloat2\x12\x31\n\x13TypeContainerFloat3\x18h \x01(\x0b\x32\x14.TypeContainerFloat3\x12\x31\n\x13TypeContainerFloat4\x18i \x01(\x0b\x32\x14.TypeContainerFloat4\x12-\n\x11TypeContainerBool\x18j \x01(\x0b\x32\x12.TypeContainerBool\")\n\x11TypeContainerBool\x12\x14\n\x05Value\x18\x01 \x01(\x08:\x05\x66\x61lse\"\'\n\x13TypeContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\"&\n\x12TypeContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"-\n\x13TypeContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"-\n\x13TypeContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"-\n\x13TypeContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\"$\n\x10TypeContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"8\n\x0cVertexWeight\x12\x15\n\nJointIndex\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\x06Weight\x18\x02 \x01(\x02:\x01\x30\"8\n\x10VertexWeightList\x12$\n\rVertexWeights\x18\x01 \x03(\x0b\x32\r.VertexWeight\"\x80\x01\n\x0fWeightComponent\x12$\n\tWeightMap\x18\x01 \x03(\x0b\x32\x11.VertexWeightList\x12#\n\x06Joints\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12\"\n\x0f\x42indingMatrices\x18\x03 \x03(\x0b\x32\t.float4x4\"$\n\x06\x66loat2\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\"2\n\x06\x66loat3\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\"@\n\x06\x66loat4\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\x12\x0c\n\x01w\x18\x04 \x01(\x02:\x01\x30\"f\n\x08\x66loat4x4\x12\x15\n\x04Row0\x18\x01 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row1\x18\x02 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row2\x18\x03 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row3\x18\x04 \x01(\x0b\x32\x07.float4*\x1f\n\x08LerpType\x12\x08\n\x04Lerp\x10\x00\x12\t\n\x05Slerp\x10\x01*:\n\tLightType\x12\t\n\x05Point\x10\x00\x12\x0c\n\x08Parallel\x10\x01\x12\x08\n\x04Spot\x10\x02\x12\n\n\x06Legacy\x10\x03*V\n\x06TypeId\x12\n\n\x06\x44ouble\x10\x00\x12\x07\n\x03Int\x10\x01\x12\t\n\x05\x46loat\x10\x02\x12\n\n\x06\x46loat2\x10\x03\x12\n\n\x06\x46loat3\x10\x04\x12\n\n\x06\x46loat4\x10\x05\x12\x08\n\x04\x42ool\x10\x06')
+  serialized_pb=_b('\n\x0bScene.proto\x1a\tbcl.proto\"3\n\x05\x41\x41\x42\x42\x66\x12\x14\n\x03min\x18\x01 \x01(\x0b\x32\x07.float3\x12\x14\n\x03max\x18\x02 \x01(\x0b\x32\x07.float3\"B\n\x12\x41nimationComponent\x12,\n\x0f\x41nimationTracks\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"\xb6\x03\n\x19\x41nimationKeyContainerBase\x12\x0f\n\x04Time\x18\x01 \x01(\x02:\x01\x30\x12\x41\n\x1b\x41nimationKeyContainerDouble\x18\x64 \x01(\x0b\x32\x1c.AnimationKeyContainerDouble\x12;\n\x18\x41nimationKeyContainerInt\x18\x65 \x01(\x0b\x32\x19.AnimationKeyContainerInt\x12?\n\x1a\x41nimationKeyContainerFloat\x18\x66 \x01(\x0b\x32\x1b.AnimationKeyContainerFloat\x12\x41\n\x1b\x41nimationKeyContainerFloat2\x18g \x01(\x0b\x32\x1c.AnimationKeyContainerFloat2\x12\x41\n\x1b\x41nimationKeyContainerFloat3\x18h \x01(\x0b\x32\x1c.AnimationKeyContainerFloat3\x12\x41\n\x1b\x41nimationKeyContainerFloat4\x18i \x01(\x0b\x32\x1c.AnimationKeyContainerFloat4\"/\n\x1b\x41nimationKeyContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\".\n\x1a\x41nimationKeyContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"5\n\x1b\x41nimationKeyContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"5\n\x1b\x41nimationKeyContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"5\n\x1b\x41nimationKeyContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\",\n\x18\x41nimationKeyContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"\xc4\x01\n\x17\x41nimationTrackContainer\x12+\n\x0eSceneComponent\x18\x01 \x01(\x0b\x32\x13.bcl.NetObjectProxy\x12\x10\n\x08Property\x18\x02 \x01(\t\x12\x1f\n\x06TypeId\x18\x03 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12&\n\tKeyFrames\x18\x04 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12!\n\x08LerpType\x18\x05 \x01(\x0e\x32\t.LerpType:\x04Lerp\"\x1d\n\rBoneComponent\x12\x0c\n\x04Name\x18\x01 \x01(\t\"=\n\x14\x42umpChannelContainer\x12\x0f\n\x07Texture\x18\x01 \x01(\t\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"8\n\x1aKeyValuePair_UInt32_UInt32\x12\x0b\n\x03Key\x18\x01 \x01(\r\x12\r\n\x05Value\x18\x02 \x01(\r\"\xcd\x01\n\x0eLightComponent\x12\x15\n\x06\x41\x63tive\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x16\n\x05\x43olor\x18\x02 \x01(\x0b\x32\x07.float4\x12\x16\n\x0b\x41ttenuation\x18\x03 \x01(\x02:\x01\x30\x12\x1d\n\x12\x41mbientCoefficient\x18\x04 \x01(\x02:\x01\x30\x12\x1f\n\x04Type\x18\x05 \x01(\x0e\x32\n.LightType:\x05Point\x12\x14\n\tConeAngle\x18\x06 \x01(\x02:\x01\x30\x12\x1e\n\rConeDirection\x18\x07 \x01(\x0b\x32\x07.float3\"\x8b\x01\n\x13MatChannelContainer\x12\x16\n\x05\x43olor\x18\x01 \x01(\x0b\x32\x07.float4\x12\x0f\n\x07Texture\x18\x02 \x01(\t\x12\x0e\n\x03Mix\x18\x03 \x01(\x02:\x01\x30\x12;\n\x18SpecularChannelContainer\x18\x64 \x01(\x0b\x32\x19.SpecularChannelContainer\"\x9f\x02\n\x11MaterialComponent\x12%\n\x07\x44iffuse\x18\x01 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08Specular\x18\x02 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08\x45missive\x18\x03 \x01(\x0b\x32\x14.MatChannelContainer\x12#\n\x04\x42ump\x18\x04 \x01(\x0b\x32\x15.BumpChannelContainer\x12\x38\n\x16MaterialLightComponent\x18\xc8\x01 \x01(\x0b\x32\x17.MaterialLightComponent\x12\x34\n\x14MaterialPBRComponent\x18\xc9\x01 \x01(\x0b\x32\x15.MaterialPBRComponent\"P\n\x16MaterialLightComponent\x12\x18\n\x10\x41pplyLightString\x18\x01 \x01(\t\x12\x1c\n\x14\x46ragmentShaderString\x18\x02 \x01(\t\"l\n\x14MaterialPBRComponent\x12\x19\n\x0eRoughnessValue\x18\x01 \x01(\x02:\x01\x30\x12\x1d\n\x12\x46resnelReflectance\x18\x02 \x01(\x02:\x01\x30\x12\x1a\n\x0f\x44iffuseFraction\x18\x03 \x01(\x02:\x01\x30\"\x9a\x02\n\x04Mesh\x12\x19\n\x08Vertices\x18\x01 \x03(\x0b\x32\x07.float3\x12\x0e\n\x06\x43olors\x18\x02 \x03(\r\x12\x18\n\x07Normals\x18\x03 \x03(\x0b\x32\x07.float3\x12\x14\n\x03UVs\x18\x04 \x03(\x0b\x32\x07.float2\x12\x1c\n\x0b\x42oneWeights\x18\x05 \x03(\x0b\x32\x07.float4\x12\x1c\n\x0b\x42oneIndices\x18\x06 \x03(\x0b\x32\x07.float4\x12\x11\n\tTriangles\x18\x07 \x03(\r\x12\x1b\n\x0b\x42oundingBox\x18\x08 \x01(\x0b\x32\x06.AABBf\x12\x19\n\x08Tangents\x18\t \x03(\x0b\x32\x07.float4\x12\x1b\n\nBiTangents\x18\n \x03(\x0b\x32\x07.float3\x12\x13\n\x08MeshType\x18\x0b \x01(\x05:\x01\x30\"_\n\nRenderPass\x12\n\n\x02VS\x18\x01 \x01(\t\x12\n\n\x02PS\x18\x02 \x01(\t\x12\x39\n\x14RenderStateContainer\x18\x03 \x03(\x0b\x32\x1b.KeyValuePair_UInt32_UInt32\"\xf3\x02\n\x17SceneComponentContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12/\n\x12TransformComponent\x18\x64 \x01(\x0b\x32\x13.TransformComponent\x12\x13\n\x04Mesh\x18\x65 \x01(\x0b\x32\x05.Mesh\x12-\n\x11MaterialComponent\x18\x66 \x01(\x0b\x32\x12.MaterialComponent\x12\'\n\x0eLightComponent\x18g \x01(\x0b\x32\x0f.LightComponent\x12)\n\x0fWeightComponent\x18h \x01(\x0b\x32\x10.WeightComponent\x12/\n\x12\x41nimationComponent\x18i \x01(\x0b\x32\x13.AnimationComponent\x12%\n\rBoneComponent\x18j \x01(\x0b\x32\x0e.BoneComponent\x12)\n\x0fShaderComponent\x18k \x01(\x0b\x32\x10.ShaderComponent\"U\n\x0eSceneContainer\x12\x1c\n\x06Header\x18\x01 \x01(\x0b\x32\x0c.SceneHeader\x12%\n\x08\x43hildren\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"]\n\x0bSceneHeader\x12\x12\n\x07Version\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\tGenerator\x18\x02 \x01(\t\x12\x11\n\tCreatedBy\x18\x03 \x01(\t\x12\x14\n\x0c\x43reationDate\x18\x04 \x01(\t\"r\n\x12SceneNodeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\'\n\nComponents\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12%\n\x08\x43hildren\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"b\n\x0fShaderComponent\x12!\n\x0c\x45\x66\x66\x65\x63tPasses\x18\x01 \x03(\x0b\x32\x0b.RenderPass\x12,\n\x0f\x45\x66\x66\x65\x63tParameter\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"F\n\x18SpecularChannelContainer\x12\x14\n\tShininess\x18\x01 \x01(\x02:\x01\x30\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"e\n\x12TransformComponent\x12\x1c\n\x0bTranslation\x18\x01 \x01(\x0b\x32\x07.float3\x12\x19\n\x08Rotation\x18\x02 \x01(\x0b\x32\x07.float3\x12\x16\n\x05Scale\x18\x03 \x01(\x0b\x32\x07.float3\"\x97\x03\n\rTypeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\x1f\n\x06TypeId\x18\x02 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12\x31\n\x13TypeContainerDouble\x18\x64 \x01(\x0b\x32\x14.TypeContainerDouble\x12+\n\x10TypeContainerInt\x18\x65 \x01(\x0b\x32\x11.TypeContainerInt\x12/\n\x12TypeContainerFloat\x18\x66 \x01(\x0b\x32\x13.TypeContainerFloat\x12\x31\n\x13TypeContainerFloat2\x18g \x01(\x0b\x32\x14.TypeContainerFloat2\x12\x31\n\x13TypeContainerFloat3\x18h \x01(\x0b\x32\x14.TypeContainerFloat3\x12\x31\n\x13TypeContainerFloat4\x18i \x01(\x0b\x32\x14.TypeContainerFloat4\x12-\n\x11TypeContainerBool\x18j \x01(\x0b\x32\x12.TypeContainerBool\")\n\x11TypeContainerBool\x12\x14\n\x05Value\x18\x01 \x01(\x08:\x05\x66\x61lse\"\'\n\x13TypeContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\"&\n\x12TypeContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"-\n\x13TypeContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"-\n\x13TypeContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"-\n\x13TypeContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\"$\n\x10TypeContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"8\n\x0cVertexWeight\x12\x15\n\nJointIndex\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\x06Weight\x18\x02 \x01(\x02:\x01\x30\"8\n\x10VertexWeightList\x12$\n\rVertexWeights\x18\x01 \x03(\x0b\x32\r.VertexWeight\"\x80\x01\n\x0fWeightComponent\x12$\n\tWeightMap\x18\x01 \x03(\x0b\x32\x11.VertexWeightList\x12#\n\x06Joints\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12\"\n\x0f\x42indingMatrices\x18\x03 \x03(\x0b\x32\t.float4x4\"$\n\x06\x66loat2\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\"2\n\x06\x66loat3\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\"@\n\x06\x66loat4\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\x12\x0c\n\x01w\x18\x04 \x01(\x02:\x01\x30\"f\n\x08\x66loat4x4\x12\x15\n\x04Row0\x18\x01 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row1\x18\x02 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row2\x18\x03 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row3\x18\x04 \x01(\x0b\x32\x07.float4*\x1f\n\x08LerpType\x12\x08\n\x04Lerp\x10\x00\x12\t\n\x05Slerp\x10\x01*:\n\tLightType\x12\t\n\x05Point\x10\x00\x12\x0c\n\x08Parallel\x10\x01\x12\x08\n\x04Spot\x10\x02\x12\n\n\x06Legacy\x10\x03*V\n\x06TypeId\x12\n\n\x06\x44ouble\x10\x00\x12\x07\n\x03Int\x10\x01\x12\t\n\x05\x46loat\x10\x02\x12\n\n\x06\x46loat2\x10\x03\x12\n\n\x06\x46loat3\x10\x04\x12\n\n\x06\x46loat4\x10\x05\x12\x08\n\x04\x42ool\x10\x06')
   ,
   dependencies=[bcl__pb2.DESCRIPTOR,])
 
@@ -42,8 +42,8 @@ _LERPTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4692,
-  serialized_end=4723,
+  serialized_start=4628,
+  serialized_end=4659,
 )
 _sym_db.RegisterEnumDescriptor(_LERPTYPE)
 
@@ -73,8 +73,8 @@ _LIGHTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4725,
-  serialized_end=4783,
+  serialized_start=4661,
+  serialized_end=4719,
 )
 _sym_db.RegisterEnumDescriptor(_LIGHTTYPE)
 
@@ -116,8 +116,8 @@ _TYPEID = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4785,
-  serialized_end=4871,
+  serialized_start=4721,
+  serialized_end=4807,
 )
 _sym_db.RegisterEnumDescriptor(_TYPEID)
 
@@ -654,50 +654,36 @@ _LIGHTCOMPONENT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Position', full_name='LightComponent.Position', index=2,
-      number=3, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
+      name='Attenuation', full_name='LightComponent.Attenuation', index=2,
+      number=3, type=2, cpp_type=6, label=1,
+      has_default_value=True, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='Attenuation', full_name='LightComponent.Attenuation', index=3,
+      name='AmbientCoefficient', full_name='LightComponent.AmbientCoefficient', index=3,
       number=4, type=2, cpp_type=6, label=1,
       has_default_value=True, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='AmbientCoefficient', full_name='LightComponent.AmbientCoefficient', index=4,
-      number=5, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='Type', full_name='LightComponent.Type', index=5,
-      number=6, type=14, cpp_type=8, label=1,
+      name='Type', full_name='LightComponent.Type', index=4,
+      number=5, type=14, cpp_type=8, label=1,
       has_default_value=True, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ConeAngle', full_name='LightComponent.ConeAngle', index=6,
-      number=7, type=2, cpp_type=6, label=1,
+      name='ConeAngle', full_name='LightComponent.ConeAngle', index=5,
+      number=6, type=2, cpp_type=6, label=1,
       has_default_value=True, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='ConeDirection', full_name='LightComponent.ConeDirection', index=7,
-      number=8, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='PositionWorldSpace', full_name='LightComponent.PositionWorldSpace', index=8,
-      number=9, type=11, cpp_type=10, label=1,
+      name='ConeDirection', full_name='LightComponent.ConeDirection', index=6,
+      number=7, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -715,7 +701,7 @@ _LIGHTCOMPONENT = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=1248,
-  serialized_end=1517,
+  serialized_end=1453,
 )
 
 
@@ -766,8 +752,8 @@ _MATCHANNELCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1520,
-  serialized_end=1659,
+  serialized_start=1456,
+  serialized_end=1595,
 )
 
 
@@ -832,8 +818,8 @@ _MATERIALCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1662,
-  serialized_end=1949,
+  serialized_start=1598,
+  serialized_end=1885,
 )
 
 
@@ -870,8 +856,8 @@ _MATERIALLIGHTCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1951,
-  serialized_end=2031,
+  serialized_start=1887,
+  serialized_end=1967,
 )
 
 
@@ -915,8 +901,8 @@ _MATERIALPBRCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2033,
-  serialized_end=2141,
+  serialized_start=1969,
+  serialized_end=2077,
 )
 
 
@@ -1016,8 +1002,8 @@ _MESH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2144,
-  serialized_end=2426,
+  serialized_start=2080,
+  serialized_end=2362,
 )
 
 
@@ -1061,8 +1047,8 @@ _RENDERPASS = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2428,
-  serialized_end=2523,
+  serialized_start=2364,
+  serialized_end=2459,
 )
 
 
@@ -1148,8 +1134,8 @@ _SCENECOMPONENTCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2526,
-  serialized_end=2897,
+  serialized_start=2462,
+  serialized_end=2833,
 )
 
 
@@ -1186,8 +1172,8 @@ _SCENECONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2899,
-  serialized_end=2984,
+  serialized_start=2835,
+  serialized_end=2920,
 )
 
 
@@ -1238,8 +1224,8 @@ _SCENEHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2986,
-  serialized_end=3079,
+  serialized_start=2922,
+  serialized_end=3015,
 )
 
 
@@ -1283,8 +1269,8 @@ _SCENENODECONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3081,
-  serialized_end=3195,
+  serialized_start=3017,
+  serialized_end=3131,
 )
 
 
@@ -1321,8 +1307,8 @@ _SHADERCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3197,
-  serialized_end=3295,
+  serialized_start=3133,
+  serialized_end=3231,
 )
 
 
@@ -1359,8 +1345,8 @@ _SPECULARCHANNELCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3297,
-  serialized_end=3367,
+  serialized_start=3233,
+  serialized_end=3303,
 )
 
 
@@ -1404,8 +1390,8 @@ _TRANSFORMCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3369,
-  serialized_end=3470,
+  serialized_start=3305,
+  serialized_end=3406,
 )
 
 
@@ -1491,8 +1477,8 @@ _TYPECONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3473,
-  serialized_end=3880,
+  serialized_start=3409,
+  serialized_end=3816,
 )
 
 
@@ -1522,8 +1508,8 @@ _TYPECONTAINERBOOL = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3882,
-  serialized_end=3923,
+  serialized_start=3818,
+  serialized_end=3859,
 )
 
 
@@ -1553,8 +1539,8 @@ _TYPECONTAINERDOUBLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3925,
-  serialized_end=3964,
+  serialized_start=3861,
+  serialized_end=3900,
 )
 
 
@@ -1584,8 +1570,8 @@ _TYPECONTAINERFLOAT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3966,
-  serialized_end=4004,
+  serialized_start=3902,
+  serialized_end=3940,
 )
 
 
@@ -1615,8 +1601,8 @@ _TYPECONTAINERFLOAT2 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4006,
-  serialized_end=4051,
+  serialized_start=3942,
+  serialized_end=3987,
 )
 
 
@@ -1646,8 +1632,8 @@ _TYPECONTAINERFLOAT3 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4053,
-  serialized_end=4098,
+  serialized_start=3989,
+  serialized_end=4034,
 )
 
 
@@ -1677,8 +1663,8 @@ _TYPECONTAINERFLOAT4 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4100,
-  serialized_end=4145,
+  serialized_start=4036,
+  serialized_end=4081,
 )
 
 
@@ -1708,8 +1694,8 @@ _TYPECONTAINERINT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4147,
-  serialized_end=4183,
+  serialized_start=4083,
+  serialized_end=4119,
 )
 
 
@@ -1746,8 +1732,8 @@ _VERTEXWEIGHT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4185,
-  serialized_end=4241,
+  serialized_start=4121,
+  serialized_end=4177,
 )
 
 
@@ -1777,8 +1763,8 @@ _VERTEXWEIGHTLIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4243,
-  serialized_end=4299,
+  serialized_start=4179,
+  serialized_end=4235,
 )
 
 
@@ -1822,8 +1808,8 @@ _WEIGHTCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4302,
-  serialized_end=4430,
+  serialized_start=4238,
+  serialized_end=4366,
 )
 
 
@@ -1860,8 +1846,8 @@ _FLOAT2 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4432,
-  serialized_end=4468,
+  serialized_start=4368,
+  serialized_end=4404,
 )
 
 
@@ -1905,8 +1891,8 @@ _FLOAT3 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4470,
-  serialized_end=4520,
+  serialized_start=4406,
+  serialized_end=4456,
 )
 
 
@@ -1957,8 +1943,8 @@ _FLOAT4 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4522,
-  serialized_end=4586,
+  serialized_start=4458,
+  serialized_end=4522,
 )
 
 
@@ -2009,8 +1995,8 @@ _FLOAT4X4 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4588,
-  serialized_end=4690,
+  serialized_start=4524,
+  serialized_end=4626,
 )
 
 _AABBF.fields_by_name['min'].message_type = _FLOAT3
@@ -2030,10 +2016,8 @@ _ANIMATIONTRACKCONTAINER.fields_by_name['TypeId'].enum_type = _TYPEID
 _ANIMATIONTRACKCONTAINER.fields_by_name['KeyFrames'].message_type = bcl__pb2._NETOBJECTPROXY
 _ANIMATIONTRACKCONTAINER.fields_by_name['LerpType'].enum_type = _LERPTYPE
 _LIGHTCOMPONENT.fields_by_name['Color'].message_type = _FLOAT4
-_LIGHTCOMPONENT.fields_by_name['Position'].message_type = _FLOAT3
 _LIGHTCOMPONENT.fields_by_name['Type'].enum_type = _LIGHTTYPE
 _LIGHTCOMPONENT.fields_by_name['ConeDirection'].message_type = _FLOAT3
-_LIGHTCOMPONENT.fields_by_name['PositionWorldSpace'].message_type = _FLOAT3
 _MATCHANNELCONTAINER.fields_by_name['Color'].message_type = _FLOAT4
 _MATCHANNELCONTAINER.fields_by_name['SpecularChannelContainer'].message_type = _SPECULARCHANNELCONTAINER
 _MATERIALCOMPONENT.fields_by_name['Diffuse'].message_type = _MATCHANNELCONTAINER
