@@ -1,0 +1,48 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Examples.SimpleDeferred.Core</RootNamespace>
+    <PackageId>Fusee.Examples.SimpleDeferred.Core</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\SimpleDeferred\Core\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\Monkey.fus" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Fusee.Base.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Base.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.GUI">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\Monkey.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+</Project>
