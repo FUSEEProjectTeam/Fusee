@@ -277,7 +277,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (texHandle.Handle != -1)
             {
-                GL.DeleteTexture(texHandle.Handle);                
+                GL.DeleteTexture(texHandle.Handle);
+                _currentTextureUnit--;
             }
         }
         #endregion
@@ -2013,78 +2014,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
 
             //GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
             //Clear(ClearFlags.Depth | ClearFlags.Color);
-
         }
-
-        /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
-        /// </summary>
-        /// <param name="texture">The texture as target</param>
-        [Obsolete ("Try to use SetRenderTarget(RenderTarget")]
-        public void SetRenderTarget(ITextureHandle texture)
-        {
-            var textureImp = (TextureHandle)texture;
-
-            // If texture is null bind frambuffer 0, this is the main screen
-            if (textureImp == null)
-            {
-                // GL.CullFace(CullFaceMode.Back);
-                // Enable writes to the color buffer
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-            }
-            // FBO Handle is set -> ShadowMap
-            else if (textureImp.FboHandle != -1)
-            {
-                // To prevent Peter Panning
-                // GL.CullFace(CullFaceMode.Front); //TODO: Move this to SceneRender
-
-                // Bind buffer - now we are rendering to this buffer!
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.FboHandle);
-
-                // Clear 
-                Clear(ClearFlags.Depth);
-            }
-            // GBufferHandle is set -> Bind GBuffer
-            else if (textureImp.GBufferHandle != -1)
-            {
-                // Bind buffer - now we are rendering to this buffer!
-                // Framebuffer or DrawFrameBuffer as Target?
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.GBufferHandle);
-
-                // Clear Depth & Color for GBuffer!
-                Clear(ClearFlags.Depth | ClearFlags.Color);
-            }
-            // RenderToTexture Handle is set -> OffScreen FrameBuffer with Color and Depth attachment
-            else if (textureImp.RenderToTextureBufferHandle != -1)
-            {
-                if (!textureImp.Toggle)
-                {
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.RenderToTextureBufferHandle);
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, textureImp.Handle, 0);
-                    GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                    GL.Enable(EnableCap.DepthTest);
-                    GL.Enable(EnableCap.Multisample);
-                    textureImp.Toggle = true;
-                }
-                else
-                {
-                    GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.RenderToTextureBufferHandle);
-                    GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.IntermediateToTextureBufferHandle);
-                    GL.BlitFramebuffer(0, 0, textureImp.TextureWidth, textureImp.TextureHeight, 0, 0,
-                        textureImp.TextureWidth, textureImp.TextureHeight, ClearBufferMask.ColorBufferBit,
-                        BlitFramebufferFilter.Nearest);
-                    //glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-                    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-                    textureImp.Toggle = false;
-                }
-
-            }
-        }
-
-
        
         /// <summary>
         /// Sets the RenderTarget.

@@ -106,7 +106,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Wrap a SceneRenderer around the model.
             _textureRenderer = new SceneRenderer(_rocketScene);
 
-            var plane = new Plane() { Normals = null };
+            var plane = new Plane();
             var lightMultiplier = 1;
             var planeScene = new SceneContainer()
             {
