@@ -107,7 +107,7 @@ namespace Fusee.Examples.Simple.Core
             _textureRenderer = new SceneRenderer(_rocketScene);
 
             var plane = new Plane() { Normals = null };
-            var lightMultiplier = 10;
+            var lightMultiplier = 1;
             var planeScene = new SceneContainer()
             {
                 Children = new List<SceneNodeContainer>()
@@ -181,9 +181,8 @@ namespace Fusee.Examples.Simple.Core
                 Children = aLotOfLights
             });
 
-            _sceneRenderer = new SceneRenderer(planeScene); 
-
-            //_guiRenderer = new SceneRenderer(_gui);            
+            _sceneRenderer = new SceneRenderer(planeScene);
+            _guiRenderer = new SceneRenderer(_gui);            
         }
 
 
@@ -258,7 +257,7 @@ namespace Fusee.Examples.Simple.Core
             RC.View = mtxCam;
             _sceneRenderer.Render(RC);
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

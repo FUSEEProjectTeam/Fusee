@@ -164,7 +164,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
-                    internalFormat = PixelInternalFormat.Intensity;
+                    internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
