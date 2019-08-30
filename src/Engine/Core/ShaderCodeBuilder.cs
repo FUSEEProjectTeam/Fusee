@@ -1364,7 +1364,10 @@ namespace Fusee.Engine.Core
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
-                            AlphaBlendEnable = true
+                            AlphaBlendEnable = true,
+                            SourceBlend = Blend.SourceAlpha,
+                            DestinationBlend = Blend.InverseSourceAlpha,
+                            BlendOperation = BlendOperation.Add,
                         }
                     }
                 },

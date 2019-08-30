@@ -1219,6 +1219,8 @@ namespace Fusee.Engine.Core
         /// the gpu.</remarks>
         public void SetShaderEffect(ShaderEffect ef)
         {
+            SetRenderState(RenderStateSet.Default);
+
             if (_rci == null)
                 throw new ArgumentNullException("rc", "must pass a valid render context.");
 
