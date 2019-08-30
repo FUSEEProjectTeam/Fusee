@@ -1138,9 +1138,9 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary>
         /// <param name="rt"></param>
-        /// <param name="ScreenParams"></param>
+        /// <param name="numberOfLights">Number of lights in the scene.</param>
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt, float2 ScreenParams)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt, float numberOfLights)
         {
             var textures = rt.RenderTextures;
 
@@ -1169,7 +1169,7 @@ namespace Fusee.Engine.Core
             frag.Append(Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
-            frag.Append("#define MAX_LIGHTS 3\n");
+            frag.Append($"#define MAX_LIGHTS {numberOfLights}\n");
 
             var texCount = 0;
 
@@ -1252,8 +1252,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = ScreenParams},
+                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},                
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},

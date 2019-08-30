@@ -107,7 +107,7 @@ namespace Fusee.Examples.Simple.Core
             _textureRenderer = new SceneRenderer(_rocketScene);
 
             var plane = new Plane() { Normals = null };
-
+            var lightMultiplier = 10;
             var planeScene = new SceneContainer()
             {
                 Children = new List<SceneNodeContainer>()
@@ -123,7 +123,7 @@ namespace Fusee.Examples.Simple.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.DeferredLightingPassEffect(_renderTarget, new float2(Width, Height))
+                                Effect = ShaderCodeBuilder.DeferredLightingPassEffect(_renderTarget, lightMultiplier*4)
                             },
                             plane
 
@@ -136,7 +136,7 @@ namespace Fusee.Examples.Simple.Core
             var rnd = new Random();
             
 
-            for (int i = 0; i < 40; i++)
+            for (int i = 0; i < lightMultiplier; i++)
             {
                 var rndVal = (float)rnd.NextDouble() * 10;
 
