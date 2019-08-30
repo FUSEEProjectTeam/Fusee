@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
-
 
 namespace Fusee.Engine.Core
 {
@@ -18,18 +16,25 @@ namespace Fusee.Engine.Core
     // ReSharper disable once InconsistentNaming
     public class OBBCalculator : SceneVisitor
     {
-        // ReSharper disable once InconsistentNaming
+        /// <summary>
+        /// Contains the model view state while traversing the scene to generate the OBB.
+        /// </summary>
         public class OBBState : VisitorState
         {
             private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
 
-
+            /// <summary>
+            /// The model view matrix.
+            /// </summary>
             public float4x4 ModelView
             {
                 set { _modelView.Tos = value; }
                 get { return _modelView.Tos; }
             }
 
+            /// <summary>
+            /// Creates a new instance of type OBBState.
+            /// </summary>
             public OBBState()
             {
                 RegisterState(_modelView);
@@ -38,11 +43,8 @@ namespace Fusee.Engine.Core
 
         //private SceneContainer _sc;
         private IEnumerable<SceneNodeContainer> _sncList;
-        private OBBState _state = new OBBState();
-        private bool _boxValid;
-        private OBBf _result;
+        private OBBState _state = new OBBState();        
         private List<float3> _allVerticesOfCurrentScene = new List<float3>();
-
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
@@ -79,9 +81,6 @@ namespace Fusee.Engine.Core
         public OBBf GetBox()
         {
             Traverse(_sncList);
-
-            //if (_boxValid)
-            //    return _result;
             return new OBBf(_allVerticesOfCurrentScene.ToArray());
         }
 
@@ -114,8 +113,7 @@ namespace Fusee.Engine.Core
         #region HierarchyLevel
 
         protected override void InitState()
-        {
-            _boxValid = false;
+        {           
             _state.Clear();
             _state.ModelView = float4x4.Identity;
         }
@@ -140,24 +138,32 @@ namespace Fusee.Engine.Core
     // ReSharper disable once InconsistentNaming
     public class AABBCalculator : SceneVisitor
     {
+        /// <summary>
+        /// Contains the model view state while traversing the scene to generate the ABB.
+        /// </summary>
         // ReSharper disable once InconsistentNaming
         public class AABBState : VisitorState
         {
             private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
 
+            /// <summary>
+            /// The model view matrix.
+            /// </summary>
             public float4x4 ModelView
             {
                 set { _modelView.Tos = value; }
                 get { return _modelView.Tos; }
             }
 
+            /// <summary>
+            /// Creates a new instance of type AABBState.
+            /// </summary>
             public AABBState()
             {
                 RegisterState(_modelView);
             }
         }
-
-        //private SceneContainer _sc;
+        
         private IEnumerable<SceneNodeContainer> _sncList;
         private AABBState _state = new AABBState();
         private bool _boxValid;
@@ -286,55 +292,20 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SceneRenderer : SceneVisitor
     {
-        // All lights
+        /// <summary>
+        /// Light results, collected from the scene in the Viserator.
+        /// </summary>
         public static Dictionary<LightComponent, LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
-        // Multipass
-        private bool _renderWithShadows;
-        private bool _renderDeferred;
-        private bool _renderEnvMap;
-        private readonly bool _wantToRenderWithShadows;
-        private readonly bool _wantToRenderDeferred;
-        private readonly bool _wantToRenderEnvMap;
+         
         /// <summary>
         /// Gets and sets the size of the shadow map.
         /// </summary>
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
         private CanvasTransformComponent _ctc;
-        private MinMaxRect _parentRect;
-
-        /// <summary>
-        /// Try to render with Shadows. If not possible, fallback to false.
-        /// </summary>
-        [Obsolete("Will be migrated to seperate SceneRenderer")]
-        public bool DoRenderWithShadows
-        {
-            private set { _renderWithShadows = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
-            get { return _renderWithShadows; }
-        }
-
-        /// <summary>
-        /// Try to render deferred. If not possible, fallback to false.
-        /// </summary>
-        [Obsolete("Will be migrated to seperate SceneRenderer")]
-        public bool DoRenderDeferred
-        {
-            private set { _renderDeferred = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
-            get { return _renderDeferred; }
-        }
-
-        /// <summary>
-        /// Try to render with EM. If not possible, fallback to false.
-        /// </summary>
-        [Obsolete("Will be migrated to seperate SceneRenderer")]
-        public bool DoRenderEnvMap
-        {
-            private set { _renderEnvMap = _rc.GetHardwareCapabilities(HardwareCapability.DefferedPossible) == 1U && value; }
-            get { return _renderEnvMap; }
-        }
+        private MinMaxRect _parentRect;        
 
         #region Traversal information
-
 
         protected Dictionary<SceneNodeContainer, float4x4> _boneMap;
         protected Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
@@ -401,34 +372,14 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Initialization Construction Startup
-        /// <summary>
-        /// Implements the scene renderer.
-        /// </summary>
-        /// <param name="sc"></param>
-        /// <param name="RenderDeferred"></param>
-        /// <param name="RenderShadows"></param>
-        public SceneRenderer(SceneContainer sc, bool RenderDeferred = false, bool RenderShadows = false)
-             : this(sc)
-        {
-            if (RenderShadows)
-                _wantToRenderWithShadows = true;
+        #region Initialization Construction Startup        
 
-            if (RenderDeferred)
-                _wantToRenderDeferred = true;
-        }
-
-        public SceneRenderer(SceneContainer sc /*, string scenePathDirectory*/)
+        public SceneRenderer(SceneContainer sc)
         {
-            // accumulate all lights and...
-            // NEEDED FOR JSIL; do not use .toDictonary(x => x.Values, x => x.Keys)
-            var results = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
-            LightResult result;
-            foreach (var keyValuePair in results)
-            {
-                if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
-                _lightComponents.Add(keyValuePair.Key, keyValuePair.Value);
-            }
+            // accumulate all lights and...            
+            var results = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();           
+            _lightComponents = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(kvp => kvp.Key, kvp => kvp.Value);          
+            
             // ...set them
             AllLightResults = _lightComponents;
 
@@ -562,7 +513,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Sets the rendercontext for the given scene.
+        /// Sets the render context for the given scene.
         /// </summary>
         /// <param name="rc"></param>
         public void SetContext(RenderContext rc)
@@ -588,30 +539,18 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-
-                //_defaultEffect.AttachToContext(_rc);
+                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);                
                 _rc.SetShaderEffect(_defaultEffect);
-
-                // Check for hardware capabilities:
-                DoRenderDeferred = _wantToRenderDeferred;
-                DoRenderWithShadows = _wantToRenderWithShadows;
-                DoRenderEnvMap = _wantToRenderEnvMap;
             }
         }
         #endregion
+
+
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>
-        /// <param name="texHandle">Optional parameter: set this if you want to render to a texture that has the given handle.</param>
-        //public void Render(RenderContext rc, ITextureHandle texHandle = null)
-        //{
-        //    SetContext(rc);
-
-        //    rc.SetRenderTarget(texHandle);
-        //    Traverse(_sc.Children);
-        //}
+        /// <param name="renderTarget">Optional parameter: set this if you want to render to one or more textures.</param>
 
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
@@ -621,25 +560,21 @@ namespace Fusee.Engine.Core
             Traverse(_sc.Children);
         }
 
-        //public void Render(RenderContext rc)
-        //{
-        //    SetContext(rc);            
-        //    Traverse(_sc.Children);
-        //}
-
-
         #region Visitors
         /// <summary>
-        /// Renders the bones.
+        /// If a Projection Component is visited, the projection matrix is set.
         /// </summary>
         /// <param name="bone"></param>
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
         {
-            _rc.Projection = pc.Matrix();
-            //_rc.Viewport(0, 0, pc.Width, pc.Height);
+            _rc.Projection = pc.Matrix();            
         }
 
+        /// <summary>
+        /// Renders the Bone.
+        /// </summary>
+        /// <param name="bone">The bone.</param>
         [VisitMethod]
         public void RenderBone(BoneComponent bone)
         {
@@ -648,7 +583,7 @@ namespace Fusee.Engine.Core
             var trans = boneContainer.GetGlobalTranslation();
             var rot = boneContainer.GetGlobalRotation();
 
-            var currentModel = float4x4.CreateTranslation(trans) * rot;
+            var currentModel = float4x4.CreateTranslation(trans) * rot; //TODO: ???
 
             float4x4 transform;
             if (!_boneMap.TryGetValue(boneContainer, out transform)) 
@@ -656,6 +591,8 @@ namespace Fusee.Engine.Core
             else
                 _boneMap[boneContainer] = _rc.Model;
         }
+
+
         /// <summary>
         /// Renders the weight.
         /// </summary>
@@ -674,6 +611,10 @@ namespace Fusee.Engine.Core
 
         private bool isCtcInitialized = false;
 
+        /// <summary>
+        /// Sets the state of the model matrices and UiRects.
+        /// </summary>
+        /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -808,8 +749,7 @@ namespace Fusee.Engine.Core
         {
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
-            _rc.View = _view;
-            // CM 3.5.17 _rc.ModelView = _view * _state.Model; // Changed from Model to ModelView
+            _rc.View = _view;            
         }
 
         [VisitMethod]
@@ -853,21 +793,14 @@ namespace Fusee.Engine.Core
 
             // chache miss
             // accumulate all lights and...
-            // NEEDED FOR JSIL; do not use .toDictonary(x => x.Values, x => x.Keys)
             var results = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
-
-            foreach (var keyValuePair in results)
-            {
-                if (_lightComponents.TryGetValue(keyValuePair.Key, out result)) continue;
-                _lightComponents.Add(keyValuePair.Key, keyValuePair.Value);
-            }
-            // _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(result => result.Key, result => result.Value);
+            _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
+            
             // ...set them
             AllLightResults = _lightComponents;
             // and multiply them with current modelview matrix
             // normalize etc.
             LightsToModelViewSpace();
-
         }
 
         private void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
@@ -967,8 +900,7 @@ namespace Fusee.Engine.Core
         {
             _state.Pop();
             _rc.Model = _state.Model;
-            _rc.View = _view;
-            //CM 3.5.17 _rc.ModelView = _view * _state.Model;
+            _rc.View = _view;            
         }
 
         #endregion
@@ -1002,8 +934,7 @@ namespace Fusee.Engine.Core
 
         private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
         {
-            ShaderEffect shaderEffect;
-            if (_shaderEffectMap.TryGetValue(shaderComponent, out shaderEffect)) return shaderEffect;
+            if (_shaderEffectMap.TryGetValue(shaderComponent, out ShaderEffect shaderEffect)) return shaderEffect;
 
             shaderEffect = MakeShader(shaderComponent);
             _rc.SetShaderEffect(shaderEffect);
@@ -1103,9 +1034,7 @@ namespace Fusee.Engine.Core
                     break;
                 default:
                     throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name} is of unhandled type {t.ToString()}!");
-                    break;
             }
-
 
             if (returnEffectParameterDeclaration.Value == null)
                 throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name}, value is null");
@@ -1113,11 +1042,7 @@ namespace Fusee.Engine.Core
             return returnEffectParameterDeclaration;
         }
 
-
-
-
         #endregion
-
     }
 
     #region LightViserator

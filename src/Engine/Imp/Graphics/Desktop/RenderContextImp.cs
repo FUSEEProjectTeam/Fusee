@@ -1431,7 +1431,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 switch (((MeshImp)mr).MeshType)
                 {
                     case OpenGLPrimitiveType.TRIANGLES:
-                    default:
+                    default:                        
                         GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.POINT:
@@ -2090,8 +2090,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets the RenderTarget.
         /// </summary>
         public void SetRenderTarget(IRenderTarget renderTarget)
-        {           
-
+        {
+            
             if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
             {    
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -2124,9 +2124,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             }
 
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit | ClearBufferMask.StencilBufferBit);
-            GL.Enable(EnableCap.DepthTest);
-
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+            
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
@@ -2135,6 +2134,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         private int CreateDepthRenderBuffer(IRenderTarget renderTarget)
         {
+            GL.Enable(EnableCap.DepthTest);
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
@@ -2143,16 +2143,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return gDepthRenderbufferHandle;
         }
 
-        private int CreateStencilRenderBuffer(IRenderTarget renderTarget)
-        {
-            GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
-            renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
-            GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.Depth24Stencil8, renderTarget.RenderTextures[0].Width, renderTarget.RenderTextures[0].Height); //TODO: careful: does not resize yet!
-            GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            return gDepthRenderbufferHandle;
-        }
-
+        
         private int CreateGBuffer(IRenderTarget renderTarget)
         {
             var gBuffer = GL.GenFramebuffer();
