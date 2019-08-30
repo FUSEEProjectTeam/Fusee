@@ -26,18 +26,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Update="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Shader\PixelShader.frag">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\Shader\VertexShader.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
     <None Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
     <None Include="Assets\Shader\PixelShader.frag" />
