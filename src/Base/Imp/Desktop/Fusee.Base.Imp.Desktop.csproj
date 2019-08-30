@@ -12,21 +12,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(FuseeBuildRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" />
+    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262.dll" Link="Natives\freetype262.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
+    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Debug.*'))" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpFont">
-      <HintPath>$(FuseeBuildRoot)\ext\Freetype\bin\SharpFont\Debug\SharpFont.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\$(Configuration)\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
 
 </Project>

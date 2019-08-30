@@ -78,8 +78,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
-		src\Directory.Build.props = src\Directory.Build.props
-		src\Directory.Build.targets = src\Directory.Build.targets
+		Directory.Build.props = Directory.Build.props
+		Directory.Build.targets = Directory.Build.targets
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}"
@@ -357,13 +357,11 @@ Global
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release|Any CPU.Build.0 = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{2D738255-B745-4C23-BD5F-EE2AC731BC93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU

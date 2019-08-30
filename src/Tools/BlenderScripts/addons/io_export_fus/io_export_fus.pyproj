@@ -5,12 +5,13 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{548ba459-616b-4d04-b0a1-2e19388c4b55}</ProjectGuid>
     <PythonProjectName>io_export_fus</PythonProjectName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..\..\..</FuseeBuildRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\..\..</FuseeEngineRoot>
     <ProjectHome />
     <StartupFile>__init__.py</StartupFile>
     <SearchPath />
     <WorkingDirectory>.</WorkingDirectory>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools\BlenderScripts\addons</OutputPath>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools\BlenderScripts\addons</OutputPath>
     <ProjectTypeGuids>{888888a0-9f3d-457c-b088-3a5042f75d52}</ProjectTypeGuids>
     <LaunchProvider>Standard Python launcher</LaunchProvider>
     <InterpreterId>Global|PythonCore|3.5-32</InterpreterId>

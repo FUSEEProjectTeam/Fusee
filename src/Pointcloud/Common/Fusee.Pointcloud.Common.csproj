@@ -29,6 +29,7 @@
 
   <ItemGroup>
     <Folder Include="Assets\" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>

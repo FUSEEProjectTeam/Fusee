@@ -19,6 +19,13 @@
     <Reference Include="Fusee.Math.Core">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>    
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <None Include="$(FuseeEngineRoot)\ext\LASlib\libLASlib.dll" Link="Natives\libLASlib.dll" />
+    <None Include="$(FuseeEngineRoot)\ext\LASlib\libLASlib.so" Link="Natives\libLASlib.so" />
   </ItemGroup>
 
 </Project>
