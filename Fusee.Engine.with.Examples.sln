@@ -394,7 +394,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.Simple.GUI.W
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.RocketOnly.WebAsm", "Examples\Complete\WASM\WebAsm\Fusee.Examples.RocketOnly.WebAsm.csproj", "{4147D0BF-211D-4125-BE94-5B681FA10D39}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimnpleDeferred", "SimnpleDeferred", "{024BFD50-DF2A-44DB-B9D6-BCEA67963E75}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleDeferred", "SimpleDeferred", "{024BFD50-DF2A-44DB-B9D6-BCEA67963E75}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.SimpleDeferred.Core", "Examples\Complete\SimpleDeferred\Core\Fusee.Examples.SimpleDeferred.Core.csproj", "{9741F5E5-EC1E-4F97-908C-C8DC3BFB3E93}"
 EndProject
