@@ -34,6 +34,6 @@
   </ItemGroup>
     
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
 </Project>

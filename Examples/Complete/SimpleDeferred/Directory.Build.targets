@@ -1,3 +1,3 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(FuseeRoot)\src\Directory.Build.targets" />
+  <Import Project="$(FuseeEngineRoot)\Directory.Build.targets" />
 </Project>

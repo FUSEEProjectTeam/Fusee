@@ -660,14 +660,6 @@ namespace Fusee.Engine.Common
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
 
-        /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
-        /// </summary>
-        /// <param name="textureHandle">The textureHandle as target</param>
-        ///// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
-        void SetRenderTarget(ITextureHandle textureHandle);
-
-
         void SetRenderTarget(IRenderTarget renderTarget);
 
         /// <summary>

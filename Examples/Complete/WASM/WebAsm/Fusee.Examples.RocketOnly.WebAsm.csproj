@@ -23,14 +23,14 @@
     <Reference Include="SkiaSharp.Wasm">
       <HintPath>..\..\..\..\..\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
     </Reference>
-    <ProjectReference Include="$(FuseeRoot)src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
-    <ProjectReference Include="$(FuseeRoot)src\Math\Core\Fusee.Math.Core.csproj" />
-    
-    <ProjectReference Include="$(FuseeRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)src\Math\Core\Fusee.Math.Core.csproj" />
+
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
 
     <ProjectReference Include="..\Core\Fusee.Examples.RocketOnly.Core.csproj" />
   </ItemGroup>
@@ -41,16 +41,16 @@
 
 
   <ItemGroup>
-   
+
     <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
-   
+
     <PackageReference Include="System.Memory" Version="4.5.3" />
 
     <PackageReference Include="WebAssembly.Bindings" Version="0.1.0-preview1" />
     <PackageReference Include="WebAssembly.Net.Http" Version="0.1.0-preview1" />
     <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.1.0-preview1" />
   </ItemGroup>
-  
+
   <ItemGroup>
     <None Remove="Assets\FuseeAnim.gif" />
     <None Remove="Assets\FuseeSpinning.gif" />
