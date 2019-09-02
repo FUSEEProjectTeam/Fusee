@@ -4,7 +4,5 @@
     {
         int TextureHandle { get; set; }
         byte[] PixelData { get; }
-
-        void Resize(int width, int height);
     }
 }

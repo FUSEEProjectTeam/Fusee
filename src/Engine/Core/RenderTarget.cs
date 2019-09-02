@@ -26,6 +26,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int DepthBufferHandle { get; set; } = -1; //TODO: Dispose framebuffer obj if it isn't needed anymore
 
+        /// <summary>
+        /// Sets the resolution of the render textures.
+        /// </summary>
         public TexRes TextureResolution { get; private set; }
 
         /// <summary>
@@ -44,7 +47,7 @@ namespace Fusee.Engine.Core
         public void CreatePositionTex()
         {
             var posTexImageData = new ImageData(ColorFormat.fRGB, (int)TextureResolution, (int)TextureResolution);
-            var posTex = new WritableTexture(posTexImageData);            
+            var posTex = new WritableTexture(posTexImageData, false, TextureFilterMode.NEAREST);            
             RenderTextures[(int)RenderTargetTextures.G_POSITION] = posTex;
         }
 
@@ -54,7 +57,7 @@ namespace Fusee.Engine.Core
         public void CreateAlbedoSpecularTex()
         {
             var albedoTexImageData = new ImageData(ColorFormat.RGBA, (int)TextureResolution, (int)TextureResolution);
-            var albedoTex = new WritableTexture(albedoTexImageData);
+            var albedoTex = new WritableTexture(albedoTexImageData, false);
             RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR] = albedoTex;
         }
 
@@ -64,7 +67,7 @@ namespace Fusee.Engine.Core
         public void CreateNormalTex()
         {
             var normalTexImageData = new ImageData(ColorFormat.fRGB, (int)TextureResolution, (int)TextureResolution);
-            var normalTex = new WritableTexture(normalTexImageData);
+            var normalTex = new WritableTexture(normalTexImageData, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_NORMAL] = normalTex;
         }
 
@@ -74,20 +77,9 @@ namespace Fusee.Engine.Core
         public void CreateDepthTex()
         {
             var depthTexImageData = new ImageData(ColorFormat.RGB, (int)TextureResolution, (int)TextureResolution);
-            var depthTex = new WritableTexture(depthTexImageData);
+            var depthTex = new WritableTexture(depthTexImageData, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
-
-        /// <summary>
-        /// Generates a ssao texture.
-        /// </summary>        
-        //public void CreateStencilTex()
-        //{
-        //    var stenciltexImageData = new ImageData(ColorFormat.Stencil, (int)TextureResolution, (int)TextureResolution);
-        //    var ssaoTex = new WritableTexture(stenciltexImageData);
-        //    RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
-        //}
-
 
         /// <summary>
         /// Generates a ssao texture.

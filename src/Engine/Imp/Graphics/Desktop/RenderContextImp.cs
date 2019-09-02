@@ -70,7 +70,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (img.PixelData != null)
             {
                 if (tex == null)
-                    tex = CreateTexture(img, false);
+                    tex = CreateTexture(img);
 
                 GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height, format, PixelType.UnsignedByte, img.PixelData);
@@ -130,13 +130,65 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
         }
 
+        private Tuple<TextureMinFilter, TextureMagFilter> GetMinMagFilter(TextureFilterMode filterMode)
+        {
+            TextureMinFilter minFilter;
+            TextureMagFilter magFilter;
+
+            switch (filterMode)
+            {
+                case TextureFilterMode.NEAREST:
+                    minFilter = TextureMinFilter.Nearest;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                default:
+                case TextureFilterMode.LINEAR:
+                    minFilter = TextureMinFilter.Linear;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                    minFilter = TextureMinFilter.NearestMipmapNearest;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                    minFilter = TextureMinFilter.LinearMipmapNearest;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                    minFilter = TextureMinFilter.NearestMipmapLinear;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                    minFilter = TextureMinFilter.LinearMipmapLinear;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+            }          
+
+            return new Tuple<TextureMinFilter, TextureMagFilter>(minFilter, magFilter);
+        }
+
+        private OpenTK.Graphics.OpenGL.TextureWrapMode GetWrapMode(Common.TextureWrapMode wrapMode)
+        {
+            switch (wrapMode)
+            {
+                default:
+                case Common.TextureWrapMode.REPEAT:
+                    return OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat;                    
+                case Common.TextureWrapMode.MIRRORED_REPEAT:
+                    return OpenTK.Graphics.OpenGL.TextureWrapMode.MirroredRepeat;
+                case Common.TextureWrapMode.CLAMP_TO_EDGE:
+                    return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge;
+                case Common.TextureWrapMode.CLAMP_TO_BORDER:
+                    return OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToBorder;
+            }
+        }
+
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
         /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
-        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(ITexture img, bool repeat)
+        public ITextureHandle CreateTexture(ITexture img)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
@@ -144,72 +196,68 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);            
+
             switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Bgra;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Bgr;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.Depth:
-                    internalFormat = PixelInternalFormat.DepthComponent16;                  
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);                   
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);                   
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);                  
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToBorder);
+                    internalFormat = PixelInternalFormat.DepthComponent24;                  
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);                   
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);                   
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);                   
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;                
                 case ColorFormat.fRGB:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                    repeat = true;
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Depth24Stencil8, width, height, 0, PixelFormat.DepthStencil, PixelType.UnsignedByte, img.PixelData);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
             ITextureHandle texID = new TextureHandle { Handle = id };
 
@@ -1375,7 +1423,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
-        {
+        {           
+
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
@@ -2066,6 +2115,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int CreateDepthRenderBuffer(IRenderTarget renderTarget)
         {
             GL.Enable(EnableCap.DepthTest);
+            
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
@@ -2079,7 +2129,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             var gBuffer = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
-
+            
             var attachements = new List<DrawBuffersEnum>();
 
             for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
@@ -2089,7 +2139,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureHandle == -1)
                 {
-                    var iTexHandle = CreateTexture(tex, false);
+                    var iTexHandle = CreateTexture(tex);
                     tex.TextureHandle = ((TextureHandle)iTexHandle).Handle;
                 }
 

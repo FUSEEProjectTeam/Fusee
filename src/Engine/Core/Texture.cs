@@ -69,8 +69,16 @@ namespace Fusee.Engine.Core
         /// </value>
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
+        public TextureFilterMode FilterMode { get; protected set; }
+        public TextureWrapMode WrapMode { get; protected set; }
+        
+        public bool DoGenerateMipMaps { get; protected set; }
+
         #endregion
 
+        /// <summary>
+        /// Creates a new instance of type Texture.
+        /// </summary>
         protected Texture() { }
 
         /// <summary>
@@ -80,21 +88,33 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in pixels.</param>
         /// <param name="height">Height in pixels.</param>
         /// <param name="colorFormat">Provides additional information about pixel encoding.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat)
+        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
+        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
+        /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
             _imageData = new ImageData(pixelData, width, height, colorFormat);
+            DoGenerateMipMaps = generateMipMaps;
+            FilterMode = filterMode;
+            WrapMode = wrapMode;            
         }
 
         /// <summary>
         /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="Blt"/> command.
         /// </summary>
         /// <param name="imageData">The existing <see cref="IImageData"/> that will be copied to initialize a Texture instance.</param>
-        public Texture(IImageData imageData)
+        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
+        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
+        /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
             _imageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
             _imageData.Blt(0,0, imageData);
+            DoGenerateMipMaps = generateMipMaps;
+            FilterMode = filterMode;
+            WrapMode = wrapMode;
         }
 
         /// <summary>

@@ -119,63 +119,83 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 format, All.UnsignedByte, img.PixelData);
         }
 
-        /* OBSOLETE
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="col">The color of the image. Value must be JS compatible.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        public ImageData CreateImage(int width, int height, ColorUint col)
+        private Tuple<TextureMinFilter, TextureMagFilter> GetMinMagFilter(TextureFilterMode filterMode)
         {
-            int colorVal = col.ToRgba();
-            int nPixels = width * height;
-            int nBytes = nPixels*4;
-            int[] pxls = new int[nPixels];
+            TextureMinFilter minFilter;
+            TextureMagFilter magFilter;
 
-            for (int i = 0; i < pxls.Length; i++)
-                pxls[i] = colorVal;
+            switch (filterMode)
+            {
+                case TextureFilterMode.NEAREST:
+                    minFilter = TextureMinFilter.Nearest;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                default:
+                case TextureFilterMode.LINEAR:
+                    minFilter = TextureMinFilter.Linear;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                    minFilter = TextureMinFilter.NearestMipmapNearest;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                    minFilter = TextureMinFilter.LinearMipmapNearest;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                    minFilter = TextureMinFilter.NearestMipmapLinear;
+                    magFilter = TextureMagFilter.Nearest;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                    minFilter = TextureMinFilter.LinearMipmapLinear;
+                    magFilter = TextureMagFilter.Linear;
+                    break;
+            }
 
-            var ret = new ImageData(new byte[nBytes], width, height,
-                new ImagePixelFormat(ColorFormat.RGBA));
-
-            Buffer.BlockCopy(pxls, 0, ret.PixelData, 0, nBytes);
-            return ret;
+            return new Tuple<TextureMinFilter, TextureMagFilter>(minFilter, magFilter);
         }
 
-        /// <summary>
-        /// Maps a specified text with on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        public ImageData TextOnImage(ImageData imgData, String fontName, float fontSize, String text, String textColor,
-            float startPosX, float startPosY)
+        private OpenTK.Graphics.ES30.TextureWrapMode GetWrapMode(Common.TextureWrapMode wrapMode)
         {
-            return imgData;
+            switch (wrapMode)
+            {
+                default:
+                case Common.TextureWrapMode.REPEAT:
+                    return OpenTK.Graphics.ES30.TextureWrapMode.Repeat;
+                case Common.TextureWrapMode.MIRRORED_REPEAT:
+                    return OpenTK.Graphics.ES30.TextureWrapMode.MirroredRepeat;
+                case Common.TextureWrapMode.CLAMP_TO_EDGE:
+                    return OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge;
+                case Common.TextureWrapMode.CLAMP_TO_BORDER:
+                {
+                    # warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge is set instead.
+                    return OpenTK.Graphics.ES30.TextureWrapMode.ClampToEdge;
+                }
+            }
         }
-
-       */
 
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
-        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
-        /// <returns>An ITexture that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(ITexture img, bool repeat)
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>     
+        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
+        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
+        /// <param name="wrapMode">Defines the wrapping mode <see cref="Common.TextureWrapMode"/>.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(ITexture img)
         {
             PixelInternalFormat internalFormat;
             OpenTK.Graphics.ES30.PixelFormat format;
 
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
 
             switch (img.PixelFormat.ColorFormat)
             {
@@ -184,16 +204,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = OpenTK.Graphics.ES30.PixelFormat.Rgba;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(All.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = OpenTK.Graphics.ES30.PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(All.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
@@ -201,48 +221,40 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = OpenTK.Graphics.ES30.PixelFormat.Alpha;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.GenerateMipmap(All.Texture2D);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.Depth:
                     internalFormat = PixelInternalFormat.Rgb;
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);                  
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, OpenTK.Graphics.ES30.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = OpenTK.Graphics.ES30.PixelFormat.RgbaInteger;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.fRGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = OpenTK.Graphics.ES30.PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-                    repeat = true;
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
-            //GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Depth24Stencil8, width, height, 0, PixelFormat.DepthStencil, PixelType.UnsignedByte, img.PixelData);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(All.Texture2D);
 
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            //GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (repeat) ? (int)TextureWrapMode.Repeat : (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
             ITextureHandle texID = new TextureHandle { Handle = id };
 
@@ -2052,7 +2064,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 if (tex.TextureHandle == -1)
                 {
-                    var iTexHandle = CreateTexture(tex, false);
+                    var iTexHandle = CreateTexture(tex);
                     tex.TextureHandle = ((TextureHandle)iTexHandle).Handle;
                 }
 

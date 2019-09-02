@@ -177,7 +177,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             catch
             {
-                _mode = new GraphicsMode(32, 24, 0, 0);
+                _mode = new GraphicsMode(32, 24, 0, 8);
                 _context = new GraphicsContext(_mode, _wi, _major, _minor, _flags);
             }
             
@@ -185,7 +185,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             ((IGraphicsContextInternal)_context).LoadAll();
 
             GL.ClearColor(Color.MidnightBlue);
-
+            
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 

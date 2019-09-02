@@ -975,14 +975,13 @@ namespace Fusee.Engine.Core
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
-        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
+        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>        
         /// <returns>
         /// An <see cref="Texture"/> that can be used for texturing in the shader.
         /// </returns>
-        public ITextureHandle CreateTexture(Texture imgData, bool repeat = false)
+        public ITextureHandle CreateTexture(Texture imgData)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(imgData, repeat);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(imgData);
             return textureHandle;
         }
 

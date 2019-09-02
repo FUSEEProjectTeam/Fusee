@@ -73,7 +73,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (img.PixelData != null)
             {
                 if (tex == null)
-                    tex = CreateTexture(img, false);
+                    tex = CreateTexture(img);
 
                 gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).Handle);
 
@@ -133,16 +133,76 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)LINEAR_MIPMAP_LINEAR);
         }
 
+        private Tuple<int, int> GetMinMagFilter(TextureFilterMode filterMode)
+        {
+            int minFilter;
+            int magFilter;
+
+
+            switch (filterMode)
+            {
+                case TextureFilterMode.NEAREST:
+                    minFilter = (int)NEAREST;
+                    magFilter = (int)NEAREST;
+                    break;
+                default:
+                case TextureFilterMode.LINEAR:
+                    minFilter = (int)LINEAR;
+                    magFilter = (int)LINEAR;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_NEAREST:
+                    minFilter = (int)NEAREST_MIPMAP_NEAREST;
+                    magFilter = (int)NEAREST_MIPMAP_NEAREST;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_NEAREST:
+                    minFilter = (int)LINEAR_MIPMAP_NEAREST;
+                    magFilter = (int)LINEAR_MIPMAP_NEAREST;
+                    break;
+                case TextureFilterMode.NEAREST_MIPMAP_LINEAR:
+                    minFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    break;
+                case TextureFilterMode.LINEAR_MIPMAP_LINEAR:
+                    minFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    magFilter = (int)NEAREST_MIPMAP_LINEAR;
+                    break;
+            }
+
+            return new Tuple<int, int>(minFilter, magFilter);
+        }
+        private int GetWrapMode(TextureWrapMode wrapMode)
+        {
+            switch (wrapMode)
+            {
+                default:
+                case TextureWrapMode.REPEAT:
+                    return (int)REPEAT;
+                case TextureWrapMode.MIRRORED_REPEAT:
+                    return (int)MIRRORED_REPEAT;
+                case TextureWrapMode.CLAMP_TO_EDGE:
+                    return (int)CLAMP_TO_EDGE;
+                case TextureWrapMode.CLAMP_TO_BORDER:
+                    {
+                        #warning TextureWrapMode.CLAMP_TO_BORDER is not supported on Android. CLAMP_TO_EDGE is set instead.
+                        return (int)CLAMP_TO_EDGE;
+                    }
+            }
+        }
+
+
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
-        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param> 
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(ITexture img, bool repeat)
+        public ITextureHandle CreateTexture(ITexture img)
         {
             uint internalFormat;
             uint format;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var glFilterMode = GetMinMagFilter(img.FilterMode);
+
             switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
@@ -168,13 +228,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var imageData = gl.CastNativeArray(img.PixelData);
             gl.TexImage2D(TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, format, UNSIGNED_BYTE, imageData);
 
-            gl.GenerateMipmap(TEXTURE_2D);
+            if(img.DoGenerateMipMaps)
+                gl.GenerateMipmap(TEXTURE_2D);
 
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)LINEAR_MIPMAP_LINEAR);
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)LINEAR_MIPMAP_LINEAR);
+            gl.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, glFilterMode.Item1);
+            gl.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glFilterMode.Item2);
 
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (repeat) ? (int)REPEAT : (int)CLAMP_TO_EDGE);
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, (repeat) ? (int)REPEAT : (int)CLAMP_TO_EDGE);
+            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
+            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);            
 
             ITextureHandle texID = new TextureHandle { Handle = id, TextureWidth = img.Width, TextureHeight = img.Height};
 
@@ -1826,7 +1887,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 */
             default:
                     throw new ArgumentOutOfRangeException("renderState");
-            }
+            }           
         }
 
         /// <summary>
