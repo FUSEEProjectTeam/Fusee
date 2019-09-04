@@ -1030,21 +1030,10 @@ def GetParents(obj):
 
 def prepare_mesh(obj):
     # This applies all the modifiers (without altering the scene)
-    # mesh = obj.to_mesh(depsgraph=bpy.context.depsgraph, apply_modifiers=True, calc_undeformed=False)
-    # depsgraph = bpy.context.evaluated_depsgraph_get()
-    # Invoke to_mesh() for original object.
-    # mesh_from_orig = obj.to_mesh()
-    # self.report({'INFO'}, f"{len(mesh_from_orig.vertices)} in new mesh without modifiers.")
-    # Remove temporary mesh.
-    # obj.to_mesh_clear()
-    # Invoke to_mesh() for evaluated object.
-    # object_eval = obj.evaluated_get(depsgraph)
-    # mesh = object_eval.to_mesh()
-    #self.report({'INFO'}, f"{len(mesh.vertices)} in new mesh with modifiers.")
-    # Remove temporary mesh.
-    # object_eval.to_mesh_clear()
-
-    mesh = obj.to_mesh()
+    # Taken from https://docs.blender.org/api/blender2.8/bpy.types.Depsgraph.html, "Evaluated ID example"
+    ev_depsgraph = bpy.context.evaluated_depsgraph_get()
+    object_eval = obj.evaluated_get(ev_depsgraph)
+    mesh = object_eval.data
 
     # Triangulate for web export
     bm = bmesh.new()
