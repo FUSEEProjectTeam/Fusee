@@ -14,18 +14,17 @@ using static Fusee.Engine.Core.Time;
 
 namespace Fusee.Examples.SimpleDeferred.Core
 {
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE Deferred Rendering Example", Description = "")]
     public class SimpleDeferred : RenderCanvas
     {
         // angle variables
         private static float _angleHorz,  _angleVert , _angleVelHorz, _angleVelVert;
 
-        private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
+        private const float RotationSpeed = 7;       
 
         private SceneContainer _rocketScene;
         private SceneRenderer _textureRenderer;
-        private SceneRenderer _sceneRenderer;
+        private SceneRenderer _quadRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -36,18 +35,34 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        private RenderTarget _renderTarget;      
-        
+        private float3 _cameraPos;
+        private float3 _initialCameraPos;
         private bool _keys;
 
         private EventHandler<ResizeEventArgs> _resizeDelLightingPass;
 
         private float4 _texClearColor = new float4(1, 1, 1, 1);
-        private float4 _backgroundColor = new float4(0, 0, 0, 1);
+        private float4 _backgroundColor = new float4(1, 1, 1, 1);
+
+
+        private RenderTarget _gBufferRenderTarget;
+        private RenderTarget _ssaoRenderTarget;
+        private RenderTarget _blurRenderTarget;
+
+        private ShaderEffect _ssaoTexEffect;
+        private ShaderEffect _lightingPassEffect;
+        private ShaderEffect _blurEffect;
+
+        private SceneContainer _planeScene;
+
+        private readonly int lightMultiplier = 1;
+
+        private const float twoPi = M.Pi * 2.0f;
 
         // Init is called on startup. 
         public override void Init()
         {
+            _cameraPos = _initialCameraPos = new float3(0, 10, -30);
             _gui = CreateGui();
             
             // Create the interaction handler
@@ -57,15 +72,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
             RC.ClearColor = _backgroundColor;
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
 
-            _renderTarget = new RenderTarget(TexRes.MID_RES);
-            _renderTarget.CreatePositionTex();
-            _renderTarget.CreateAlbedoSpecularTex();
-            _renderTarget.CreateNormalTex();
-            _renderTarget.CreateDepthTex();
-            _renderTarget.CreateSSAOTex();
-            //_renderTarget.CreateStencilTex();
+            _gBufferRenderTarget = new RenderTarget(TexRes.MID_RES);
+            _ssaoRenderTarget = new RenderTarget(TexRes.MID_RES);
+            _blurRenderTarget = new RenderTarget(TexRes.MID_RES);
 
             //Add resize delegate
             var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
@@ -82,7 +93,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             {
                 var renderTargetMat = new ShaderEffectComponent()
                 {
-                    Effect = ShaderCodeBuilder.RenderTargetTextureEffect(_renderTarget),
+                    Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget),
                 };
 
                 var oldEffect = child.GetComponent<ShaderEffectComponent>().Effect;
@@ -105,10 +116,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the model.
             _textureRenderer = new SceneRenderer(_rocketScene);
-
             var plane = new Plane();
-            var lightMultiplier = 1;
-            var planeScene = new SceneContainer()
+            _planeScene = new SceneContainer()
             {
                 Children = new List<SceneNodeContainer>()
                 {
@@ -123,7 +132,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.DeferredLightingPassEffect(_renderTarget, lightMultiplier*4)
+                                Effect = _lightingPassEffect
                             },
                             plane
 
@@ -132,56 +141,57 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 }
             };
             var aLotOfLights = new ChildList();
-
             var rnd = new Random();
-            
-
             for (int i = 0; i < lightMultiplier; i++)
             {
                 var rndVal = (float)rnd.NextDouble() * 10;
 
+                //aLotOfLights.Add(new SceneNodeContainer()
+                //{
+                //    Components = new List<SceneComponentContainer>()
+                //    {
+                //        new TransformComponent(){ Translation = new float3(2, 2 ,0) },
+                //        new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true},
+                //        new Cube()
+                //    }
+                //});
                 aLotOfLights.Add(new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(-rndVal,0,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true}
-            }
+                    {
+                        new TransformComponent(){ Translation = new float3(-10, 2, 0)},
+                        new LightComponent() { Type = LightType.Parallel, Color = new float4(1, 1, 1, 1), Attenuation = 1.0f, Active = true },
+                        new Cube()
+                    }
+
                 });
                 aLotOfLights.Add(new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(rndVal,rndVal,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true }
-        }
-                
+                    {
+                        new TransformComponent(){ Translation = new float3(-500, 300,0)},
+                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true },
+                        new Cube()
+                    }
                 });
                 aLotOfLights.Add(new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(0,rndVal,0) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true }
-    }
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
-                {
-                    Components = new List<SceneComponentContainer>()
-                        {
-                            new TransformComponent(){ Translation = new float3(0,-rndVal,rndVal) },
-                            new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true }
-}
+                    {
+                        new TransformComponent(){ Translation = new float3(500, 300, -0)},
+                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true },
+                        new Cube()
+                    }
                 });
             }
 
-            planeScene.Children.Add(new SceneNodeContainer()
+            _planeScene.Children.Add(new SceneNodeContainer()
             {
                 Name = "LightContainer",
                 Children = aLotOfLights
             });
 
-            _sceneRenderer = new SceneRenderer(planeScene);
+            _quadRenderer = new SceneRenderer(_planeScene);
             _guiRenderer = new SceneRenderer(_gui);            
         }
 
@@ -215,27 +225,18 @@ namespace Fusee.Examples.SimpleDeferred.Core
             {
                 if (_keys)
                 {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
+                    _angleVelHorz = RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
                 }
             }
 
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            _angleHorz -= _angleVelHorz;
+            _angleVert -= _angleVelVert;
+            _angleVelHorz = 0;
+            _angleVelVert = 0;
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
-
-            //Set the view matrix for the interaction handler.
+            
+            CalcAndSetViewMat();           
             _sih.View = RC.View;
 
             // Constantly check for interactive objects.
@@ -248,14 +249,32 @@ namespace Fusee.Examples.SimpleDeferred.Core
             }
 
             RC.ClearColor = _texClearColor;
-            RC.Viewport(0, 0, (int)_renderTarget.TextureResolution, (int)_renderTarget.TextureResolution);
-            // Render the scene loaded in Init()
-            _textureRenderer.Render(RC, _renderTarget);
+            RC.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution);
+            // Render the scene loaded in Init()           
+            _textureRenderer.Render(RC, _gBufferRenderTarget);
+
+            if(_ssaoTexEffect == null)
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2(Width, Height), new float2(ZNear, ZFar));
+
+            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _ssaoTexEffect;
+            _quadRenderer.Render(RC, _ssaoRenderTarget);
+
+            if (_blurEffect == null)
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTarget, _blurRenderTarget);
+            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _blurEffect;
+            _quadRenderer.Render(RC, _blurRenderTarget);
+
+            _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextures.G_SSAO);
+            //TODO: _ssaoRenderTarget.Dispose();
 
             RC.ClearColor = _backgroundColor;
             RC.Viewport(0, 0, Width, Height);
-            RC.View = mtxCam;
-            _sceneRenderer.Render(RC);
+            
+
+            if (_lightingPassEffect == null)
+                _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightMultiplier * 4); //create in RenderAFrame because ssao tex needs to be generated first.
+            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
+            _quadRenderer.Render(RC);
 
             _guiRenderer.Render(RC);
 
@@ -266,6 +285,45 @@ namespace Fusee.Examples.SimpleDeferred.Core
         public override void Resize(ResizeEventArgs e)
         {
                            
+        }
+
+        private void CalcAndSetViewMat()
+        {
+            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+                _angleHorz %= twoPi;
+            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+                _angleVert %= twoPi;
+
+            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 100;
+            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 100;            
+
+            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);            
+        }
+
+        private float4x4 FPSView(float3 eye, float pitch, float yaw)
+        {
+            // I assume the values are already converted to radians.
+            float cosPitch = M.Cos(pitch);
+            float sinPitch = M.Sin(pitch);
+            float cosYaw = M.Cos(yaw);
+            float sinYaw = M.Sin(yaw);
+
+            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
+            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
+            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
+
+            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+            float4x4 viewMatrix = new float4x4(
+                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
+                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
+                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
+                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
+            );
+
+            viewMatrix = float4x4.Transpose(viewMatrix);
+
+            return viewMatrix;
+
         }
 
         private SceneContainer CreateGui()

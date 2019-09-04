@@ -32,6 +32,17 @@ namespace Fusee.Engine.Core
         public TexRes TextureResolution { get; private set; }
 
         /// <summary>
+        /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
+        /// </summary>
+        /// <param name="src">The source RenderTarget.</param>
+        /// <param name="tex">The type of the texture.</param>
+        public void SetTextureFromRenderTarget(RenderTarget src, RenderTargetTextures tex)
+        {
+            var srcTex = src.RenderTextures[(int)tex];
+            RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
+        }
+
+        /// <summary>
         /// Creates a new instance of type "RenderTarget".
         /// </summary>
         /// <param name="texRes">Resolution of the created Textures.</param>
@@ -45,9 +56,8 @@ namespace Fusee.Engine.Core
         /// Generates a position texture.
         /// </summary>
         public void CreatePositionTex()
-        {
-            var posTexImageData = new ImageData(ColorFormat.fRGB, (int)TextureResolution, (int)TextureResolution);
-            var posTex = new WritableTexture(posTexImageData, false, TextureFilterMode.NEAREST);            
+        {            
+            var posTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32 ), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);            
             RenderTextures[(int)RenderTargetTextures.G_POSITION] = posTex;
         }
 
@@ -55,9 +65,8 @@ namespace Fusee.Engine.Core
         /// Generates a albedo and specular (alpha channel) texture.
         /// </summary>       
         public void CreateAlbedoSpecularTex()
-        {
-            var albedoTexImageData = new ImageData(ColorFormat.RGBA, (int)TextureResolution, (int)TextureResolution);
-            var albedoTex = new WritableTexture(albedoTexImageData, false);
+        {            
+            var albedoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.RGBA), (int)TextureResolution, (int)TextureResolution, false);
             RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR] = albedoTex;
         }
 
@@ -65,9 +74,8 @@ namespace Fusee.Engine.Core
         /// Generates a normal texture.
         /// </summary>
         public void CreateNormalTex()
-        {
-            var normalTexImageData = new ImageData(ColorFormat.fRGB, (int)TextureResolution, (int)TextureResolution);
-            var normalTex = new WritableTexture(normalTexImageData, false, TextureFilterMode.NEAREST);
+        {          
+            var normalTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_NORMAL] = normalTex;
         }
 
@@ -75,9 +83,8 @@ namespace Fusee.Engine.Core
         /// Generates a depth texture.
         /// </summary>
         public void CreateDepthTex()
-        {
-            var depthTexImageData = new ImageData(ColorFormat.RGB, (int)TextureResolution, (int)TextureResolution);
-            var depthTex = new WritableTexture(depthTexImageData, false, TextureFilterMode.NEAREST);
+        {           
+            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
 
@@ -85,9 +92,8 @@ namespace Fusee.Engine.Core
         /// Generates a ssao texture.
         /// </summary>        
         public void CreateSSAOTex()
-        {
-            var ssaoTexImageData = new ImageData(ColorFormat.RGB, (int)TextureResolution, (int)TextureResolution);
-            var ssaoTex = new WritableTexture(ssaoTexImageData);
+        {           
+            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
         }
 

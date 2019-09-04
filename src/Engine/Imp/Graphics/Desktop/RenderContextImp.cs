@@ -241,12 +241,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;                
-                case ColorFormat.fRGB:
-                    internalFormat = PixelInternalFormat.Rgb16f;
+                case ColorFormat.fRGB32:
+                    internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);                    
+                    break;
+                case ColorFormat.fRGB16:
+                    internalFormat = PixelInternalFormat.Rgb16f;
+                    format = PixelFormat.Rgb;
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -2119,7 +2126,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, renderTarget.RenderTextures[0].Width, renderTarget.RenderTextures[0].Height); //TODO: careful: does not resize yet!
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }

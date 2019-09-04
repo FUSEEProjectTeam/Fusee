@@ -20,9 +20,20 @@
         /// </summary>
         Intensity,
 
+        /// <summary>
+        /// RGBA integer.
+        /// </summary>
         iRGBA,
 
-        fRGB,
+        /// <summary>
+        /// RGBA float, 32bit.
+        /// </summary>
+        fRGB32,
+
+        /// <summary>
+        /// RGBA float, 16bit.
+        /// </summary>
+        fRGB16,
 
         Depth,
     }

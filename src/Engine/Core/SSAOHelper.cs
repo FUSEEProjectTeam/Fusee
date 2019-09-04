@@ -42,7 +42,7 @@ namespace Fusee.Engine.Core
             }
             
             return kernel;
-        }
+        }        
 
         /// <summary>
         /// Creates a noise texture with size 4x4.
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core
                 pxData.AddRange(bytesZ);
             }
 
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB)));
+            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)),false, Common.TextureFilterMode.NEAREST);
         }
 
         private static float RandomFloatBetween(double minValue, double maxValue, Random random)

@@ -1014,14 +1014,250 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Deferred
-        
+
+        public static ShaderEffect SSAORenderTargetBlurEffect(RenderTarget srcSsaoRenderTarget, RenderTarget targetSsaoRenderTarget)
+        {
+            targetSsaoRenderTarget.CreateSSAOTex();
+
+            float blurKernelSize;
+            switch (srcSsaoRenderTarget.TextureResolution)
+            {
+                case TexRes.LOW_RES:
+                    blurKernelSize = 2.0f;
+                    break;
+                default:
+                case TexRes.MID_RES:
+                    blurKernelSize = 4.0f;
+                    break;
+                case TexRes.HIGH_RES:
+                    blurKernelSize = 8.0f;
+                    break;              
+            }
+
+            //------------ vertex shader ------------------//
+            var vert = new StringBuilder();
+            vert.Append(Version());
+            vert.Append(EsPrecision());
+            
+            vert.Append(@"
+
+            in vec3 fuVertex;
+            out vec2 vTexCoords;
+
+            ");
+
+            vert.Append(@"
+            void main() 
+            {
+                vTexCoords = fuVertex.xy * 2.0 * 0.5 + 0.5;
+                gl_Position = vec4(fuVertex.xy * 2.0, 0.0 ,1.0);
+
+            }");
+
+            //--------- Fragment shader ----------- //
+            var frag = new StringBuilder();
+            frag.Append(Version());
+            frag.Append(EsPrecision());
+            frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)}\n");
+            frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
+            frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize / 2.0f)}\n");
+
+            frag.Append($"in vec2 vTexCoords;\n");
+           
+            frag.Append($"uniform sampler2D SSAO_INPUT_TEX;\n");
+           
+
+            frag.Append($"out vec4 o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");
+
+            frag.Append("void main() {");
+
+            frag.Append(@"
+            vec2 texelSize = 1.0 / vec2(textureSize(SSAO_INPUT_TEX, 0));
+            float result = 0.0;
+            for (int x = -KERNEL_SIZE_HALF; x < KERNEL_SIZE_HALF; ++x) 
+            {
+                for (int y = -KERNEL_SIZE_HALF; y < KERNEL_SIZE_HALF; ++y) 
+                {
+                    vec2 offset = vec2(float(x), float(y)) * texelSize;
+                    result += texture(SSAO_INPUT_TEX, vTexCoords + offset).r;
+                }
+            }
+
+            result = result / (KERNEL_SIZE * KERNEL_SIZE);
+            
+            ");
+
+            frag.Append($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(result, result, result, 1.0);");
+
+            frag.Append("}");
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcSsaoRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+               
+            });
+
+        }
+
+       
+        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget ssaoRenderTarget, RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, float2 clipPlaneDist)
+        {
+            ssaoRenderTarget.CreateSSAOTex();
+
+            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
+            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
+
+            //------------ vertex shader ------------------//
+            var vert = new StringBuilder();
+            vert.Append(Version());
+            vert.Append(EsPrecision());
+
+            vert.Append(@"
+
+            in vec3 fuVertex;
+            out vec2 vTexCoords;
+
+            ");
+
+            vert.Append(@"
+            void main() 
+            {
+                vTexCoords = fuVertex.xy * 2.0 * 0.5 + 0.5;
+                gl_Position = vec4(fuVertex.xy * 2.0, 0.0 ,1.0);
+
+            }");
+
+            //--------- Fragment shader ----------- //
+            var frag = new StringBuilder();
+            frag.Append(Version());
+            frag.Append(EsPrecision());
+            frag.Append($"#define KERNEL_LENGTH {kernelLength}\n");
+
+            frag.Append($"in vec2 vTexCoords;\n");
+
+            frag.Append($"uniform vec2 ScreenParams;\n");
+            frag.Append($"uniform vec2 ClipPlaneDist;\n");
+            frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");            
+            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_POSITION)};\n");
+            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_NORMAL)};\n");
+            frag.Append($"uniform sampler2D NoiseTex;\n");
+            frag.Append($"uniform mat4 FUSEE_P;\n");
+
+            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");            
+
+            frag.Append("void main() {");
+            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
+
+            frag.Append(@"
+            if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
+                discard;
+            ");
+
+            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).xyz;");
+
+            //SSAO
+            //-------------------------------------- -
+            frag.Append(@"
+            float radius = 5.0;
+            float occlusion = 0.0;
+            float bias = 0.005;
+            ");
+
+            frag.AppendLine($"float noiseScale = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);");
+            frag.AppendLine($"vec3 randomVec = texture(NoiseTex, vTexCoords * noiseScale).xyz;");
+
+            frag.AppendLine($"vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal));");
+            frag.AppendLine($"vec3 bitangent = cross(Normal, tangent);");
+            frag.AppendLine($"mat3 tbn = mat3(tangent, bitangent, Normal);");
+
+            frag.Append(@"
+
+            for (int i = 0; i < KERNEL_LENGTH; ++i) 
+            {
+             // get sample position:
+             vec3 sampleVal = tbn * SSAOKernel[i];
+             sampleVal = sampleVal * radius + FragPos.xyz;
+
+             // project sample position:
+             vec4 offset = vec4(sampleVal, 1.0);
+             offset = FUSEE_P * offset;		
+             offset.xy /= offset.w;
+             offset.xy = offset.xy * 0.5 + 0.5;
+
+             // get sample depth:
+             // ----- EXPENSIVE TEXTURE LOOKUP - graphics card workload goes up and frame rate goes down the nearer the camera is to the model.
+             // keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
+            ");
+
+            frag.AppendLine($"float sampleDepth = texture({RenderTargetTextures.G_POSITION.ToString()}, offset.xy).z;");
+            frag.Append(@"           
+
+             // range check & accumulate:
+             float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
+             occlusion += (sampleDepth <= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
+            }
+
+            occlusion = clamp(1.0 - (occlusion / float(KERNEL_LENGTH)), 0.0, 1.0);           
+
+            ");
+            
+            frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");            
+
+            frag.Append("}");
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+
+                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
+                new EffectParameterDeclaration { Name = "ClipPlaneDist", Value = clipPlaneDist},
+                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
+                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
+                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+            });
+
+        }
+
         /// <summary>
         /// ShaderEffect for rendering into the textures given in a RenderTarget (Geometry Pass).
         /// </summary>
         /// <param name="rt">The RenderTarget</param>
         /// <returns></returns>
-        public static ShaderEffect RenderTargetTextureEffect(RenderTarget rt)
+        public static ShaderEffect GBufferTextureEffect(RenderTarget rt)
         {
+            rt.CreatePositionTex();
+            rt.CreateAlbedoSpecularTex();
+            rt.CreateNormalTex();
+            rt.CreateDepthTex();
+
             var textures = rt.RenderTextures;
 
             //------------ vertex shader ------------------//
@@ -1042,7 +1278,7 @@ namespace Fusee.Engine.Core
                 in vec3 fuNormal;
                 in vec4 fuColor;
                 
-                out vec4 vWorldPos;
+                out vec4 vPos;
                 out vec3 vNormal;
                 out vec4 vColor;               
 
@@ -1051,7 +1287,7 @@ namespace Fusee.Engine.Core
             vert.Append(@"
                 void main() 
                 {
-                    vWorldPos = FUSEE_M * vec4(fuVertex.xyz, 1.0);
+                    vPos = FUSEE_MV * vec4(fuVertex.xyz, 1.0);
                     vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz;
                     vColor = DiffuseColor;
 
@@ -1076,7 +1312,7 @@ namespace Fusee.Engine.Core
             }
 
             frag.Append(@"
-                in vec4 vWorldPos;
+                in vec4 vPos;
                 in vec3 vNormal;
                 in vec4 vColor;"
             );
@@ -1091,7 +1327,7 @@ namespace Fusee.Engine.Core
                 switch (i)
                 {
                     case 0: //POSITION
-                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vWorldPos.xyz, vWorldPos.w);");
+                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vPos.xyz, vPos.w);");
                         break;
                     case 1: //ALBEDO_SPECULAR
                         frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
@@ -1101,8 +1337,6 @@ namespace Fusee.Engine.Core
                         break;
                     case 3: //DEPTH
                         frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
-                        break;
-                    case 4: //SSAO
                         break;
                 }
             }
@@ -1142,8 +1376,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt, float numberOfLights)
         {
-            var textures = rt.RenderTextures;
-
+            // Vertex shader ------------------------------
             var vert = new StringBuilder();
             vert.Append(Version());
             vert.Append(EsPrecision());
@@ -1159,81 +1392,103 @@ namespace Fusee.Engine.Core
             vert.Append(@"
             void main() 
             {
-
                 vTexCoords = fuVertex.xy * 2.0 * 0.5 + 0.5;
                 gl_Position = vec4(fuVertex.xy * 2.0, 0.0 ,1.0);
 
             }");
 
+            // Fragment shader ------------------------------
             var frag = new StringBuilder();
             frag.Append(Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
             frag.Append($"#define MAX_LIGHTS {numberOfLights}\n");
 
-            var texCount = 0;
-
-            for (int i = 0; i < textures.Length; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextures)).Length; i++)
             {
-                var tex = textures[i];
-                if (tex == null) continue;
-
-                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
-                texCount++;
+                 frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");               
             }
 
             frag.Append(LightStructDeclaration());
 
-            frag.Append($"uniform vec2 ScreenParams;\n");
-            frag.Append($"uniform mat4 FUSEE_IV;\n");
+            frag.Append($"uniform mat4 FUSEE_IV;\n");         
+            frag.Append($"uniform mat4 FUSEE_V;\n");
+            frag.Append($"uniform mat4 FUSEE_ITV;\n");          
             frag.Append($"in vec2 vTexCoords;\n");
             frag.Append($"out vec4 oColor;\n");
-
             frag.Append(@"void main()
             {
             ");
 
-            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).rgb;");
             frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
-
+            //Do not do calculations for the background - is there a smarter way (stencil buffer)?
+            //---------------------------------------
             frag.Append(@"
-
-
             if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
                 discard;
+            ");
 
+            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).rgb;");            
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");
+                         
+
+            //Lighting calculation
+            //-------------------------
+            frag.Append(@"
             // then calculate lighting as usual
-            vec3 lighting = DiffuseColor * 0.8; // hard-coded ambient component
+            vec3 lighting = vec3(0.3 * DiffuseColor * Occlusion); // 0.3 = ssao strength
 
             vec3 camPos = FUSEE_IV[3].xyz;
-            vec3 viewDir = normalize(camPos - FragPos);
+            vec3 viewDir = normalize(- FragPos);
 
             for(int i = 0; i < MAX_LIGHTS; ++i)
             {
                 vec3 lightColor = allLights[i].intensities.xyz;
-                vec3 lightPosition = allLights[i].positionWorldSpace;
+                vec3 lightPosition = (FUSEE_V * vec4(allLights[i].positionWorldSpace, 1.0)).xyz;
+                
+                //attenuation
+                float attenuation = 1.0;
+                switch(allLights[i].lightType)
+                {
+                    case 0:
+                        float lightConstant = 1.0;
+                        float lightLinear = 0.0014;
+                        float lightQuadratic = 0.000007;
+
+                        float distance = length(lightPosition - FragPos);
+                        attenuation = 1.0 / (lightConstant + lightLinear * distance + lightQuadratic * (distance * distance));
+
+                        break;
+                    case 1:
+                        break;
+                    case 2:
+                        break;
+                    case 3:
+                        break;
+                }
 
                 // diffuse
                 vec3 lightDir = normalize(lightPosition - FragPos);
+                           
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
-                lighting += diffuse;
+                lighting += (diffuse * attenuation);
             
                 // specular
                 vec3 reflectDir = reflect(-lightDir, Normal);  
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec *lightColor;
-                lighting += specular;
+                lighting += (specular * attenuation);
             }
     
-            oColor = vec4(lighting, 1.0);
-            
-            
+            oColor = vec4(lighting, 1.0);    
+            //oColor = vec4(Occlusion, 1.0);
+
             ");
             frag.Append("}");
 
-            return  new ShaderEffect(new[]
+            return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
@@ -1251,8 +1506,12 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},
@@ -1260,8 +1519,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].ambientCoefficient", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneAngle", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneDirection", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1}
-
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
             });
         }
         #endregion

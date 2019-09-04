@@ -66,7 +66,8 @@ namespace Fusee.Base.Common
                         return 3;
                     case ColorFormat.Intensity:                    
                         return 1;
-                    case ColorFormat.fRGB:
+                    case ColorFormat.fRGB32:
+                    case ColorFormat.fRGB16:
                         return 12;
                     case ColorFormat.Depth:
                         return 2;

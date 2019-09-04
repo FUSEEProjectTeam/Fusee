@@ -33,11 +33,11 @@ namespace Fusee.Base.Common
                     : ColorFormat == ColorFormat.RGB 
                         ? 3
                         : ColorFormat == ColorFormat.Depth
-                            ? 2
-                        : ColorFormat == ColorFormat.Intensity
-                            ? 1
-                                : ColorFormat == ColorFormat.fRGB
-                                    ? 12
+                            ? 3
+                            : ColorFormat == ColorFormat.Intensity
+                                ? 1
+                                : ColorFormat == ColorFormat.fRGB16 || ColorFormat == ColorFormat.fRGB32 //GL_FLOAT: 4byte per component
+                                    ? 12                                    
                                         : 0;
             }
         }

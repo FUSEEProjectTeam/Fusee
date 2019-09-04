@@ -11,7 +11,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// Point light. Emits rays from a single point radially into all directions
         /// </summary>
-        Point = 0,
+        Point,
         /// <summary>
         /// Parallel light. Emits parallel rays into a specified direction. No attenuation.
         /// </summary>

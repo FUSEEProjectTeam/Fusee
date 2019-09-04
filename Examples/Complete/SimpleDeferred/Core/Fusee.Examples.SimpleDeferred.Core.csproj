@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <None Remove="Assets\Monkey.fus" />
+    <None Remove="Assets\nanosuit.fus" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,5 +45,17 @@
     <Resource Include="Assets\Monkey.fus">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Assets\nanosuit.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Assets\nanosuitWalls.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\sponza.fus">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>

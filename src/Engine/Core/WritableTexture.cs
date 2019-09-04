@@ -1,5 +1,4 @@
 ﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
@@ -17,23 +16,34 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Should be containing zeros by default. If you want to use the PixelData directly it gets blted from the graphics card (not implemented yet).
         /// </summary>
-        public new byte[] PixelData { get; private set; } //TODO: get px data from graphics card on PixelData get()
+        public new byte[] PixelData { get; private set; } //TODO: get px data (and _imageData) from graphics card on PixelData get()
 
         /// <summary>
-        /// Creates a new instance of type "WritableTexture".
+        /// Width in pixels.
         /// </summary>
-        /// <param name="imageData"></param>
-        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
-        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
-        /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public WritableTexture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public new int Width
         {
-            _imageData = (ImageData)imageData;
-
-            DoGenerateMipMaps = generateMipMaps;
-            FilterMode = filterMode;
-            WrapMode = wrapMode;
+            get;
+            private set;
         }
+
+        /// <summary>
+        /// Height in pixels.
+        /// </summary>
+        public new int Height
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// PixelFormat provides additional information about pixel encoding.
+        /// </summary>
+        public new ImagePixelFormat PixelFormat
+        {
+            get;
+            private set;
+        }        
 
 
         /// <summary>
@@ -46,12 +56,11 @@ namespace Fusee.Engine.Core
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public WritableTexture(ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
-        {
-            _imageData = new ImageData(
-               new byte[width * height * colorFormat.BytesPerPixel],
-               width, height, colorFormat);
-            //_imageData.Blt(0, 0, imageData);
+        {          
 
+            PixelFormat = colorFormat;
+            Width = width;
+            Height = height;
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;

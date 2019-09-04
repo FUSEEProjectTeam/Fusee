@@ -237,7 +237,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
-                case ColorFormat.fRGB:
+                case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = OpenTK.Graphics.ES30.PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
