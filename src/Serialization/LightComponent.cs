@@ -52,7 +52,7 @@ namespace Fusee.Serialization
         /// Represents the attenuation of the light.
         /// </summary>
         [ProtoMember(3)]
-        public float Attenuation;
+        public float MaxDistance;
         /// <summary>
         /// Represents the ambient coefficient of the light.
         /// </summary>
@@ -64,14 +64,22 @@ namespace Fusee.Serialization
         [ProtoMember(5)]
         public LightType Type;
         /// <summary>
-        /// Represents the spot angle of the light.
+        /// Represents the outer spot angle of the light.
         /// </summary>
         [ProtoMember(6)]
-        public float ConeAngle;
+        public float OuterConeAngle;
+
+
         /// <summary>
-        /// Represents the cone direction of the light.
+        /// Represents the spot inner angle of the light.
         /// </summary>
         [ProtoMember(7)]
+        public float InnerConeAngle;
+
+        /// <summary>
+        /// Represents the cone direction of the light in world space.
+        /// </summary>
+        [ProtoMember(8)]
         public float3 ConeDirection;
         ///// <summary>
         ///// Represents the position in world coordinates.

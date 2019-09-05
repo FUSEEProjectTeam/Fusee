@@ -109,10 +109,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
             }
 
-            var yellowLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true};
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), Attenuation = 0.7f, Active = true };
-            var blueLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true };
+            var yellowLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), MaxDistance = 0.7f, Active = true};
+            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 0.7f, Active = true };
+            var blueLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), MaxDistance = 0.7f, Active = true };
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 0.7f, Active = true };
 
             // Wrap a SceneRenderer around the model.
             _textureRenderer = new SceneRenderer(_rocketScene);
@@ -160,7 +160,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Components = new List<SceneComponentContainer>()
                     {
                         new TransformComponent(){ Translation = new float3(-10, 2, 0)},
-                        new LightComponent() { Type = LightType.Parallel, Color = new float4(1, 1, 1, 1), Attenuation = 1.0f, Active = true },
+                        new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, ConeDirection = new float3(0, -1, -0.5f) },
                         new Cube()
                     }
 
@@ -169,8 +169,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 {
                     Components = new List<SceneComponentContainer>()
                     {
-                        new TransformComponent(){ Translation = new float3(-500, 300,0)},
-                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), Attenuation = 0.7f, Active = true },
+                        new TransformComponent(){ Translation = new float3(-450, 150,0)},
+                        new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, ConeDirection = new float3(0, 0, 1), OuterConeAngle = 25, InnerConeAngle = 5 },
                         new Cube()
                     }
                 });
@@ -179,7 +179,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Components = new List<SceneComponentContainer>()
                     {
                         new TransformComponent(){ Translation = new float3(500, 300, -0)},
-                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), Attenuation = 0.7f, Active = true },
+                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true },
                         new Cube()
                     }
                 });
@@ -276,7 +276,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
             _quadRenderer.Render(RC);
 
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();

@@ -792,7 +792,7 @@ namespace Fusee.Engine.Core
             var attenuation = new List<string>
             {
                 "float distanceToLight = distance(position, viewPos.xyz) / 1000.0;",
-                "float distance = pow(distanceToLight/attenuation,4.0);",
+                "float distance = pow(distanceToLight/maxDistance,4.0);",
                 "float att = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);"
             };
 
@@ -860,7 +860,7 @@ namespace Fusee.Engine.Core
                 new[]
                 {
                     GLSL.CreateVar(Type.Vec3, "position"), GLSL.CreateVar(Type.Vec4, "intensities"),
-                    GLSL.CreateVar(Type.Vec3, "coneDirection"), GLSL.CreateVar(Type.Float, "attenuation"),
+                    GLSL.CreateVar(Type.Vec3, "coneDirection"), GLSL.CreateVar(Type.Float, "maxDistance"),
                     GLSL.CreateVar(Type.Float, "ambientCoefficient"), GLSL.CreateVar(Type.Float, "coneAngle"),
                     GLSL.CreateVar(Type.Int, "lightType")
                 }, methodBody));
@@ -965,9 +965,9 @@ namespace Fusee.Engine.Core
                 "vec3 currentPosition = allLights[i].position;",
                 "vec4 currentIntensities = allLights[i].intensities;",
                 "vec3 currentConeDirection = allLights[i].coneDirection;",
-                "float currentAttenuation = allLights[i].attenuation;",
+                "float currentAttenuation = allLights[i].maxDistance;",
                 "float currentAmbientCoefficient = allLights[i].ambientCoefficient;",
-                "float currentConeAngle = allLights[i].coneAngle;",
+                "float currentConeAngle = allLights[i].outerConeAngle;",
                 "int currentLightType = allLights[i].lightType; ",
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
@@ -997,9 +997,10 @@ namespace Fusee.Engine.Core
                 vec3 positionWorldSpace;
                 vec4 intensities;
                 vec3 coneDirection;
-                float attenuation;
+                float maxDistance;
                 float ambientCoefficient;
-                float coneAngle;
+                float outerConeAngle;
+                float innerConeAngle;
                 int lightType;
             };
             uniform Light allLights[MAX_LIGHTS];
@@ -1413,6 +1414,7 @@ namespace Fusee.Engine.Core
 
             frag.Append($"uniform mat4 FUSEE_IV;\n");         
             frag.Append($"uniform mat4 FUSEE_V;\n");
+            frag.Append($"uniform mat4 FUSEE_MV;\n");
             frag.Append($"uniform mat4 FUSEE_ITV;\n");          
             frag.Append($"in vec2 vTexCoords;\n");
             frag.Append($"out vec4 oColor;\n");
@@ -1447,30 +1449,48 @@ namespace Fusee.Engine.Core
             {
                 vec3 lightColor = allLights[i].intensities.xyz;
                 vec3 lightPosition = (FUSEE_V * vec4(allLights[i].positionWorldSpace, 1.0)).xyz;
-                
+                vec3 lightDir = normalize(lightPosition - FragPos);                
+
                 //attenuation
                 float attenuation = 1.0;
                 switch(allLights[i].lightType)
                 {
+                    //Point
                     case 0:
-                        float lightConstant = 1.0;
-                        float lightLinear = 0.0014;
-                        float lightQuadratic = 0.000007;
-
-                        float distance = length(lightPosition - FragPos);
-                        attenuation = 1.0 / (lightConstant + lightLinear * distance + lightQuadratic * (distance * distance));
-
+                    {
+                        float distanceToLight = length(lightPosition - FragPos); 
+                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
+                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
                         break;
+                    }
+                    //Parallel
                     case 1:
+                        lightDir = -normalize((FUSEE_V * vec4(allLights[i].coneDirection, 0.0)).xyz);
                         break;
+                    //Spot
                     case 2:
+                    {                           
+                        //point component
+                        float distanceToLight = length(lightPosition - FragPos); 
+                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
+                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
+                        
+                        //cone component
+                        vec3 coneDir = normalize((FUSEE_V * vec4(allLights[i].coneDirection, 0.0)).xyz);
+                        float lightToSurfaceAngle = dot(lightDir, -coneDir); 
+                        
+                        float epsilon = cos(allLights[i].innerConeAngle) - cos(allLights[i].outerConeAngle);
+                        float t = (lightToSurfaceAngle - cos(allLights[i].outerConeAngle)) / epsilon;                        
+
+                        attenuation *= clamp(t, 0.0, 1.0);                           
+
                         break;
+                    }
                     case 3:
                         break;
                 }
 
-                // diffuse
-                vec3 lightDir = normalize(lightPosition - FragPos);
+                // diffuse               
                            
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
                 lighting += (diffuse * attenuation);
@@ -1508,6 +1528,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = rt.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
@@ -1515,9 +1536,10 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].attenuation", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].maxDistance", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].ambientCoefficient", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].outerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].innerConeAngle", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].coneDirection", Value = float3.Zero},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
             });
@@ -1751,7 +1773,12 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                Name = "allLights[" + 0 + "].coneAngle",
+                Name = "allLights[" + 0 + "].outerConeAngle",
+                Value = 0.0f
+            });
+            effectParameters.Add(new EffectParameterDeclaration
+            {
+                Name = "allLights[" + 0 + "].innerConeAngle",
                 Value = 0.0f
             });
             effectParameters.Add(new EffectParameterDeclaration

@@ -393,7 +393,8 @@ namespace Fusee.Engine.Core
                     AmbientCoefficient = 0.0f,
                     Attenuation = 0.0f,
                     Color = new float4(1.0f, 1.0f, 1.0f, 1f),
-                    ConeAngle = 45f,
+                    OuterConeAngle = 45f,
+                    InnerConeAngle = 35f,
                     ConeDirection = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
                     Type = (int)LightType.Legacy
@@ -871,7 +872,8 @@ namespace Fusee.Engine.Core
                 light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);
 
                 // convert spotlight angle from degrees to radians
-                light.ConeAngle = M.DegreesToRadians(light.ConeAngle);
+                light.OuterConeAngle = M.DegreesToRadians(light.OuterConeAngle);
+                light.InnerConeAngle = M.DegreesToRadians(light.InnerConeAngle);
                 AllLightResults[key] = light;
             }
         }
@@ -923,10 +925,11 @@ namespace Fusee.Engine.Core
             _rc.SetFXParam($"allLights[{position}].position", light.PositionModelViewSpace);
             _rc.SetFXParam($"allLights[{position}].positionWorldSpace", light.PositionWorldSpace);
             _rc.SetFXParam($"allLights[{position}].intensities", light.Color);
-            _rc.SetFXParam($"allLights[{position}].attenuation", light.Attenuation);
+            _rc.SetFXParam($"allLights[{position}].maxDistance", light.Attenuation);
             _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
-            _rc.SetFXParam($"allLights[{position}].coneAngle", light.ConeAngle);
-            _rc.SetFXParam($"allLights[{position}].coneDirection", light.ConeDirectionModelViewSpace);
+            _rc.SetFXParam($"allLights[{position}].outerConeAngle", light.OuterConeAngle);
+            _rc.SetFXParam($"allLights[{position}].innerConeAngle", light.InnerConeAngle);
+            _rc.SetFXParam($"allLights[{position}].coneDirection", light.ConeDirection);
             _rc.SetFXParam($"allLights[{position}].lightType", light.Type);
         }
 
@@ -1077,9 +1080,13 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int Type;
         /// <summary>
-        /// Represents the spot angle of the light.
+        /// Represents the outer spot angle of the light.
         /// </summary>
-        public float ConeAngle;
+        public float OuterConeAngle;
+        /// <summary>
+        /// Represents the inner spot angle of the light.
+        /// </summary>
+        public float InnerConeAngle;
         /// <summary>
         /// Represents the cone direction of the light.
         /// </summary>
@@ -1089,7 +1096,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4 ModelMatrix;
         /// <summary>
-        /// The light's position in World Coordiantes.
+        /// The light's position in World Coordinates.
         /// </summary>
         public float3 PositionWorldSpace;
         /// <summary>
@@ -1157,7 +1164,8 @@ namespace Fusee.Engine.Core
             {
                 Type = (int)lightComponent.Type,
                 Color = lightComponent.Color,
-                ConeAngle = lightComponent.ConeAngle,
+                OuterConeAngle = lightComponent.OuterConeAngle,
+                InnerConeAngle = lightComponent.InnerConeAngle,
                 ConeDirection = lightComponent.ConeDirection,
                 AmbientCoefficient = lightComponent.AmbientCoefficient,
                 ModelMatrix = State.Model,
@@ -1165,7 +1173,7 @@ namespace Fusee.Engine.Core
                 PositionWorldSpace = State.Model.Column3.xyz,
                 ConeDirectionWorldSpace = State.Model * lightComponent.ConeDirection,
                 Active = lightComponent.Active,
-                Attenuation = lightComponent.Attenuation
+                Attenuation = lightComponent.MaxDistance
             };
             YieldItem(new KeyValuePair<LightComponent, LightResult>(lightComponent, lightResult));
         }
