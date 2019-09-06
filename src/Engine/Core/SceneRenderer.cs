@@ -395,7 +395,7 @@ namespace Fusee.Engine.Core
                     Color = new float4(1.0f, 1.0f, 1.0f, 1f),
                     OuterConeAngle = 45f,
                     InnerConeAngle = 35f,
-                    ConeDirection = float3.UnitZ,
+                    Direction = float3.UnitZ,
                     ModelMatrix = float4x4.Identity,
                     Type = (int)LightType.Legacy
                 });
@@ -866,7 +866,7 @@ namespace Fusee.Engine.Core
                 light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
 
                 // float4 is really needed
-                var lightConeDirectionFloat4 = new float4(light.ConeDirection.x, light.ConeDirection.y, light.ConeDirection.z, 0.0f);
+                var lightConeDirectionFloat4 = new float4(light.Direction.x, light.Direction.y, light.Direction.z, 0.0f);
                 lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
                 lightConeDirectionFloat4.Normalize();
                 light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);
@@ -929,7 +929,7 @@ namespace Fusee.Engine.Core
             _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
             _rc.SetFXParam($"allLights[{position}].outerConeAngle", light.OuterConeAngle);
             _rc.SetFXParam($"allLights[{position}].innerConeAngle", light.InnerConeAngle);
-            _rc.SetFXParam($"allLights[{position}].coneDirection", light.ConeDirection);
+            _rc.SetFXParam($"allLights[{position}].direction", light.Direction);
             _rc.SetFXParam($"allLights[{position}].lightType", light.Type);
         }
 
@@ -1088,9 +1088,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float InnerConeAngle;
         /// <summary>
-        /// Represents the cone direction of the light.
+        /// Direction of the light in world space. Will only have an effect for directional lights, such as spot or parallel light.
         /// </summary>
-        public float3 ConeDirection;
+        public float3 Direction;
         /// <summary>
         /// The ModelMatrix of the light
         /// </summary>
@@ -1166,12 +1166,12 @@ namespace Fusee.Engine.Core
                 Color = lightComponent.Color,
                 OuterConeAngle = lightComponent.OuterConeAngle,
                 InnerConeAngle = lightComponent.InnerConeAngle,
-                ConeDirection = lightComponent.ConeDirection,
+                Direction = lightComponent.Direction,
                 AmbientCoefficient = lightComponent.AmbientCoefficient,
                 ModelMatrix = State.Model,
                 //Position = lightComponent.Position,
                 PositionWorldSpace = State.Model.Column3.xyz,
-                ConeDirectionWorldSpace = State.Model * lightComponent.ConeDirection,
+                ConeDirectionWorldSpace = State.Model * lightComponent.Direction,
                 Active = lightComponent.Active,
                 Attenuation = lightComponent.MaxDistance
             };

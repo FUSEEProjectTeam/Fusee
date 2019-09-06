@@ -48,16 +48,20 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private RenderTarget _gBufferRenderTarget;
         private RenderTarget _ssaoRenderTarget;
         private RenderTarget _blurRenderTarget;
+        private RenderTarget _lightedSceneRenderTarget;
 
         private ShaderEffect _ssaoTexEffect;
         private ShaderEffect _lightingPassEffect;
         private ShaderEffect _blurEffect;
+        private ShaderEffect _fxaaEffect;
 
         private SceneContainer _planeScene;
 
         private readonly int lightMultiplier = 1;
 
         private const float twoPi = M.Pi * 2.0f;
+
+        private bool _fxaaON = true;
 
         // Init is called on startup. 
         public override void Init()
@@ -74,9 +78,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
 
-            _gBufferRenderTarget = new RenderTarget(TexRes.MID_RES);
-            _ssaoRenderTarget = new RenderTarget(TexRes.MID_RES);
-            _blurRenderTarget = new RenderTarget(TexRes.MID_RES);
+            var texTex = TexRes.MID_RES;
+            _gBufferRenderTarget = new RenderTarget(texTex);
+            _ssaoRenderTarget = new RenderTarget(texTex);
+            _blurRenderTarget = new RenderTarget(texTex);
+            _lightedSceneRenderTarget = new RenderTarget(texTex);
 
             //Add resize delegate
             var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
@@ -145,23 +151,12 @@ namespace Fusee.Examples.SimpleDeferred.Core
             for (int i = 0; i < lightMultiplier; i++)
             {
                 var rndVal = (float)rnd.NextDouble() * 10;
-
-                //aLotOfLights.Add(new SceneNodeContainer()
-                //{
-                //    Components = new List<SceneComponentContainer>()
-                //    {
-                //        new TransformComponent(){ Translation = new float3(2, 2 ,0) },
-                //        new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), Attenuation = 0.7f, Active = true},
-                //        new Cube()
-                //    }
-                //});
                 aLotOfLights.Add(new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
                     {
                         new TransformComponent(){ Translation = new float3(-10, 2, 0)},
-                        new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, ConeDirection = new float3(0, -1, -0.5f) },
-                        new Cube()
+                        new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Direction = new float3(0, -1, -0.5f) },                       
                     }
 
                 });
@@ -170,8 +165,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Components = new List<SceneComponentContainer>()
                     {
                         new TransformComponent(){ Translation = new float3(-450, 150,0)},
-                        new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, ConeDirection = new float3(0, 0, 1), OuterConeAngle = 25, InnerConeAngle = 5 },
-                        new Cube()
+                        new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, Direction = new float3(0, 0, 1), OuterConeAngle = 25, InnerConeAngle = 5 },                        
                     }
                 });
                 aLotOfLights.Add(new SceneNodeContainer()
@@ -179,8 +173,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Components = new List<SceneComponentContainer>()
                     {
                         new TransformComponent(){ Translation = new float3(500, 300, -0)},
-                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true },
-                        new Cube()
+                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true },                        
                     }
                 });
             }
@@ -267,16 +260,40 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextures.G_SSAO);
             //TODO: _ssaoRenderTarget.Dispose();
 
-            RC.ClearColor = _backgroundColor;
-            RC.Viewport(0, 0, Width, Height);
-            
 
-            if (_lightingPassEffect == null)
-                _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightMultiplier * 4); //create in RenderAFrame because ssao tex needs to be generated first.
-            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
-            _quadRenderer.Render(RC);
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+            {
+                _fxaaON = !_fxaaON;
+            }
 
-            //_guiRenderer.Render(RC);
+            if (!_fxaaON)
+            {
+                // ----FXAA OFF----
+                RC.ClearColor = _backgroundColor;
+                RC.Viewport(0, 0, Width, Height);
+                if (_lightingPassEffect == null)
+                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightMultiplier * 3); //create in RenderAFrame because ssao tex needs to be generated first.
+                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
+                _quadRenderer.Render(RC);
+
+            }
+            else
+            {
+                // ---- FXAA ON ----
+                if (_lightingPassEffect == null)
+                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, _lightedSceneRenderTarget, lightMultiplier * 3); //create in RenderAFrame because ssao tex needs to be generated first.
+                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
+                _quadRenderer.Render(RC, _lightedSceneRenderTarget);
+
+                RC.ClearColor = _backgroundColor;
+                RC.Viewport(0, 0, Width, Height);
+                if (_fxaaEffect == null)
+                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneRenderTarget, new float2(Width, Height));
+                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _fxaaEffect;
+                _quadRenderer.Render(RC);
+            }
+
+            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -284,7 +301,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
        
         public override void Resize(ResizeEventArgs e)
         {
-                           
+            if(_ssaoTexEffect != null)
+                _ssaoTexEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
+            if (_fxaaEffect != null)
+                _fxaaEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
         }
 
         private void CalcAndSetViewMat()
