@@ -63,6 +63,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private bool _fxaaON = true;
 
+        TexRes _texRes = TexRes.MID_RES;
+
         // Init is called on startup. 
         public override void Init()
         {
@@ -78,11 +80,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
 
-            var texTex = TexRes.MID_RES;
-            _gBufferRenderTarget = new RenderTarget(texTex);
-            _ssaoRenderTarget = new RenderTarget(texTex);
-            _blurRenderTarget = new RenderTarget(texTex);
-            _lightedSceneRenderTarget = new RenderTarget(texTex);
+            
+            _gBufferRenderTarget = new RenderTarget(_texRes);
+            _ssaoRenderTarget = new RenderTarget(_texRes);
+            _blurRenderTarget = new RenderTarget(_texRes);
+            _lightedSceneRenderTarget = new RenderTarget(_texRes);
 
             //Add resize delegate
             var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
@@ -201,6 +203,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _keys = true;
             }
 
+            if (Keyboard.IsKeyDown(KeyCodes.F))            
+                _fxaaON = !_fxaaON;   
+
             if (Mouse.LeftButton)
             {
                 _keys = false;
@@ -246,8 +251,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Render the scene loaded in Init()           
             _textureRenderer.Render(RC, _gBufferRenderTarget);
 
-            if(_ssaoTexEffect == null)
-                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2(Width, Height), new float2(ZNear, ZFar));
+           
+            if (_ssaoTexEffect == null)
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(ZNear, ZFar));
 
             _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _ssaoTexEffect;
             _quadRenderer.Render(RC, _ssaoRenderTarget);
@@ -257,15 +263,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _blurEffect;
             _quadRenderer.Render(RC, _blurRenderTarget);
 
-            _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextures.G_SSAO);
-            //TODO: _ssaoRenderTarget.Dispose();
-
-
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-            {
-                _fxaaON = !_fxaaON;
-            }
-
+            _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextures.G_SSAO); 
+            
             if (!_fxaaON)
             {
                 // ----FXAA OFF----
@@ -275,7 +274,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightMultiplier * 3); //create in RenderAFrame because ssao tex needs to be generated first.
                 _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
                 _quadRenderer.Render(RC);
-
             }
             else
             {
@@ -288,7 +286,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 RC.ClearColor = _backgroundColor;
                 RC.Viewport(0, 0, Width, Height);
                 if (_fxaaEffect == null)
-                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneRenderTarget, new float2(Width, Height));
+                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneRenderTarget, new float2((float)_texRes, (float)_texRes));
                 _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _fxaaEffect;
                 _quadRenderer.Render(RC);
             }
@@ -301,10 +299,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
        
         public override void Resize(ResizeEventArgs e)
         {
-            if(_ssaoTexEffect != null)
-                _ssaoTexEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
-            if (_fxaaEffect != null)
-                _fxaaEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
+            //if(_ssaoTexEffect != null)
+            //    _ssaoTexEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
+            //if (_fxaaEffect != null)
+            //    _fxaaEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
         }
 
         private void CalcAndSetViewMat()

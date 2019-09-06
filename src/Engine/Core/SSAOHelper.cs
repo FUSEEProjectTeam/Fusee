@@ -27,14 +27,14 @@ namespace Fusee.Engine.Core
             {
                 kernel[i] = new float3
                 (
-                    RandomFloatBetween(0f, 1f, rnd) * 2.0f - 1.0f,
-                    RandomFloatBetween(0f, 1f, rnd) * 2.0f - 1.0f,
-                    RandomFloatBetween(0f, 1f, rnd)
+                    (float)rnd.NextDouble() * 2.0f - 1.0f,
+                    (float)rnd.NextDouble() * 2.0f - 1.0f,
+                    (float)rnd.NextDouble()
                 );
 
                 kernel[i].Normalize();
 
-                kernel[i] *= RandomFloatBetween(0f, 1f, rnd);
+                kernel[i] *= (float)rnd.NextDouble();
 
                 float scale = i / kernelSize;
                 scale = M.Lerp(0.1f, 1.0f, scale * scale);
@@ -67,14 +67,8 @@ namespace Fusee.Engine.Core
                 pxData.AddRange(bytesZ);
             }
 
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)),false, Common.TextureFilterMode.NEAREST);
-        }
-
-        private static float RandomFloatBetween(double minValue, double maxValue, Random random)
-        {
-            var next = random.NextDouble();            
-            return (float)(minValue + (next * (maxValue - minValue)));
-        }        
+            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)),true , Common.TextureFilterMode.NEAREST);
+        }          
 
         private static float3[] SSAONoise(int noiseSize) //should be a multiple of 4...
         {
@@ -86,8 +80,8 @@ namespace Fusee.Engine.Core
             {
                 noise[i] = new float3
                 (
-                    RandomFloatBetween(0f, 1f, rnd) * 2.0f - 1.0f,
-                    RandomFloatBetween(0f, 1f, rnd) * 2.0f - 1.0f,
+                    (float)rnd.NextDouble() * 2.0f - 1.0f,
+                    (float)rnd.NextDouble() * 2.0f - 1.0f,
                     0.0f
                 );
             }
