@@ -10,8 +10,7 @@ namespace Fusee.Engine.Core
 
         private Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
 
-        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
-        private Dictionary<Suid, int> _identifierToWritableTextureHandleDictionary = new Dictionary<Suid, int>();
+        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();       
 
         private void Remove(ITextureHandle textureHandle)
         {
@@ -48,15 +47,15 @@ namespace Fusee.Engine.Core
         }
 
 
-        private int RegisterNewWritableTexture(WritableTexture texture)
-        {            
+        private ITextureHandle RegisterNewWritableTexture(WritableTexture texture)
+        {
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToWritableTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
 
             return texture.TextureHandle;
-            
+
         }
 
         private ITextureHandle RegisterNewTexture(Texture texture)
@@ -91,9 +90,9 @@ namespace Fusee.Engine.Core
             return foundTextureHandle;
         }
 
-        public int GetWritableTextureHandleFromTexture(WritableTexture texture)
+        public ITextureHandle GetWritableTextureHandleFromTexture(WritableTexture texture)
         {    
-            if (!_identifierToWritableTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {
                 return RegisterNewWritableTexture(texture);
             }

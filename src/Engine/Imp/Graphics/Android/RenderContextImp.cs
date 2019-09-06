@@ -1,19 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Text;
 using Android.Content;
-using Android.Content.Res;
-using Android.Graphics;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
-using OpenTK;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
-//using OpenTK.Graphics.ES11;
 using OpenTK.Graphics.ES30;
-using Path = Fusee.Base.Common.Path;
 using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.Android
@@ -768,22 +761,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
-        }
-
-        public void SetShaderParamWritableTexture(IShaderParam param, int texId)
-        {
-            int iParam = ((ShaderParam)param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
-            {
-                texUnit = _currentAll++;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.Texture2D, texId);
-        }
+        }        
 
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
         {
@@ -2062,13 +2040,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 var tex = renderTarget.RenderTextures[i];
                 if (tex == null) continue;
 
-                if (tex.TextureHandle == -1)
+                if (tex.TextureHandle == null)
                 {
                     var iTexHandle = CreateTexture(tex);
-                    tex.TextureHandle = ((TextureHandle)iTexHandle).Handle;
+                    tex.TextureHandle = new TextureHandle();
+                    ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
                 }
 
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + i, TextureTarget.Texture2D, tex.TextureHandle, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + i, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
                 attachements.Add(DrawBufferMode.ColorAttachment0 + i);
             }
 

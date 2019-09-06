@@ -990,23 +990,7 @@ namespace Fusee.Engine.Core
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.CopyDepthBufferFromDeferredBuffer(textureHandle);
         }
-
-        /// <summary>
-        /// Creates a new writable texture and binds it to the shader.
-        /// This is done by creating a framebuffer and a renderbuffer (if needed).
-        /// All bufferhandles are returned with the texture.
-        /// For binding this texture call <see cref="SetRenderTarget"/>
-        /// <param name="width"></param>
-        /// <param name="height"></param>SetRenderTarget
-        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITexture"/>ITexture that can be used for of screen rendering
-        /// </returns>
-        //public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
-        //{
-        //    return _rci.CreateWritableTexture(width, height, textureFormat);
-        //}
+        
 
         /// <summary>
         /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
@@ -1035,27 +1019,11 @@ namespace Fusee.Engine.Core
         /// <param name="texture">An ITexture.</param>
         public void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
         {
-            int textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
-            _rci.SetShaderParamWritableTexture(param, textureHandle);
-        }
-
-        ///// <summary>
-        ///// Sets a Shader Parameter to a created texture.
-        ///// </summary>
-        ///// <param name="param">Shader Parameter used for texture binding.</param>
-        ///// <param name="texture">An ITexture.</param>
-        //public void SetShaderParamTexture(IShaderParam param, WritableTexture texture)
-        //{
-        //    ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
-        //    _rci.SetShaderParamTexture(param, texture.TextureHandle);
-        //}
-
-        //  // TEXHANDLE_BYPASS
-        public void SetShaderParamTextureHandle(IShaderParam param, ITextureHandle textureHandle)
-        {
+            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle);
-        }
+        }        
 
+        
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
@@ -1794,10 +1762,7 @@ namespace Fusee.Engine.Core
             {
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }            
-            else if (param.Info.Type == typeof(ITextureHandle))  //  // TEXHANDLE_BYPASS
-            {
-                SetShaderParamTextureHandle(param.Info.Handle, (ITextureHandle)param.Value);
-            }
+            
         }
         /// <summary>
         /// Returns the hardware capabilities.

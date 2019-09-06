@@ -6,7 +6,6 @@ namespace Fusee.Engine.Common
 {
     public interface IRenderTarget
     {
-
         int GBufferHandle { get; set; }
         int DepthBufferHandle { get; set; }
 

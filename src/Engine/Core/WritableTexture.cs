@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Gets set, if the texture is created on the graphics card.
         /// </summary>
-        public int TextureHandle { get; set; } = -1; // only int (texHandle.Handle) to allow a shader code builder
+        public ITextureHandle TextureHandle { get; set; }
 
         /// <summary>
         /// Should be containing zeros by default. If you want to use the PixelData directly it gets blted from the graphics card (not implemented yet).
@@ -63,7 +63,7 @@ namespace Fusee.Engine.Core
             Height = height;
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
-            WrapMode = wrapMode;
+            WrapMode = wrapMode;            
         }
     }
 }

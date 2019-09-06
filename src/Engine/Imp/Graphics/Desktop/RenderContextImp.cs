@@ -861,22 +861,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
-        }
-
-        public void SetShaderParamWritableTexture(IShaderParam param, int texId)
-        {
-            int iParam = ((ShaderParam)param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
-            {
-                texUnit = _currentTextureUnit++;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.Texture2D, texId);
-        }
+        }        
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
@@ -2144,13 +2129,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 var tex = renderTarget.RenderTextures[i];
                 if (tex == null) continue;
 
-                if (tex.TextureHandle == -1)
+                if (tex.TextureHandle == null)
                 {
                     var iTexHandle = CreateTexture(tex);
-                    tex.TextureHandle = ((TextureHandle)iTexHandle).Handle;
+                    tex.TextureHandle = new TextureHandle();
+                    ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
                 }
 
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, tex.TextureHandle, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
                 attachements.Add(DrawBuffersEnum.ColorAttachment0 + i);
             }
 
