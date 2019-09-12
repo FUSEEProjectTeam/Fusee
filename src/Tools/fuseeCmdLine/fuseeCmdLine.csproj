@@ -9,7 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
     <AssemblyName>fusee</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">..\..\..</FuseeBuildRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..</FuseeEngineRoot>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
@@ -21,9 +22,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -33,9 +32,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,13 +41,13 @@
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeBuildRoot)\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>..\..\..\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>..\..\..\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -151,23 +148,23 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Base\Core\Fusee.Base.Core.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
       <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
       <Name>Fusee.Base.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Engine\Core\Fusee.Engine.Core.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Fusee.Engine.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Math\Core\Fusee.Math.Core.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
       <Name>Fusee.Math.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Serialization\Fusee.Serialization.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
       <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
       <Name>Fusee.Serialization</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xene\Fusee.Xene.csproj">
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
       <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
       <Name>Fusee.Xene</Name>
     </ProjectReference>
@@ -201,21 +198,21 @@
   <!-- Names and directoreies -->
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
-    <BlenderAddonSourcePath>..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+    <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
     <!-- Input files part of the Addon -->
     <ItemGroup>
       <BlenderAddonPythonFiles Include="$(BlenderAddonSourcePath)\**\*.py" />
-      <BlenderAddonProtobufPythonFiles Include="$(FuseeBuildRoot)\ext\protobuf\Python\**\*" />
+      <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
@@ -233,7 +230,7 @@
   <!-- END OF BUILD THE BLENDER ADDON -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
-  <Import Project="$(FuseeBuildRoot)\ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
+  <Import Project="$(FuseeEngineRoot)\ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

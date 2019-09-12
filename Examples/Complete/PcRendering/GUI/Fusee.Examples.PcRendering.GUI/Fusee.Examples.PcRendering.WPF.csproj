@@ -6,7 +6,7 @@
     <UseWPF>true</UseWPF>    
   </PropertyGroup>
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\GUI\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\GUI\WPF</OutputPath>
     <StartupObject>Fusee.Examples.PcRendering.WPF.App</StartupObject>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Tools</OutputPath>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

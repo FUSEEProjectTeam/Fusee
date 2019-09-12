@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.AdvancedUI.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.AdvancedUI.Desktop</PackageId>
@@ -12,8 +12,8 @@
     <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Desktop\</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+  <ItemGroup>    
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,37 +22,37 @@
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Base.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Base.Imp.Desktop">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Desktop.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Engine.Imp.Graphics.Desktop">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Desktop.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Desktop.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
     </Reference>
     <Reference Include="Fusee.Xene">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <Reference Include="protobuf-net">
-      <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

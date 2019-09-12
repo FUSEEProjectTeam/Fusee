@@ -10,21 +10,10 @@
             "request": "launch", 
             "preLaunchTask": "build",
             "program": "${env:FuseeRoot}/bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.dll",
-            "args": ["${workspaceRoot}/bin/Debug/netcoreapp2.2/PointcloudReader.dll"],
+            "args": ["${workspaceRoot}/bin/Debug/Examples/PointcloudReader/PointcloudReader.dll"],
             "cwd": "${env:FuseeRoot}bin/Debug/Player/Desktop",
             "stopAtEntry": false,
             "console": "externalTerminal"
-        },
-        {
-            "name": "Start in FUSEE Web Player",
-            "type": "clr",
-            "request": "launch", 
-            "preLaunchTask": "Publish FUSEE Web app",
-            "program": "${env:FuseeRoot}/bin/Debug/Tools/fusee.exe",
-            "args": ["server", "${workspaceRoot}/pub/Web"],
-            "cwd": ".",
-            "stopAtEntry": false,
-            "console": "externalTerminal"           
         }
     ]
 }
