@@ -1,37 +1,16 @@
-﻿using Fusee.Math.Core;
+﻿
+using Fusee.Base.Common;
+using Fusee.Math.Core;
 using ProtoBuf;
 
 namespace Fusee.Serialization
 {
     /// <summary>
-    /// Specifies the type of the light.
-    /// </summary>
-    public enum LightType
-    {
-        /// <summary>
-        /// Point light. Emits rays from a single point radially into all directions
-        /// </summary>
-        Point,
-        /// <summary>
-        /// Parallel light. Emits parallel rays into a specified direction. No attenuation.
-        /// </summary>
-        Parallel,
-        /// <summary>
-        /// Spot light. Like a point light but with rules describing the intensities of the
-        /// rays depending on their direction.
-        /// </summary>
-        Spot,
-        /// <summary>
-        /// Simple infinite Softbox at CameraPosition
-        /// </summary>
-        Legacy
-    }
-
-    /// <summary>
     /// Contains light information. If contained in a node, the node serves as a light object.
+    /// The Position and Direction of a Light gets calculated internally, depending on the parent transform components, found in the scene graph.
     /// </summary>
     [ProtoContract]
-    public class LightComponent : SceneComponentContainer
+    public class LightComponent: SceneComponentContainer
     {
         /// <summary>
         /// Represents the light status.
@@ -44,7 +23,7 @@ namespace Fusee.Serialization
         /// </summary>
         [ProtoMember(2)]
         public float4 Color;
-      
+
         /// <summary>
         /// Represents the attenuation of the light.
         /// </summary>
@@ -52,10 +31,11 @@ namespace Fusee.Serialization
         public float MaxDistance;
 
         /// <summary>
-        /// Represents the ambient coefficient of the light.
+        /// Represents the strength of the light (non-physically representation of the brightness).
+        /// Should be a value between 0 and 1.
         /// </summary>
         [ProtoMember(4)]
-        public float AmbientCoefficient;
+        public float Strength;
 
         /// <summary>
         /// Represents the type of the light.
@@ -77,9 +57,12 @@ namespace Fusee.Serialization
         public float InnerConeAngle;
 
         /// <summary>
-        /// Represents the cone direction of the light in world space.
+        /// Creates a new instance of type LightComponent.
         /// </summary>
-        [ProtoMember(8)]
-        public float3 Direction;       
+        /// <param name="strength">Represents the strength of the light (non-physically representation of the brightness).</param>
+        public LightComponent(float strength = 1)
+        {
+            Strength = strength;
+        }
     }
 }

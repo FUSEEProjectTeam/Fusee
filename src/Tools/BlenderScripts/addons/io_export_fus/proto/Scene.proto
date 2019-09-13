@@ -61,11 +61,11 @@ enum LerpType {
 message LightComponent {
    optional bool Active = 1 [default = false];
    optional float4 Color = 2;
-   optional float Attenuation = 3 [default = 0];
+   optional float MaxDistance = 3 [default = 0];
    optional float AmbientCoefficient = 4 [default = 0];
    optional LightType Type = 5 [default = Point];
-   optional float ConeAngle = 6 [default = 0];
-   optional float3 ConeDirection = 7;
+   optional float OuterConeAngle = 6 [default = 0];
+   optional float InnerConeAngle = 7 [default = 0];
 }
 enum LightType {
    Point = 0;

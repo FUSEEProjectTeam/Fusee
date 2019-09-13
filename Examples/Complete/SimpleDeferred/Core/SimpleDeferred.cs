@@ -57,7 +57,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private SceneContainer _planeScene;
 
-        private readonly int lightMultiplier = 1;
+        private int noOfLights = 1;
 
         private const float twoPi = M.Pi * 2.0f;
 
@@ -117,10 +117,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
             }
 
-            var yellowLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 1, 0, 1), MaxDistance = 0.7f, Active = true};
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 0.7f, Active = true };
-            var blueLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 0, 1, 1), MaxDistance = 0.7f, Active = true };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 0.7f, Active = true };
+            var sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 0.8f };
+        
+            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true};
+            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, OuterConeAngle = 25, InnerConeAngle = 5};
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true};
 
             // Wrap a SceneRenderer around the model.
             _textureRenderer = new SceneRenderer(_rocketScene);
@@ -148,37 +149,70 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     }
                 }
             };
-            var aLotOfLights = new ChildList();
-            var rnd = new Random();
-            for (int i = 0; i < lightMultiplier; i++)
+            var aLotOfLights = new ChildList
             {
-                var rndVal = (float)rnd.NextDouble() * 10;
-                aLotOfLights.Add(new SceneNodeContainer()
+                new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                    {
-                        new TransformComponent(){ Translation = new float3(-10, 2, 0)},
-                        new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Direction = new float3(0, -1, -0.5f) },                       
-                    }
+                {
+                    new TransformComponent(){ Translation = new float3(-10, 2, 0), Rotation = new float3(M.DegreesToRadians(75), 0, 0)},
+                    sun,
+                }
 
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
+                },
+                new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                    {
-                        new TransformComponent(){ Translation = new float3(-450, 150,0)},
-                        new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, Direction = new float3(0, 0, 1), OuterConeAngle = 25, InnerConeAngle = 5 },                        
-                    }
-                });
-                aLotOfLights.Add(new SceneNodeContainer()
+                {
+                    new TransformComponent(){ Translation = new float3(-450, 150, 0), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
+                    blueLight,
+                }
+                },
+                new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
-                    {
-                        new TransformComponent(){ Translation = new float3(500, 300, -0)},
-                        new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true },                        
-                    }
-                });
-            }
+                {
+                    new TransformComponent(){ Translation = new float3(-600, 180, 180)},
+                    redLight,
+                }
+                },
+                new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent(){ Translation = new float3(-600, 180, -140)},
+                    redLight,
+                }
+                },
+                new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent(){ Translation = new float3(500, 180, 180)},
+                    redLight,
+                }
+                },
+                new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent(){ Translation = new float3(500, 180, -140)},
+                    redLight,
+                }
+                },
+                new SceneNodeContainer()
+                {
+                    Components = new List<SceneComponentContainer>()
+                {
+                    new TransformComponent(){ Translation = new float3(0, 300, 40)},
+                    greenLight,
+                }
+                },
+                
+            };
+
+            noOfLights = aLotOfLights.Count();
+
 
             _planeScene.Children.Add(new SceneNodeContainer()
             {
@@ -271,7 +305,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 RC.ClearColor = _backgroundColor;
                 RC.Viewport(0, 0, Width, Height);
                 if (_lightingPassEffect == null)
-                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightMultiplier * 3); //create in RenderAFrame because ssao tex needs to be generated first.
+                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, noOfLights); //create in RenderAFrame because ssao tex needs to be generated first.
                 _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
                 _quadRenderer.Render(RC);
             }
@@ -279,7 +313,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             {
                 // ---- FXAA ON ----
                 if (_lightingPassEffect == null)
-                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, _lightedSceneRenderTarget, lightMultiplier * 3); //create in RenderAFrame because ssao tex needs to be generated first.
+                    _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, _lightedSceneRenderTarget, noOfLights); //create in RenderAFrame because ssao tex needs to be generated first.
                 _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
                 _quadRenderer.Render(RC, _lightedSceneRenderTarget);
 
@@ -295,15 +329,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-       
-        public override void Resize(ResizeEventArgs e)
-        {
-            //if(_ssaoTexEffect != null)
-            //    _ssaoTexEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
-            //if (_fxaaEffect != null)
-            //    _fxaaEffect.SetEffectParam("ScreenParams", new float2(Width, Height));
-        }
+        }       
+        
 
         private void CalcAndSetViewMat()
         {

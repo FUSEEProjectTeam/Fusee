@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -295,7 +297,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Light results, collected from the scene in the Viserator.
         /// </summary>
-        public static Dictionary<LightComponent, LightResult> AllLightResults = new Dictionary<LightComponent, LightResult>();
+        public static List<LightResult> AllLightResults = new List<LightResult>();
          
         /// <summary>
         /// Gets and sets the size of the shadow map.
@@ -314,7 +316,7 @@ namespace Fusee.Engine.Core
 
         protected RenderContext _rc;
 
-        protected Dictionary<LightComponent, LightResult> _lightComponents = new Dictionary<LightComponent, LightResult>();
+        private List<LightResult> _lightComponents = new List<LightResult>();
 
         private string _scenePathDirectory;
         protected ShaderEffect _defaultEffect;
@@ -372,34 +374,39 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Initialization Construction Startup        
-
-        public SceneRenderer(SceneContainer sc)
+        #region Initialization Construction Startup      
+        
+        private void SetDefaultLight()
         {
-            // accumulate all lights and...            
-            var results = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();           
-            _lightComponents = sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(kvp => kvp.Key, kvp => kvp.Value);          
             
-            // ...set them
-            AllLightResults = _lightComponents;
-
-            if (AllLightResults.Count == 0)
+            // if there is no light in scene then add one (legacyMode)
+            AllLightResults.Add(new LightResult()
             {
-                // if there is no light in scene then add one (legacyMode)
-                AllLightResults.Add(new LightComponent(), new LightResult
+                Light = new LightComponent()
                 {
-                    PositionWorldSpace = float3.UnitZ,                    
                     Active = true,
-                    AmbientCoefficient = 0.0f,
-                    Attenuation = 0.0f,
+                    Strength = 1.0f,
+                    MaxDistance = 0.0f,
                     Color = new float4(1.0f, 1.0f, 1.0f, 1f),
                     OuterConeAngle = 45f,
                     InnerConeAngle = 35f,
-                    Direction = float3.UnitZ,
-                    ModelMatrix = float4x4.Identity,
-                    Type = (int)LightType.Legacy
-                });
-            }
+                    Type = LightType.Legacy
+                },
+                Rotation = float4x4.Identity,
+                WorldSpacePos = float3.Zero
+            });
+            
+        }
+
+        public SceneRenderer(SceneContainer sc)
+        {
+            // check if the scene contains at least on light
+            _lightComponents = sc.Children.Viserate<LightViserator, LightResult>().ToList();
+                        // ...set them
+            AllLightResults = _lightComponents;
+
+            if (AllLightResults.Count == 0)
+                SetDefaultLight();           
 
             _sc = sc;
             // _scenePathDirectory = scenePathDirectory;
@@ -555,9 +562,10 @@ namespace Fusee.Engine.Core
 
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
-            SetContext(rc);
+            AccumulateLight();
 
-            rc.SetRenderTarget(renderTarget);
+            SetContext(rc);
+            rc.SetRenderTarget(renderTarget);            
             Traverse(_sc.Children);
         }
 
@@ -783,25 +791,19 @@ namespace Fusee.Engine.Core
                 AddWeightComponentToMesh(mesh, wc);
 
             if(mesh.Active)
-                RenderCurrentPass(rm, _state.Effect);
+                UpdateShaderParamsForAllLights(rm);
         }
 
-        [VisitMethod]
-        public void AccumulateLight(LightComponent lightComponent)
-        {
-            LightResult result;
-            if (AllLightResults.TryGetValue(lightComponent, out result)) return;
-
-            // chache miss
-            // accumulate all lights and...
-            var results = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>();
-            _lightComponents = _sc.Children.Viserate<LightSetup, KeyValuePair<LightComponent, LightResult>>().ToDictionary(kvp => kvp.Key, kvp => kvp.Value);
-            
+        
+        public void AccumulateLight()
+        {           
+            // accumulate all lights and...           
+            _lightComponents = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
             // ...set them
             AllLightResults = _lightComponents;
-            // and multiply them with current modelview matrix
-            // normalize etc.
-            LightsToModelViewSpace();
+
+            if (AllLightResults.Count == 0)            
+                SetDefaultLight();           
         }
 
         private void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
@@ -853,30 +855,7 @@ namespace Fusee.Engine.Core
 
             mesh.BoneIndices = boneIndices;
             mesh.BoneWeights = boneWeights;
-        }
-
-        private void LightsToModelViewSpace()
-        {
-            // Add ModelView Matrix to all lights
-            foreach (var key in AllLightResults.Keys.ToList())
-            {
-                var light = AllLightResults[key];
-
-                // Multiply LightPosition with modelview
-                light.PositionModelViewSpace = _rc.ModelView * light.PositionWorldSpace;
-
-                // float4 is really needed
-                var lightConeDirectionFloat4 = new float4(light.Direction.x, light.Direction.y, light.Direction.z, 0.0f);
-                lightConeDirectionFloat4 = _rc.ModelView * lightConeDirectionFloat4;
-                lightConeDirectionFloat4.Normalize();
-                light.ConeDirectionModelViewSpace = new float3(lightConeDirectionFloat4.x, lightConeDirectionFloat4.y, lightConeDirectionFloat4.z);
-
-                // convert spotlight angle from degrees to radians
-                light.OuterConeAngle = M.DegreesToRadians(light.OuterConeAngle);
-                light.InnerConeAngle = M.DegreesToRadians(light.InnerConeAngle);
-                AllLightResults[key] = light;
-            }
-        }
+        }       
 
         #endregion
 
@@ -907,30 +886,41 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        public void RenderCurrentPass(Mesh rm, ShaderEffect effect)
+        private void UpdateShaderParamsForAllLights(Mesh rm)
         {
-            for (var i = 0; i < _lightComponents.Keys.Count; i++)
-            {
-                _rc.SetShaderEffect(effect);
-                UpdateLightParamsInPixelShader(i, _lightComponents[_lightComponents.Keys.ElementAt(i)], effect);
-                _rc.Render(rm);
+            for (var i = 0; i < _lightComponents.Count; i++)
+            {                
+                UpdateShaderParamForLight(i, _lightComponents[i]);                
             }
+            _rc.Render(rm);
         }
 
-        private void UpdateLightParamsInPixelShader(int position, LightResult light, ShaderEffect effect)
+        private void UpdateShaderParamForLight(int position, LightResult lightRes)
         {
-            if (!light.Active) return;
+            if (!lightRes.Light.Active) return;
+
+            var light = lightRes.Light;
+
+            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
+            var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
+            var strength = light.Strength;
+            if (strength > 1.0 || strength < 0.0)
+            {
+                strength = M.Clamp(light.Strength, 0.0f, 1.0f);
+                Diagnostics.Log("WARNING: strength of the light will be clamped between 0 and 1.");
+            }
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            _rc.SetFXParam($"allLights[{position}].position", light.PositionModelViewSpace);
-            _rc.SetFXParam($"allLights[{position}].positionWorldSpace", light.PositionWorldSpace);
+            _rc.SetFXParam($"allLights[{position}].position", _rc.View * lightRes.WorldSpacePos);
+            _rc.SetFXParam($"allLights[{position}].positionWorldSpace", lightRes.WorldSpacePos);
             _rc.SetFXParam($"allLights[{position}].intensities", light.Color);
-            _rc.SetFXParam($"allLights[{position}].maxDistance", light.Attenuation);
-            _rc.SetFXParam($"allLights[{position}].ambientCoefficient", light.AmbientCoefficient);
-            _rc.SetFXParam($"allLights[{position}].outerConeAngle", light.OuterConeAngle);
-            _rc.SetFXParam($"allLights[{position}].innerConeAngle", light.InnerConeAngle);
-            _rc.SetFXParam($"allLights[{position}].direction", light.Direction);
-            _rc.SetFXParam($"allLights[{position}].lightType", light.Type);
+            _rc.SetFXParam($"allLights[{position}].maxDistance", light.MaxDistance);
+            _rc.SetFXParam($"allLights[{position}].strength", strength);
+            _rc.SetFXParam($"allLights[{position}].outerConeAngle", M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetFXParam($"allLights[{position}].innerConeAngle", M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetFXParam($"allLights[{position}].direction", dirViewSpace);
+            _rc.SetFXParam($"allLights[{position}].directionWorldSpace", dirWorldSpace);
+            _rc.SetFXParam($"allLights[{position}].lightType", (int)light.Type);
         }
 
         #region RenderContext/Asset Setup
@@ -945,9 +935,8 @@ namespace Fusee.Engine.Core
             _shaderEffectMap.Add(shaderComponent, shaderEffect);
             return shaderEffect;
         }
-
-
-        // Creates Shader from given shaderComponent
+        
+        // Creates Shader from given ShaderComponent
         private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
         {
             var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
@@ -1051,71 +1040,28 @@ namespace Fusee.Engine.Core
     #region LightViserator
 
     /// <summary>
-    /// This struct saves a light found by a Viserator with all parameters
+    /// This struct saves a light and all its parameters, as found by a Viserator.
     /// </summary>
     public struct LightResult
     {
         /// <summary>
-        /// Represents the light status.
+        /// The light component as present (1 to n times) in the scene graph.
         /// </summary>
-        public bool Active;
-        ///// <summary>
-        ///// Represents the position of the light.
-        ///// </summary>
-        //public float3 Position;
+        public LightComponent Light { get; set; }
+
         /// <summary>
-        /// Represents the color.
+        /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
+        /// Therefore the LightComponent itself has no position information - it gets set while traversing the scene graph.
         /// </summary>
-        public float4 Color;
+        public float3 WorldSpacePos { get; set; }
+
         /// <summary>
-        /// Represents the attenuation of the light.
+        /// The rotation matrix. Determines the direction of the light, also set while traversing the scene graph.
         /// </summary>
-        public float Attenuation;
-        /// <summary>
-        /// Represents the ambient coefficient of the light.
-        /// </summary>
-        public float AmbientCoefficient;
-        /// <summary>
-        /// Represents the type of the light.
-        /// </summary>
-        public int Type;
-        /// <summary>
-        /// Represents the outer spot angle of the light.
-        /// </summary>
-        public float OuterConeAngle;
-        /// <summary>
-        /// Represents the inner spot angle of the light.
-        /// </summary>
-        public float InnerConeAngle;
-        /// <summary>
-        /// Direction of the light in world space. Will only have an effect for directional lights, such as spot or parallel light.
-        /// </summary>
-        public float3 Direction;
-        /// <summary>
-        /// The ModelMatrix of the light
-        /// </summary>
-        public float4x4 ModelMatrix;
-        /// <summary>
-        /// The light's position in World Coordinates.
-        /// </summary>
-        public float3 PositionWorldSpace;
-        /// <summary>
-        /// The cone's direction in WorldSpace
-        /// </summary>
-        public float3 ConeDirectionWorldSpace;
-        /// <summary>
-        /// The lights's position in ModelView Coordinates.
-        /// </summary>
-        public float3 PositionModelViewSpace;
-        /// <summary>
-        /// The cone's position in ModelViewCoordinates
-        /// </summary>
-        public float3 ConeDirectionModelViewSpace;
+        public float4x4 Rotation { get; set; }
     }
 
-
-
-    public class LightSetupState : VisitorState
+    internal class LightViseratorState : VisitorState
     {
         private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
 
@@ -1132,24 +1078,23 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LightSetupState"/> class.
+        /// Initializes a new instance of the <see cref="LightViseratorState"/> class.
         /// </summary>
-        public LightSetupState()
+        public LightViseratorState()
         {
             RegisterState(_model);
         }
     }
 
-    public class LightSetup : Viserator<KeyValuePair<LightComponent, LightResult>, LightSetupState>
+    internal class LightViserator : Viserator<LightResult, LightViseratorState>
     {
-        public Dictionary<LightComponent, LightResult> FoundLightResults = new Dictionary<LightComponent, LightResult>();
+        public Dictionary<Suid, LightComponent> FoundLightResults = new Dictionary<Suid, LightComponent>();
 
         protected override void InitState()
         {
             base.InitState();
             State.Model = float4x4.Identity;
         }
-
 
         [VisitMethod]
         public void OnTransform(TransformComponent xform)
@@ -1162,20 +1107,12 @@ namespace Fusee.Engine.Core
         {
             var lightResult = new LightResult
             {
-                Type = (int)lightComponent.Type,
-                Color = lightComponent.Color,
-                OuterConeAngle = lightComponent.OuterConeAngle,
-                InnerConeAngle = lightComponent.InnerConeAngle,
-                Direction = lightComponent.Direction,
-                AmbientCoefficient = lightComponent.AmbientCoefficient,
-                ModelMatrix = State.Model,
-                //Position = lightComponent.Position,
-                PositionWorldSpace = State.Model.Column3.xyz,
-                ConeDirectionWorldSpace = State.Model * lightComponent.Direction,
-                Active = lightComponent.Active,
-                Attenuation = lightComponent.MaxDistance
-            };
-            YieldItem(new KeyValuePair<LightComponent, LightResult>(lightComponent, lightResult));
+                Light = lightComponent,
+                Rotation = State.Model.RotationComponent(),
+                WorldSpacePos = new float3(State.Model.M14, State.Model.M24, State.Model.M34)
+            };            
+
+            YieldItem(lightResult);
         }
     }
     #endregion
