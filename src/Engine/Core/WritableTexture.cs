@@ -56,8 +56,7 @@ namespace Fusee.Engine.Core
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public WritableTexture(ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
-        {          
-
+        { 
             PixelFormat = colorFormat;
             Width = width;
             Height = height;

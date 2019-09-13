@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreatePositionTex()
         {            
-            var posTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32 ), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);            
+            var posTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);            
             RenderTextures[(int)RenderTargetTextures.G_POSITION] = posTex;
         }
 
@@ -75,7 +75,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreateNormalTex()
         {          
-            var normalTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var normalTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_NORMAL] = normalTex;
         }
 
@@ -84,7 +84,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreateDepthTex()
         {           
-            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
 
@@ -93,11 +93,9 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public void CreateSSAOTex()
         {           
-            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
         }
-
-
 
         //public void Dispose()
         //{

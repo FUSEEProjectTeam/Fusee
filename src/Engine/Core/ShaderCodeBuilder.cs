@@ -2001,9 +2001,7 @@ namespace Fusee.Engine.Core
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec *lightColor;
                 lighting += (specular * attenuation) * allLights[i].strength;
-            }  
-            
-
+            }
             ");
 
             frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");

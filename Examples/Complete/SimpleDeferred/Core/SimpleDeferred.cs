@@ -284,8 +284,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             RC.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution);
             // Render the scene loaded in Init()           
             _textureRenderer.Render(RC, _gBufferRenderTarget);
-
-           
+                       
             if (_ssaoTexEffect == null)
                 _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(ZNear, ZFar));
 
@@ -406,7 +405,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNodeContainer(
-                "FUSEE Simple Example",
+                "FUSEE Deferred Example",
                 "ButtonText",
                 vsTex,
                 psTex,
