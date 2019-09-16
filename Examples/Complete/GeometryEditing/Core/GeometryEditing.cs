@@ -36,7 +36,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
         private SceneNodeContainer _parentNode;
         private SceneContainer _scene;
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
         private Dictionary<int, Geometry> _activeGeometrys;
 
@@ -81,7 +81,7 @@ namespace Fusee.Examples.GeometryEditing.Core
             });
             _scene.Children[0].Components.Insert(0, projComp);
 
-            _renderer = new SceneRenderer(_scene);
+            _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
             //////////////////////////////////////////////////////////////////////////

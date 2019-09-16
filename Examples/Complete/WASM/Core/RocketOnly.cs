@@ -22,14 +22,14 @@ namespace Fusee.Examples.RocketOnly.Core
 
         private SceneContainer _rocketScene;
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private TransformComponent _cubeTransform;
         private const float ZNear = 1f;
         private const float ZFar = 1000;
         private float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
 
         private bool _keys;
 
@@ -69,7 +69,7 @@ namespace Fusee.Examples.RocketOnly.Core
                     projComp.Resize(Width, Height);
                     RC.Viewport(0, 0, Width, Height);
                 });
-                _sceneRenderer = new SceneRenderer(_rocketScene);
+                _sceneRenderer = new SceneRendererForward(_rocketScene);
                 Diagnostics.Log("Rocket Set");
                 projComp.Resize(Width, Height);
             }

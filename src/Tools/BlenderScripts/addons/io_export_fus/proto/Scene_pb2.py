@@ -21,7 +21,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   name='Scene.proto',
   package='',
   syntax='proto2',
-  serialized_pb=_b('\n\x0bScene.proto\x1a\tbcl.proto\"3\n\x05\x41\x41\x42\x42\x66\x12\x14\n\x03min\x18\x01 \x01(\x0b\x32\x07.float3\x12\x14\n\x03max\x18\x02 \x01(\x0b\x32\x07.float3\"B\n\x12\x41nimationComponent\x12,\n\x0f\x41nimationTracks\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"\xb6\x03\n\x19\x41nimationKeyContainerBase\x12\x0f\n\x04Time\x18\x01 \x01(\x02:\x01\x30\x12\x41\n\x1b\x41nimationKeyContainerDouble\x18\x64 \x01(\x0b\x32\x1c.AnimationKeyContainerDouble\x12;\n\x18\x41nimationKeyContainerInt\x18\x65 \x01(\x0b\x32\x19.AnimationKeyContainerInt\x12?\n\x1a\x41nimationKeyContainerFloat\x18\x66 \x01(\x0b\x32\x1b.AnimationKeyContainerFloat\x12\x41\n\x1b\x41nimationKeyContainerFloat2\x18g \x01(\x0b\x32\x1c.AnimationKeyContainerFloat2\x12\x41\n\x1b\x41nimationKeyContainerFloat3\x18h \x01(\x0b\x32\x1c.AnimationKeyContainerFloat3\x12\x41\n\x1b\x41nimationKeyContainerFloat4\x18i \x01(\x0b\x32\x1c.AnimationKeyContainerFloat4\"/\n\x1b\x41nimationKeyContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\".\n\x1a\x41nimationKeyContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"5\n\x1b\x41nimationKeyContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"5\n\x1b\x41nimationKeyContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"5\n\x1b\x41nimationKeyContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\",\n\x18\x41nimationKeyContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"\xc4\x01\n\x17\x41nimationTrackContainer\x12+\n\x0eSceneComponent\x18\x01 \x01(\x0b\x32\x13.bcl.NetObjectProxy\x12\x10\n\x08Property\x18\x02 \x01(\t\x12\x1f\n\x06TypeId\x18\x03 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12&\n\tKeyFrames\x18\x04 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12!\n\x08LerpType\x18\x05 \x01(\x0e\x32\t.LerpType:\x04Lerp\"\x1d\n\rBoneComponent\x12\x0c\n\x04Name\x18\x01 \x01(\t\"=\n\x14\x42umpChannelContainer\x12\x0f\n\x07Texture\x18\x01 \x01(\t\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"8\n\x1aKeyValuePair_UInt32_UInt32\x12\x0b\n\x03Key\x18\x01 \x01(\r\x12\r\n\x05Value\x18\x02 \x01(\r\"\xcd\x01\n\x0eLightComponent\x12\x15\n\x06\x41\x63tive\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x16\n\x05\x43olor\x18\x02 \x01(\x0b\x32\x07.float4\x12\x16\n\x0bMaxDistance\x18\x03 \x01(\x02:\x01\x30\x12\x1d\n\x12\x41mbientCoefficient\x18\x04 \x01(\x02:\x01\x30\x12\x1f\n\x04Type\x18\x05 \x01(\x0e\x32\n.LightType:\x05Point\x12\x19\n\x0eOuterConeAngle\x18\x06 \x01(\x02:\x01\x30\x12\x19\n\x0eInnerConeAngle\x18\x07 \x01(\x02:\x01\x30\"\x8b\x01\n\x13MatChannelContainer\x12\x16\n\x05\x43olor\x18\x01 \x01(\x0b\x32\x07.float4\x12\x0f\n\x07Texture\x18\x02 \x01(\t\x12\x0e\n\x03Mix\x18\x03 \x01(\x02:\x01\x30\x12;\n\x18SpecularChannelContainer\x18\x64 \x01(\x0b\x32\x19.SpecularChannelContainer\"\x9f\x02\n\x11MaterialComponent\x12%\n\x07\x44iffuse\x18\x01 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08Specular\x18\x02 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08\x45missive\x18\x03 \x01(\x0b\x32\x14.MatChannelContainer\x12#\n\x04\x42ump\x18\x04 \x01(\x0b\x32\x15.BumpChannelContainer\x12\x38\n\x16MaterialLightComponent\x18\xc8\x01 \x01(\x0b\x32\x17.MaterialLightComponent\x12\x34\n\x14MaterialPBRComponent\x18\xc9\x01 \x01(\x0b\x32\x15.MaterialPBRComponent\"P\n\x16MaterialLightComponent\x12\x18\n\x10\x41pplyLightString\x18\x01 \x01(\t\x12\x1c\n\x14\x46ragmentShaderString\x18\x02 \x01(\t\"l\n\x14MaterialPBRComponent\x12\x19\n\x0eRoughnessValue\x18\x01 \x01(\x02:\x01\x30\x12\x1d\n\x12\x46resnelReflectance\x18\x02 \x01(\x02:\x01\x30\x12\x1a\n\x0f\x44iffuseFraction\x18\x03 \x01(\x02:\x01\x30\"\x9a\x02\n\x04Mesh\x12\x19\n\x08Vertices\x18\x01 \x03(\x0b\x32\x07.float3\x12\x0e\n\x06\x43olors\x18\x02 \x03(\r\x12\x18\n\x07Normals\x18\x03 \x03(\x0b\x32\x07.float3\x12\x14\n\x03UVs\x18\x04 \x03(\x0b\x32\x07.float2\x12\x1c\n\x0b\x42oneWeights\x18\x05 \x03(\x0b\x32\x07.float4\x12\x1c\n\x0b\x42oneIndices\x18\x06 \x03(\x0b\x32\x07.float4\x12\x11\n\tTriangles\x18\x07 \x03(\r\x12\x1b\n\x0b\x42oundingBox\x18\x08 \x01(\x0b\x32\x06.AABBf\x12\x19\n\x08Tangents\x18\t \x03(\x0b\x32\x07.float4\x12\x1b\n\nBiTangents\x18\n \x03(\x0b\x32\x07.float3\x12\x13\n\x08MeshType\x18\x0b \x01(\x05:\x01\x30\"_\n\nRenderPass\x12\n\n\x02VS\x18\x01 \x01(\t\x12\n\n\x02PS\x18\x02 \x01(\t\x12\x39\n\x14RenderStateContainer\x18\x03 \x03(\x0b\x32\x1b.KeyValuePair_UInt32_UInt32\"\xf3\x02\n\x17SceneComponentContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12/\n\x12TransformComponent\x18\x64 \x01(\x0b\x32\x13.TransformComponent\x12\x13\n\x04Mesh\x18\x65 \x01(\x0b\x32\x05.Mesh\x12-\n\x11MaterialComponent\x18\x66 \x01(\x0b\x32\x12.MaterialComponent\x12\'\n\x0eLightComponent\x18g \x01(\x0b\x32\x0f.LightComponent\x12)\n\x0fWeightComponent\x18h \x01(\x0b\x32\x10.WeightComponent\x12/\n\x12\x41nimationComponent\x18i \x01(\x0b\x32\x13.AnimationComponent\x12%\n\rBoneComponent\x18j \x01(\x0b\x32\x0e.BoneComponent\x12)\n\x0fShaderComponent\x18k \x01(\x0b\x32\x10.ShaderComponent\"U\n\x0eSceneContainer\x12\x1c\n\x06Header\x18\x01 \x01(\x0b\x32\x0c.SceneHeader\x12%\n\x08\x43hildren\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"]\n\x0bSceneHeader\x12\x12\n\x07Version\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\tGenerator\x18\x02 \x01(\t\x12\x11\n\tCreatedBy\x18\x03 \x01(\t\x12\x14\n\x0c\x43reationDate\x18\x04 \x01(\t\"r\n\x12SceneNodeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\'\n\nComponents\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12%\n\x08\x43hildren\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"b\n\x0fShaderComponent\x12!\n\x0c\x45\x66\x66\x65\x63tPasses\x18\x01 \x03(\x0b\x32\x0b.RenderPass\x12,\n\x0f\x45\x66\x66\x65\x63tParameter\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"F\n\x18SpecularChannelContainer\x12\x14\n\tShininess\x18\x01 \x01(\x02:\x01\x30\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"e\n\x12TransformComponent\x12\x1c\n\x0bTranslation\x18\x01 \x01(\x0b\x32\x07.float3\x12\x19\n\x08Rotation\x18\x02 \x01(\x0b\x32\x07.float3\x12\x16\n\x05Scale\x18\x03 \x01(\x0b\x32\x07.float3\"\x97\x03\n\rTypeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\x1f\n\x06TypeId\x18\x02 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12\x31\n\x13TypeContainerDouble\x18\x64 \x01(\x0b\x32\x14.TypeContainerDouble\x12+\n\x10TypeContainerInt\x18\x65 \x01(\x0b\x32\x11.TypeContainerInt\x12/\n\x12TypeContainerFloat\x18\x66 \x01(\x0b\x32\x13.TypeContainerFloat\x12\x31\n\x13TypeContainerFloat2\x18g \x01(\x0b\x32\x14.TypeContainerFloat2\x12\x31\n\x13TypeContainerFloat3\x18h \x01(\x0b\x32\x14.TypeContainerFloat3\x12\x31\n\x13TypeContainerFloat4\x18i \x01(\x0b\x32\x14.TypeContainerFloat4\x12-\n\x11TypeContainerBool\x18j \x01(\x0b\x32\x12.TypeContainerBool\")\n\x11TypeContainerBool\x12\x14\n\x05Value\x18\x01 \x01(\x08:\x05\x66\x61lse\"\'\n\x13TypeContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\"&\n\x12TypeContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"-\n\x13TypeContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"-\n\x13TypeContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"-\n\x13TypeContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\"$\n\x10TypeContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"8\n\x0cVertexWeight\x12\x15\n\nJointIndex\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\x06Weight\x18\x02 \x01(\x02:\x01\x30\"8\n\x10VertexWeightList\x12$\n\rVertexWeights\x18\x01 \x03(\x0b\x32\r.VertexWeight\"\x80\x01\n\x0fWeightComponent\x12$\n\tWeightMap\x18\x01 \x03(\x0b\x32\x11.VertexWeightList\x12#\n\x06Joints\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12\"\n\x0f\x42indingMatrices\x18\x03 \x03(\x0b\x32\t.float4x4\"$\n\x06\x66loat2\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\"2\n\x06\x66loat3\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\"@\n\x06\x66loat4\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\x12\x0c\n\x01w\x18\x04 \x01(\x02:\x01\x30\"f\n\x08\x66loat4x4\x12\x15\n\x04Row0\x18\x01 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row1\x18\x02 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row2\x18\x03 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row3\x18\x04 \x01(\x0b\x32\x07.float4*\x1f\n\x08LerpType\x12\x08\n\x04Lerp\x10\x00\x12\t\n\x05Slerp\x10\x01*:\n\tLightType\x12\t\n\x05Point\x10\x00\x12\x0c\n\x08Parallel\x10\x01\x12\x08\n\x04Spot\x10\x02\x12\n\n\x06Legacy\x10\x03*V\n\x06TypeId\x12\n\n\x06\x44ouble\x10\x00\x12\x07\n\x03Int\x10\x01\x12\t\n\x05\x46loat\x10\x02\x12\n\n\x06\x46loat2\x10\x03\x12\n\n\x06\x46loat3\x10\x04\x12\n\n\x06\x46loat4\x10\x05\x12\x08\n\x04\x42ool\x10\x06')
+  serialized_pb=_b('\n\x0bScene.proto\x1a\tbcl.proto\"3\n\x05\x41\x41\x42\x42\x66\x12\x14\n\x03min\x18\x01 \x01(\x0b\x32\x07.float3\x12\x14\n\x03max\x18\x02 \x01(\x0b\x32\x07.float3\"B\n\x12\x41nimationComponent\x12,\n\x0f\x41nimationTracks\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"\xb6\x03\n\x19\x41nimationKeyContainerBase\x12\x0f\n\x04Time\x18\x01 \x01(\x02:\x01\x30\x12\x41\n\x1b\x41nimationKeyContainerDouble\x18\x64 \x01(\x0b\x32\x1c.AnimationKeyContainerDouble\x12;\n\x18\x41nimationKeyContainerInt\x18\x65 \x01(\x0b\x32\x19.AnimationKeyContainerInt\x12?\n\x1a\x41nimationKeyContainerFloat\x18\x66 \x01(\x0b\x32\x1b.AnimationKeyContainerFloat\x12\x41\n\x1b\x41nimationKeyContainerFloat2\x18g \x01(\x0b\x32\x1c.AnimationKeyContainerFloat2\x12\x41\n\x1b\x41nimationKeyContainerFloat3\x18h \x01(\x0b\x32\x1c.AnimationKeyContainerFloat3\x12\x41\n\x1b\x41nimationKeyContainerFloat4\x18i \x01(\x0b\x32\x1c.AnimationKeyContainerFloat4\"/\n\x1b\x41nimationKeyContainerDouble\x12\x10\n\x05Value\x18\x01 \x01(\x01:\x01\x30\".\n\x1a\x41nimationKeyContainerFloat\x12\x10\n\x05Value\x18\x01 \x01(\x02:\x01\x30\"5\n\x1b\x41nimationKeyContainerFloat2\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float2\"5\n\x1b\x41nimationKeyContainerFloat3\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float3\"5\n\x1b\x41nimationKeyContainerFloat4\x12\x16\n\x05Value\x18\x01 \x01(\x0b\x32\x07.float4\",\n\x18\x41nimationKeyContainerInt\x12\x10\n\x05Value\x18\x01 \x01(\x05:\x01\x30\"\xc4\x01\n\x17\x41nimationTrackContainer\x12+\n\x0eSceneComponent\x18\x01 \x01(\x0b\x32\x13.bcl.NetObjectProxy\x12\x10\n\x08Property\x18\x02 \x01(\t\x12\x1f\n\x06TypeId\x18\x03 \x01(\x0e\x32\x07.TypeId:\x06\x44ouble\x12&\n\tKeyFrames\x18\x04 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12!\n\x08LerpType\x18\x05 \x01(\x0e\x32\t.LerpType:\x04Lerp\"\x1d\n\rBoneComponent\x12\x0c\n\x04Name\x18\x01 \x01(\t\"=\n\x14\x42umpChannelContainer\x12\x0f\n\x07Texture\x18\x01 \x01(\t\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"\xc3\x01\n\x0eLightComponent\x12\x15\n\x06\x41\x63tive\x18\x01 \x01(\x08:\x05\x66\x61lse\x12\x16\n\x05\x43olor\x18\x02 \x01(\x0b\x32\x07.float4\x12\x16\n\x0bMaxDistance\x18\x03 \x01(\x02:\x01\x30\x12\x13\n\x08Strength\x18\x04 \x01(\x02:\x01\x30\x12\x1f\n\x04Type\x18\x05 \x01(\x0e\x32\n.LightType:\x05Point\x12\x19\n\x0eOuterConeAngle\x18\x06 \x01(\x02:\x01\x30\x12\x19\n\x0eInnerConeAngle\x18\x07 \x01(\x02:\x01\x30\"\x8b\x01\n\x13MatChannelContainer\x12\x16\n\x05\x43olor\x18\x01 \x01(\x0b\x32\x07.float4\x12\x0f\n\x07Texture\x18\x02 \x01(\t\x12\x0e\n\x03Mix\x18\x03 \x01(\x02:\x01\x30\x12;\n\x18SpecularChannelContainer\x18\x64 \x01(\x0b\x32\x19.SpecularChannelContainer\"\x9f\x02\n\x11MaterialComponent\x12%\n\x07\x44iffuse\x18\x01 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08Specular\x18\x02 \x01(\x0b\x32\x14.MatChannelContainer\x12&\n\x08\x45missive\x18\x03 \x01(\x0b\x32\x14.MatChannelContainer\x12#\n\x04\x42ump\x18\x04 \x01(\x0b\x32\x15.BumpChannelContainer\x12\x38\n\x16MaterialLightComponent\x18\xc8\x01 \x01(\x0b\x32\x17.MaterialLightComponent\x12\x34\n\x14MaterialPBRComponent\x18\xc9\x01 \x01(\x0b\x32\x15.MaterialPBRComponent\"P\n\x16MaterialLightComponent\x12\x18\n\x10\x41pplyLightString\x18\x01 \x01(\t\x12\x1c\n\x14\x46ragmentShaderString\x18\x02 \x01(\t\"l\n\x14MaterialPBRComponent\x12\x19\n\x0eRoughnessValue\x18\x01 \x01(\x02:\x01\x30\x12\x1d\n\x12\x46resnelReflectance\x18\x02 \x01(\x02:\x01\x30\x12\x1a\n\x0f\x44iffuseFraction\x18\x03 \x01(\x02:\x01\x30\"\x9a\x02\n\x04Mesh\x12\x19\n\x08Vertices\x18\x01 \x03(\x0b\x32\x07.float3\x12\x0e\n\x06\x43olors\x18\x02 \x03(\r\x12\x18\n\x07Normals\x18\x03 \x03(\x0b\x32\x07.float3\x12\x14\n\x03UVs\x18\x04 \x03(\x0b\x32\x07.float2\x12\x1c\n\x0b\x42oneWeights\x18\x05 \x03(\x0b\x32\x07.float4\x12\x1c\n\x0b\x42oneIndices\x18\x06 \x03(\x0b\x32\x07.float4\x12\x11\n\tTriangles\x18\x07 \x03(\r\x12\x1b\n\x0b\x42oundingBox\x18\x08 \x01(\x0b\x32\x06.AABBf\x12\x19\n\x08Tangents\x18\t \x03(\x0b\x32\x07.float4\x12\x1b\n\nBiTangents\x18\n \x03(\x0b\x32\x07.float3\x12\x13\n\x08MeshType\x18\x0b \x01(\x05:\x01\x30\"\xc8\x02\n\x17SceneComponentContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12/\n\x12TransformComponent\x18\x64 \x01(\x0b\x32\x13.TransformComponent\x12\x13\n\x04Mesh\x18\x65 \x01(\x0b\x32\x05.Mesh\x12-\n\x11MaterialComponent\x18\x66 \x01(\x0b\x32\x12.MaterialComponent\x12\'\n\x0eLightComponent\x18g \x01(\x0b\x32\x0f.LightComponent\x12)\n\x0fWeightComponent\x18h \x01(\x0b\x32\x10.WeightComponent\x12/\n\x12\x41nimationComponent\x18i \x01(\x0b\x32\x13.AnimationComponent\x12%\n\rBoneComponent\x18j \x01(\x0b\x32\x0e.BoneComponent\"U\n\x0eSceneContainer\x12\x1c\n\x06Header\x18\x01 \x01(\x0b\x32\x0c.SceneHeader\x12%\n\x08\x43hildren\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"]\n\x0bSceneHeader\x12\x12\n\x07Version\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\tGenerator\x18\x02 \x01(\t\x12\x11\n\tCreatedBy\x18\x03 \x01(\t\x12\x14\n\x0c\x43reationDate\x18\x04 \x01(\t\"r\n\x12SceneNodeContainer\x12\x0c\n\x04Name\x18\x01 \x01(\t\x12\'\n\nComponents\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12%\n\x08\x43hildren\x18\x03 \x03(\x0b\x32\x13.bcl.NetObjectProxy\"F\n\x18SpecularChannelContainer\x12\x14\n\tShininess\x18\x01 \x01(\x02:\x01\x30\x12\x14\n\tIntensity\x18\x02 \x01(\x02:\x01\x30\"e\n\x12TransformComponent\x12\x1c\n\x0bTranslation\x18\x01 \x01(\x0b\x32\x07.float3\x12\x19\n\x08Rotation\x18\x02 \x01(\x0b\x32\x07.float3\x12\x16\n\x05Scale\x18\x03 \x01(\x0b\x32\x07.float3\"8\n\x0cVertexWeight\x12\x15\n\nJointIndex\x18\x01 \x01(\x05:\x01\x30\x12\x11\n\x06Weight\x18\x02 \x01(\x02:\x01\x30\"8\n\x10VertexWeightList\x12$\n\rVertexWeights\x18\x01 \x03(\x0b\x32\r.VertexWeight\"\x80\x01\n\x0fWeightComponent\x12$\n\tWeightMap\x18\x01 \x03(\x0b\x32\x11.VertexWeightList\x12#\n\x06Joints\x18\x02 \x03(\x0b\x32\x13.bcl.NetObjectProxy\x12\"\n\x0f\x42indingMatrices\x18\x03 \x03(\x0b\x32\t.float4x4\"$\n\x06\x66loat2\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\"2\n\x06\x66loat3\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\"@\n\x06\x66loat4\x12\x0c\n\x01x\x18\x01 \x01(\x02:\x01\x30\x12\x0c\n\x01y\x18\x02 \x01(\x02:\x01\x30\x12\x0c\n\x01z\x18\x03 \x01(\x02:\x01\x30\x12\x0c\n\x01w\x18\x04 \x01(\x02:\x01\x30\"f\n\x08\x66loat4x4\x12\x15\n\x04Row0\x18\x01 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row1\x18\x02 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row2\x18\x03 \x01(\x0b\x32\x07.float4\x12\x15\n\x04Row3\x18\x04 \x01(\x0b\x32\x07.float4*\x1f\n\x08LerpType\x12\x08\n\x04Lerp\x10\x00\x12\t\n\x05Slerp\x10\x01*:\n\tLightType\x12\t\n\x05Point\x10\x00\x12\x0c\n\x08Parallel\x10\x01\x12\x08\n\x04Spot\x10\x02\x12\n\n\x06Legacy\x10\x03*V\n\x06TypeId\x12\n\n\x06\x44ouble\x10\x00\x12\x07\n\x03Int\x10\x01\x12\t\n\x05\x46loat\x10\x02\x12\n\n\x06\x46loat2\x10\x03\x12\n\n\x06\x46loat3\x10\x04\x12\n\n\x06\x46loat4\x10\x05\x12\x08\n\x04\x42ool\x10\x06')
   ,
   dependencies=[bcl__pb2.DESCRIPTOR,])
 
@@ -42,8 +42,8 @@ _LERPTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4628,
-  serialized_end=4659,
+  serialized_start=3607,
+  serialized_end=3638,
 )
 _sym_db.RegisterEnumDescriptor(_LERPTYPE)
 
@@ -73,8 +73,8 @@ _LIGHTTYPE = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4661,
-  serialized_end=4719,
+  serialized_start=3640,
+  serialized_end=3698,
 )
 _sym_db.RegisterEnumDescriptor(_LIGHTTYPE)
 
@@ -116,8 +116,8 @@ _TYPEID = _descriptor.EnumDescriptor(
   ],
   containing_type=None,
   options=None,
-  serialized_start=4721,
-  serialized_end=4807,
+  serialized_start=3700,
+  serialized_end=3786,
 )
 _sym_db.RegisterEnumDescriptor(_TYPEID)
 
@@ -594,44 +594,6 @@ _BUMPCHANNELCONTAINER = _descriptor.Descriptor(
 )
 
 
-_KEYVALUEPAIR_UINT32_UINT32 = _descriptor.Descriptor(
-  name='KeyValuePair_UInt32_UInt32',
-  full_name='KeyValuePair_UInt32_UInt32',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Key', full_name='KeyValuePair_UInt32_UInt32.Key', index=0,
-      number=1, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='KeyValuePair_UInt32_UInt32.Value', index=1,
-      number=2, type=13, cpp_type=3, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=1189,
-  serialized_end=1245,
-)
-
-
 _LIGHTCOMPONENT = _descriptor.Descriptor(
   name='LightComponent',
   full_name='LightComponent',
@@ -661,7 +623,7 @@ _LIGHTCOMPONENT = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       options=None),
     _descriptor.FieldDescriptor(
-      name='AmbientCoefficient', full_name='LightComponent.AmbientCoefficient', index=3,
+      name='Strength', full_name='LightComponent.Strength', index=3,
       number=4, type=2, cpp_type=6, label=1,
       has_default_value=True, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -700,8 +662,8 @@ _LIGHTCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1248,
-  serialized_end=1453,
+  serialized_start=1190,
+  serialized_end=1385,
 )
 
 
@@ -752,8 +714,8 @@ _MATCHANNELCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1456,
-  serialized_end=1595,
+  serialized_start=1388,
+  serialized_end=1527,
 )
 
 
@@ -818,8 +780,8 @@ _MATERIALCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1598,
-  serialized_end=1885,
+  serialized_start=1530,
+  serialized_end=1817,
 )
 
 
@@ -856,8 +818,8 @@ _MATERIALLIGHTCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1887,
-  serialized_end=1967,
+  serialized_start=1819,
+  serialized_end=1899,
 )
 
 
@@ -901,8 +863,8 @@ _MATERIALPBRCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=1969,
-  serialized_end=2077,
+  serialized_start=1901,
+  serialized_end=2009,
 )
 
 
@@ -1002,53 +964,8 @@ _MESH = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2080,
-  serialized_end=2362,
-)
-
-
-_RENDERPASS = _descriptor.Descriptor(
-  name='RenderPass',
-  full_name='RenderPass',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='VS', full_name='RenderPass.VS', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='PS', full_name='RenderPass.PS', index=1,
-      number=2, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='RenderStateContainer', full_name='RenderPass.RenderStateContainer', index=2,
-      number=3, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=2364,
-  serialized_end=2459,
+  serialized_start=2012,
+  serialized_end=2294,
 )
 
 
@@ -1115,13 +1032,6 @@ _SCENECOMPONENTCONTAINER = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       options=None),
-    _descriptor.FieldDescriptor(
-      name='ShaderComponent', full_name='SceneComponentContainer.ShaderComponent', index=8,
-      number=107, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
   ],
   extensions=[
   ],
@@ -1134,8 +1044,8 @@ _SCENECOMPONENTCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2462,
-  serialized_end=2833,
+  serialized_start=2297,
+  serialized_end=2625,
 )
 
 
@@ -1172,8 +1082,8 @@ _SCENECONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2835,
-  serialized_end=2920,
+  serialized_start=2627,
+  serialized_end=2712,
 )
 
 
@@ -1224,8 +1134,8 @@ _SCENEHEADER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=2922,
-  serialized_end=3015,
+  serialized_start=2714,
+  serialized_end=2807,
 )
 
 
@@ -1269,46 +1179,8 @@ _SCENENODECONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3017,
-  serialized_end=3131,
-)
-
-
-_SHADERCOMPONENT = _descriptor.Descriptor(
-  name='ShaderComponent',
-  full_name='ShaderComponent',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='EffectPasses', full_name='ShaderComponent.EffectPasses', index=0,
-      number=1, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='EffectParameter', full_name='ShaderComponent.EffectParameter', index=1,
-      number=2, type=11, cpp_type=10, label=3,
-      has_default_value=False, default_value=[],
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3133,
-  serialized_end=3231,
+  serialized_start=2809,
+  serialized_end=2923,
 )
 
 
@@ -1345,8 +1217,8 @@ _SPECULARCHANNELCONTAINER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3233,
-  serialized_end=3303,
+  serialized_start=2925,
+  serialized_end=2995,
 )
 
 
@@ -1390,312 +1262,8 @@ _TRANSFORMCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=3305,
-  serialized_end=3406,
-)
-
-
-_TYPECONTAINER = _descriptor.Descriptor(
-  name='TypeContainer',
-  full_name='TypeContainer',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Name', full_name='TypeContainer.Name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeId', full_name='TypeContainer.TypeId', index=1,
-      number=2, type=14, cpp_type=8, label=1,
-      has_default_value=True, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerDouble', full_name='TypeContainer.TypeContainerDouble', index=2,
-      number=100, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerInt', full_name='TypeContainer.TypeContainerInt', index=3,
-      number=101, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerFloat', full_name='TypeContainer.TypeContainerFloat', index=4,
-      number=102, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerFloat2', full_name='TypeContainer.TypeContainerFloat2', index=5,
-      number=103, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerFloat3', full_name='TypeContainer.TypeContainerFloat3', index=6,
-      number=104, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerFloat4', full_name='TypeContainer.TypeContainerFloat4', index=7,
-      number=105, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-    _descriptor.FieldDescriptor(
-      name='TypeContainerBool', full_name='TypeContainer.TypeContainerBool', index=8,
-      number=106, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3409,
-  serialized_end=3816,
-)
-
-
-_TYPECONTAINERBOOL = _descriptor.Descriptor(
-  name='TypeContainerBool',
-  full_name='TypeContainerBool',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerBool.Value', index=0,
-      number=1, type=8, cpp_type=7, label=1,
-      has_default_value=True, default_value=False,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3818,
-  serialized_end=3859,
-)
-
-
-_TYPECONTAINERDOUBLE = _descriptor.Descriptor(
-  name='TypeContainerDouble',
-  full_name='TypeContainerDouble',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerDouble.Value', index=0,
-      number=1, type=1, cpp_type=5, label=1,
-      has_default_value=True, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3861,
-  serialized_end=3900,
-)
-
-
-_TYPECONTAINERFLOAT = _descriptor.Descriptor(
-  name='TypeContainerFloat',
-  full_name='TypeContainerFloat',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerFloat.Value', index=0,
-      number=1, type=2, cpp_type=6, label=1,
-      has_default_value=True, default_value=float(0),
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3902,
-  serialized_end=3940,
-)
-
-
-_TYPECONTAINERFLOAT2 = _descriptor.Descriptor(
-  name='TypeContainerFloat2',
-  full_name='TypeContainerFloat2',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerFloat2.Value', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3942,
-  serialized_end=3987,
-)
-
-
-_TYPECONTAINERFLOAT3 = _descriptor.Descriptor(
-  name='TypeContainerFloat3',
-  full_name='TypeContainerFloat3',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerFloat3.Value', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=3989,
-  serialized_end=4034,
-)
-
-
-_TYPECONTAINERFLOAT4 = _descriptor.Descriptor(
-  name='TypeContainerFloat4',
-  full_name='TypeContainerFloat4',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerFloat4.Value', index=0,
-      number=1, type=11, cpp_type=10, label=1,
-      has_default_value=False, default_value=None,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=4036,
-  serialized_end=4081,
-)
-
-
-_TYPECONTAINERINT = _descriptor.Descriptor(
-  name='TypeContainerInt',
-  full_name='TypeContainerInt',
-  filename=None,
-  file=DESCRIPTOR,
-  containing_type=None,
-  fields=[
-    _descriptor.FieldDescriptor(
-      name='Value', full_name='TypeContainerInt.Value', index=0,
-      number=1, type=5, cpp_type=1, label=1,
-      has_default_value=True, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      options=None),
-  ],
-  extensions=[
-  ],
-  nested_types=[],
-  enum_types=[
-  ],
-  options=None,
-  is_extendable=False,
-  syntax='proto2',
-  extension_ranges=[],
-  oneofs=[
-  ],
-  serialized_start=4083,
-  serialized_end=4119,
+  serialized_start=2997,
+  serialized_end=3098,
 )
 
 
@@ -1732,8 +1300,8 @@ _VERTEXWEIGHT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4121,
-  serialized_end=4177,
+  serialized_start=3100,
+  serialized_end=3156,
 )
 
 
@@ -1763,8 +1331,8 @@ _VERTEXWEIGHTLIST = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4179,
-  serialized_end=4235,
+  serialized_start=3158,
+  serialized_end=3214,
 )
 
 
@@ -1808,8 +1376,8 @@ _WEIGHTCOMPONENT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4238,
-  serialized_end=4366,
+  serialized_start=3217,
+  serialized_end=3345,
 )
 
 
@@ -1846,8 +1414,8 @@ _FLOAT2 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4368,
-  serialized_end=4404,
+  serialized_start=3347,
+  serialized_end=3383,
 )
 
 
@@ -1891,8 +1459,8 @@ _FLOAT3 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4406,
-  serialized_end=4456,
+  serialized_start=3385,
+  serialized_end=3435,
 )
 
 
@@ -1943,8 +1511,8 @@ _FLOAT4 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4458,
-  serialized_end=4522,
+  serialized_start=3437,
+  serialized_end=3501,
 )
 
 
@@ -1995,8 +1563,8 @@ _FLOAT4X4 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=4524,
-  serialized_end=4626,
+  serialized_start=3503,
+  serialized_end=3605,
 )
 
 _AABBF.fields_by_name['min'].message_type = _FLOAT3
@@ -2033,7 +1601,6 @@ _MESH.fields_by_name['BoneIndices'].message_type = _FLOAT4
 _MESH.fields_by_name['BoundingBox'].message_type = _AABBF
 _MESH.fields_by_name['Tangents'].message_type = _FLOAT4
 _MESH.fields_by_name['BiTangents'].message_type = _FLOAT3
-_RENDERPASS.fields_by_name['RenderStateContainer'].message_type = _KEYVALUEPAIR_UINT32_UINT32
 _SCENECOMPONENTCONTAINER.fields_by_name['TransformComponent'].message_type = _TRANSFORMCOMPONENT
 _SCENECOMPONENTCONTAINER.fields_by_name['Mesh'].message_type = _MESH
 _SCENECOMPONENTCONTAINER.fields_by_name['MaterialComponent'].message_type = _MATERIALCOMPONENT
@@ -2041,27 +1608,13 @@ _SCENECOMPONENTCONTAINER.fields_by_name['LightComponent'].message_type = _LIGHTC
 _SCENECOMPONENTCONTAINER.fields_by_name['WeightComponent'].message_type = _WEIGHTCOMPONENT
 _SCENECOMPONENTCONTAINER.fields_by_name['AnimationComponent'].message_type = _ANIMATIONCOMPONENT
 _SCENECOMPONENTCONTAINER.fields_by_name['BoneComponent'].message_type = _BONECOMPONENT
-_SCENECOMPONENTCONTAINER.fields_by_name['ShaderComponent'].message_type = _SHADERCOMPONENT
 _SCENECONTAINER.fields_by_name['Header'].message_type = _SCENEHEADER
 _SCENECONTAINER.fields_by_name['Children'].message_type = bcl__pb2._NETOBJECTPROXY
 _SCENENODECONTAINER.fields_by_name['Components'].message_type = bcl__pb2._NETOBJECTPROXY
 _SCENENODECONTAINER.fields_by_name['Children'].message_type = bcl__pb2._NETOBJECTPROXY
-_SHADERCOMPONENT.fields_by_name['EffectPasses'].message_type = _RENDERPASS
-_SHADERCOMPONENT.fields_by_name['EffectParameter'].message_type = bcl__pb2._NETOBJECTPROXY
 _TRANSFORMCOMPONENT.fields_by_name['Translation'].message_type = _FLOAT3
 _TRANSFORMCOMPONENT.fields_by_name['Rotation'].message_type = _FLOAT3
 _TRANSFORMCOMPONENT.fields_by_name['Scale'].message_type = _FLOAT3
-_TYPECONTAINER.fields_by_name['TypeId'].enum_type = _TYPEID
-_TYPECONTAINER.fields_by_name['TypeContainerDouble'].message_type = _TYPECONTAINERDOUBLE
-_TYPECONTAINER.fields_by_name['TypeContainerInt'].message_type = _TYPECONTAINERINT
-_TYPECONTAINER.fields_by_name['TypeContainerFloat'].message_type = _TYPECONTAINERFLOAT
-_TYPECONTAINER.fields_by_name['TypeContainerFloat2'].message_type = _TYPECONTAINERFLOAT2
-_TYPECONTAINER.fields_by_name['TypeContainerFloat3'].message_type = _TYPECONTAINERFLOAT3
-_TYPECONTAINER.fields_by_name['TypeContainerFloat4'].message_type = _TYPECONTAINERFLOAT4
-_TYPECONTAINER.fields_by_name['TypeContainerBool'].message_type = _TYPECONTAINERBOOL
-_TYPECONTAINERFLOAT2.fields_by_name['Value'].message_type = _FLOAT2
-_TYPECONTAINERFLOAT3.fields_by_name['Value'].message_type = _FLOAT3
-_TYPECONTAINERFLOAT4.fields_by_name['Value'].message_type = _FLOAT4
 _VERTEXWEIGHTLIST.fields_by_name['VertexWeights'].message_type = _VERTEXWEIGHT
 _WEIGHTCOMPONENT.fields_by_name['WeightMap'].message_type = _VERTEXWEIGHTLIST
 _WEIGHTCOMPONENT.fields_by_name['Joints'].message_type = bcl__pb2._NETOBJECTPROXY
@@ -2082,29 +1635,18 @@ DESCRIPTOR.message_types_by_name['AnimationKeyContainerInt'] = _ANIMATIONKEYCONT
 DESCRIPTOR.message_types_by_name['AnimationTrackContainer'] = _ANIMATIONTRACKCONTAINER
 DESCRIPTOR.message_types_by_name['BoneComponent'] = _BONECOMPONENT
 DESCRIPTOR.message_types_by_name['BumpChannelContainer'] = _BUMPCHANNELCONTAINER
-DESCRIPTOR.message_types_by_name['KeyValuePair_UInt32_UInt32'] = _KEYVALUEPAIR_UINT32_UINT32
 DESCRIPTOR.message_types_by_name['LightComponent'] = _LIGHTCOMPONENT
 DESCRIPTOR.message_types_by_name['MatChannelContainer'] = _MATCHANNELCONTAINER
 DESCRIPTOR.message_types_by_name['MaterialComponent'] = _MATERIALCOMPONENT
 DESCRIPTOR.message_types_by_name['MaterialLightComponent'] = _MATERIALLIGHTCOMPONENT
 DESCRIPTOR.message_types_by_name['MaterialPBRComponent'] = _MATERIALPBRCOMPONENT
 DESCRIPTOR.message_types_by_name['Mesh'] = _MESH
-DESCRIPTOR.message_types_by_name['RenderPass'] = _RENDERPASS
 DESCRIPTOR.message_types_by_name['SceneComponentContainer'] = _SCENECOMPONENTCONTAINER
 DESCRIPTOR.message_types_by_name['SceneContainer'] = _SCENECONTAINER
 DESCRIPTOR.message_types_by_name['SceneHeader'] = _SCENEHEADER
 DESCRIPTOR.message_types_by_name['SceneNodeContainer'] = _SCENENODECONTAINER
-DESCRIPTOR.message_types_by_name['ShaderComponent'] = _SHADERCOMPONENT
 DESCRIPTOR.message_types_by_name['SpecularChannelContainer'] = _SPECULARCHANNELCONTAINER
 DESCRIPTOR.message_types_by_name['TransformComponent'] = _TRANSFORMCOMPONENT
-DESCRIPTOR.message_types_by_name['TypeContainer'] = _TYPECONTAINER
-DESCRIPTOR.message_types_by_name['TypeContainerBool'] = _TYPECONTAINERBOOL
-DESCRIPTOR.message_types_by_name['TypeContainerDouble'] = _TYPECONTAINERDOUBLE
-DESCRIPTOR.message_types_by_name['TypeContainerFloat'] = _TYPECONTAINERFLOAT
-DESCRIPTOR.message_types_by_name['TypeContainerFloat2'] = _TYPECONTAINERFLOAT2
-DESCRIPTOR.message_types_by_name['TypeContainerFloat3'] = _TYPECONTAINERFLOAT3
-DESCRIPTOR.message_types_by_name['TypeContainerFloat4'] = _TYPECONTAINERFLOAT4
-DESCRIPTOR.message_types_by_name['TypeContainerInt'] = _TYPECONTAINERINT
 DESCRIPTOR.message_types_by_name['VertexWeight'] = _VERTEXWEIGHT
 DESCRIPTOR.message_types_by_name['VertexWeightList'] = _VERTEXWEIGHTLIST
 DESCRIPTOR.message_types_by_name['WeightComponent'] = _WEIGHTCOMPONENT
@@ -2201,13 +1743,6 @@ BumpChannelContainer = _reflection.GeneratedProtocolMessageType('BumpChannelCont
   ))
 _sym_db.RegisterMessage(BumpChannelContainer)
 
-KeyValuePair_UInt32_UInt32 = _reflection.GeneratedProtocolMessageType('KeyValuePair_UInt32_UInt32', (_message.Message,), dict(
-  DESCRIPTOR = _KEYVALUEPAIR_UINT32_UINT32,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:KeyValuePair_UInt32_UInt32)
-  ))
-_sym_db.RegisterMessage(KeyValuePair_UInt32_UInt32)
-
 LightComponent = _reflection.GeneratedProtocolMessageType('LightComponent', (_message.Message,), dict(
   DESCRIPTOR = _LIGHTCOMPONENT,
   __module__ = 'Scene_pb2'
@@ -2250,13 +1785,6 @@ Mesh = _reflection.GeneratedProtocolMessageType('Mesh', (_message.Message,), dic
   ))
 _sym_db.RegisterMessage(Mesh)
 
-RenderPass = _reflection.GeneratedProtocolMessageType('RenderPass', (_message.Message,), dict(
-  DESCRIPTOR = _RENDERPASS,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:RenderPass)
-  ))
-_sym_db.RegisterMessage(RenderPass)
-
 SceneComponentContainer = _reflection.GeneratedProtocolMessageType('SceneComponentContainer', (_message.Message,), dict(
   DESCRIPTOR = _SCENECOMPONENTCONTAINER,
   __module__ = 'Scene_pb2'
@@ -2285,13 +1813,6 @@ SceneNodeContainer = _reflection.GeneratedProtocolMessageType('SceneNodeContaine
   ))
 _sym_db.RegisterMessage(SceneNodeContainer)
 
-ShaderComponent = _reflection.GeneratedProtocolMessageType('ShaderComponent', (_message.Message,), dict(
-  DESCRIPTOR = _SHADERCOMPONENT,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:ShaderComponent)
-  ))
-_sym_db.RegisterMessage(ShaderComponent)
-
 SpecularChannelContainer = _reflection.GeneratedProtocolMessageType('SpecularChannelContainer', (_message.Message,), dict(
   DESCRIPTOR = _SPECULARCHANNELCONTAINER,
   __module__ = 'Scene_pb2'
@@ -2305,62 +1826,6 @@ TransformComponent = _reflection.GeneratedProtocolMessageType('TransformComponen
   # @@protoc_insertion_point(class_scope:TransformComponent)
   ))
 _sym_db.RegisterMessage(TransformComponent)
-
-TypeContainer = _reflection.GeneratedProtocolMessageType('TypeContainer', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINER,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainer)
-  ))
-_sym_db.RegisterMessage(TypeContainer)
-
-TypeContainerBool = _reflection.GeneratedProtocolMessageType('TypeContainerBool', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERBOOL,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerBool)
-  ))
-_sym_db.RegisterMessage(TypeContainerBool)
-
-TypeContainerDouble = _reflection.GeneratedProtocolMessageType('TypeContainerDouble', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERDOUBLE,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerDouble)
-  ))
-_sym_db.RegisterMessage(TypeContainerDouble)
-
-TypeContainerFloat = _reflection.GeneratedProtocolMessageType('TypeContainerFloat', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERFLOAT,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerFloat)
-  ))
-_sym_db.RegisterMessage(TypeContainerFloat)
-
-TypeContainerFloat2 = _reflection.GeneratedProtocolMessageType('TypeContainerFloat2', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERFLOAT2,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerFloat2)
-  ))
-_sym_db.RegisterMessage(TypeContainerFloat2)
-
-TypeContainerFloat3 = _reflection.GeneratedProtocolMessageType('TypeContainerFloat3', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERFLOAT3,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerFloat3)
-  ))
-_sym_db.RegisterMessage(TypeContainerFloat3)
-
-TypeContainerFloat4 = _reflection.GeneratedProtocolMessageType('TypeContainerFloat4', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERFLOAT4,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerFloat4)
-  ))
-_sym_db.RegisterMessage(TypeContainerFloat4)
-
-TypeContainerInt = _reflection.GeneratedProtocolMessageType('TypeContainerInt', (_message.Message,), dict(
-  DESCRIPTOR = _TYPECONTAINERINT,
-  __module__ = 'Scene_pb2'
-  # @@protoc_insertion_point(class_scope:TypeContainerInt)
-  ))
-_sym_db.RegisterMessage(TypeContainerInt)
 
 VertexWeight = _reflection.GeneratedProtocolMessageType('VertexWeight', (_message.Message,), dict(
   DESCRIPTOR = _VERTEXWEIGHT,

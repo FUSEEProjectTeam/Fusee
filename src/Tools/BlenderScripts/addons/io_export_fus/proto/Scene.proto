@@ -50,10 +50,6 @@ message BumpChannelContainer {
    optional string Texture = 1;
    optional float Intensity = 2 [default = 0];
 }
-message KeyValuePair_UInt32_UInt32 {
-   optional uint32 Key = 1;
-   optional uint32 Value = 2;
-}
 enum LerpType {
    Lerp = 0;
    Slerp = 1;
@@ -62,7 +58,7 @@ message LightComponent {
    optional bool Active = 1 [default = false];
    optional float4 Color = 2;
    optional float MaxDistance = 3 [default = 0];
-   optional float AmbientCoefficient = 4 [default = 0];
+   optional float Strength = 4 [default = 0];
    optional LightType Type = 5 [default = Point];
    optional float OuterConeAngle = 6 [default = 0];
    optional float InnerConeAngle = 7 [default = 0];
@@ -111,11 +107,6 @@ message Mesh {
    repeated float3 BiTangents = 10;
    optional int32 MeshType = 11 [default = 0];
 }
-message RenderPass {
-   optional string VS = 1;
-   optional string PS = 2;
-   repeated KeyValuePair_UInt32_UInt32 RenderStateContainer = 3;
-}
 message SceneComponentContainer {
    optional string Name = 1;
    // the following represent sub-types; at most 1 should have a value
@@ -126,7 +117,6 @@ message SceneComponentContainer {
    optional WeightComponent WeightComponent = 104;
    optional AnimationComponent AnimationComponent = 105;
    optional BoneComponent BoneComponent = 106;
-   optional ShaderComponent ShaderComponent = 107;
 }
 message SceneContainer {
    optional SceneHeader Header = 1;
@@ -143,10 +133,6 @@ message SceneNodeContainer {
    repeated bcl.NetObjectProxy Components = 2; // reference-tracked SceneComponentContainer
    repeated bcl.NetObjectProxy Children = 3; // reference-tracked SceneNodeContainer
 }
-message ShaderComponent {
-   repeated RenderPass EffectPasses = 1;
-   repeated bcl.NetObjectProxy EffectParameter = 2; // reference-tracked TypeContainer
-}
 message SpecularChannelContainer {
    optional float Shininess = 1 [default = 0];
    optional float Intensity = 2 [default = 0];
@@ -155,39 +141,6 @@ message TransformComponent {
    optional float3 Translation = 1;
    optional float3 Rotation = 2;
    optional float3 Scale = 3;
-}
-message TypeContainer {
-   optional string Name = 1;
-   optional TypeId TypeId = 2 [default = Double];
-   // the following represent sub-types; at most 1 should have a value
-   optional TypeContainerDouble TypeContainerDouble = 100;
-   optional TypeContainerInt TypeContainerInt = 101;
-   optional TypeContainerFloat TypeContainerFloat = 102;
-   optional TypeContainerFloat2 TypeContainerFloat2 = 103;
-   optional TypeContainerFloat3 TypeContainerFloat3 = 104;
-   optional TypeContainerFloat4 TypeContainerFloat4 = 105;
-   optional TypeContainerBool TypeContainerBool = 106;
-}
-message TypeContainerBool {
-   optional bool Value = 1 [default = false];
-}
-message TypeContainerDouble {
-   optional double Value = 1 [default = 0];
-}
-message TypeContainerFloat {
-   optional float Value = 1 [default = 0];
-}
-message TypeContainerFloat2 {
-   optional float2 Value = 1;
-}
-message TypeContainerFloat3 {
-   optional float3 Value = 1;
-}
-message TypeContainerFloat4 {
-   optional float4 Value = 1;
-}
-message TypeContainerInt {
-   optional int32 Value = 1 [default = 0];
 }
 enum TypeId {
    Double = 0;

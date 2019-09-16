@@ -27,9 +27,9 @@ namespace Fusee.Examples.AdvancedUI.Core
         private const float ZFar = 1000;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private float _initWidth;
@@ -183,8 +183,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame

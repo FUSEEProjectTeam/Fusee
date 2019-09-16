@@ -143,16 +143,7 @@ namespace Fusee.Engine.Core
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
-        }
-        /// <summary>
-        /// Converts the shader.
-        /// </summary>
-        /// <param name="shaderComponent"></param>
-        [VisitMethod]
-        public void ConvShader(ShaderComponent shaderComponent)
-        {
-
-        }
+        }        
 
         /// <summary>
         /// Converts the shader.

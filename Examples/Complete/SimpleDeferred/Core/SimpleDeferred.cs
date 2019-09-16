@@ -23,14 +23,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;       
 
         private SceneContainer _rocketScene;
-        private SceneRenderer _textureRenderer;
-        private SceneRenderer _quadRenderer;
+        private SceneRendererForward _textureRenderer;
+        private SceneRendererForward _quadRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
         private readonly float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -124,7 +124,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true};
 
             // Wrap a SceneRenderer around the model.
-            _textureRenderer = new SceneRenderer(_rocketScene);
+            _textureRenderer = new SceneRendererForward(_rocketScene);
             var plane = new Plane();
             _planeScene = new SceneContainer()
             {
@@ -220,8 +220,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 Children = aLotOfLights
             });
 
-            _quadRenderer = new SceneRenderer(_planeScene);
-            _guiRenderer = new SceneRenderer(_gui);            
+            _quadRenderer = new SceneRendererForward(_planeScene);
+            _guiRenderer = new SceneRendererForward(_gui);            
         }
 
 
@@ -271,6 +271,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             CalcAndSetViewMat();           
             _sih.View = RC.View;
 
+            var planeShaderEffectComp = (ShaderEffectComponent)_planeScene.Children[0].Components[2];
+
             // Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
@@ -288,12 +290,12 @@ namespace Fusee.Examples.SimpleDeferred.Core
             if (_ssaoTexEffect == null)
                 _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(ZNear, ZFar));
 
-            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _ssaoTexEffect;
+            planeShaderEffectComp.Effect = _ssaoTexEffect;
             _quadRenderer.Render(RC, _ssaoRenderTarget);
 
             if (_blurEffect == null)
                 _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTarget, _blurRenderTarget);
-            _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _blurEffect;
+            planeShaderEffectComp.Effect = _blurEffect;
             _quadRenderer.Render(RC, _blurRenderTarget);
 
             _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextures.G_SSAO); 
@@ -305,7 +307,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 RC.Viewport(0, 0, Width, Height);
                 if (_lightingPassEffect == null)
                     _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, noOfLights); //create in RenderAFrame because ssao tex needs to be generated first.
-                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
+                planeShaderEffectComp.Effect = _lightingPassEffect;
                 _quadRenderer.Render(RC);
             }
             else
@@ -313,14 +315,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 // ---- FXAA ON ----
                 if (_lightingPassEffect == null)
                     _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, _lightedSceneRenderTarget, noOfLights); //create in RenderAFrame because ssao tex needs to be generated first.
-                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _lightingPassEffect;
+                planeShaderEffectComp.Effect = _lightingPassEffect;
                 _quadRenderer.Render(RC, _lightedSceneRenderTarget);
 
                 RC.ClearColor = _backgroundColor;
                 RC.Viewport(0, 0, Width, Height);
                 if (_fxaaEffect == null)
                     _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneRenderTarget, new float2((float)_texRes, (float)_texRes));
-                _planeScene.Children[0].GetComponent<ShaderEffectComponent>().Effect = _fxaaEffect;
+                planeShaderEffectComp.Effect = _fxaaEffect;
                 _quadRenderer.Render(RC);
             }
 

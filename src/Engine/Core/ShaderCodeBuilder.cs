@@ -563,7 +563,7 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(EsPrecision());
 
             // Define number of lights
-            var numberOfLights = SceneRenderer.AllLightResults.Count > 0 ? SceneRenderer.AllLightResults.Count : 1;
+            var numberOfLights = SceneRendererForward.AllLightResults.Count > 0 ? SceneRendererForward.AllLightResults.Count : 1;
 
             // legacy code, should be larger one by default!
             _pixelShader.Add($"#define MAX_LIGHTS {numberOfLights}");

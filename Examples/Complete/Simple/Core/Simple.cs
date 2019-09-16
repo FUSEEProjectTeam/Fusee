@@ -23,13 +23,13 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
         private float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -59,8 +59,8 @@ namespace Fusee.Examples.Simple.Core
             });
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
 

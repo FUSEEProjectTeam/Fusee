@@ -12,287 +12,10 @@ using Fusee.Xirkit;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Object-Oriented Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
-    /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
-    /// </summary>
-    // ReSharper disable once InconsistentNaming
-    public class OBBCalculator : SceneVisitor
-    {
-        /// <summary>
-        /// Contains the model view state while traversing the scene to generate the OBB.
-        /// </summary>
-        public class OBBState : VisitorState
-        {
-            private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
-
-            /// <summary>
-            /// The model view matrix.
-            /// </summary>
-            public float4x4 ModelView
-            {
-                set { _modelView.Tos = value; }
-                get { return _modelView.Tos; }
-            }
-
-            /// <summary>
-            /// Creates a new instance of type OBBState.
-            /// </summary>
-            public OBBState()
-            {
-                RegisterState(_modelView);
-            }
-        }
-
-        //private SceneContainer _sc;
-        private IEnumerable<SceneNodeContainer> _sncList;
-        private OBBState _state = new OBBState();        
-        private List<float3> _allVerticesOfCurrentScene = new List<float3>();
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
-        /// </summary>
-        /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(SceneContainer sc)
-        {
-            _sncList = sc.Children;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
-        /// </summary>
-        /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(IEnumerable<SceneNodeContainer> sncList)
-        {
-            _sncList = sncList;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="OBBCalculator"/> class.
-        /// </summary>
-        /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
-        public OBBCalculator(SceneNodeContainer snc)
-        {
-            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
-        }
-
-        /// <summary>
-        /// Performs the calculation and returns the resulting box on the object(s) passed in the constructor. Any calculation
-        /// always includes a full traversal over all child nodes.
-        /// </summary>
-        /// <returns>The resulting axis-aligned bounding box.</returns>
-        public OBBf GetBox()
-        {
-            Traverse(_sncList);
-            return new OBBf(_allVerticesOfCurrentScene.ToArray());
-        }
-
-        #region Visitors
-
-        /// <summary>
-        /// Do not call. Used for internal traversal purposes only
-        /// </summary>
-        /// <param name="transform">The transform component.</param>
-        [VisitMethod]
-        public void OnTransform(TransformComponent transform)
-        {
-            _state.ModelView *= transform.Matrix();
-        }
-
-        /// <summary>
-        /// Do not call. Used for internal traversal purposes only
-        /// </summary>
-        /// <param name="mesh">The mesh component.</param>
-        [VisitMethod]
-        public void OnMesh(Mesh mesh)
-        {
-            // modify mesh
-            for(var i = 0; i < mesh.Vertices.Length; i++)
-                _allVerticesOfCurrentScene.Add(_state.ModelView * mesh.Vertices[i]);
-        }
-
-        #endregion
-
-        #region HierarchyLevel
-
-        protected override void InitState()
-        {           
-            _state.Clear();
-            _state.ModelView = float4x4.Identity;
-        }
-
-        protected override void PushState()
-        {
-            _state.Push();
-        }
-
-        protected override void PopState()
-        {
-            _state.Pop();
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Axis-Aligned Bounding Box Calculator. Use instances of this class to calculate axis-aligned bounding boxes
-    /// on scenes, list of scene nodes or individual scene nodes. Calculations always include any child nodes.
-    /// </summary>
-    // ReSharper disable once InconsistentNaming
-    public class AABBCalculator : SceneVisitor
-    {
-        /// <summary>
-        /// Contains the model view state while traversing the scene to generate the ABB.
-        /// </summary>
-        // ReSharper disable once InconsistentNaming
-        public class AABBState : VisitorState
-        {
-            private readonly CollapsingStateStack<float4x4> _modelView = new CollapsingStateStack<float4x4>();
-
-            /// <summary>
-            /// The model view matrix.
-            /// </summary>
-            public float4x4 ModelView
-            {
-                set { _modelView.Tos = value; }
-                get { return _modelView.Tos; }
-            }
-
-            /// <summary>
-            /// Creates a new instance of type AABBState.
-            /// </summary>
-            public AABBState()
-            {
-                RegisterState(_modelView);
-            }
-        }
-        
-        private IEnumerable<SceneNodeContainer> _sncList;
-        private AABBState _state = new AABBState();
-        private bool _boxValid;
-        private AABBf _result;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
-        /// </summary>
-        /// <param name="sc">The scene container to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(SceneContainer sc)
-        {
-            _sncList = sc.Children;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
-        /// </summary>
-        /// <param name="sncList">The list of scene nodes to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(IEnumerable<SceneNodeContainer> sncList)
-        {
-            _sncList = sncList;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AABBCalculator"/> class.
-        /// </summary>
-        /// <param name="snc">A single scene node to calculate an axis-aligned bounding box for.</param>
-        public AABBCalculator(SceneNodeContainer snc)
-        {
-            _sncList = SceneVisitorHelpers.SingleRootEnumerable(snc);
-        }
-
-        /// <summary>
-        /// Performs the calculation and returns the resulting box on the object(s) passed in the constructor. Any calculation
-        /// always includes a full traversal over all child nodes.
-        /// </summary>
-        /// <returns>The resulting axis-aligned bounding box.</returns>
-        public AABBf? GetBox()
-        {
-            Traverse(_sncList);
-            if (_boxValid)
-                return _result;
-            return null;
-        }
-
-        #region Visitors
-
-        /// <summary>
-        /// Do not call. Used for internal traversal purposes only
-        /// </summary>
-        /// <param name="transform">The transform component.</param>
-        [VisitMethod]
-        public void OnTransform(TransformComponent transform)
-        {
-            _state.ModelView *= transform.Matrix();
-        }
-
-        /// <summary>
-        /// Do not call. Used for internal traversal purposes only
-        /// </summary>
-        /// <param name="mesh">The mesh component.</param>
-        [VisitMethod]
-        public void OnMesh(Mesh mesh)
-        {
-            var box = _state.ModelView * mesh.BoundingBox;
-            if (!_boxValid)
-            {
-                _result = box;
-                _boxValid = true;
-            }
-            else
-            {
-                _result = AABBf.Union(_result, box);
-            }
-        }
-
-        #endregion
-
-        #region HierarchyLevel
-
-        protected override void InitState()
-        {
-            _boxValid = false;
-            _state.Clear();
-            _state.ModelView = float4x4.Identity;
-        }
-
-        protected override void PushState()
-        {
-            _state.Push();
-        }
-
-        protected override void PopState()
-        {
-            _state.Pop();
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// All supported lightning calculation methods LegacyShaderCodeBuilder.cs supports.
-    /// </summary>
-    // ReSharper disable InconsistentNaming
-    public enum LightingCalculationMethod
-    {
-        /// <summary> 
-        /// Simple Blinn Phong Shading without fresnel and distribution function
-        /// </summary>
-        SIMPLE,
-
-        /// <summary>
-        /// Physical based shading
-        /// </summary>
-        ADVANCED,
-
-        /// <summary>
-        /// Physical based shading with environment cube map algorithm
-        /// </summary>
-        ADVANCEDENVMAP
-    }
-
-    /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
-    public class SceneRenderer : SceneVisitor
+    public partial class SceneRendererForward : SceneVisitor
     {
         /// <summary>
         /// Light results, collected from the scene in the Viserator.
@@ -305,80 +28,51 @@ namespace Fusee.Engine.Core
         public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
 
         private CanvasTransformComponent _ctc;
-        private MinMaxRect _parentRect;        
+        private MinMaxRect _parentRect;
 
         #region Traversal information
 
+        /// <summary>
+        /// Caches SceneNodeContainers and their model matrices. Used when visiting a <see cref="BoneComponent"/>.
+        /// </summary>
         protected Dictionary<SceneNodeContainer, float4x4> _boneMap;
-        protected Dictionary<ShaderComponent, ShaderEffect> _shaderEffectMap;
+        
+        /// <summary>
+        /// Manages animations.
+        /// </summary>
         protected Animation _animation;
-        protected readonly SceneContainer _sc;
 
-        protected RenderContext _rc;
+        /// <summary>
+        /// The SceneContainer, containing the scene that gets rendered.
+        /// </summary>
+        protected SceneContainer _sc;
 
-        private List<LightResult> _lightComponents = new List<LightResult>();
+        /// <summary>
+        /// The RenderContext, used to render the scene.
+        /// </summary>
+        protected RenderContext _rc; 
 
-        private string _scenePathDirectory;
+        /// <summary>
+        /// The ShaderEffect, used if no other effect is found while traversing the scene.
+        /// </summary>
         protected ShaderEffect _defaultEffect;
 
-        #endregion
+        /// <summary>
+        /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
+        /// </summary>
+        protected RendererState _state;        
 
-        #region State
-
-        public class RendererState : VisitorState
-        {
-            protected CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-            protected CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
-            protected CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
-
-            public float4x4 Model
-            {
-                get { return _model.Tos; }
-                set { _model.Tos = value; }
-            }
-
-            public MinMaxRect UiRect
-            {
-                get { return _uiRect.Tos; }
-                set { _uiRect.Tos = value; }
-            }
-
-            public float4x4 CanvasXForm
-            {
-                get => _canvasXForm.Tos;
-                set => _canvasXForm.Tos = value;
-            }
-
-            private StateStack<ShaderEffect> _effect = new StateStack<ShaderEffect>();
-
-            /// <summary>
-            /// Gets and sets the shader effect.
-            /// </summary>
-            public ShaderEffect Effect
-            {
-                set { _effect.Tos = value; }
-                get { return _effect.Tos; }
-            }
-
-            public RendererState()
-            {
-                RegisterState(_model);
-                RegisterState(_canvasXForm);
-                RegisterState(_effect);
-                RegisterState(_uiRect);
-            }
-        }
-
-        protected RendererState _state;
-        protected float4x4 _view;
+        /// <summary>
+        /// List of <see cref="LightResult"/>, created by the <see cref="LightViserator"/>.
+        /// </summary>
+        protected List<LightResult> _lightComponents = new List<LightResult>();
 
         #endregion
 
         #region Initialization Construction Startup      
-        
+
         private void SetDefaultLight()
-        {
-            
+        {            
             // if there is no light in scene then add one (legacyMode)
             AllLightResults.Add(new LightResult()
             {
@@ -398,11 +92,16 @@ namespace Fusee.Engine.Core
             
         }
 
-        public SceneRenderer(SceneContainer sc)
+        /// <summary>
+        /// Creates a new instance of type SceneRendererForward.
+        /// This scene renderer is used for forward rendering.
+        /// </summary>
+        /// <param name="sc">The <see cref="SceneContainer"/> containing the scene that is rendered.</param>
+        public SceneRendererForward(SceneContainer sc)
         {
             // check if the scene contains at least on light
             _lightComponents = sc.Children.Viserate<LightViserator, LightResult>().ToList();
-                        // ...set them
+            // ...set them
             AllLightResults = _lightComponents;
 
             if (AllLightResults.Count == 0)
@@ -414,6 +113,10 @@ namespace Fusee.Engine.Core
             InitAnimations(_sc);
         }
 
+        /// <summary>
+        /// Initializes animations, given as <see cref="AnimationComponent"/>.
+        /// </summary>
+        /// <param name="sc">The SceneContainer, containing the AnimationComponents.</param>
         public void InitAnimations(SceneContainer sc)
         {
             _animation = new Animation();
@@ -511,6 +214,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Handles animations.
+        /// </summary>
         public void Animate()
         {
             if (_animation.ChannelBaseList.Count != 0)
@@ -533,7 +239,7 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
-                _shaderEffectMap = new Dictionary<ShaderComponent, ShaderEffect>();
+                
                 var defaultMat = new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer
@@ -559,7 +265,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc"></param>
         /// <param name="renderTarget">Optional parameter: set this if you want to render to one or more textures.</param>
-
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
             AccumulateLight();
@@ -570,10 +275,11 @@ namespace Fusee.Engine.Core
         }
 
         #region Visitors
+
         /// <summary>
         /// If a Projection Component is visited, the projection matrix is set.
         /// </summary>
-        /// <param name="bone"></param>
+        /// <param name="pc">The visited ProjectionComponent.</param>
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
         {
@@ -600,8 +306,7 @@ namespace Fusee.Engine.Core
             else
                 _boneMap[boneContainer] = _rc.Model;
         }
-
-
+        
         /// <summary>
         /// Renders the weight.
         /// </summary>
@@ -627,8 +332,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
-            _ctc = ctc;
-            _rc.View = _view;
+            _ctc = ctc;            
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.WORLD)
             {
@@ -687,6 +391,10 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// If a RectTransformComponent is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
+        /// </summary>
+        /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
         public void RenderRectTransform(RectTransformComponent rtc)
         {
@@ -720,6 +428,10 @@ namespace Fusee.Engine.Core
             _state.Model *= float4x4.CreateTranslation(translationX, translationY, 0); 
         }
 
+        /// <summary>
+        /// If a XFormComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormComponent.</param>
         [VisitMethod]
         public void RenderXForm(XFormComponent xfc)
         {
@@ -737,10 +449,13 @@ namespace Fusee.Engine.Core
                 scale = float4x4.CreateScale(1, 1, 1);
 
             _state.Model *= scale;
-            _rc.Model = _state.Model;
-            _rc.View = _view;
+            _rc.Model = _state.Model;            
         }
 
+        /// <summary>
+        /// If a XFormTextComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormTextComponent.</param>
         [VisitMethod]
         public void RenderXFormText(XFormTextComponent xfc)
         {
@@ -749,32 +464,36 @@ namespace Fusee.Engine.Core
             var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
             _state.Model *= scale;
-            _rc.Model = _state.Model;
-            _rc.View = _view;
+            _rc.Model = _state.Model;           
         }
 
+        /// <summary>
+        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
+        /// It additionally updates the view matrix of the RenderContext.
+        /// </summary> 
+        /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
         {
             _state.Model *= transform.Matrix();
-            _rc.Model = _state.Model;
-            _rc.View = _view;            
+            _rc.Model = _state.Model;                      
         }
 
+        /// <summary>
+        /// If a PtOctantComponent is visited the level of this octant is set in the shader.
+        /// </summary>
+        /// <param name="ptOctant"></param>
         [VisitMethod]
         public void RenderPtOctantComponent(PtOctantComponent ptOctant)
         {    
             _state.Effect.SetEffectParam("OctantLevel", ptOctant.Level);
         }
+                
 
-        [VisitMethod]
-        public void RenderShader(ShaderComponent shaderComponent)
-        {
-            var effect = BuildMaterialFromShaderComponent(shaderComponent);
-            _state.Effect = effect;
-        }
-
-
+        /// <summary>
+        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="shaderComponent">The ShaderEffectComponent</param>
         [VisitMethod]
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
@@ -782,20 +501,30 @@ namespace Fusee.Engine.Core
             _rc.SetShaderEffect(shaderComponent.Effect);
         }
 
+        /// <summary>
+        /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
+        /// the shader parameters for all lights in the scene are updated according to the <see cref="LightViserator"/>
+        /// and the geometry is passed to be pushed through the rendering pipeline.        
+        /// </summary>
+        /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
         public void RenderMesh(Mesh mesh)
         {
-            Mesh rm = mesh;
+            if (!mesh.Active) return;
+
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)
                 AddWeightComponentToMesh(mesh, wc);
+            
+            UpdateShaderParamsForAllLights();
 
-            if(mesh.Active)
-                UpdateShaderParamsForAllLights(rm);
+            _rc.Render(mesh);
         }
-
         
-        public void AccumulateLight()
+        /// <summary>
+        /// Viserates the LightComponent and caches them in a dedicated field.
+        /// </summary>
+        protected void AccumulateLight()
         {           
             // accumulate all lights and...           
             _lightComponents = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
@@ -861,6 +590,9 @@ namespace Fusee.Engine.Core
 
         #region HierarchyLevel
 
+        /// <summary>
+        /// Sets the initial values in the <see cref="RendererState"/>.
+        /// </summary>
         protected override void InitState()
         {
             _state.Clear();
@@ -868,31 +600,35 @@ namespace Fusee.Engine.Core
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
             _state.Effect = _defaultEffect;
-
-            _view = _rc.ModelView;
+            
         }
 
+        /// <summary>
+        /// Pushes into the RenderState.
+        /// </summary>
         protected override void PushState()
         {
             _state.Push();
         }
 
+        /// <summary>
+        /// Pops from the RenderState and sets the Model and View matrices in the RenderContext.
+        /// </summary>
         protected override void PopState()
         {
             _state.Pop();
-            _rc.Model = _state.Model;
-            _rc.View = _view;            
+            _rc.Model = _state.Model;                     
         }
 
         #endregion
 
-        private void UpdateShaderParamsForAllLights(Mesh rm)
+        private void UpdateShaderParamsForAllLights()
         {
             for (var i = 0; i < _lightComponents.Count; i++)
             {                
                 UpdateShaderParamForLight(i, _lightComponents[i]);                
             }
-            _rc.Render(rm);
+            
         }
 
         private void UpdateShaderParamForLight(int position, LightResult lightRes)
@@ -924,67 +660,7 @@ namespace Fusee.Engine.Core
         }
 
         #region RenderContext/Asset Setup
-
-        private ShaderEffect BuildMaterialFromShaderComponent(ShaderComponent shaderComponent)
-        {
-            if (_shaderEffectMap.TryGetValue(shaderComponent, out ShaderEffect shaderEffect)) return shaderEffect;
-
-            shaderEffect = MakeShader(shaderComponent);
-            _rc.SetShaderEffect(shaderEffect);
-            //shaderEffect.AttachToContext(_rc);
-            _shaderEffectMap.Add(shaderComponent, shaderEffect);
-            return shaderEffect;
-        }
-        
-        // Creates Shader from given ShaderComponent
-        private static ShaderEffect MakeShader(ShaderComponent shaderComponent)
-        {
-            var effectParametersFromShaderComponent = new List<EffectParameterDeclaration>();
-            var renderStateSet = new RenderStateSet();
-
-            if (shaderComponent.EffectParameter != null)
-            {
-                // BUG: JSIL crashes with:
-                // BUG: effectParametersFromShaderComponent.AddRange(shaderComponent.EffectParameter.Select(CreateEffectParameterDeclaration));
-
-                var allEffectParameterDeclaration = new List<EffectParameterDeclaration>();
-
-                foreach (var effectParam in shaderComponent.EffectParameter) // DO NOT CONVERT TO LINQ!
-                {
-                    allEffectParameterDeclaration.Add(CreateEffectParameterDeclaration(effectParam));
-                }
-                effectParametersFromShaderComponent.AddRange(allEffectParameterDeclaration);
-
-            }
-
-            // no Effectpasses
-            if (shaderComponent.EffectPasses == null)
-                throw new InvalidDataException("No EffectPasses in Shader Component! Please specify at least one pass");
-
-            var effectPasses = new EffectPassDeclaration[shaderComponent.EffectPasses.Count];
-
-            for (var i = 0; i < shaderComponent.EffectPasses.Count; i++)
-            {
-                var newEffectPass = new EffectPassDeclaration();
-                var effectPass = shaderComponent.EffectPasses[i];
-
-                if (effectPass.RenderStateContainer != null)
-                {
-                    renderStateSet = new RenderStateSet();
-                    renderStateSet.SetRenderStates(effectPass.RenderStateContainer);
-                }
-
-
-                newEffectPass.VS = effectPass.VS;
-                newEffectPass.PS = effectPass.PS;
-                newEffectPass.StateSet = renderStateSet;
-
-                effectPasses[i] = newEffectPass;
-            }
-
-            return new ShaderEffect(effectPasses, effectParametersFromShaderComponent);
-        }
-
+               
         private static EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)
         {
             if (effectParameter.Name == null)
@@ -1037,83 +713,5 @@ namespace Fusee.Engine.Core
         #endregion
     }
 
-    #region LightViserator
-
-    /// <summary>
-    /// This struct saves a light and all its parameters, as found by a Viserator.
-    /// </summary>
-    public struct LightResult
-    {
-        /// <summary>
-        /// The light component as present (1 to n times) in the scene graph.
-        /// </summary>
-        public LightComponent Light { get; set; }
-
-        /// <summary>
-        /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
-        /// Therefore the LightComponent itself has no position information - it gets set while traversing the scene graph.
-        /// </summary>
-        public float3 WorldSpacePos { get; set; }
-
-        /// <summary>
-        /// The rotation matrix. Determines the direction of the light, also set while traversing the scene graph.
-        /// </summary>
-        public float4x4 Rotation { get; set; }
-    }
-
-    internal class LightViseratorState : VisitorState
-    {
-        private readonly CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-
-        /// <summary>
-        /// Gets and sets the top of the Model matrix stack. The Model matrix transforms model coordinates into world coordinates.
-        /// </summary>
-        /// <value>
-        /// The Model matrix.
-        /// </value>
-        public float4x4 Model
-        {
-            set { _model.Tos = value; }
-            get { return _model.Tos; }
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="LightViseratorState"/> class.
-        /// </summary>
-        public LightViseratorState()
-        {
-            RegisterState(_model);
-        }
-    }
-
-    internal class LightViserator : Viserator<LightResult, LightViseratorState>
-    {
-        public Dictionary<Suid, LightComponent> FoundLightResults = new Dictionary<Suid, LightComponent>();
-
-        protected override void InitState()
-        {
-            base.InitState();
-            State.Model = float4x4.Identity;
-        }
-
-        [VisitMethod]
-        public void OnTransform(TransformComponent xform)
-        {
-            State.Model *= xform.Matrix();
-        }
-
-        [VisitMethod]
-        public void OnLight(LightComponent lightComponent)
-        {
-            var lightResult = new LightResult
-            {
-                Light = lightComponent,
-                Rotation = State.Model.RotationComponent(),
-                WorldSpacePos = new float3(State.Model.M14, State.Model.M24, State.Model.M34)
-            };            
-
-            YieldItem(lightResult);
-        }
-    }
-    #endregion
+    
 }

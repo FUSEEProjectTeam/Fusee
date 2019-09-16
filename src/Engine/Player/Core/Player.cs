@@ -28,7 +28,7 @@ namespace Fusee.Engine.Player.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
         private bool _twoTouchRepeated;
@@ -40,7 +40,7 @@ namespace Fusee.Engine.Player.Core
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -132,8 +132,8 @@ namespace Fusee.Engine.Player.Core
             });
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
             
         }
 
