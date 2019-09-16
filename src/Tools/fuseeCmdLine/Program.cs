@@ -275,8 +275,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
                     SceneContainer fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
 
-                    var ser = new Serializer();
-                    ser.Serialize(output, fuseeScene);
+                    ProtoBuf.Serializer.Serialize(output, fuseeScene);
                     output.Flush();
                     output.Close();
                 })
@@ -308,7 +307,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         {
                             using (var output = new StreamWriter(File.Open(opts.Output, FileMode.Create)))
                             {
-                                output.WriteLine("syntax = \"proto2\";");
+                                // Is added with Protobuf 2.4.0: output.WriteLine("syntax = \"proto2\";");
                                 output.Write(schema);
                             }
                             Console.Error.WriteLine(

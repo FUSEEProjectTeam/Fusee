@@ -1,0 +1,237 @@
+syntax = "proto2";
+import "protobuf-net/bcl.proto"; // schema for protobuf-net's handling of core .NET types
+import "protobuf-net/protogen.proto"; // custom protobuf-net options
+
+message AABBf {
+   optional float3 min = 1;
+   optional float3 max = 2;
+}
+message AnimationComponent {
+   repeated .bcl.NetObjectProxy AnimationTracks = 3 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked AnimationTrackContainer
+}
+message AnimationKeyContainerBase {
+   optional float Time = 1 [default = 0];
+   oneof subtype {
+      AnimationKeyContainerDouble AnimationKeyContainerDouble = 100;
+      AnimationKeyContainerInt AnimationKeyContainerInt = 101;
+      AnimationKeyContainerFloat AnimationKeyContainerFloat = 102;
+      AnimationKeyContainerFloat2 AnimationKeyContainerFloat2 = 103;
+      AnimationKeyContainerFloat3 AnimationKeyContainerFloat3 = 104;
+      AnimationKeyContainerFloat4 AnimationKeyContainerFloat4 = 105;
+   }
+}
+message AnimationKeyContainerDouble {
+   optional double Value = 1 [default = 0];
+}
+message AnimationKeyContainerFloat {
+   optional float Value = 1 [default = 0];
+}
+message AnimationKeyContainerFloat2 {
+   optional float2 Value = 1;
+}
+message AnimationKeyContainerFloat3 {
+   optional float3 Value = 1;
+}
+message AnimationKeyContainerFloat4 {
+   optional float4 Value = 1;
+}
+message AnimationKeyContainerInt {
+   optional int32 Value = 1 [default = 0];
+}
+message AnimationTrackContainer {
+   optional .bcl.NetObjectProxy SceneComponent = 1 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneComponentContainer
+   optional string Property = 2;
+   optional TypeId TypeId = 3 [default = Double];
+   repeated .bcl.NetObjectProxy KeyFrames = 4 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked AnimationKeyContainerBase
+   optional LerpType LerpType = 5 [default = Lerp];
+}
+message BoneComponent {
+   optional string Name = 1;
+}
+message BumpChannelContainer {
+   optional string Texture = 1;
+   optional float Intensity = 2 [default = 0];
+}
+enum LerpType {
+   Lerp = 0;
+   Slerp = 1;
+}
+message LightComponent {
+   optional bool Active = 1 [default = false];
+   optional float4 Color = 2;
+   optional float3 Position = 3;
+   optional float Attenuation = 4 [default = 0];
+   optional float AmbientCoefficient = 5 [default = 0];
+   optional LightType Type = 6 [default = Point];
+   optional float ConeAngle = 7 [default = 0];
+   optional float3 ConeDirection = 8;
+   optional float3 PositionWorldSpace = 9;
+}
+enum LightType {
+   Point = 0;
+   Parallel = 1;
+   Spot = 2;
+   Legacy = 3;
+}
+message MatChannelContainer {
+   optional float4 Color = 1;
+   optional string Texture = 2;
+   optional float Mix = 3 [default = 0];
+   oneof subtype {
+      SpecularChannelContainer SpecularChannelContainer = 100;
+   }
+}
+message MaterialComponent {
+   optional MatChannelContainer Diffuse = 1;
+   optional MatChannelContainer Specular = 2;
+   optional MatChannelContainer Emissive = 3;
+   optional BumpChannelContainer Bump = 4;
+   oneof subtype {
+      MaterialLightComponent MaterialLightComponent = 200;
+      MaterialPBRComponent MaterialPBRComponent = 201;
+   }
+}
+message MaterialLightComponent {
+   optional string ApplyLightString = 1;
+   optional string FragmentShaderString = 2;
+}
+message MaterialPBRComponent {
+   optional float RoughnessValue = 1 [default = 0];
+   optional float FresnelReflectance = 2 [default = 0];
+   optional float DiffuseFraction = 3 [default = 0];
+}
+message Mesh {
+   repeated float3 Vertices = 1;
+   repeated uint32 Colors = 2;
+   repeated float3 Normals = 3;
+   repeated float2 UVs = 4;
+   repeated float4 BoneWeights = 5;
+   repeated float4 BoneIndices = 6;
+   repeated uint32 Triangles = 7;
+   optional AABBf BoundingBox = 8;
+   repeated float4 Tangents = 9;
+   repeated float3 BiTangents = 10;
+   optional int32 MeshType = 11 [default = 0];
+}
+message RenderPass {
+   optional string VS = 1;
+   optional string PS = 2;
+   map<uint32,uint32> RenderStateContainer = 3;
+}
+message SceneComponentContainer {
+   optional string Name = 1;
+   oneof subtype {
+      TransformComponent TransformComponent = 100;
+      Mesh Mesh = 101;
+      MaterialComponent MaterialComponent = 102;
+      LightComponent LightComponent = 103;
+      WeightComponent WeightComponent = 104;
+      AnimationComponent AnimationComponent = 105;
+      BoneComponent BoneComponent = 106;
+      ShaderComponent ShaderComponent = 107;
+   }
+}
+message SceneContainer {
+   optional SceneHeader Header = 1;
+   repeated .bcl.NetObjectProxy Children = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
+}
+message SceneHeader {
+   optional int32 Version = 1 [default = 0];
+   optional string Generator = 2;
+   optional string CreatedBy = 3;
+   optional string CreationDate = 4;
+}
+message SceneNodeContainer {
+   optional string Name = 1;
+   repeated .bcl.NetObjectProxy Components = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneComponentContainer
+   repeated .bcl.NetObjectProxy Children = 3 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
+}
+message ShaderComponent {
+   repeated RenderPass EffectPasses = 1;
+   repeated .bcl.NetObjectProxy EffectParameter = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked TypeContainer
+}
+message SpecularChannelContainer {
+   optional float Shininess = 1 [default = 0];
+   optional float Intensity = 2 [default = 0];
+}
+message TransformComponent {
+   optional float3 Translation = 1;
+   optional float3 Rotation = 2;
+   optional float3 Scale = 3;
+}
+message TypeContainer {
+   optional string Name = 1;
+   optional TypeId TypeId = 2 [default = Double];
+   oneof subtype {
+      TypeContainerDouble TypeContainerDouble = 100;
+      TypeContainerInt TypeContainerInt = 101;
+      TypeContainerFloat TypeContainerFloat = 102;
+      TypeContainerFloat2 TypeContainerFloat2 = 103;
+      TypeContainerFloat3 TypeContainerFloat3 = 104;
+      TypeContainerFloat4 TypeContainerFloat4 = 105;
+      TypeContainerBool TypeContainerBool = 106;
+   }
+}
+message TypeContainerBool {
+   optional bool Value = 1 [default = false];
+}
+message TypeContainerDouble {
+   optional double Value = 1 [default = 0];
+}
+message TypeContainerFloat {
+   optional float Value = 1 [default = 0];
+}
+message TypeContainerFloat2 {
+   optional float2 Value = 1;
+}
+message TypeContainerFloat3 {
+   optional float3 Value = 1;
+}
+message TypeContainerFloat4 {
+   optional float4 Value = 1;
+}
+message TypeContainerInt {
+   optional int32 Value = 1 [default = 0];
+}
+enum TypeId {
+   Double = 0;
+   Int = 1;
+   Float = 2;
+   Float2 = 3;
+   Float3 = 4;
+   Float4 = 5;
+   Bool = 6;
+}
+message VertexWeight {
+   optional int32 JointIndex = 1 [default = 0];
+   optional float Weight = 2 [default = 0];
+}
+message VertexWeightList {
+   repeated VertexWeight VertexWeights = 1;
+}
+message WeightComponent {
+   repeated VertexWeightList WeightMap = 1;
+   repeated .bcl.NetObjectProxy Joints = 2 [(.protobuf_net.fieldopt).asRef = true]; // reference-tracked SceneNodeContainer
+   repeated float4x4 BindingMatrices = 3;
+}
+message float2 {
+   optional float x = 1 [default = 0];
+   optional float y = 2 [default = 0];
+}
+message float3 {
+   optional float x = 1 [default = 0];
+   optional float y = 2 [default = 0];
+   optional float z = 3 [default = 0];
+}
+message float4 {
+   optional float x = 1 [default = 0];
+   optional float y = 2 [default = 0];
+   optional float z = 3 [default = 0];
+   optional float w = 4 [default = 0];
+}
+message float4x4 {
+   optional float4 Row0 = 1;
+   optional float4 Row1 = 2;
+   optional float4 Row2 = 3;
+   optional float4 Row3 = 4;
+}

@@ -62,15 +62,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="OpenTK-1.0" />
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+    <!-- Fusee References -->
   </ItemGroup>
-  <!-- Fusee References -->
   <ItemGroup>
-    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll">
-      <Name>Fusee.SerializationSerializer</Name>
-    </Reference>
     <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>

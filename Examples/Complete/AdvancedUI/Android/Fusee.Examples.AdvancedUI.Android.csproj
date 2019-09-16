@@ -64,15 +64,10 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="OpenTK-1.0" />
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
-    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll">
-      <Name>Fusee.SerializationSerializer</Name>
-    </Reference>
     <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>
@@ -130,14 +125,12 @@
     <AndroidAsset Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
   <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir;FuseeCollectAndCopyAssets;FuseeResolveAssetDependencies;FuseeResolveNativeDependencies">
     <ItemGroup>
       <_FuseeAndroidAssets1 Include="$(OutputPath)\Assets\**\*" />
       <_FuseeAndroidAssets2 Include="$(OutputPath)\$(AssemblyName).Assets\**\*" />
     </ItemGroup>
-
     <Copy SourceFiles="@(_FuseeAndroidAssets1)" DestinationFiles="@(_FuseeAndroidAssets1->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
     <Copy SourceFiles="@(_FuseeAndroidAssets2)" DestinationFiles="@(_FuseeAndroidAssets2->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
   </Target>

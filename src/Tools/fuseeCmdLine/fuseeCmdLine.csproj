@@ -39,18 +39,19 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(FuseeEngineRoot)\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -178,6 +179,7 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ManifestFile.cs</LastGenOutput>
     </Content>
+    <None Include="packages.config" />
     <None Include="WebPage.tt">
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>WebPage.cs</LastGenOutput>
@@ -199,6 +201,7 @@
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
     <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+    <BlenderAddonSourcePath>$(MSBuildProjectDirectory)\..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
@@ -208,11 +211,18 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <!-- for Scene.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <!-- for bcl.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <!-- for protogen.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />

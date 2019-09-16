@@ -1,22 +1,14 @@
 # Contents of this directory
 
-This directory contains the necessary dependencies for FUSEE's .fus file serialization functionality, based on Google Protocol Buffers and
-its .NET adaption: protobuf-net.
-
-## Debug and Release - protobuf-net.dll 
-
-Needed by C# projects defining classes that are meant to be serialized. Contains the protobuf-net C# attributes such as [ProtoContract].
-This DLL results from a Fork of the original protobuf-net project maintained by the FuseeProjectTeam.
-
-## PrecompileTool
-
-.NET Precompiler generating a .NET serialization DLL with Serialization code for all protobuf-net attributed classes. 
-The contents of this folder results from a Fork of the original protobuf-net project maintained by the FuseeProjectTeam.
-
-## protoc-3.4.0-win32
+## protoc-3.9.1-win64
 
 Protbuf compiler generating target-language dependent code based on .proto definition files. Used in FUSEE to generate Python serialization
-code for .fus files from the .proto file created by "fusee protoschema", which generates the .proto-files from the C# protobuf-net declarations.
+code for .fus files from the .proto file created by the 
+```
+> fusee.exe protoschema
+```
+
+command, which generates the .proto-files from the C# protobuf-net declarations. The python serialization of .fus files is used in the FUSEE Blender Add-On.
 
 ## Python
 
@@ -25,4 +17,15 @@ shipped with Blender (which lacks a lot including "pip"...). This code will be h
 installed without internet connection on a machine without Administrator privileges.
 
 Additionally, this directory holds the "six.py" file also lacking in Blender Python, referenced by protobuf's "descriptor.py".
+
+-----------------------------------
+
+### What about protobuf-net.dll formerly found in Debug and Release directories?
+
+Since FUSEE Release 0.8 protobuf-net.dll is referenced as a [nuget package](https://www.nuget.org/packages/protobuf-net/3.0.0-alpha.55).
+
+### What about precompile.exe formerly found in the PrecompileTool directory?
+
+The protobuf-net version used since FUSEE Release 0.8 (3.0.0-alpha.55) works without precompiling serialization code during build. Depending on the platform protobuf-net emits serialization code on the fly (if Reflection.Emit is supported) or falls back on a slower serialization without generated code.
+
 

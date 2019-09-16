@@ -955,22 +955,24 @@ namespace Fusee.Engine.Core
 
         private void AddPixelBody()
         {
+            string fragColorAlpha = _materialProbs.HasDiffuse ? $"{DiffuseColorName}.w" : "1.0";
+
             var methodBody = new List<string>
             {
                 "vec4 result = vec4(0.0);",
                 "for(int i = 0; i < MAX_LIGHTS;i++)",
                 "{",
-                "vec3 currentPosition = allLights[i].position;",
-                "vec4 currentIntensities = allLights[i].intensities;",
-                "vec3 currentConeDirection = allLights[i].coneDirection;",
-                "float currentAttenuation = allLights[i].attenuation;",
-                "float currentAmbientCoefficient = allLights[i].ambientCoefficient;",
-                "float currentConeAngle = allLights[i].coneAngle;",
-                "int currentLightType = allLights[i].lightType; ",
-                "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
-                "currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
+                "   vec3 currentPosition = allLights[i].position;",
+                "   vec4 currentIntensities = allLights[i].intensities;",
+                "   vec3 currentConeDirection = allLights[i].coneDirection;",
+                "   float currentAttenuation = allLights[i].attenuation;",
+                "   float currentAmbientCoefficient = allLights[i].ambientCoefficient;",
+                "   float currentConeAngle = allLights[i].coneAngle;",
+                "   int currentLightType = allLights[i].lightType; ",
+                "   result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
+                "   currentAttenuation, currentAmbientCoefficient, currentConeAngle, currentLightType);",
                 "}",
-                 _materialProbs.HasDiffuseTexture ? $"fragmentColor = result;" : $"fragmentColor = vec4(result.rgb, {DiffuseColorName}.w);"
+                 _materialProbs.HasDiffuseTexture ? $"fragmentColor = result;" : $"fragmentColor = vec4(result.rgb, {fragColorAlpha});"
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
