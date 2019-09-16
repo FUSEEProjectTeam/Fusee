@@ -141,6 +141,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the scene.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene, _texRes, perspectiveProjComp);
+            //_sceneRenderer = new SceneRendererForward(_rocketScene);
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
@@ -159,8 +160,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _keys = true;
             }
 
-            if (Keyboard.IsKeyDown(KeyCodes.F))
-                _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+            //if (Keyboard.IsKeyDown(KeyCodes.F))
+            //    _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
             
             if (Mouse.LeftButton)
             {

@@ -7,6 +7,7 @@ namespace Fusee.Serialization
 {
     /// <summary>
     /// Contains light information. If contained in a node, the node serves as a light object.
+    /// If possible, avoid adding or removing these at runtime, instead create all you need and set active or inactive.
     /// The Position and Direction of a Light gets calculated internally, depending on the parent transform components, found in the scene graph.
     /// </summary>
     [ProtoContract]

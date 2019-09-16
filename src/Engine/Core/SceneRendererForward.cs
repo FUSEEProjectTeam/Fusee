@@ -17,11 +17,31 @@ namespace Fusee.Engine.Core
     /// </summary>
     public partial class SceneRendererForward : SceneVisitor
     {
+        private int _numberOfLights;
+        private bool _hasNumberOfLightsChanged;
+
         /// <summary>
         /// Light results, collected from the scene in the Viserator.
         /// </summary>
-        public static List<LightResult> AllLightResults = new List<LightResult>();
-         
+        public List<LightResult> LightComponents
+        {
+            get
+            {
+                return _lightComponents;
+            }
+            private set
+            {                
+                _lightComponents = value;
+
+                if(_numberOfLights != _lightComponents.Count)
+                {
+                    
+                    _hasNumberOfLightsChanged = true;
+                    _numberOfLights = _lightComponents.Count;
+                } 
+            }
+        }
+
         /// <summary>
         /// Gets and sets the size of the shadow map.
         /// </summary>
@@ -74,7 +94,7 @@ namespace Fusee.Engine.Core
         private void SetDefaultLight()
         {            
             // if there is no light in scene then add one (legacyMode)
-            AllLightResults.Add(new LightResult()
+            _lightComponents.Add(new LightResult()
             {
                 Light = new LightComponent()
                 {
@@ -90,6 +110,7 @@ namespace Fusee.Engine.Core
                 WorldSpacePos = float3.Zero
             });
             
+            
         }
 
         /// <summary>
@@ -99,15 +120,9 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The <see cref="SceneContainer"/> containing the scene that is rendered.</param>
         public SceneRendererForward(SceneContainer sc)
         {
-            // check if the scene contains at least on light
-            _lightComponents = sc.Children.Viserate<LightViserator, LightResult>().ToList();
-            // ...set them
-            AllLightResults = _lightComponents;
-
-            if (AllLightResults.Count == 0)
-                SetDefaultLight();           
-
             _sc = sc;
+            AccumulateLight(); 
+           
             // _scenePathDirectory = scenePathDirectory;
             _state = new RendererState();
             InitAnimations(_sc);
@@ -497,8 +512,17 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
-            _state.Effect = shaderComponent.Effect;
-            _rc.SetShaderEffect(shaderComponent.Effect);
+            if (_hasNumberOfLightsChanged)
+            {
+               //change #define MAX_LIGHTS... or rebuild shader effect?
+                _hasNumberOfLightsChanged = false;
+            }
+            else
+            {
+                _state.Effect = shaderComponent.Effect;
+                _rc.SetShaderEffect(shaderComponent.Effect);
+            }
+            
         }
 
         /// <summary>
@@ -525,13 +549,12 @@ namespace Fusee.Engine.Core
         /// Viserates the LightComponent and caches them in a dedicated field.
         /// </summary>
         protected void AccumulateLight()
-        {           
+        {
+            
             // accumulate all lights and...           
-            _lightComponents = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
-            // ...set them
-            AllLightResults = _lightComponents;
-
-            if (AllLightResults.Count == 0)            
+            LightComponents = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
+            
+            if (LightComponents.Count == 0)            
                 SetDefaultLight();           
         }
 
