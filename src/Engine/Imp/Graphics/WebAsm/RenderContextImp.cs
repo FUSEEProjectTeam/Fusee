@@ -2086,7 +2086,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             //Clear(ClearFlags.Depth | ClearFlags.Color);
 
         }
-
        
 
         public void SetRenderTarget(IRenderTarget renderTarget)

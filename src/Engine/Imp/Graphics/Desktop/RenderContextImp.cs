@@ -2116,8 +2116,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
-
-        
+                
         private int CreateFrameBuffer(IRenderTarget renderTarget)
         {
             var gBuffer = GL.GenFramebuffer();

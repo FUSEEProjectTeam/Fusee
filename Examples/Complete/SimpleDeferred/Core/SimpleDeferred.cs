@@ -160,9 +160,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _keys = true;
             }
 
-            //if (Keyboard.IsKeyDown(KeyCodes.F))
-            //    _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
-            
+            if (Keyboard.IsKeyDown(KeyCodes.F))
+                _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+
             if (Mouse.LeftButton)
             {
                 _keys = false;
@@ -209,7 +209,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             Present();
         }
 
-
         private void CalcAndSetViewMat()
         {
             if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
@@ -246,7 +245,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             viewMatrix = float4x4.Transpose(viewMatrix);
 
             return viewMatrix;
-
         }
 
         private SceneContainer CreateGui()

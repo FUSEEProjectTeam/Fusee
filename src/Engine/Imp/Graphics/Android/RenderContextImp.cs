@@ -171,15 +171,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>     
-        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
-        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
-        /// <param name="wrapMode">Defines the wrapping mode <see cref="Common.TextureWrapMode"/>.</param>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param> 
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
             PixelInternalFormat internalFormat;
-            OpenTK.Graphics.ES30.PixelFormat format;
+            PixelFormat format;
 
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -194,26 +191,24 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
-                    format = OpenTK.Graphics.ES30.PixelFormat.Rgba;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(All.Texture2D);
+                    format = PixelFormat.Rgba;
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
-                    format = OpenTK.Graphics.ES30.PixelFormat.Rgb;
+                    format = PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(All.Texture2D);
+                    
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
-                    format = OpenTK.Graphics.ES30.PixelFormat.Alpha;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.GenerateMipmap(All.Texture2D);
+                    format = PixelFormat.Alpha;
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
@@ -221,18 +216,18 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     internalFormat = PixelInternalFormat.Rgb;
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);                  
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, OpenTK.Graphics.ES30.PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba;
-                    format = OpenTK.Graphics.ES30.PixelFormat.RgbaInteger;
+                    format = PixelFormat.RgbaInteger;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb;
-                    format = OpenTK.Graphics.ES30.PixelFormat.Rgb;
+                    format = PixelFormat.Rgb;
                     GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
@@ -243,7 +238,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             if (img.DoGenerateMipMaps)
-                GL.GenerateMipmap(All.Texture2D);
+                GL.GenerateMipmap(TextureTarget.Texture2D);
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
@@ -1973,9 +1968,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        /// <summary>
+        /// Sets the RenderTarget.
+        /// </summary>
         public void SetRenderTarget(IRenderTarget renderTarget)
         {
-
             if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
             {
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -1984,27 +1981,29 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             int gBuffer;
 
-            if (renderTarget.GBufferHandle == -1)
+            if (renderTarget.GBufferHandle == null)
             {
-                gBuffer = CreateGBuffer(renderTarget);
-                renderTarget.GBufferHandle = gBuffer;
+                renderTarget.GBufferHandle = new FrameBufferHandle();
+                gBuffer = CreateFrameBuffer(renderTarget);
+                ((FrameBufferHandle)renderTarget.GBufferHandle).Handle = gBuffer;
             }
             else
             {
-                gBuffer = renderTarget.GBufferHandle;
+                gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }
 
             int gDepthRenderbufferHandle;
-            if (renderTarget.DepthBufferHandle == -1)
+            if (renderTarget.DepthBufferHandle == null)
             {
+                renderTarget.DepthBufferHandle = new RenderBufferHandle();
                 // Create and attach depth buffer (renderbuffer)
                 gDepthRenderbufferHandle = CreateDepthRenderBuffer(renderTarget);
-                renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
+                ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             }
             else
             {
-                gDepthRenderbufferHandle = renderTarget.DepthBufferHandle;
+                gDepthRenderbufferHandle = ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle;
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             }
 
@@ -2019,16 +2018,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private int CreateDepthRenderBuffer(IRenderTarget renderTarget)
         {
             GL.Enable(EnableCap.DepthTest);
+
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
-            renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
+            //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent24, renderTarget.RenderTextures[0].Width, renderTarget.RenderTextures[0].Height); //TODO: careful: does not resize yet!
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
 
-
-        private int CreateGBuffer(IRenderTarget renderTarget)
+        private int CreateFrameBuffer(IRenderTarget renderTarget)
         {
             GL.GenBuffers(1, out int gBuffer);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
