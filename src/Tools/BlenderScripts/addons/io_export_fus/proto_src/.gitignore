@@ -2,9 +2,7 @@
 # protoc will generate .py files from .proto files within this directory
 # See proto_src/Readme.md for explanation
 # 
-# Ignore everything in this directory
-*
-# Except this file
-!.gitignore
+# Ignore Scene.proto
+Scene.proto
 
 

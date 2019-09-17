@@ -39,8 +39,6 @@
     <Folder Include="proto_src\protobuf-net\" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="proto\.gitignore" />
-    <Content Include="proto\protobuf_net\.gitignore" />
     <Content Include="proto_src\protobuf-net\bcl.proto" />
     <Content Include="proto_src\protobuf-net\protogen.proto" />
     <Content Include="proto_src\Readme.md" />
