@@ -2114,8 +2114,9 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null, int numberOfLights = 1)
         {
-            ShaderCodeBuilder scb = null;           
-            
+            ShaderCodeBuilder scb = null;
+
+            //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
                 if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, numberOfLights, wc);

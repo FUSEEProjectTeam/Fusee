@@ -47,6 +47,7 @@ namespace Fusee.Engine.Core
         /// The rotation matrix. Determines the direction of the light, also set while traversing the scene graph.
         /// </summary>
         public float4x4 Rotation { get; set; }
+
     }
 
     internal class LightViseratorState : VisitorState
