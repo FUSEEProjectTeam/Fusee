@@ -2062,8 +2062,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets the RenderTarget.
         /// </summary>
         public void SetRenderTarget(IRenderTarget renderTarget)
-        {
-            
+        {            
             if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
             {    
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
@@ -2072,27 +2071,29 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int gBuffer;
 
-            if (renderTarget.GBufferHandle == -1)
-            {                
-                gBuffer = CreateGBuffer(renderTarget);
-                renderTarget.GBufferHandle = gBuffer;
+            if (renderTarget.GBufferHandle == null)
+            {
+                renderTarget.GBufferHandle = new FrameBufferHandle();
+                gBuffer = CreateFrameBuffer(renderTarget);
+                ((FrameBufferHandle)renderTarget.GBufferHandle).Handle = gBuffer;
             }
             else
             {
-                gBuffer = renderTarget.GBufferHandle;
+                gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }
 
             int gDepthRenderbufferHandle;
-            if (renderTarget.DepthBufferHandle == -1)
+            if (renderTarget.DepthBufferHandle == null)
             {
+                renderTarget.DepthBufferHandle = new RenderBufferHandle();
                 // Create and attach depth buffer (renderbuffer)
                 gDepthRenderbufferHandle = CreateDepthRenderBuffer(renderTarget);
-                renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
+                ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             }
             else
             {
-                gDepthRenderbufferHandle = renderTarget.DepthBufferHandle;
+                gDepthRenderbufferHandle = ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle;
                 GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             }
 
@@ -2109,7 +2110,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Enable(EnableCap.DepthTest);
             
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
-            renderTarget.DepthBufferHandle = gDepthRenderbufferHandle;
+            //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
@@ -2117,7 +2118,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         
-        private int CreateGBuffer(IRenderTarget renderTarget)
+        private int CreateFrameBuffer(IRenderTarget renderTarget)
         {
             var gBuffer = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);

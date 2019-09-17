@@ -5,9 +5,11 @@ using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Engine.Common;
 using static Fusee.Engine.Imp.Graphics.WebAsm.WebGLRenderingContextBase;
+using static Fusee.Engine.Imp.Graphics.WebAsm.WebGL2RenderingContextBase;
 using WebAssembly.Core;
 using System.Runtime.InteropServices;
 using Fusee.Engine.Imp.WebAsm;
+using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
@@ -19,6 +21,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         #region Fields
 
         protected WebGLRenderingContextBase gl;
+        protected WebGL2RenderingContextBase gl2;
 
         private int _currentTextureUnit;
         private readonly Dictionary<WebGLUniformLocation, int> _shaderParam2TexUnit;
@@ -218,9 +221,25 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     internalFormat = ALPHA;
                     format = ALPHA;
                     break;
+                case ColorFormat.iRGBA:
+                    internalFormat = RGB8I;
+                    format = RGBA;
+                    break;
+                case ColorFormat.fRGB32:
+                    internalFormat = RGB32I;
+                    format = RGBA;
+                    break;
+                case ColorFormat.fRGB16:
+                    internalFormat = RGB16I;
+                    format = RGBA;
+                    break;
+                case ColorFormat.Depth:
+                    internalFormat = DEPTH_COMPONENT16;
+                    format = DEPTH_COMPONENT;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
-            }
+            }            
 
             var id = gl.CreateTexture();
 
@@ -2068,79 +2087,91 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         }
 
-        /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
-        /// </summary>
-        /// <param name="texture">The texture as target</param>
-        public void SetRenderTarget(ITextureHandle texture) // TODO: Clear deferredNormalPass
-        {
-            if (texture != null)
-                throw new NotImplementedException("TODO: See if WebGLDotNET supports required operations.");
-
-            /*
-            var textureImp = (TextureHandle)texture;
-
-            // If texture is null bind frambuffer 0, this is the main screen
-            if (textureImp == null)
-            {
-                // gl.CullFace(CullFaceMode.Back);
-                // Enable writes to the color buffer
-                gl.BindFramebuffer(FRAMEBUFFER, null);
-
-            }
-            // FBO Handle is set -> ShadowMap
-            else if (textureImp.FboHandle != null)
-            {
-                // To prevent Peter Panning
-                // gl.CullFace(CullFaceMode.Front); //TODO: Move this to SceneRender
-
-                // Bind buffer - now we are rendering to this buffer!
-                gl.BindFramebuffer(DRAW_FRAMEBUFFER, textureImp.FboHandle);
-
-                // Clear 
-                Clear(ClearFlags.Depth);
-            }
-            // GBufferHandle is set -> Bind GBuffer
-            else if (textureImp.GBufferHandle != -1)
-            {
-                // Bind buffer - now we are rendering to this buffer!
-                // Framebuffer or DrawFrameBuffer as Target?
-                gl.BindFramebuffer(FRAMEBUFFER, textureImp.GBufferHandle);
-
-                // Clear Depth & Color for GBuffer!
-                Clear(ClearFlags.Depth | ClearFlags.Color);
-            }
-            // RenderToTexture Handle is set -> OffScreen FrameBuffer with Color and Depth attachment
-            else if (textureImp.RenderToTextureBufferHandle != -1)
-            {
-                if (!textureImp.Toggle)
-                {
-                    gl.BindFramebuffer(FRAMEBUFFER, textureImp.RenderToTextureBufferHandle);
-                    gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment0, TEXTURE_2DMultisample, textureImp.Handle, 0);
-                    gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-                    gl.Enable(DEPTH_TEST);
-                    gl.Enable(EnableCap.Multisample);
-                    textureImp.Toggle = true;
-                }
-                else
-                {
-                    gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.RenderToTextureBufferHandle);
-                    gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, textureImp.IntermediateToTextureBufferHandle);
-                    gl.BlitFramebuffer(0, 0, textureImp.TextureWidth, textureImp.TextureHeight, 0, 0,
-                        textureImp.TextureWidth, textureImp.TextureHeight, ClearBufferMask.ColorBufferBit,
-                        BlitFramebufferFilter.Nearest);
-                    //glBlitFramebuffer(0, 0, SCR_WIDTH, SCR_HEIGHT, 0, 0, SCR_WIDTH, SCR_HEIGHT, GL_COLOR_BUFFER_BIT, GL_NEAREST);
-                    gl.BindFramebuffer(FRAMEBUFFER, 0);
-                    textureImp.Toggle = false;
-                }
-
-            }
-            */
-        }
+       
 
         public void SetRenderTarget(IRenderTarget renderTarget)
         {
-            throw new NotImplementedException("Render to Framebuffer is not yet implemented in web context");
+            if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
+            {
+                gl2.BindFramebuffer(FRAMEBUFFER, null);
+                return;
+            }
+
+            WebGLFramebuffer gBuffer;            
+
+            if (renderTarget.GBufferHandle == null)
+            {
+                renderTarget.GBufferHandle = new FrameBufferHandle();
+                gBuffer = CreateFrameBuffer(renderTarget);
+                ((FrameBufferHandle)renderTarget.GBufferHandle).FrameBuffer = gBuffer;
+            }
+            else
+            {
+                gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).FrameBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
+            }
+
+            WebGLRenderbuffer gDepthRenderbuffer;
+            if (renderTarget.DepthBufferHandle == null)
+            {
+                renderTarget.DepthBufferHandle = new RenderBufferHandle();
+                // Create and attach depth buffer (renderbuffer)
+                gDepthRenderbuffer = CreateDepthRenderBuffer(renderTarget);
+                ((RenderBufferHandle)renderTarget.DepthBufferHandle).RenderBuffer = gDepthRenderbuffer;
+            }
+            else
+            {
+                gDepthRenderbuffer = ((RenderBufferHandle)renderTarget.DepthBufferHandle).RenderBuffer;
+                gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
+            }
+
+            Clear(ClearFlags.Color);
+            Clear(ClearFlags.Depth);            
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+            {
+                throw new Exception($"Error creating RenderTarget: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
+            }
+        }
+
+        private WebGLRenderbuffer CreateDepthRenderBuffer(IRenderTarget renderTarget)
+        {
+            gl2.Enable(DEPTH_TEST);
+
+            var gDepthRenderbuffer = gl2.CreateRenderbuffer();            
+            gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
+            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
+            gl2.FramebufferRenderbuffer(FRAMEBUFFER, DEPTH_ATTACHMENT, RENDERBUFFER, gDepthRenderbuffer);
+            return gDepthRenderbuffer;
+        }
+
+
+        private WebGLFramebuffer CreateFrameBuffer(IRenderTarget renderTarget)
+        {
+            var gBuffer = gl2.CreateFramebuffer();
+            gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
+
+            var attachements = new List<uint>();
+
+            for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+            {
+                var tex = renderTarget.RenderTextures[i];
+                if (tex == null) continue;
+
+                if (tex.TextureHandle == null)
+                {
+                    var iTexHandle = CreateTexture(tex);
+                    tex.TextureHandle = new TextureHandle();
+                    ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                }
+
+                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)i, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                attachements.Add(COLOR_ATTACHMENT0 + (uint)i);
+            }
+
+            gl2.DrawBuffers(attachements.ToArray());
+
+            return gBuffer;
         }
 
 

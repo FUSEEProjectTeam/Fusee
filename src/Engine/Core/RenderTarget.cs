@@ -19,12 +19,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Handle of the corresponding G-Buffer. Used to dispose the object if it isn't needed anymore.
         /// </summary>
-        public int GBufferHandle { get; set; } = -1; //TODO: Dispose framebuffer obj if it isn't needed anymore        
+        public IBufferHandle GBufferHandle { get; set; } //TODO: Dispose framebuffer obj if it isn't needed anymore        
 
         /// <summary>
         /// Handle of the corresponding Depth Buffer (as renderbuffer). Used to dispose the object if it isn't needed anymore.
         /// </summary>
-        public int DepthBufferHandle { get; set; } = -1; //TODO: Dispose framebuffer obj if it isn't needed anymore
+        public IBufferHandle DepthBufferHandle { get; set; } //TODO: Dispose framebuffer obj if it isn't needed anymore
 
         /// <summary>
         /// Sets the resolution of the render textures.
