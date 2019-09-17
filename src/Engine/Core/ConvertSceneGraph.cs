@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
         {
             // check if the scene contains at least on light
             _lightComponents = sc.Children.Viserate<LightViserator, LightResult>().ToList();
-            _numberOfLights = _lightComponents.Count == 0 ? 1 : _lightComponents.Count();
+            _numberOfLights = _lightComponents.Count == 0 ? 1 : _lightComponents.Count(); //Needed because the ShaderEffect is built here (when visiting a MaterialComponent).
 
             //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
             var projectionComponents = sc.Children.Viserate<ProjectionViserator, ProjectionComponent>().ToList();
@@ -222,8 +222,7 @@ namespace Fusee.Engine.Core
         {
             // check if we have bones
             if (_boneContainers.Count >= 1)
-            {
-                
+            {                
                 if(weight.Joints == null) // initialize joint container
                     weight.Joints = new List<SceneNodeContainer>();
 

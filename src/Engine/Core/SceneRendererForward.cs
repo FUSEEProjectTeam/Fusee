@@ -34,8 +34,7 @@ namespace Fusee.Engine.Core
                 _lightComponents = value;
 
                 if(_numberOfLights != _lightComponents.Count)
-                {
-                    
+                {                    
                     _hasNumberOfLightsChanged = true;
                     _numberOfLights = _lightComponents.Count;
                 } 
@@ -109,8 +108,6 @@ namespace Fusee.Engine.Core
                 Rotation = float4x4.Identity,
                 WorldSpacePos = float3.Zero
             });
-            
-            
         }
 
         /// <summary>
@@ -622,8 +619,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = _defaultEffect;
-            
+            _state.Effect = _defaultEffect;            
         }
 
         /// <summary>
@@ -650,8 +646,7 @@ namespace Fusee.Engine.Core
             for (var i = 0; i < _lightComponents.Count; i++)
             {                
                 UpdateShaderParamForLight(i, _lightComponents[i]);                
-            }
-            
+            }            
         }
 
         private void UpdateShaderParamForLight(int position, LightResult lightRes)

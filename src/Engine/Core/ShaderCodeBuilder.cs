@@ -553,7 +553,6 @@ namespace Fusee.Engine.Core
             AddApplyLightMethod(mc);
             AddPixelBody();
 
-
             AddTabsToMethods(ref _pixelShader);
 
             //Diagnostics.Log(string.Join("\n", _pixelShader));
@@ -2080,7 +2079,7 @@ namespace Fusee.Engine.Core
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="texName">Name of the texture you want to use.</param>
-        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the thexture are mixed.</param>
+        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
         public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
@@ -2130,7 +2129,7 @@ namespace Fusee.Engine.Core
                 scb = new ShaderCodeBuilder(mc, null, numberOfLights, wc); // TODO, CurrentNode.GetWeights() != null); 
             }
 
-            var effectParameters = AssembleEffectParamers(mc);
+            var effectParameters = AssembleEffectParamers(mc, numberOfLights);
 
             if (scb == null) throw new Exception("Material could not be evaluated or be built!");
             var ret = new ShaderEffect(new[]
@@ -2155,7 +2154,7 @@ namespace Fusee.Engine.Core
             return ret;
         }
         
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, int numberOfLights)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -2249,46 +2248,49 @@ namespace Fusee.Engine.Core
                 });
             }
 
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].position",
-                Value = new float3(0, 0, -1.0f)
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].intensities",
-                Value = float4.Zero
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].maxDistance",
-                Value = 0.0f
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].strength",
-                Value = 0.0f
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].outerConeAngle",
-                Value = 0.0f
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].innerConeAngle",
-                Value = 0.0f
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].direction",
-                Value = float3.Zero
-            });
-            effectParameters.Add(new EffectParameterDeclaration
-            {
-                Name = "allLights[" + 0 + "].lightType",
-                Value = 1
-            });
+            for (int i = 0; i < numberOfLights; i++)
+            {            
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].position",
+                    Value = new float3(0, 0, -1.0f)
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].intensities",
+                    Value = float4.Zero
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].maxDistance",
+                    Value = 0.0f
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].strength",
+                    Value = 0.0f
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].outerConeAngle",
+                    Value = 0.0f
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].innerConeAngle",
+                    Value = 0.0f
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].direction",
+                    Value = float3.Zero
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].lightType",
+                    Value = 1
+                });
+            }
 
             // FUSEE_ PARAMS
             // TODO: Just add the necessary ones!
