@@ -12,11 +12,13 @@ command, which generates the .proto-files from the C# protobuf-net declarations.
 
 ## Python
 
-Protobuf python code usually installed with "pip install protobuf". The code ist held here to be able to copy it to the neutered Python installation
+Protobuf python code usually installed with `pip install protobuf`. The code is copied here to be able to copy it to the neutered Python installation
 shipped with Blender (which lacks a lot including "pip"...). This code will be held directly with the FUSEE Blender Add-On, which might be
 installed without internet connection on a machine without Administrator privileges.
 
-Additionally, this directory holds the "six.py" file also lacking in Blender Python, referenced by protobuf's "descriptor.py".
+To find the destination directory of the files installed with `pip install protobuf`, use the `pip show protobuf` command. Make sure the version matches the version of the Protobuf compiler (here: protoc-3.9.1).
+
+Additionally, this directory holds the [six.py](https://github.com/benjaminp/six/blob/master/six.py) file also lacking in Blender Python, referenced by protobuf's "descriptor.py".
 
 -----------------------------------
 

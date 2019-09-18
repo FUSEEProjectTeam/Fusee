@@ -5,7 +5,6 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using Assimp;
 using CommandLine;
 using Fusee.Serialization;
 using Fusee.Engine.Core;
@@ -13,7 +12,6 @@ using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
 using System.Security;
-using System.Windows.Forms;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -32,35 +30,8 @@ namespace Fusee.Tools.fuseeCmdLine
 
     class Program
     {
-        static AssimpContext Assimp => _assimpCtx ?? (_assimpCtx = new AssimpContext());
-        private static AssimpContext _assimpCtx;
         private static FuseeHttpServer _httpServer;
         private static Thread _httpThread;
-
-        [Verb("scene", HelpText = "Convert 3D scene input into .fus.")]
-        public class SceneOptions
-        {
-            [Value(0,
-                HelpText =
-                    "Input scene file in a recognized format. Use the 'inputsceneformats' command to retrieve a list of supported formats.",
-                MetaName = "Input", Required = true)]
-            public string Input { get; set; }
-
-            [Option('o', "output",
-                HelpText = "Path of .fus file to be written. \".fus\" extension will be added if not present.")]
-            public string Output { get; set; }
-
-            [Option('f', "format",
-                HelpText =
-                    "Input file format overriding the file extension (if any). For example 'obj' for a Wavefront .obj file."
-            )]
-            public string Format { get; set; }
-        }
-
-        [Verb("inputsceneformats", HelpText = "List the supported input scene formats.")]
-        public class InputSceneFormats
-        {
-        }
 
         [Verb("protoschema", HelpText = "Output the protobuf schema for the .fus file format.")]
         public class ProtoSchema
@@ -155,22 +126,6 @@ namespace Fusee.Tools.fuseeCmdLine
             public string List { get; set; }
         }
 
-        [Verb("generate", HelpText = "Generate necessary web export files (Config file, Manifest file, HTML page). Deprecated. Currently used in the FUSEE build process (FuseeBuildActions.target.xml). To be replaced by the publish verb.")]
-        public class Generate
-        {
-            [Value(0, HelpText = "Target Directory", MetaName = "TargetDir", Required = true)]
-            public string TargDir { get; set; }
-
-            [Value(1, HelpText = "Target Web", MetaName = "TargetWeb", Required = true)]
-            public string TargWeb { get; set; }
-
-            [Value(2, HelpText = "Target Application Path", MetaName = "TargetApp", Required = true)]
-            public string TargAppPath { get; set; }
-
-            [Value(3, HelpText = "External (Script) Files", MetaName = "ExternalFiles", Required = true)]
-            public string ExternalFiles { get; set; }
-        }
-
         // "Globals"
         static string fuseeCmdLineRoot = null;
         static string fuseeRoot = null;
@@ -208,88 +163,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, SceneOptions, InputSceneFormats, WebViewer, Generate>(args)
-
-                // Called with the SCENE verb
-                .WithParsed<SceneOptions>(opts =>
-                {
-                    Stream input = null, output = null;
-
-                    // Check and open input file
-                    string inputFormat = Path.GetExtension(opts.Input).ToLower();
-                    if (String.IsNullOrEmpty(inputFormat))
-                    {
-                        if (String.IsNullOrEmpty(opts.Format))
-                        {
-                            Console.Error.WriteLine($"ERROR: No input format specified.");
-                            Environment.Exit((int)ErrorCode.InputFormat);
-                        }
-                        inputFormat = opts.Format.ToLower();
-                        if (inputFormat[0] != '.')
-                            inputFormat = inputFormat.Insert(0, ".");
-                    }
-                    if (!Assimp.IsImportFormatSupported(inputFormat))
-                    {
-                        Console.Error.WriteLine($"ERROR: Unsupported input format {inputFormat}.");
-                        Environment.Exit((int)ErrorCode.InputFormat);
-                    }
-                    try
-                    {
-                        input = File.Open(opts.Input, FileMode.Open);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"ERROR opening input file '{opts.Input}':");
-                        Console.Error.WriteLine(ex);
-                        Environment.Exit((int)ErrorCode.InputFile);
-                    }
-
-                    // Check and open output file
-                    if (String.IsNullOrEmpty(opts.Output))
-                    {
-                        string inp = Path.GetFullPath(opts.Input);
-                        opts.Output = Path.Combine(
-                            Path.GetPathRoot(inp),
-                            Path.GetDirectoryName(inp),
-                            Path.GetFileNameWithoutExtension(inp) + ".fus");
-                    }
-                    if (Path.GetExtension(opts.Output).ToLower() != ".fus")
-                    {
-                        opts.Output += ".fus";
-                    }
-                    try
-                    {
-                        output = File.Open(opts.Output, FileMode.Create);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"ERROR creating output file '{opts.Output}':");
-                        Console.Error.WriteLine(ex);
-                        Environment.Exit((int)ErrorCode.OutputFile);
-                    }
-
-                    Console.WriteLine($"Converting from {opts.Input} to {Path.GetFileName(opts.Output)}");
-                    var assimpScene = Assimp.ImportFileFromStream(input,
-                        PostProcessSteps.Triangulate | PostProcessSteps.GenerateSmoothNormals |
-                        PostProcessSteps.JoinIdenticalVertices, inputFormat);
-
-                    SceneContainer fuseeScene = Assimp2Fusee.FuseefyScene(assimpScene);
-
-                    ProtoBuf.Serializer.Serialize(output, fuseeScene);
-                    output.Flush();
-                    output.Close();
-                })
-
-                // Called with the INPUTSCENEFORMATS verb
-                .WithParsed<InputSceneFormats>(opts =>
-                {
-                    Console.WriteLine("Supported input formats for scene files:");
-                    foreach (var inFormat in Assimp.GetSupportedImportFormats())
-                    {
-                        Console.Write(inFormat + "; ");
-                    }
-                    Console.WriteLine();
-                })
+            var result = Parser.Default.ParseArguments<Publish, Server, Install, ProtoSchema, WebViewer>(args)
 
                 // Called with the PROTOSCHEMA verb
                 .WithParsed<ProtoSchema>(opts =>
@@ -1131,291 +1005,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     Environment.Exit((int) exitCode);
                 })
 
-                // Called with the GENERATE verb (fuGen legacy code)
-                .WithParsed<Generate>(opts =>
-                {
-                    var targDir = opts.TargDir;
-                    var targWeb = opts.TargWeb;
-                    var targApp = opts.TargAppPath;
-                    var externalFiles = opts.ExternalFiles.Split(';');
 
-                    string fileName = Path.GetFileNameWithoutExtension(targApp);
-
-                    // Create directories
-                    if (!Directory.Exists(Path.Combine(targWeb, "Assets")))
-                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets"));
-
-                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Scripts")))
-                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Scripts"));
-
-                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Styles")))
-                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Styles"));
-
-                    if (!Directory.Exists(Path.Combine(targWeb, "Assets", "Config")))
-                        Directory.CreateDirectory(Path.Combine(targWeb, "Assets", "Config"));
-                    
-                    // Does HTML already exists?
-                    var newHTML = !File.Exists(targWeb + fileName + ".html");
-
-                    Console.Error.WriteLine(newHTML
-                        ? "No HTML file found - generating a simple HTML file"
-                        : "HTML file already exists - delete it to create a new one");
-
-                    // Collecting all files
-                    var customManifest = Directory.Exists(Path.Combine(targDir, "Assets"));
-                    var customCSS = "";
-
-                    Console.Error.WriteLine(customManifest
-                        ? "Found an Assets folder - collecting all and write manifest"
-                        : "No Assets folder - no additional files will be added");
-
-                    List<string> filePaths;
-
-                    if (customManifest)
-                    {
-                        filePaths = Directory.GetFiles(Path.Combine(targDir, "Assets"), "*.*", SearchOption.AllDirectories).ToList();
-                        filePaths.Sort(string.Compare);
-                    }
-                    else
-                        filePaths = new List<string>();
-
-                    // Load custom implementations first
-                    var fileCount = 0;
-
-                    /*
-                    var externalFiles = new[]
-                    {
-                        "Fusee.Engine.Imp.WebAudio", "Fusee.Engine.Imp.WebNet", "Fusee.Engine.Imp.WebGL",
-                        "Fusee.Engine.Imp.WebInput", "XirkitScript", "WebSimpleScene"
-                    };
-                    */
-
-                    foreach (var extFile in externalFiles)
-                    {
-                        var exists = File.Exists(Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
-
-                        if (exists)
-                        {
-                            filePaths.Insert(fileCount, Path.Combine(targWeb, "Assets", "Scripts", extFile + ".js"));
-                            fileCount++;
-                        }
-                        else
-                        {
-                            Console.Error.WriteLine("ERROR Couldn't find " + extFile + ".js");
-                            Environment.Exit((int)ErrorCode.InputFile);
-                        }
-                    }
-
-                    List<string> destRelativePaths = new List<string>(filePaths.Count);
-                    for (int inx = 0; inx < filePaths.Count; inx++)
-                        destRelativePaths.Add("");
-
-                    if (customManifest)
-                    {
-                        // Copy to output folder
-                        for (var ct = filePaths.Count - 1; ct > fileCount - 1; ct--)
-                        {
-                            bool remove = false;
-                            string pathExt = "";
-                            string filePath = filePaths.ElementAt(ct);
-
-                            // style or config
-                            if (Path.GetExtension(filePath) == ".css")
-                            {
-                                customCSS = Path.GetFileName(filePath);
-                                pathExt = "Styles";
-                                remove = true;
-                            }
-
-                            if (Path.GetFileName(filePath) == "fusee_config.xml")
-                            {
-                                pathExt = "Config";
-                                remove = true;
-                            }
-
-                            var srcAssetFolder = FileTools.PathAddTrailingSeperator(Path.Combine(targDir, "Assets"));
-                            var srcAssetDirPath = FileTools.PathAddTrailingSeperator(Path.GetDirectoryName(filePath));
-
-                            var srcRelativeToAssetsDir = FileTools.MakeRelativePath(srcAssetFolder, srcAssetDirPath);
-                            pathExt = srcRelativeToAssetsDir;
-                            // DebugMode("MakeRelativePath(" + srcAssetFolder + ", " + srcAssetDirPath + "); yields: " + srcRelativeToAssetsDir);
-
-                            // Copy files to output if they don't exist yet
-                            var tmpFileName = Path.GetFileName(filePath);
-                            var dstFilePath = Path.Combine(targWeb, "Assets", pathExt, tmpFileName);
-
-                            if (tmpFileName != null && !File.Exists(dstFilePath))
-                            {
-                                Directory.CreateDirectory(Path.GetDirectoryName(dstFilePath));
-                                File.Copy(filePath, dstFilePath);
-                            }
-
-                            destRelativePaths[ct] = pathExt;
-
-                            if (remove)
-                            {
-                                filePaths.RemoveAt(ct);
-                                destRelativePaths.RemoveAt(ct);
-                            }
-                        }
-                    }
-
-                    // Create manifest
-                    var fileNamesList = new List<string>();
-                    var fileSizeList = new List<long>();
-                    var fileTypesList = new List<string>();
-                    var fileFormatsList = new List<string>();
-
-                    AssetManifest.GenerateAssetManifestEntryItems(filePaths, destRelativePaths, fileCount, fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
-                    var manifest = new ManifestFile("Fusee.Engine.Player.Web", fileNamesList, fileSizeList, fileTypesList, fileFormatsList);
-                    string manifestContent = manifest.TransformText();
-
-                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Scripts", fileName + ".contentproj.manifest.js"),
-                        manifestContent);
-
-                    // Create HTML file
-                    if (newHTML)
-                    {
-                        Console.WriteLine(customCSS == ""
-                            ? "No additional .css file found in Assets folder - using only default one"
-                            : "Found an additional .css file in Assets folder - adding to HTML file");
-
-                        var page = new WebPage(targApp, customCSS);
-                        string pageContent = page.TransformText();
-
-                        File.WriteAllText(Path.Combine(targWeb, fileName + ".html"), pageContent);
-                    }
-
-                    // Create config file
-                    var customConf = File.Exists(Path.Combine(targDir, "Assets", "fusee_config.xml"));
-
-                    Console.WriteLine(!customConf
-                        ? "No custom config file ('fusee_config.xml') found in Assets folder - using default settings"
-                        : "Found an custom config file in Assets folder - applying settings to webbuild");
-
-                    var conf = new JsilConfig(targApp, targDir, customConf);
-                    string confContent = conf.TransformText();
-
-                    File.WriteAllText(Path.Combine(targWeb, "Assets", "Config", "jsil_config.js"), confContent);
-
-                    // Done
-                    Console.Error.WriteLine($"SUCCESS: Generated Web Build at {targWeb}.");
-                    Environment.Exit(0);
-                })
-
-                // Called with the WEB verb (fuConv legacy code called from the Blender Add-on)
-                .WithParsed<WebViewer>(opts =>
-                {
-                    List<string> textureFiles = new List<string>();
-                    try
-                    {
-                        // Get list of paths to texturefiles
-                        string fileList = opts.List;
-                        Console.WriteLine($"FILELIST: {opts.List}");
-                        textureFiles = fileList.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).ToList();
-                        Console.WriteLine($"FILES: {textureFiles}");
-                    }
-                    catch (Exception /* ex */)
-                    {
-                        Console.WriteLine($"No texture filepaths set");
-                    }
-
-                    string htmlFileDir = opts.Output;
-
-                    InitFuseeDirectories();
-                    string fuseePlayerDir = Path.Combine(fuseeBuildRoot, "Player", "Web");
-
-                    Stream input = null;
-                    string sceneFileDir = Path.Combine(htmlFileDir, "Assets");
-                    if (File.Exists(sceneFileDir))
-                    {
-                        File.Delete(sceneFileDir);
-                    }
-                    string sceneFilePath = Path.Combine(sceneFileDir, "Model.fus");
-                    // string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.SceneViewer.Web.html");
-                    string origHtmlFilePath = Path.Combine(htmlFileDir, "Fusee.Engine.Player.Web.html");
-                    if (File.Exists(origHtmlFilePath))
-                        File.Delete(origHtmlFilePath);
-                    string targetHtmlFilePath =
-                        Path.Combine(htmlFileDir, Path.GetFileNameWithoutExtension(opts.Input) + ".html");
-                    if (File.Exists(targetHtmlFilePath))
-                        File.Delete(targetHtmlFilePath);
-
-                    //Copy
-                    FileTools.DirectoryCopy(fuseePlayerDir, htmlFileDir, true, true);
-                    File.Move(origHtmlFilePath, targetHtmlFilePath);
-
-                    // Rename 
-
-                    // Check and open input file
-                    string inputFormat = Path.GetExtension(opts.Input).ToLower();
-                    if (!String.Equals(inputFormat, ".fus"))
-                    {
-                        Console.Error.WriteLine($"Input ('{opts.Input}') is not a .fus file.");
-                        Environment.Exit((int)ErrorCode.InputFile);
-                    }
-
-                    try
-                    {
-                        input = File.Open(opts.Input, FileMode.Open);
-                        input.Close();
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"ERROR opening input file '{opts.Input}':");
-                        Console.Error.WriteLine(ex);
-                        Environment.Exit((int)ErrorCode.InputFile);
-                    }
-
-                    // Check and open output file
-                    if (String.IsNullOrEmpty(opts.Output))
-                    {
-                        Console.Error.WriteLine("No outputpath specified");
-                        Environment.Exit((int)ErrorCode.OutputFile);
-                    }
-                    try
-                    {
-                        if (File.Exists(sceneFilePath))
-                            File.Delete(sceneFilePath);
-                        File.Move(opts.Input, sceneFilePath);
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.Error.WriteLine($"ERROR creating output file '{sceneFilePath}':");
-                        Console.Error.WriteLine(ex);
-                        Environment.Exit((int)ErrorCode.OutputFile);
-                    }
-
-                    //Manifest File + Textures
-                    Console.WriteLine($"Moving File from {opts.Input} to {sceneFilePath}");
-                    for (int i = 0; i < textureFiles.Count; i++)
-                    {
-                        string textureFile = Path.GetFileName(textureFiles[i]);
-                        string texturePath = Path.Combine(sceneFileDir, textureFile);
-                        if (!File.Exists(texturePath))
-                        {
-                            File.Move(textureFiles[i], texturePath);
-                        }
-                        textureFiles[i] = Path.Combine("Assets", textureFile);
-                        Console.WriteLine($"TEXTUREFILES {textureFiles[i]}");
-                    }
-                    if (textureFiles != null)
-                        AssetManifest.CreateAssetManifest(htmlFileDir, textureFiles);
-
-                    //WebServer
-                    if (_httpServer == null)
-                    {
-                        _httpServer = new FuseeHttpServer(htmlFileDir, 4655); // HEX: FU
-                        Thread thread = new Thread(_httpServer.listen);
-                        thread.Start();
-                    }
-                    else
-                    {
-                        _httpServer.HtDocsRoot = htmlFileDir;
-                    }
-                    Console.WriteLine($"Server running");
-                    Process.Start("http://localhost:4655/" + Path.GetFileName(targetHtmlFilePath));
-                })
 
                 // ERROR on the command line
                 .WithNotParsed(errs =>
@@ -1450,6 +1040,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
             }
 
+            /* Removed - no FolderBrowserDialog in DotNet Core. Plus, opening a user dialog makes fusee.exe batch-incompatible
             // No Blender Installations found! Let the user pick Blender Path with file dialog!
             if (!blenderDirs.Any())
             {
@@ -1461,6 +1052,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     blenderDirs.Add(fbd.SelectedPath);
                 } // ERROR message will be shown @909 if no blender addon could be installed... 
             }
+            */
 
             // Find addon sub-subdirectories
             List<string> addonDirs = new List<string>();
