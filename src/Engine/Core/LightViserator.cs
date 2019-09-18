@@ -76,8 +76,7 @@ namespace Fusee.Engine.Core
     }
 
     internal class LightViserator : Viserator<LightResult, LightViseratorState>
-    {
-        public Dictionary<Suid, LightComponent> FoundLightResults = new Dictionary<Suid, LightComponent>();
+    {        
 
         protected override void InitState()
         {

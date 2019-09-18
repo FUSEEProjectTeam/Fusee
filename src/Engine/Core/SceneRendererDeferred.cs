@@ -35,6 +35,9 @@ namespace Fusee.Engine.Core
         private ShaderEffect _blurEffect;
         private ShaderEffect _fxaaEffect;
 
+        /// <summary>
+        /// Sets the GL.ClearColor
+        /// </summary>
         public float4 BackgroundColor;
         private bool _isBackgroundColorSet = false;
 
@@ -112,8 +115,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>        
         public void Render(RenderContext rc)
-        {           
-
+        {
             AccumulateLight();
             SetContext(rc);
             

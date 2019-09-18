@@ -46,6 +46,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private float4 _backgroundColorDay;
         private float4 _backgroundColorNight;
 
+        private LightComponent _sun;
+
         // Init is called on startup. 
         public override void Init()
         {
@@ -72,7 +74,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             AddResizeDelegate(_resizeDel);
 
             //Add lights to the scene
-            var sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 0.8f };
+            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f };
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true };
             var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, OuterConeAngle = 25, InnerConeAngle = 5 };
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true };
@@ -86,7 +88,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Components = new List<SceneComponentContainer>()
                 {
                     _sunTransform,
-                    sun,
+                    _sun,
                 }
 
                 },
@@ -171,11 +173,17 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var lerp = deg / 360;
 
             if (deg <= 180)
+            {
                 _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
+                _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
+                Diagnostics.Log(lerp / 0.5f);
+            }
             else
-                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f)/(1-0.5f));
-
-            Diagnostics.Log(lerp);
+            {
+                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
+                _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
+                Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
+            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)

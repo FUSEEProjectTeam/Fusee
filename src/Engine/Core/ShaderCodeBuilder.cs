@@ -861,7 +861,7 @@ namespace Fusee.Engine.Core
                     GLSL.CreateVar(Type.Vec3, "position"), GLSL.CreateVar(Type.Vec4, "intensities"),
                     GLSL.CreateVar(Type.Vec3, "direction"), GLSL.CreateVar(Type.Float, "maxDistance"),
                     GLSL.CreateVar(Type.Float, "strength"), GLSL.CreateVar(Type.Float, "outerConeAngle"),
-                    GLSL.CreateVar(Type.Float, "innerConeAngle"), GLSL.CreateVar(Type.Int, "lightType")
+                    GLSL.CreateVar(Type.Float, "innerConeAngle"), GLSL.CreateVar(Type.Int, "lightType"),
                 }, methodBody));
         }
         
@@ -938,6 +938,7 @@ namespace Fusee.Engine.Core
                 "vec4 result = ambientLighting(0.2);", //ambient component
                 "for(int i = 0; i < MAX_LIGHTS;i++)",
                 "{",
+                "if(allLights[i].isActive == 0) continue;",
                 "vec3 currentPosition = allLights[i].position;",
                 "vec4 currentIntensities = allLights[i].intensities;",
                 "vec3 currentConeDirection = allLights[i].direction;",
@@ -981,6 +982,7 @@ namespace Fusee.Engine.Core
                 float outerConeAngle;
                 float innerConeAngle;
                 int lightType;
+                int isActive;
             };
             uniform Light allLights[MAX_LIGHTS];
             ";
@@ -1781,13 +1783,14 @@ namespace Fusee.Engine.Core
             //-------------------------
             frag.Append(@"
             // then calculate lighting as usual
-            vec3 lighting = vec3(0.3 * DiffuseColor * Occlusion); // 0.3 = ssao strength
+            vec3 lighting = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength
 
             vec3 camPos = FUSEE_IV[3].xyz;
             vec3 viewDir = normalize(- FragPos);
 
             for(int i = 0; i < MAX_LIGHTS; ++i)
             {
+                if(allLights[i].isActive == 0) continue;
                 vec3 lightColor = allLights[i].intensities.xyz;
                 vec3 lightPosition = allLights[i].position;
                 vec3 lightDir = normalize(lightPosition - FragPos);                
@@ -1882,6 +1885,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].innerConeAngle", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].direction", Value = float3.Zero},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].isActive", Value = 1},
             });
         }
 
@@ -1958,13 +1962,14 @@ namespace Fusee.Engine.Core
             //-------------------------
             frag.Append(@"
             // then calculate lighting as usual
-            vec3 lighting = vec3(0.3 * DiffuseColor * Occlusion); // 0.3 = ssao strength
+            vec3 lighting = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength
 
             vec3 camPos = FUSEE_IV[3].xyz;
             vec3 viewDir = normalize(-FragPos);
 
             for(int i = 0; i < MAX_LIGHTS; ++i)
             {
+                if(allLights[i].isActive == 0) continue;
                 vec3 lightColor = allLights[i].intensities.xyz;
                 vec3 lightPosition = allLights[i].position;
                 vec3 lightDir = normalize(lightPosition - FragPos);                
@@ -2058,6 +2063,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].innerConeAngle", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].direction", Value = float3.Zero},
                 new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].isActive", Value = 1},
             });
         }
 
@@ -2307,6 +2313,11 @@ namespace Fusee.Engine.Core
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].lightType",
+                    Value = 1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].isActive",
                     Value = 1
                 });
             }

@@ -118,9 +118,8 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            AccumulateLight(); 
-           
-            // _scenePathDirectory = scenePathDirectory;
+            AccumulateLight();         
+            
             _state = new RendererState();
             InitAnimations(_sc);
         }
@@ -650,9 +649,7 @@ namespace Fusee.Engine.Core
         }
 
         private void UpdateShaderParamForLight(int position, LightResult lightRes)
-        {
-            if (!lightRes.Light.Active) return;
-
+        { 
             var light = lightRes.Light;
 
             var dirWorldSpace = float3.Normalize((lightRes.Rotation * -float4.UnitY).xyz);
@@ -675,6 +672,7 @@ namespace Fusee.Engine.Core
             _rc.SetFXParam($"allLights[{position}].direction", dirViewSpace);
             _rc.SetFXParam($"allLights[{position}].directionWorldSpace", dirWorldSpace);
             _rc.SetFXParam($"allLights[{position}].lightType", (int)light.Type);
+            _rc.SetFXParam($"allLights[{position}].isActive", light.Active? 1 : 0);
         }
 
         #region RenderContext/Asset Setup
