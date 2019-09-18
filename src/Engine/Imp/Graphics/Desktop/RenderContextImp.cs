@@ -272,6 +272,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteFrameBuffer(IBufferHandle bh)
+        {
+            GL.DeleteFramebuffer(((FrameBufferHandle)bh).Handle);
+        }
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteRenderBuffer(IBufferHandle bh)
+        {
+            GL.DeleteFramebuffer(((RenderBufferHandle)bh).Handle);
+        }
+
+        /// <summary>
         /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
         /// </summary>
         /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>

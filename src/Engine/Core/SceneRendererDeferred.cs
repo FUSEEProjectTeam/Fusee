@@ -2,6 +2,7 @@
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
@@ -39,7 +40,7 @@ namespace Fusee.Engine.Core
         /// Sets the GL.ClearColor
         /// </summary>
         public float4 BackgroundColor;
-        private bool _isBackgroundColorSet = false;
+        private bool _isBackgroundColorSet = false;       
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -55,6 +56,11 @@ namespace Fusee.Engine.Core
             _ssaoRenderTarget = new RenderTarget(_texRes);
             _blurRenderTarget = new RenderTarget(_texRes);
             _lightedSceneRenderTarget = new RenderTarget(_texRes);
+
+            _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
+            _ssaoRenderTarget.DeleteBuffers += DeleteBuffers;
+            _blurRenderTarget.DeleteBuffers += DeleteBuffers;
+            _lightedSceneRenderTarget.DeleteBuffers += DeleteBuffers;
 
             //Create ShaderEffect for deferred rendering ...TODO: add support for textures, create shader effect in Scene Converter to avoid another traversal.
             foreach (var child in sc.Children)
@@ -115,7 +121,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>        
         public void Render(RenderContext rc)
-        {
+        {           
+
             AccumulateLight();
             SetContext(rc);
             
@@ -180,7 +187,16 @@ namespace Fusee.Engine.Core
                 _quadShaderEffectComp.Effect = _fxaaEffect;
                 rc.SetRenderTarget();
                 Traverse(_quadScene.Children);
-            }
+            }           
+        }
+
+        private void DeleteBuffers(object sender, EventArgs e)
+        {
+            var rt = (RenderTarget)sender;
+            if (rt.GBufferHandle != null)
+                _rc.DeleteFrameBuffer(rt.GBufferHandle);
+            if (rt.DepthBufferHandle != null)
+                _rc.DeleteRenderBuffer(rt.DepthBufferHandle);
         }
     }
 }

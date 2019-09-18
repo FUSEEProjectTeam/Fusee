@@ -1002,6 +1002,24 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Free all allocated gpu memory that belongs to a framebuffer object.
+        /// </summary>
+        /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteFrameBuffer(IBufferHandle bufferHandle)
+        {
+            _rci.DeleteFrameBuffer(bufferHandle);
+        }
+
+        /// <summary>
+        /// Free all allocated gpu memory that belongs to a renderbuffer object.
+        /// </summary>
+        /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteRenderBuffer(IBufferHandle bufferHandle)
+        {
+            _rci.DeleteRenderBuffer(bufferHandle);
+        }
+
+        /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>

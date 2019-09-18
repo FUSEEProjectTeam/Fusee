@@ -11,8 +11,17 @@ namespace Fusee.Engine.Core
     /// Render to a target if you want to render to a texture and use them in an other pass.
     /// Use the "Create__Tex"-Methods to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextures"/> enum.
     /// </summary>
-    public class RenderTarget : IRenderTarget
+    public class RenderTarget : IRenderTarget, IDisposable
     {
+        // Event of mesh Data changes
+        /// <summary>
+        /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
+        /// </summary>
+        public event EventHandler<EventArgs> DeleteBuffers;
+
+        /// Flag: Has Dispose already been called?
+        public bool Disposed { get; private set; } = false;
+
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
 
@@ -97,49 +106,32 @@ namespace Fusee.Engine.Core
             RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
         }
 
-        //public void Dispose()
-        //{
-        //    Dispose(true);
-        //    // This object will be cleaned up by the Dispose method.
-        //    // Therefore, you should call GC.SupressFinalize to
-        //    // take this object off the finalization queue
-        //    // and prevent finalization code for this object
-        //    // from executing a second time.
-        //    GC.SuppressFinalize(this);
-        //}
+        // Public implementation of Dispose pattern callable by consumers.
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-        //// Dispose(bool disposing) executes in two distinct scenarios.
-        //// If disposing equals true, the method has been called directly
-        //// or indirectly by a user's code. Managed and unmanaged resources
-        //// can be disposed.
-        //// If disposing equals false, the method has been called by the
-        //// runtime from inside the finalizer and you should not reference
-        //// other objects. Only unmanaged resources can be disposed.
-        //protected virtual void Dispose(bool disposing)
-        //{
-        //    // Check to see if Dispose has already been called.
-        //    if (!disposed)
-        //    {
-        //        //foreach (var tex in RenderTextures)
-        //        //{
-        //        //    if (tex == null) continue;
-        //        //    ((WritableTexture)tex).Dispose();
-        //        //}
+        // Protected implementation of Dispose pattern.
+        protected virtual void Dispose(bool disposing)
+        {
+            if (Disposed)
+                return;
 
-        //        // Note disposing has been done.
-        //        disposed = true;
+            if (disposing)
+            {
+                //Dispose buffers here
+                DeleteBuffers?.Invoke(this, new EventArgs());
+            }
 
-        //    }
-        //}
+            Disposed = true;
+        }
 
-
-        //~RenderTarget()
-        //{
-        //    // Do not re-create Dispose clean-up code here.
-        //    // Calling Dispose(false) is optimal in terms of
-        //    // readability and maintainability.
-        //    Dispose(false);
-        //}
+        ~RenderTarget()
+        {           
+            Dispose(false);
+        }
 
     }
 }

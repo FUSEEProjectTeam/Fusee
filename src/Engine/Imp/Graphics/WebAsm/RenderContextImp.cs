@@ -262,6 +262,24 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
+        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteFrameBuffer(IBufferHandle bh)
+        {
+            gl2.DeleteFramebuffer(((FrameBufferHandle)bh).FrameBuffer);
+        }
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        public void DeleteRenderBuffer(IBufferHandle bh)
+        {
+            gl2.DeleteRenderbuffer(((RenderBufferHandle)bh).RenderBuffer);
+        }
+
+        /// <summary>
         /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
         /// </summary>
         /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>

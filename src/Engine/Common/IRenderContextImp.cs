@@ -55,6 +55,18 @@ namespace Fusee.Engine.Common
         void RemoveShader(IShaderProgramImp sp);
 
         /// <summary>
+        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        void DeleteFrameBuffer(IBufferHandle bh);
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        void DeleteRenderBuffer(IBufferHandle bh);
+
+        /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>
         /// <param name="shaderProgram">The shader program to query for parameters.</param>
