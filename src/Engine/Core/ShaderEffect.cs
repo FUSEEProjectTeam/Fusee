@@ -186,7 +186,24 @@ namespace Fusee.Engine.Core
                 }
                 return null;
         }
-     
+
+        /// <summary>
+        /// Returns the value of a given shadereffect variable
+        /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>
+        /// </summary>
+        /// <param name="name">Name of the uniform variable</param>
+        /// /// <param name="obj">The value. Return null if no parameter was found.</param>
+        /// <returns></returns>
+        public void GetEffectParam(string name, out object obj)
+        {
+            obj = null;
+            if (ParamDecl.TryGetValue(name, out object pa))
+            {
+                obj = pa;
+            }
+            
+        }
+
         // This property returns the number of elements
         // in the inner dictionary.
         /// <summary>

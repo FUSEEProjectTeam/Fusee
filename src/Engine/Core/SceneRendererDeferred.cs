@@ -35,7 +35,7 @@ namespace Fusee.Engine.Core
         private ShaderEffect _blurEffect;
         private ShaderEffect _fxaaEffect;
 
-        private float4 _backgroundColor;
+        public float4 BackgroundColor;
         private bool _isBackgroundColorSet = false;
 
         /// <summary>
@@ -55,25 +55,32 @@ namespace Fusee.Engine.Core
 
             //Create ShaderEffect for deferred rendering ...TODO: add support for textures, create shader effect in Scene Converter to avoid another traversal.
             foreach (var child in sc.Children)
-            {
-                var renderTargetMat = new ShaderEffectComponent()
-                {
-                    Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget),
-                };
-
+            {  
                 var oldEffectComp = child.GetComponent<ShaderEffectComponent>();
                 if (oldEffectComp == null) continue;
                 var oldEffect = oldEffectComp.Effect;
 
                 var col = (float4)oldEffect.GetEffectParam("DiffuseColor");
                 var specStrength = (float)oldEffect.GetEffectParam("SpecularIntensity");
-
                 col.a = specStrength;
+
+                oldEffect.GetEffectParam("DiffuseTexture", out object tex);
+                oldEffect.GetEffectParam("DiffuseMix", out object mix);
+
+                var renderTargetMat = new ShaderEffectComponent();
+                if (tex != null)
+                {
+                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, (float)mix, (Texture)tex);                   
+                }
+                else
+                {
+                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, 1f);
+                }
 
                 child.RemoveComponent<ShaderEffectComponent>();
 
                 child.Components.Insert(1, renderTargetMat);
-                renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
+                renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);                
             }
 
             _quadScene = new SceneContainer()
@@ -105,13 +112,14 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>        
         public void Render(RenderContext rc)
-        {
+        {           
+
             AccumulateLight();
             SetContext(rc);
-
+            
             if (!_isBackgroundColorSet)
             {
-                _backgroundColor = _rc.ClearColor;
+                BackgroundColor = _rc.ClearColor;
                 _isBackgroundColorSet = true;
             }
 
@@ -142,7 +150,7 @@ namespace Fusee.Engine.Core
             //Pass 4 & 5: FXAA and Lighting
             if (!FxaaOn)
             {
-                _rc.ClearColor = _backgroundColor;
+                _rc.ClearColor = BackgroundColor;
 
                 // ----FXAA OFF----
                 _rc.Viewport(0, 0, _projectionComponent.Width, _projectionComponent.Height);
@@ -154,7 +162,7 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                _rc.ClearColor = _backgroundColor;
+                _rc.ClearColor = BackgroundColor;
 
                 // ---- FXAA ON ----
                 if (_lightingPassEffect == null)

@@ -1573,8 +1573,10 @@ namespace Fusee.Engine.Core
         /// ShaderEffect for rendering into the textures given in a RenderTarget (Geometry Pass).
         /// </summary>
         /// <param name="rt">The RenderTarget</param>
+        /// <param name="diffuseMix">Constant for mixing a single albedo color with a color read from a texture.</param>
+        /// <param name="diffuseTex">The texture, containing diffuse colors.</param>
         /// <returns></returns>
-        public static ShaderEffect GBufferTextureEffect(RenderTarget rt)
+        public static ShaderEffect GBufferTextureEffect(RenderTarget rt, float diffuseMix, Texture diffuseTex = null)
         {
             rt.CreatePositionTex();
             rt.CreateAlbedoSpecularTex();
@@ -1600,10 +1602,12 @@ namespace Fusee.Engine.Core
                 in vec3 fuVertex;
                 in vec3 fuNormal;
                 in vec4 fuColor;
+                in vec2 fuUV;
                 
                 out vec4 vPos;
                 out vec3 vNormal;
-                out vec4 vColor;               
+                out vec4 vColor;    
+                out vec2 vUv;
 
                 ");
 
@@ -1613,6 +1617,7 @@ namespace Fusee.Engine.Core
                     vPos = FUSEE_MV * vec4(fuVertex.xyz, 1.0);
                     vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz;
                     vColor = DiffuseColor;
+                    vUv = fuUV;
 
                     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 
@@ -1637,10 +1642,19 @@ namespace Fusee.Engine.Core
             frag.Append(@"
                 in vec4 vPos;
                 in vec3 vNormal;
-                in vec4 vColor;"
+                in vec4 vColor;
+                in vec2 vUv;"              
             );
 
-            frag.Append("void main() {");
+            if(diffuseTex != null)
+            {
+                frag.Append(@"
+                uniform sampler2D DiffuseTexture;
+                uniform float DiffuseMix;"                    
+                );
+            }
+
+            frag.AppendLine("void main() {");
 
             for (int i = 0; i < textures.Length; i++)
             {
@@ -1650,16 +1664,19 @@ namespace Fusee.Engine.Core
                 switch (i)
                 {
                     case 0: //POSITION
-                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vPos.xyz, vPos.w);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vPos.xyz, vPos.w);");
                         break;
                     case 1: //ALBEDO_SPECULAR
-                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
+                        if(diffuseTex != null)
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(mix(vColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), vColor.a);");
+                        else
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
                         break;
                     case 2: //NORMAL
-                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(normalize(vNormal.xyz), 1.0);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(normalize(vNormal.xyz), 1.0);");
                         break;
                     case 3: //DEPTH
-                        frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
                 }
             }
@@ -1687,6 +1704,8 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration {Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
                 new EffectParameterDeclaration {Name = "DiffuseColor", Value = new float4(1.0f, 0, 1.0f, 1.0f)},
+                new EffectParameterDeclaration {Name = "DiffuseTexture", Value = diffuseTex},
+                new EffectParameterDeclaration {Name = "DiffuseMix", Value = diffuseMix},
             });
 
         }
@@ -1820,7 +1839,7 @@ namespace Fusee.Engine.Core
                 // specular
                 vec3 reflectDir = reflect(-lightDir, Normal);  
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
-                vec3 specular = SpecularStrength * spec *lightColor;
+                vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (specular * attenuation) *  allLights[i].strength;
             }
     

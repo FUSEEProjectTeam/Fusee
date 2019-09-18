@@ -655,7 +655,7 @@ namespace Fusee.Engine.Core
 
             var light = lightRes.Light;
 
-            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
+            var dirWorldSpace = float3.Normalize((lightRes.Rotation * -float4.UnitY).xyz);
             var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
             var strength = light.Strength;
             if (strength > 1.0 || strength < 0.0)
