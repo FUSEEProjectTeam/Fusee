@@ -1,204 +1,34 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>fusee</AssemblyName>
-    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..</FuseeEngineRoot>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <NuGetPackageImportStamp>
-    </NuGetPackageImportStamp>
-    <TargetFrameworkProfile />
+    <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
+
   <ItemGroup>
-    <Reference Include="AssimpNet, Version=3.3.1.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(FuseeEngineRoot)\ext\AssimpNet.3.3.1\lib\net20\AssimpNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
+  </ItemGroup>  
+  
   <ItemGroup>
-    <Compile Include="AssetManifest.cs" />
-    <Compile Include="Assimp2Fusee.cs" />
-    <Compile Include="ConfXMLReader.cs" />
-    <Compile Include="CustomConfig.cs" />
-    <Compile Include="CustomManifest.cs" />
-    <Compile Include="CustomPage.cs" />
-    <Compile Include="FileTools.cs" />
-    <Compile Include="FileTypes.cs" />
-    <Compile Include="JsilConfig.cs">
-      <DependentUpon>JsilConfig.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="ManifestFile.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>ManifestFile.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SimpleHttpServer.cs" />
-    <Compile Include="CommandLine\BaseAttribute.cs" />
-    <Compile Include="CommandLine\Core\ArgumentsExtensions.cs" />
-    <Compile Include="CommandLine\Core\InstanceBuilder.cs" />
-    <Compile Include="CommandLine\Core\InstanceChooser.cs" />
-    <Compile Include="CommandLine\Core\KeyValuePairHelper.cs" />
-    <Compile Include="CommandLine\Core\NameExtensions.cs" />
-    <Compile Include="CommandLine\Core\NameLookup.cs" />
-    <Compile Include="CommandLine\Core\OptionMapper.cs" />
-    <Compile Include="CommandLine\Core\OptionSpecification.cs" />
-    <Compile Include="CommandLine\Core\PreprocessorGuards.cs" />
-    <Compile Include="CommandLine\Core\ReflectionExtensions.cs" />
-    <Compile Include="CommandLine\Core\Scalar.cs" />
-    <Compile Include="CommandLine\Core\Sequence.cs" />
-    <Compile Include="CommandLine\Core\Specification.cs" />
-    <Compile Include="CommandLine\Core\SpecificationExtensions.cs" />
-    <Compile Include="CommandLine\Core\SpecificationGuards.cs" />
-    <Compile Include="CommandLine\Core\SpecificationProperty.cs" />
-    <Compile Include="CommandLine\Core\SpecificationPropertyExtensions.cs" />
-    <Compile Include="CommandLine\Core\SpecificationPropertyRules.cs" />
-    <Compile Include="CommandLine\Core\Switch.cs" />
-    <Compile Include="CommandLine\Core\Token.cs" />
-    <Compile Include="CommandLine\Core\Tokenizer.cs" />
-    <Compile Include="CommandLine\Core\TokenPartitioner.cs" />
-    <Compile Include="CommandLine\Core\TypeConverter.cs" />
-    <Compile Include="CommandLine\Core\TypeDescriptor.cs" />
-    <Compile Include="CommandLine\Core\TypeLookup.cs" />
-    <Compile Include="CommandLine\Core\ValueMapper.cs" />
-    <Compile Include="CommandLine\Core\ValueSpecification.cs" />
-    <Compile Include="CommandLine\Core\Verb.cs" />
-    <Compile Include="CommandLine\Error.cs" />
-    <Compile Include="CommandLine\ErrorExtensions.cs" />
-    <Compile Include="CommandLine\ErrorHandling.cs" />
-    <Compile Include="CommandLine\Infrastructure\EnumerableExtensions`1.cs" />
-    <Compile Include="CommandLine\Infrastructure\ExceptionExtensions.cs" />
-    <Compile Include="CommandLine\Infrastructure\PopsicleSetter.cs" />
-    <Compile Include="CommandLine\Infrastructure\ReferenceEqualityComparer.cs" />
-    <Compile Include="CommandLine\Infrastructure\ReflectionHelper.cs" />
-    <Compile Include="CommandLine\Infrastructure\ResultExtensions.cs" />
-    <Compile Include="CommandLine\Infrastructure\StringBuilderExtensions.cs" />
-    <Compile Include="CommandLine\Infrastructure\StringExtensions.cs" />
-    <Compile Include="CommandLine\NameInfo.cs" />
-    <Compile Include="CommandLine\NullInstance.cs" />
-    <Compile Include="CommandLine\OptionAttribute.cs" />
-    <Compile Include="CommandLine\Parser.cs" />
-    <Compile Include="CommandLine\ParserExtensions.cs" />
-    <Compile Include="CommandLine\ParserResult.cs" />
-    <Compile Include="CommandLine\ParserResultExtensions.cs" />
-    <Compile Include="CommandLine\ParserSettings.cs" />
-    <Compile Include="CommandLine\Text\AssemblyLicenseAttribute.cs" />
-    <Compile Include="CommandLine\Text\AssemblyUsageAttribute.cs" />
-    <Compile Include="CommandLine\Text\CopyrightInfo.cs" />
-    <Compile Include="CommandLine\Text\Example.cs" />
-    <Compile Include="CommandLine\Text\HeadingInfo.cs" />
-    <Compile Include="CommandLine\Text\HelpText.cs" />
-    <Compile Include="CommandLine\Text\MultiLineTextAttribute.cs" />
-    <Compile Include="CommandLine\Text\SentenceBuilder.cs" />
-    <Compile Include="CommandLine\Text\UsageAttribute.cs" />
-    <Compile Include="CommandLine\UnParserExtensions.cs" />
-    <Compile Include="CommandLine\ValueAttribute.cs" />
-    <Compile Include="CommandLine\VerbAttribute.cs" />
-    <Compile Include="CSharpx\**\*.cs" />
-    <Compile Include="WebPage.cs">
-      <DependentUpon>WebPage.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
-      <Project>{7e0c9336-7a38-4c87-97e2-a8d2a90aa29d}</Project>
-      <Name>Fusee.Base.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
-      <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
-      <Name>Fusee.Engine.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
-      <Project>{E95FA1C8-6491-4B4B-BBE1-EDA6B16B2C6A}</Project>
-      <Name>Fusee.Math.Core</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
-      <Project>{b7fac89a-4e75-4eac-bbc3-bbdb89c94b8a}</Project>
-      <Name>Fusee.Serialization</Name>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
-      <Project>{10da02fc-109f-4d71-864a-9f5b1e9a0d70}</Project>
-      <Name>Fusee.Xene</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="JsilConfig.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>JsilConfig.cs</LastGenOutput>
-    </None>
-    <Content Include="ManifestFile.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>ManifestFile.cs</LastGenOutput>
-    </Content>
-    <None Include="WebPage.tt">
-      <Generator>TextTemplatingFilePreprocessor</Generator>
-      <LastGenOutput>WebPage.cs</LastGenOutput>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
-  </ItemGroup>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+  </ItemGroup>  
+  
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
 	 This code should be part of the respective .pyproj project file. Unforntunately .pyprojects
 	 don't do anything during "Build". Thus Post-Build steps are non functional. -->
-  <!-- One of the many many many tries to simply zip the .py files during the build.... -->
-  <!-- Import Project="$(MSBuildExtensionsPath)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets"/ -->
-  <!-- Condition="Exists($(MSBuildCommunityTargets))" /-->
   <!-- Names and directoreies -->
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
     <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
+    <BlenderAddonSourcePath>$(MSBuildProjectDirectory)\..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
   </PropertyGroup>
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
@@ -208,11 +38,18 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.4.0-win32\bin\protoc.exe&quot; -I=$(BlenderAddonSourcePath)\proto --python_out=$(BlenderAddonSourcePath)\proto $(BlenderAddonSourcePath)\proto\Scene.proto&quot;" />
+    <!-- for Scene.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <!-- for bcl.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <!-- for protogen.proto -->
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
@@ -227,15 +64,5 @@
     <!-- Zip ZipFileName="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName).zip" WorkingDirectory="$(BlenderAddonSourcePath)\..\" Files="@(BlenderAddonPythonFiles)" /-->
     <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
   </Target>
-  <!-- END OF BUILD THE BLENDER ADDON -->
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- Inserted by hand - unless Assimp-Net's FuGet packages is fixed...-->
-  <Import Project="$(FuseeEngineRoot)\ext\AssimpNet.3.3.1\build\AssimpNet.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
+
 </Project>
