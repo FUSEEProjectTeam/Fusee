@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Engine.GUI</RootNamespace>
     <PackageId>Fusee.Engine.GUI</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Engine GUI</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -10,9 +11,6 @@
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
@@ -25,9 +23,9 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\nineSlice.vert" />
-    <None Include="Assets\nineSliceTile.frag" />
-    <None Include="Assets\texture.frag" />
-    <None Include="Assets\texture.vert" />
+    <Content Include="Assets\nineSlice.vert" />
+    <Content Include="Assets\nineSliceTile.frag" />
+    <Content Include="Assets\texture.frag" />
+    <Content Include="Assets\texture.vert" />
   </ItemGroup>
 </Project>

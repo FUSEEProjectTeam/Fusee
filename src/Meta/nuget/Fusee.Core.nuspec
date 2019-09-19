@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Fusee.Core</id>
+    <version>0.7.0</version>
+    <title>Fusee.Core</title>
+    <authors>FuseeProjectTeam</authors>
+    <description>Meta package for platform independant Fusee packages.</description>
+    <copyright>Copyright © 2013-today</copyright>
+    <license type="expression">MIT</license>
+    <projectUrl>https://fusee3d.org/</projectUrl>
+  	<repository type="git" url="https://github.com/FUSEEProjectTeam/Fusee.git" />
+    <icon>images\FuseeLogo.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+    <tags></tags>
+    <dependencies>
+      <group>
+        <dependency id="Fusee.Base.Common" version ="0.7.0" />
+        <dependency id="Fusee.Base.Core" version ="0.7.0" />
+        <dependency id="Fusee.Engine.Common" version ="0.7.0" />
+        <dependency id="Fusee.Engine.Core" version ="0.7.0" />
+        <dependency id="Fusee.Engine.GUI" version="0.7.0" />
+        <dependency id="Fusee.Math.Core" version="0.7.0" />
+        <dependency id="Fusee.Jometri" version="0.7.0" />
+        <dependency id="Fusee.Serialization" version="0.7.0" />
+        <dependency id="Fusee.Xene" version="0.7.0" />
+        <dependency id="Fusee.Xirkit" version="0.7.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+	  <file src="..\..\..\art\Deliverables\FuseeIcon512WithText.png" target="images\FuseeLogo.png" />
+  </files>
+</package>

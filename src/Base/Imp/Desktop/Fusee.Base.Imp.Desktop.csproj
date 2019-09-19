@@ -4,6 +4,7 @@
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <Description>Fusee Base Imp Desktop</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,22 +13,19 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262.dll" Link="Natives\freetype262.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
-    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Debug.*'))" />
+    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Debug.*'))" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="SharpFont">
-      <HintPath>$(FuseeEngineRoot)\ext\Freetype\bin\SharpFont\$(Configuration)\SharpFont.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
   </ItemGroup>
-
 </Project>

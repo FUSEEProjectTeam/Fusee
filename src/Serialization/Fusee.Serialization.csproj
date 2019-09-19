@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Serialization</RootNamespace>
     <PackageId>Fusee.Serialization</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Serialization</Description>
   </PropertyGroup>
 
   <PropertyGroup>

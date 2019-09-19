@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Engine.Core</RootNamespace>
     <PackageId>Fusee.Engine.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Engine Core</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -10,9 +11,6 @@
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
-  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
@@ -24,9 +22,9 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
-    <None Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
-    <None Include="Assets\Shader\PixelShader.frag" />
-    <None Include="Assets\Shader\VertexShader.vert" />
+    <Content Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
+    <Content Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
+    <Content Include="Assets\Shader\PixelShader.frag" />
+    <Content Include="Assets\Shader\VertexShader.vert" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>Fusee.Desktop</id>
+    <version>0.7.0</version>
+    <title>Fusee.Desktop</title>
+    <authors>FuseeProjectTeam</authors>
+    <description>Meta package for platform dependant Fusee packages.</description>
+    <copyright>Copyright © 2013-today</copyright>
+    <license type="expression">MIT</license>
+    <projectUrl>https://fusee3d.org/</projectUrl>
+  	<repository type="git" url="https://github.com/FUSEEProjectTeam/Fusee.git" />
+    <icon>images\FuseeLogo.png</icon>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <releaseNotes></releaseNotes>
+    <tags></tags>
+    <dependencies>
+      <group>
+        <dependency id="Fusee.Base.Imp.Desktop" version ="0.7.0" />
+		<dependency id="Fusee.Core" version="0.7.0" />
+        <dependency id="Fusee.Engine.Imp.Graphics.Desktop" version ="0.7.0" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+	  <file src="..\..\..\art\Deliverables\FuseeIcon512WithText.png" target="images\FuseeLogo.png" />
+  </files>
+</package>

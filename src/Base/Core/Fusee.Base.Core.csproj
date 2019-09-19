@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Base.Core</RootNamespace>
     <PackageId>Fusee.Base.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Base Core</Description>
   </PropertyGroup>
 
   <PropertyGroup>
