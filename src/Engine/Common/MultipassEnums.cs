@@ -28,7 +28,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// SSAO texture (stores occlusion).
         /// </summary>
-        G_SSAO,       
+        G_SSAO,
     }
 
     public enum TexRes

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
@@ -35,7 +36,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The light component as present (1 to n times) in the scene graph.
         /// </summary>
-        public LightComponent Light { get; set; }
+        public LightComponent Light { get; private set; }
 
         /// <summary>
         /// It should be possible for one instance of type LightComponent to be used multiple times in the scene graph.
@@ -48,6 +49,37 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4 Rotation { get; set; }
 
+        public Suid Id { get; set; }
+
+        public LightResult(LightComponent light)
+        {
+            Light = light;
+            WorldSpacePos = float3.Zero;
+            Rotation = float4x4.Identity;
+            Id = new Suid();
+        }
+
+        public override bool Equals(object obj)
+        {
+            var lr = (LightResult)obj;
+            return this.Id.Equals(lr.Id);
+        }
+
+        public static bool operator ==(LightResult thisLr, LightResult otherLr)
+        {
+            return otherLr.Id.Equals(thisLr.Id);
+        }
+
+        
+        public static bool operator !=(LightResult thisLr, LightResult otherLr)
+        {
+            return !otherLr.Id.Equals(thisLr.Id);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Id.GetHashCode();
+        }
     }
 
     internal class LightViseratorState : VisitorState
@@ -93,9 +125,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnLight(LightComponent lightComponent)
         {
-            var lightResult = new LightResult
-            {
-                Light = lightComponent,
+            var lightResult = new LightResult(lightComponent)
+            {                
                 Rotation = State.Model.RotationComponent(),
                 WorldSpacePos = new float3(State.Model.M14, State.Model.M24, State.Model.M34)
             };            

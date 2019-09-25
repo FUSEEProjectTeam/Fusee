@@ -2142,6 +2142,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             
             var attachements = new List<DrawBuffersEnum>();
 
+            //Textures
             for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
             {
                 var tex = renderTarget.RenderTextures[i];
@@ -2156,7 +2157,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
                 attachements.Add(DrawBuffersEnum.ColorAttachment0 + i);
-            }
+            }         
 
             GL.DrawBuffers(attachements.Count, attachements.ToArray());
 

@@ -2,6 +2,8 @@
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -28,17 +30,18 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Handle of the corresponding G-Buffer. Used to dispose the object if it isn't needed anymore.
         /// </summary>
-        public IBufferHandle GBufferHandle { get; set; } //TODO: Dispose framebuffer obj if it isn't needed anymore        
+        public IBufferHandle GBufferHandle { get; set; }
 
         /// <summary>
         /// Handle of the corresponding Depth Buffer (as renderbuffer). Used to dispose the object if it isn't needed anymore.
         /// </summary>
-        public IBufferHandle DepthBufferHandle { get; set; } //TODO: Dispose framebuffer obj if it isn't needed anymore
+        public IBufferHandle DepthBufferHandle { get; set; }
 
         /// <summary>
         /// Sets the resolution of the render textures.
         /// </summary>
-        public TexRes TextureResolution { get; private set; }
+        public TexRes TextureResolution { get; private set; }        
+        
 
         /// <summary>
         /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
@@ -56,10 +59,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="texRes">Resolution of the created Textures.</param>
         public RenderTarget(TexRes texRes)
-        {
+        {           
             RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextures)).Length];
-            TextureResolution = texRes;
-        }
+            TextureResolution = texRes;            
+        }        
 
         /// <summary>
         /// Generates a position texture.
@@ -93,7 +96,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreateDepthTex()
         {           
-            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
 

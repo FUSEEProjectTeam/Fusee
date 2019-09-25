@@ -62,7 +62,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.09f, 1);             
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
 
             //Add resize delegate
             var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
@@ -79,7 +79,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, OuterConeAngle = 25, InnerConeAngle = 5 };
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true };
 
-            _sunTransform = new TransformComponent() { Translation = new float3(-10, 2, 0), Rotation = new float3(M.DegreesToRadians(0), 0, 0) };
+            _sunTransform = new TransformComponent() { Translation = new float3(-10, 2, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0) };
 
             var aLotOfLights = new ChildList
             {
@@ -96,7 +96,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 {
                     Components = new List<SceneComponentContainer>()
                 {
-                    new TransformComponent(){ Translation = new float3(-450, 150, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0)},
+                    new TransformComponent(){ Translation = new float3(-450, 150, 0), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
                     blueLight,
                 }
                 },
@@ -164,26 +164,26 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            _sunTransform.Rotate(new float3(M.DegreesToRadians(0.5f), 0, 0));
+            //_sunTransform.Rotate(new float3(M.DegreesToRadians(1.0f), 0, 0));
 
-            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
-            if (deg < 0)
-                deg = (360 + deg);
+            //var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
+            //if (deg < 0)
+            //    deg = (360 + deg);
 
-            var lerp = deg / 360;
+            //var lerp = deg / 360;
 
-            if (deg <= 180)
-            {
-                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
-                _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
-                Diagnostics.Log(lerp / 0.5f);
-            }
-            else
-            {
-                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
-                _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
-                Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
-            }
+            //if (deg <= 180)
+            //{
+            //    _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
+            //    _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
+            //    //Diagnostics.Log(lerp / 0.5f);
+            //}
+            //else
+            //{
+            //    _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
+            //    _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
+            //    //Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
+            //}
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)

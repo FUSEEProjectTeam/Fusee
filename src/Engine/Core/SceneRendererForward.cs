@@ -18,12 +18,14 @@ namespace Fusee.Engine.Core
     public partial class SceneRendererForward : SceneVisitor
     {
         private int _numberOfLights;
-        private bool _hasNumberOfLightsChanged;
+
+        ///Is set to true if a light was added or removed from the scene.
+        protected bool HasNumberOfLightsChanged;
 
         /// <summary>
         /// Light results, collected from the scene in the Viserator.
         /// </summary>
-        public List<LightResult> LightComponents
+        public List<LightResult> LightResults
         {
             get
             {
@@ -35,7 +37,7 @@ namespace Fusee.Engine.Core
 
                 if(_numberOfLights != _lightComponents.Count)
                 {                    
-                    _hasNumberOfLightsChanged = true;
+                    HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightComponents.Count;
                 } 
             }
@@ -93,18 +95,18 @@ namespace Fusee.Engine.Core
         private void SetDefaultLight()
         {            
             // if there is no light in scene then add one (legacyMode)
-            _lightComponents.Add(new LightResult()
+            _lightComponents.Add(new LightResult(new LightComponent()
             {
-                Light = new LightComponent()
-                {
-                    Active = true,
-                    Strength = 1.0f,
-                    MaxDistance = 0.0f,
-                    Color = new float4(1.0f, 1.0f, 1.0f, 1f),
-                    OuterConeAngle = 45f,
-                    InnerConeAngle = 35f,
-                    Type = LightType.Legacy
-                },
+                Active = true,
+                Strength = 1.0f,
+                MaxDistance = 0.0f,
+                Color = new float4(1.0f, 1.0f, 1.0f, 1f),
+                OuterConeAngle = 45f,
+                InnerConeAngle = 35f,
+                Type = LightType.Legacy
+            })
+            {
+                
                 Rotation = float4x4.Identity,
                 WorldSpacePos = float3.Zero
             });
@@ -508,17 +510,14 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderShaderEffect(ShaderEffectComponent shaderComponent)
         {
-            if (_hasNumberOfLightsChanged)
+            if (HasNumberOfLightsChanged)
             {
                //change #define MAX_LIGHTS... or rebuild shader effect?
-                _hasNumberOfLightsChanged = false;
+                HasNumberOfLightsChanged = false;
             }
-            else
-            {
-                _state.Effect = shaderComponent.Effect;
-                _rc.SetShaderEffect(shaderComponent.Effect);
-            }
-            
+            _state.Effect = shaderComponent.Effect;
+            _rc.SetShaderEffect(shaderComponent.Effect);
+
         }
 
         /// <summary>
@@ -548,9 +547,9 @@ namespace Fusee.Engine.Core
         {
             
             // accumulate all lights and...           
-            LightComponents = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
+            LightResults = _sc.Children.Viserate<LightViserator, LightResult>().ToList();
             
-            if (LightComponents.Count == 0)            
+            if (LightResults.Count == 0)            
                 SetDefaultLight();           
         }
 
@@ -652,9 +651,10 @@ namespace Fusee.Engine.Core
         { 
             var light = lightRes.Light;
 
-            var dirWorldSpace = float3.Normalize((lightRes.Rotation * -float4.UnitY).xyz);
+            var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
             var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);
             var strength = light.Strength;
+
             if (strength > 1.0 || strength < 0.0)
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
@@ -672,7 +672,7 @@ namespace Fusee.Engine.Core
             _rc.SetFXParam($"allLights[{position}].direction", dirViewSpace);
             _rc.SetFXParam($"allLights[{position}].directionWorldSpace", dirWorldSpace);
             _rc.SetFXParam($"allLights[{position}].lightType", (int)light.Type);
-            _rc.SetFXParam($"allLights[{position}].isActive", light.Active? 1 : 0);
+            _rc.SetFXParam($"allLights[{position}].isActive", light.Active ? 1 : 0);
         }
 
         #region RenderContext/Asset Setup
