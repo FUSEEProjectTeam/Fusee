@@ -17,7 +17,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
   </ItemGroup>
 
   <ItemGroup>
