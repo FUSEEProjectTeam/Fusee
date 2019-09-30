@@ -1,13 +1,9 @@
-﻿#pragma warning disable 1591
-
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
@@ -973,9 +969,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1061,8 +1055,4 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float3> Parse { get; set; }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

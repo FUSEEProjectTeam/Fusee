@@ -1,5 +1,3 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
@@ -42,9 +40,7 @@ namespace Fusee.Math.Core
     /// </remarks> 
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable InconsistentNaming
     public struct float4x4 : IEquatable<float4x4>
-    // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -467,13 +463,11 @@ namespace Fusee.Math.Core
 
         #region float[] ToArray()
 
-        // ReSharper disable UnusedMember.Local
         private float[] ToArray()
         {
             return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
             // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
         }
-        // ReSharper restore UnusedMember.Local
 
         #endregion
 
@@ -1835,9 +1829,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1904,5 +1896,3 @@ namespace Fusee.Math.Core
         public static Converter<string, float4x4> Parse { get; set; }
     }
 }
-
-#pragma warning restore 1591

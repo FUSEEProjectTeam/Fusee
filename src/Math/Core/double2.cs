@@ -1,7 +1,4 @@
-#pragma warning disable 1591
-
 using System;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -749,5 +746,3 @@ namespace Fusee.Math.Core
         public static Converter<string, double2> Parse { get ; set; }
     }
 }
-
-#pragma warning restore 1591

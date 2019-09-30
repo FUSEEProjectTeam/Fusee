@@ -12,7 +12,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The parts forming the curve.
         /// </summary>
-        public IList<CurvePart> CurveParts;
+        public IList<CurvePart> CurveParts = new List<CurvePart>();
 
         /// <summary>
         /// Combines two Curves by creating a new one.
@@ -113,7 +113,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// The segments making up the CurvePart.
         /// </summary>
-        public IList<CurveSegment> CurveSegments;
+        public IList<CurveSegment> CurveSegments = new List<CurveSegment>();
 
         /// <summary>
         /// Calculates a polygonal chain, representing the CurvePart.
@@ -231,7 +231,7 @@ namespace Fusee.Math.Core
         /// <summary>
         ///The vertices of a CurveSegment represented by float3s.
         /// </summary>
-        public IList<float3> Vertices;
+        public IList<float3> Vertices = new List<float3>();
 
         /// <summary>
         /// Calculates a point on a bézier curve using De Casteljaus algorithm.

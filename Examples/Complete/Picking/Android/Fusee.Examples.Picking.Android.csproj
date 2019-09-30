@@ -62,7 +62,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="OpenTK-1.0" />
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
     <!-- Fusee References -->
   </ItemGroup>
   <ItemGroup>
@@ -122,14 +122,12 @@
     <AndroidAsset Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
-
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
   <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir;FuseeCollectAndCopyAssets;FuseeResolveAssetDependencies;FuseeResolveNativeDependencies">
     <ItemGroup>
       <_FuseeAndroidAssets1 Include="$(OutputPath)\Assets\**\*" />
       <_FuseeAndroidAssets2 Include="$(OutputPath)\$(AssemblyName).Assets\**\*" />
     </ItemGroup>
-
     <Copy SourceFiles="@(_FuseeAndroidAssets1)" DestinationFiles="@(_FuseeAndroidAssets1->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
     <Copy SourceFiles="@(_FuseeAndroidAssets2)" DestinationFiles="@(_FuseeAndroidAssets2->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
   </Target>
