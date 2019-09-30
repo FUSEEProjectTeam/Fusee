@@ -1593,6 +1593,24 @@ namespace Fusee.Engine.Core
 
         #region Render releated Members
 
+        // <summary>
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
+        /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
+        /// </summary>
+        public void EnableDepthClamp()
+        {
+            _rci.EnableDepthClamp();
+        }
+
+        /// <summary>
+        /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
+        /// </summary>
+        public void DisableDepthClamp()
+        {
+            _rci.DisableDepthClamp();
+        }
+
         /// <summary>
         /// Apply a single render state to the render context. All subsequent rendering will be
         /// performed using the currently set state unless it is changed to a different value.
@@ -1719,7 +1737,6 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-
                 throw new Exception("Error while rendering pass " + i, ex);
             }
         }

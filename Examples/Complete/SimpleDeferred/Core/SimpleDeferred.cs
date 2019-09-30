@@ -25,8 +25,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private SceneContainer _rocketScene;
         private SceneRendererDeferred _sceneRenderer;
 
-        private const float ZNear = 1f;
-        private const float ZFar = 1000;
+        private const float ZNear = 0.1f;
+
+        //For shadow calculation the distance to the far clipping plane should be as small as possible to ensure the best shadow map resolution when using parallel lights.
+        //Can be a custom value when cascaded shadow maps are implemented.
+        private const float ZFar = 3000;
         private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
@@ -51,7 +54,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _cameraPos = new float3(0, 10, -30);
+            _cameraPos = new float3(0, 10, -10);
             _gui = CreateGui();
 
             // Create the interaction handler
@@ -59,13 +62,18 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = _backgroundColorDay = new float4(0.9f, 0.95f, 1, 1);
-            _backgroundColorNight = new float4(0, 0, 0.09f, 1);             
+            _backgroundColorNight = new float4(0, 0, 0.09f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
             //Add resize delegate
             var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
+            perspectiveProjComp.ZFar = ZFar;
+            perspectiveProjComp.ZNear = ZNear;
+            perspectiveProjComp.Fov = _fovy;
             _resizeDel = delegate
             {
                 perspectiveProjComp.Resize(Width, Height);
@@ -74,34 +82,54 @@ namespace Fusee.Examples.SimpleDeferred.Core
             AddResizeDelegate(_resizeDel);
 
             //Add lights to the scene
-            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f };
+            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true };
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true };
-            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 600, Active = true, OuterConeAngle = 25, InnerConeAngle = 5 };
+            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5 , IsCastingShadows = true };
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true };
 
-            _sunTransform = new TransformComponent() { Translation = new float3(-10, 2, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0) };
+            _sunTransform = new TransformComponent() { Translation = new float3(0, 10, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
+                        
 
             var aLotOfLights = new ChildList
             {
                 new SceneNodeContainer()
                 {
+                    Name = "sun",
                     Components = new List<SceneComponentContainer>()
                 {
                     _sunTransform,
                     _sun,
-                }
+                    //new Cube()
+                },
+                    //Children = new ChildList()
+                    //{
+                    //    new SceneNodeContainer()
+                    //    {
+                    //        Components = new List<SceneComponentContainer>()
+                    //        {
+                    //            new TransformComponent 
+                    //            {
+                    //                Translation = float3.UnitZ,
+                    //                Scale = float3.One/2f
+                    //            },
+                    //            new Cube()
+                    //        }
+                    //    }
+                    //}
 
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "blueLight",
                     Components = new List<SceneComponentContainer>()
                 {
-                    new TransformComponent(){ Translation = new float3(-450, 150, 0), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
+                    new TransformComponent(){ Translation = new float3(-600, 180, 180), Rotation = new float3(M.DegreesToRadians(180), 0, 0)},
                     blueLight,
                 }
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "redLight1",
                     Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent(){ Translation = new float3(-600, 180, 180)},
@@ -110,6 +138,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "redLight2",
                     Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent(){ Translation = new float3(-600, 180, -140)},
@@ -118,6 +147,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "redLight3",
                     Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent(){ Translation = new float3(500, 180, 180)},
@@ -126,6 +156,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "redLight4",
                     Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent(){ Translation = new float3(500, 180, -140)},
@@ -134,6 +165,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
                 new SceneNodeContainer()
                 {
+                    Name = "greenLight",
                     Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent(){ Translation = new float3(0, 300, 40)},
@@ -142,6 +174,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 },
 
             };
+
 
             _rocketScene.Children.Add(new SceneNodeContainer()
             {
@@ -157,33 +190,40 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
-
+        bool rotate = false;
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //_sunTransform.Rotate(new float3(M.DegreesToRadians(1.0f), 0, 0));
-
-            //var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
-            //if (deg < 0)
-            //    deg = (360 + deg);
-
-            //var lerp = deg / 360;
-
-            //if (deg <= 180)
+            //if (!rotate)
             //{
-            //    _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
-            //    _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
-            //    //Diagnostics.Log(lerp / 0.5f);
+            //    _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(20), 0, 0));
+            //    rotate = true;
             //}
-            //else
-            //{
-            //    _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
-            //    _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
-            //    //Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
-            //}
+
+            _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.1f), 0, 0));
+            Diagnostics.Log(_sunTransform.Rotation);
+
+            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
+            if (deg < 0)
+                deg = (360 + deg);
+
+            var lerp = deg / 360;
+
+            if (deg <= 180)
+            {
+                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
+                _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
+                //Diagnostics.Log(lerp / 0.5f);
+            }
+            else
+            {
+                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
+                _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
+                //Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
+            }
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -247,8 +287,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
                 _angleVert %= twoPi;
 
-            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 100;
-            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 100;
+            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 1000;
+            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 1000;
 
             RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
         }

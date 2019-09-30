@@ -1048,6 +1048,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
+        /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
+        /// </summary>
+        public void EnableDepthClamp()
+        {
+            GL.Enable(EnableCap.DepthClamp);
+        }
+
+        /// <summary>
+        /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
+        /// </summary>
+        public void DisableDepthClamp()
+        {
+            GL.Disable(EnableCap.DepthClamp);
+        }
+
+        /// <summary>
         /// Create one single multi-purpose attribute buffer
         /// </summary>
         /// <param name="attributes"></param>

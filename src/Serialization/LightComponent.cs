@@ -1,7 +1,8 @@
-﻿
+
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using ProtoBuf;
+using System;
 
 namespace Fusee.Serialization
 {
@@ -65,5 +66,10 @@ namespace Fusee.Serialization
         {
             Strength = strength;
         }
+
+        /// <summary>
+        /// Defines if a shadow map is created for this light.
+        /// </summary>
+        public bool IsCastingShadows;
     }
 }

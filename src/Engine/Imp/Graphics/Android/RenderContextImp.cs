@@ -822,6 +822,25 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #endregion
 
         #region Rendering related Members
+
+        /// <summary>
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
+        /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
+        /// </summary>
+        public void EnableDepthClamp()
+        {
+            throw new NotImplementedException("Depth clamping isn't implemented yet!");
+        }
+
+        /// <summary>
+        /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
+        /// </summary>
+        public void DisableDepthClamp()
+        {
+            throw new NotImplementedException("Depth clamping isn't implemented yet!");
+        }
+
         /// <summary>
         /// Creates the shaderprogram by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
         /// Do not use this function in frequent updates.

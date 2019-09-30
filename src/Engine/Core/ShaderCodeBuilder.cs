@@ -983,6 +983,7 @@ namespace Fusee.Engine.Core
                 float innerConeAngle;
                 int lightType;
                 int isActive;
+                int isCastingShadows;
             };
             uniform Light allLights[MAX_LIGHTS];
             ";
@@ -1315,7 +1316,7 @@ namespace Fusee.Engine.Core
                     PS = frag.ToString(),
                     StateSet = new RenderStateSet
                     {
-                        AlphaBlendEnable = true,
+                        AlphaBlendEnable = false,
                         ZEnable = true,
                     }
                 }
@@ -1417,7 +1418,7 @@ namespace Fusee.Engine.Core
                     PS = frag.ToString(),
                     StateSet = new RenderStateSet
                     {
-                        AlphaBlendEnable = true,
+                        AlphaBlendEnable = false,
                         ZEnable = true,
                     }
                 }
@@ -1551,7 +1552,7 @@ namespace Fusee.Engine.Core
                     PS = frag.ToString(),
                     StateSet = new RenderStateSet
                     {
-                        AlphaBlendEnable = true,
+                        AlphaBlendEnable = false,
                         ZEnable = true,
                     }
                 }
@@ -1692,7 +1693,7 @@ namespace Fusee.Engine.Core
                     PS = frag.ToString(),
                     StateSet = new RenderStateSet
                     {
-                        AlphaBlendEnable = true,
+                        AlphaBlendEnable = false,
                         ZEnable = true,
                     }
                 }
@@ -1715,10 +1716,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary>
-        /// <param name="rt">The source render target.</param>
-        /// <param name="numberOfLights">Number of lights in the scene.</param>
+        /// <param name="rt">The source render target.</param>        
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt, float numberOfLights)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget rt)
         {
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
@@ -1746,14 +1746,29 @@ namespace Fusee.Engine.Core
             frag.Append(Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
-            frag.Append($"#define MAX_LIGHTS {numberOfLights}\n");
-
+            
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextures)).Length; i++)
             {
                  frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");               
             }
 
-            frag.Append(LightStructDeclaration());
+            frag.Append(@"struct Light 
+            {
+                vec3 position;
+                vec3 positionWorldSpace;
+                vec4 intensities;
+                vec3 direction;
+                vec3 directionWorldSpace;
+                float maxDistance;
+                float strength;
+                float outerConeAngle;
+                float innerConeAngle;
+                int lightType;
+                int isActive;
+                int isCastingShadows;
+            };
+            uniform Light light;
+            ");
 
             frag.Append($"uniform mat4 FUSEE_IV;\n");         
             frag.Append($"uniform mat4 FUSEE_V;\n");
@@ -1761,6 +1776,14 @@ namespace Fusee.Engine.Core
             frag.Append($"uniform mat4 FUSEE_ITV;\n");          
             frag.Append($"in vec2 vTexCoords;\n");
             frag.Append($"out vec4 oColor;\n");
+            frag.Append("uniform sampler2D ShadowMap;\n");
+            frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
+            frag.Append("uniform int PassNo;\n");
+
+            //Shadow calculation
+            //-------------------------------------- 
+            frag.Append(ShadowCalculation());
+
             frag.Append(@"void main()
             {
             ");
@@ -1773,7 +1796,7 @@ namespace Fusee.Engine.Core
                 discard;
             ");
 
-            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).rgb;");            
+            frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords);");            
             frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
             frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
             frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");
@@ -1783,48 +1806,54 @@ namespace Fusee.Engine.Core
             //-------------------------
             frag.Append(@"
             // then calculate lighting as usual
-            vec3 lighting = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength
+            vec3 lighting = vec3(0.0, 0.0, 0.0);
+            if(PassNo == 0){
+                vec3 ambient = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength 
+                lighting += ambient;
+            }
 
             vec3 camPos = FUSEE_IV[3].xyz;
-            vec3 viewDir = normalize(- FragPos);
+            vec3 viewDir = normalize(- FragPos.xyz);
 
-            for(int i = 0; i < MAX_LIGHTS; ++i)
+            
+            if(light.isActive == 1)
             {
-                if(allLights[i].isActive == 0) continue;
-                vec3 lightColor = allLights[i].intensities.xyz;
-                vec3 lightPosition = allLights[i].position;
-                vec3 lightDir = normalize(lightPosition - FragPos);                
+
+                float shadow = 0.0;
+                vec3 lightColor = light.intensities.xyz;
+                vec3 lightPosition = light.position;
+                vec3 lightDir = normalize(lightPosition - FragPos.xyz);                
 
                 //attenuation
                 float attenuation = 1.0;
-                switch(allLights[i].lightType)
+                switch(light.lightType)
                 {
                     //Point
                     case 0:
                     {
-                        float distanceToLight = length(lightPosition - FragPos); 
-                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
+                        float distanceToLight = length(lightPosition - FragPos.xyz); 
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
                         attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
                         break;
                     }
                     //Parallel
                     case 1:
-                        lightDir = -allLights[i].direction;
+                        lightDir = -light.direction;
                         break;
                     //Spot
                     case 2:
                     {                           
                         //point component
-                        float distanceToLight = length(lightPosition - FragPos); 
-                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
+                        float distanceToLight = length(lightPosition - FragPos.xyz); 
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
                         attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
                         
                         //cone component
-                        vec3 coneDir = allLights[i].direction;
+                        vec3 coneDir = light.direction;
                         float lightToSurfaceAngleCos = dot(coneDir, -lightDir); 
                         
-                        float epsilon = cos(allLights[i].innerConeAngle) - cos(allLights[i].outerConeAngle);
-                        float t = ( lightToSurfaceAngleCos - cos(allLights[i].outerConeAngle)) / epsilon;                        
+                        float epsilon = cos(light.innerConeAngle) - cos(light.outerConeAngle);
+                        float t = ( lightToSurfaceAngleCos - cos(light.outerConeAngle)) / epsilon;                        
 
                         attenuation *= clamp(t, 0.0, 1.0);                          
 
@@ -1834,22 +1863,28 @@ namespace Fusee.Engine.Core
                         break;
                 }
 
-                // diffuse               
-                           
+                // shadow                
+                if(light.isCastingShadows == 1)
+                {
+                    vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
+                    shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir);
+                }
+
+                // diffuse 
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
-                lighting += (diffuse * attenuation) * allLights[i].strength;
+                lighting += (1.0 - shadow) *(diffuse * attenuation) * light.strength;
             
                 // specular
                 vec3 reflectDir = reflect(-lightDir, Normal);  
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec * lightColor;
-                lighting += (specular * attenuation) *  allLights[i].strength;
-            }
-    
-            oColor = vec4(lighting, 1.0);
-
-            ");
-            frag.Append("}");            
+                lighting += (1.0 - shadow) *(specular * attenuation) *  light.strength;
+        }
+        
+        oColor = vec4(lighting, 1.0);
+        }
+        ");
+                    
 
             return new ShaderEffect(new[]
             {
@@ -1861,6 +1896,11 @@ namespace Fusee.Engine.Core
                     {
                         AlphaBlendEnable = true,
                         ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+
+                        ZFunc = Compare.LessEqual
                     }
                 }
             },
@@ -1876,27 +1916,29 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].maxDistance", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].strength", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].outerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].innerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].direction", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
+                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
+                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
+                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
             });
         }
+        
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="targetRenderTarget">The render target, containing the texture we want to render to.</param>
-        /// <param name="numberOfLights">Number of lights in the scene.</param>
+        /// <param name="targetRenderTarget">The render target, containing the texture we want to render to.</param>       
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, RenderTarget targetRenderTarget, float numberOfLights, RenderTarget shadowRenderTarget = null)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, RenderTarget targetRenderTarget, RenderTarget shadowRenderTarget = null)
         {
             targetRenderTarget.CreateAlbedoSpecularTex();
             // Vertex shader ------------------------------
@@ -1924,55 +1966,45 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(EsPrecision());
-            frag.Append($"#define MAX_LIGHTS {numberOfLights}\n");
+            frag.Append(EsPrecision());            
 
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextures)).Length; i++)
             {
                 frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
             }
 
-            frag.Append(LightStructDeclaration());
+            frag.Append(@"struct Light 
+            {
+                vec3 position;
+                vec3 positionWorldSpace;
+                vec4 intensities;
+                vec3 direction;
+                vec3 directionWorldSpace;
+                float maxDistance;
+                float strength;
+                float outerConeAngle;
+                float innerConeAngle;
+                int lightType;
+                int isActive;
+                int isCastingShadows;
+            };
+            uniform Light light;
+            ");
 
             frag.Append("uniform mat4 FUSEE_IV;\n");
             frag.Append("uniform mat4 FUSEE_V;\n");
             frag.Append("uniform mat4 FUSEE_MV;\n");
             frag.Append("uniform mat4 FUSEE_ITV;\n");
             frag.Append("uniform sampler2D ShadowMap;\n");
-            frag.Append("uniform mat4 LightSpaceMatrix;");
-            frag.Append("uniform vec2 LightMatClipPlanes;\n");
+            frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
+            frag.Append("uniform int PassNo;\n");
 
-            frag.Append($"in vec2 vTexCoords;\n");            
-            frag.Append("in vec4 vPosInLightSpace;\n");
+            frag.Append($"in vec2 vTexCoords;\n");
             frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)};\n");
 
             //Shadow calculation
-            //--------------------------------------
-
-            frag.Append(@"
-                    
-            float LinearizeDepth(float depth)
-            {
-                float z = depth * 2.0 - 1.0; // Back to NDC 
-                return (2.0 * LightMatClipPlanes.x * LightMatClipPlanes.y) / (LightMatClipPlanes.y + LightMatClipPlanes.x - z * (LightMatClipPlanes.y - LightMatClipPlanes.x));
-            }
-
-            ");
-
-            frag.Append(@"
-                
-                float ShadowCalculation(vec4 fragPosLightSpace)
-                {
-                    // perform perspective divide
-                    vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
-                    projCoords = projCoords * 0.5 + 0.5; 
-                    float closestDepth = texture(ShadowMap, projCoords.xy).r;
-                    float currentDepth = projCoords.z;  
-                    float bias = 0.005;  
-                    return currentDepth-bias > closestDepth  ? 1.0 : 0.0;
-                }
-
-            ");
+            //-------------------------------------- 
+            frag.Append(ShadowCalculation());
 
             frag.Append(@"void main()
             {
@@ -1989,107 +2021,93 @@ namespace Fusee.Engine.Core
             frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords);");
             frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
             frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
-            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");
-
-                      
+            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");                                  
 
             //Lighting calculation
             //-------------------------
             frag.Append(@"
             // then calculate lighting as usual
-            vec3 ambient = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength
-            
-            vec3 lighting = ambient;
+            vec3 lighting = vec3(0,0,0);
+
+            if(PassNo == 0){
+                vec3 ambient = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength 
+                lighting += ambient;
+            }
 
             vec3 camPos = FUSEE_IV[3].xyz;
             vec3 viewDir = normalize(-FragPos.xyz);
 
-            for(int i = 0; i < MAX_LIGHTS; ++i)
+           
+            if(light.isActive == 1)
             {
-                if(allLights[i].isActive == 0) continue;
-
                 float shadow = 0.0;
 
-                vec3 lightColor = allLights[i].intensities.xyz;
-                vec3 lightPosition = allLights[i].position;
+                vec3 lightColor = light.intensities.xyz;
+                vec3 lightPosition = light.position;
                 vec3 lightDir = normalize(lightPosition - FragPos.xyz);                
 
                 //attenuation
                 float attenuation = 1.0;
-                switch(allLights[i].lightType)
+                switch(light.lightType)
                 {
                     //Point
                     case 0:
                     {
                         float distanceToLight = length(lightPosition - FragPos.xyz); 
-                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
-                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
+                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);                        
+
                         break;
                     }
                     //Parallel
                     case 1:
-                        lightDir = -allLights[i].direction;
-                        
-                        // shadow
-                        vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * vec4(FragPos.xyz, 1.0);
-                        shadow = ShadowCalculation(posInLightSpace);
-
+                        lightDir = -light.direction;
                         break;
                     //Spot
                     case 2:
                     {                           
                         //point component
                         float distanceToLight = length(lightPosition - FragPos.xyz); 
-                        float distance = pow(distanceToLight/allLights[i].maxDistance, 2.0);
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
                         attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
                         
                         //cone component
-                        vec3 coneDir = allLights[i].direction;
+                        vec3 coneDir = light.direction;
                         float lightToSurfaceAngleCos = dot(coneDir, -lightDir); 
                         
-                        float epsilon = cos(allLights[i].innerConeAngle) - cos(allLights[i].outerConeAngle);
-                        float t = ( lightToSurfaceAngleCos - cos(allLights[i].outerConeAngle)) / epsilon;
+                        float epsilon = cos(light.innerConeAngle) - cos(light.outerConeAngle);
+                        float t = (lightToSurfaceAngleCos - cos(light.outerConeAngle)) / epsilon;
                         attenuation *= clamp(t, 0.0, 1.0);
                         break;
                     }
                     case 3:
                         break;
-                }                
+                }
+
+                // shadow                
+                if(light.isCastingShadows == 1)
+                {
+                    vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
+                    shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir);
+                }
 
                 // diffuse 
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
-                lighting += (1.0 - shadow) * (diffuse * attenuation * allLights[i].strength);
+                lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);
             
                 // specular
                 vec3 reflectDir = reflect(-lightDir, Normal);  
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec * lightColor;
-                lighting += (1.0 - shadow) * (specular * attenuation * allLights[i].strength);
-                                
+                lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
+            }              
             ");
-            
-            //end lights for loop
-            frag.Append(" }");
-
-            //frag.AppendLine("float d = LinearizeDepth(texture(ShadowMap, vTexCoords)).r;");            
+                   
             frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");           
-            
+
             frag.Append("}");
 
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = vert.ToString(),
-                    PS = frag.ToString(),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                    }
-                }
-            },
-            new[]
+            var effectParams = new List<EffectParameterDeclaration>()
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
@@ -2101,21 +2119,46 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].position", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].positionWorldSpace", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].maxDistance", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].strength", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].outerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].innerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].direction", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].lightType", Value = 1},
-                new EffectParameterDeclaration { Name = "allLights[" + 0 + "].isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
+                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
+                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
+                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+            };
 
-                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowRenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH]},
-                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One},
-            });
+            if(shadowRenderTarget != null)
+            {
+                effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
+                effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowRenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] });
+            }
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,                        
+                        SourceBlend = Blend.One,                        
+                        DestinationBlend = Blend.One,
+                        
+                        ZFunc = Compare.LessEqual
+
+                    }
+                }
+            },
+            effectParams.ToArray()); 
         }
 
         /// <summary>
@@ -2150,11 +2193,29 @@ namespace Fusee.Engine.Core
             frag.Append(EsPrecision());
 
             frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextures), (int)RenderTargetTextures.G_DEPTH)};\n");
+            frag.Append("uniform vec2 LightMatClipPlanes;\n");
+            frag.Append("uniform int LightType;\n");
+
+            frag.Append(@"
+                    
+            float LinearizeDepth(float depth)
+            {
+                float z = depth * 2.0 - 1.0; // Back to NDC 
+                return (2.0 * LightMatClipPlanes.x * LightMatClipPlanes.y) / (LightMatClipPlanes.y + LightMatClipPlanes.x - z * (LightMatClipPlanes.y - LightMatClipPlanes.x));
+            }
+
+            ");
 
             frag.Append(@"void main()
-            { 
+            {  
+                float d = gl_FragCoord.z;
+                //if(LightType == 2 || LightType == 3)
+                //{
+                //    d = LinearizeDepth(gl_FragCoord.z);
+                //}
+                
             ");
-            frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextures), (int)RenderTargetTextures.G_DEPTH)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);\n");
+            frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextures), (int)RenderTargetTextures.G_DEPTH)} = vec4(d, d, d, 1.0);\n");
             frag.Append(@"}
             ");
 
@@ -2166,8 +2227,10 @@ namespace Fusee.Engine.Core
                     PS = frag.ToString(),
                     StateSet = new RenderStateSet
                     {
-                        AlphaBlendEnable = true,
+                        AlphaBlendEnable = false,
                         ZEnable = true,
+                        CullMode = Cull.Clockwise,
+                        ZFunc = Compare.LessEqual,
                     }
                 }
             },
@@ -2176,8 +2239,45 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One},
+                new EffectParameterDeclaration { Name = "LightType", Value = 0},
 
-            });
+            });;
+        }
+
+        private static string ShadowCalculation()
+        {
+            return @"
+                
+            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+            {
+                float shadow = 0.0;
+
+                // perform perspective divide
+                vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;
+                projCoords = projCoords * 0.5 + 0.5; 
+                //float closestDepth = texture(shadowMap, projCoords.xy).r;
+                float currentDepth = projCoords.z;  
+
+                float bias = 0.0;//max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+            
+                vec2 texelSize = vec2(1.0, 1.0) / vec2(textureSize(shadowMap, 0));
+                for(int x = -1; x <= 1; ++x)
+                {
+                    for(int y = -1; y <= 1; ++y)
+                    {
+                        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
+                        shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
+                    }    
+                }
+                shadow /= 9.0;
+
+
+                //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+                return shadow;
+            }
+
+            ";
         }
 
         #endregion
@@ -2432,6 +2532,11 @@ namespace Fusee.Engine.Core
                 {
                     Name = "allLights[" + i + "].isActive",
                     Value = 1
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].isCastingShadows",
+                    Value = 0
                 });
             }
 

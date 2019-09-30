@@ -456,6 +456,20 @@ namespace Fusee.Xene
             Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
         }
 
+        public static void RotateAround(this TransformComponent tc, float3 center, float3 angles)
+        {
+            var pos = tc.Translation;
+            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
+            var dir = pos - center; // find current direction relative to center
+            dir = addRotationMtx * dir; // rotate the direction
+            tc.Translation = center + dir; // define new position
+            
+            // rotate object to keep looking at the center:
+            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+            var euler = float4x4.RotMatToEuler(currentRotationMtx);
+            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+        }
+
         /// <summary>
         /// Rotates this node.
         /// </summary>

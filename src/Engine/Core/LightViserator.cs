@@ -49,37 +49,38 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4 Rotation { get; set; }
 
-        public Suid Id { get; set; }
+        public Suid Id;
 
         public LightResult(LightComponent light)
         {
             Light = light;
             WorldSpacePos = float3.Zero;
             Rotation = float4x4.Identity;
-            Id = new Suid();
-        }
+            Id = Suid.GenerateSuid();
+        }       
 
         public override bool Equals(object obj)
         {
-            var lr = (LightResult)obj;
-            return this.Id.Equals(lr.Id);
+            var lc = (LightResult)obj;
+            return this.Id.Equals(lc.Id);
         }
 
-        public static bool operator ==(LightResult thisLr, LightResult otherLr)
+        public static bool operator ==(LightResult thisLc, LightResult otherLc)
         {
-            return otherLr.Id.Equals(thisLr.Id);
+            return otherLc.Id.Equals(thisLc.Id);
         }
 
-        
-        public static bool operator !=(LightResult thisLr, LightResult otherLr)
+
+        public static bool operator !=(LightResult thisLc, LightResult otherLc)
         {
-            return !otherLr.Id.Equals(thisLr.Id);
+            return !otherLc.Id.Equals(thisLc.Id);
         }
 
         public override int GetHashCode()
         {
             return this.Id.GetHashCode();
         }
+
     }
 
     internal class LightViseratorState : VisitorState
@@ -107,9 +108,8 @@ namespace Fusee.Engine.Core
         }
     }
 
-    internal class LightViserator : Viserator<LightResult, LightViseratorState>
-    {        
-
+    internal class LightViserator : Viserator<Tuple<SceneNodeContainer, LightResult>, LightViseratorState>
+    {         
         protected override void InitState()
         {
             base.InitState();
@@ -129,9 +129,9 @@ namespace Fusee.Engine.Core
             {                
                 Rotation = State.Model.RotationComponent(),
                 WorldSpacePos = new float3(State.Model.M14, State.Model.M24, State.Model.M34)
-            };            
+            };
 
-            YieldItem(lightResult);
+            YieldItem(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, lightResult));
         }
     }
    

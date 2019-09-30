@@ -4,6 +4,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Math.Core;
 using System.Linq;
+using System;
 
 namespace Fusee.Engine.Core
 {
@@ -22,7 +23,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
-        private List<LightResult> _lightComponents;
+        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
         private int _numberOfLights; 
 
         //private IEnumerable<System.Type> _codeComponentSubClasses;
@@ -48,8 +49,8 @@ namespace Fusee.Engine.Core
         public SceneContainer Convert(SceneContainer sc)
         {
             // check if the scene contains at least on light
-            _lightComponents = sc.Children.Viserate<LightViserator, LightResult>().ToList();
-            _numberOfLights = _lightComponents.Count == 0 ? 1 : _lightComponents.Count(); //Needed because the ShaderEffect is built here (when visiting a MaterialComponent).
+            _lightViseratorResults = sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();
+            _numberOfLights = _lightViseratorResults.Count == 0 ? 1 : _lightViseratorResults.Count(); //Needed because the ShaderEffect is built here (when visiting a MaterialComponent).
 
             //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
             var projectionComponents = sc.Children.Viserate<ProjectionViserator, ProjectionComponent>().ToList();

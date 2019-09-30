@@ -96,7 +96,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreateDepthTex()
         {           
-            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
 
@@ -105,7 +105,7 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public void CreateSSAOTex()
         {           
-            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
+            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
             RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
         }
 
