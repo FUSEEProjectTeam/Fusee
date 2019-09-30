@@ -14,7 +14,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
    
   <PropertyGroup>
