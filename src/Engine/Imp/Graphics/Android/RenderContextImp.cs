@@ -2073,15 +2073,39 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.GenBuffers(1, out int gBuffer);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
 
-            var attachements = new List<DrawBufferMode>();
-
             int depthCnt = 0;
             var depthTexPos = (int)RenderTargetTextures.G_DEPTH;
 
-            for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+            if (!renderTarget.IsDepthOnly)
             {
-                var tex = renderTarget.RenderTextures[i];
-                if (tex == null) continue;
+                var attachements = new List<DrawBufferMode>();
+
+                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                {
+                    var tex = renderTarget.RenderTextures[i];
+                    if (tex == null) continue;
+
+                    if (tex.TextureHandle == null)
+                    {
+                        var iTexHandle = CreateTexture(tex);
+                        tex.TextureHandle = new TextureHandle();
+                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                    }
+
+                    if (i == depthTexPos)
+                    {
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        depthCnt++;
+                    }
+                    else
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                }
+
+                GL.DrawBuffers(attachements.Count, attachements.ToArray());
+            }
+            else
+            {
+                var tex = renderTarget.RenderTextures[depthTexPos];
 
                 if (tex.TextureHandle == null)
                 {
@@ -2090,16 +2114,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
                 }
 
-                if (i == depthTexPos)
-                {
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
-                    depthCnt++;
-                }
-                else
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                GL.DrawBuffers(0, new DrawBufferMode[1] { DrawBufferMode.None }); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
+                GL.ReadBuffer(ReadBufferMode.None);
             }
-
-            GL.DrawBuffers(attachements.Count, attachements.ToArray());
 
             return gBuffer;
         }

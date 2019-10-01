@@ -2170,21 +2170,46 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             return gDepthRenderbuffer;
         }
 
-
         private WebGLFramebuffer CreateFrameBuffer(IRenderTarget renderTarget)
         {
             var gBuffer = gl2.CreateFramebuffer();
             gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
 
-            var attachements = new List<uint>();
-
             int depthCnt = 0;
             var depthTexPos = (int)RenderTargetTextures.G_DEPTH;
 
-            for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+            if (!renderTarget.IsDepthOnly)
             {
-                var tex = renderTarget.RenderTextures[i];
-                if (tex == null) continue;
+                var attachements = new List<uint>();
+
+                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                {
+                    var tex = renderTarget.RenderTextures[i];
+                    if (tex == null) continue;
+
+                    if (tex.TextureHandle == null)
+                    {
+                        var iTexHandle = CreateTexture(tex);
+                        tex.TextureHandle = new TextureHandle();
+                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                    }
+
+                    if (i == depthTexPos)
+                    {
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        depthCnt++;
+                    }
+                    else
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+
+                    attachements.Add(COLOR_ATTACHMENT0 + (uint)i);
+                }
+
+                gl2.DrawBuffers(attachements.ToArray());
+            }
+            else
+            {
+                var tex = renderTarget.RenderTextures[depthTexPos];
 
                 if (tex.TextureHandle == null)
                 {
@@ -2193,18 +2218,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
                 }
 
-                if (i == depthTexPos)
-                {
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
-                    depthCnt++;
-                }
-                else
-                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
-               
-                attachements.Add(COLOR_ATTACHMENT0 + (uint)i);
+                gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                gl2.DrawBuffers(null); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
+                gl2.ReadBuffer(NONE);
             }
-
-            gl2.DrawBuffers(attachements.ToArray());
 
             return gBuffer;
         }

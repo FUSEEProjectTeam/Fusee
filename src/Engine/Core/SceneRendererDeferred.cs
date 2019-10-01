@@ -314,6 +314,7 @@ namespace Fusee.Engine.Core
             if (!_shadowRenderTargets.TryGetValue(key, out ShadowParams outParams))
             {
                 var shadowRenderTarget = new RenderTarget(shadowMapRes);
+                shadowRenderTarget.IsDepthOnly = true;
                 shadowRenderTarget.CreateDepthTex();
 
                 outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMat = lightMat, RenderTarget = shadowRenderTarget };

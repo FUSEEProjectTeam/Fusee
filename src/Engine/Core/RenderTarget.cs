@@ -37,7 +37,20 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Sets the resolution of the render textures.
         /// </summary>
-        public TexRes TextureResolution { get; private set; }        
+        public TexRes TextureResolution { get; private set; }
+
+        public bool IsDepthOnly { get; set ; }        
+
+        /// <summary>
+        /// Creates a new instance of type "RenderTarget".
+        /// </summary>
+        /// <param name="texRes">Resolution of the created Textures.</param>
+        public RenderTarget(TexRes texRes)
+        {           
+            RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextures)).Length];
+            TextureResolution = texRes;
+            IsDepthOnly = false;
+        }
 
         /// <summary>
         /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
@@ -48,16 +61,6 @@ namespace Fusee.Engine.Core
         {
             var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
-        }
-
-        /// <summary>
-        /// Creates a new instance of type "RenderTarget".
-        /// </summary>
-        /// <param name="texRes">Resolution of the created Textures.</param>
-        public RenderTarget(TexRes texRes)
-        {           
-            RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextures)).Length];
-            TextureResolution = texRes;            
         }
 
         public void CreateCubeMapOfType(RenderTargetTextures textureType)
