@@ -82,7 +82,9 @@ namespace Fusee.Engine.Core
 
         internal class ShadowParams
         {
-            public float4x4 LightSpaceMat;
+            // For omni directional shadow mapping there will be six LightSpaceMatrices
+            // to allow the creation of the cube map in one pass.
+            public float4x4[] LightSpaceMats;
             public RenderTarget RenderTarget;
             public float2 ClipPlanesForLightMat;
         }
@@ -266,8 +268,12 @@ namespace Fusee.Engine.Core
             float3 lightPos;
             float4x4 lightView;
             float4x4 lightProjection;
-
-            float4x4 lightMat;
+            
+            float4x4[] lightSpaceMatrices;
+            if (lr.Light.Type != Base.Common.LightType.Point)
+                lightSpaceMatrices = new float4x4[1];
+            else
+                lightSpaceMatrices = new float4x4[6];
 
             float zNear;
             float zFar;
@@ -281,16 +287,32 @@ namespace Fusee.Engine.Core
                     lightProjection = GetProjectionForParallelLight(lightView, out var clipPlanes);
                     zNear = clipPlanes.x;
                     zFar = clipPlanes.y;
-                    lightMat = lightProjection * lightView;
+                    lightSpaceMatrices[0] = lightProjection * lightView;
                     break;
                 case Base.Common.LightType.Point:
                     //TODO: implement cube shadow maps
                     lightPos = lr.WorldSpacePos;
                     zNear = 0.1f;
                     zFar = lr.Light.MaxDistance;
-                    lightProjection = float4x4.CreateOrthographic(lr.Light.MaxDistance, lr.Light.MaxDistance, zNear, zFar);
-                    lightView = float4x4.LookAt(lightPos, lightPos + float3.Normalize(lr.Rotation * float3.UnitZ), lr.Rotation * float3.UnitY);
-                    lightMat = lightProjection * lightView;
+
+                    lightProjection = float4x4.CreatePerspectiveFieldOfView(M.DegreesToRadians(90), 1f, zNear, zFar);
+                    lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitX, -float3.UnitY); //right face
+                    lightSpaceMatrices[0] = lightProjection * lightView;
+                    
+                    lightView = float4x4.LookAt(lightPos, lightPos + -float3.UnitX, -float3.UnitY); //left face
+                    lightSpaceMatrices[1] = lightProjection * lightView;
+                    
+                    lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitY, float3.UnitZ); //upper face
+                    lightSpaceMatrices[2] = lightProjection * lightView;
+                    
+                    lightView = float4x4.LookAt(lightPos, lightPos + -float3.UnitY, -float3.UnitZ); //lower face
+                    lightSpaceMatrices[3] = lightProjection * lightView;
+                    
+                    lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitZ, -float3.UnitY); //back face
+                    lightSpaceMatrices[4] = lightProjection * lightView;
+                    
+                    lightView = float4x4.LookAt(lightPos, lightPos + -float3.UnitZ, -float3.UnitY); //front face
+                    lightSpaceMatrices[5] = lightProjection * lightView;
                     break;
                 case Base.Common.LightType.Spot:
                     lightPos = lr.WorldSpacePos;
@@ -298,14 +320,14 @@ namespace Fusee.Engine.Core
                     zFar = 0.1f + lr.Light.MaxDistance;
                     lightProjection = float4x4.CreatePerspectiveFieldOfView(M.DegreesToRadians(lr.Light.OuterConeAngle)*2, 1f, zNear, zFar);
                     lightView = float4x4.LookAt(lightPos, lightPos + float3.Normalize(lr.Rotation * float3.UnitZ), lr.Rotation * float3.UnitY);
-                    lightMat = lightProjection * lightView;
+                    lightSpaceMatrices[0] = lightProjection * lightView;
                     break;
                 case Base.Common.LightType.Legacy:                    
                     lightView = _rc.View;
                     lightProjection = GetProjectionForParallelLight(lightView, out var clipPlanesLegacy);
                     zNear = clipPlanesLegacy.x;
                     zFar = clipPlanesLegacy.y;
-                    lightMat = lightProjection * lightView;
+                    lightSpaceMatrices[0] = lightProjection * lightView;
                     break;
                 default:
                     throw new ArgumentException("No Light Space Matrix created, light type not supported!");
@@ -313,16 +335,18 @@ namespace Fusee.Engine.Core
 
             if (!_shadowRenderTargets.TryGetValue(key, out ShadowParams outParams))
             {
-                var shadowRenderTarget = new RenderTarget(shadowMapRes);
-                shadowRenderTarget.IsDepthOnly = true;
+                var shadowRenderTarget = new RenderTarget(shadowMapRes)
+                {
+                    IsDepthOnly = true
+                };
                 shadowRenderTarget.CreateDepthTex();
 
-                outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMat = lightMat, RenderTarget = shadowRenderTarget };
+                outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, RenderTarget = shadowRenderTarget };
                 _shadowRenderTargets.Add(key, outParams);
             }
             else
             {
-                outParams.LightSpaceMat = lightMat;
+                outParams.LightSpaceMats = lightSpaceMatrices;
                 outParams.ClipPlanesForLightMat = new float2(zNear, zFar);
             }
 
@@ -361,7 +385,7 @@ namespace Fusee.Engine.Core
             if (light.IsCastingShadows)
             {
                 effect.SetEffectParam("ShadowMap", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH]);
-                effect.SetEffectParam("LightSpaceMatrix", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].LightSpaceMat);
+                effect.SetEffectParam("LightSpaceMatrix", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].LightSpaceMats[0]);
             }
         }
 
@@ -394,7 +418,7 @@ namespace Fusee.Engine.Core
 
                 var shadowParams = CalculateLightSpaceMat(lightVisRes.Item2, ShadowMapRes, key);
                 rc.SetRenderTarget(shadowParams.RenderTarget);
-                _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMat);
+                _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMats[0]);
                 _shadowEffect.SetEffectParam("LightMatClipPlanes", _shadowRenderTargets[key].ClipPlanesForLightMat);
                 _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);                
                 Traverse(_sc.Children);
