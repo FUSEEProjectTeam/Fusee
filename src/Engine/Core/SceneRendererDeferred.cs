@@ -102,9 +102,20 @@ namespace Fusee.Engine.Core
             _texRes = texRes;
             _projectionComponent = projComp;
             _gBufferRenderTarget = new RenderTarget(_texRes);
+            _gBufferRenderTarget.CreatePositionTex();
+            _gBufferRenderTarget.CreateAlbedoSpecularTex();
+            _gBufferRenderTarget.CreateNormalTex();
+            _gBufferRenderTarget.CreateDepthTex();
+
             _ssaoRenderTarget = new RenderTarget(_texRes);
+            _ssaoRenderTarget.CreateSSAOTex();
+
             _blurRenderTarget = new RenderTarget(_texRes);
+            _blurRenderTarget.CreateSSAOTex();
+
             _lightedSceneRenderTarget = new RenderTarget(_texRes);
+            _lightedSceneRenderTarget.CreateAlbedoSpecularTex();
+
             _ambientLightedSceneRenderTarget = new RenderTarget(_texRes);
 
             _shadowRenderTargets = new Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams>();
@@ -433,7 +444,7 @@ namespace Fusee.Engine.Core
             //Pass 2: SSAO
             _currentPass = DeferredPasses.SSAO;
             if (_ssaoTexEffect == null)
-                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_ssaoRenderTarget, _gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(_projectionComponent.ZNear, _projectionComponent.ZNear));
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(_projectionComponent.ZNear, _projectionComponent.ZNear));
             _quadShaderEffectComp.Effect = _ssaoTexEffect;
             rc.SetRenderTarget(_ssaoRenderTarget);
             Traverse(_quadScene.Children);
@@ -441,7 +452,7 @@ namespace Fusee.Engine.Core
             //Pass 3: Blur SSAO Texture
             _currentPass = DeferredPasses.SSAO_BLUR;
             if (_blurEffect == null)
-                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTarget, _blurRenderTarget);
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTarget);
             _quadShaderEffectComp.Effect = _blurEffect;
             rc.SetRenderTarget(_blurRenderTarget);
             Traverse(_quadScene.Children);

@@ -1332,12 +1332,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="srcSsaoRenderTarget">The RenderTarget containing the non blurred ssao texture.</param>
-        /// <param name="targetSsaoRenderTarget">The RenderTarget containing the blurred ssao texture.</param>       
-        public static ShaderEffect SSAORenderTargetBlurEffect(RenderTarget srcSsaoRenderTarget, RenderTarget targetSsaoRenderTarget)
+        /// <param name="srcSsaoRenderTarget">The RenderTarget containing the non blurred ssao texture.</param>        
+        public static ShaderEffect SSAORenderTargetBlurEffect(RenderTarget srcSsaoRenderTarget)
         {
-            targetSsaoRenderTarget.CreateSSAOTex();
-
             float blurKernelSize;
             switch (srcSsaoRenderTarget.TextureResolution)
             {
@@ -1433,16 +1430,13 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Shader effect for the ssao pass.
-        /// </summary>
-        /// <param name="ssaoRenderTarget">The RenderTarget containing the (non blurred) ssao texture.</param>
+        /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="clipPlaneDist">Distances to near and far clipping planes.</param>        
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget ssaoRenderTarget, RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, float2 clipPlaneDist)
+        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, float2 clipPlaneDist)
         {
-            ssaoRenderTarget.CreateSSAOTex();
-
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
 
@@ -1581,11 +1575,6 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect GBufferTextureEffect(RenderTarget rt, float diffuseMix, Texture diffuseTex = null)
         {
-            rt.CreatePositionTex();
-            rt.CreateAlbedoSpecularTex();
-            rt.CreateNormalTex();
-            rt.CreateDepthTex();
-
             var textures = rt.RenderTextures;
 
             //------------ vertex shader ------------------//
@@ -1930,17 +1919,15 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
             });
         }
-        
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="targetRenderTarget">The render target, containing the texture we want to render to.</param>       
+        /// <param name="shadowRenderTarget">The render target, containing the texture we want to render to.</param>       
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, RenderTarget targetRenderTarget, RenderTarget shadowRenderTarget = null)
-        {
-            targetRenderTarget.CreateAlbedoSpecularTex();
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, RenderTarget shadowRenderTarget = null)
+        {            
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
             vert.Append(Version());
