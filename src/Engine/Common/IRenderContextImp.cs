@@ -679,13 +679,6 @@ namespace Fusee.Engine.Common
 
         void SetRenderTarget(IRenderTarget renderTarget);
 
-        /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
-        /// </summary>
-        /// <param name="texture">The texture as target</param>
-        /// <param name="position">The texture position within a cubemap</param>
-        void SetCubeMapRenderTarget(ITextureHandle texture, int position);
-
         /*
          * TODO: NO tangent space normal maps at this time...
          * 

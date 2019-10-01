@@ -2099,29 +2099,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
             */
             throw new NotImplementedException("TODO: See if WebGLDotNET supports required operations.");
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="texture"></param>
-        /// <param name="position"></param>
-        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
-        {
-            var textureImp = (TextureHandle)texture;
-
-            // Enable writes to the color buffer
-            gl.BindFramebuffer(FRAMEBUFFER, textureImp.FboHandle);
-
-            // bind correct texture
-            gl.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, (uint) (TEXTURE_CUBE_MAP_POSITIVE_X + position), textureImp.Handle, 0);
-
-
-            //gl.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            //Clear(ClearFlags.Depth | ClearFlags.Color);
-
-        }
+        }        
        
 
         public void SetRenderTarget(IRenderTarget renderTarget)

@@ -1677,17 +1677,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
-        /// </summary>
-        /// <param name="texture">The texture as target</param>
-        /// <param name="position">The texture position within a cubemap</param>
-        public void SetCubeMapRenderTarget(Texture texture, int position)
-        {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
-            _rci.SetCubeMapRenderTarget(textureHandle, position);
-        }
-
-        /// <summary>
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="m">The mesh that should be rendered.</param>

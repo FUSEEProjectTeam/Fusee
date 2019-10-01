@@ -229,10 +229,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.Depth:
-                    internalFormat = PixelInternalFormat.DepthComponent24;                  
+                    internalFormat = PixelInternalFormat.DepthComponent24;
+                    format = PixelFormat.DepthComponent;
+                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, IntPtr.Zero);
                     GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);                   
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);                   
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);                   
+                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba8ui;
@@ -2073,26 +2074,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var height = textureImp.TextureHeight;
             GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="texture"></param>
-        /// <param name="position"></param>
-        public void SetCubeMapRenderTarget(ITextureHandle texture, int position)
-        {
-            var textureImp = (TextureHandle)texture;
-
-            // Enable writes to the color buffer
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, textureImp.FboHandle);
-
-            // bind correct texture
-            GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMapPositiveX + position, textureImp.Handle, 0);
-
-
-            //GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            //Clear(ClearFlags.Depth | ClearFlags.Color);
-        }
+        
        
         /// <summary>
         /// Sets the RenderTarget.
@@ -2117,28 +2099,31 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
-            }
+            }            
 
-            int gDepthRenderbufferHandle;
-            if (renderTarget.DepthBufferHandle == null)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null)
             {
-                renderTarget.DepthBufferHandle = new RenderBufferHandle();
-                // Create and attach depth buffer (renderbuffer)
-                gDepthRenderbufferHandle = CreateDepthRenderBuffer(renderTarget);
-                ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
+                int gDepthRenderbufferHandle;
+                if (renderTarget.DepthBufferHandle == null)
+                {
+                    renderTarget.DepthBufferHandle = new RenderBufferHandle();
+                    // Create and attach depth buffer (renderbuffer)
+                    gDepthRenderbufferHandle = CreateDepthRenderBuffer(renderTarget);
+                    ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
+                }
+                else
+                {
+                    gDepthRenderbufferHandle = ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle;
+                    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
+                }
             }
-            else
-            {
-                gDepthRenderbufferHandle = ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle;
-                GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            }
-
-            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
             
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
             }
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
         private int CreateDepthRenderBuffer(IRenderTarget renderTarget)
@@ -2156,9 +2141,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int CreateFrameBuffer(IRenderTarget renderTarget)
         {
             var gBuffer = GL.GenFramebuffer();
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
-            
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);            
             var attachements = new List<DrawBuffersEnum>();
+
+            int depthCnt = 0;
+            var depthTexPos = (int)RenderTargetTextures.G_DEPTH;
 
             //Textures
             for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
@@ -2172,13 +2159,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     tex.TextureHandle = new TextureHandle();
                     ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
                 }
-
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + i, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                
+                if(i == depthTexPos)
+                {
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                    depthCnt++;
+                }
+                else                
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + (i-depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);                
+                              
                 attachements.Add(DrawBuffersEnum.ColorAttachment0 + i);
-            }         
-
-            GL.DrawBuffers(attachements.Count, attachements.ToArray());
-
+            }
+            
+            GL.DrawBuffers(attachements.Count, attachements.ToArray());            
             return gBuffer;
         }
 

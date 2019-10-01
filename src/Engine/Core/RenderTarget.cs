@@ -1,13 +1,9 @@
-﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
+using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
-{
-    
+{    
     
     /// <summary>
     /// Render to a target if you want to render to a texture and use them in an other pass.
@@ -15,9 +11,8 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class RenderTarget : IRenderTarget, IDisposable
     {
-        // Event of mesh Data changes
         /// <summary>
-        /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
+        /// Event that deletes unmanaged buffer objects.
         /// </summary>
         public event EventHandler<EventArgs> DeleteBuffers;
 
@@ -26,6 +21,8 @@ namespace Fusee.Engine.Core
 
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
+
+        public IWritableCubeMap CubeMap { get; private set; }
 
         /// <summary>
         /// Handle of the corresponding G-Buffer. Used to dispose the object if it isn't needed anymore.
@@ -41,7 +38,6 @@ namespace Fusee.Engine.Core
         /// Sets the resolution of the render textures.
         /// </summary>
         public TexRes TextureResolution { get; private set; }        
-        
 
         /// <summary>
         /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
@@ -62,7 +58,26 @@ namespace Fusee.Engine.Core
         {           
             RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextures)).Length];
             TextureResolution = texRes;            
-        }        
+        }
+
+        public void CreateCubeMapOfType(RenderTargetTextures textureType)
+        {
+            switch (textureType)
+            {
+                case RenderTargetTextures.G_POSITION:
+                    break;
+                case RenderTargetTextures.G_ALBEDO_SPECULAR:
+                    break;
+                case RenderTargetTextures.G_NORMAL:
+                    break;
+                case RenderTargetTextures.G_DEPTH:
+                    break;
+                case RenderTargetTextures.G_SSAO:
+                    break;
+                default:
+                    break;
+            }
+        }
 
         /// <summary>
         /// Generates a position texture.
@@ -96,7 +111,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void CreateDepthTex()
         {           
-            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.Depth), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
             RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
         }
 

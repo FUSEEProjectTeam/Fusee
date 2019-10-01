@@ -16,7 +16,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Should be containing zeros by default. If you want to use the PixelData directly it gets blted from the graphics card (not implemented yet).
         /// </summary>
-        public new byte[] PixelData { get; private set; } //TODO: get px data (and _imageData) from graphics card on PixelData get()
+        public new byte[] PixelData { get; private set; } //TODO: (?) get px data (and _imageData) from graphics card on PixelData get()
 
         /// <summary>
         /// Width in pixels.
