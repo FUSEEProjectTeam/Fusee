@@ -65,8 +65,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.09f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
             //Add resize delegate
@@ -197,14 +197,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            //if (!rotate)
-            //{
-            //    _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(20), 0, 0));
-            //    rotate = true;
-            //}
+            if (!rotate)
+            {
+                _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(20), 0, 0));
+                rotate = true;
+            }
 
-            _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.1f), 0, 0));
-            Diagnostics.Log(_sunTransform.Rotation);
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.1f), 0, 0));
+            //Diagnostics.Log(_sunTransform.Rotation);
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
             if (deg < 0)
