@@ -64,5 +64,60 @@ namespace Fusee.Engine.Core
             FilterMode = filterMode;
             WrapMode = wrapMode;            
         }
+
+        /// <summary>
+        /// Create a texture that is intended to save position information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreatePosTex(int width, int height)
+        {
+            return new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save albedo (rgb channels) and specular (alpha channel) information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateAlbedoSpecularTex(int width, int height)
+        {
+            return new WritableTexture(new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save normal information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateNormalTex(int width, int height)
+        {
+            return new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save depth information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateDepthTex(int width, int height)
+        {
+            return new WritableTexture(new ImagePixelFormat(ColorFormat.Depth), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save ssao information.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateSSAOTex(int width, int height)
+        {
+            return new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+        }
     }
 }

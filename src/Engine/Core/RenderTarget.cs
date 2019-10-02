@@ -39,6 +39,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public TexRes TextureResolution { get; private set; }
 
+        /// <summary>
+        /// If the RenderTarget only contains a depth texture or a depth cube map, there will be no draw buffers.
+        /// </summary>
         public bool IsDepthOnly { get; set ; }        
 
         /// <summary>
@@ -52,6 +55,11 @@ namespace Fusee.Engine.Core
             IsDepthOnly = false;
         }
 
+        public void CreateCubeMap(RenderTargetTextures textureType)
+        {
+            CubeMap = new WritableCubeMap(textureType, TextureResolution);
+        }
+
         /// <summary>
         /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
         /// </summary>
@@ -61,71 +69,48 @@ namespace Fusee.Engine.Core
         {
             var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
-        }
-
-        public void CreateCubeMapOfType(RenderTargetTextures textureType)
-        {
-            switch (textureType)
-            {
-                case RenderTargetTextures.G_POSITION:
-                    break;
-                case RenderTargetTextures.G_ALBEDO_SPECULAR:
-                    break;
-                case RenderTargetTextures.G_NORMAL:
-                    break;
-                case RenderTargetTextures.G_DEPTH:
-                    break;
-                case RenderTargetTextures.G_SSAO:
-                    break;
-                default:
-                    break;
-            }
-        }
+        }         
+        
 
         /// <summary>
-        /// Generates a position texture.
+        /// Generates a position texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void CreatePositionTex()
-        {            
-            var posTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);            
-            RenderTextures[(int)RenderTargetTextures.G_POSITION] = posTex;
-        }
-
-        /// <summary>
-        /// Generates a albedo and specular (alpha channel) texture.
-        /// </summary>       
-        public void CreateAlbedoSpecularTex()
-        {            
-            var albedoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.RGBA), (int)TextureResolution, (int)TextureResolution, false);
-            RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR] = albedoTex;
-        }
-
-        /// <summary>
-        /// Generates a normal texture.
-        /// </summary>
-        public void CreateNormalTex()
+        public void SetPositionTex()
         {          
-            var normalTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB16), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
-            RenderTextures[(int)RenderTargetTextures.G_NORMAL] = normalTex;
+            RenderTextures[(int)RenderTargetTextures.G_POSITION] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
-        /// Generates a depth texture.
+        /// Generates a albedo and specular (alpha channel) texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>       
+        public void SetAlbedoSpecularTex()
+        {
+            RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR] = WritableTexture.CreateAlbedoSpecularTex((int)TextureResolution, (int)TextureResolution);
+        }
+
+        /// <summary>
+        /// Generates a normal texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void CreateDepthTex()
-        {           
-            var depthTex = new WritableTexture(new ImagePixelFormat(ColorFormat.Depth), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
-            RenderTextures[(int)RenderTargetTextures.G_DEPTH] = depthTex;
+        public void SetNormalTex()
+        {
+            RenderTextures[(int)RenderTargetTextures.G_NORMAL] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
-        /// Generates a ssao texture.
-        /// </summary>        
-        public void CreateSSAOTex()
-        {           
-            var ssaoTex = new WritableTexture(new ImagePixelFormat(ColorFormat.fRGB32), (int)TextureResolution, (int)TextureResolution, false, TextureFilterMode.NEAREST);
-            RenderTextures[(int)RenderTargetTextures.G_SSAO] = ssaoTex;
+        /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>
+        public void SetDepthTex()
+        {
+            RenderTextures[(int)RenderTargetTextures.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution);
         }
+
+        /// <summary>
+        /// Generates a ssao texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>        
+        public void SetSSAOTex()
+        { 
+            RenderTextures[(int)RenderTargetTextures.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+        }        
 
         // Public implementation of Dispose pattern callable by consumers.
         public void Dispose()

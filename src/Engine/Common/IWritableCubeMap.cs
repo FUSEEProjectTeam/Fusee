@@ -1,4 +1,6 @@
 ﻿
+using Fusee.Base.Common;
+
 namespace Fusee.Engine.Common
 {
     /// <summary>
@@ -6,15 +8,16 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IWritableCubeMap
     {
-        /// <summary>
-        /// Textures are evaluated in the following order: 
-        /// Positive X
-        /// Negative X
-        /// Positive Y
-        /// Negative Y
-        /// Positive Z
-        /// Negative Z
-        /// </summary>
-        IWritableTexture[] Textures { get; set; }
+        RenderTargetTextures TextureType { get;}       
+
+        IWritableTexture PositiveX { get; }
+        IWritableTexture NegativeX { get; }
+        IWritableTexture PositiveY { get; }
+        IWritableTexture NegativeY { get; }
+        IWritableTexture PositiveZ { get; }
+        IWritableTexture NegativeZ { get; }
+
+        ITexture GetTextureByFace(CubeMapFaces face);
+
     }
 }

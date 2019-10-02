@@ -183,6 +183,86 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+        public ITextureHandle CreateCubeMap(IWritableCubeMap img)
+        {
+            PixelInternalFormat internalFormat;
+            PixelFormat format;            
+            PixelType pxType;
+
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.TextureCubeMap, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.PositiveX.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.PositiveX.WrapMode);
+
+            switch (img.PositiveX.PixelFormat.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    internalFormat = PixelInternalFormat.Rgba;
+                    format = PixelFormat.Bgra;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                case ColorFormat.RGB:
+                    internalFormat = PixelInternalFormat.Rgb;
+                    format = PixelFormat.Bgr;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case ColorFormat.Intensity:
+                    internalFormat = PixelInternalFormat.Alpha;
+                    format = PixelFormat.Alpha;
+                    pxType = PixelType.UnsignedByte;
+                    break;
+                case ColorFormat.Depth:
+                    internalFormat = PixelInternalFormat.DepthComponent24;
+                    format = PixelFormat.DepthComponent;
+                    pxType = PixelType.Float;
+                    break;
+                case ColorFormat.iRGBA:
+                    internalFormat = PixelInternalFormat.Rgba8ui;
+                    format = PixelFormat.RgbaInteger;
+                    pxType = PixelType.UnsignedByte;
+
+                    break;
+                case ColorFormat.fRGB32:
+                    internalFormat = PixelInternalFormat.Rgb32f;
+                    format = PixelFormat.Rgb;
+                    pxType = PixelType.Float;
+
+                    break;
+                case ColorFormat.fRGB16:
+                    internalFormat = PixelInternalFormat.Rgb16f;
+                    format = PixelFormat.Rgb;
+                    pxType = PixelType.Float;
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                var face = img.GetTextureByFace((CubeMapFaces)i);
+                if(face.PixelFormat.ColorFormat == ColorFormat.Depth)
+                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, face.Width, face.Height, 0, format, pxType, IntPtr.Zero);
+                else
+                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, face.Width, face.Height, 0, format, pxType, face.PixelData);
+            }
+
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { Handle = id };
+
+            return texID;
+        }
+
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>

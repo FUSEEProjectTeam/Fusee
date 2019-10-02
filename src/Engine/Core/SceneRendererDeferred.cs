@@ -102,19 +102,19 @@ namespace Fusee.Engine.Core
             _texRes = texRes;
             _projectionComponent = projComp;
             _gBufferRenderTarget = new RenderTarget(_texRes);
-            _gBufferRenderTarget.CreatePositionTex();
-            _gBufferRenderTarget.CreateAlbedoSpecularTex();
-            _gBufferRenderTarget.CreateNormalTex();
-            _gBufferRenderTarget.CreateDepthTex();
+            _gBufferRenderTarget.SetPositionTex();
+            _gBufferRenderTarget.SetAlbedoSpecularTex();
+            _gBufferRenderTarget.SetNormalTex();
+            _gBufferRenderTarget.SetDepthTex();
 
             _ssaoRenderTarget = new RenderTarget(_texRes);
-            _ssaoRenderTarget.CreateSSAOTex();
+            _ssaoRenderTarget.SetSSAOTex();
 
             _blurRenderTarget = new RenderTarget(_texRes);
-            _blurRenderTarget.CreateSSAOTex();
+            _blurRenderTarget.SetSSAOTex();
 
             _lightedSceneRenderTarget = new RenderTarget(_texRes);
-            _lightedSceneRenderTarget.CreateAlbedoSpecularTex();
+            _lightedSceneRenderTarget.SetAlbedoSpecularTex();
 
             _ambientLightedSceneRenderTarget = new RenderTarget(_texRes);
 
@@ -350,7 +350,7 @@ namespace Fusee.Engine.Core
                 {
                     IsDepthOnly = true
                 };
-                shadowRenderTarget.CreateDepthTex();
+                shadowRenderTarget.SetDepthTex();
 
                 outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, RenderTarget = shadowRenderTarget };
                 _shadowRenderTargets.Add(key, outParams);
