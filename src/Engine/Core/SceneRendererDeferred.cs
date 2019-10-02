@@ -418,6 +418,7 @@ namespace Fusee.Engine.Core
 
             _rc.ClearColor = _texClearColor;
 
+            //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass.
             //Create shadow textures in GBuffer RenderTarget and one RenderTarget for each shadow map.
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes);
             _currentPass = DeferredPasses.SHADOW;
@@ -497,6 +498,7 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, _lightedSceneRenderTarget);
                 }
 
+                //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass.
                 var lightPassCnt = 0;
                 rc.SetRenderTarget(_lightedSceneRenderTarget);
                 for (int i = 0; i < LightViseratorResults.Count; i++)

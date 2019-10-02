@@ -20,6 +20,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         // ReSharper disable InconsistentNaming
         public string VS;
+
+        /// <summary>
+        /// Geometry-shader as string
+        /// </summary>
+        public string GS;
+
         /// <summary>
         /// Pixel- or fragmentshader as string
         /// </summary>

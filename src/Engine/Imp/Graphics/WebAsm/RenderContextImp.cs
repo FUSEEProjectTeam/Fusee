@@ -999,12 +999,16 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Do not use this function in frequent updates.
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
+        /// <param name="gs">The vertex shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
         /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps)
+        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
         {
+            if (gs != null)
+                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+
             bool statusCode;
             string info;
 

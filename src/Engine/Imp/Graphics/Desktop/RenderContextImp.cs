@@ -1052,16 +1052,18 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Do not use this function in frequent updates.
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
+        /// <param name="gs">The geometry shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
         /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps)
+        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
         {
             int statusCode;
             string info;
 
             int vertexObject = GL.CreateShader(ShaderType.VertexShader);
+
             int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
 
             // Compile vertex shader
@@ -1069,6 +1071,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.CompileShader(vertexObject);
             GL.GetShaderInfoLog(vertexObject, out info);
             GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out statusCode);
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            // Compile geometry shader
+            int geometryObject = -1;
+            if (gs != null)
+            {
+                geometryObject = GL.CreateShader(ShaderType.GeometryShader);
+
+                GL.ShaderSource(geometryObject, gs);
+                GL.CompileShader(geometryObject);
+                GL.GetShaderInfoLog(geometryObject, out info);
+                GL.GetShader(geometryObject, ShaderParameter.CompileStatus, out statusCode);
+            }
 
             if (statusCode != 1)
                 throw new ApplicationException(info);
@@ -1084,6 +1101,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             int program = GL.CreateProgram();
             GL.AttachShader(program, fragmentObject);
+
+            if(gs != null)
+                GL.AttachShader(program, geometryObject);
+
             GL.AttachShader(program, vertexObject);
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
@@ -1096,7 +1117,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindAttribLocation(program, Helper.BoneWeightAttribLocation, Helper.BoneWeightAttribName);
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
-            GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
+            GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
 
             // mr: Detach Shader & delete
             //GL.DetachShader(program, fragmentObject);

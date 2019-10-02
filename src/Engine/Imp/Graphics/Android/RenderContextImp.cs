@@ -851,13 +851,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps)
+        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
         {
+            if (gs != null)
+                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+
             int statusCode;
             StringBuilder info = new StringBuilder(512);
             int length;
 
-            int vertexObject = GL.CreateShader(All.VertexShader);
+            int vertexObject = GL.CreateShader(All.VertexShader);            
             int fragmentObject = GL.CreateShader(All.FragmentShader);
 
             // Compile vertex shader

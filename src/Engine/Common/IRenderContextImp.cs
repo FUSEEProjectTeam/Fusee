@@ -46,12 +46,13 @@ namespace Fusee.Engine.Common
         /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
         /// </summary>
         void DisableDepthClamp();
-       
+
 
         /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
+        /// <param name="gs">A string containing the geometry shader source.</param>
         /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
@@ -59,7 +60,7 @@ namespace Fusee.Engine.Common
         /// The result is already compiled to code executable on the GPU. <see cref="IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        IShaderProgramImp CreateShader(string vs, string ps);
+        IShaderProgramImp CreateShader(string vs, string ps, string gs = null);
 
         /// <summary>
         /// Removes given shaderprogramm from GPU
