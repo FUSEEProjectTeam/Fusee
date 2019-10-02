@@ -46,6 +46,16 @@ namespace Fusee.Engine.Core
             }
         }
 
+        private ITextureHandle RegisterNewWritableTexture(WritableCubeMap texture)
+        {
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
+
+            return texture.TextureHandle;
+
+        }
 
         private ITextureHandle RegisterNewWritableTexture(WritableTexture texture)
         {
@@ -86,6 +96,15 @@ namespace Fusee.Engine.Core
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out foundTextureHandle))
             {
                 return RegisterNewTexture(texture);
+            }
+            return foundTextureHandle;
+        }
+
+        public ITextureHandle GetWritableTextureHandleFromTexture(WritableCubeMap texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            {
+                return RegisterNewWritableTexture(texture);
             }
             return foundTextureHandle;
         }

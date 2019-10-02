@@ -190,7 +190,7 @@ namespace Fusee.Engine.Core
         /// The view matrix.
         /// </value>
         /// <remarks>
-        /// This matrix is also reffered often as the camera transformation(not the projection). 
+        /// This matrix is also referred often as the camera transformation(not the projection). 
         /// It describes the orientation of the view that is used to render a scene.
         /// You can use <see cref="float4x4.LookAt(float3, float3, float3)"/> to create a valid view matrix and analyze how it is build up.
         /// </remarks>
@@ -1039,9 +1039,20 @@ namespace Fusee.Engine.Core
         {
             ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle);
-        }        
+        }
 
-        
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="texture">An ITexture.</param>
+        public void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
+        {
+            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
+            _rci.SetShaderParamTexture(param, textureHandle);
+        }
+
+
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
@@ -1145,9 +1156,9 @@ namespace Fusee.Engine.Core
         /// The result is already compiled to code executable on the GPU. <see cref="RenderContext.SetShader(ShaderProgram)"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        private ShaderProgram CreateShader(string vs, string ps)
+        private ShaderProgram CreateShader(string vs, string ps, string gs = null)
         {
-            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps));
+            var sp = new ShaderProgram(_rci, _rci.CreateShader(vs, ps, gs));
 
             /*
                 sp.ShaderParamHandlesImp = new ShaderParamHandleImp[MatrixParamNames.Length];
@@ -1231,7 +1242,7 @@ namespace Fusee.Engine.Core
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    compiledShader.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i]);
+                    compiledShader.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
                 }
             }
             catch (Exception ex)
@@ -1775,6 +1786,10 @@ namespace Fusee.Engine.Core
             else if (param.Info.Type == typeof(float4x4[]))
             {
                 SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+            }
+            else if (param.Value is IWritableCubeMap)
+            {
+                SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
             }
             else if (param.Value is IWritableTexture)
             {

@@ -1934,6 +1934,106 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
         /// </summary>
         /// <returns></returns>
+        public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
+        {
+            // Vertex shader ------------------------------
+            var vert = new StringBuilder();
+            vert.AppendLine("#version 330 core");           
+
+            vert.Append(@"                
+            
+            uniform mat4 FUSEE_M;              
+            in vec3 fuVertex; 
+            ");
+
+            vert.Append(@"
+            void main() 
+            {                
+                gl_Position = FUSEE_M * vec4(fuVertex, 1.0);               
+
+            }");
+
+            //Geometry shader ------------------------------
+            var geom = new StringBuilder();
+            geom.AppendLine("#version 330 core");
+            geom.Append(@"
+                layout (triangles) in;
+                layout (triangle_strip, max_vertices=18) out;
+
+                uniform mat4 LightSpaceMatrices[6];
+
+                out vec4 FragPos;
+
+                void main()
+                {
+                    for(int face = 0; face < 6; face++)
+                    {
+                        gl_Layer = face; // built-in variable that specifies to which face we render.
+                        for(int i = 0; i < 3; ++i) // for each triangle's vertices
+                        {
+                            FragPos = gl_in[i].gl_Position;
+                            gl_Position = LightSpaceMatrices[face] * FragPos;
+                            EmitVertex();
+                        }    
+                        EndPrimitive();
+                    }
+                }  
+
+            ");
+
+            // Fragment shader ------------------------------
+            var frag = new StringBuilder();
+            frag.Append("#version 330 core\n");
+
+            frag.Append("in vec4 FragPos;\n");
+            frag.Append("uniform vec2 LightMatClipPlanes;\n");
+            frag.Append("uniform vec3 LightPos;\n");
+
+            frag.Append(@"
+            void main()
+            {
+                // get distance between fragment and light source
+                float lightDistance = length(FragPos.xyz - LightPos);
+    
+                // map to [0;1] range by dividing by far_plane
+                lightDistance = lightDistance / LightMatClipPlanes.y;
+    
+                // write this as modified depth                
+                gl_FragDepth = lightDistance;
+            }  
+                
+            ");
+
+            var effectParamDecls = new List<EffectParameterDeclaration>();
+            effectParamDecls.Add(new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity });
+            effectParamDecls.Add(new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity });
+            effectParamDecls.Add(new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One });
+            effectParamDecls.Add(new EffectParameterDeclaration { Name = "LightPos", Value = float3.One });
+            effectParamDecls.Add(new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices });            
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = vert.ToString(),
+                    GS = geom.ToString(),
+                    PS = frag.ToString(),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                        CullMode = Cull.Clockwise,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },            
+            effectParamDecls.ToArray());
+        }
+
+        /// <summary>
+        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
+        /// </summary>
+        /// <returns></returns>
         public static ShaderEffect ShadowMapEffect()
         { 
             // Vertex shader ------------------------------

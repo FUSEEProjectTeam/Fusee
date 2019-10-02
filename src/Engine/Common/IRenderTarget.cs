@@ -8,7 +8,9 @@ namespace Fusee.Engine.Common
 
         IBufferHandle DepthBufferHandle { get; set; }
 
-        IWritableTexture[] RenderTextures { get; }        
+        IWritableTexture[] RenderTextures { get; } 
+        
+        IWritableCubeMap CubeMap { get; }
 
         TexRes TextureResolution { get; }
 

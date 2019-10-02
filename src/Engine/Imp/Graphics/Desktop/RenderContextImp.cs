@@ -192,13 +192,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.TextureCubeMap, id);
 
-            var glMinMagFilter = GetMinMagFilter(img.PositiveX.FilterMode);
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
 
-            var glWrapMode = GetWrapMode(img.PositiveX.WrapMode);
+            var glWrapMode = GetWrapMode(img.WrapMode);
 
-            switch (img.PositiveX.PixelFormat.ColorFormat)
+            switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
@@ -244,12 +244,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
 
             for (int i = 0; i < 6; i++)
-            {
-                var face = img.GetTextureByFace((CubeMapFaces)i);
-                if(face.PixelFormat.ColorFormat == ColorFormat.Depth)
-                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, face.Width, face.Height, 0, format, pxType, IntPtr.Zero);
+            {                
+                if(img.PixelFormat.ColorFormat == ColorFormat.Depth)
+                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, img.Width, img.Height, 0, format, pxType, IntPtr.Zero);
                 else
-                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, face.Width, face.Height, 0, format, pxType, face.PixelData);
+                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
             }
 
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
@@ -2182,7 +2181,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         public void SetRenderTarget(IRenderTarget renderTarget)
         {            
-            if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
+            if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null) && renderTarget.CubeMap == null))
             {    
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 return;
@@ -2202,7 +2201,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }            
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && (renderTarget.CubeMap == null && !renderTarget.IsDepthOnly))
             {
                 int gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
@@ -2280,15 +2279,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             else
             {
                 var tex = renderTarget.RenderTextures[depthTexPos];
-                
-                if (tex.TextureHandle == null)
+
+                if (tex != null)
                 {
-                    var iTexHandle = CreateTexture(tex);
-                    tex.TextureHandle = new TextureHandle();
-                    ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                    if (tex.TextureHandle == null)
+                    {
+                        var iTexHandle = CreateTexture(tex);
+                        tex.TextureHandle = new TextureHandle();
+                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                    }
+
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                }
+                else
+                {
+                    if(renderTarget.CubeMap != null)
+                    {                        
+                        if (renderTarget.CubeMap.TextureHandle == null)
+                        {
+                            var iTexHandle = CreateCubeMap(renderTarget.CubeMap);
+                            renderTarget.CubeMap.TextureHandle = new TextureHandle();
+                            ((TextureHandle)renderTarget.CubeMap.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
+                        }
+                    }
+
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)renderTarget.CubeMap.TextureHandle).Handle, 0);
                 }
                 
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
                 GL.DrawBuffer(DrawBufferMode.None);
                 GL.ReadBuffer(ReadBufferMode.None);
             }

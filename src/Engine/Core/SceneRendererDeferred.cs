@@ -79,6 +79,7 @@ namespace Fusee.Engine.Core
         private readonly TexRes _texRes;
         private readonly ProjectionComponent _projectionComponent;
         private readonly ShaderEffect _shadowEffect;
+        private ShaderEffect _shadowCubeMapEffect;
 
         internal class ShadowParams
         {
@@ -213,13 +214,12 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
 
-            if (_currentPass == DeferredPasses.SHADOW)
-                _rc.SetShaderEffect(_shadowEffect);
-            else
+            if (_currentPass != DeferredPasses.SHADOW)
             {
                 _rc.SetShaderEffect(shaderComponent.Effect);
                 _state.Effect = shaderComponent.Effect;
             }
+            
         }
 
         /// <summary>
@@ -274,7 +274,7 @@ namespace Fusee.Engine.Core
             return float4x4.CreateOrthographic(lightSpaceFrustumAABB.Size.x, lightSpaceFrustumAABB.Size.y, lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.min.z + lightSpaceFrustumAABB.Size.z);
         }
 
-        private ShadowParams CalculateLightSpaceMat(LightResult lr, TexRes shadowMapRes, Tuple<SceneNodeContainer, LightComponent> key)
+        private ShadowParams CreateShadowParams(LightResult lr, TexRes shadowMapRes, Tuple<SceneNodeContainer, LightComponent> key)
         {
             float3 lightPos;
             float4x4 lightView;
@@ -350,7 +350,12 @@ namespace Fusee.Engine.Core
                 {
                     IsDepthOnly = true
                 };
-                shadowRenderTarget.SetDepthTex();
+                if (lr.Light.Type == Base.Common.LightType.Point) 
+                {
+                    shadowRenderTarget.CreateCubeMap(Base.Common.ColorFormat.Depth);
+                }
+                else
+                    shadowRenderTarget.SetDepthTex();
 
                 outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, RenderTarget = shadowRenderTarget };
                 _shadowRenderTargets.Add(key, outParams);
@@ -422,17 +427,36 @@ namespace Fusee.Engine.Core
             //Create shadow textures in GBuffer RenderTarget and one RenderTarget for each shadow map.
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes);
             _currentPass = DeferredPasses.SHADOW;
+            _rc.SetShaderEffect(_shadowEffect);
             foreach (var lightVisRes in LightViseratorResults)
             {
                 if (!lightVisRes.Item2.Light.IsCastingShadows || !lightVisRes.Item2.Light.Active) continue;
 
                 var key = new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light);
 
-                var shadowParams = CalculateLightSpaceMat(lightVisRes.Item2, ShadowMapRes, key);
+                var shadowParams = CreateShadowParams(lightVisRes.Item2, ShadowMapRes, key);
+
+                if (lightVisRes.Item2.Light.Type == Base.Common.LightType.Point)
+                {
+                    if (_shadowCubeMapEffect == null)
+                        _shadowCubeMapEffect = ShaderCodeBuilder.ShadowCubeMapEffect(shadowParams.LightSpaceMats);
+                    else
+                    {
+                        _shadowCubeMapEffect.SetEffectParam($"LightSpaceMatrices[0]", shadowParams.LightSpaceMats);
+                    }
+
+                    _shadowCubeMapEffect.SetEffectParam("LightMatClipPlanes", shadowParams.ClipPlanesForLightMat);
+                    _shadowCubeMapEffect.SetEffectParam("LightPos", lightVisRes.Item2.WorldSpacePos);
+                    _rc.SetShaderEffect(_shadowCubeMapEffect);
+                }
+                else
+                {
+                    _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMats[0]);
+                    _shadowEffect.SetEffectParam("LightMatClipPlanes", _shadowRenderTargets[key].ClipPlanesForLightMat);
+                    _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+                }
+
                 rc.SetRenderTarget(shadowParams.RenderTarget);
-                _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMats[0]);
-                _shadowEffect.SetEffectParam("LightMatClipPlanes", _shadowRenderTargets[key].ClipPlanesForLightMat);
-                _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);                
                 Traverse(_sc.Children);
             }
 
@@ -519,7 +543,6 @@ namespace Fusee.Engine.Core
                 _quadShaderEffectComp.Effect = _fxaaEffect;
                 rc.SetRenderTarget();
                 Traverse(_quadScene.Children);
-
             }
         }
 

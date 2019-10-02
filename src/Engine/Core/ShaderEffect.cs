@@ -77,6 +77,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public readonly string[] PixelShaderSrc;
 
+        /// <summary>
+        /// Geometry of all passes
+        /// </summary>
+        public readonly string[]GeometryShaderSrc;
+
         // Event ShaderEffect changes
         /// <summary>
         /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
@@ -111,12 +116,14 @@ namespace Fusee.Engine.Core
             
             VertexShaderSrc = new string[nPasses];
             PixelShaderSrc = new string[nPasses];
+            GeometryShaderSrc = new string[nPasses];
 
             for (int i = 0; i < nPasses; i++)
             {
                 States[i] = effectPasses[i].StateSet;
                 VertexShaderSrc[i] = effectPasses[i].VS;
                 PixelShaderSrc[i] = effectPasses[i].PS;
+                GeometryShaderSrc[i] = effectPasses[i].GS;
             }
 
             ParamDecl = new Dictionary<string, object>();

@@ -55,9 +55,9 @@ namespace Fusee.Engine.Core
             IsDepthOnly = false;
         }
 
-        public void CreateCubeMap(RenderTargetTextures textureType)
+        public void CreateCubeMap(ColorFormat colorFormat)
         {
-            CubeMap = new WritableCubeMap(textureType, TextureResolution);
+            CubeMap = new WritableCubeMap(new ImagePixelFormat(colorFormat), (int)TextureResolution, (int) TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_EDGE);
         }
 
         /// <summary>

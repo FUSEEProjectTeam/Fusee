@@ -44,6 +44,6 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Create textures in high resolution.
         /// </summary>
-        HIGH_RES = 4069,
+        HIGH_RES = 4096,
     }
 }
