@@ -68,7 +68,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Jometri", "src\Jometr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Player.Core", "src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj", "{FE8C3118-A8F4-45CC-BF31-E2F38771BF4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "fuseeCmdLine", "src\Tools\fuseeCmdLine\fuseeCmdLine.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "fuseeCmdLine", "src\Tools\fuseeCmdLine\fuseeCmdLine.csproj", "{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}"
 EndProject
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "io_export_fus", "src\Tools\BlenderScripts\addons\io_export_fus\io_export_fus.pyproj", "{548BA459-616B-4D04-B0A1-2E19388C4B55}"
 EndProject

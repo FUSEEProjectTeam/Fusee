@@ -1,0 +1,12 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Target Name="FFUSEEEngineGuiNuGetCopyAssets" BeforeTargets="Build">
+    <Message Text="Copying NuGet FUSEE assets from Fusee.Engine.GUI to project" />
+    <ItemGroup>
+      <SourceAssets Include="$(MSBuildThisFileDirectory)..\contentFiles\Assets\**\*"/>
+    </ItemGroup>
+    <Copy
+       SourceFiles="@(SourceAssets)"
+       DestinationFiles="@(SourceAssets->'$(OutputPath)\Assets\%(RecursiveDir)%(Filename)%(Extension)')"
+         />
+  </Target>
+</Project>
