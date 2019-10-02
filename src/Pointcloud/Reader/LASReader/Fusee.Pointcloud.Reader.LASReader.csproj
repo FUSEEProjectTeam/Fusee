@@ -11,8 +11,12 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
   
   <ItemGroup>
@@ -20,7 +24,7 @@
     <None Include="$(FuseeEngineRoot)\ext\LASlib\$(Configuration)\libLASlib.so" Link="Natives\libLASlib.so" />-->
 
     <!-- Release version is usually faster -->
-    <None Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" />
-    <None Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" />
+    <Content Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.dll" Link="Natives\libLASlib.dll" PackagePath="runtimes/win/native" />
+    <Content Include="$(FuseeEngineRoot)\ext\LASlib\Release\libLASlib.so" Link="Natives\libLASlib.so" PackagePath="runtimes/linux/native" />
   </ItemGroup>
 </Project>
