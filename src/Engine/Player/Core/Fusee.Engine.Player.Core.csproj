@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Engine.Player.Core</RootNamespace>
     <PackageId>Fusee.Engine.Player.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -46,11 +47,4 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Assets\FuseeText.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>
