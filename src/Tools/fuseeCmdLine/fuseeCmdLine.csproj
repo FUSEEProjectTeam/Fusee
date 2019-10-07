@@ -5,6 +5,8 @@
     <AssemblyName>fusee</AssemblyName>
     <PackageId>Fusee.Tools.fuseeCmdLine</PackageId>
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>fusee</ToolCommandName>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>

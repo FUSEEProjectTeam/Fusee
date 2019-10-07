@@ -370,6 +370,7 @@ Global
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{BEE87E0D-4592-47C9-BDB3-C52755ED75B6}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{548BA459-616B-4D04-B0A1-2E19388C4B55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{548BA459-616B-4D04-B0A1-2E19388C4B55}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
 		{548BA459-616B-4D04-B0A1-2E19388C4B55}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
