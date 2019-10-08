@@ -42,18 +42,18 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for Scene.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
     <!-- for bcl.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
     <!-- for protogen.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
     <!-- Copy the python files to the bin output folder -->
     <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
