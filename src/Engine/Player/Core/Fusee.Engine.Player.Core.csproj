@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="NuGet\Fusee.Engine.Player.Core.targets" PackagePath="build\Fusee.Engine.Player.Core.targets" />
   </ItemGroup>
 
   <ItemGroup>
