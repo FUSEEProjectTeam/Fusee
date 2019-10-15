@@ -71,5 +71,10 @@ namespace Fusee.Serialization
         /// Defines if a shadow map is created for this light.
         /// </summary>
         public bool IsCastingShadows;
+
+        /// <summary>
+        /// Bias for calculating shadows.
+        /// </summary>
+        public float Bias;
     }
 }

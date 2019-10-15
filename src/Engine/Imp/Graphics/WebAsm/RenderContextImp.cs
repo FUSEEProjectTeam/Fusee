@@ -888,53 +888,24 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).Handle);
         }
 
-        public void SetShaderParamWritableTexture(IShaderParam param, int texId)
-        {
-            throw new NotImplementedException();
-        }
-
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITextureHandle probably returned from CreateWritableTexture method</param>
-        /// <param name="gHandle">The GBufferHandle</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
+        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
+        public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
         {
-            switch (gHandle)
+            var hParam = ((ShaderParam)param).handle;
+            int texUnit;
+            if (!_shaderParam2TexUnit.TryGetValue(hParam, out texUnit))
             {
-                case GBufferHandle.GPositionHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferPositionTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GNormalHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferNormalTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GAlbedoHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferAlbedoSpecTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GDepth:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferDepthTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.EnvMap:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).Handle;
-                    var hParam = ((ShaderParam)param).handle;
-                    int texUnit;
-                    if (!_shaderParam2TexUnit.TryGetValue(hParam, out texUnit))
-                    {
-                        texUnit = _currentTextureUnit++;
-                        _shaderParam2TexUnit[hParam] = texUnit;
-                    }
-                    gl.Uniform1i(hParam, texUnit);
-                    gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
-                    gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).Handle);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
+                texUnit = _currentTextureUnit++;
+                _shaderParam2TexUnit[hParam] = texUnit;
             }
+            gl.Uniform1i(hParam, texUnit);
+            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
+            //gl.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
+            gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).Handle);
         }
 
         #endregion

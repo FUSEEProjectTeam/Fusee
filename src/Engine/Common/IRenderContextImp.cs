@@ -233,9 +233,8 @@ namespace Fusee.Engine.Common
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
-        /// <param name="gHandle">The GBufferHandle</param>
-        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle);
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>
         /// Updates the texture from video the given video stream.

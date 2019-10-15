@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="textureType">The type of the texture.</param>
         /// <param name="sizePerFace">The resolution of the faces.</param>
-        public WritableCubeMap(ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public WritableCubeMap(RenderTargetTextures textureType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {           
             PixelFormat = colorFormat;
             Width = width;
@@ -73,6 +73,7 @@ namespace Fusee.Engine.Core
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
             WrapMode = wrapMode;
+            TextureType = textureType;
         }
 
         //private IWritableTexture[] _textures { get; set; }

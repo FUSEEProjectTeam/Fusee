@@ -810,9 +810,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
                     case ActiveUniformType.Sampler2D:
                     case ActiveUniformType.UnsignedIntSampler2D:
-                    case ActiveUniformType.IntSampler2D:
-                    case ActiveUniformType.SamplerCube:
+                    case ActiveUniformType.IntSampler2D:                    
                         paramInfo.Type = typeof(ITexture);
+                        break;
+                    case ActiveUniformType.SamplerCube:
+                        paramInfo.Type = typeof(IWritableCubeMap);
                         break;
                     default:
                         throw new ArgumentOutOfRangeException($"ActiveUniformType {uType} unknown.");
@@ -959,50 +961,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
-        }        
+        }
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITextureHandle probably returned from CreateWritableTexture method</param>
-        /// <param name="gHandle">The GBufferHandle</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
+        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
+        public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
         {
-            switch (gHandle)
+            int iParam = ((ShaderParam)param).handle;
+            int texUnit;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
             {
-                case GBufferHandle.GPositionHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferPositionTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GNormalHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferNormalTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GAlbedoHandle:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferAlbedoSpecTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.GDepth:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).GBufferDepthTextureHandle;
-                    SetShaderParamTexture(param, texId);
-                    break;
-                case GBufferHandle.EnvMap:
-                    ((TextureHandle)texId).Handle = ((TextureHandle)texId).Handle;
-                    var iParam = ((ShaderParam)param).handle;
-                    int texUnit;
-                    if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
-                    {
-                        texUnit = _currentTextureUnit++;
-                        _shaderParam2TexUnit[iParam] = texUnit;
-                    }
-                    GL.Uniform1(iParam, texUnit);
-                    GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).Handle);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(gHandle), gHandle, null);
+                texUnit = _currentTextureUnit++;
+                _shaderParam2TexUnit[iParam] = texUnit;
             }
+            GL.Uniform1(iParam, texUnit);
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
+            GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).Handle);
         }
         #endregion
 

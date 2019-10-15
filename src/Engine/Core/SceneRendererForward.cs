@@ -689,6 +689,7 @@ namespace Fusee.Engine.Core
             _rc.SetFXParam(lightParamStrings.LightType, (int)light.Type);
             _rc.SetFXParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
             _rc.SetFXParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
+            _rc.SetFXParam(lightParamStrings.Bias, light.Bias);
         }
 
         #region RenderContext/Asset Setup
@@ -759,6 +760,7 @@ namespace Fusee.Engine.Core
         public string LightType;
         public string IsActive;
         public string IsCastingShadows;
+        public string Bias;
 
         public LightParamStrings(int arrayPos)
         {
@@ -774,7 +776,7 @@ namespace Fusee.Engine.Core
             LightType = $"allLights[{arrayPos}].lightType";
             IsActive = $"allLights[{arrayPos}].isActive";
             IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
-
+            Bias = $"allLights[{arrayPos}].bias";
         }
 
     }

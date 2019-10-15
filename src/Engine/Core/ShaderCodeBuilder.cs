@@ -984,6 +984,7 @@ namespace Fusee.Engine.Core
                 int lightType;
                 int isActive;
                 int isCastingShadows;
+                float bias;
             };
             uniform Light allLights[MAX_LIGHTS];
             ";
@@ -1701,15 +1702,15 @@ namespace Fusee.Engine.Core
             });
 
         }
-        
+
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="shadowRenderTarget">The render target, containing a shadow map.</param>       
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, RenderTarget shadowRenderTarget = null)
-        {            
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, RenderTarget shadowRenderTarget = null)
+        {
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
             vert.Append(Version());
@@ -1735,7 +1736,7 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(EsPrecision());            
+            frag.Append(EsPrecision());
 
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextures)).Length; i++)
             {
@@ -1756,6 +1757,7 @@ namespace Fusee.Engine.Core
                 int lightType;
                 int isActive;
                 int isCastingShadows;
+                float bias;
             };
             uniform Light light;
             ");
@@ -1764,7 +1766,15 @@ namespace Fusee.Engine.Core
             frag.Append("uniform mat4 FUSEE_V;\n");
             frag.Append("uniform mat4 FUSEE_MV;\n");
             frag.Append("uniform mat4 FUSEE_ITV;\n");
-            frag.Append("uniform sampler2D ShadowMap;\n");
+
+            if (lc.IsCastingShadows) 
+            {
+                if (lc.Type != Base.Common.LightType.Point)
+                    frag.Append("uniform sampler2D ShadowMap;\n");
+                else
+                    frag.Append("uniform samplerCube ShadowCubeMap;\n"); 
+            }
+
             frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
             frag.Append("uniform int PassNo;\n");
 
@@ -1773,7 +1783,10 @@ namespace Fusee.Engine.Core
 
             //Shadow calculation
             //-------------------------------------- 
-            frag.Append(ShadowCalculation());
+            if (lc.Type != Base.Common.LightType.Point)
+                frag.Append(ShadowCalculation());
+            else
+                frag.Append(ShadowCalculationCubeMap());
 
             frag.Append(@"void main()
             {
@@ -1852,14 +1865,34 @@ namespace Fusee.Engine.Core
                     case 3:
                         break;
                 }
+                ");
 
-                // shadow                
-                if(light.isCastingShadows == 1)
+            if (lc.IsCastingShadows)
+            {
+                if (lc.Type != Base.Common.LightType.Point)
                 {
-                    vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
-                    shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir);
+                    frag.Append(@"
+                    // shadow                
+                    if (light.isCastingShadows == 1)
+                    {
+                        vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
+                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir,  light.bias);                    
+                    }                
+                    ");
                 }
+                else
+                {
+                    frag.Append(@"
+                    // shadow       
+                    if (light.isCastingShadows == 1)
+                    {
+                        shadow = ShadowCalculationCubeMap(ShadowCubeMap, (FUSEE_IV * FragPos).xyz, light.positionWorldSpace, light.maxDistance, Normal, lightDir, light.bias);
+                    }
+                    ");
+                }
+            }
 
+            frag.Append(@"
                 // diffuse 
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
                 lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);
@@ -1899,13 +1932,18 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
                 new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
+                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
             };
 
             if(shadowRenderTarget != null)
             {
                 effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
-                effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowRenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] });
+
+                if(lc.Type != Base.Common.LightType.Point)
+                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowRenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] });
+                else
+                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowRenderTarget.CubeMap });
             }
 
             return new ShaderEffect(new[]
@@ -2004,12 +2042,14 @@ namespace Fusee.Engine.Core
                 
             ");
 
-            var effectParamDecls = new List<EffectParameterDeclaration>();
-            effectParamDecls.Add(new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity });
-            effectParamDecls.Add(new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity });
-            effectParamDecls.Add(new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One });
-            effectParamDecls.Add(new EffectParameterDeclaration { Name = "LightPos", Value = float3.One });
-            effectParamDecls.Add(new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices });            
+            var effectParamDecls = new List<EffectParameterDeclaration>
+            {
+                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One },
+                new EffectParameterDeclaration { Name = "LightPos", Value = float3.One },
+                new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+            };
 
             return new ShaderEffect(new[]
             {
@@ -2118,7 +2158,7 @@ namespace Fusee.Engine.Core
         {
             return @"
                 
-            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir)
+            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, float bias)
             {
                 float shadow = 0.0;
 
@@ -2128,7 +2168,7 @@ namespace Fusee.Engine.Core
                 //float closestDepth = texture(shadowMap, projCoords.xy).r;
                 float currentDepth = projCoords.z;  
 
-                float bias = 0.0;//max(0.005 * (1.0 - dot(normal, lightDir)), 0.0005);
+                float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);
             
                 vec2 texelSize = vec2(1.0, 1.0) / vec2(textureSize(shadowMap, 0));
                 for(int x = -1; x <= 1; ++x)
@@ -2136,13 +2176,55 @@ namespace Fusee.Engine.Core
                     for(int y = -1; y <= 1; ++y)
                     {
                         float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-                        shadow += (currentDepth - bias) > pcfDepth ? 1.0 : 0.0;        
+                        shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;        
                     }    
                 }
                 shadow /= 9.0;
 
 
                 //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
+                return shadow;
+            }
+
+            ";
+        }
+
+        private static string ShadowCalculationCubeMap()
+        {
+            return @"
+                
+            float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias)
+            {
+
+                vec3 sampleOffsetDirections[20] = vec3[]
+                (
+                   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
+                   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
+                   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
+                   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
+                   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+                );
+
+                // get vector between fragment position and light position
+                vec3 fragToLight = (fragPos - lightPos) * -1.0;                
+                // now get current linear depth as the length between the fragment and light position
+                float currentDepth = length(fragToLight);
+
+                float shadow = 0.0;
+                float thisBias   = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);//0.15;
+                int samples  = 20;
+                vec3 camPos = FUSEE_IV[3].xyz;
+                float viewDistance = length(camPos - fragPos);
+
+                float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+                for(int i = 0; i < samples; ++i)
+                {
+                    float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
+                    closestDepth *= farPlane;   // Undo mapping [0;1]
+                    if(currentDepth - thisBias > closestDepth)
+                        shadow += 1.0;
+                }
+                shadow /= float(samples);
                 return shadow;
             }
 

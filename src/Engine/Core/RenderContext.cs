@@ -1049,21 +1049,8 @@ namespace Fusee.Engine.Core
         public void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
             ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle);
+            _rci.SetShaderParamCubeTexture(param, textureHandle);
         }
-
-
-        /// <summary>
-        /// Sets a Shader Parameter to a created texture.
-        /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateWritableTexture() method.</param>
-        /// <param name="gHandle">The desired gBuffer texture</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle)
-        {
-            _rci.SetShaderParamTexture(param, texId, gHandle);
-        }
-
 
         #endregion
 
@@ -1337,6 +1324,12 @@ namespace Fusee.Engine.Core
                 foreach (var paramNew in shaderParamInfos)
                 {
                     var paramNew_ = paramNew;   // TEXHANDLE_BYPASS
+
+                    if(paramNew_.Name == "ShadowCubeMap")
+                    {
+                        var t = 1;
+                    }
+
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
                     {
@@ -1363,12 +1356,12 @@ namespace Fusee.Engine.Core
 
                         // ReSharper disable UseMethodIsInstanceOfType
                         // ReSharper disable OperatorIsCanBeUsed
-                        var initValType = initValue.GetType();
+                        var initValType = initValue.GetType();                        
 
-                        if (typeof(ITextureHandle).IsAssignableFrom(initValType) && paramNew.Type == typeof(ITexture))  // TEXHANDLE_BYPASS
-                        {
-                            paramNew_.Type = typeof(ITextureHandle);
-                        }
+                        //if (typeof(ITextureHandle).IsAssignableFrom(initValType) && paramNew.Type == typeof(ITexture))  // TEXHANDLE_BYPASS
+                        //{
+                        //    paramNew_.Type = typeof(ITextureHandle);
+                        //}
 
                         if (!(((paramNew_.Type == typeof(int) || paramNew_.Type == typeof(float))
                                   &&

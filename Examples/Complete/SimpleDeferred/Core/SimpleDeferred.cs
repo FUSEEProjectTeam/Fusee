@@ -82,10 +82,10 @@ namespace Fusee.Examples.SimpleDeferred.Core
             AddResizeDelegate(_resizeDel);
 
             //Add lights to the scene
-            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true };
-            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true };
-            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5 , IsCastingShadows = true };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 400, Active = true, IsCastingShadows = true };
+            _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.05f };
+            var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = true, Bias = 0.15f };
+            var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true };
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0.15f };
 
             _sunTransform = new TransformComponent() { Translation = new float3(0, 10, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
                         
@@ -168,11 +168,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     Name = "greenLight",
                     Components = new List<SceneComponentContainer>()
                 {
-                    new TransformComponent(){ Translation = new float3(0, 300, 40)},
+                    new TransformComponent(){ Translation = new float3(0, 100, 150)},
                     greenLight,
+                    
                 }
                 },
-
             };
 
 
