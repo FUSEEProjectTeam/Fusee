@@ -183,6 +183,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
+
+        /// <summary>
+        /// Creates a new CubeMap and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateCubeMap(IWritableCubeMap img)
         {
             PixelInternalFormat internalFormat;
@@ -271,6 +277,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
+            PixelType pxType;
 
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -286,54 +293,44 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Bgra;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;
+                   
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Bgr;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;
+                   
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
+                    pxType = PixelType.UnsignedByte;
                     
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
                     break;
                 case ColorFormat.Depth:
                     internalFormat = PixelInternalFormat.DepthComponent24;
                     format = PixelFormat.DepthComponent;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, IntPtr.Zero);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);                   
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.Float;
+                   
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;
+                    
                     break;                
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormat.Rgb;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);                    
+                    pxType = PixelType.Float;
+                                   
                     break;
                 case ColorFormat.fRGB16:
                     internalFormat = PixelInternalFormat.Rgb16f;
                     format = PixelFormat.Rgb;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.Float;                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -342,6 +339,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);

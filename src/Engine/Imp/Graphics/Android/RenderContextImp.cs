@@ -177,6 +177,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
+            PixelType pxType;
 
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
@@ -192,47 +193,34 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.Rgba;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;
+                    
                     break;
                 case ColorFormat.RGB:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;                    
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
                     internalFormat = PixelInternalFormat.Alpha;
                     format = PixelFormat.Alpha;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);                    
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;                   
                     break;
                 case ColorFormat.Depth:
                     internalFormat = PixelInternalFormat.Luminance; //TODO: Correct format? DepthComponent is not available here.
                     format = PixelFormat.DepthComponent;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, IntPtr.Zero);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.Float;                    
                     break;
                 case ColorFormat.iRGBA:
                     internalFormat = PixelInternalFormat.Rgba;
                     format = PixelFormat.RgbaInteger;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.UnsignedByte, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+                    pxType = PixelType.UnsignedByte;                   
                     break;
                 case ColorFormat.fRGB32:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
-                    GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, PixelType.Float, img.PixelData);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
-                    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
-                    
+                    pxType = PixelType.Float;  
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
@@ -241,6 +229,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
+            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
