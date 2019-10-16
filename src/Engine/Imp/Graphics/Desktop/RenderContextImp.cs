@@ -1840,7 +1840,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
                     GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
                 }
@@ -1877,7 +1877,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
                     GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
                 }

@@ -1849,7 +1849,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
                     gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
                 }
@@ -1886,7 +1886,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
                     gl2.DrawBuffers(new uint[] {COLOR_ATTACHMENT0 });
                 }

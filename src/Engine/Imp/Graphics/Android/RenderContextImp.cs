@@ -306,6 +306,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     format = PixelFormat.Rgb;
                     pxType = PixelType.Float;  
                     break;
+                case ColorFormat.fRGB16:
+                    internalFormat = PixelInternalFormat.Rgb;
+                    format = PixelFormat.Rgb;
+                    pxType = PixelType.Float;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
@@ -380,177 +385,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
             throw new NotImplementedException();
         }
 
-        #endregion
-
-        #region Text related Members
-        /*
-        /// <summary>
-        /// Loads a font file (*.ttf) and processes it with the given font size.
-        /// </summary>
-        /// <param name="stream">The stream where to read the font from.</param>
-        /// <param name="size">The size.</param>
-        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        public IFont LoadFont(Stream stream, uint size)
-        {
-            byte[] fileArray;
-            using (MemoryStream ms = new MemoryStream())
-            {
-                stream.CopyTo(ms);
-                fileArray = ms.ToArray();
-            }
-
-            var texAtlas = new Font
-            {
-                Face = _sharpFont.NewMemoryFace(fileArray, 0),
-                FontSize = size,
-                UseKerning = false
-            };
-
-            texAtlas.Face.SetPixelSizes(0, size);
-            return GenerateTextureAtlas(texAtlas);
-        }
-
-        private IFont GenerateTextureAtlas(IFont font)
-        {
-            if (font == null)
-                return null;
-
-            var texAtlas = ((Font) font);
-            var face = texAtlas.Face;
-
-            // get atlas texture size
-            var rowW = 0;
-            var rowH = 0;
-            var h = 0;
-
-            const int maxWidth = 512;
-
-            for (uint i = 32; i < 256; i++)
-            {
-                face.LoadChar(i, LoadFlags.Default, LoadTarget.Normal);
-                
-                if (rowW + ((int) face.Glyph.Advance.X) + 1 >= maxWidth)
-                {
-                    h += rowH;
-                    rowW = 0;
-                    rowH = 0;
-                }
-
-                rowW += ((int) face.Glyph.Advance.X) + 1;
-                rowH = System.Math.Max((int) face.Glyph.Metrics.Height, rowH);
-            }
-
-            // for resizing to non-power-of-two
-            var potH = (h + rowH) - 1;
-
-            potH |= potH >> 1;
-            potH |= potH >> 2;
-            potH |= potH >> 4;
-            potH |= potH >> 8;
-            potH |= potH >> 16;
-
-            texAtlas.Width = maxWidth;
-            texAtlas.Height = ++potH;
-
-            // atlas texture
-            int tex;
-            GL.GenTextures(1, out tex);
-
-            GL.ActiveTexture(All.Texture0);
-            GL.BindTexture(All.Texture2D, tex);
-
-            GL.TexImage2D(All.Texture2D, 0, (int)All.Alpha, maxWidth, potH, 0,
-                All.Alpha, All.UnsignedByte, IntPtr.Zero);
-
-            // texture settings
-            GL.PixelStore(All.UnpackAlignment, 1);
-
-            GL.TexParameter(All.Texture2D, All.TextureWrapS, (int) All.ClampToEdge);
-            GL.TexParameter(All.Texture2D, All.TextureWrapT,
-                (int)All.ClampToEdge);
-
-            GL.TexParameter(All.Texture2D, All.TextureMinFilter, (int)All.Linear);
-            GL.TexParameter(All.Texture2D, All.TextureMagFilter, (int)All.Linear);
-
-            texAtlas.TexAtlas = new Texture {handle = tex};
-
-            // paste the glyph images into the texture atlas
-            texAtlas.CharInfo = new CharInfoStruct[256];
-
-            var offX = 0;
-            var offY = 0;
-            rowH = 0;
-
-            for (uint i = 32; i < 256; i++)
-            {
-                face.LoadChar(i, LoadFlags.Default, LoadTarget.Normal);
-                face.Glyph.RenderGlyph(RenderMode.Normal);
-
-                if (offX + face.Glyph.Bitmap.Width + 1 >= maxWidth)
-                {
-                    offY += rowH;
-                    rowH = 0;
-                    offX = 0;
-                }
-
-                GL.TexSubImage2D(All.Texture2D, 0, offX, offY, face.Glyph.Bitmap.Width, face.Glyph.Bitmap.Rows,
-                    All.Alpha, All.UnsignedByte, face.Glyph.Bitmap.Buffer);
-
-                // char informations
-                texAtlas.CharInfo[i].AdvanceX = (int) face.Glyph.Advance.X;
-                texAtlas.CharInfo[i].AdvanceY = (int) face.Glyph.Advance.Y;
-
-                texAtlas.CharInfo[i].BitmapW = face.Glyph.Bitmap.Width;
-                texAtlas.CharInfo[i].BitmapH = face.Glyph.Bitmap.Rows;
-
-                texAtlas.CharInfo[i].BitmapL = face.Glyph.BitmapLeft;
-                texAtlas.CharInfo[i].BitmapT = face.Glyph.BitmapTop;
-
-                texAtlas.CharInfo[i].TexOffX = offX/(float) maxWidth;
-                texAtlas.CharInfo[i].TexOffY = offY/(float) potH;
-
-                rowH = System.Math.Max(rowH, face.Glyph.Bitmap.Rows);
-                offX += face.Glyph.Bitmap.Width + 1;
-            }
-
-            return texAtlas;
-        }
-
-        /// <summary>
-        /// Fixes the kerning of a text (if possible).
-        /// </summary>
-        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
-        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
-        public float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
-        {
-            var texAtlas = ((Font) font);
-
-            if (!texAtlas.UseKerning || !texAtlas.Face.HasKerning)
-                return vertices;
-
-            // use kerning -> fix values
-            var fixX = 0f;
-            var fixVert = 4;
-
-            for (var c = 0; c < text.Length - 1; c++)
-            {
-                var leftChar = texAtlas.Face.GetCharIndex(text[c]);
-                var rightChar = texAtlas.Face.GetCharIndex(text[c + 1]);
-
-                fixX += ((int) texAtlas.Face.GetKerning(leftChar, rightChar, KerningMode.Default).X)*scaleX;
-
-                vertices[fixVert++].x += fixX;
-                vertices[fixVert++].x += fixX;
-                vertices[fixVert++].x += fixX;
-                vertices[fixVert++].x += fixX;
-            }
-
-            return vertices;
-        }
-        */
         #endregion
 
         #region Shader related Members
@@ -876,7 +710,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public void EnableDepthClamp()
         {
-            throw new NotImplementedException("Depth clamping isn't implemented yet!");
+            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
 
         /// <summary>
@@ -884,7 +718,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public void DisableDepthClamp()
         {
-            throw new NotImplementedException("Depth clamping isn't implemented yet!");
+            //throw new NotImplementedException("Depth clamping isn't implemented yet!");
         }
 
         /// <summary>
@@ -2071,14 +1905,16 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
                     GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
                 }
                 else
                 {
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
-                    GL.DrawBuffers(0, new DrawBufferMode[1] { DrawBufferMode.None }); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
+                    //see https://stackoverflow.com/questions/32956543/make-draw-call-in-opengl-that-only-touches-the-depth-buffer
+                    GL.ColorMask(false, false, false, false);
+                    //GL.DrawBuffers(0, new DrawBufferMode[1] { DrawBufferMode.None }); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.                    
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
             }
@@ -2108,14 +1944,15 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 if (tex.TextureType != RenderTargetTextures.G_DEPTH)
                 {
-                    CreateDepthRenderBuffer(1024, 1024);
+                    CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle, 0);
                     GL.DrawBuffers(1, new DrawBufferMode[1] { DrawBufferMode.ColorAttachment0 });
                 }
                 else
                 {
                     GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0, TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle, 0);
-                    GL.DrawBuffers(0, new DrawBufferMode[1] { DrawBufferMode.None }); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
+                    GL.ColorMask(false, false, false, false);
+                    //GL.DrawBuffers(0, new DrawBufferMode[1] { DrawBufferMode.None }); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
             }
@@ -2124,7 +1961,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -2174,9 +2010,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-            {
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-            }
+                throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -2188,7 +2022,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent24, width, height);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferInternalFormat.DepthComponent16, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
