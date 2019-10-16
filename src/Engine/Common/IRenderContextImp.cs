@@ -261,12 +261,17 @@ namespace Fusee.Engine.Common
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="texture">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>
-        /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
-        /// </returns>
+        /// <param name="texture">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
         ITextureHandle CreateTexture(ITexture texture);
 
+        /// <summary>
+        /// Creates a new cube map and binds it to the shader.
+        /// </summary>
+        /// <remarks>
+        /// Method should be called after LoadImage method to process
+        /// the BitmapData an make them available for the shader.
+        /// </remarks>
+        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>       
         ITextureHandle CreateCubeMap(IWritableCubeMap img);
 
         /// <summary>
@@ -485,6 +490,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+
         /// <summary>
         /// Sets the specified render state to the given setting.
         /// </summary>

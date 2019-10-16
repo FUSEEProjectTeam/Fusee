@@ -777,7 +777,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, Helper.BoneWeightAttribLocation, Helper.BoneWeightAttribName);
             GL.BindAttribLocation(program, Helper.BitangentAttribLocation, Helper.BitangentAttribName);
 
-            GL.LinkProgram(program); // AAAARRRRRGGGGHHHH!!!! Must be called AFTER BindAttribLocation
+            GL.LinkProgram(program);
             return new ShaderProgramImp {Program = program};
         }
 
@@ -1201,85 +1201,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             GL.DeleteBuffers(1, ref ((MeshImp)mr).BitangentBufferObject);
             ((MeshImp)mr).InvalidateBiTangents();
-        }
-
-        /// <summary>
-        /// Renders the specified <see cref="IMeshImp" />.
-        /// </summary>
-        /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        public void RenderDeferred(IMeshImp mr)
-        {
-            if (((MeshImp)mr).VertexBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.VertexAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-                GL.VertexAttribPointer(Helper.VertexAttribLocation, 3, All.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).ColorBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.ColorAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-                GL.VertexAttribPointer(Helper.ColorAttribLocation, 4, All.UnsignedByte, true, 0,
-                    IntPtr.Zero);
-            }
-
-            if (((MeshImp)mr).UVBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.UvAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-                GL.VertexAttribPointer(Helper.UvAttribLocation, 2, All.Float, false, 0, IntPtr.Zero);
-            }
-
-            if (((MeshImp)mr).NormalBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.NormalAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-                GL.VertexAttribPointer(Helper.NormalAttribLocation, 3, All.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneIndexBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.BoneIndexAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-                GL.VertexAttribPointer(Helper.BoneIndexAttribLocation, 4, All.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).BoneWeightBufferObject != 0)
-            {
-                GL.EnableVertexAttribArray(Helper.BoneWeightAttribLocation);
-                GL.BindBuffer(All.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-                GL.VertexAttribPointer(Helper.BoneWeightAttribLocation, 4, All.Float, false, 0,
-                    IntPtr.Zero);
-            }
-            if (((MeshImp)mr).ElementBufferObject != 0)
-            {
-                GL.BindBuffer(All.ElementArrayBuffer, ((MeshImp)mr).ElementBufferObject);
-                GL.DrawElements(All.Triangles, ((MeshImp)mr).NElements, All.UnsignedShort,
-                    IntPtr.Zero);
-                //GL.DrawArrays(GL.Enums.All.POINTS, 0, shape.Vertices.Length);
-            }
-            if (((MeshImp)mr).VertexBufferObject != 0)
-            {
-                GL.BindBuffer(All.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.VertexAttribLocation);
-            }
-            if (((MeshImp)mr).ColorBufferObject != 0)
-            {
-                GL.BindBuffer(All.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.ColorAttribLocation);
-            }
-            if (((MeshImp)mr).NormalBufferObject != 0)
-            {
-                GL.BindBuffer(All.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.NormalAttribLocation);
-            }
-            if (((MeshImp)mr).UVBufferObject != 0)
-            {
-                GL.BindBuffer(All.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(Helper.UvAttribLocation);
-            }
-        }
+        }       
 
         /// <summary>
         /// Renders the specified <see cref="IMeshImp" />.
@@ -2119,8 +2041,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
         }
-
-
+        
         public bool CreateFBO()
         {
             return true;

@@ -25,12 +25,17 @@ namespace Fusee.Engine.Core
         /// Gets and sets the viewport width.
         /// </summary>
         public int ViewportWidth { get; private set; }
+
         /// <summary>
         /// Gets and sets the viewport heigth.
         /// </summary>
         public int ViewportHeight { get; private set; }
 
-        public ShaderProgram _currentShader { get; private set; }
+        /// <summary>
+        /// The currently bound shader program.
+        /// </summary>
+        public ShaderProgram CurrentShaderProgram { get; private set; }
+
         private readonly MatrixParamNames _currentShaderParams;
         private ShaderEffect _currentShaderEffect;
 
@@ -55,9 +60,19 @@ namespace Fusee.Engine.Core
 
         private readonly ShaderProgram _debugShader;
         private readonly IShaderParam _debugColor;
-        private bool _debugLinesEnabled = true;
 
-        public bool HasPickingContext { get; private set; }
+        /// <summary>
+        /// Gets and sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DebugLinesEnabled
+        {
+            get { return _debugLinesEnabled; }
+            set { _debugLinesEnabled = value; }
+        }
+        private bool _debugLinesEnabled = true;        
 
         /// <summary>
         /// Sets global FX Params
@@ -179,7 +194,6 @@ namespace Fusee.Engine.Core
 
 
         #endregion
-
 
         #region Matrix Fields
 
@@ -802,7 +816,7 @@ namespace Fusee.Engine.Core
         private void UpdateCurrentShader()
         {
 
-            if (_currentShader == null)
+            if (CurrentShaderProgram == null)
                 return;
 
             if (!_updatedShaderParams)
@@ -868,37 +882,37 @@ namespace Fusee.Engine.Core
 
         private void UpdateShaderParams()
         {
-            if (_currentShader == null)
+            if (CurrentShaderProgram == null)
             {
                 // TODO: log that no shader was set
                 return;
             }
 
             // Normal versions of MV and P
-            _currentShaderParams.FUSEE_M = _currentShader.GetShaderParam("FUSEE_M");
-            _currentShaderParams.FUSEE_V = _currentShader.GetShaderParam("FUSEE_V");
-            _currentShaderParams.FUSEE_MV = _currentShader.GetShaderParam("FUSEE_MV");
-            _currentShaderParams.FUSEE_P = _currentShader.GetShaderParam("FUSEE_P");
-            _currentShaderParams.FUSEE_MVP = _currentShader.GetShaderParam("FUSEE_MVP");
+            _currentShaderParams.FUSEE_M = CurrentShaderProgram.GetShaderParam("FUSEE_M");
+            _currentShaderParams.FUSEE_V = CurrentShaderProgram.GetShaderParam("FUSEE_V");
+            _currentShaderParams.FUSEE_MV = CurrentShaderProgram.GetShaderParam("FUSEE_MV");
+            _currentShaderParams.FUSEE_P = CurrentShaderProgram.GetShaderParam("FUSEE_P");
+            _currentShaderParams.FUSEE_MVP = CurrentShaderProgram.GetShaderParam("FUSEE_MVP");
 
             // Inverted versions
-            _currentShaderParams.FUSEE_IMV = _currentShader.GetShaderParam("FUSEE_IMV");
-            _currentShaderParams.FUSEE_IP = _currentShader.GetShaderParam("FUSEE_IP");
-            _currentShaderParams.FUSEE_IMVP = _currentShader.GetShaderParam("FUSEE_IMVP");
-            _currentShaderParams.FUSEE_IV = _currentShader.GetShaderParam("FUSEE_IV");
+            _currentShaderParams.FUSEE_IMV = CurrentShaderProgram.GetShaderParam("FUSEE_IMV");
+            _currentShaderParams.FUSEE_IP = CurrentShaderProgram.GetShaderParam("FUSEE_IP");
+            _currentShaderParams.FUSEE_IMVP = CurrentShaderProgram.GetShaderParam("FUSEE_IMVP");
+            _currentShaderParams.FUSEE_IV = CurrentShaderProgram.GetShaderParam("FUSEE_IV");
 
             // Transposed versions
-            _currentShaderParams.FUSEE_TMV = _currentShader.GetShaderParam("FUSEE_TMV");
-            _currentShaderParams.FUSEE_TP = _currentShader.GetShaderParam("FUSEE_TP");
-            _currentShaderParams.FUSEE_TMVP = _currentShader.GetShaderParam("FUSEE_TMVP");
+            _currentShaderParams.FUSEE_TMV = CurrentShaderProgram.GetShaderParam("FUSEE_TMV");
+            _currentShaderParams.FUSEE_TP = CurrentShaderProgram.GetShaderParam("FUSEE_TP");
+            _currentShaderParams.FUSEE_TMVP = CurrentShaderProgram.GetShaderParam("FUSEE_TMVP");
 
             // Inverted and transposed versions
-            _currentShaderParams.FUSEE_ITMV = _currentShader.GetShaderParam("FUSEE_ITMV");
-            _currentShaderParams.FUSEE_ITP = _currentShader.GetShaderParam("FUSEE_ITP");
-            _currentShaderParams.FUSEE_ITMVP = _currentShader.GetShaderParam("FUSEE_ITMVP");
+            _currentShaderParams.FUSEE_ITMV = CurrentShaderProgram.GetShaderParam("FUSEE_ITMV");
+            _currentShaderParams.FUSEE_ITP = CurrentShaderProgram.GetShaderParam("FUSEE_ITP");
+            _currentShaderParams.FUSEE_ITMVP = CurrentShaderProgram.GetShaderParam("FUSEE_ITMVP");
 
             // Bones
-            _currentShaderParams.FUSEE_BONES = _currentShader.GetShaderParam("FUSEE_BONES[0]");
+            _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
 
             //
 
@@ -1088,14 +1102,6 @@ namespace Fusee.Engine.Core
         #region Shader related Members
 
         /// <summary>
-        /// Gets the current shader.
-        /// </summary>
-        /// <value>
-        /// The current shader.
-        /// </value>
-        public ShaderEffect CurrentShader => _currentShaderEffect;
-
-        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -1136,9 +1142,9 @@ namespace Fusee.Engine.Core
         {
             _updatedShaderParams = false;
 
-            if (_currentShader != program)
+            if (CurrentShaderProgram != program)
             {
-                _currentShader = program;
+                CurrentShaderProgram = program;
                 _rci.SetShader(program._spi);
             }
             UpdateShaderParams(); // initial set
@@ -1355,10 +1361,9 @@ namespace Fusee.Engine.Core
         {
             return _rci.GetShaderParamList(program._spi);
         }
-
-        // Pass thru
+        
         /// <summary>
-        /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
+        /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
         /// </summary>
         /// <param name="program">The <see cref="ShaderProgram"/> using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
@@ -1775,18 +1780,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Gets and sets a value indicating whether [debug lines enabled].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DebugLinesEnabled
-        {
-            get { return _debugLinesEnabled; }
-            set { _debugLinesEnabled = value; }
-        }
-
-        /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
         /// <param name="start">The start point of the DebugLine.</param>
@@ -1799,7 +1792,7 @@ namespace Fusee.Engine.Core
                 start /= 2;
                 end /= 2;
 
-                var oldShader = _currentShader;
+                var oldShader = CurrentShaderProgram;
                 SetShader(_debugShader);
 
                 SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
