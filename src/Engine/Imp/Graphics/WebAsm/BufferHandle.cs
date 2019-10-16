@@ -7,7 +7,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
     /// </summary>
     public class RenderBufferHandle : IBufferHandle
     {
-        internal WebGLRenderbuffer RenderBuffer = null;
+        internal WebGLRenderbuffer Handle = null;
     }
 
     /// <summary>
@@ -15,6 +15,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
     /// </summary>
     public class FrameBufferHandle : IBufferHandle
     {
-        internal WebGLFramebuffer FrameBuffer = null;
+        internal WebGLFramebuffer Handle = null;
     }
 }

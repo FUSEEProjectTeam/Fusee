@@ -1,3 +1,4 @@
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -94,7 +95,9 @@ namespace Fusee.Engine.Core
             // For omni directional shadow mapping there will be six LightSpaceMatrices
             // to allow the creation of the cube map in one pass.
             public float4x4[] LightSpaceMats;
-            public RenderTarget RenderTarget;
+            //TODO: not cool - think of some other way to distinguish between cube map and normal texture.
+            public IWritableCubeMap CubeShadowMap;
+            public IWritableTexture ShadowMap;
             public float2 ClipPlanesForLightMat;
         }
 
@@ -355,18 +358,17 @@ namespace Fusee.Engine.Core
 
             if (!_shadowRenderTargets.TryGetValue(key, out ShadowParams outParams))
             {
-                var shadowRenderTarget = new RenderTarget(shadowMapRes)
+                if (lr.Light.Type == LightType.Point)
                 {
-                    IsDepthOnly = true
-                };
-                if (lr.Light.Type == Base.Common.LightType.Point) 
-                {
-                    shadowRenderTarget.CreateCubeMap(RenderTargetTextures.G_DEPTH, Base.Common.ColorFormat.Depth);
+                    var shadowMap = new WritableCubeMap(RenderTargetTextures.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_EDGE);
+                    outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, CubeShadowMap = shadowMap };
                 }
                 else
-                    shadowRenderTarget.SetDepthTex();
-
-                outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, RenderTarget = shadowRenderTarget };
+                {
+                    var shadowMap = new WritableTexture(RenderTargetTextures.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+                    outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, ShadowMap = shadowMap };
+                }
+               
                 _shadowRenderTargets.Add(key, outParams);
             }
             else
@@ -409,13 +411,19 @@ namespace Fusee.Engine.Core
 
             if (light.IsCastingShadows)
             {
-                effect.SetEffectParam("ShadowMap", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH]);
-                effect.SetEffectParam("LightSpaceMatrix", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].LightSpaceMats[0]);
-                
-                if(light.Type == Base.Common.LightType.Point)
-                    effect.SetEffectParam("ShadowCubeMap", _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget.CubeMap);
+                var shadowParams = _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+                if (shadowParams.ShadowMap != null)
+                {
+                    effect.SetEffectParam("ShadowMap", shadowParams.ShadowMap);
+                    effect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMats[0]);
+                }
                 else
-                    effect.SetEffectParam("ShadowCubeMap", null);
+                {
+                    if (light.Type == LightType.Point && shadowParams.CubeShadowMap != null)
+                        effect.SetEffectParam("ShadowCubeMap", shadowParams.CubeShadowMap);
+                    else
+                        effect.SetEffectParam("ShadowCubeMap", null);
+                }
             }
         }
 
@@ -462,15 +470,19 @@ namespace Fusee.Engine.Core
                     _shadowCubeMapEffect.SetEffectParam("LightMatClipPlanes", shadowParams.ClipPlanesForLightMat);
                     _shadowCubeMapEffect.SetEffectParam("LightPos", lightVisRes.Item2.WorldSpacePos);
                     _rc.SetShaderEffect(_shadowCubeMapEffect);
+
+                    rc.SetRenderTarget(shadowParams.CubeShadowMap);
                 }
                 else
                 {
                     _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMats[0]);
                     _shadowEffect.SetEffectParam("LightMatClipPlanes", _shadowRenderTargets[key].ClipPlanesForLightMat);
                     _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+
+                    rc.SetRenderTarget(shadowParams.ShadowMap);
                 }
 
-                rc.SetRenderTarget(shadowParams.RenderTarget);
+                
                 Traverse(_sc.Children);
             }
 
@@ -519,15 +531,17 @@ namespace Fusee.Engine.Core
 
                     if (lightVisRes.Item2.Light.IsCastingShadows)
                     {
+                        var shadowParams = _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+
                         if ((_lightingPassEffectOther == null || _needToRecreateLightingMatOther) && lightVisRes.Item2.Light.Type != Base.Common.LightType.Point)
                         {
                             _needToRecreateLightingMatOther = false;
-                            _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget);
+                            _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMap);
                         }
                         if ((_lightingPassEffectPoint == null || _needToRecreateLightingMatPoint) && lightVisRes.Item2.Light.Type == Base.Common.LightType.Point)
                         {
                             _needToRecreateLightingMatPoint = false;
-                            _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget);
+                            _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableCubeMap)shadowParams.CubeShadowMap);
                         }
 
                         if (lightVisRes.Item2.Light.Type != Base.Common.LightType.Point)
@@ -556,8 +570,7 @@ namespace Fusee.Engine.Core
             else
             {
                 _rc.ClearColor = float4.Zero;
-                // ---- FXAA ON ----  
-                
+                // ---- FXAA ON ----
 
                 //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass.
                 var lightPassCnt = 0;
@@ -569,15 +582,17 @@ namespace Fusee.Engine.Core
 
                     if (lightVisRes.Item2.Light.IsCastingShadows)
                     {
+                        var shadowParams = _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+
                         if ((_lightingPassEffectOther == null || _needToRecreateLightingMatOther) && lightVisRes.Item2.Light.Type != Base.Common.LightType.Point)
                         {
                             _needToRecreateLightingMatOther = false;
-                            _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget);
+                            _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMap);
                         }
                         if ((_lightingPassEffectPoint == null || _needToRecreateLightingMatPoint) && lightVisRes.Item2.Light.Type == Base.Common.LightType.Point)
                         {
                             _needToRecreateLightingMatPoint = false;
-                            _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _shadowRenderTargets[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)].RenderTarget);
+                            _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableCubeMap)shadowParams.CubeShadowMap);
                         }
 
                         if (lightVisRes.Item2.Light.Type != Base.Common.LightType.Point)

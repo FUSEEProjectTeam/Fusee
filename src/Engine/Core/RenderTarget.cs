@@ -1,13 +1,13 @@
-using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core
-{    
+{ 
     
     /// <summary>
-    /// Render to a target if you want to render to a texture and use them in an other pass.
-    /// Use the "Create__Tex"-Methods to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextures"/> enum.
+    /// Use this if you want to render into buffer object, associated with one or more textures.
+    /// If only a single texture is needed, the usage of a <see cref="WritableTexture"/> as a render target is preferred.
+    /// Use the "Create__Tex"-Methods of this class to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextures"/> enum.
     /// </summary>
     public class RenderTarget : IRenderTarget, IDisposable
     {
@@ -21,9 +21,7 @@ namespace Fusee.Engine.Core
 
         ///Order of textures in RenderTextures array is given by the corresponding enum.
         public IWritableTexture[] RenderTextures { get; private set; }
-
-        public IWritableCubeMap CubeMap { get; private set; }
-
+        
         /// <summary>
         /// Handle of the corresponding G-Buffer. Used to dispose the object if it isn't needed anymore.
         /// </summary>
@@ -55,12 +53,6 @@ namespace Fusee.Engine.Core
             IsDepthOnly = false;
         }
 
-        public void CreateCubeMap(RenderTargetTextures texType, ColorFormat colorFormat)
-        {
-            CubeMap = new WritableCubeMap(texType, new ImagePixelFormat(colorFormat), (int)TextureResolution, (int) TextureResolution, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_EDGE);
-            
-        }
-
         /// <summary>
         /// Sets a RenderTexture from another RenderTarget at the correct position in the RenderTexure array.
         /// </summary>
@@ -70,8 +62,7 @@ namespace Fusee.Engine.Core
         {
             var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
-        }         
-        
+        }
 
         /// <summary>
         /// Generates a position texture and sets it at the correct position in the RenderTextures Array.

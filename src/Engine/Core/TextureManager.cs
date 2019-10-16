@@ -46,25 +46,31 @@ namespace Fusee.Engine.Core
             }
         }
 
-        private ITextureHandle RegisterNewWritableTexture(WritableCubeMap texture)
+        private ITextureHandle RegisterNewTexture(WritableCubeMap texture)
         {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateCubeMap(texture);
+
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, textureHandle);
 
-            return texture.TextureHandle;
+            return textureHandle;
 
         }
 
-        private ITextureHandle RegisterNewWritableTexture(WritableTexture texture)
+        private ITextureHandle RegisterNewTexture(WritableTexture texture)
         {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
 
-            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, texture.TextureHandle);
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, textureHandle);
 
-            return texture.TextureHandle;
+            return textureHandle;
 
         }
 
@@ -100,11 +106,11 @@ namespace Fusee.Engine.Core
             return foundTextureHandle;
         }
 
-        public ITextureHandle GetWritableTextureHandleFromTexture(WritableCubeMap texture)
+        public ITextureHandle GetWritableCubeMapHandleFromTexture(WritableCubeMap texture)
         {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {
-                return RegisterNewWritableTexture(texture);
+                return RegisterNewTexture(texture);
             }
             return foundTextureHandle;
         }
@@ -113,7 +119,7 @@ namespace Fusee.Engine.Core
         {    
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {
-                return RegisterNewWritableTexture(texture);
+                return RegisterNewTexture(texture);
             }
             return foundTextureHandle;
         }

@@ -267,6 +267,8 @@ namespace Fusee.Engine.Common
         /// </returns>
         ITextureHandle CreateTexture(ITexture texture);
 
+        ITextureHandle CreateCubeMap(IWritableCubeMap img);
+
         /// <summary>
         /// Removes the TextureHandle's buffers and textures from the graphics card's memory
         /// </summary>
@@ -281,70 +283,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="width"></param>
         void SetLineWidth(float width);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="texture"></param>
-        void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture);
-
-        /// <summary>
-        /// Creates a new writable texture and binds it to the shader.
-        /// This is done by creating a framebuffer and a renderbuffer (if needed).
-        /// All bufferhandles are returned with the texture.
-        /// For binding this texture call <see cref="SetRenderTarget"/>
-        /// <param name="width"></param>
-        /// <param name="height"></param>SetRenderTarget
-        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITextureHandle"/>ITextureHandle that can be used for of screen rendering
-        /// </returns>
-        //ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
-
-        /*
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="color">The color of the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        ImageData CreateImage(int width, int height, ColorUint color);
-
-        /// <summary>
-        /// Maps a text in a specific font on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        ImageData TextOnImage(ImageData imgData, string fontName, float fontSize, String text, string textColor,
-            float startPosX, float startPosY);
-
-        /// <summary>
-        /// Loads a font file (*.ttf) and processes it with the given font size.
-        /// </summary>
-        /// <param name="stream">The stream to read font data from.</param>
-        /// <param name="size">The font size.</param>
-        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        IFont LoadFont(Stream stream, uint size);
-
-        /// <summary>
-        /// Fixes the kerning of a text (if possible).
-        /// </summary>
-        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
-        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
-        float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
-        */
-
+        
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
         /// </summary>
@@ -438,123 +377,6 @@ namespace Fusee.Engine.Common
         /// <seealso cref="IRenderContextImp.CreateShader"/>
         /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
         void SetShader(IShaderProgramImp shaderProgramImp);
-
-        /* #region Atomic Buffer Operations
-
-         #region Atomic Buffer Create Operations
-
-         /// <summary>
-         /// Binds the vertices onto the GL Rendercontext and returns an VertexBuffer index.
-         /// </summary>
-         /// <param name="vertices">The vertices.</param>
-         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
-         /// <returns>A valid VertexBuffer Handle, otherwise 0.</returns>
-         int CreateVertexBuffer(float3[] vertices);
-
-         /// <summary>
-         /// Binds the normals onto the GL Rendercontext and returns an NormalBuffer index.
-         /// </summary>
-         /// <param name="normals">The normals.</param>
-         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
-         /// <returns>A valid NormalBuffer Handle, otherwise 0.</returns>
-         int CreateNormalBuffer(float3[] normals);
-
-         /// <summary>
-         /// Binds the UV coordinates onto the GL Rendercontext and returns an UVBuffer index.
-         /// </summary>
-         /// <param name="uvs">The UV's.</param>
-         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
-         /// <returns>A valid UVBuffer Handle, otherwise 0.</returns>
-         int CreateUvBuffer(float2[] uvs);
-
-         /// <summary>
-         /// Binds the colors onto the GL Rendercontext and returns an ColorBuffer index.
-         /// </summary>
-         /// <param name="colors">The colors.</param>
-         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-         /// <returns>A valid ColorBuffer Handle, otherwise 0.</returns>
-         int CreateColorBuffer(uint[] colors);
-
-         /// <summary>
-         /// Binds the triangles onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="triangleIndices">The triangle indices.</param>
-         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
-         /// <returns>A valid TriangleBuffer Handle, otherwise 0.</returns>
-         int CreateTriangleBuffer(ushort[] triangleIndices);
-
-         /// <summary>
-         /// Binds the boneindices onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="boneIndices">The boneindices.</param>
-         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
-         /// <returns>A valid BoneIndexBuffer Handle, otherwise 0.</returns>
-         int CreateBoneIndexBuffer(float4[] boneIndices);
-
-         /// <summary>
-         /// Binds the boneweights onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="boneWeights">The boneweights.</param>
-         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
-         /// <returns>A valid BoneWeightsBuffer Handle, otherwise 0.</returns>
-         int CreateBoneWeightsBuffer(float4[] boneWeights);
-
-         #endregion
-
-
-         #region Atomic Buffer Delete Operations
-         /// <summary>
-         /// Deletes the vertex buffer associated with the handle.
-         /// </summary>
-         /// <param name="vertexBufferHandle">The vertexBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteVertices(int vertexBufferHandle);
-
-         /// <summary>
-         /// Deletes the normals buffer associated with the handle.
-         /// </summary>
-         /// <param name="normalsBufferHandle">The normalsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteNormals(int normalsBufferHandle);
-
-         /// <summary>
-         /// Deletes the colors buffer associated with the handle.
-         /// </summary>
-         /// <param name="colorsBufferHandle">The colorsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteColors(int colorsBufferHandle);
-
-         /// <summary>
-         /// Deletes the UVs buffer associated with the handle.
-         /// </summary>
-         /// <param name="uvsBufferHandle">The uvsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteUVs(int uvsBufferHandle);
-
-         /// <summary>
-         /// Deletes the triangles buffer associated with the handle.
-         /// </summary>
-         /// <param name="trianglesBufferHandle">The trianglesBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteTriangles(int trianglesBufferHandle);
-
-         /// <summary>
-         /// Deletes the bone weights buffer associated with the handle.
-         /// </summary>
-         /// <param name="boneWeightsBufferHandle">The boneWeightsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteBoneWeights(int boneWeightsBufferHandle);
-
-         /// <summary>
-         /// Deletes the bone indices buffer associated with the handle.
-         /// </summary>
-         /// <param name="boneIndicesBufferHandle">The boneIndicesBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteBoneIndices(int boneIndicesBufferHandle);
-
-         #endregion
-
-         #endregion*/
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
@@ -677,7 +499,26 @@ namespace Fusee.Engine.Common
         /// <returns>the current value of the render state.</returns>
         uint GetRenderState(RenderState renderState);
 
-        void SetRenderTarget(IRenderTarget renderTarget);
+        /// <summary>
+        /// Renders into the given textures of the RenderTarget.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles);
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle);
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle);
 
         /*
          * TODO: NO tangent space normal maps at this time...

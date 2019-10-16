@@ -78,7 +78,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 if (tex == null)
                     tex = CreateTexture(img);
 
-                gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).Handle);
+                gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
 
                 var imageData = gl.CastNativeArray(img.PixelData);
                 gl.TexSubImage2D(TEXTURE_2D, 0, 0, 0, img.Width, img.Height, pixelFormat, UNSIGNED_BYTE, imageData);
@@ -126,7 +126,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             } while (scanlines.MoveNext());
 
-            gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).Handle);
+            gl.BindTexture(TEXTURE_2D, ((TextureHandle)tex).TexHandle);
             var imageData = gl.CastNativeArray(bytes);
             gl.TexSubImage2D(TEXTURE_2D, 0, startX, startY, width, height, pixelFormat, UNSIGNED_BYTE, imageData);
 
@@ -192,6 +192,90 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
         }
 
+        /// <summary>
+        /// Creates a new CubeMap and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateCubeMap(IWritableCubeMap img)
+        {
+            uint internalFormat;
+            uint format;
+            uint pxType;
+
+            WebGLTexture id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+
+            switch (img.PixelFormat.ColorFormat)
+            {
+                case ColorFormat.RGBA:
+                    internalFormat = RGBA;
+                    format = RGBA;
+                    pxType = UNSIGNED_BYTE;
+                    break;
+                case ColorFormat.RGB:
+                    internalFormat = RGB;
+                    format = RGB;
+                    pxType = UNSIGNED_BYTE;
+                    break;
+                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                case ColorFormat.Intensity:
+                    internalFormat = ALPHA;
+                    format = ALPHA;
+                    pxType = UNSIGNED_BYTE;
+                    break;
+                case ColorFormat.Depth:
+                    internalFormat = DEPTH_COMPONENT24;
+                    format = DEPTH_COMPONENT;
+                    pxType = FLOAT;
+                    break;
+                case ColorFormat.iRGBA:
+                    internalFormat = RGBA8UI;
+                    format = RGBA;
+                    pxType = UNSIGNED_BYTE;
+
+                    break;
+                case ColorFormat.fRGB32:
+                    internalFormat = RGB32F;
+                    format = RGB;
+                    pxType = FLOAT;
+
+                    break;
+                case ColorFormat.fRGB16:
+                    internalFormat = RGB16F;
+                    format = RGB;
+                    pxType = FLOAT;
+
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
+            }
+
+            for (int i = 0; i < 6; i++)
+            {
+                if (img.PixelFormat.ColorFormat == ColorFormat.Depth)
+                    gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)internalFormat, img.Width, img.Height, 0, format, pxType, IntPtr.Zero);
+                else
+                    gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
+            }
+
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MAG_FILTER, (int)magFilter);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MIN_FILTER, (int)minFilter);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_S, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_T, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_WRAP_R, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
+        }
+
 
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
@@ -202,70 +286,76 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             uint internalFormat;
             uint format;
+            uint pxType;
+
+            WebGLTexture id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
 
             var glWrapMode = GetWrapMode(img.WrapMode);
-            var glFilterMode = GetMinMagFilter(img.FilterMode);
-
-            uint type;
 
             switch (img.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = RGBA;
                     format = RGBA;
-                    type = UNSIGNED_BYTE;
+                    pxType = UNSIGNED_BYTE;
                     break;
                 case ColorFormat.RGB:
                     internalFormat = RGB;
                     format = RGB;
-                    type = UNSIGNED_BYTE;
+                    pxType = UNSIGNED_BYTE;
                     break;
                 // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
                 case ColorFormat.Intensity:
-                    internalFormat = LUMINANCE;
+                    internalFormat = ALPHA;
                     format = ALPHA;
-                    type = UNSIGNED_BYTE;
-                    break;
-                case ColorFormat.iRGBA:
-                    internalFormat = RGB8I;
-                    format = RGBA;
-                    type = UNSIGNED_BYTE;
-                    break;
-                case ColorFormat.fRGB32:
-                    internalFormat = RGB32I;
-                    format = RGBA;
-                    type = FLOAT;
-                    break;
-                case ColorFormat.fRGB16:
-                    internalFormat = RGB16I;
-                    format = RGBA;
-                    type = FLOAT;
+                    pxType = UNSIGNED_BYTE;
                     break;
                 case ColorFormat.Depth:
                     internalFormat = DEPTH_COMPONENT24;
                     format = DEPTH_COMPONENT;
-                    type = FLOAT;
+                    pxType = FLOAT;
+                    break;
+                case ColorFormat.iRGBA:
+                    internalFormat = RGBA8UI;
+                    format = RGBA;
+                    pxType = UNSIGNED_BYTE;
+
+                    break;
+                case ColorFormat.fRGB32:
+                    internalFormat = RGB32F;
+                    format = RGB;
+                    pxType = FLOAT;
+
+                    break;
+                case ColorFormat.fRGB16:
+                    internalFormat = RGB16F;
+                    format = RGB;
+                    pxType = FLOAT;
+
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
-            }            
+            }
 
-            var id = gl.CreateTexture();
-
-            gl.BindTexture(TEXTURE_2D, id);
+            
             var imageData = gl.CastNativeArray(img.PixelData);
-            gl.TexImage2D(TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, format, type, imageData);
+            gl.TexImage2D(TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, format, pxType, imageData);
 
             if(img.DoGenerateMipMaps)
                 gl.GenerateMipmap(TEXTURE_2D);
 
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, glFilterMode.Item1);
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, glFilterMode.Item2);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, (int)glWrapMode);
 
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, glWrapMode);
-            gl.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, glWrapMode);            
-
-            ITextureHandle texID = new TextureHandle { Handle = id, TextureWidth = img.Width, TextureHeight = img.Height};
+            ITextureHandle texID = new TextureHandle { TexHandle = id};
 
             return texID;
         }
@@ -276,7 +366,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteFrameBuffer(IBufferHandle bh)
         {
-            gl2.DeleteFramebuffer(((FrameBufferHandle)bh).FrameBuffer);
+            gl2.DeleteFramebuffer(((FrameBufferHandle)bh).Handle);
         }
 
         /// <summary>
@@ -285,7 +375,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteRenderBuffer(IBufferHandle bh)
         {
-            gl2.DeleteRenderbuffer(((RenderBufferHandle)bh).RenderBuffer);
+            gl2.DeleteRenderbuffer(((RenderBufferHandle)bh).Handle);
         }
 
         /// <summary>
@@ -296,344 +386,20 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             TextureHandle texHandle = (TextureHandle)textureHandle;
 
-            if (texHandle.RenderToTextureBufferHandle != null)
+            if (texHandle.FrameBufferHandle != null)
             {
-                gl.DeleteTexture(texHandle.RenderToTextureBufferHandle);
+                gl.DeleteFramebuffer(texHandle.FrameBufferHandle);
+            }
+            
+            if (texHandle.DepthRenderBufferHandle != null)
+            {
+                gl.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
             }
 
-            if (texHandle.FboHandle != null)
+            if (texHandle.TexHandle != null)
             {
-                gl.DeleteFramebuffer(texHandle.FboHandle);
+                gl.DeleteTexture(texHandle.TexHandle);
             }
-
-            if (texHandle.IntermediateToTextureBufferHandle != null)
-            {
-                gl.DeleteTexture(texHandle.IntermediateToTextureBufferHandle);
-            }
-
-            if (texHandle.GBufferHandle != null)
-            {
-                gl.DeleteFramebuffer(texHandle.GBufferHandle);
-
-                if (texHandle.GDepthRenderbufferHandle != null)
-                {
-                    gl.DeleteTexture(texHandle.GDepthRenderbufferHandle);
-                }
-
-                if (texHandle.GBufferAlbedoSpecTextureHandle != null)
-                {
-                    gl.DeleteTexture(texHandle.GBufferAlbedoSpecTextureHandle);
-                }
-
-                if (texHandle.GBufferDepthTextureHandle != null)
-                {
-                    gl.DeleteTexture(texHandle.GBufferDepthTextureHandle);
-                }
-
-                if (texHandle.GBufferNormalTextureHandle != null)
-                {
-                    gl.DeleteTexture(texHandle.GBufferNormalTextureHandle);
-                }
-
-                if (texHandle.GBufferPositionTextureHandle != null)
-                {
-                    gl.DeleteTexture(texHandle.GBufferPositionTextureHandle);
-                }
-            }
-
-            // TODO: (dd) ?? TBD
-            if (texHandle.DepthHandle != null)
-            {
-
-            }
-
-            if (texHandle.Handle != null)
-            {
-                gl.DeleteTexture(texHandle.Handle);
-            }
-        }
-
-        /// <summary>
-        /// Creates a new writable texture and binds it to the shader.
-        /// Creates also a framebufferobject and installs convenience methods for binding and reading.
-        /// </summary>
-        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
-        {
-            TextureHandle returnTexture = null;
-
-            try
-            {
-                switch (textureFormat)
-                {
-                    case WritableTextureFormat.Depth:
-                        returnTexture = CreateDepthFramebuffer(width, height);
-                        break;
-                    case WritableTextureFormat.CubeMap:
-                        returnTexture = CreateCubeMapFramebuffer(width, height);
-                        break;
-                    case WritableTextureFormat.RenderTargetTexture:
-                        returnTexture = CreateRenderTargetTextureFramebuffer(width, height);
-                        break;
-                    case WritableTextureFormat.GBuffer:
-                        returnTexture = CreateGBufferFramebuffer(width, height);
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-            }
-            catch (Exception e)
-            {
-                Diagnostics.Log($"Error creating writable Texture: {gl.GetError()}, {e}");
-            }
-            return returnTexture;
-        }
-
-
-        private TextureHandle CreateGBufferFramebuffer(int width, int height)
-        {
-            throw new NotImplementedException("TODO: use explicit WebGL version 2 context within WebAsm.RenderContextImp");
-            /*
-            // TODO: Add Speculardata
-            // Set up G-Buffer
-            // 4 textures:
-            // 1. Positions (RGB)
-            // 2. Normals (RGB)
-            // 3. Color (RGB)
-            // 4. Depth (DepthComponent24)
-
-            WebGLFramebuffer gBufferHandle = null;
-            WebGLTexture gBufferPositionTextureHandle = null;
-            WebGLTexture gBufferNormalTextureHandle = null;
-            WebGLTexture gBufferAlbedoTextureHandle = null;
-            WebGLTexture gBufferDepthTextureHandle = null;
-
-            // Renderbuffer
-            WebGLTexture gDepthRenderbufferHandle = null;
-
-            gBufferHandle = gl.CreateFramebuffer();
-            gl.BindFramebuffer(FRAMEBUFFER, gBufferHandle);
-
-            // Position color buffer - 16 or 32 bit float per component - high precision texture
-            gBufferPositionTextureHandle = gl.CreateTexture();
-            gl.BindTexture(TEXTURE_2D, gBufferPositionTextureHandle);
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment0, TEXTURE_2D, gBufferPositionTextureHandle, 0);
-
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-
-            // Normal color buffer - 16 or 32 bit float per component - high precision texture
-            gBufferNormalTextureHandle = gl.CreateTexture();
-            gl.BindTexture(TEXTURE_2D, gBufferNormalTextureHandle);
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment1, TEXTURE_2D, gBufferNormalTextureHandle, 0);
-
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-            // Color - default 8bit texture is enough
-            gl.GenTextures(1, out gBufferAlbedoTextureHandle);
-            gl.BindTexture(TEXTURE_2D, gBufferAlbedoTextureHandle);
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment2, TEXTURE_2D, gBufferAlbedoTextureHandle, 0);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-            // Depth - default 32f texture is enough
-            gl.GenTextures(1, out gBufferDepthTextureHandle);
-            gl.BindTexture(TEXTURE_2D, gBufferDepthTextureHandle);
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment3, TEXTURE_2D, gBufferDepthTextureHandle, 0);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-            // Tell OpenGL which color attachments we will use (of this framebuffer) for rendering:
-            var attachements = new[]
-            {
-                DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1,
-                DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3
-            };
-
-            gl.DrawBuffers(attachements.Length, attachements);
-
-            // Create and attach depth buffer (renderbuffer)
-            gl.GenRenderbuffers(1, out gDepthRenderbufferHandle);
-            gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            gl.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
-            gl.FramebufferRenderbuffer(FRAMEBUFFER, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-
-            // Bind normal buffer again
-            gl.BindFramebuffer(FRAMEBUFFER, 0);
-
-            // check if complete
-            if (gl.CheckFramebufferStatus(FRAMEBUFFER) != FramebufferErrorCode.FramebufferComplete)
-            {
-                throw new Exception($"Error creating writable Texture: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
-            }
-
-
-            // Fill texture with all params
-            return new TextureHandle
-            {
-                GBufferHandle = gBufferHandle,
-                GBufferPositionTextureHandle = gBufferPositionTextureHandle,
-                GBufferAlbedoSpecTextureHandle = gBufferAlbedoTextureHandle,
-                GBufferNormalTextureHandle = gBufferNormalTextureHandle,
-                GBufferDepthTextureHandle = gBufferDepthTextureHandle,
-                GDepthRenderbufferHandle = gDepthRenderbufferHandle,
-
-                TextureWidth = width,
-                TextureHeight = height
-            };
-            */
-        }
-
-        // Creates a depth framebuffer
-        private static TextureHandle CreateDepthFramebuffer(int width, int height)
-        {
-            throw new NotImplementedException("TODO: use explicit WebGL version 2 context within WebAsm.RenderContextImp");
-            /*
-
-            var textureHandle = 0;
-            var fboHandle = 0;
-
-            // Create a shadow texture
-            gl.GenTextures(1, out textureHandle);
-
-            gl.BindTexture(TEXTURE_2D, textureHandle);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToBorder);
-            // everything outside the border will be white
-            var borderColor = 1.0f;
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureBorderColor, borderColor);
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
-            // Create FBO
-            gl.GenFramebuffers(1, out fboHandle);
-            gl.BindFramebuffer(FRAMEBUFFER, fboHandle);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.DepthAttachment, TEXTURE_2D, textureHandle, 0);
-
-            // Disable writes to the color buffer
-            gl.DrawBuffer(DrawBufferMode.None);
-            gl.ReadBuffer(ReadBufferMode.None);
-
-            if (gl.CheckFramebufferStatus(FRAMEBUFFER) != FramebufferErrorCode.FramebufferCompleteExt)
-            {
-                throw new Exception($"Error creating writable Texture: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
-            }
-
-            return new TextureHandle { Handle = textureHandle, FboHandle = fboHandle };
-            */
-        }
-
-        private static TextureHandle CreateCubeMapFramebuffer(int width, int height)
-        {
-            throw new NotImplementedException("TODO: use explicit WebGL version 2 context within WebAsm.RenderContextImp");
-            /*
-            //throw new NotImplementedException("Currently not implemented!");
-
-            var cubeMapTextureHandle = 0;
-            var depthBuffer = 0;
-            var framebuffer = 0;
-
-            // Create a shadow texture
-            gl.GenTextures(1, out cubeMapTextureHandle);
-            gl.BindTexture(TextureTarget.TextureCubeMap, cubeMapTextureHandle);
-
-            gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-            gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-            // HDR Texture
-            for (var i = 0; i < 6; i++)
-                gl.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-
-            // create the fbo
-            gl.GenFramebuffers(1, out framebuffer);
-            gl.BindFramebuffer(FRAMEBUFFER, framebuffer);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMap, cubeMapTextureHandle, 0);
-
-            // create the uniform depth buffer
-            gl.GenRenderbuffers(1, out depthBuffer);
-            gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
-            gl.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
-            gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-
-            // Bind normal buffer again
-            gl.BindFramebuffer(FRAMEBUFFER, 0);
-            //gl.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-            if (gl.CheckFramebufferStatus(FRAMEBUFFER) != FramebufferErrorCode.FramebufferComplete)
-            {
-                throw new Exception($"Error creating writable Texture: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
-            }
-
-            return new TextureHandle { Handle = cubeMapTextureHandle, FboHandle = framebuffer };
-            */
-        }
-
-        private static TextureHandle CreateRenderTargetTextureFramebuffer(int width, int height)
-        {
-            throw new NotImplementedException("TODO: implement me.");
-            /*
-            // configure 4x MSAA framebuffer
-            int msaa_level = 4;
-            // --------------------------
-            gl.GenFramebuffers(1, out int framebuffer);
-            gl.BindFramebuffer(FRAMEBUFFER, framebuffer);
-
-            // create a multisampled color attachment texture
-            var textureColorBufferMultiSampled = gl.GenTexture();
-            gl.BindTexture(TEXTURE_2DMultisample, textureColorBufferMultiSampled);
-            gl.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, msaa_level, PixelInternalFormat.Rgba32f, width, height, true);
-            gl.BindTexture(TEXTURE_2DMultisample, 0);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment0, TEXTURE_2DMultisample, textureColorBufferMultiSampled, 0);
-
-            // create a (also multisampled) renderbuffer object for depth and stencil attachments
-            gl.GenRenderbuffers(1, out int rbo);
-            gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-            gl.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, msaa_level, RenderbufferStorage.Depth24Stencil8, width, height);
-            gl.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-            gl.FramebufferRenderbuffer(FRAMEBUFFER, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rbo);
-
-            if (gl.CheckFramebufferStatus(FRAMEBUFFER) != FramebufferErrorCode.FramebufferComplete)
-            {
-                throw new Exception($"Error creating writable Texture: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
-            }
-            gl.BindFramebuffer(FRAMEBUFFER, 0);
-
-            // configure second post-processing framebuffer
-            //unsigned int intermediateFBO;
-            gl.GenFramebuffers(1, out int intermediateFbo);
-            gl.BindFramebuffer(FRAMEBUFFER, intermediateFbo);
-
-            //// create a color attachment texture (multisampled texture will be blitted into screenTexture)
-            int screenTexture = gl.GenTexture();
-            gl.BindTexture(TEXTURE_2D, screenTexture);
-
-            gl.TexImage2D(TEXTURE_2D, 0, PixelInternalFormat.Rgba32f, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            gl.TexParameter(TEXTURE_2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            gl.FramebufferTexture2D(FRAMEBUFFER, FramebufferAttachment.ColorAttachment0, TEXTURE_2D, screenTexture, 0);
-
-            // Handle= the blitted texture that will be used as shaderparam sampler2D...
-            return new TextureHandle { Handle = screenTexture, RenderToTextureBufferHandle = framebuffer, IntermediateToTextureBufferHandle = intermediateFbo, TextureWidth = width, TextureHeight = height };
-            */
         }
 
         #endregion
@@ -885,7 +651,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.Uniform1i(hParam, texUnit);
             gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
             //gl.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).Handle);
+            gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
         }
 
         /// <summary>
@@ -905,7 +671,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.Uniform1i(hParam, texUnit);
             gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
             //gl.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).Handle);
+            gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
         }
 
         #endregion
@@ -1639,7 +1405,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).Handle);
+            gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
             gl.CopyTexImage2D(TEXTURE_2D, 0, RGBA, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -2067,85 +1833,144 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
 
         /// <summary>
-        /// Copies Depthbuffer from a deferred buffer texture
+        /// Renders into the given texture.
         /// </summary>
-        /// <param name="texture"></param>
-        public void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture)
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
-            /*
-            var textureImp = (TextureHandle)texture;
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
 
-            gl.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.GDepthRenderbufferHandle);
-            gl.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
-                                                                      // copy depth
-            var width = textureImp.TextureWidth;
-            var height = textureImp.TextureHeight;
-            gl.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
-            */
-            throw new NotImplementedException("TODO: See if WebGLDotNET supports required operations.");
-        }        
-       
+                gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexHandle);
 
-        public void SetRenderTarget(IRenderTarget renderTarget)
+                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(1024, 1024);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.DrawBuffers(new uint[] { COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+
+            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
+        }
+
+        /// <summary>
+        /// Renders into the given cube map.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle)
         {
-            if (renderTarget == null || renderTarget.RenderTextures.All(x => x == null))
+            if (((TextureHandle)texHandle).FrameBufferHandle == null)
+            {
+                var fBuffer = gl2.CreateFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                gl2.BindFramebuffer(FRAMEBUFFER, fBuffer);
+
+                gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(1024, 1024);
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.DrawBuffers(new uint[] {COLOR_ATTACHMENT0 });
+                }
+                else
+                {
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
+                    gl2.DrawBuffers(new uint[] { NONE });
+                    gl2.ReadBuffer(NONE);
+                }
+            }
+            else
+                gl2.BindFramebuffer(FRAMEBUFFER, ((TextureHandle)texHandle).FrameBufferHandle);
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+
+
+            gl2.Clear(DEPTH_BUFFER_BIT | COLOR_BUFFER_BIT);
+        }
+
+        /// <summary>
+        /// Renders into the given textures of the RenderTarget.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles)
+        {
+            if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null)))
             {
                 gl2.BindFramebuffer(FRAMEBUFFER, null);
                 return;
             }
 
-            WebGLFramebuffer gBuffer;            
+            WebGLFramebuffer gBuffer;
 
             if (renderTarget.GBufferHandle == null)
             {
                 renderTarget.GBufferHandle = new FrameBufferHandle();
-                gBuffer = CreateFrameBuffer(renderTarget);
-                ((FrameBufferHandle)renderTarget.GBufferHandle).FrameBuffer = gBuffer;
+                gBuffer = CreateFrameBuffer(renderTarget, texHandles);
+                ((FrameBufferHandle)renderTarget.GBufferHandle).Handle = gBuffer;
             }
             else
             {
-                gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).FrameBuffer;
+                gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
                 gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
             }
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && !renderTarget.IsDepthOnly)
             {
-                WebGLRenderbuffer gDepthRenderbuffer;
+                WebGLRenderbuffer gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
                 {
                     renderTarget.DepthBufferHandle = new RenderBufferHandle();
                     // Create and attach depth buffer (renderbuffer)
-                    gDepthRenderbuffer = CreateDepthRenderBuffer(renderTarget);
-                    ((RenderBufferHandle)renderTarget.DepthBufferHandle).RenderBuffer = gDepthRenderbuffer;
+                    gDepthRenderbufferHandle = CreateDepthRenderBuffer((int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
+                    ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
                 }
                 else
                 {
-                    gDepthRenderbuffer = ((RenderBufferHandle)renderTarget.DepthBufferHandle).RenderBuffer;
-                    gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
+                    gDepthRenderbufferHandle = ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle;
+                    gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbufferHandle);
                 }
-            }          
+            }
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
             {
-                throw new Exception($"Error creating RenderTarget: {gl.GetError()}, {gl.CheckFramebufferStatus(FRAMEBUFFER)}");
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
             }
 
-            Clear(ClearFlags.Color);
-            Clear(ClearFlags.Depth);
+            gl2.Clear(DEPTH_CLEAR_VALUE | COLOR_CLEAR_VALUE);
         }
 
-        private WebGLRenderbuffer CreateDepthRenderBuffer(IRenderTarget renderTarget)
+        private WebGLRenderbuffer CreateDepthRenderBuffer(int width, int height)
         {
             gl2.Enable(DEPTH_TEST);
 
             var gDepthRenderbuffer = gl2.CreateRenderbuffer();            
             gl2.BindRenderbuffer(RENDERBUFFER, gDepthRenderbuffer);
-            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
+            gl2.RenderbufferStorage(RENDERBUFFER, DEPTH_COMPONENT24, width, height);
             gl2.FramebufferRenderbuffer(FRAMEBUFFER, DEPTH_ATTACHMENT, RENDERBUFFER, gDepthRenderbuffer);
             return gDepthRenderbuffer;
         }
 
-        private WebGLFramebuffer CreateFrameBuffer(IRenderTarget renderTarget)
+        private WebGLFramebuffer CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
             var gBuffer = gl2.CreateFramebuffer();
             gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
@@ -2155,46 +1980,38 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             if (!renderTarget.IsDepthOnly)
             {
-                var attachements = new List<uint>();
+                var attachments = new List<uint>();
 
-                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                //Textures
+                for (int i = 0; i < texHandles.Length; i++)
                 {
-                    var tex = renderTarget.RenderTextures[i];
-                    if (tex == null) continue;
 
-                    if (tex.TextureHandle == null)
-                    {
-                        var iTexHandle = CreateTexture(tex);
-                        tex.TextureHandle = new TextureHandle();
-                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
-                    }
+                    var texHandle = texHandles[i];
+                    if (texHandle == null) continue;
 
                     if (i == depthTexPos)
                     {
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT + (uint)depthCnt, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
                         depthCnt++;
                     }
                     else
-                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
 
-                    attachements.Add(COLOR_ATTACHMENT0 + (uint)i);
+                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
+
                 }
-
-                gl2.DrawBuffers(attachements.ToArray());
+                gl2.DrawBuffers(attachments.ToArray());
             }
-            else
+            else //If a framebuffer only has a depth texture we don't need draw buffers
             {
-                var tex = renderTarget.RenderTextures[depthTexPos];
+                var texHandle = texHandles[depthTexPos];
 
-                if (tex.TextureHandle == null)
-                {
-                    var iTexHandle = CreateTexture(tex);
-                    tex.TextureHandle = new TextureHandle();
-                    ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
-                }
+                if (texHandle != null)
+                    gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
+                else
+                    throw new NullReferenceException("Texture handle is null!");
 
-                gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
-                gl2.DrawBuffers(null); //TODO: Correct call? GL.DrawBuffer(DrawBufferMode.None) does not exist.
+                gl2.DrawBuffers(new uint[] { NONE });
                 gl2.ReadBuffer(NONE);
             }
 

@@ -2,7 +2,7 @@
 {
    
     public interface IWritableTexture : ITexture
-    {       
-        ITextureHandle TextureHandle { get; set; }        
+    {
+        RenderTargetTextures TextureType { get; }
     }
 }

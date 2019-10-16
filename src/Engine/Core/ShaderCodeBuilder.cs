@@ -650,7 +650,7 @@ namespace Fusee.Engine.Core
         {
             var methodBody = new List<string>
             {
-               
+
                 "return vec4(DiffuseColor.xyz * ambientCoefficient, 1.0);"
             };
 
@@ -726,7 +726,7 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(GLSL.CreateMethod(Type.Float, "CalcShadowFactor",
                 new[] { GLSL.CreateVar(Type.Vec4, "fragPosLightSpace") }, methodBody));
         }
-        
+
         private void AddApplyLightMethod(MaterialComponent mc)
         {
             if (_materialProbs.HasApplyLightString)
@@ -783,11 +783,11 @@ namespace Fusee.Engine.Core
 
 
             if (_materialProbs.HasSpecular)
-                applyLightParams.Add("Ispe = specularLighting(N, L, V, intensities);");           
+                applyLightParams.Add("Ispe = specularLighting(N, L, V, intensities);");
 
 
             var attenuation = new List<string>
-            { 
+            {
                 "float distanceToLight = length(position - vViewPos.xyz);",
                 "float distance = pow(distanceToLight / maxDistance, 2.0);",
                 "float att = (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
@@ -864,7 +864,7 @@ namespace Fusee.Engine.Core
                     GLSL.CreateVar(Type.Float, "innerConeAngle"), GLSL.CreateVar(Type.Int, "lightType"),
                 }, methodBody));
         }
-        
+
         /// <summary>
         /// Replaces Specular Calculation with Cook-Torrance-Shader
         /// </summary>
@@ -950,15 +950,15 @@ namespace Fusee.Engine.Core
                 "result += ApplyLight(currentPosition, currentIntensities, currentConeDirection, ",
                 "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
                 "}",
-               
+
                  _materialProbs.HasDiffuseTexture ? $"fragmentColor = result;" : $"fragmentColor = vec4(result.rgb, {DiffuseColorName}.w);",
-                 
+
             };
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
                 new[] { "" }, methodBody));
         }
-        
+
         private static string EsPrecision()
         {
             /*return "#ifdef GL_ES\n" +
@@ -1305,7 +1305,7 @@ namespace Fusee.Engine.Core
             vec4 finalColor = texture(LIGHTED_SCENE_TEX, finalUv);
             oColor = finalColor;
             
-            ");            
+            ");
 
             frag.Append("}");
 
@@ -1348,14 +1348,14 @@ namespace Fusee.Engine.Core
                     break;
                 case TexRes.HIGH_RES:
                     blurKernelSize = 8.0f;
-                    break;              
+                    break;
             }
 
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
             vert.Append(Version());
             vert.Append(EsPrecision());
-            
+
             vert.Append(@"
 
             in vec3 fuVertex;
@@ -1380,9 +1380,9 @@ namespace Fusee.Engine.Core
             frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize / 2.0f)}\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
-           
+
             frag.Append($"uniform sampler2D SSAO_INPUT_TEX;\n");
-           
+
 
             frag.Append($"out vec4 o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");
 
@@ -1424,7 +1424,7 @@ namespace Fusee.Engine.Core
             new[]
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcSsaoRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
-               
+
             });
 
         }
@@ -1471,13 +1471,13 @@ namespace Fusee.Engine.Core
 
             frag.Append($"uniform vec2 ScreenParams;\n");
             frag.Append($"uniform vec2 ClipPlaneDist;\n");
-            frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");            
+            frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_POSITION)};\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_NORMAL)};\n");
             frag.Append($"uniform sampler2D NoiseTex;\n");
             frag.Append($"uniform mat4 FUSEE_P;\n");
 
-            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");            
+            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");
 
             frag.Append("void main() {");
             frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
@@ -1534,8 +1534,8 @@ namespace Fusee.Engine.Core
             occlusion = clamp(1.0 - (occlusion / float(KERNEL_LENGTH)), 0.0, 1.0);           
 
             ");
-            
-            frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");            
+
+            frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");
 
             frag.Append("}");
 
@@ -1636,14 +1636,14 @@ namespace Fusee.Engine.Core
                 in vec4 vPos;
                 in vec3 vNormal;
                 in vec4 vColor;
-                in vec2 vUv;"              
+                in vec2 vUv;"
             );
 
-            if(diffuseTex != null)
+            if (diffuseTex != null)
             {
                 frag.Append(@"
                 uniform sampler2D DiffuseTexture;
-                uniform float DiffuseMix;"                    
+                uniform float DiffuseMix;"
                 );
             }
 
@@ -1660,7 +1660,7 @@ namespace Fusee.Engine.Core
                         frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vPos.xyz, vPos.w);");
                         break;
                     case 1: //ALBEDO_SPECULAR
-                        if(diffuseTex != null)
+                        if (diffuseTex != null)
                             frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(mix(vColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), vColor.a);");
                         else
                             frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
@@ -1703,15 +1703,9 @@ namespace Fusee.Engine.Core
 
         }
 
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="shadowRenderTarget">The render target, containing a shadow map.</param>       
-        /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, RenderTarget shadowRenderTarget = null)
+
+        private static string DeferredLightningVS()
         {
-            // Vertex shader ------------------------------
             var vert = new StringBuilder();
             vert.Append(Version());
             vert.Append(EsPrecision());
@@ -1732,6 +1726,11 @@ namespace Fusee.Engine.Core
 
             }");
 
+            return vert.ToString();
+        }
+
+        private static string DeferredLightningFS(LightComponent lc)
+        {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
             frag.Append(Version());
@@ -1767,12 +1766,12 @@ namespace Fusee.Engine.Core
             frag.Append("uniform mat4 FUSEE_MV;\n");
             frag.Append("uniform mat4 FUSEE_ITV;\n");
 
-            if (lc.IsCastingShadows) 
+            if (lc.IsCastingShadows)
             {
                 if (lc.Type != Base.Common.LightType.Point)
                     frag.Append("uniform sampler2D ShadowMap;\n");
                 else
-                    frag.Append("uniform samplerCube ShadowCubeMap;\n"); 
+                    frag.Append("uniform samplerCube ShadowCubeMap;\n");
             }
 
             frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
@@ -1790,7 +1789,7 @@ namespace Fusee.Engine.Core
 
             frag.Append(@"void main()
             {
-            ");           
+            ");
 
             frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
@@ -1803,7 +1802,7 @@ namespace Fusee.Engine.Core
             frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords);");
             frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
             frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
-            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");                                  
+            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");
 
             //Lighting calculation
             //-------------------------
@@ -1904,10 +1903,139 @@ namespace Fusee.Engine.Core
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
             }              
             ");
-                   
-            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");           
+
+            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
 
             frag.Append("}");
+
+            return frag.ToString();
+        }
+
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>            
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap)
+        {
+            
+            var effectParams = new List<EffectParameterDeclaration>()
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
+                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
+                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
+                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+            };
+
+
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });           
+            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
+           
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = DeferredLightningVS(),
+                    PS = DeferredLightningFS(lc),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+                        ZFunc = Compare.LessEqual,
+
+
+                    }
+                }
+            },
+            effectParams.ToArray());
+        }
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>       
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap)
+        {
+
+            var effectParams = new List<EffectParameterDeclaration>()
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
+                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
+                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
+                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
+                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
+                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+            };
+            
+            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowMap });
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = DeferredLightningVS(),
+                    PS = DeferredLightningFS(lc),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+                        ZFunc = Compare.LessEqual,
+
+
+                    }
+                }
+            },
+            effectParams.ToArray());
+        }
+
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>       
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc)
+        {
 
             var effectParams = new List<EffectParameterDeclaration>()
             {
@@ -1936,36 +2064,26 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
             };
 
-            if(shadowRenderTarget != null)
-            {
-                effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
-
-                if(lc.Type != Base.Common.LightType.Point)
-                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowRenderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] });
-                else
-                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowRenderTarget.CubeMap });
-            }
-
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
-                    VS = vert.ToString(),
-                    PS = frag.ToString(),
+                    VS = DeferredLightningVS(),
+                    PS = DeferredLightningFS(lc),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
                         ZEnable = true,
-                        BlendOperation = BlendOperation.Add,                        
-                        SourceBlend = Blend.One,                        
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
                         DestinationBlend = Blend.One,
-                        
-                        ZFunc = Compare.LessEqual
+                        ZFunc = Compare.LessEqual,
+
 
                     }
                 }
             },
-            effectParams.ToArray()); 
+            effectParams.ToArray());
         }
 
         /// <summary>
@@ -1976,7 +2094,7 @@ namespace Fusee.Engine.Core
         {
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
-            vert.AppendLine("#version 330 core");           
+            vert.AppendLine("#version 330 core");
 
             vert.Append(@"                
             
@@ -2066,7 +2184,7 @@ namespace Fusee.Engine.Core
                         ZFunc = Compare.LessEqual,
                     }
                 }
-            },            
+            },
             effectParamDecls.ToArray());
         }
 
@@ -2075,7 +2193,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <returns></returns>
         public static ShaderEffect ShadowMapEffect()
-        { 
+        {
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
             vert.Append(Version());
@@ -2144,14 +2262,14 @@ namespace Fusee.Engine.Core
                 }
             },
             new[]
-            {              
+            {
                 new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One},
                 new EffectParameterDeclaration { Name = "LightType", Value = 0},
 
-            });;
+            }); ;
         }
 
         private static string ShadowCalculation()
@@ -2171,6 +2289,11 @@ namespace Fusee.Engine.Core
                 float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);
             
                 vec2 texelSize = vec2(1.0, 1.0) / vec2(textureSize(shadowMap, 0));
+                
+                //use this for using sampler2DShadow (automatic PCF) instead of sampler2D
+                //float depth = texture(shadowMap, projCoords.xyz).r; 
+                //shadow += (currentDepth - thisBias) > depth ? 1.0 : 0.0;
+                
                 for(int x = -1; x <= 1; ++x)
                 {
                     for(int y = -1; y <= 1; ++y)
@@ -2181,8 +2304,6 @@ namespace Fusee.Engine.Core
                 }
                 shadow /= 9.0;
 
-
-                //shadow = currentDepth - bias > closestDepth  ? 1.0 : 0.0;
                 return shadow;
             }
 
@@ -2290,7 +2411,7 @@ namespace Fusee.Engine.Core
             };
 
             return MakeShaderEffectFromMatComp(temp);
-        }        
+        }
 
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
@@ -2342,7 +2463,7 @@ namespace Fusee.Engine.Core
             );
             return ret;
         }
-        
+
         private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, int numberOfLights)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
@@ -2438,7 +2559,7 @@ namespace Fusee.Engine.Core
             }
 
             for (int i = 0; i < numberOfLights; i++)
-            {            
+            {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
                     Name = "allLights[" + i + "].position",

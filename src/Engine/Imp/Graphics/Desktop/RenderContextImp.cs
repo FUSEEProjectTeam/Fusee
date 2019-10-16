@@ -72,7 +72,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (tex == null)
                     tex = CreateTexture(img);
 
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
                 GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height, format, PixelType.UnsignedByte, img.PixelData);
             }
         }
@@ -121,7 +121,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             } while (scanlines.MoveNext());
 
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).Handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
             GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
 
             //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
@@ -263,7 +263,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { Handle = id };
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
         }
@@ -275,12 +275,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
+
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
-
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.Texture2D, id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = glMinMagFilter.Item1;
@@ -346,7 +346,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            ITextureHandle texID = new TextureHandle { Handle = id };
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
         }
@@ -377,336 +377,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             TextureHandle texHandle = (TextureHandle)textureHandle;
 
-            if (texHandle.RenderToTextureBufferHandle != -1)
+            if (texHandle.FrameBufferHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.RenderToTextureBufferHandle);
+                GL.DeleteFramebuffer(texHandle.FrameBufferHandle);
+            }
+            
+            if (texHandle.DepthRenderBufferHandle != -1)
+            {
+                GL.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
             }
 
-            if (texHandle.FboHandle != -1)
+            if (texHandle.TexHandle != -1)
             {
-                GL.DeleteFramebuffer(texHandle.FboHandle);
-            }
-
-            if (texHandle.IntermediateToTextureBufferHandle != -1)
-            {
-                GL.DeleteFramebuffer(texHandle.IntermediateToTextureBufferHandle);
-            }
-
-            if (texHandle.GBufferHandle != -1)
-            {
-                GL.DeleteFramebuffer(texHandle.GBufferHandle);
-
-                if (texHandle.GDepthRenderbufferHandle != -1)
-                {
-                    GL.DeleteFramebuffer(texHandle.GDepthRenderbufferHandle);
-                }
-
-                if (texHandle.GBufferAlbedoSpecTextureHandle != -1)
-                {
-                    GL.DeleteTexture(texHandle.GBufferAlbedoSpecTextureHandle);
-                }
-
-                if (texHandle.GBufferDepthTextureHandle != -1)
-                {
-                    GL.DeleteTexture(texHandle.GBufferDepthTextureHandle);
-                }
-
-                if (texHandle.GBufferNormalTextureHandle != -1)
-                {
-                    GL.DeleteTexture(texHandle.GBufferNormalTextureHandle);
-                }
-
-                if (texHandle.GBufferPositionTextureHandle != -1)
-                {
-                    GL.DeleteTexture(texHandle.GBufferPositionTextureHandle);
-                }
-            }
-
-            // TODO: (dd) ?? TBD
-            if (texHandle.DepthHandle != -1)
-            {
-
-            }
-
-            if (texHandle.Handle != -1)
-            {
-                GL.DeleteTexture(texHandle.Handle);
+                GL.DeleteTexture(texHandle.TexHandle);
                 _currentTextureUnit--;
             }
         }
-        #endregion
-
-        #region Legacy 'create buffer' methods
-        ///// <summary>
-        ///// Creates a new writable texture and binds it to the shader.
-        ///// Creates also a framebufferobject and installs convenience methods for binding and reading.
-        ///// </summary>
-        ///// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        //public ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat)
-        //{
-        //    TextureHandle returnTexture = null;
-
-        //    try
-        //    {
-        //        switch (textureFormat)
-        //        {
-        //            case WritableTextureFormat.Depth:
-        //                returnTexture = CreateDepthFramebuffer(width, height);
-        //                break;
-        //            case WritableTextureFormat.CubeMap:
-        //                returnTexture = CreateCubeMapFramebuffer(width, height);
-        //                break;
-        //            case WritableTextureFormat.RenderTargetTexture:
-        //                returnTexture = CreateRenderTargetTextureFramebuffer(width, height);
-        //                break;
-        //            case WritableTextureFormat.GBuffer:
-        //                returnTexture = CreateGBufferFramebuffer(width, height);
-        //                break;
-        //            default:
-        //                throw new NotImplementedException();
-        //        }
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Diagnostics.Log($"Error creating writable Texture: {GL.GetError()}, {e}");
-        //    }
-        //    return returnTexture;
-        //}
-
-
-        //private static TextureHandle CreateGBufferFramebuffer(int width, int height)
-        //{
-        //    // TODO: Add Speculardata
-        //    // Set up G-Buffer
-        //    // 4 textures:
-        //    // 1. Positions (RGB)
-        //    // 2. Normals (RGB)
-        //    // 3. Color (RGB)
-        //    // 4. Depth (DepthComponent24)
-
-        //    var gBufferHandle = 0;
-        //    var gBufferPositionTextureHandle = 0;
-        //    var gBufferNormalTextureHandle = 0;
-        //    var gBufferAlbedoTextureHandle = 0;
-        //    var gBufferDepthTextureHandle = 0;
-
-        //    // Renderbuffer
-        //    var gDepthRenderbufferHandle = 0;
-
-        //    GL.GenFramebuffers(1, out gBufferHandle);
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBufferHandle);
-
-        //    // Position color buffer - 16 or 32 bit float per component - high precision texture
-        //    GL.GenTextures(1, out gBufferPositionTextureHandle);
-        //    GL.BindTexture(TextureTarget.Texture2D, gBufferPositionTextureHandle);
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, gBufferPositionTextureHandle, 0);
-
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-
-        //    // Normal color buffer - 16 or 32 bit float per component - high precision texture
-        //    GL.GenTextures(1, out gBufferNormalTextureHandle);
-        //    GL.BindTexture(TextureTarget.Texture2D, gBufferNormalTextureHandle);
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb16f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment1, TextureTarget.Texture2D, gBufferNormalTextureHandle, 0);
-
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-        //    // Color - default 8bit texture is enough
-        //    GL.GenTextures(1, out gBufferAlbedoTextureHandle);
-        //    GL.BindTexture(TextureTarget.Texture2D, gBufferAlbedoTextureHandle);
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment2, TextureTarget.Texture2D, gBufferAlbedoTextureHandle, 0);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (float)(int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-
-        //    // Depth - default 32f texture is enough
-        //    GL.GenTextures(1, out gBufferDepthTextureHandle);
-        //    GL.BindTexture(TextureTarget.Texture2D, gBufferDepthTextureHandle);
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment3, TextureTarget.Texture2D, gBufferDepthTextureHandle, 0);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-
-        //    // Tell OpenGL which color attachments we will use (of this framebuffer) for rendering:
-        //    var attachements = new[]
-        //    {
-        //        DrawBuffersEnum.ColorAttachment0, DrawBuffersEnum.ColorAttachment1,
-        //        DrawBuffersEnum.ColorAttachment2, DrawBuffersEnum.ColorAttachment3
-        //    };
-
-        //    GL.DrawBuffers(attachements.Length, attachements);
-
-        //    // Create and attach depth buffer (renderbuffer)
-        //    GL.GenRenderbuffers(1, out gDepthRenderbufferHandle);
-        //    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-        //    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
-        //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-
-        //    // Bind normal buffer again
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-        //    // check if complete
-        //    if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-        //    {
-        //        throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-        //    }
-
-
-        //    // Fill texture with all params
-        //    return new TextureHandle
-        //    {
-        //        GBufferHandle = gBufferHandle,
-        //        GBufferPositionTextureHandle = gBufferPositionTextureHandle,
-        //        GBufferAlbedoSpecTextureHandle = gBufferAlbedoTextureHandle,
-        //        GBufferNormalTextureHandle = gBufferNormalTextureHandle,
-        //        GBufferDepthTextureHandle = gBufferDepthTextureHandle,
-        //        GDepthRenderbufferHandle = gDepthRenderbufferHandle,
-
-        //        TextureWidth = width,
-        //        TextureHeight = height
-        //    };
-        //}
-
-        //// Creates a depth framebuffer
-        //private static TextureHandle CreateDepthFramebuffer(int width, int height)
-        //{
-        //    var textureHandle = 0;
-        //    var fboHandle = 0;
-
-        //    // Create a shadow texture
-        //    GL.GenTextures(1, out textureHandle);
-
-        //    GL.BindTexture(TextureTarget.Texture2D, textureHandle);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToBorder);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToBorder);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToBorder);
-        //    // everything outside the border will be white
-        //    var borderColor = 1.0f;
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBorderColor, borderColor);
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.DepthComponent16, width, height, 0, PixelFormat.DepthComponent, PixelType.Float, IntPtr.Zero);
-
-        //    // Create FBO
-        //    GL.GenFramebuffers(1, out fboHandle);
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, fboHandle);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, textureHandle, 0);
-
-        //    // Disable writes to the color buffer
-        //    GL.DrawBuffer(DrawBufferMode.None);
-        //    GL.ReadBuffer(ReadBufferMode.None);
-
-        //    if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferCompleteExt)
-        //    {
-        //        throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-        //    }
-
-        //    return new TextureHandle { Handle = textureHandle, FboHandle = fboHandle, TextureWidth = width, TextureHeight = height };
-        //}
-
-        //private static TextureHandle CreateCubeMapFramebuffer(int width, int height)
-        //{
-        //    //throw new NotImplementedException("Currently not implemented!");
-
-        //    var cubeMapTextureHandle = 0;
-        //    var depthBuffer = 0;
-        //    var framebuffer = 0;
-
-        //    // Create a shadow texture
-        //    GL.GenTextures(1, out cubeMapTextureHandle);
-        //    GL.BindTexture(TextureTarget.TextureCubeMap, cubeMapTextureHandle);
-
-        //    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-        //    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        //    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
-
-        //    // HDR Texture
-        //    for (var i = 0; i < 6; i++)
-        //        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat.Rgb32f, width, height, 0, PixelFormat.Rgb, PixelType.Float, IntPtr.Zero);
-
-        //    // create the fbo
-        //    GL.GenFramebuffers(1, out framebuffer);
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.TextureCubeMap, cubeMapTextureHandle, 0);
-
-        //    // create the uniform depth buffer
-        //    GL.GenRenderbuffers(1, out depthBuffer);
-        //    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, depthBuffer);
-        //    GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent, width, height);
-        //    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-
-        //    // Bind normal buffer again
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-        //    //GL.BindTexture(TextureTarget.TextureCubeMap, 0);
-
-        //    if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-        //    {
-        //        throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-        //    }
-
-        //    return new TextureHandle { Handle = cubeMapTextureHandle, FboHandle = framebuffer };
-        //}
-
-        //private static TextureHandle CreateRenderTargetTextureFramebuffer(int width, int height)
-        //{
-        //    // configure 4x MSAA framebuffer
-        //    int msaa_level = 4;
-        //    // --------------------------
-        //    GL.GenFramebuffers(1, out int framebuffer);
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
-
-        //    // create a multisampled color attachment texture
-        //    var textureColorBufferMultiSampled = GL.GenTexture();
-        //    GL.BindTexture(TextureTarget.Texture2DMultisample, textureColorBufferMultiSampled);
-        //    GL.TexImage2DMultisample(TextureTargetMultisample.Texture2DMultisample, msaa_level, PixelInternalFormat.Rgba32f, width, height, true);
-        //    GL.BindTexture(TextureTarget.Texture2DMultisample, 0);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2DMultisample, textureColorBufferMultiSampled, 0);
-
-        //    // create a (also multisampled) renderbuffer object for depth and stencil attachments
-        //    GL.GenRenderbuffers(1, out int rbo);
-        //    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, rbo);
-        //    GL.RenderbufferStorageMultisample(RenderbufferTarget.Renderbuffer, msaa_level, RenderbufferStorage.Depth24Stencil8, width, height);
-        //    GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, 0);
-        //    GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, rbo);
-
-        //    if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
-        //    {
-        //        throw new Exception($"Error creating writable Texture: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-        //    }
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
-
-        //    // configure second post-processing framebuffer
-        //    //unsigned int intermediateFBO;
-        //    GL.GenFramebuffers(1, out int intermediateFbo);
-        //    GL.BindFramebuffer(FramebufferTarget.Framebuffer, intermediateFbo);
-
-        //    //// create a color attachment texture (multisampled texture will be blitted into screenTexture)
-        //    int screenTexture = GL.GenTexture();
-        //    GL.BindTexture(TextureTarget.Texture2D, screenTexture);
-
-        //    GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba32f, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, IntPtr.Zero);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Linear);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        //    GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        //    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, TextureTarget.Texture2D, screenTexture, 0);
-
-        //    // Handle= the blitted texture that will be used as shaderparam sampler2D...
-        //    return new TextureHandle { Handle = screenTexture, RenderToTextureBufferHandle = framebuffer, IntermediateToTextureBufferHandle = intermediateFbo, TextureWidth = width, TextureHeight = height };
-        //}
-
         #endregion
 
         #region Shader related Members
@@ -825,6 +511,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return paramList;
         }
 
+        /// <summary>
+        /// Specifies the rasterized width of both aliased and antialiased lines.
+        /// </summary>
+        /// <param name="width">The width in px.</param>
         public void SetLineWidth(float width)
         {
             GL.LineWidth(width);
@@ -879,9 +569,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
-        }
-
-        // TODO add vector implementations
+        }        
 
         /// <summary>
         /// Sets a <see cref="float4x4" /> shader parameter.
@@ -958,9 +646,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);            
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
         }
 
         /// <summary>
@@ -978,9 +665,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            //GL.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
-            GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).Handle);
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);           
+            GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
         }
         #endregion
 
@@ -1250,7 +936,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Binds the bitangents onto the GL Render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="tangents">The BiTangents.</param>
+        /// <param name="bitangents">The BiTangents.</param>
         /// <exception cref="ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="ApplicationException"></exception>
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
@@ -1679,7 +1365,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
@@ -1970,8 +1656,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case RenderState.BlendFactor:
                     GL.BlendColor(Color.FromArgb((int)value));
                     break;
-                /* TODO: Implement texture wrapping rahter as a texture property than a "global" render state. This is most
-                 * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
+                /* TODO: Implement texture wrapping rather as a texture property than a "global" render state. This is most
+                 * convenient to implement with OpenGL/TK and easier to mimic in DirectX than the other way round.
                 case RenderState.Wrap0:
                     break;
                 case RenderState.Wrap1:
@@ -2136,30 +1822,90 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ArgumentOutOfRangeException("renderState");
             }
         }
-
+                
         /// <summary>
-        /// Copies Depthbuffer from a deferred buffer texture
+        /// Renders into the given texture.
         /// </summary>
-        /// <param name="texture"></param>
-        public void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture)
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
-            var textureImp = (TextureHandle)texture;
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                var fBuffer = GL.GenFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
 
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, textureImp.GDepthRenderbufferHandle);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0); // Write to default framebuffer
-                                                                      // copy depth
-            var width = textureImp.TextureWidth;
-            var height = textureImp.TextureHeight;
-            GL.BlitFramebuffer(0, 0, width, height, 0, 0, width, height, ClearBufferMask.DepthBufferBit, BlitFramebufferFilter.Nearest);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(1024, 1024);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+                }
+                else
+                {
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.None);
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+            }
+            else            
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
+           
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)            
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");            
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
-        
-       
+
         /// <summary>
-        /// Sets the RenderTarget.
+        /// Renders into the given cube map.
         /// </summary>
-        public void SetRenderTarget(IRenderTarget renderTarget)
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle)
+        {
+            if (((TextureHandle)texHandle).FrameBufferHandle == -1)
+            {
+                var fBuffer = GL.GenFramebuffer();
+                ((TextureHandle)texHandle).FrameBufferHandle = fBuffer;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, fBuffer);
+
+                GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
+
+                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                {
+                    CreateDepthRenderBuffer(1024, 1024);
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+                }
+                else
+                {
+                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)texHandle).TexHandle, 0);
+                    GL.DrawBuffer(DrawBufferMode.None);
+                    GL.ReadBuffer(ReadBufferMode.None);
+                }
+            }
+            else            
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);            
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)            
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+            
+
+            GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
+        }
+
+        /// <summary>
+        /// Renders into the given textures of the RenderTarget.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        public void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {            
-            if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null) && renderTarget.CubeMap == null))
+            if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null)))
             {    
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 return;
@@ -2170,7 +1916,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (renderTarget.GBufferHandle == null)
             {
                 renderTarget.GBufferHandle = new FrameBufferHandle();
-                gBuffer = CreateFrameBuffer(renderTarget);
+                gBuffer = CreateFrameBuffer(renderTarget, texHandles);
                 ((FrameBufferHandle)renderTarget.GBufferHandle).Handle = gBuffer;
             }
             else
@@ -2179,14 +1925,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }            
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && (renderTarget.CubeMap == null && !renderTarget.IsDepthOnly))
+            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && !renderTarget.IsDepthOnly)
             {
                 int gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
                 {
                     renderTarget.DepthBufferHandle = new RenderBufferHandle();
                     // Create and attach depth buffer (renderbuffer)
-                    gDepthRenderbufferHandle = CreateDepthRenderBuffer(renderTarget);
+                    gDepthRenderbufferHandle = CreateDepthRenderBuffer((int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
                     ((RenderBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
                 }
                 else
@@ -2204,19 +1950,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
 
-        private int CreateDepthRenderBuffer(IRenderTarget renderTarget)
+        private int CreateDepthRenderBuffer(int width, int height)
         {
             GL.Enable(EnableCap.DepthTest);
             
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
-            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, (int)renderTarget.TextureResolution, (int)renderTarget.TextureResolution);
+            GL.RenderbufferStorage(RenderbufferTarget.Renderbuffer, RenderbufferStorage.DepthComponent24, width, height);
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
                 
-        private int CreateFrameBuffer(IRenderTarget renderTarget)
+        private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[]  texHandles)
         {
             var gBuffer = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
@@ -2229,60 +1975,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 var attachments = new List<DrawBuffersEnum>();
 
                 //Textures
-                for (int i = 0; i < renderTarget.RenderTextures.Length; i++)
+                for (int i = 0; i < texHandles.Length; i++)
                 {
-                    var tex = renderTarget.RenderTextures[i];
-                    if (tex == null) continue;
-
-                    if (tex.TextureHandle == null)
-                    {
-                        var iTexHandle = CreateTexture(tex);
-                        tex.TextureHandle = new TextureHandle();
-                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
-                    }
+                    
+                    var texHandle = texHandles[i];
+                    if (texHandle == null) continue;
 
                     if (i == depthTexPos)
                     {
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
                         depthCnt++;
                     }
                     else
-                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
 
                     attachments.Add(DrawBuffersEnum.ColorAttachment0 + i);
 
                 }
                 GL.DrawBuffers(attachments.Count, attachments.ToArray());
             }
-            else
+            else //If a framebuffer only has a depth texture we don't need draw buffers
             {
-                var tex = renderTarget.RenderTextures[depthTexPos];
+                var texHandle = texHandles[depthTexPos];
 
-                if (tex != null)
-                {
-                    if (tex.TextureHandle == null)
-                    {
-                        var iTexHandle = CreateTexture(tex);
-                        tex.TextureHandle = new TextureHandle();
-                        ((TextureHandle)tex.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
-                    }
-
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)tex.TextureHandle).Handle, 0);
-                }
-                else
-                {
-                    if(renderTarget.CubeMap != null)
-                    {                        
-                        if (renderTarget.CubeMap.TextureHandle == null)
-                        {
-                            var iTexHandle = CreateCubeMap(renderTarget.CubeMap);
-                            renderTarget.CubeMap.TextureHandle = new TextureHandle();
-                            ((TextureHandle)renderTarget.CubeMap.TextureHandle).Handle = ((TextureHandle)iTexHandle).Handle;
-                        }
-                    }
-
-                    GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, ((TextureHandle)renderTarget.CubeMap.TextureHandle).Handle, 0);
-                }
+                if (texHandle != null)                
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);                
+                else                
+                    throw new NullReferenceException("Texture handle is null!");
                 
                 GL.DrawBuffer(DrawBufferMode.None);
                 GL.ReadBuffer(ReadBufferMode.None);
