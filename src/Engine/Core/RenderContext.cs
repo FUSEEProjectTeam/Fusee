@@ -1259,10 +1259,6 @@ namespace Fusee.Engine.Core
 
                 foreach (var paramNew in shaderParamInfos)
                 {
-                    if (paramNew.Name == "ShadowCubeMap")
-                    {
-                        var t = 1;
-                    }
 
                     Object initValue;
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
@@ -1735,7 +1731,7 @@ namespace Fusee.Engine.Core
             {
                 SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
             }
-            else if (param.Info.Type == typeof(ITexture))
+            else if (param.Value is ITexture)
             {
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }            

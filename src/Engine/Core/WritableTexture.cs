@@ -1,24 +1,31 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Serialization;
+using System;
 
 namespace Fusee.Engine.Core
 {
     /// <summary>
     /// Special Texture, e.g. for usage in multipass rendering.
     /// </summary>
-    public class WritableTexture : Texture, IWritableTexture
+    public class WritableTexture : IWritableTexture
     {
-        public RenderTargetTextureTypes TextureType { get; private set; }
+        /// <summary>
+        /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
+        /// </summary>
+        public event EventHandler<TextureEventArgs> TextureChanged;
 
         /// <summary>
-        /// Should be containing zeros by default. If you want to use the PixelData directly it gets blted from the graphics card (not implemented yet).
+        /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public new byte[] PixelData { get; private set; } //TODO: (?) get px data (and _imageData) from graphics card on PixelData get()
+        public Suid SessionUniqueIdentifier { get; private set; }
+
+        public RenderTargetTextureTypes TextureType { get; private set; }
 
         /// <summary>
         /// Width in pixels.
         /// </summary>
-        public new int Width
+        public int Width
         {
             get;
             private set;
@@ -27,7 +34,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Height in pixels.
         /// </summary>
-        public new int Height
+        public int Height
         {
             get;
             private set;
@@ -36,11 +43,29 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// PixelFormat provides additional information about pixel encoding.
         /// </summary>
-        public new ImagePixelFormat PixelFormat
+        public ImagePixelFormat PixelFormat
         {
             get;
             private set;
-        }        
+        }
+
+        public bool DoGenerateMipMaps
+        {
+            get;
+            private set;
+        }
+
+        public TextureWrapMode WrapMode
+        {
+            get;
+            private set;
+        }
+
+        public TextureFilterMode FilterMode
+        {
+            get;
+            private set;
+        }
 
 
         /// <summary>
@@ -53,7 +78,8 @@ namespace Fusee.Engine.Core
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
-        { 
+        {
+            SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;
             Width = width;
             Height = height;
@@ -116,6 +142,22 @@ namespace Fusee.Engine.Core
         public static WritableTexture CreateSSAOTex(int width, int height)
         {
             return new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+        }
+
+        /// <summary>
+        /// Implementation of the <see cref="IDisposable"/> interface.
+        /// </summary>
+        public void Dispose()
+        {
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
+        }
+
+        /// <summary>
+        /// Destructor calls <see cref="Dispose"/> in order to fire TextureChanged event.
+        /// </summary>
+        ~WritableTexture()
+        {
+            Dispose();
         }
     }
 }

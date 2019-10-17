@@ -261,18 +261,20 @@ namespace Fusee.Engine.Common
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="texture">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
-        ITextureHandle CreateTexture(ITexture texture);
+        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(ITexture img);
 
         /// <summary>
         /// Creates a new cube map and binds it to the shader.
-        /// </summary>
-        /// <remarks>
-        /// Method should be called after LoadImage method to process
-        /// the BitmapData an make them available for the shader.
-        /// </remarks>
+        /// </summary>        
         /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>       
-        ITextureHandle CreateCubeMap(IWritableCubeMap img);
+        ITextureHandle CreateTexture(IWritableCubeMap img);
+
+        /// <summary>
+        /// Creates a new texture and binds it to the shader.
+        /// </summary>      
+        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(IWritableTexture img);
 
         /// <summary>
         /// Removes the TextureHandle's buffers and textures from the graphics card's memory

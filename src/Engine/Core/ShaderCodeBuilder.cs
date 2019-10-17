@@ -369,8 +369,8 @@ namespace Fusee.Engine.Core
 
             if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, Helper.TangentAttribName));
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, Helper.BitangentAttribName));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, ShaderCodeBuilderHelper.TangentAttribName));
+                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, ShaderCodeBuilderHelper.BitangentAttribName));
 
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vT"));
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vB"));
@@ -492,8 +492,8 @@ namespace Fusee.Engine.Core
 
             if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
             {
-                _vertexShader.Add($"vT = {Helper.TangentAttribName};");
-                _vertexShader.Add($"vB = {Helper.BitangentAttribName};");
+                _vertexShader.Add($"vT = {ShaderCodeBuilderHelper.TangentAttribName};");
+                _vertexShader.Add($"vB = {ShaderCodeBuilderHelper.BitangentAttribName};");
             }
 
             _vertexShader.Add(_meshProbs.HasWeightMap

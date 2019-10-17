@@ -10,19 +10,19 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Texture implements <see cref="IImageData"/> and is used inside <see cref="RenderContext"/> to render bitmaps in fusee.
     /// </summary>
-    public class Texture : ITexture, IDisposable
+    public class Texture : ITexture
     {
         #region RenderContext Asset Management
         // Event of mesh Data changes
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
-        public event EventHandler<TextureDataEventArgs> TextureChanged;
+        public event EventHandler<TextureEventArgs> TextureChanged;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
+        public Suid SessionUniqueIdentifier { get; private set; }
         #endregion
 
         protected ImageData _imageData;
@@ -93,6 +93,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
+            SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
             DoGenerateMipMaps = generateMipMaps;
             FilterMode = filterMode;
@@ -108,6 +109,7 @@ namespace Fusee.Engine.Core
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
+            SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
@@ -150,7 +152,7 @@ namespace Fusee.Engine.Core
             var del = this.TextureChanged;
             if (del != null)
             {
-                del(this, new TextureDataEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
+                del(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
             }
         }
 
@@ -176,7 +178,7 @@ namespace Fusee.Engine.Core
             var del = TextureChanged;
             if (del != null)
             {
-                del(this, new TextureDataEventArgs(this, TextureChangedEnum.Disposed));
+                del(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
             }
         }
 

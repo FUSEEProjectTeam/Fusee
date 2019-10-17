@@ -1,65 +1,57 @@
 ﻿using System;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// EventArgs to propagate changes of a <see cref="Texture"/> object's life cycle and property changes.
-    /// Used inside <see cref="TextureManager"/>.
+    /// This enum describes if a Texture has been disposed or if the texture's region changed. Used inside the TextureManager./>.
     /// </summary>
-    public class TextureDataEventArgs : EventArgs
+    public enum TextureChangedEnum
     {
-        private readonly Texture _texture;
-        private readonly TextureChangedEnum _textureChangedEnum;
+        /// <summary>
+        /// The texture has been disposed.
+        /// </summary>
+        Disposed = 0,
+        /// <summary>
+        /// The texture's region has changed
+        /// </summary>
+        RegionChanged = 1,
+    }
 
+    /// <summary>
+    /// EventArgs to propagate changes of a <see cref="ITextureBase"/> object's life cycle and property changes.
+    /// Used inside the TextureManager./>.
+    /// </summary>
+    public class TextureEventArgs : EventArgs
+    {
         /// <summary>
         /// The <see cref="Texture"/> that triggered the event.
         /// </summary>
-        public Texture Texture
-        {
-            get { return _texture; }
-        }
+        public ITextureBase Texture { get; }
 
         /// <summary>
         /// Description enum providing details about what property of the Texture changed.
         /// </summary>
-        public TextureChangedEnum ChangedEnum
-        {
-            get { return _textureChangedEnum; }
-        }
-
-        private int _xStart, _yStart, _width, _height;
+        public TextureChangedEnum ChangedEnum { get; }
 
         /// <summary>
         /// x offset -> where does the changed region start along x (from left to right)?
         /// </summary>
-        public int XStart
-        {
-            get { return _xStart; }
-        }
+        public int XStart { get; }
 
         /// <summary>
         /// y offset -> where does the changed region start along y (from top to bottom)?
         /// </summary>
-        public int YStart
-        {
-            get { return _yStart; }
-        }
+        public int YStart { get; }
 
         /// <summary>
         /// Width in pixels.
         /// </summary>
-        public int Width
-        {
-            get { return _width; }
-        }
+        public int Width { get; }
 
         /// <summary>
         /// Height in pixels.
         /// </summary>
-        public int Height
-        {
-            get { return _height; }
-        }
+        public int Height { get; }
 
         /// <summary>
         /// Constructor takes a Texture and a description which property of the Texture changed.
@@ -70,14 +62,14 @@ namespace Fusee.Engine.Core
         /// <param name="yStart">(optional) y offset -> where does the changed region start along y (from top to bottom)?</param>
         /// <param name="width">Width in pixels.</param>
         /// <param name="height">Height in pixels.</param>
-        public TextureDataEventArgs(Texture texture, TextureChangedEnum textureChangedEnum, int xStart = 0, int yStart = 0, int width = 0, int height = 0)
+        public TextureEventArgs(ITextureBase texture, TextureChangedEnum textureChangedEnum, int xStart = 0, int yStart = 0, int width = 0, int height = 0)
         {
-            _texture = texture;
-            _textureChangedEnum = textureChangedEnum;
-            _xStart = xStart;
-            _yStart = yStart;
-            _width = width;
-            _height = height;
+            Texture = texture;
+            ChangedEnum = textureChangedEnum;
+            XStart = xStart;
+            YStart = yStart;
+            Width = width;
+            Height = height;
 
         }
     }

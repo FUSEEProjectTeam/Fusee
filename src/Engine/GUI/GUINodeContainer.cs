@@ -327,7 +327,7 @@ namespace Fusee.Engine.GUI
         /// <summary>
         /// Initializes a new instance of the <see cref="TextNodeContainer"/> class.
         /// </summary>
-        /// <param name="text">The text you want to disply.</param>
+        /// <param name="text">The text you want to display.</param>
         /// <param name="name">The name of the SceneNodeContainer.</param>
         /// <param name="vs">The vertex shader you want to use..</param>
         /// <param name="ps">The pixel shader you want to use.</param>

@@ -10,14 +10,14 @@ namespace Fusee.Engine.Core
 
         private Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
 
-        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();       
+        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
 
         private void Remove(ITextureHandle textureHandle)
         {
             _renderContextImp.RemoveTextureHandle(textureHandle);
         }
 
-        private void TextureChanged(object sender, TextureDataEventArgs textureDataEventArgs)
+        private void TextureChanged(object sender, TextureEventArgs textureDataEventArgs)
         {
             ITextureHandle toBeUpdatedTextureHandle;
             if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.SessionUniqueIdentifier,
@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
                 throw new KeyNotFoundException("Texture is not registered.");
             }
 
-            Texture texture = textureDataEventArgs.Texture;
+            ITextureBase texture = textureDataEventArgs.Texture;
 
             switch (textureDataEventArgs.ChangedEnum)
             {
@@ -39,9 +39,13 @@ namespace Fusee.Engine.Core
                     //_reusableIdentifiers.Push(textureDataEventArgs.Texture.Identifier);
                     break;
                 case TextureChangedEnum.RegionChanged:
-                    _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, texture,
-                        textureDataEventArgs.XStart, textureDataEventArgs.YStart, textureDataEventArgs.Width,
-                        textureDataEventArgs.Height);
+                    //TODO: An IWritableTexture has no implementation of UpdateTextureRegion (yet)
+                    if (texture.GetType() == typeof(ITexture))
+                    {
+                        _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, (ITexture)texture,
+                            textureDataEventArgs.XStart, textureDataEventArgs.YStart, textureDataEventArgs.Width,
+                            textureDataEventArgs.Height);
+                    }
                     break;
             }
         }
@@ -49,7 +53,7 @@ namespace Fusee.Engine.Core
         private ITextureHandle RegisterNewTexture(WritableCubeMap texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
-            ITextureHandle textureHandle = _renderContextImp.CreateCubeMap(texture);
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -116,7 +120,7 @@ namespace Fusee.Engine.Core
         }
 
         public ITextureHandle GetWritableTextureHandleFromTexture(WritableTexture texture)
-        {    
+        {
             if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
             {
                 return RegisterNewTexture(texture);

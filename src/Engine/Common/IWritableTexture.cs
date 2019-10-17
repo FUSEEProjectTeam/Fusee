@@ -3,7 +3,7 @@
    /// <summary>
    /// Cross platform abstraction for a WritableTexture.
    /// </summary>
-    public interface IWritableTexture : ITexture
+    public interface IWritableTexture : ITextureBase
     {
         RenderTargetTextureTypes TextureType { get; }
     }

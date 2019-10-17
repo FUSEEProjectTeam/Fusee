@@ -5,22 +5,8 @@ namespace Fusee.Base.Common
     /// <summary>
     /// Interface describing what operations are possible on arbitrary image data
     /// </summary>
-    public interface IImageData
+    public interface IImageData: IImageBase
     {
-        /// <summary>
-        /// Width of the IImageData object in pixels.
-        /// </summary>
-        int Width { get; }
-        /// <summary>
-        /// Height of the IImageData object in pixels.
-        /// </summary>
-        int Height { get; }
-
-        /// <summary>
-        /// PixelFormat contains additional information about IImageData's pixel encoding, e.g. amount of color channels.
-        /// </summary>
-        ImagePixelFormat PixelFormat { get; }
-
         /// <summary>
         /// Block Image Transfer. Write a block of pixels to this instance from some other IImageData
         /// </summary>
