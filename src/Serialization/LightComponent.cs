@@ -1,4 +1,3 @@
-
 using Fusee.Base.Common;
 using Fusee.Math.Core;
 using ProtoBuf;

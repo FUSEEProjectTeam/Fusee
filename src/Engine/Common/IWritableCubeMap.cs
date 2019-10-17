@@ -8,6 +8,6 @@ namespace Fusee.Engine.Common
     /// </summary>
     public interface IWritableCubeMap : IWritableTexture
     {
-        RenderTargetTextures TextureType { get; }
+        RenderTargetTextureTypes TextureType { get; }
     }
 }

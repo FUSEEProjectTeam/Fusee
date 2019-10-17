@@ -588,9 +588,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public void SetShaderParam(IShaderParam param, float4x4 val)
         {
             gl.UniformMatrix4fv(((ShaderParam)param).handle, true, val.ToArray());
+            
         }
-
-
 
         /// <summary>
         ///     Sets a <see cref="float4" /> array shader parameter.
@@ -1847,7 +1846,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 gl2.BindTexture(TEXTURE_2D, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1884,7 +1883,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
                 gl2.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0, TEXTURE_CUBE_MAP, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1934,7 +1933,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
             }
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && !renderTarget.IsDepthOnly)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null && !renderTarget.IsDepthOnly)
             {
                 WebGLRenderbuffer gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
@@ -1976,7 +1975,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
 
             int depthCnt = 0;
-            var depthTexPos = (int)RenderTargetTextures.G_DEPTH;
+            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
             {

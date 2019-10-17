@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -1072,7 +1073,7 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Version());
             frag.Append(EsPrecision());
-            frag.Append($"#define LIGHTED_SCENE_TEX {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)}\n");
+            frag.Append($"#define LIGHTED_SCENE_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)}\n");
             frag.Append($"#define EDGE_THRESHOLD_MIN 0.0625\n");
             frag.Append($"#define EDGE_THRESHOLD_MAX 0.125\n");
             frag.Append($"#define ITERATIONS 14\n");
@@ -1326,7 +1327,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
                 new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
             });
 
@@ -1377,7 +1378,7 @@ namespace Fusee.Engine.Core
             var frag = new StringBuilder();
             frag.Append(Version());
             frag.Append(EsPrecision());
-            frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)}\n");
+            frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
             frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
             frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize / 2.0f)}\n");
 
@@ -1386,7 +1387,7 @@ namespace Fusee.Engine.Core
             frag.Append($"uniform sampler2D SSAO_INPUT_TEX;\n");
 
 
-            frag.Append($"out vec4 o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");
+            frag.Append($"out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
 
             frag.Append("void main() {");
 
@@ -1406,7 +1407,7 @@ namespace Fusee.Engine.Core
             
             ");
 
-            frag.Append($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(result, result, result, 1.0);");
+            frag.Append($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)} = vec4(result, result, result, 1.0);");
 
             frag.Append("}");
 
@@ -1425,7 +1426,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcSsaoRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcSsaoRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
 
             });
 
@@ -1474,22 +1475,22 @@ namespace Fusee.Engine.Core
             frag.Append($"uniform vec2 ScreenParams;\n");
             frag.Append($"uniform vec2 ClipPlaneDist;\n");
             frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");
-            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_POSITION)};\n");
-            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_NORMAL)};\n");
+            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_POSITION)};\n");
+            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_NORMAL)};\n");
             frag.Append($"uniform sampler2D NoiseTex;\n");
             frag.Append($"uniform mat4 FUSEE_P;\n");
 
-            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)};\n");
+            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
 
             frag.Append("void main() {");
-            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
 
             frag.Append(@"
             if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
                 discard;
             ");
 
-            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords).xyz;");
+            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords).xyz;");
 
             //SSAO
             //-------------------------------------- -
@@ -1525,7 +1526,7 @@ namespace Fusee.Engine.Core
              // keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
             ");
 
-            frag.AppendLine($"float sampleDepth = texture({RenderTargetTextures.G_POSITION.ToString()}, offset.xy).z;");
+            frag.AppendLine($"float sampleDepth = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, offset.xy).z;");
             frag.Append(@"           
 
              // range check & accumulate:
@@ -1537,7 +1538,7 @@ namespace Fusee.Engine.Core
 
             ");
 
-            frag.Append($"{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");
+            frag.Append($"{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");
 
             frag.Append("}");
 
@@ -1556,9 +1557,9 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
 
                 new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
                 new EffectParameterDeclaration { Name = "ClipPlaneDist", Value = clipPlaneDist},
@@ -1630,7 +1631,7 @@ namespace Fusee.Engine.Core
                 var tex = textures[i];
                 if (tex == null) continue;
 
-                frag.Append($"layout (location = {texCount}) out vec4 {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
+                frag.Append($"layout (location = {texCount}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
                 texCount++;
             }
 
@@ -1659,19 +1660,19 @@ namespace Fusee.Engine.Core
                 switch (i)
                 {
                     case 0: //POSITION
-                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(vPos.xyz, vPos.w);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(vPos.xyz, vPos.w);");
                         break;
                     case 1: //ALBEDO_SPECULAR
                         if (diffuseTex != null)
-                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(mix(vColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), vColor.a);");
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(mix(vColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), vColor.a);");
                         else
-                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vColor;");
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vColor;");
                         break;
                     case 2: //NORMAL
-                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(normalize(vNormal.xyz), 1.0);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(normalize(vNormal.xyz), 1.0);");
                         break;
                     case 3: //DEPTH
-                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextures), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
+                        frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
                 }
             }
@@ -1739,9 +1740,9 @@ namespace Fusee.Engine.Core
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
 
-            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextures)).Length; i++)
+            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
             {
-                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextures), i)};\n");
+                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
             }
 
             frag.Append(@"struct Light 
@@ -1770,7 +1771,7 @@ namespace Fusee.Engine.Core
 
             if (lc.IsCastingShadows)
             {
-                if (lc.Type != Base.Common.LightType.Point)
+                if (lc.Type != LightType.Point)
                     frag.Append("uniform sampler2D ShadowMap;\n");
                 else
                     frag.Append("uniform samplerCube ShadowCubeMap;\n");
@@ -1780,11 +1781,11 @@ namespace Fusee.Engine.Core
             frag.Append("uniform int PassNo;\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
-            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)};\n");
+            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)};\n");
 
             //Shadow calculation
             //-------------------------------------- 
-            if (lc.Type != Base.Common.LightType.Point)
+            if (lc.Type != LightType.Point)
                 frag.Append(ShadowCalculation());
             else
                 frag.Append(ShadowCalculationCubeMap());
@@ -1793,7 +1794,7 @@ namespace Fusee.Engine.Core
             {
             ");
 
-            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextures.G_NORMAL.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
             //---------------------------------------
             frag.Append(@"
@@ -1801,10 +1802,10 @@ namespace Fusee.Engine.Core
                 discard;
             ");
 
-            frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextures.G_POSITION.ToString()}, vTexCoords);");
-            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextures.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
-            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextures.G_SSAO.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, vTexCoords).rgb;");
 
             //Lighting calculation
             //-------------------------
@@ -1870,7 +1871,7 @@ namespace Fusee.Engine.Core
 
             if (lc.IsCastingShadows)
             {
-                if (lc.Type != Base.Common.LightType.Point)
+                if (lc.Type != LightType.Point)
                 {
                     frag.Append(@"
                     // shadow                
@@ -1906,7 +1907,7 @@ namespace Fusee.Engine.Core
             }              
             ");
 
-            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextures), RenderTargetTextures.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
+            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
 
             frag.Append("}");
 
@@ -1923,10 +1924,10 @@ namespace Fusee.Engine.Core
             
             var effectParams = new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
@@ -1983,10 +1984,10 @@ namespace Fusee.Engine.Core
 
             var effectParams = new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
@@ -2041,10 +2042,10 @@ namespace Fusee.Engine.Core
 
             var effectParams = new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration { Name = RenderTargetTextures.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextures.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
@@ -2221,7 +2222,7 @@ namespace Fusee.Engine.Core
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
 
-            frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextures), (int)RenderTargetTextures.G_DEPTH)};\n");
+            frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)};\n");
             frag.Append("uniform vec2 LightMatClipPlanes;\n");
             frag.Append("uniform int LightType;\n");
 
@@ -2244,7 +2245,7 @@ namespace Fusee.Engine.Core
                 //}
                 
             ");
-            frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextures), (int)RenderTargetTextures.G_DEPTH)} = vec4(d, d, d, 1.0);\n");
+            frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)} = vec4(d, d, d, 1.0);\n");
             frag.Append(@"}
             ");
 

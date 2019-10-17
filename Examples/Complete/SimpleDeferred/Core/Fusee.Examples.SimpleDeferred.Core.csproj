@@ -8,12 +8,6 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\SimpleDeferred\Core\</OutputPath>
   </PropertyGroup>
-
-  <ItemGroup>
-    <None Remove="Assets\Monkey.fus" />
-    <None Remove="Assets\nanosuit.fus" />
-  </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\Engine\Core\Fusee.Engine.Core.csproj" />
   </ItemGroup>

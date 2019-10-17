@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading.Tasks;
 
 namespace Fusee.Base.Common
 {
@@ -9,7 +8,7 @@ namespace Fusee.Base.Common
     /// Asset provider base class for implementing asset providers based on streams. 
     /// Used to implement FileAssetProvider and Android ApkAssetProviders.
     /// </summary>
-    public abstract class StreamAssetProvider: IAssetProvider
+    public abstract class StreamAssetProvider : IAssetProvider
     {
         private readonly Dictionary<Type, AssetHandler> _assetHandlers;
 
@@ -47,19 +46,12 @@ namespace Fusee.Base.Common
         protected abstract Stream GetStream(string id);
 
         /// <summary>
-        /// Implement this on a given platform to create an async stream for the asset identified by id.
-        /// </summary>
-        /// <param name="id">The asset identifier.</param>
-        /// <returns>Implementors should return null if the asset cannot be retrieved.</returns>
-        protected abstract Task<Stream> GetStreamAsync(string id);
-
-        /// <summary>
         /// Retrieves the asset identified by the given string.
         /// </summary>
         /// <param name="id">The identifier string.</param>
         /// <param name="type">The type of the asset.</param>
         /// <returns>
-        /// The asset, if this provider can acquire an asset with the given id and the given type. Otherwise null.
+        /// The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
         public object GetAsset(string id, Type type)
@@ -75,43 +67,13 @@ namespace Fusee.Base.Common
                 if (_assetHandlers.TryGetValue(type, out handler))
                 {
                     object ret;
-                    if (null != (ret = handler.Decoder(id, stream)))
+                     if (null != (ret = handler.Decoder(id, stream)))
                     {
                         // Return in using will dispose the used object, which is what we want...
                         return ret;
                     }
                 }
             }
-            return null;
-        }
-
-        /// <summary>
-        /// Retrieves the asset identified by the given string with an <see langword="async"/> method.
-        /// </summary>
-        /// <param name="id">The identifier string.</param>
-        /// <param name="type">The type of the asset.</param>
-        /// <returns>
-        /// The asset, if this provider can acquire an asset with the given id and the given type. Otherwise null.
-        /// </returns>
-        /// <exception cref="System.ArgumentNullException"></exception>
-        public async Task<object> GetAssetAsync(string id, Type type)
-        {
-            Console.WriteLine("Getting asset ...");
-
-            var stream = await GetStreamAsync(id).ConfigureAwait(false);
-            
-                if (stream == null)
-                {
-                    return null;
-                }
-
-                AssetHandler handler;
-                if (_assetHandlers.TryGetValue(type, out handler))
-                {
-                        // Return in using will dispose the used object, which is what we want...
-                        return await handler.DecoderAsync(id, stream);
-                }
-            
             return null;
         }
 
@@ -144,46 +106,11 @@ namespace Fusee.Base.Common
         }
 
         /// <summary>
-        /// Determines whether this asset provider can get the specified asset without actually getting it.
-        /// </summary>
-        /// <param name="id">The identifier string.</param>
-        /// <param name="type">The expected type of the asset.</param>
-        /// <returns>
-        /// true if this asset will produce a result. Otherwise false.
-        /// </returns>
-        public async Task<bool> CanGetAsync(string id, Type type)
-        {
-            if (!await CheckExistsAsync(id))
-            {
-                type = null;
-                return false;
-            }
-
-            AssetHandler handler;
-            if (_assetHandlers.TryGetValue(type, out handler))
-            {
-                if (handler.Checker(id))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-
-        /// <summary>
-        /// Checks the existence of the identified asset. Implement this on a given platform.
+        /// Checks the existance of the identified asset. Implement this on a given platform.
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>Implementors should return true if a stream can be created.</returns>
         protected abstract bool CheckExists(string id);
-
-        /// <summary>
-        /// Checks the existence of the identified asset as an async method. Implement this on a given platform.
-        /// </summary>
-        /// <param name="id">The asset identifier.</param>
-        /// <returns>Implementors should return true if a stream can be created.</returns>
-        protected abstract Task<bool> CheckExistsAsync(string id);
 
         /// <summary>
         /// Asynchronous get method.
@@ -219,6 +146,5 @@ namespace Fusee.Base.Common
         {
             _assetHandlers.Add(handler.ReturnedType, handler);
         }
-      
     }
 }

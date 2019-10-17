@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 
 namespace Fusee.Base.Common
 {
@@ -43,27 +42,18 @@ namespace Fusee.Base.Common
     /// Type used in <see cref="IAssetProvider.RegisterTypeHandler"/>.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <param name="storage">An opaque object containing the data. The actual type of the storage depends on the AssetProvider.
-    /// Many providers use a stream.</param>
-    /// <returns>The asset cast to <see cref="Task"/></returns>
-    public delegate Task<object> AssetDecoderAsync(string id, object storage);
-
-    /// <summary>
-    /// Type used in <see cref="IAssetProvider.RegisterTypeHandler"/>.
-    /// </summary>
-    /// <param name="id">The identifier.</param>
     /// <returns>True if the corresponding <see cref="AssetDecoder"/> will probably handle the requested asset.</returns>
     public delegate bool AssetChecker(string id);
 
     /// <summary>
     /// Structure containing an asset handler - typically used by implementation projects knowing how 
-    /// to decode an asset of a given type using a serialization format (e.g. a stream or a memory location)
+    /// to decode an assset of a given type using a serialization format (e.g. a stream or a memory location)
     /// defined by the platform.
     /// </summary>
     public struct AssetHandler
     {
         /// <summary>
-        /// The type of asset returned by the decoder
+        /// The type of asset returnded by the decoder
         /// </summary>
         public Type ReturnedType;
         /// <summary>
@@ -71,13 +61,6 @@ namespace Fusee.Base.Common
         /// the opaque storage.
         /// </summary>
         public AssetDecoder Decoder;
-
-        /// <summary>
-        /// A method capable of decoding an asset into the returned type from 
-        /// the opaque storage.
-        /// </summary>
-        public AssetDecoderAsync DecoderAsync;
-
         /// <summary>
         /// A method delivering a boolean value if an asset with the given id will be 
         /// handled by the decoder.
@@ -111,16 +94,8 @@ namespace Fusee.Base.Common
         /// </summary>
         /// <param name="id">The identifier string.</param>
         /// <param name="type">The type of the asset.</param>
-        /// <returns>The asset, if this provider can acquire an asset with the given id and the given type. Otherwise null.</returns>
+        /// <returns>The asset, if this provider can akquire an asset with the given id and the given type. Ohterwise null.</returns>
         object GetAsset(string id, Type type);
-
-        /// <summary>
-        /// Retrieves the asset identified by the given string in async.
-        /// </summary>
-        /// <param name="id">The identifier string.</param>
-        /// <param name="type">The type of the asset.</param>
-        /// <returns>The asset, if this provider can acquire an asset with the given id and the given type. Otherwise null.</returns>
-        Task<object> GetAssetAsync(string id, Type type);
 
         /// <summary>
         /// Determines whether this asset provider can get the specified asset without actually getting it.
@@ -131,16 +106,6 @@ namespace Fusee.Base.Common
         /// true if this asset will produce a result. Otherwise false.
         /// </returns>
         bool CanGet(string id, Type type);
-
-        /// <summary>
-        /// Determines whether this asset provider can get the specified asset without actually getting it.
-        /// </summary>
-        /// <param name="id">The identifier string.</param>
-        /// <param name="type">The expected type of the asset.</param>
-        /// <returns>
-        /// true if this asset will produce a result. Otherwise false.
-        /// </returns>
-        Task<bool> CanGetAsync(string id, Type type);
 
         // TODO: prepare for asynchronous handling
         /// <summary>

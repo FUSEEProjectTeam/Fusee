@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Common
 {
     /// <summary>
-    /// Enum, that defines all available render texture types
+    /// Enum, that defines all available render texture types. 
     /// </summary>
-    public enum RenderTargetTextures
+    public enum RenderTargetTextureTypes
     {
         /// <summary>
         /// Position texture.
@@ -31,6 +27,9 @@ namespace Fusee.Engine.Common
         G_SSAO,
     }
 
+    /// <summary>
+    /// Common texture resolutions for render textures. The value is given in px.
+    /// </summary>
     public enum TexRes
     {
         /// <summary>

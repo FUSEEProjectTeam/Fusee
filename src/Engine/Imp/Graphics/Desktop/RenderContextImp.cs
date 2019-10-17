@@ -1838,7 +1838,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1875,7 +1875,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texHandle).TexHandle);
 
-                if (tex.TextureType != RenderTargetTextures.G_DEPTH)
+                if (tex.TextureType != RenderTargetTextureTypes.G_DEPTH)
                 {
                     CreateDepthRenderBuffer(tex.Width, tex.Height);
                     GL.FramebufferTexture(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, ((TextureHandle)texHandle).TexHandle, 0);
@@ -1925,7 +1925,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             }            
 
-            if (renderTarget.RenderTextures[(int)RenderTargetTextures.G_DEPTH] == null && !renderTarget.IsDepthOnly)
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null && !renderTarget.IsDepthOnly)
             {
                 int gDepthRenderbufferHandle;
                 if (renderTarget.DepthBufferHandle == null)
@@ -1968,7 +1968,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
             
             int depthCnt = 0;
-            var depthTexPos = (int)RenderTargetTextures.G_DEPTH;
+            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
             {

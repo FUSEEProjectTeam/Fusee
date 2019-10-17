@@ -4,7 +4,6 @@ using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Serialization;
 
@@ -50,14 +49,6 @@ namespace Fusee.Base.Core
         public static T Get<T>(string id) => Instance.GetAsset<T>(id);
 
         /// <summary>
-        /// Staticton implementation of <see cref="GetAsset{T}"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        public static async Task<T> GetAsync<T>(string id) => await Instance.GetAssetAsync<T>(id);
-
-        /// <summary>
         /// Retrieves the asset identified by id.
         /// </summary>
         /// <typeparam name="T">The expected type of the asset to retrieve.</typeparam>
@@ -77,29 +68,6 @@ namespace Fusee.Base.Core
                 }
             }
             return default(T);
-        }
-
-        /// <summary>
-        /// Retrieves the asset identified by id.
-        /// </summary>
-        /// <typeparam name="T">The expected type of the asset to retrieve.</typeparam>
-        /// <param name="id">The identifier.</param>
-        /// <returns>The asset, if found. Otherwise null.</returns>
-        /// <remarks>Internally, this method queries all of the registerd asset providers (<see cref="RegisterAssetProvider"/>.
-        /// The first asset provider capable of retrieving the asset "wins". It's up to any appliacation to guarantee
-        /// uniquenesss of asset identifiers among all assets and asset providers.
-        /// </remarks>
-        public async Task<T> GetAssetAsync<T>(string id)
-        {
-            foreach (var assetProvider in _providers)
-            {
-                if (await assetProvider.CanGetAsync(id, typeof(T)))
-                {
-                    return (T)await assetProvider.GetAssetAsync(id, typeof(T));
-                }
-            }
-            
-            return default;
         }
 
         /// <summary>

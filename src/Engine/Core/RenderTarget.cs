@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
     /// If only a single texture is needed, the usage of a <see cref="WritableTexture"/> as a render target is preferred.
-    /// Use the "Create__Tex"-Methods of this class to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextures"/> enum.
+    /// Use the "Create__Tex"-Methods of this class to generate the textures you need. The order of the textures in the RenderTextures array is given by the <see cref="RenderTargetTextureTypes"/> enum.
     /// </summary>
     public class RenderTarget : IRenderTarget, IDisposable
     {
@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core
         /// <param name="texRes">Resolution of the created Textures.</param>
         public RenderTarget(TexRes texRes)
         {           
-            RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextures)).Length];
+            RenderTextures = new WritableTexture[Enum.GetNames(typeof(RenderTargetTextureTypes)).Length];
             TextureResolution = texRes;
             IsDepthOnly = false;
         }
@@ -58,7 +58,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="src">The source RenderTarget.</param>
         /// <param name="tex">The type of the texture.</param>
-        public void SetTextureFromRenderTarget(RenderTarget src, RenderTargetTextures tex)
+        public void SetTextureFromRenderTarget(RenderTarget src, RenderTargetTextureTypes tex)
         {
             var srcTex = src.RenderTextures[(int)tex];
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
@@ -69,7 +69,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetPositionTex()
         {          
-            RenderTextures[(int)RenderTargetTextures.G_POSITION] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_POSITION] = WritableTexture.CreatePosTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace Fusee.Engine.Core
         /// </summary>       
         public void SetAlbedoSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextures.G_ALBEDO_SPECULAR] = WritableTexture.CreateAlbedoSpecularTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR] = WritableTexture.CreateAlbedoSpecularTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetNormalTex()
         {
-            RenderTextures[(int)RenderTargetTextures.G_NORMAL] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL] = WritableTexture.CreateNormalTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void SetDepthTex()
         {
-            RenderTextures[(int)RenderTargetTextures.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
         /// </summary>        
         public void SetSSAOTex()
         { 
-            RenderTextures[(int)RenderTargetTextures.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
         }        
 
         // Public implementation of Dispose pattern callable by consumers.

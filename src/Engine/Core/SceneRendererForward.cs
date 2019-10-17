@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
+using Fusee.Base.Common;
 
 namespace Fusee.Engine.Core
 {

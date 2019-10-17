@@ -1,8 +1,10 @@
 ﻿namespace Fusee.Engine.Common
 {
-   
+   /// <summary>
+   /// Cross platform abstraction for a WritableTexture.
+   /// </summary>
     public interface IWritableTexture : ITexture
     {
-        RenderTargetTextures TextureType { get; }
+        RenderTargetTextureTypes TextureType { get; }
     }
 }

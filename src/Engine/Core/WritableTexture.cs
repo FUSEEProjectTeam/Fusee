@@ -8,7 +8,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class WritableTexture : Texture, IWritableTexture
     {
-        public RenderTargetTextures TextureType { get; private set; }
+        public RenderTargetTextureTypes TextureType { get; private set; }
 
         /// <summary>
         /// Should be containing zeros by default. If you want to use the PixelData directly it gets blted from the graphics card (not implemented yet).
@@ -52,7 +52,7 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public WritableTexture(RenderTargetTextures texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         { 
             PixelFormat = colorFormat;
             Width = width;
@@ -71,7 +71,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreatePosTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextures.G_POSITION, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.G_POSITION, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
         }
 
         /// <summary>
@@ -82,7 +82,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateAlbedoSpecularTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextures.G_ALBEDO_SPECULAR, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO_SPECULAR, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
         }
 
         /// <summary>
@@ -93,7 +93,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateNormalTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextures.G_NORMAL, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.G_NORMAL, new ImagePixelFormat(ColorFormat.fRGB16), width, height, false, TextureFilterMode.NEAREST);
         }
 
         /// <summary>
@@ -104,7 +104,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateDepthTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextures.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+            return new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
         }
 
         /// <summary>
@@ -115,7 +115,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static WritableTexture CreateSSAOTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextures.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
+            return new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), width, height, false, TextureFilterMode.NEAREST);
         }
     }
 }
