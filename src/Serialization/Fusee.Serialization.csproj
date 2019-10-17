@@ -11,17 +11,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="..\Base\Common\Fusee.Base.Common.csproj" />
   </ItemGroup>
 
  <!-- <PropertyGroup>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
+  </ItemGroup>
+   
   <PropertyGroup>
     <BuildDependsOn>
       $(BuildDependsOn);
@@ -37,6 +37,8 @@
     <Message Importance="High" Text="$(AssemblyName).dll -&gt; $(OutputPath)SerializationSerializer.dll" />
   </Target>
   <!--<PropertyGroup>
+  </PropertyGroup>
+  <PropertyGroup>
     <CleanDependsOn>
       $(CleanDependsOn);
       SerializationCompileClean

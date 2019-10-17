@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Runtime.InteropServices;
-using System.Security.Cryptography;
 
 namespace Fusee.Math.Core
 {
@@ -8,9 +7,7 @@ namespace Fusee.Math.Core
     ///     Represents a 3x3 Matrix
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable InconsistentNaming
     public struct float3x3 : IEquatable<float3x3>
-        // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -249,14 +246,11 @@ namespace Fusee.Math.Core
 
         #region float[] ToArray()
 
-        // ReSharper disable UnusedMember.Local
         private float[] ToArray()
         {
             return new[] {M11, M12, M13, M21, M22, M23, M31, M32, M33};
             // return new float[] { M11, M21, M31, M12, M22, M32, M13, M23, M33 };
         }
-
-        // ReSharper restore UnusedMember.Local
 
         #endregion
 
@@ -538,9 +532,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion

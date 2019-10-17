@@ -933,6 +933,8 @@ namespace Fusee.Engine.Core
 
         private void AddPixelBody()
         {
+            string fragColorAlpha = _materialProbs.HasDiffuse ? $"{DiffuseColorName}.w" : "1.0";
+
             var methodBody = new List<string>
             {
                 "vec4 result = ambientLighting(0.2);", //ambient component
