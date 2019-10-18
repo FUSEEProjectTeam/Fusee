@@ -44,11 +44,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        /// <summary>
-        /// Gets and sets the size of the shadow map.
-        /// </summary>
-        public float2 ShadowMapSize { set; get; } = new float2(1024, 1024);
-
         private CanvasTransformComponent _ctc;
         private MinMaxRect _parentRect;
 
@@ -291,6 +286,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
             AccumulateLight();
+            UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTarget);
             Traverse(_sc.Children);
         }
@@ -543,8 +539,6 @@ namespace Fusee.Engine.Core
             if (wc != null)
                 AddWeightComponentToMesh(mesh, wc);
 
-            UpdateShaderParamsForAllLights();
-
             _rc.Render(mesh);
         }
 
@@ -647,7 +641,7 @@ namespace Fusee.Engine.Core
 
         private Dictionary<int, LightParamStrings> _lightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
-        protected void UpdateShaderParamsForAllLights()
+        private void UpdateShaderParamsForAllLights()
         {
             for (var i = 0; i < _lightResults.Count; i++)
             {
@@ -660,7 +654,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        protected void UpdateShaderParamForLight(int position, LightResult lightRes)
+        private void UpdateShaderParamForLight(int position, LightResult lightRes)
         {
             var light = lightRes.Light;
 

@@ -1951,7 +1951,6 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
             };
 
-
             effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });           
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
            
@@ -2617,6 +2616,11 @@ namespace Fusee.Engine.Core
                 {
                     Name = "allLights[" + i + "].isCastingShadows",
                     Value = 0
+                });
+                effectParameters.Add(new EffectParameterDeclaration
+                {
+                    Name = "allLights[" + i + "].bias",
+                    Value = 0f
                 });
             }
 

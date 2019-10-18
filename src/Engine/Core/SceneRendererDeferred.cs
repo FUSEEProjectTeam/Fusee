@@ -195,23 +195,23 @@ namespace Fusee.Engine.Core
             _quadShaderEffectComp = (ShaderEffectComponent)_quadScene.Children[0].Components[1];
         }
 
-        /// <summary>
-        /// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
-        /// the shader parameters for all lights in the scene are updated according to the <see cref="LightViserator"/>
-        /// and the geometry is passed to be pushed through the rendering pipeline.        
-        /// </summary>
-        /// <param name="mesh">The Mesh.</param>
-        [VisitMethod]
-        public new void RenderMesh(Mesh mesh)
-        {
-            if (!mesh.Active) return;
+        ///// <summary>
+        ///// If a Mesh is visited and it has a <see cref="WeightComponent"/> the BoneIndices and  BoneWeights get set, 
+        ///// the shader parameters for all lights in the scene are updated according to the <see cref="LightViserator"/>
+        ///// and the geometry is passed to be pushed through the rendering pipeline.        
+        ///// </summary>
+        ///// <param name="mesh">The Mesh.</param>
+        //[VisitMethod]
+        //public new void RenderMesh(Mesh mesh)
+        //{
+        //    if (!mesh.Active) return;
 
-            WeightComponent wc = CurrentNode.GetWeights();
-            if (wc != null)
-                AddWeightComponentToMesh(mesh, wc);
+        //    WeightComponent wc = CurrentNode.GetWeights();
+        //    if (wc != null)
+        //        AddWeightComponentToMesh(mesh, wc);
 
-            _rc.Render(mesh);
-        }
+        //    _rc.Render(mesh);
+        //}
 
         /// <summary>
         /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
@@ -409,6 +409,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam("light.lightType", (int)light.Type);
             effect.SetEffectParam("light.isActive", light.Active ? 1 : 0);
             effect.SetEffectParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
+            effect.SetEffectParam("light.bias", light.Bias);
 
             if (light.IsCastingShadows)
             {
@@ -435,7 +436,7 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc)
         {  
             SetContext(rc);
-            AccumulateLight();
+            AccumulateLight();            
             _rc.EnableDepthClamp();
 
             if (!_isBackgroundColorSet)
@@ -574,7 +575,7 @@ namespace Fusee.Engine.Core
                 rc.SetRenderTarget(_lightedSceneRenderTarget);
                 for (int i = 0; i < LightViseratorResults.Count; i++)
                 {
-                    var lightVisRes = LightViseratorResults[i];
+                    var lightVisRes = LightViseratorResults[i];                    
                     if (!lightVisRes.Item2.Light.Active) continue;
 
                     if (lightVisRes.Item2.Light.IsCastingShadows)
