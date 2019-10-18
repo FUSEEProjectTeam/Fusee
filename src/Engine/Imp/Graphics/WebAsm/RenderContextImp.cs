@@ -192,27 +192,13 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
         }
 
-        /// <summary>
-        /// Creates a new CubeMap and binds it to the shader.
-        /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
-        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableCubeMap img)
+        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             uint internalFormat;
             uint format;
             uint pxType;
 
-            WebGLTexture id = gl2.CreateTexture();
-            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
-
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
-
-            var glWrapMode = GetWrapMode(img.WrapMode);
-
-            switch (img.PixelFormat.ColorFormat)
+            switch (tex.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = RGBA;
@@ -257,12 +243,35 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
+            return new TexturePixelInfo()
+            {
+                Format = format,
+                InternalFormat = internalFormat,
+                PxType = pxType
+
+            };
+        }
+
+        /// <summary>
+        /// Creates a new CubeMap and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableCubeMap img)
+        {
+            WebGLTexture id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
             for (int i = 0; i < 6; i++)
             {
-                if (img.PixelFormat.ColorFormat == ColorFormat.Depth)
-                    gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)internalFormat, img.Width, img.Height, 0, format, pxType, IntPtr.Zero);
-                else
-                    gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
+               gl2.TexImage2D(TEXTURE_CUBE_MAP_POSITIVE_X + (uint)i, 0, (int)pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);               
             }
 
             gl2.TexParameteri(TEXTURE_CUBE_MAP, TEXTURE_MAG_FILTER, (int)magFilter);
@@ -276,7 +285,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             return texID;
         }
 
-
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
         /// </summary>
@@ -284,10 +292,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
-            uint internalFormat;
-            uint format;
-            uint pxType;
-
             WebGLTexture id = gl2.CreateTexture();
             gl2.BindTexture(TEXTURE_CUBE_MAP, id);
 
@@ -296,55 +300,44 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             var magFilter = glMinMagFilter.Item2;
 
             var glWrapMode = GetWrapMode(img.WrapMode);
-
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    internalFormat = RGBA;
-                    format = RGBA;
-                    pxType = UNSIGNED_BYTE;
-                    break;
-                case ColorFormat.RGB:
-                    internalFormat = RGB;
-                    format = RGB;
-                    pxType = UNSIGNED_BYTE;
-                    break;
-                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case ColorFormat.Intensity:
-                    internalFormat = ALPHA;
-                    format = ALPHA;
-                    pxType = UNSIGNED_BYTE;
-                    break;
-                case ColorFormat.Depth:
-                    internalFormat = DEPTH_COMPONENT24;
-                    format = DEPTH_COMPONENT;
-                    pxType = FLOAT;
-                    break;
-                case ColorFormat.iRGBA:
-                    internalFormat = RGBA8UI;
-                    format = RGBA;
-                    pxType = UNSIGNED_BYTE;
-
-                    break;
-                case ColorFormat.fRGB32:
-                    internalFormat = RGB32F;
-                    format = RGB;
-                    pxType = FLOAT;
-
-                    break;
-                case ColorFormat.fRGB16:
-                    internalFormat = RGB16F;
-                    format = RGB;
-                    pxType = FLOAT;
-
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
-            }
-
+            var pxInfo = GetTexturePixelInfo(img);
 
             var imageData = gl.CastNativeArray(img.PixelData);
-            gl.TexImage2D(TEXTURE_2D, 0, internalFormat, img.Width, img.Height, 0, format, pxType, imageData);
+            gl.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imageData);
+
+            if (img.DoGenerateMipMaps)
+                gl.GenerateMipmap(TEXTURE_2D);
+
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_T, (int)glWrapMode);
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_R, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param> 
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableTexture img)
+        {
+            WebGLTexture id = gl2.CreateTexture();
+            gl2.BindTexture(TEXTURE_CUBE_MAP, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+            var pxInfo = GetTexturePixelInfo(img);
+
+            var imgData = gl.CastNativeArray(new byte[0]); //TODO: how to create an empty(?) ITypedArray?
+            gl.TexImage2D(TEXTURE_2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, imgData);
 
             if (img.DoGenerateMipMaps)
                 gl.GenerateMipmap(TEXTURE_2D);
@@ -440,7 +433,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="sp"></param>
         public void RemoveShader(IShaderProgramImp sp)
         {
-            if (sp == null) return; // if no RenderContext is available return otherwise memory read error
+            if (sp == null) return;
 
             var program = ((ShaderProgramImp)sp).Program;
 
@@ -453,6 +446,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl.DeleteProgram(program);
         }
 
+        /// <summary>
+        /// Set the width of line primitives.
+        /// </summary>
+        /// <param name="width"></param>
         public void SetLineWidth(float width)
         {
             gl.LineWidth(width);

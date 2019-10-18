@@ -11,13 +11,6 @@ using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
-    internal struct TexturePixelInfo
-    {
-        public PixelInternalFormat InternalFormat;
-        public PixelFormat Format;
-        public PixelType PxType;
-    }
-
     /// <summary>
     /// Implementation of the <see cref="IRenderContextImp" /> interface for usage with OpenTK framework.
     /// </summary>
@@ -26,8 +19,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #region Fields
 
         private int _currentTextureUnit;
-        private readonly Dictionary<int, int> _shaderParam2TexUnit;
-        private IRenderContextImp _renderContextImpImplementation;
+        private readonly Dictionary<int, int> _shaderParam2TexUnit;        
 
         #endregion
 
@@ -446,8 +438,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="sp"></param>
         public void RemoveShader(IShaderProgramImp sp)
         {
-            if (_renderContextImpImplementation == null) return; // if no RenderContext is available return otherwise memory read error
-
             var program = ((ShaderProgramImp)sp).Program;
 
             // wait for all threads to be finished

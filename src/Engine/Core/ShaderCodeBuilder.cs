@@ -1917,7 +1917,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>            
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMap">The shadow map.</param>            
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap)
         {
@@ -1977,7 +1979,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>       
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMap">The shadow map.</param>       
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap)
         {
@@ -2036,7 +2040,8 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>       
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>              
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc)
         {
 

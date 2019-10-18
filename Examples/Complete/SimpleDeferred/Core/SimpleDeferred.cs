@@ -65,8 +65,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.09f, 1);
 
             // Load the rocket model
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
             //Add resize delegate

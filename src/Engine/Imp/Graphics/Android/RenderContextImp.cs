@@ -19,7 +19,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         #region Fields   
         private int _currentAll;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
-        private Context _androidContext;
+        private readonly Context _androidContext;
         #endregion
 
         #region Constructors
@@ -159,27 +159,13 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
-        /// <summary>
-        /// Creates a new CubeMap and binds it to the shader.
-        /// </summary>
-        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
-        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
-        public ITextureHandle CreateTexture(IWritableCubeMap img)
+        private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             PixelInternalFormat internalFormat;
             PixelFormat format;
             PixelType pxType;
 
-            int id = GL.GenTexture();
-            GL.BindTexture(TextureTarget.TextureCubeMap, id);
-
-            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
-            var minFilter = glMinMagFilter.Item1;
-            var magFilter = glMinMagFilter.Item2;
-
-            var glWrapMode = GetWrapMode(img.WrapMode);
-
-            switch (img.PixelFormat.ColorFormat)
+            switch (tex.PixelFormat.ColorFormat)
             {
                 case ColorFormat.RGBA:
                     internalFormat = PixelInternalFormat.Rgba;
@@ -224,8 +210,35 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
             }
 
+            return new TexturePixelInfo()
+            {
+                Format = format,
+                InternalFormat = internalFormat,
+                PxType = pxType
+
+            };
+        }
+
+        /// <summary>
+        /// Creates a new CubeMap and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableCubeMap img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.TextureCubeMap, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+
+            var pxInfo = GetTexturePixelInfo(img);
+
             for (int i = 0; i < 6; i++)
-                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, internalFormat, img.Width, img.Height, 0, format, pxType, IntPtr.Zero);
+                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
 
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)minFilter);
@@ -245,10 +258,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(ITexture img)
         {
-            PixelInternalFormat internalFormat;
-            PixelFormat format;
-            PixelType pxType;
-
             int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
@@ -258,53 +267,45 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             var glWrapMode = GetWrapMode(img.WrapMode);
 
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormat.Rgba;
-                    pxType = PixelType.UnsignedByte;
-
-                    break;
-                case ColorFormat.RGB:
-                    internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Rgb;
-                    pxType = PixelType.UnsignedByte;
-                    break;
-                // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                case ColorFormat.Intensity:
-                    internalFormat = PixelInternalFormat.Alpha;
-                    format = PixelFormat.Alpha;
-                    pxType = PixelType.UnsignedByte;
-                    break;
-                case ColorFormat.Depth:
-                    internalFormat = PixelInternalFormat.Luminance; //TODO: Correct format? DepthComponent is not available here.
-                    format = PixelFormat.DepthComponent;
-                    pxType = PixelType.Float;
-                    break;
-                case ColorFormat.iRGBA:
-                    internalFormat = PixelInternalFormat.Rgba;
-                    format = PixelFormat.RgbaInteger;
-                    pxType = PixelType.UnsignedByte;
-                    break;
-                case ColorFormat.fRGB32:
-                    internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Rgb;
-                    pxType = PixelType.Float;
-                    break;
-                case ColorFormat.fRGB16:
-                    internalFormat = PixelInternalFormat.Rgb;
-                    format = PixelFormat.Rgb;
-                    pxType = PixelType.Float;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException("CreateTexture: Image pixel format not supported");
-            }
+            var pxInfo = GetTexturePixelInfo(img);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
-            GL.TexImage2D(TextureTarget.Texture2D, 0, internalFormat, img.Width, img.Height, 0, format, pxType, img.PixelData);
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
+
+            ITextureHandle texID = new TextureHandle { TexHandle = id };
+
+            return texID;
+        }
+
+        /// <summary>
+        /// Creates a new Texture and binds it to the shader.
+        /// </summary>
+        /// <param name="img">A given ImageData object, containing all necessary information for the upload to the graphics card.</param>
+        /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
+        public ITextureHandle CreateTexture(IWritableTexture img)
+        {
+            int id = GL.GenTexture();
+            GL.BindTexture(TextureTarget.Texture2D, id);
+
+            var glMinMagFilter = GetMinMagFilter(img.FilterMode);
+            var minFilter = glMinMagFilter.Item1;
+            var magFilter = glMinMagFilter.Item2;
+
+            var glWrapMode = GetWrapMode(img.WrapMode);
+
+            var pxInfo = GetTexturePixelInfo(img);
+
+            if (img.DoGenerateMipMaps)
+                GL.GenerateMipmap(TextureTarget.Texture2D);
+
+            GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
