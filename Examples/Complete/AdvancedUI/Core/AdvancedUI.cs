@@ -128,7 +128,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
-            var monkey = _scene.Children[0].GetComponent<Mesh>();
+            var monkey = _scene.Children[1].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
@@ -193,10 +193,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            ////TODO: set screen space UI projection to orthographic in SceneRenderer
-            //var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            //RC.Projection = projection;
-
             #region Controls
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
@@ -254,7 +250,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
             #endregion
 
-
             //Annotations will be unpdated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
@@ -273,9 +268,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     var uiInput = _uiInput[k];
 
                     //the monkey's matrices
-                    var monkey = _scene.Children[0];
+                    var monkey = _scene.Children[1];
                     var model = monkey.GetGlobalTransformation();
-                    var projection = monkey.GetParentProjection();
+                    var projection = _scene.Children[0].GetParentProjection();
 
                     var mvpMonkey = projection * RC.View * model;
 
