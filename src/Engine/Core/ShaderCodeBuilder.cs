@@ -1336,20 +1336,20 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a blurred ssao texture, to hide rectangular artifacts originating from the noise texture;
         /// </summary>
-        /// <param name="srcSsaoRenderTarget">The RenderTarget containing the non blurred ssao texture.</param>        
-        public static ShaderEffect SSAORenderTargetBlurEffect(RenderTarget srcSsaoRenderTarget)
+        /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
+        public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
             float blurKernelSize;
-            switch (srcSsaoRenderTarget.TextureResolution)
+            switch (ssaoRenderTex.Width)
             {
-                case TexRes.LOW_RES:
+                case (int)TexRes.LOW_RES:
                     blurKernelSize = 2.0f;
                     break;
                 default:
-                case TexRes.MID_RES:
+                case (int)TexRes.MID_RES:
                     blurKernelSize = 4.0f;
                     break;
-                case TexRes.HIGH_RES:
+                case (int)TexRes.HIGH_RES:
                     blurKernelSize = 8.0f;
                     break;
             }
@@ -1426,7 +1426,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcSsaoRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = ssaoRenderTex},
 
             });
 

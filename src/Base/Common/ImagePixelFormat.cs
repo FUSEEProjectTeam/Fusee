@@ -28,7 +28,7 @@ namespace Fusee.Base.Common
         {
             get
             {
-                return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.iRGBA
+                return ColorFormat == ColorFormat.RGBA || ColorFormat == ColorFormat.uiRgb8
                     ? 4
                     : ColorFormat == ColorFormat.RGB 
                         ? 3

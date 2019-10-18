@@ -65,8 +65,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _backgroundColorNight = new float4(0, 0, 0.09f, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
             //Add resize delegate
@@ -87,8 +87,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true };
             var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0.15f };
 
-            _sunTransform = new TransformComponent() { Translation = new float3(0, 10, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
-                        
+            _sunTransform = new TransformComponent() { Translation = new float3(0, 10, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };                        
 
             var aLotOfLights = new ChildList
             {

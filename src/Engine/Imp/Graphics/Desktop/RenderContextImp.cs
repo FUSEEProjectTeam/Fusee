@@ -54,18 +54,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
         {
             ITexture img = stream.GetCurrentFrame();
-            PixelFormat format;
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    format = PixelFormat.Bgra;
-                    break;
-                case ColorFormat.RGB:
-                    format = PixelFormat.Bgr;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            PixelFormat format = GetTexturePixelInfo(img).Format;
             if (img.PixelData != null)
             {
                 if (tex == null)
@@ -88,34 +77,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            PixelFormat format;
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    format = PixelFormat.Bgra;
-                    break;
-                case ColorFormat.RGB:
-                    format = PixelFormat.Bgr;
-                    break;
-                case ColorFormat.iRGBA:
-                    format = PixelFormat.BgraInteger;
-                    break;
-                case ColorFormat.Intensity:
-                    // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
-                    format = PixelFormat.Alpha;
-                    break;
-                case ColorFormat.fRGB32:
-                    format = PixelFormat.Rgb;
-                    break;
-                case ColorFormat.fRGB16:
-                    format = PixelFormat.Rgb;
-                    break;
-                case ColorFormat.Depth:
-                    format = PixelFormat.DepthComponent;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            PixelFormat format = GetTexturePixelInfo(img).Format;
 
             // copy the bytes from img to GPU texture
             int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
@@ -228,7 +190,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     pxType = PixelType.Float;
 
                     break;
-                case ColorFormat.iRGBA:
+                case ColorFormat.uiRgb8:
                     internalFormat = PixelInternalFormat.Rgba8ui;
                     format = PixelFormat.RgbaInteger;
                     pxType = PixelType.UnsignedByte;

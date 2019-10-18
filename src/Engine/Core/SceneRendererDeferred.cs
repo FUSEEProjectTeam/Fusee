@@ -78,10 +78,12 @@ namespace Fusee.Engine.Core
         private DeferredPasses _currentPass;
 
         private readonly RenderTarget _gBufferRenderTarget;
-        private readonly RenderTarget _ssaoRenderTarget;
+        
         private readonly RenderTarget _blurRenderTarget;
         private readonly RenderTarget _ambientLightedSceneRenderTarget;
         private readonly RenderTarget _lightedSceneRenderTarget;
+
+        private readonly WritableTexture _ssaoRenderTexture;
 
         private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowRenderTargets; //One per Light 
 
@@ -119,8 +121,8 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetNormalTex();
             _gBufferRenderTarget.SetDepthTex();
 
-            _ssaoRenderTarget = new RenderTarget(_texRes);
-            _ssaoRenderTarget.SetSSAOTex();
+            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)texRes, (int)texRes, false, TextureFilterMode.NEAREST);
+
 
             _blurRenderTarget = new RenderTarget(_texRes);
             _blurRenderTarget.SetSSAOTex();
@@ -132,8 +134,7 @@ namespace Fusee.Engine.Core
 
             _shadowRenderTargets = new Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams>();
 
-            _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
-            _ssaoRenderTarget.DeleteBuffers += DeleteBuffers;
+            _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;            
             _blurRenderTarget.DeleteBuffers += DeleteBuffers;
             _lightedSceneRenderTarget.DeleteBuffers += DeleteBuffers;
             _ambientLightedSceneRenderTarget.DeleteBuffers += DeleteBuffers;
@@ -493,13 +494,13 @@ namespace Fusee.Engine.Core
             if (_ssaoTexEffect == null)
                 _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(_projectionComponent.ZNear, _projectionComponent.ZNear));
             _quadShaderEffectComp.Effect = _ssaoTexEffect;
-            rc.SetRenderTarget(_ssaoRenderTarget);
+            rc.SetRenderTarget(_ssaoRenderTexture);
             Traverse(_quadScene.Children);
 
             //Pass 3: Blur SSAO Texture
             _currentPass = DeferredPasses.SSAO_BLUR;
             if (_blurEffect == null)
-                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTarget);
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
             _quadShaderEffectComp.Effect = _blurEffect;
             rc.SetRenderTarget(_blurRenderTarget);
             Traverse(_quadScene.Children);
@@ -541,9 +542,9 @@ namespace Fusee.Engine.Core
                         }
 
                         if (lightVisRes.Item2.Light.Type != LightType.Point)
-                            _lightingPassEffect = _lightingPassEffectPoint;
-                        else
                             _lightingPassEffect = _lightingPassEffectOther;
+                        else
+                            _lightingPassEffect = _lightingPassEffectPoint;
                     }
                     else
                     {
@@ -558,7 +559,7 @@ namespace Fusee.Engine.Core
 
                     UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect);
                     _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
-                    _quadShaderEffectComp.Effect = _lightingPassEffect;                    
+                    _quadShaderEffectComp.Effect = _lightingPassEffect;
                     Traverse(_quadScene.Children);
                     lightPassCnt++;
                 }

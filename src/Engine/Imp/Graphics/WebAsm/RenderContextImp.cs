@@ -61,18 +61,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
         {
             ITexture img = stream.GetCurrentFrame();
-            uint pixelFormat;
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    pixelFormat = RGBA;
-                    break;
-                case ColorFormat.RGB:
-                    pixelFormat = RGB;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            uint pixelFormat = GetTexturePixelInfo(img).Format;
+
             if (img.PixelData != null)
             {
                 if (tex == null)
@@ -97,18 +87,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
         public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
         {
-            uint pixelFormat;
-            switch (img.PixelFormat.ColorFormat)
-            {
-                case ColorFormat.RGBA:
-                    pixelFormat = RGBA;
-                    break;
-                case ColorFormat.RGB:
-                    pixelFormat = RGB;
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            uint pixelFormat = GetTexturePixelInfo(img).Format;
 
             // copy the bytes from img to GPU texture
             int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
@@ -221,7 +200,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     format = DEPTH_COMPONENT;
                     pxType = FLOAT;
                     break;
-                case ColorFormat.iRGBA:
+                case ColorFormat.uiRgb8:
                     internalFormat = RGBA8UI;
                     format = RGBA;
                     pxType = UNSIGNED_BYTE;
@@ -508,16 +487,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         break;
 
                     case SAMPLER_2D:
+                    case UNSIGNED_INT_SAMPLER_2D:
+                    case INT_SAMPLER_2D:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
-
                     case SAMPLER_CUBE:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException();
-                }
+                }                
 
                 paramList.Add(paramInfo);
             }

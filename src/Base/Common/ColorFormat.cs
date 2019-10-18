@@ -23,7 +23,7 @@
         /// <summary>
         /// RGBA integer.
         /// </summary>
-        iRGBA,
+        uiRgb8,
 
         /// <summary>
         /// RGBA float, 32bit.
