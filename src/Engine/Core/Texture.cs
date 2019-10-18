@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core
     public class Texture : ITexture
     {
         #region RenderContext Asset Management
-        // Event of mesh Data changes
+        
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Core
         public Suid SessionUniqueIdentifier { get; private set; }
         #endregion
 
-        protected ImageData _imageData;
+        private readonly ImageData _imageData;
 
         #region Properties
 
@@ -69,10 +69,37 @@ namespace Fusee.Engine.Core
         /// </value>
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
-        public TextureFilterMode FilterMode { get; protected set; }
-        public TextureWrapMode WrapMode { get; protected set; }
-        
-        public bool DoGenerateMipMaps { get; protected set; }
+        /// <summary>
+        /// Specifies if mipmaps are created for this texture.
+        /// </summary>
+        public bool DoGenerateMipMaps
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Specifies the texture's wrap mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureWrapMode WrapMode
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureFilterMode FilterMode
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
+        /// </summary>
+        public RenderTargetTextureTypes TextureType { get; private set; }
 
         #endregion
 
@@ -149,11 +176,7 @@ namespace Fusee.Engine.Core
                 return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
-            var del = this.TextureChanged;
-            if (del != null)
-            {
-                del(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
-            }
+            this.TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
         }
 
         /// <summary>
@@ -175,11 +198,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void Dispose()
         {
-            var del = TextureChanged;
-            if (del != null)
-            {
-                del(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
-            }
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
         }
 
         /// <summary>

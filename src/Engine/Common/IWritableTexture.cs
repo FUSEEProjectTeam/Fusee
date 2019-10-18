@@ -2,9 +2,14 @@
 {
    /// <summary>
    /// Cross platform abstraction for a WritableTexture.
+   /// Use writable textures if you want to render into a texture.
+   /// Does NOT offer access to the pixel data.
    /// </summary>
     public interface IWritableTexture : ITextureBase
     {
+        /// <summary>
+        /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
+        /// </summary>
         RenderTargetTextureTypes TextureType { get; }
     }
 }

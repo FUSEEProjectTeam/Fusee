@@ -3,7 +3,7 @@
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// Interface describing what operations are possible on arbitrary image data
+    /// Interface describing operations are possible on arbitrary image data types.
     /// </summary>
     public interface IImageData: IImageBase
     {
@@ -33,7 +33,5 @@ namespace Fusee.Base.Common
         /// Returns true if IImageData has not been initialized with an byte array.
         /// </summary>
         bool IsEmpty { get; }
-
-
     }
 }

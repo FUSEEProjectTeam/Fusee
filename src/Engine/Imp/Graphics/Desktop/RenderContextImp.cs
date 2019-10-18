@@ -108,6 +108,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case ColorFormat.iRGBA:
                     format = PixelFormat.BgraInteger;
                     break;
+                case ColorFormat.Intensity:
+                    // TODO: Handle Alpha-only / Intensity-only and AlphaIntensity correctly.
+                    format = PixelFormat.Alpha;
+                    break;
+                case ColorFormat.fRGB32:
+                    format = PixelFormat.Rgb;
+                    break;
+                case ColorFormat.fRGB16:
+                    format = PixelFormat.Rgb;
+                    break;
+                case ColorFormat.Depth:
+                    format = PixelFormat.DepthComponent;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -169,7 +182,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     minFilter = TextureMinFilter.LinearMipmapLinear;
                     magFilter = TextureMagFilter.Linear;
                     break;
-            }          
+            }
 
             return new Tuple<TextureMinFilter, TextureMagFilter>(minFilter, magFilter);
         }
@@ -180,7 +193,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 default:
                 case Common.TextureWrapMode.REPEAT:
-                    return OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat;                    
+                    return OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat;
                 case Common.TextureWrapMode.MIRRORED_REPEAT:
                     return OpenTK.Graphics.OpenGL.TextureWrapMode.MirroredRepeat;
                 case Common.TextureWrapMode.CLAMP_TO_EDGE:
@@ -270,9 +283,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             var glWrapMode = GetWrapMode(img.WrapMode);
             var pxInfo = GetTexturePixelInfo(img);
 
-            for (int i = 0; i < 6; i++)             
-                    GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
-            
+            for (int i = 0; i < 6; i++)
+                GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
 
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureMinFilter, (int)minFilter);
@@ -284,7 +297,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             return texID;
         }
-               
+
 
         /// <summary>
         /// Creates a new Texture and binds it to the shader.
@@ -353,7 +366,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// Free all allocated gpu memory that belong to a frame-buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteFrameBuffer(IBufferHandle bh)
@@ -362,7 +375,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// Free all allocated gpu memory that belong to a render-buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteRenderBuffer(IBufferHandle bh)
@@ -382,7 +395,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 GL.DeleteFramebuffer(texHandle.FrameBufferHandle);
             }
-            
+
             if (texHandle.DepthRenderBufferHandle != -1)
             {
                 GL.DeleteRenderbuffer(texHandle.DepthRenderBufferHandle);
@@ -400,7 +413,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         /// <summary>
         /// Gets the shader parameter.
-        /// The Shader parameter is used to bind values inside of shaderprograms that run on the graphics card.
+        /// The Shader parameter is used to bind values inside of shader programs that run on the graphics card.
         /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
@@ -413,7 +426,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Gets the float parameter value inside a shaderprogram by using a <see cref="IShaderParam" /> as search reference.
+        /// Gets the float parameter value inside a shader program by using a <see cref="IShaderParam" /> as search reference.
         /// Do not use this function in frequent updates as it transfers information from graphics card to the cpu which takes time.
         /// </summary>
         /// <param name="program">The program.</param>
@@ -450,7 +463,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
-        /// <returns>All Shader parameters of a shaderprogram are returned.</returns>
+        /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
         {
@@ -497,7 +510,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         break;
                     case ActiveUniformType.Sampler2D:
                     case ActiveUniformType.UnsignedIntSampler2D:
-                    case ActiveUniformType.IntSampler2D:                    
+                    case ActiveUniformType.IntSampler2D:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
                     case ActiveUniformType.SamplerCube:
@@ -570,7 +583,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetShaderParam(IShaderParam param, float4 val)
         {
             GL.Uniform4(((ShaderParam)param).handle, val.x, val.y, val.z, val.w);
-        }        
+        }
 
         /// <summary>
         /// Sets a <see cref="float4x4" /> shader parameter.
@@ -647,7 +660,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);            
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
         }
 
@@ -666,7 +679,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);           
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
         }
         #endregion
@@ -766,7 +779,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int program = GL.CreateProgram();
             GL.AttachShader(program, fragmentObject);
 
-            if(gs != null)
+            if (gs != null)
                 GL.AttachShader(program, geometryObject);
 
             GL.AttachShader(program, vertexObject);
@@ -865,7 +878,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Remove an attribute buffer previously created with <see cref="CreateAttributeBuffer"/> and release all associated resources
         /// allocated on the GPU.
         /// </summary>
-        /// <param name="attribHandle">The han</param>
+        /// <param name="attribHandle">The attribute handle</param>
         public void DeleteAttributeBuffer(IAttribImp attribHandle)
         {
             if (attribHandle != null)
@@ -1055,14 +1068,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentException("UVs must not be null or empty");
             }
 
-            int vboBytes;
             int uvsBytes = uvs.Length * 2 * sizeof(float);
             if (((MeshImp)mr).UVBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).UVBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(uvsBytes), uvs, BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(String.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -1217,7 +1229,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
-        {           
+        {
 
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
@@ -1275,7 +1287,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 switch (((MeshImp)mr).MeshType)
                 {
                     case OpenGLPrimitiveType.TRIANGLES:
-                    default:                        
+                    default:
                         GL.DrawElements(PrimitiveType.Triangles, ((MeshImp)mr).NElements, DrawElementsType.UnsignedShort, IntPtr.Zero);
                         break;
                     case OpenGLPrimitiveType.POINT:
@@ -1348,7 +1360,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
-        /// <param name="start">The startpoint of the DebugLine.</param>
+        /// <param name="start">The starting point of the DebugLine.</param>
         /// <param name="end">The endpoint of the DebugLine.</param>
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
@@ -1823,12 +1835,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     throw new ArgumentOutOfRangeException("renderState");
             }
         }
-                
+
         /// <summary>
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle)
         {
             if (((TextureHandle)texHandle).FrameBufferHandle == -1)
@@ -1852,11 +1864,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
             }
-            else            
+            else
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
-           
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)            
-                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");            
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -1865,7 +1877,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Renders into the given cube map.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given cube map. Should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle)
         {
             if (((TextureHandle)texHandle).FrameBufferHandle == -1)
@@ -1889,12 +1901,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.ReadBuffer(ReadBufferMode.None);
                 }
             }
-            else            
-                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);            
+            else
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, ((TextureHandle)texHandle).FrameBufferHandle);
 
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)            
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
-            
+
 
             GL.Clear(ClearBufferMask.DepthBufferBit | ClearBufferMask.ColorBufferBit);
         }
@@ -1903,11 +1915,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Renders into the given textures of the RenderTarget.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.</param>
         public void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles)
-        {            
+        {
             if (renderTarget == null || (renderTarget.RenderTextures.All(x => x == null)))
-            {    
+            {
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
                 return;
             }
@@ -1924,7 +1936,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 gBuffer = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
-            }            
+            }
 
             if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null && !renderTarget.IsDepthOnly)
             {
@@ -1942,7 +1954,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
                 }
             }
-            
+
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
                 throw new Exception($"Error creating RenderTarget: {GL.GetError()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
@@ -1954,7 +1966,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int CreateDepthRenderBuffer(int width, int height)
         {
             GL.Enable(EnableCap.DepthTest);
-            
+
             GL.GenRenderbuffers(1, out int gDepthRenderbufferHandle);
             //((FrameBufferHandle)renderTarget.DepthBufferHandle).Handle = gDepthRenderbufferHandle;
             GL.BindRenderbuffer(RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
@@ -1962,12 +1974,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, RenderbufferTarget.Renderbuffer, gDepthRenderbufferHandle);
             return gDepthRenderbufferHandle;
         }
-                
-        private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[]  texHandles)
+
+        private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
             var gBuffer = GL.GenFramebuffer();
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
-            
+
             int depthCnt = 0;
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
@@ -1978,7 +1990,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
-                    
+
                     var texHandle = texHandles[i];
                     if (texHandle == null) continue;
 
@@ -1995,19 +2007,19 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 }
                 GL.DrawBuffers(attachments.Count, attachments.ToArray());
             }
-            else //If a framebuffer only has a depth texture we don't need draw buffers
+            else //If a frame-buffer only has a depth texture we don't need draw buffers
             {
                 var texHandle = texHandles[depthTexPos];
 
-                if (texHandle != null)                
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);                
-                else                
+                if (texHandle != null)
+                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                else
                     throw new NullReferenceException("Texture handle is null!");
-                
+
                 GL.DrawBuffer(DrawBufferMode.None);
                 GL.ReadBuffer(ReadBufferMode.None);
             }
-                          
+
             return gBuffer;
         }
 
@@ -2049,8 +2061,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case HardwareCapability.DefferedPossible:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
                 case HardwareCapability.Buffersize:
-                    throw new NotImplementedException("Not yet.");
-                    return 0;
+                    throw new NotImplementedException("Not yet.");                    
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }

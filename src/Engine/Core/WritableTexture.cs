@@ -6,7 +6,8 @@ using System;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Special Texture, e.g. for usage in multipass rendering.
+    /// Use writable textures if you want to render into a texture.
+    /// Does NOT offer access to the pixel data.
     /// </summary>
     public class WritableTexture : IWritableTexture
     {
@@ -20,6 +21,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Suid SessionUniqueIdentifier { get; private set; }
 
+        /// <summary>
+        /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
+        /// </summary>
         public RenderTargetTextureTypes TextureType { get; private set; }
 
         /// <summary>
@@ -49,18 +53,27 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        /// <summary>
+        /// Specifies if mipmaps are created for this texture.
+        /// </summary>
         public bool DoGenerateMipMaps
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Specifies the texture's wrap mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
         public TextureWrapMode WrapMode
         {
             get;
             private set;
         }
 
+        /// <summary>
+        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
         public TextureFilterMode FilterMode
         {
             get;
@@ -71,6 +84,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Creates a new instance of type "WritableTexture".
         /// </summary>
+        /// <param name="texType">Defines the type of the render texture.</param>
         /// <param name="colorFormat">The color format of the texture, <see cref="ImagePixelFormat"/></param>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>

@@ -2,8 +2,7 @@ using Fusee.Engine.Common;
 using System;
 
 namespace Fusee.Engine.Core
-{ 
-    
+{    
     /// <summary>
     /// Use this if you want to render into buffer object, associated with one or more textures.
     /// If only a single texture is needed, the usage of a <see cref="WritableTexture"/> as a render target is preferred.
@@ -106,14 +105,14 @@ namespace Fusee.Engine.Core
 
         // Public implementation of Dispose pattern callable by consumers.
         public void Dispose()
-        {
+        {            
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
         // Protected implementation of Dispose pattern.
         protected virtual void Dispose(bool disposing)
-        {
+        {            
             if (Disposed)
                 return;
 
@@ -126,8 +125,11 @@ namespace Fusee.Engine.Core
             Disposed = true;
         }
 
+        /// <summary>
+        /// Deconstruction of the render target.
+        /// </summary>
         ~RenderTarget()
-        {           
+        {            
             Dispose(false);
         }
 

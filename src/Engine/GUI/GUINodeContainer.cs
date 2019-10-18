@@ -152,7 +152,7 @@ namespace Fusee.Engine.GUI
         /// <param name="name">The name of the canvas.</param>
         /// <param name="canvasRenderMode">Choose in which mode you want to render this canvas.</param>
         /// <param name="size">The size of the canvas.</param>
-        /// By default Scale in SCREEN mode is set to 0.1.</param>
+        /// By default Scale in SCREEN mode is set to 0.1.
         public CanvasNodeContainer(string name, CanvasRenderMode canvasRenderMode, MinMaxRect size)
         {
             Name = name;

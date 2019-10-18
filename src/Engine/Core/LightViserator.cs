@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core
     public enum LightingCalculationMethod
     {
         /// <summary> 
-        /// Simple Blinn Phong Shading without fresnel and distribution function
+        /// Simple Blinn-Phong shading without fresnel and distribution function
         /// </summary>
         SIMPLE,
 
@@ -49,8 +49,15 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float4x4 Rotation { get; set; }
 
+        /// <summary>
+        /// The session unique identifier of tis LightResult.
+        /// </summary>
         public Suid Id;
 
+        /// <summary>
+        /// Creates a new instance of type LightResult.
+        /// </summary>
+        /// <param name="light">The LightComponent.</param>
         public LightResult(LightComponent light)
         {
             Light = light;
@@ -59,23 +66,43 @@ namespace Fusee.Engine.Core
             Id = Suid.GenerateSuid();
         }       
 
+        /// <summary>
+        /// Override for the Equals method.
+        /// </summary>
+        /// <param name="obj">The object to compare with.</param>
+        /// <returns></returns>
         public override bool Equals(object obj)
         {
             var lc = (LightResult)obj;
             return this.Id.Equals(lc.Id);
         }
 
+        /// <summary>
+        /// Override of the == operator.
+        /// </summary>
+        /// <param name="thisLc">The first LightResult that will be compared with a second one.</param>
+        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>
+        /// <returns></returns>
         public static bool operator ==(LightResult thisLc, LightResult otherLc)
         {
             return otherLc.Id.Equals(thisLc.Id);
         }
 
-
+        /// <summary>
+        /// Override of the != operator.
+        /// </summary>
+        /// <param name="thisLc">The first LightResult that will be compared with a second one.</param>
+        /// <param name="otherLc">The second LightResult that will be compared with the first one.</param>
+        /// <returns></returns>
         public static bool operator !=(LightResult thisLc, LightResult otherLc)
         {
             return !otherLc.Id.Equals(thisLc.Id);
         }
 
+        /// <summary>
+        /// Override of the GetHashCode method.
+        /// Returns the session unique identifier as hash code.
+        /// </summary>  
         public override int GetHashCode()
         {
             return this.Id.GetHashCode();

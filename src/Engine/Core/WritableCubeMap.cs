@@ -5,6 +5,9 @@ using System;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Special type of <see cref="WritableTexture"/>. If this type is used a cube map with six faces is created on the gpu.
+    /// </summary>
     public class WritableCubeMap : IWritableCubeMap
     {
         /// <summary>
@@ -17,17 +20,37 @@ namespace Fusee.Engine.Core
         /// </summary>
         public Suid SessionUniqueIdentifier { get; private set; }
 
-        public bool DoGenerateMipMaps { get; set; }
+        /// <summary>
+        /// Specifies if mipmaps are created for this texture.
+        /// </summary>
+        public bool DoGenerateMipMaps
+        {
+            get;
+            private set;
+        }
 
-        public TextureWrapMode WrapMode { get; set; }
+        /// <summary>
+        /// Specifies the texture's wrap mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureWrapMode WrapMode
+        {
+            get;
+            private set;
+        }
 
-        public TextureFilterMode FilterMode { get; set; }
+        /// <summary>
+        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureFilterMode FilterMode
+        {
+            get;
+            private set;
+        }
 
-        public bool IsEmpty { get; set; }
-
+        /// <summary>
+        /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
+        /// </summary>
         public RenderTargetTextureTypes TextureType { get; private set; }
-       
-        public ITextureHandle TextureHandle { get; set; }
 
 
         /// <summary>

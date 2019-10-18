@@ -129,9 +129,8 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <value>
         /// The length.
-        /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// </value>       
+        /// <seealso cref="LengthSquared" />
         public double Length
         {
             get
@@ -150,8 +149,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length squared.
         /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
+        /// <see cref="Length" />        
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -757,7 +755,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Multiplies a vector by the components a vector (scale).
         /// </summary>
-        /// <param name="vector">Left operand.</param>
+        /// <param name="vec">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <returns>
         /// Result of the operation.

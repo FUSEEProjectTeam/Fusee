@@ -8,9 +8,9 @@ namespace Fusee.Engine.Core
     {
         private readonly IRenderContextImp _renderContextImp;
 
-        private Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
+        private readonly Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
 
-        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
+        private readonly Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
 
         private void Remove(ITextureHandle textureHandle)
         {
@@ -19,9 +19,8 @@ namespace Fusee.Engine.Core
 
         private void TextureChanged(object sender, TextureEventArgs textureDataEventArgs)
         {
-            ITextureHandle toBeUpdatedTextureHandle;
             if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.SessionUniqueIdentifier,
-                out toBeUpdatedTextureHandle))
+                out ITextureHandle toBeUpdatedTextureHandle))
             {
                 throw new KeyNotFoundException("Texture is not registered.");
             }
@@ -102,8 +101,7 @@ namespace Fusee.Engine.Core
 
         public ITextureHandle GetTextureHandleFromTexture(Texture texture)
         {
-            ITextureHandle foundTextureHandle;
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out foundTextureHandle))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out ITextureHandle foundTextureHandle))
             {
                 return RegisterNewTexture(texture);
             }
@@ -129,7 +127,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {

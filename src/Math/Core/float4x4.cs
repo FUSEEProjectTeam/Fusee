@@ -183,23 +183,6 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Returns this matrix as an array
-        /// </summary>
-        public float[] AsArray
-        {
-            get
-            {
-                return new float[]
-                {
-                    M11, M12, M13, M14,
-                    M21, M22, M23, M24,
-                    M31, M32, M33, M34,
-                    M41, M42, M43, M44
-                };
-            }
-        }
-
-        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public float4 Column0
@@ -469,8 +452,7 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public float[] ToArray()
         {
-            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
-            // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
+            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };            
         }
 
         #endregion
@@ -543,8 +525,7 @@ namespace Fusee.Math.Core
         /// Build a rotation matrix from the specified axis/angle rotation.
         /// </summary>
         /// <param name="axis">The axis to rotate about.</param>
-        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>
-        /// <param name="inDegrees">Whether the angle is given in degrees or radians (Default false).</param>
+        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>       
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
@@ -796,9 +777,13 @@ namespace Fusee.Math.Core
         }
 
         //see Blender mathutils and Graphic Gems IV p. 222-229
+        /// <summary>
+        /// Returns the euler angles from a given rotation matrix.
+        /// </summary>
+        /// <param name="rotMat">The roation matrix.</param>        
         public static float3 RotMatToEuler(float4x4 rotMat)
         {
-            //Matrix is beeing handled as a multidimentional array to ensure that the rotation order can be changed easily in the future.
+            //Matrix is being handled as a multi-dimensional array to ensure that the rotation order can be changed easily in the future.
             var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
 
             var eul1 = new float[3];

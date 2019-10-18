@@ -37,7 +37,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             Diagnostics.Log(c);
         }
 
-        // This method is called everytime the context needs
+        // This method is called every time the context needs
         // to be recreated. Use it to set any egl-specific settings
         // prior to context creation
         protected override void CreateFrameBuffer()

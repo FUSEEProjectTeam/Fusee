@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
         public int ViewportWidth { get; private set; }
 
         /// <summary>
-        /// Gets and sets the viewport heigth.
+        /// Gets and sets the viewport height.
         /// </summary>
         public int ViewportHeight { get; private set; }
 
@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
 
         // ShaderEffect Management
         private readonly ShaderEffectManager _shaderEffectManager;
-        private Dictionary<ShaderEffect, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<ShaderEffect, CompiledShaderEffect>();
+        private readonly Dictionary<ShaderEffect, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<ShaderEffect, CompiledShaderEffect>();
 
         private bool _updatedShaderParams;
 
@@ -67,12 +67,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
         /// </value>
-        public bool DebugLinesEnabled
-        {
-            get { return _debugLinesEnabled; }
-            set { _debugLinesEnabled = value; }
-        }
-        private bool _debugLinesEnabled = true;        
+        public bool DebugLinesEnabled { get; set; } = true;
 
         /// <summary>
         /// Sets global FX Params
@@ -327,7 +322,7 @@ namespace Fusee.Engine.Core
         /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="RenderContext.ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
-        /// view coordinate geometry wihth the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
+        /// view coordinate geometry with the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
         /// projection.
         /// </remarks>
         public float4x4 Projection
@@ -356,7 +351,7 @@ namespace Fusee.Engine.Core
         /// The combination of the ModelView and Projection matrices.
         /// </summary>
         /// <value>
-        /// The 4x4 matrix resulting from the matrix multiplaction of the ModelView and the Projection matrix.
+        /// The 4x4 matrix resulting from the matrix multiplication of the ModelView and the Projection matrix.
         /// </value>
         /// <remarks>
         /// <see cref="RenderContext.ModelView"/> and <see cref="RenderContext.Projection"/>.
@@ -815,7 +810,6 @@ namespace Fusee.Engine.Core
 
         private void UpdateCurrentShader()
         {
-
             if (CurrentShaderProgram == null)
                 return;
 
@@ -979,7 +973,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Free all allocated gpu memory that belongs to a framebuffer object.
+        /// Free all allocated gpu memory that belongs to a frame-buffer object.
         /// </summary>
         /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteFrameBuffer(IBufferHandle bufferHandle)
@@ -988,7 +982,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Free all allocated gpu memory that belongs to a renderbuffer object.
+        /// Free all allocated gpu memory that belongs to a render-buffer object.
         /// </summary>
         /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
         public void DeleteRenderBuffer(IBufferHandle bufferHandle)
@@ -1028,37 +1022,6 @@ namespace Fusee.Engine.Core
             ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
             _rci.SetShaderParamCubeTexture(param, textureHandle);
         }
-
-        #endregion
-
-        #region Text related Members
-
-        /*
-        /// <summary>
-        /// Loads a font file (*.ttf) and processes it with the given font size.
-        /// </summary>
-        /// <param name="stream">The stream containting the font data.</param>
-        /// <param name="size">The font size.</param>
-        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        /// <exception cref="System.Exception">Font not found: "filename"</exception>
-        public IFont LoadFont(Stream stream, uint size)
-        {
-            return _rci.LoadFont(stream, size);
-        }
-
-        /// <summary>
-        /// Fixes the kerning of a text (if possible).
-        /// </summary>
-        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
-        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
-        internal float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX)
-        {
-            return _rci.FixTextKerning(font, vertices, text, scaleX);
-        }
-        */
 
         #endregion
 
@@ -1110,7 +1073,7 @@ namespace Fusee.Engine.Core
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
         /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="RenderContext.SetShader(ShaderProgram)"/>
+        /// The result is already compiled to code executable on the GPU. <see cref="SetShader(ShaderProgram)"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
         private ShaderProgram CreateShader(string vs, string ps, string gs = null)
@@ -1119,7 +1082,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Removes given shaderprogramm from GPU
+        /// Removes given shader program from GPU
         /// </summary>
         /// <param name="ef">The ShaderEffect</param>
         internal void RemoveShader(ShaderEffect ef)
@@ -1136,8 +1099,8 @@ namespace Fusee.Engine.Core
         /// Activates the passed shader program as the current shader for geometry rendering.
         /// </summary>
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="RenderContext.CreateShader"/>
-        /// <seealso cref="RenderContext.Render(Mesh)"/>
+        /// <seealso cref="CreateShader"/>
+        /// <seealso cref="Render(Mesh)"/>
         private void SetShader(ShaderProgram program)
         {
             _updatedShaderParams = false;
@@ -1167,7 +1130,7 @@ namespace Fusee.Engine.Core
             if (ef == null)
                 return;
 
-            // Is this shadereffect already built?
+            // Is this shader effect already built?
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
             {
                 _currentShaderEffect = ef;
@@ -1199,7 +1162,7 @@ namespace Fusee.Engine.Core
 
             CreateAllShaderEffectVariables(ef);
 
-            // register built shadereffect
+            // register built shader effect
             _shaderEffectManager.RegisterShaderEffect(ef);
 
             // register this shader effect as current shader
@@ -1209,7 +1172,7 @@ namespace Fusee.Engine.Core
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
             CompiledShaderEffect sFxParam;
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out sFxParam)) return; // if ef not built -> return
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out sFxParam)) return; // if "ef" not built -> return
 
             foreach (var passParams in sFxParam.ParamsPerPass)
             {
@@ -1260,15 +1223,13 @@ namespace Fusee.Engine.Core
                 foreach (var paramNew in shaderParamInfos)
                 {
 
-                    Object initValue;
-                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out initValue))
+                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out object initValue))
                     {
                         if (initValue == null)
                             continue;
 
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        object globalFXValue;
-                        if (_allFXParams.TryGetValue(paramNew.Name, out globalFXValue))
+                        if (_allFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
@@ -1282,7 +1243,7 @@ namespace Fusee.Engine.Core
 
                         // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
                         // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
-                        // Thus for primitve types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
+                        // Thus for primitive types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
 
                         // ReSharper disable UseMethodIsInstanceOfType
                         // ReSharper disable OperatorIsCanBeUsed
@@ -1365,7 +1326,7 @@ namespace Fusee.Engine.Core
         /// <param name="paramName">Name of the shader parameter.</param>
         /// <returns>A <see cref="IShaderParam"/> object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
-        /// The returned handle can be used to assign values to a (uniform) shader paramter.
+        /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
         public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
@@ -1519,9 +1480,9 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
-        #region Render releated Members
+        #region Render related Members
 
-        // <summary>
+        /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
@@ -1543,7 +1504,7 @@ namespace Fusee.Engine.Core
         /// Apply a single render state to the render context. All subsequent rendering will be
         /// performed using the currently set state unless it is changed to a different value.
         /// </summary>
-        /// <param name="renderState">One of the <see cref="RenderState"/> enumaration values.</param>
+        /// <param name="renderState">One of the <see cref="RenderState"/> enumeration values.</param>
         /// <param name="value">An unsigned integer value representing the value the state should be set to.
         ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
         /// boolean value, or even a color.  </param>
@@ -1666,7 +1627,7 @@ namespace Fusee.Engine.Core
                 _meshManager.Cleanup();
                 _textureManager.Cleanup();
 
-                // After rendering all passes cleanup shadereffect
+                // After rendering all passes cleanup shader effect
                 _shaderEffectManager.Cleanup();
             }
             catch (Exception ex)
@@ -1752,7 +1713,7 @@ namespace Fusee.Engine.Core
         #region Other Members
 
         /// <summary>
-        /// This method returns the color of one or more pixels from the backbuffer.
+        /// This method returns the color of one or more pixels from the back-buffer.
         /// </summary>
         /// <param name="x">X-Coordinate</param>
         /// <param name="y">Y-Coordinate</param>
@@ -1765,7 +1726,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// This method returns depth value from the depthbuffer at a given coordinate.
+        /// This method returns depth value from the depth-buffer at a given coordinate.
         /// </summary>
         /// <param name="x">X-Coordinate</param>
         /// <param name="y">Y-Coordinate</param>
@@ -1783,7 +1744,7 @@ namespace Fusee.Engine.Core
         /// <param name="color">The color of the DebugLine.</param>
         public void DebugLine(float3 start, float3 end, float4 color)
         {
-            if (_debugLinesEnabled)
+            if (DebugLinesEnabled)
             {
                 start /= 2;
                 end /= 2;
@@ -1802,14 +1763,14 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Erases the contents of the speciefied rendering buffers.
+        /// Erases the contents of the specified rendering buffers.
         /// </summary>
         /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
         /// <remarks>
         /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
         /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
         /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
-        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
+        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwise
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         public void Clear(ClearFlags flags)
@@ -1823,9 +1784,9 @@ namespace Fusee.Engine.Core
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
-        /// <param name="height">vertical size (in pixels) of the ouput region.</param>
+        /// <param name="height">vertical size (in pixels) of the output region.</param>
         /// <remarks>
-        /// Setting the Viewport limits the rendering ouptut to the specified rectangular region.
+        /// Setting the Viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
         public void Viewport(int x, int y, int width, int height)
         {

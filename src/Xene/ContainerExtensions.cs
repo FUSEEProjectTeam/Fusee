@@ -418,7 +418,7 @@ namespace Fusee.Xene
         /// Translate this node.
         /// </summary>
         /// <param name="tc"></param>
-        /// <param name="translation">Translation amount as float3.</param>
+        /// <param name="xyz">Translation amount as float3.</param>
         public static void Translate(this TransformComponent tc, float3 xyz)
         {
             tc.Translation += xyz;

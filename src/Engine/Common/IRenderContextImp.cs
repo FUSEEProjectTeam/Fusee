@@ -99,7 +99,7 @@ namespace Fusee.Engine.Common
         /// <param name="paramName">Name of the shader parameter.</param>
         /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
-        /// The returned handle can be used to assign values to a (uniform) shader paramter.
+        /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
@@ -464,8 +464,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
-        /// <param name="mr">The mesh that should be rendered.</param>
-        /// <param name="type">The OpenGL primitive type that should be renderer (triangle, quads, points, etc.)</param>
+        /// <param name="mr">The mesh that should be rendered.</param>        
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -511,21 +510,21 @@ namespace Fusee.Engine.Common
         /// Renders into the given textures of the RenderTarget.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.</param>
         void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles);
 
         /// <summary>
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle);
 
         /// <summary>
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The texture.</param>
-        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
         void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle);
 
         /*
