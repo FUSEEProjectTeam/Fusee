@@ -27,9 +27,9 @@ namespace Fusee.Examples.AdvancedUI.Core
         private const float ZFar = 1000;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private float _initWidth;
@@ -128,12 +128,16 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
-            var monkey = _scene.Children[0].GetComponent<Mesh>();
+            var monkey = _scene.Children[1].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
@@ -179,8 +183,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             RC.ClearColor = new float4(0.1f, 0.1f, 0.1f, 1);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_scene);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
         // RenderAFrame is called once a frame
@@ -188,10 +192,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            ////TODO: set screen space UI projection to orthographic in SceneRenderer
-            //var projection = float4x4.CreatePerspectiveFieldOfView(_fovy, _aspectRatio, ZNear, ZFar);
-            //RC.Projection = projection;
 
             #region Controls
             // Mouse and keyboard movement
@@ -250,7 +250,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             }
             #endregion
 
-
             //Annotations will be unpdated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
@@ -269,9 +268,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     var uiInput = _uiInput[k];
 
                     //the monkey's matrices
-                    var monkey = _scene.Children[0];
+                    var monkey = _scene.Children[1];
                     var model = monkey.GetGlobalTransformation();
-                    var projection = monkey.GetParentProjection();
+                    var projection = _scene.Children[0].GetParentProjection();
 
                     var mvpMonkey = projection * RC.View * model;
 
@@ -467,7 +466,11 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                canvasProjComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
             return new SceneContainer
             {

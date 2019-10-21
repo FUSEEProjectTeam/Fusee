@@ -19,7 +19,7 @@ namespace Fusee.Examples.MeshingAround.Core
         private float _alpha;
         private float _beta;
 
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
         // Init is called on startup. 
         public override void Init()
@@ -171,10 +171,14 @@ namespace Fusee.Examples.MeshingAround.Core
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
             var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
             sc.Children[0].Components.Insert(0, projComp);
 
-            _renderer = new SceneRenderer(sc);
+            _renderer = new SceneRendererForward(sc);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);

@@ -21,7 +21,7 @@ namespace Fusee.Math.Core
         [ProtoMember(2)] public double3 Max;
 
         /// <summary>
-        ///     The roation of the oriented bounding box
+        ///     The rotation of the oriented bounding box
         /// </summary>
         [ProtoMember(3)] public double4x4 Rotation;
 
@@ -52,7 +52,7 @@ namespace Fusee.Math.Core
         /// <param name="max_">the maximum x y and z values</param>
         /// <param name="rotation_">the rotation of this box</param>
         /// <param name="translation_">the translation of this box</param>
-        /// <param name="translation_">the size of this box</param>
+        /// <param name="size_">the size of this box</param>
         public OBBd(double3 min_, double3 max_, double4x4 rotation_, double3 translation_, double3 size_)
         {
             Min = min_;

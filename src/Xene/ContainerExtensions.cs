@@ -135,6 +135,42 @@ namespace Fusee.Xene
         }
 
         /// <summary>
+        /// Removes the components with the specified type and the sub-types in the children of this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="type">The type of the components to look for.</param>
+        /// <returns>A List of components of the specified type, if contained within the given container.</returns>
+        public static void RemoveComponentsInChildren(this SceneNodeContainer sncThis, Type type)
+        {
+            if (sncThis == null || type == null)
+                throw new ArgumentException("SceneNodeContainer or type is null!");
+
+            foreach (var child in sncThis.Children)
+            {
+                for (int i = 0; i < child.Components.Count; i++)
+                {
+                    var comp = child.Components[i];
+                    if (comp.GetType().IsAssignableFrom(type) || comp.GetType().IsSubclassOf(type))
+                        child.Components.RemoveAt(i);
+                }
+
+                RemoveComponentsInChildren(child, type);
+            }
+        }
+
+        /// <summary>
+        /// Removes components with the specified type in the children of this scene node container.
+        /// </summary>
+        /// <typeparam name="TComp">The type of the components to look for.</typeparam>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        public static void RemoveComponentsInChildren<TComp>(this SceneNodeContainer sncThis)
+            where TComp : SceneComponentContainer
+        {
+            RemoveComponentsInChildren(sncThis, typeof(TComp));
+        }
+
+        /// <summary>
         /// Finds the components with the specified type and the sub-types in the children of this scene node container.
         /// </summary>
         /// <param name="sncThis">This scene node container.</param>
@@ -196,6 +232,58 @@ namespace Fusee.Xene
         }
 
         /// <summary>
+        /// Removes the component with the specified type in this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="type">The type of the component to look for.</param>
+        /// <param name="inx">specifies the n'th component if more than component of the given type exists.</param>
+        /// <returns>A component of the specified type, if contained within the given container, null otherwise.</returns>
+        public static void RemoveComponent(this SceneNodeContainer sncThis, Type type, int inx = 0)
+        {
+            if (sncThis == null || sncThis.Components == null || type == null)
+                throw new ArgumentException("SceneNodeContainer or type is null!");
+
+            int inxC = 0;
+            for (int i = 0; i < sncThis.Components.Count; i++)
+            {
+                var cont = sncThis.Components[i];
+                
+                if (cont.GetType().IsAssignableFrom(type))
+                {
+                    if (inxC == inx)
+                        sncThis.Components.RemoveAt(i);
+                    inxC++;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type in this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>       
+        /// <returns>A component of the specified type, if contained within the given container, null otherwise.</returns>
+        public static IEnumerable<TComp> GetComponents<TComp>(this SceneNodeContainer sncThis) where TComp : SceneComponentContainer
+        {
+            return GetComponents(sncThis, typeof(TComp)).Cast<TComp>();
+        }
+
+        /// <summary>
+        /// Finds the components with the specified type in this scene node container.
+        /// </summary>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="type">The type of the component to look for.</param>        
+        public static IEnumerable<SceneComponentContainer> GetComponents(this SceneNodeContainer sncThis, Type type)
+        {
+            foreach (var cont in sncThis.Components)
+            {
+                if (cont.GetType().IsAssignableFrom(type))
+                {
+                    yield return cont;
+                }
+            }            
+        }
+
+        /// <summary>
         /// Finds the component with the specified type in this scene node container.
         /// </summary>
         /// <typeparam name="TComp">The type of the component to look for.</typeparam>
@@ -206,6 +294,19 @@ namespace Fusee.Xene
             where TComp : SceneComponentContainer
         {
             return (TComp) GetComponent(sncThis, typeof (TComp), inx);
+        }
+
+        /// <summary>
+        /// Removes the component with the specified type in this scene node container.
+        /// </summary>
+        /// <typeparam name="TComp">The type of the component to look for.</typeparam>
+        /// <param name="sncThis">This scene node container.</param>
+        /// <param name="inx">specifies the n'th component if more than component of the given type exists.</param>
+        /// <returns>A component of the specified type, if contained within this container, null otherwise.</returns>
+        public static void RemoveComponent<TComp>(this SceneNodeContainer sncThis, int inx = 0)
+            where TComp : SceneComponentContainer
+        {
+            RemoveComponent(sncThis, typeof(TComp), inx);
         }
 
         /// <summary>
@@ -317,7 +418,7 @@ namespace Fusee.Xene
         /// Translate this node.
         /// </summary>
         /// <param name="tc"></param>
-        /// <param name="translation">Translation amount as float3.</param>
+        /// <param name="xyz">Translation amount as float3.</param>
         public static void Translate(this TransformComponent tc, float3 xyz)
         {
             tc.Translation += xyz;
@@ -353,6 +454,20 @@ namespace Fusee.Xene
         public static void Rotate(this TransformComponent tc, Quaternion quaternion, Space space = Space.Model)
         {
             Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
+        }
+
+        public static void RotateAround(this TransformComponent tc, float3 center, float3 angles)
+        {
+            var pos = tc.Translation;
+            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
+            var dir = pos - center; // find current direction relative to center
+            dir = addRotationMtx * dir; // rotate the direction
+            tc.Translation = center + dir; // define new position
+            
+            // rotate object to keep looking at the center:
+            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
+            var euler = float4x4.RotMatToEuler(currentRotationMtx);
+            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
         }
 
         /// <summary>

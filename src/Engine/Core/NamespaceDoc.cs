@@ -4,11 +4,11 @@
     /// <para>
     /// Classes in this module implement FUSEE's 3D rendering capability. 
     /// Many classes contain methods that
-    /// enable user code to render 3D content, create 3D output windows, create and maniulate scene contents,
+    /// enable user code to render 3D content, create 3D output windows, create and manipulate scene contents,
     /// organize scene contents in scene graphs, etc. 
     /// </para>
     /// <para>
-    /// Among the most important classses are
+    /// Among the most important classes are
     /// <list type="bullet">
     ///   <item>
     ///     <term><see cref="RenderCanvas"/></term>
@@ -20,7 +20,7 @@
     ///     <description>Abstracts 3D Drawing functionality from the underlying hardware-API (e.g. OpenGL).</description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneRenderer"/></term>
+    ///     <term><see cref="SceneRendererForward"/></term>
     ///     <description>Visits a scene graph's items and renders each item's contribution to a render context.</description>
     ///   </item>
     /// </list>

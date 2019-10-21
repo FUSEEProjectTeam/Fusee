@@ -31,7 +31,7 @@ namespace Fusee.Examples.Picking.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
         private ScenePicker _scenePicker;
 
         private bool _keys;
@@ -43,7 +43,7 @@ namespace Fusee.Examples.Picking.Core
 
 #if GUI_SIMPLE
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -81,17 +81,21 @@ namespace Fusee.Examples.Picking.Core
             _scene = CreateScene();
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
 #if GUI_SIMPLE
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-            _guiRenderer = new SceneRenderer(_gui);
+            _guiRenderer = new SceneRendererForward(_gui);
 #endif
         }
 
@@ -294,7 +298,11 @@ namespace Fusee.Examples.Picking.Core
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                canvasProjComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
 
 
             return new SceneContainer

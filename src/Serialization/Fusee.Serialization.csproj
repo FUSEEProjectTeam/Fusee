@@ -12,11 +12,12 @@
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="..\Base\Common\Fusee.Base.Common.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
-   
+
   <PropertyGroup>
     <BuildDependsOn>
       $(BuildDependsOn);

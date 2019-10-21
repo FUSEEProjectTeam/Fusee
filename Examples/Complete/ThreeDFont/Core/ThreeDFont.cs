@@ -14,7 +14,7 @@ namespace Fusee.Examples.ThreeDFont.Core
     [FuseeApplication(Name = "FUSEE ThreeDFont Example", Description = "Create meshes from Font-Files.")]
     public class ThreeDFont : RenderCanvas
     {
-        private SceneRenderer _renderer;
+        private SceneRendererForward _renderer;
 
         private float _alpha;
         private float _beta;
@@ -140,10 +140,14 @@ namespace Fusee.Examples.ThreeDFont.Core
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
             var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
+            AddResizeDelegate(delegate
+            {
+                projComp.Resize(Width, Height);
+                RC.Viewport(0, 0, Width, Height);
+            });
             sc.Children[0].Components.Insert(0, projComp);
 
-            _renderer = new SceneRenderer(sc);
+            _renderer = new SceneRendererForward(sc);
 
             var shaderFx = new ShaderEffect(new[] {
                 new EffectPassDeclaration

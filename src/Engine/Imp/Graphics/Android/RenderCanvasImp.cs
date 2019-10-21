@@ -120,9 +120,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public bool Focused
         {
             get { return _gameView.Focused; }
-        }
-
-        // Some tryptichon related Fields.
+        }       
 
         /// <summary>
         /// Activates (true) or deactivates (false) the video wall feature.
@@ -212,7 +210,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Closes the GameWindow with a call to opentk.
+        /// Closes the GameWindow with a call to ÓpenTk.
         /// </summary>
         public void CloseGameWindow()
         {
@@ -228,7 +226,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Set the cursor (the mouse pointer image) to one of the pre-defined types
+        /// Set the cursor (the mouse pointer image) to one of the predefined types
         /// </summary>
         /// <param name="cursorType">The type of the cursor to set.</param>
         public void SetCursor(CursorType cursorType)
@@ -251,7 +249,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as it is only for initilization purposes.
+        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as it is only for initialization purposes.
         /// </summary>
         public void Run()
         {
@@ -271,7 +269,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         public event EventHandler<InitEventArgs> Init;
         /// <summary>
-        /// Occurs when [un load].
+        /// Occurs when [unload].
         /// </summary>
         public event EventHandler<InitEventArgs> UnLoad;
         /// <summary>
@@ -356,7 +354,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Initializes a new instance of the <see cref="RenderCanvasGameView"/> class.
         /// </summary>
         /// <param name="renderCanvasImp">The render canvas implementation.</param>
-        /// <param name="antiAliasing">if set to <c>true</c> perform Antialiasing.</param>
+        /// <param name="antiAliasing">if set to <c>true</c> perform antialiasing.</param>
         /// <param name="context">The Android context.</param>
         /// <param name="attrs">An Android View attribute set.</param>
         /// <param name="run"></param>
@@ -418,7 +416,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 _renderCanvasImp.DoRender();
         }
 
-        // This method is called everytime the context needs
+        // This method is called every time the context needs
         // to be recreated. Use it to set any egl-specific settings
         // prior to context creation
         protected override void CreateFrameBuffer()

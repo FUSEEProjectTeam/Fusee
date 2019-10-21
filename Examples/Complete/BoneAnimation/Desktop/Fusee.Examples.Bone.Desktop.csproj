@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project  Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Bone.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Bone.Desktop</PackageId>

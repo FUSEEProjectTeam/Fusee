@@ -6,7 +6,7 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Creates a Icosahedron geomentry straight from the code.
+    /// Creates a Icosahedron geometry straight from the code.
     /// </summary>
     public class Icosahedron : Mesh
     {
@@ -124,7 +124,7 @@ namespace Fusee.Engine.Core
 
 
     /// <summary>
-    /// Creates a Icosphere geomentry straight from the code.
+    /// Creates a Icosphere geometry straight from the code.
     /// </summary>
     public class Icosphere : Mesh
     {
@@ -167,7 +167,7 @@ namespace Fusee.Engine.Core
                 AddNormalizedVertex(vert);
             }
 
-            //Subdevide triangles
+            //Subdivide triangles
             for (var i = 0; i < recursionLevel; i++)
             {
                 var faces2 = new List<ushort>();

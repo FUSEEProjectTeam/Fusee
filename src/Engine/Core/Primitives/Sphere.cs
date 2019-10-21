@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Math.Core;
+﻿using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-
     /// <summary>
     /// Creates a simple sphere geometry straight from the code.
     /// </summary>
