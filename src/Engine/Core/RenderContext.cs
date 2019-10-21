@@ -921,17 +921,6 @@ namespace Fusee.Engine.Core
         #region Image Data related Members
 
         /// <summary>
-        /// Copies the current frame image from a <see cref="IVideoStreamImp"/> into the given Texture.
-        /// </summary>
-        /// <param name="stream">The <see cref="IVideoStreamImp"/> that will be used as source.</param>
-        /// <param name="tex">The <see cref="Texture"/> in which the video streams current frame will be copied into.</param>
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, Texture tex)
-        {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
-            _rci.UpdateTextureFromVideoStream(stream, textureHandle);
-        }
-
-        /// <summary>
         /// Updates a rectangular region of a given Texture (dstTexture) by copying a rectangular block from another texture (srcTexture).
         /// </summary>
         /// <param name="dstTexture">This Textures region will be updated.</param>

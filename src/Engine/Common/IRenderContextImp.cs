@@ -236,12 +236,6 @@ namespace Fusee.Engine.Common
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId);
 
-        /// <summary>
-        /// Updates the texture from video the given video stream.
-        /// </summary>
-        /// <param name="stream">The video stream to retrieve an individual image.</param>
-        /// <param name="tex">The texture to fill with the image from the video.</param>
-        void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex);
 
         /// <summary>
         /// Updates the given region of a texture with te passed image data.

@@ -1,12 +1,12 @@
+using Fusee.Base.Common;
+using Fusee.Base.Core;
+using Fusee.Engine.Common;
+using Fusee.Math.Core;
+using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using Fusee.Base.Common;
-using Fusee.Base.Core;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using Fusee.Math.Core;
-using Fusee.Engine.Common;
 using System.Linq;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
@@ -16,14 +16,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
-        #region Fields
-
-        private int _currentTextureUnit;
-        private readonly Dictionary<int, int> _shaderParam2TexUnit;        
-
-        #endregion
-
-        #region Constructors
+        private int _textureCount;
+        private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -31,7 +25,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="renderCanvas">The render canvas interface.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            _currentTextureUnit = 0;
+            _textureCount = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
@@ -41,68 +35,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.CullFace(CullFaceMode.Back);
         }
 
-        #endregion
-
         #region Image data related Members
-
-        /// <summary>
-        /// Updates a texture with images obtained from a Video.
-        /// </summary>
-        /// <param name="stream">The Video from which the images are taken.</param>
-        /// <param name="tex">The texture to which the ImageData is bound to.</param>
-        /// <remarks>Look at the VideoTextureExample for further information.</remarks>
-        public void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex)
-        {
-            ITexture img = stream.GetCurrentFrame();
-            PixelFormat format = GetTexturePixelInfo(img).Format;
-            if (img.PixelData != null)
-            {
-                if (tex == null)
-                    tex = CreateTexture(img);
-
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
-                GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, img.Width, img.Height, format, PixelType.UnsignedByte, img.PixelData);
-            }
-        }
-
-        /// <summary>
-        /// Updates a specific rectangle of a texture.
-        /// </summary>
-        /// <param name="tex">The texture to which the ImageData is bound to.</param>
-        /// <param name="img">The ImageData struct containing information about the image. </param>
-        /// <param name="startX">The x-value of the upper left corner of th rectangle.</param>
-        /// <param name="startY">The y-value of the upper left corner of th rectangle.</param>
-        /// <param name="width">The width of the rectangle.</param>
-        /// <param name="height">The height of the rectangle.</param>
-        /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
-        public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
-        {
-            PixelFormat format = GetTexturePixelInfo(img).Format;
-
-            // copy the bytes from img to GPU texture
-            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
-            var scanlines = img.ScanLines(startX, startY, width, height);
-            byte[] bytes = new byte[bytesTotal];
-            int offset = 0;
-            do
-            {
-                if (scanlines.Current != null)
-                {
-                    var lineBytes = scanlines.Current.GetScanLineBytes();
-                    Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
-                    offset += lineBytes.Length;
-                }
-
-            } while (scanlines.MoveNext());
-
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
-            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
-
-            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
-
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
-        }
 
         private Tuple<TextureMinFilter, TextureMagFilter> GetMinMagFilter(TextureFilterMode filterMode)
         {
@@ -320,6 +253,45 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Updates a specific rectangle of a texture.
+        /// </summary>
+        /// <param name="tex">The texture to which the ImageData is bound to.</param>
+        /// <param name="img">The ImageData struct containing information about the image. </param>
+        /// <param name="startX">The x-value of the upper left corner of th rectangle.</param>
+        /// <param name="startY">The y-value of the upper left corner of th rectangle.</param>
+        /// <param name="width">The width of the rectangle.</param>
+        /// <param name="height">The height of the rectangle.</param>
+        /// <remarks> /// <remarks>Look at the VideoTextureExample for further information.</remarks></remarks>
+        public void UpdateTextureRegion(ITextureHandle tex, ITexture img, int startX, int startY, int width, int height)
+        {
+            PixelFormat format = GetTexturePixelInfo(img).Format;
+
+            // copy the bytes from img to GPU texture
+            int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
+            var scanlines = img.ScanLines(startX, startY, width, height);
+            byte[] bytes = new byte[bytesTotal];
+            int offset = 0;
+            do
+            {
+                if (scanlines.Current != null)
+                {
+                    var lineBytes = scanlines.Current.GetScanLineBytes();
+                    Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
+                    offset += lineBytes.Length;
+                }
+
+            } while (scanlines.MoveNext());
+
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)tex).TexHandle);
+            GL.TexSubImage2D(TextureTarget.Texture2D, 0, startX, startY, width, height, format, PixelType.UnsignedByte, bytes);
+
+            //GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        }
+
+        /// <summary>
         /// Free all allocated gpu memory that belong to a frame-buffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
@@ -358,12 +330,120 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (texHandle.TexHandle != -1)
             {
                 GL.DeleteTexture(texHandle.TexHandle);
-                _currentTextureUnit--;
+                _textureCount--;
             }
         }
         #endregion
 
         #region Shader related Members
+
+        /// <summary>
+        /// Creates the shader program by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
+        /// Do not use this function in frequent updates.
+        /// </summary>
+        /// <param name="vs">The vertex shader code.</param>
+        /// <param name="gs">The geometry shader code.</param>
+        /// <param name="ps">The pixel(=fragment) shader code.</param>
+        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
+        /// <exception cref="ApplicationException">
+        /// </exception>
+        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
+        {
+            int vertexObject = GL.CreateShader(ShaderType.VertexShader);
+            int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
+
+            // Compile vertex shader
+            GL.ShaderSource(vertexObject, vs);
+            GL.CompileShader(vertexObject);
+            GL.GetShaderInfoLog(vertexObject, out string info);
+            GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out int statusCode);
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            // Compile geometry shader
+            int geometryObject = -1;
+            if (gs != null)
+            {
+                geometryObject = GL.CreateShader(ShaderType.GeometryShader);
+
+                GL.ShaderSource(geometryObject, gs);
+                GL.CompileShader(geometryObject);
+                GL.GetShaderInfoLog(geometryObject, out info);
+                GL.GetShader(geometryObject, ShaderParameter.CompileStatus, out statusCode);
+            }
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            // Compile pixel shader
+            GL.ShaderSource(fragmentObject, ps);
+            GL.CompileShader(fragmentObject);
+            GL.GetShaderInfoLog(fragmentObject, out info);
+            GL.GetShader(fragmentObject, ShaderParameter.CompileStatus, out statusCode);
+
+            if (statusCode != 1)
+                throw new ApplicationException(info);
+
+            int program = GL.CreateProgram();
+            GL.AttachShader(program, fragmentObject);
+
+            if (gs != null)
+                GL.AttachShader(program, geometryObject);
+
+            GL.AttachShader(program, vertexObject);
+
+            // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.VertexAttribLocation, ShaderCodeBuilderHelper.VertexAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.ColorAttribLocation, ShaderCodeBuilderHelper.ColorAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.UvAttribLocation, ShaderCodeBuilderHelper.UvAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.NormalAttribLocation, ShaderCodeBuilderHelper.NormalAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.TangentAttribLocation, ShaderCodeBuilderHelper.TangentAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneIndexAttribLocation, ShaderCodeBuilderHelper.BoneIndexAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneWeightAttribLocation, ShaderCodeBuilderHelper.BoneWeightAttribName);
+            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BitangentAttribLocation, ShaderCodeBuilderHelper.BitangentAttribName);
+
+            GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
+
+            // mr: Detach Shader & delete
+            //GL.DetachShader(program, fragmentObject);
+            //GL.DetachShader(program, vertexObject);
+            //GL.DeleteShader(fragmentObject);
+            //GL.DeleteShader(vertexObject);
+
+            return new ShaderProgramImp { Program = program };
+        }
+
+        /// <inheritdoc />
+        /// <summary>
+        /// Removes shader from the GPU
+        /// </summary>
+        /// <param name="sp"></param>
+        public void RemoveShader(IShaderProgramImp sp)
+        {
+            var program = ((ShaderProgramImp)sp).Program;
+
+            // wait for all threads to be finished
+            GL.Finish();
+            GL.Flush();
+
+            // cleanup
+            GL.DeleteShader(program);
+            GL.DeleteProgram(program);
+        }
+
+
+        /// <summary>
+        /// Sets the shader program onto the GL Render context.
+        /// </summary>
+        /// <param name="program">The shader program.</param>
+        public void SetShader(IShaderProgramImp program)
+        {
+            _textureCount = 0;
+            _shaderParam2TexUnit.Clear();
+
+            GL.UseProgram(((ShaderProgramImp)program).Program);
+        }
 
         /// <summary>
         /// Gets the shader parameter.
@@ -388,27 +468,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>A float number (default is 0).</returns>
         public float GetParamValue(IShaderProgramImp program, IShaderParam param)
         {
-            float f;
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out f);
+            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out float f);
             return f;
-        }
-
-        /// <inheritdoc />
-        /// <summary>
-        /// Removes shader from the GPU
-        /// </summary>
-        /// <param name="sp"></param>
-        public void RemoveShader(IShaderProgramImp sp)
-        {
-            var program = ((ShaderProgramImp)sp).Program;
-
-            // wait for all threads to be finished
-            GL.Finish();
-            GL.Flush();
-
-            // cleanup
-            GL.DeleteShader(program);
-            GL.DeleteProgram(program);
         }
 
         /// <summary>
@@ -605,10 +666,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
             int iParam = ((ShaderParam)param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
-                texUnit = _currentTextureUnit++;
+                texUnit = _textureCount++;
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
@@ -624,10 +684,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
         {
             int iParam = ((ShaderParam)param).handle;
-            int texUnit;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
-                texUnit = _currentTextureUnit++;
+                texUnit = _textureCount++;
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
             GL.Uniform1(iParam, texUnit);
@@ -636,7 +695,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
         #endregion
 
-        #region Clear Fields
+        #region Clear
+
+        /// <summary>
+        /// Clears the specified flags.
+        /// </summary>
+        /// <param name="flags">The flags.</param>
+        public void Clear(ClearFlags flags)
+        {
+            GL.Clear((ClearBufferMask)flags);
+        }
 
         /// <summary>
         /// Gets and sets the color of the background.
@@ -648,8 +716,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                Vector4 ret;
-                GL.GetFloat(GetPName.ColorClearValue, out ret);
+                GL.GetFloat(GetPName.ColorClearValue, out Vector4 ret);
                 return new float4(ret.X, ret.Y, ret.Z, ret.W);
             }
             set { GL.ClearColor(value.x, value.y, value.z, value.w); }
@@ -665,8 +732,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             get
             {
-                float ret;
-                GL.GetFloat(GetPName.DepthClearValue, out ret);
+                GL.GetFloat(GetPName.DepthClearValue, out float ret);
                 return ret;
             }
             set { GL.ClearDepth(value); }
@@ -675,108 +741,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         #endregion
 
         #region Rendering related Members
-
-        /// <summary>
-        /// Creates the shader program by using a valid GLSL vertex and fragment shader code. This code is compiled at runtime.
-        /// Do not use this function in frequent updates.
-        /// </summary>
-        /// <param name="vs">The vertex shader code.</param>
-        /// <param name="gs">The geometry shader code.</param>
-        /// <param name="ps">The pixel(=fragment) shader code.</param>
-        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
-        /// <exception cref="ApplicationException">
-        /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
-        {
-            int statusCode;
-            string info;
-
-            int vertexObject = GL.CreateShader(ShaderType.VertexShader);
-
-            int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
-
-            // Compile vertex shader
-            GL.ShaderSource(vertexObject, vs);
-            GL.CompileShader(vertexObject);
-            GL.GetShaderInfoLog(vertexObject, out info);
-            GL.GetShader(vertexObject, ShaderParameter.CompileStatus, out statusCode);
-
-            if (statusCode != 1)
-                throw new ApplicationException(info);
-
-            // Compile geometry shader
-            int geometryObject = -1;
-            if (gs != null)
-            {
-                geometryObject = GL.CreateShader(ShaderType.GeometryShader);
-
-                GL.ShaderSource(geometryObject, gs);
-                GL.CompileShader(geometryObject);
-                GL.GetShaderInfoLog(geometryObject, out info);
-                GL.GetShader(geometryObject, ShaderParameter.CompileStatus, out statusCode);
-            }
-
-            if (statusCode != 1)
-                throw new ApplicationException(info);
-
-            // Compile pixel shader
-            GL.ShaderSource(fragmentObject, ps);
-            GL.CompileShader(fragmentObject);
-            GL.GetShaderInfoLog(fragmentObject, out info);
-            GL.GetShader(fragmentObject, ShaderParameter.CompileStatus, out statusCode);
-
-            if (statusCode != 1)
-                throw new ApplicationException(info);
-
-            int program = GL.CreateProgram();
-            GL.AttachShader(program, fragmentObject);
-
-            if (gs != null)
-                GL.AttachShader(program, geometryObject);
-
-            GL.AttachShader(program, vertexObject);
-
-            // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.VertexAttribLocation, ShaderCodeBuilderHelper.VertexAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.ColorAttribLocation, ShaderCodeBuilderHelper.ColorAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.UvAttribLocation, ShaderCodeBuilderHelper.UvAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.NormalAttribLocation, ShaderCodeBuilderHelper.NormalAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.TangentAttribLocation, ShaderCodeBuilderHelper.TangentAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneIndexAttribLocation, ShaderCodeBuilderHelper.BoneIndexAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneWeightAttribLocation, ShaderCodeBuilderHelper.BoneWeightAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BitangentAttribLocation, ShaderCodeBuilderHelper.BitangentAttribName);
-
-            GL.LinkProgram(program); //Must be called AFTER BindAttribLocation
-
-            // mr: Detach Shader & delete
-            //GL.DetachShader(program, fragmentObject);
-            //GL.DetachShader(program, vertexObject);
-            //GL.DeleteShader(fragmentObject);
-            //GL.DeleteShader(vertexObject);
-
-            return new ShaderProgramImp { Program = program };
-        }
-
-        /// <summary>
-        /// Sets the shader program onto the GL Render context.
-        /// </summary>
-        /// <param name="program">The shader program.</param>
-        public void SetShader(IShaderProgramImp program)
-        {
-            _currentTextureUnit = 0;
-            _shaderParam2TexUnit.Clear();
-
-            GL.UseProgram(((ShaderProgramImp)program).Program);
-        }
-
-        /// <summary>
-        /// Clears the specified flags.
-        /// </summary>
-        /// <param name="flags">The flags.</param>
-        public void Clear(ClearFlags flags)
-        {
-            GL.Clear((ClearBufferMask)flags);
-        }
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -809,14 +773,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentException("Vertices must not be null or empty");
             }
 
-            int handle;
-            int vboBytes;
             int vertsBytes = attributes.Length * 3 * sizeof(float);
-            GL.GenBuffers(1, out handle);
+            GL.GenBuffers(1, out int handle);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, handle);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(vertsBytes), attributes, BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format(
                     "Problem uploading attribute buffer to VBO ('{2}'). Tried to upload {0} bytes, uploaded {1}.",
@@ -993,14 +955,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentException("BoneWeights must not be null or empty");
             }
 
-            int vboBytes;
             int weightsBytes = boneWeights.Length * 4 * sizeof(float);
             if (((MeshImp)mr).BoneWeightBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).BoneWeightBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(weightsBytes), boneWeights, BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(String.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -1046,14 +1007,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 throw new ArgumentException("colors must not be null or empty");
             }
 
-            int vboBytes;
             int colsBytes = colors.Length * sizeof(uint);
             if (((MeshImp)mr).ColorBufferObject == 0)
                 GL.GenBuffers(1, out ((MeshImp)mr).ColorBufferObject);
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
             GL.BufferData(BufferTarget.ArrayBuffer, (IntPtr)(colsBytes), colors, BufferUsageHint.StaticDraw);
-            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out vboBytes);
+            GL.GetBufferParameter(BufferTarget.ArrayBuffer, BufferParameterName.BufferSize, out int vboBytes);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
@@ -1182,7 +1142,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         public void Render(IMeshImp mr)
         {
-
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
                 GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.VertexAttribLocation);
@@ -1307,20 +1266,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
                 GL.DisableVertexAttribArray(ShaderCodeBuilderHelper.TangentAttribLocation);
             }
-        }
-
-        /// <summary>
-        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
-        /// </summary>
-        /// <param name="start">The starting point of the DebugLine.</param>
-        /// <param name="end">The endpoint of the DebugLine.</param>
-        /// <param name="color">The color of the DebugLine.</param>
-        public void DebugLine(float3 start, float3 end, float4 color)
-        {
-            GL.Begin(PrimitiveType.Lines);
-            GL.Vertex3(start.x, start.y, start.z);
-            GL.Vertex3(end.x, end.y, end.z);
-            GL.End();
         }
 
         /// <summary>
@@ -1620,18 +1565,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 case RenderState.BlendFactor:
                     GL.BlendColor(Color.FromArgb((int)value));
-                    break;
-                /* TODO: Implement texture wrapping rather as a texture property than a "global" render state. This is most
-                 * convenient to implement with OpenGL/TK and easier to mimic in DirectX than the other way round.
-                case RenderState.Wrap0:
-                    break;
-                case RenderState.Wrap1:
-                    break;
-                case RenderState.Wrap2:
-                    break;
-                case RenderState.Wrap3:
-                    break;
-                */
+                    break;               
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
             }
@@ -1655,9 +1589,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             {
                 case RenderState.FillMode:
                     {
-                        int pm;
                         FillMode ret;
-                        GL.GetInteger(GetPName.PolygonMode, out pm);
+                        GL.GetInteger(GetPName.PolygonMode, out int pm);
                         switch ((PolygonMode)pm)
                         {
                             case PolygonMode.Point:
@@ -1676,12 +1609,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                 case RenderState.CullMode:
                     {
-                        int cullFace;
-                        GL.GetInteger(GetPName.CullFace, out cullFace);
+                        GL.GetInteger(GetPName.CullFace, out int cullFace);
                         if (cullFace == 0)
                             return (uint)Cull.None;
-                        int frontFace;
-                        GL.GetInteger(GetPName.FrontFace, out frontFace);
+                        GL.GetInteger(GetPName.FrontFace, out int frontFace);
                         if (frontFace == (int)FrontFaceDirection.Cw)
                             return (uint)Cull.Clockwise;
                         return (uint)Cull.Counterclockwise;
@@ -1691,8 +1622,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return 1; // == true
                 case RenderState.ZFunc:
                     {
-                        int depFunc;
-                        GL.GetInteger(GetPName.DepthFunc, out depFunc);
+                        GL.GetInteger(GetPName.DepthFunc, out int depFunc);
                         Compare ret;
                         switch ((DepthFunction)depFunc)
                         {
@@ -1727,14 +1657,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                 case RenderState.ZEnable:
                     {
-                        int depTest;
-                        GL.GetInteger(GetPName.DepthTest, out depTest);
+                        GL.GetInteger(GetPName.DepthTest, out int depTest);
                         return (uint)(depTest);
                     }
                 case RenderState.ZWriteEnable:
                     {
-                        int depWriteMask;
-                        GL.GetInteger(GetPName.DepthWritemask, out depWriteMask);
+                        GL.GetInteger(GetPName.DepthWritemask, out int depWriteMask);
                         return (uint)(depWriteMask);
                     }
                 case RenderState.AlphaBlendEnable:
@@ -1745,38 +1673,32 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                 case RenderState.BlendOperation:
                     {
-                        int rgbMode;
-                        GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
+                        GL.GetInteger(GetPName.BlendEquationRgb, out int rgbMode);
                         return (uint)BlendOperationFromOgl((BlendEquationMode)rgbMode);
                     }
                 case RenderState.BlendOperationAlpha:
                     {
-                        int alphaMode;
-                        GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
+                        GL.GetInteger(GetPName.BlendEquationAlpha, out int alphaMode);
                         return (uint)BlendOperationFromOgl((BlendEquationMode)alphaMode);
                     }
                 case RenderState.SourceBlend:
                     {
-                        int rgbSrc;
-                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
+                        GL.GetInteger(GetPName.BlendSrcRgb, out int rgbSrc);
                         return (uint)BlendFromOgl(rgbSrc);
                     }
                 case RenderState.DestinationBlend:
                     {
-                        int rgbDst;
-                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbDst);
+                        GL.GetInteger(GetPName.BlendSrcRgb, out int rgbDst);
                         return (uint)BlendFromOgl(rgbDst);
                     }
                 case RenderState.SourceBlendAlpha:
                     {
-                        int alphaSrc;
-                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
+                        GL.GetInteger(GetPName.BlendSrcAlpha, out int alphaSrc);
                         return (uint)BlendFromOgl(alphaSrc);
                     }
                 case RenderState.DestinationBlendAlpha:
                     {
-                        int alphaDst;
-                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
+                        GL.GetInteger(GetPName.BlendDstAlpha, out int alphaDst);
                         return (uint)BlendFromOgl(alphaDst);
                     }
                 case RenderState.BlendFactor:
@@ -2013,10 +1935,24 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case HardwareCapability.DefferedPossible:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
                 case HardwareCapability.Buffersize:
-                    throw new NotImplementedException("Not yet.");                    
+                    throw new NotImplementedException("Not yet.");
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }
+        }
+
+        /// <summary>
+        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
+        /// </summary>
+        /// <param name="start">The starting point of the DebugLine.</param>
+        /// <param name="end">The endpoint of the DebugLine.</param>
+        /// <param name="color">The color of the DebugLine.</param>
+        public void DebugLine(float3 start, float3 end, float4 color)
+        {
+            GL.Begin(PrimitiveType.Lines);
+            GL.Vertex3(start.x, start.y, start.z);
+            GL.Vertex3(end.x, end.y, end.z);
+            GL.End();
         }
 
         #endregion
