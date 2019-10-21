@@ -12,9 +12,16 @@ namespace Fusee.Math.Core
     [ProtoContract]
     public struct MinMaxRect
     {
+
+        /// <summary>
+        /// Returns the minimum (lower-left corner) as a float2 vector.
+        /// </summary>
         [ProtoMember(1)]
         public float2 Min;
 
+        /// <summary>
+        /// Returns the maximum (upper-right corner) as a float2 vector.
+        /// </summary>
         [ProtoMember(2)]
         public float2 Max;
 

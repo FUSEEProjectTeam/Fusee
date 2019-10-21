@@ -162,6 +162,7 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        
         public float this[int idx]
         {
             get
