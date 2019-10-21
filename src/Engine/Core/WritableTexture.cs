@@ -80,6 +80,24 @@ namespace Fusee.Engine.Core
             private set;
         }
 
+        /// <summary>
+        /// Specifies the texture's comparison mode, see <see cref="TextureCompareMode"/>.
+        /// </summary>
+        public TextureCompareMode CompareMode
+        {
+            get;
+            private set;
+        }
+
+
+        /// <summary>
+        /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
+        /// </summary>
+        public TextureCompareFunc CompareFunc
+        {
+            get;
+            private set;
+        }
 
         /// <summary>
         /// Creates a new instance of type "WritableTexture".
@@ -91,7 +109,9 @@ namespace Fusee.Engine.Core
         /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
-        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
+        /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
+        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="TextureCompareFunc"/>)</param>
+        public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, TextureCompareFunc compareFunc = TextureCompareFunc.GL_LESS)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;
@@ -101,6 +121,8 @@ namespace Fusee.Engine.Core
             FilterMode = filterMode;
             WrapMode = wrapMode;
             TextureType = texType;
+            CompareMode = compareMode;
+            CompareFunc = compareFunc;
         }
 
         /// <summary>
@@ -141,10 +163,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
+        /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
+        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="TextureCompareFunc"/>)</param>
         /// <returns></returns>
-        public static WritableTexture CreateDepthTex(int width, int height)
+        public static WritableTexture CreateDepthTex(int width, int height, TextureCompareMode compareMode = TextureCompareMode.NONE, TextureCompareFunc compareFunc = TextureCompareFunc.GL_LESS)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+            return new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), width, height, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, compareMode, compareFunc);
         }
 
         /// <summary>

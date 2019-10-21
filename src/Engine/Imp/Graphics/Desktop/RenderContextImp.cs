@@ -226,19 +226,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
-            int id = GL.GenTexture();
+            int id = GL.GenTexture();            
             GL.BindTexture(TextureTarget.Texture2D, id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
             var minFilter = glMinMagFilter.Item1;
             var magFilter = glMinMagFilter.Item2;
-
             var glWrapMode = GetWrapMode(img.WrapMode);
-
             var pxInfo = GetTexturePixelInfo(img);
 
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)img.CompareMode);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)img.CompareFunc);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
@@ -524,9 +525,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case ActiveUniformType.Sampler2D:
                     case ActiveUniformType.UnsignedIntSampler2D:
                     case ActiveUniformType.IntSampler2D:
+                    case ActiveUniformType.Sampler2DShadow:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
                     case ActiveUniformType.SamplerCube:
+                    case ActiveUniformType.SamplerCubeShadow:
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
                     default:

@@ -54,7 +54,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _cameraPos = new float3(0, 10, -10);
+            _cameraPos = new float3(0, 20, -10);
             _gui = CreateGui();
 
             // Create the interaction handler

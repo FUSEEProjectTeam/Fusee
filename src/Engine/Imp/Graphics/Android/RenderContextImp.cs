@@ -517,6 +517,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         paramInfo.Type = typeof(ITextureBase);
                         break;
                     case ActiveUniformType.SamplerCube:
+                    case ActiveUniformType.SamplerCubeShadow:
                         paramInfo.Type = typeof(IWritableCubeMap);
                         break;
 

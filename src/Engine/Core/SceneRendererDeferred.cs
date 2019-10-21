@@ -119,7 +119,7 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetPositionTex();
             _gBufferRenderTarget.SetAlbedoSpecularTex();
             _gBufferRenderTarget.SetNormalTex();
-            _gBufferRenderTarget.SetDepthTex();
+            _gBufferRenderTarget.SetDepthTex(TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LEQUAL);
 
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)texRes, (int)texRes, false, TextureFilterMode.NEAREST);
 
@@ -248,13 +248,12 @@ namespace Fusee.Engine.Core
             _thisScenesProjection = _rc.Projection;
         }
 
-        //TODO: PROBLEM Without cascaded shadow maps and a large frustum we get a large AABB, possibly spanning the whole scene and therefore imprecise shadows.
-        private float4x4 GetProjectionForParallelLight(float4x4 lightView, out float2 clipPlanes)
+        private float4[] GetWorldSpaceFrustumCorners()
         {
             //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
             //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
             //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
-            var invViewProjection = float4x4.Invert(_thisScenesProjection * _rc.View);            
+            var invViewProjection = float4x4.Invert(_thisScenesProjection * _rc.View);
 
             var frustumCorners = new float4[8];
 
@@ -265,14 +264,25 @@ namespace Fusee.Engine.Core
             frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
             frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
             frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr           
+            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
 
             for (int i = 0; i < frustumCorners.Length; i++)
             {
                 var corner = frustumCorners[i];
-                corner /= corner.w; //world space frustum corners
-                corner = lightView * corner; //light space frustum corners
+                corner /= corner.w; //world space frustum corners               
+                frustumCorners[i] = corner;
+            }
 
+            return frustumCorners;
+        }
+
+        //TODO: PROBLEM Without cascaded shadow maps and a large frustum we get a large AABB, possibly spanning the whole scene and therefore imprecise shadows.
+        private float4x4 GetProjectionForParallelLight(float4x4 lightView, float4[] frustumCorners ,out float2 clipPlanes)
+        {
+            for (int i = 0; i < frustumCorners.Length; i++)
+            {
+                var corner = frustumCorners[i];                
+                corner = lightView * corner; //light space frustum corners
                 frustumCorners[i] = corner;
             }
 
@@ -283,7 +293,7 @@ namespace Fusee.Engine.Core
             }
 
             clipPlanes = new float2(lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.min.z + lightSpaceFrustumAABB.Size.z);
-            return float4x4.CreateOrthographic(lightSpaceFrustumAABB.Size.x, lightSpaceFrustumAABB.Size.y, lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.min.z + lightSpaceFrustumAABB.Size.z);
+            return float4x4.CreateOrthographic(lightSpaceFrustumAABB.Size.x, lightSpaceFrustumAABB.Size.y, lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.max.z + lightSpaceFrustumAABB.min.z);
         }
 
         private ShadowParams CreateShadowParams(LightResult lr, TexRes shadowMapRes, Tuple<SceneNodeContainer, LightComponent> key)
@@ -303,15 +313,32 @@ namespace Fusee.Engine.Core
 
             switch (lr.Light.Type)
             {
-                case LightType.Parallel:                
+                case LightType.Parallel:
                     // TODO: implement cascaded shadow maps.
-                    lightPos = lr.WorldSpacePos;                                               
-                    lightView = float4x4.LookAt(lightPos, lightPos + float3.Normalize(lr.Rotation * float3.UnitZ), lr.Rotation * float3.UnitY);                    
-                    lightProjection = GetProjectionForParallelLight(lightView, out var clipPlanes);
+
+                    var n = System.Math.Abs(_thisScenesProjection.M34 / (_thisScenesProjection.M33 + 1.0f));
+                    var f = System.Math.Abs(_thisScenesProjection.M34 / (_thisScenesProjection.M33 - 1.0f));
+                    
+                    var frustumCorners = GetWorldSpaceFrustumCorners();
+
+                    float3 frustumCenter = float3.Zero;
+
+                    foreach (var corner in frustumCorners)
+                    {
+                        frustumCenter += corner.xyz;
+                    }
+                    frustumCenter /= 8;
+
+                    var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
+                       
+                    lightPos = frustumCenter + (-lightDir * (f - n));//lr.WorldSpacePos;                                               
+                    lightView = float4x4.LookAt(lightPos, lightPos + float3.Normalize(lr.Rotation * float3.UnitZ), float3.Normalize(lr.Rotation * float3.UnitY));                    
+                    lightProjection = GetProjectionForParallelLight(lightView, frustumCorners, out var clipPlanes);
                     zNear = clipPlanes.x;
                     zFar = clipPlanes.y;
                     lightSpaceMatrices[0] = lightProjection * lightView;
                     break;
+
                 case LightType.Point:
                     //TODO: implement cube shadow maps
                     lightPos = lr.WorldSpacePos;
@@ -348,7 +375,7 @@ namespace Fusee.Engine.Core
                     break;
                 case LightType.Legacy:                    
                     lightView = _rc.View;
-                    lightProjection = GetProjectionForParallelLight(lightView, out var clipPlanesLegacy);
+                    lightProjection = GetProjectionForParallelLight(lightView,GetWorldSpaceFrustumCorners(), out var clipPlanesLegacy);;
                     zNear = clipPlanesLegacy.x;
                     zFar = clipPlanesLegacy.y;
                     lightSpaceMatrices[0] = lightProjection * lightView;
@@ -361,12 +388,12 @@ namespace Fusee.Engine.Core
             {
                 if (lr.Light.Type == LightType.Point)
                 {
-                    var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_EDGE);
+                    var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.LINEAR, TextureWrapMode.CLAMP_TO_EDGE);
                     outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, CubeShadowMap = shadowMap };
                 }
                 else
                 {
-                    var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER);
+                    var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
                     outParams = new ShadowParams() { ClipPlanesForLightMat = new float2(zNear, zFar), LightSpaceMats = lightSpaceMatrices, ShadowMap = shadowMap };
                 }
                

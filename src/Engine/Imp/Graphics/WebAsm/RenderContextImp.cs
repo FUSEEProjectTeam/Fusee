@@ -268,7 +268,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Updates a specific rectangle of a texture.
         /// </summary>
         /// <param name="tex">The texture to which the ImageData is bound to.</param>
-        /// <param name="img">The ImageData-Struct containing information about the image. </param>
+        /// <param name="img">The ImageData struct containing information about the image. </param>
         /// <param name="startX">The x-value of the upper left corner of th rectangle.</param>
         /// <param name="startY">The y-value of the upper left corner of th rectangle.</param>
         /// <param name="width">The width of the rectangle.</param>
@@ -533,8 +533,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     case SAMPLER_2D:
                     case UNSIGNED_INT_SAMPLER_2D:
                     case INT_SAMPLER_2D:
+                    case SAMPLER_2D_SHADOW:
                         paramInfo.Type = typeof(ITextureBase);
                         break;
+                    case SAMPLER_CUBE_SHADOW:
                     case SAMPLER_CUBE:
                         paramInfo.Type = typeof(ITextureBase);
                         break;

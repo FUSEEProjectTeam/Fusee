@@ -11,5 +11,16 @@
         /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
         /// </summary>
         RenderTargetTextureTypes TextureType { get; }
+
+        /// <summary>
+        /// Specifies the texture's comparison mode, see <see cref="TextureCompareMode"/>.
+        /// </summary>
+        TextureCompareMode CompareMode { get; }
+
+
+        /// <summary>
+        /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
+        /// </summary>
+        TextureCompareFunc CompareFunc { get; }
     }
 }
