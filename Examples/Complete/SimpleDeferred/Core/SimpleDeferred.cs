@@ -74,12 +74,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             perspectiveProjComp.ZFar = ZFar;
             perspectiveProjComp.ZNear = ZNear;
             perspectiveProjComp.Fov = _fovy;
-            _resizeDel = delegate
-            {
-                perspectiveProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            };
-            AddResizeDelegate(_resizeDel);
 
             //Add lights to the scene
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
@@ -380,13 +374,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate
-            {
-                canvasProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
-
+            canvas.Components.Insert(0, canvasProjComp);            
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

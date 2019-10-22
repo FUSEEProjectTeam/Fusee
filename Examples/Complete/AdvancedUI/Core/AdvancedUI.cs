@@ -132,12 +132,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate
-            {
-                projComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();            
 
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
@@ -466,12 +461,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate
-            {
-                canvasProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
-
+            
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

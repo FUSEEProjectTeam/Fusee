@@ -476,7 +476,7 @@ namespace Fusee.Engine.Core
 
             //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass.
             //Create shadow textures in GBuffer RenderTarget and one RenderTarget for each shadow map.
-            _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes);
+            _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
             _currentPass = DeferredPasses.SHADOW;
             _rc.SetShaderEffect(_shadowEffect);
             foreach (var lightVisRes in LightViseratorResults)
@@ -512,7 +512,7 @@ namespace Fusee.Engine.Core
             }
 
             //Pass 1: Geometry pass
-            _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution);
+            _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
             _currentPass = DeferredPasses.GEOMETRY;
             rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
@@ -520,7 +520,7 @@ namespace Fusee.Engine.Core
             //Pass 2: SSAO
             _currentPass = DeferredPasses.SSAO;
             if (_ssaoTexEffect == null)
-                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(_projectionComponent.ZNear, _projectionComponent.ZNear));
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
             _quadShaderEffectComp.Effect = _ssaoTexEffect;
             rc.SetRenderTarget(_ssaoRenderTexture);
             Traverse(_quadScene.Children);

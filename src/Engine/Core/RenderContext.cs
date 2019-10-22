@@ -1774,17 +1774,19 @@ namespace Fusee.Engine.Core
         /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
         /// <param name="height">vertical size (in pixels) of the output region.</param>
+        /// <param name="renderToScreen">Determines if we render to screen or to a frame buffer object. Is true per default.</param>
         /// <remarks>
         /// Setting the Viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
-        public void Viewport(int x, int y, int width, int height)
+        public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
         {
+            _rci.Viewport(x, y, width, height);
+
+            if (!renderToScreen) return;
+
             ViewportWidth = width;
             ViewportHeight = height;
-
-            _rci.Viewport(x, y, width, height);
         }
-
 
         /// <summary>
         /// Enable or disable Color channels to be written to the frame buffer (final image).

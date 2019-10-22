@@ -1439,7 +1439,7 @@ namespace Fusee.Engine.Core
         /// <param name="kernelLength">SSAO kernel size.</param>
         /// <param name="screenParams">Width and Height of the screen.</param>
         /// <param name="clipPlaneDist">Distances to near and far clipping planes.</param>        
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams, float2 clipPlaneDist)
+        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
@@ -1472,8 +1472,7 @@ namespace Fusee.Engine.Core
 
             frag.Append($"in vec2 vTexCoords;\n");
 
-            frag.Append($"uniform vec2 ScreenParams;\n");
-            frag.Append($"uniform vec2 ClipPlaneDist;\n");
+            frag.Append($"uniform vec2 ScreenParams;\n");            
             frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_POSITION)};\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_NORMAL)};\n");
@@ -1561,8 +1560,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
 
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
-                new EffectParameterDeclaration { Name = "ClipPlaneDist", Value = clipPlaneDist},
+                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},                
                 new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
                 new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
