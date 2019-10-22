@@ -170,12 +170,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate
-            {
-                projComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
             sc.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRendererForward(sc);

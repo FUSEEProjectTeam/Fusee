@@ -73,12 +73,7 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-            AddResizeDelegate(delegate
-            {
-                projComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
             _scene.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRendererForward(_scene);

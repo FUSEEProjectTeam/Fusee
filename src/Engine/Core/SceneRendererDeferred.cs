@@ -520,7 +520,7 @@ namespace Fusee.Engine.Core
             //Pass 2: SSAO
             _currentPass = DeferredPasses.SSAO;
             if (_ssaoTexEffect == null)
-                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes), new float2(_projectionComponent.ZNear, _projectionComponent.ZNear));
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
             _quadShaderEffectComp.Effect = _ssaoTexEffect;
             rc.SetRenderTarget(_ssaoRenderTexture);
             Traverse(_quadScene.Children);

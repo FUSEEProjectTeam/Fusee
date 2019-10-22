@@ -1785,6 +1785,11 @@ namespace Fusee.Engine.Core
             _rci.Viewport(x, y, width, height);
         }
 
+        public void ViewportDeferred(int x, int y, int width, int height)
+        {
+            _rci.Viewport(x, y, width, height);
+        }
+
 
         /// <summary>
         /// Enable or disable Color channels to be written to the frame buffer (final image).
