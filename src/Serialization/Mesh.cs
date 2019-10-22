@@ -334,7 +334,7 @@ namespace Fusee.Serialization
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
         /// </summary>
         ~Mesh()
         {
