@@ -1472,7 +1472,7 @@ namespace Fusee.Engine.Core
 
             frag.Append($"in vec2 vTexCoords;\n");
 
-            frag.Append($"uniform vec2 ScreenParams;\n");            
+            frag.Append($"uniform vec2 ScreenParams;\n");
             frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_POSITION)};\n");
             frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_NORMAL)};\n");
@@ -1485,7 +1485,7 @@ namespace Fusee.Engine.Core
             frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
 
             frag.Append(@"
-            if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
+            if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)
                 discard;
             ");
 
@@ -1560,7 +1560,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
 
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},                
+                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
                 new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
                 new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
                 new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
@@ -1778,6 +1778,8 @@ namespace Fusee.Engine.Core
             frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
             frag.Append("uniform int PassNo;\n");
 
+            frag.Append("uniform vec4 BackgroundColor;\n");
+
             frag.Append($"in vec2 vTexCoords;\n");
             frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)};\n");
 
@@ -1796,8 +1798,13 @@ namespace Fusee.Engine.Core
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
             //---------------------------------------
             frag.Append(@"
-            if(Normal.x == 1.0 && Normal.y == 1.0 && Normal.z == 1.0)
-                discard;
+            if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)      
+            {
+            ");
+
+            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = BackgroundColor;");
+            frag.AppendLine(@"  return;
+            }
             ");
 
             frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
@@ -1919,9 +1926,9 @@ namespace Fusee.Engine.Core
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
         {
-            
+
             var effectParams = new List<EffectParameterDeclaration>()
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
@@ -1947,11 +1954,12 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
                 new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
             };
 
-            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });           
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
-           
+
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
@@ -1980,7 +1988,7 @@ namespace Fusee.Engine.Core
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMap">The shadow map.</param>       
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap, float4 backgroundColor)
         {
 
             var effectParams = new List<EffectParameterDeclaration>()
@@ -2008,8 +2016,9 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
                 new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
             };
-            
+
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowMap });
 
             return new ShaderEffect(new[]
@@ -2039,7 +2048,7 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>              
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor)
         {
 
             var effectParams = new List<EffectParameterDeclaration>()
@@ -2067,6 +2076,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
                 new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
+                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
             };
 
             return new ShaderEffect(new[]
