@@ -3,14 +3,15 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Simple.Android</RootNamespace>
     <AssemblyName>Fusee.Examples.Simple.Android</AssemblyName>
-    <FuseeBuildRoot Condition=" '$(FuseeRoot)' == '' ">..\..\..\..</FuseeBuildRoot>
-    <!-- Build into main FUSEE bin directory -->
-    <FuseeBuildRoot Condition=" '$(FuseeBuildRoot)' == '' ">$(FuseeRoot)</FuseeBuildRoot>
-    <!-- Build into local bin directory -->
-    <!-- <FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\</FuseeEngineRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
+    <!-- Build into main FUSEE bin directory -->
+    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
+    <!-- Build into local bin directory -->
+    <!-- <BaseOutputPath>..\</BaseOutputPath> -->
+    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{72B29431-717A-47AD-9BDB-2A60E284D727}</ProjectGuid>
@@ -27,9 +28,6 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -51,9 +49,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
-    <BaseIntermediateOutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\$(Configuration)\</BaseIntermediateOutputPath>
-    <IntermediateOutputPath>$(BaseIntermediateOutputPath)\</IntermediateOutputPath>
     <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -67,40 +62,35 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="OpenTK-1.0" />
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
   <!-- Fusee References -->
   <ItemGroup>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll">
-      <Name>Fusee.SerializationSerializer</Name>
-    </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll">
       <Name>Fusee.Base.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\Debug\Libraries\Fusee.Base.Core.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll">
       <Name>Fusee.Base.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Android.dll">
       <Name>Fusee.Base.Imp.Android</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll">
       <Name>Fusee.Math.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll">
       <Name>Fusee.Serialization</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll">
       <Name>Fusee.Engine.Common</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll">
       <Name>Fusee.Engine.Core</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Android.dll">
       <Name>Fusee.Engine.Imp.Graphics.Android</Name>
     </Reference>
-    <Reference Include="$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
+    <Reference Include="$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll">
       <Name>Fusee.Xene</Name>
     </Reference>
     <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj">
@@ -129,9 +119,16 @@
     <AndroidResource Include="Resources\drawable-xxhdpi\icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidAsset Include="Assets\AboutAssets.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </AndroidAsset>
+    <AndroidAsset Include="Assets\AboutAssets.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+  <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
+  <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir;FuseeCollectAndCopyAssets;FuseeResolveAssetDependencies;FuseeResolveNativeDependencies">
+    <ItemGroup>
+      <_FuseeAndroidAssets1 Include="$(OutputPath)\Assets\**\*" />
+      <_FuseeAndroidAssets2 Include="$(OutputPath)\$(AssemblyName).Assets\**\*" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_FuseeAndroidAssets1)" DestinationFiles="@(_FuseeAndroidAssets1->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
+    <Copy SourceFiles="@(_FuseeAndroidAssets2)" DestinationFiles="@(_FuseeAndroidAssets2->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
+  </Target>
 </Project>

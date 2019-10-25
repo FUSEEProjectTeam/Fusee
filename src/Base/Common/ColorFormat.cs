@@ -18,6 +18,26 @@
         /// <summary>
         /// Used for Images containing a single grey-scale value per-pixel. Each pixel consists of one byte.
         /// </summary>
-        Intensity
+        Intensity,
+
+        /// <summary>
+        /// RGBA integer.
+        /// </summary>
+        uiRgb8,
+
+        /// <summary>
+        /// RGBA float, 32bit.
+        /// </summary>
+        fRGB32,
+
+        /// <summary>
+        /// RGBA float, 16bit.
+        /// </summary>
+        fRGB16,
+
+        /// <summary>
+        /// Used for creating depth maps.
+        /// </summary>
+        Depth,
     }
 }

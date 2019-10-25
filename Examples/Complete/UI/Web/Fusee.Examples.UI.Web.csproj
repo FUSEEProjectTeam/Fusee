@@ -1,4 +1,4 @@
-﻿<Project>
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.UI.Web</RootNamespace>
     <PackageId>Fusee.Examples.UI.Web</PackageId>
@@ -6,8 +6,6 @@
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_WEB</DefineConstants>
   </PropertyGroup>
-
-  <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
 
   <PropertyGroup>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
@@ -46,15 +44,10 @@
     <Reference Include="Fusee.Engine.Imp.Graphics.Web">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Web.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
   </ItemGroup>
 
   <ItemGroup>
@@ -71,6 +64,4 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
-  <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
 </Project>

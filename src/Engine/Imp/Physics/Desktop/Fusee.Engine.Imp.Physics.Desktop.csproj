@@ -12,11 +12,12 @@
 
   <ItemGroup>
     <Reference Include="BulletSharp">
-      <HintPath>$(FuseeBuildRoot)\ext\BulletSharp.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\BulletSharp.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
+
 </Project>

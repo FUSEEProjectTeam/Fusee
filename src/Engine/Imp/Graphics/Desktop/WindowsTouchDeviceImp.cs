@@ -178,29 +178,29 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private enum PointerMsgFlags : uint
         {
             // ReSharper disable InconsistentNaming
-             POINTER_MESSAGE_FLAG_NEW            =   0x00000001, // New pointer
-             POINTER_MESSAGE_FLAG_INRANGE        =   0x00000002, // Pointer has not departed
-             POINTER_MESSAGE_FLAG_INCONTACT      =   0x00000004, // Pointer is in contact
-             POINTER_MESSAGE_FLAG_FIRSTBUTTON    =   0x00000010, // Primary action
-             POINTER_MESSAGE_FLAG_SECONDBUTTON   =   0x00000020, // Secondary action
-             POINTER_MESSAGE_FLAG_THIRDBUTTON    =   0x00000040, // Third button
-             POINTER_MESSAGE_FLAG_FOURTHBUTTON   =   0x00000080, // Fourth button
-             POINTER_MESSAGE_FLAG_FIFTHBUTTON    =   0x00000100, // Fifth button
-             POINTER_MESSAGE_FLAG_PRIMARY        =   0x00002000, // Pointer is primary
-             POINTER_MESSAGE_FLAG_CONFIDENCE     =   0x00004000, // Pointer is considered unlikely to be accidental
-             POINTER_MESSAGE_FLAG_CANCELED       =   0x00008000, // Pointer is departing in an abnormal manner
+            POINTER_MESSAGE_FLAG_NEW = 0x00000001, // New pointer
+            POINTER_MESSAGE_FLAG_INRANGE = 0x00000002, // Pointer has not departed
+            POINTER_MESSAGE_FLAG_INCONTACT = 0x00000004, // Pointer is in contact
+            POINTER_MESSAGE_FLAG_FIRSTBUTTON = 0x00000010, // Primary action
+            POINTER_MESSAGE_FLAG_SECONDBUTTON = 0x00000020, // Secondary action
+            POINTER_MESSAGE_FLAG_THIRDBUTTON = 0x00000040, // Third button
+            POINTER_MESSAGE_FLAG_FOURTHBUTTON = 0x00000080, // Fourth button
+            POINTER_MESSAGE_FLAG_FIFTHBUTTON = 0x00000100, // Fifth button
+            POINTER_MESSAGE_FLAG_PRIMARY = 0x00002000, // Pointer is primary
+            POINTER_MESSAGE_FLAG_CONFIDENCE = 0x00004000, // Pointer is considered unlikely to be accidental
+            POINTER_MESSAGE_FLAG_CANCELED = 0x00008000, // Pointer is departing in an abnormal manner
             // ReSharper enable InconsistentNaming
         }
 
-        private UInt16 LOWORD(UInt32 wParam) => unchecked ((UInt16) wParam);
-        private UInt16 HIWORD(UInt32 wParam) => unchecked ((UInt16)((wParam >> 16) & 0xFFFF));
+        private UInt16 LOWORD(UInt32 wParam) => unchecked((UInt16)wParam);
+        private UInt16 HIWORD(UInt32 wParam) => unchecked((UInt16)((wParam >> 16) & 0xFFFF));
 
         private UInt16 GET_X_LPARAM(UInt32 lp) => LOWORD(lp);
         private UInt16 GET_Y_LPARAM(UInt32 lp) => HIWORD(lp);
 
         private int GET_POINTERID_WPARAM(UInt32 wParam) => LOWORD(wParam);
 
-        private bool IS_POINTER_FLAG_SET_WPARAM(UInt32 wParam, PointerMsgFlags flag) => ((UInt32) HIWORD(wParam) & ((UInt32) flag)) == ((UInt32) flag);
+        private bool IS_POINTER_FLAG_SET_WPARAM(UInt32 wParam, PointerMsgFlags flag) => ((UInt32)HIWORD(wParam) & ((UInt32)flag)) == ((UInt32)flag);
         private bool IS_POINTER_NEW_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_NEW);
         private bool IS_POINTER_INRANGE_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_INRANGE);
         private bool IS_POINTER_INCONTACT_WPARAM(UInt32 wParam) => IS_POINTER_FLAG_SET_WPARAM(wParam, PointerMsgFlags.POINTER_MESSAGE_FLAG_INCONTACT);
@@ -281,22 +281,22 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     case (int)WinMessage.WM_CLOSE: // Seems defunkt.
                         DisconnectWindowsEvents();
                         break;
-                    case (int) WinMessage.WM_POINTERUPDATE:
+                    case (int)WinMessage.WM_POINTERUPDATE:
                         winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
                         ScreenToClient(hWnd, ref winPoint);
                         OnWindowsTouchMove(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
-                    case (int) WinMessage.WM_POINTERUP:
+                    case (int)WinMessage.WM_POINTERUP:
                         winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
                         ScreenToClient(hWnd, ref winPoint);
                         OnWindowsTouchEnd(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
-                    case (int) WinMessage.WM_POINTERDOWN:
+                    case (int)WinMessage.WM_POINTERDOWN:
                         winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
                         ScreenToClient(hWnd, ref winPoint);
                         OnWindowsTouchStart(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
                         return IntPtr.Zero;
-                    case (int) WinMessage.WM_NCPOINTERUP:
+                    case (int)WinMessage.WM_NCPOINTERUP:
                         winPoint = new POINT(GET_X_LPARAM((uint)lParam), GET_Y_LPARAM((uint)lParam));
                         ScreenToClient(hWnd, ref winPoint);
                         OnWindowsTouchCancel(GET_POINTERID_WPARAM((uint)wParam), winPoint.X, winPoint.Y);
@@ -312,9 +312,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             // See https://msdn.microsoft.com/library/windows/desktop/ms724832.aspx : Apps NOT targetet for a specific windows version (like 8.1 or 10)
             // retrieve Version# 6.2 (resembling Windows 8), which is the version where "Pointer" touch handling is first supported.
-            if (os.Platform == PlatformID.Win32NT 
-                && (    os.Version.Major > 6
-                     || os.Version.Major == 6 && os.Version.Minor >= 2) 
+            if (os.Platform == PlatformID.Win32NT
+                && (os.Version.Major > 6
+                     || os.Version.Major == 6 && os.Version.Minor >= 2)
                 )
             {
                 EnableMouseInPointer(false);
@@ -599,7 +599,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
-        /// Retrieves the button count. One button for each of the up to five supported touchpoints signalling that the touchpoint currently has contact.
+        /// Retrieves the button count. One button for each of the up to five supported touchpoints signaling that the touchpoint currently has contact.
         /// </summary>
         /// <value>
         /// The button count.
@@ -624,6 +624,4 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             throw new InvalidOperationException($"Unknown button id {iButtonId}. This device supports no pollable buttons at all.");
         }
     }
-
-
 }

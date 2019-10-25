@@ -23,17 +23,6 @@
                 "reveal": "silent"
             },
             "problemMatcher": []
-        },
-        {
-            "dependsOn": ["build"],
-            "label": "Publish FUSEE Web app",
-            "command": "fusee publish --platform Web",
-            "type": "shell",
-            "group": "build",
-            "presentation": {
-                "reveal": "silent"
-            },
-            "problemMatcher": []
-        }        
+        }     
     ]
 }

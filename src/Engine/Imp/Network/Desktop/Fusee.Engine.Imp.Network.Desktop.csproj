@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
@@ -12,10 +12,11 @@
 
   <ItemGroup>
     <Reference Include="Lidgren.Network">
-      <HintPath>$(FuseeBuildRoot)\ext\Lidgren.Network.dll</HintPath>
+      <HintPath>$(FuseeEngineRoot)\ext\Lidgren.Network.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
+
 </Project>
