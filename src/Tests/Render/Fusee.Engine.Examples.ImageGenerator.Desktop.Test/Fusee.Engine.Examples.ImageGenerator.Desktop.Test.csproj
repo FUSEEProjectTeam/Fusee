@@ -20,6 +20,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(FuseeBuildRoot)\src\Tests\Render\ImageGenerator\Desktop\Fusee.Engine.Examples.ImageGenerator.Desktop.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Tests\Render\ImageGenerator\Desktop\Fusee.Engine.Examples.ImageGenerator.Desktop.csproj" />
   </ItemGroup>
 </Project>
