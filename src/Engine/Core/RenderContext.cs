@@ -1005,6 +1005,22 @@ namespace Fusee.Engine.Core
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
+        /// <param name="textures">A texture array.</param>
+        public void SetShaderParamWritableTextureArray(IShaderParam param, WritableTexture[] textures)
+        {
+            var texHandles = new List<ITextureHandle>();
+            foreach (var tex in textures)
+            {
+                ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                texHandles.Add(textureHandle);
+            }            
+            _rci.SetShaderParamTextureArray(param, texHandles.ToArray());
+        }
+
+        /// <summary>
+        /// Sets a Shader Parameter to a created texture.
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
         public void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
@@ -1672,6 +1688,10 @@ namespace Fusee.Engine.Core
             else if (param.Info.Type == typeof(float4x4[]))
             {
                 SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+            }
+            else if (param.Info.Type == typeof(IWritableTexture[]))
+            {
+                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
             }
             else if (param.Value is IWritableCubeMap)
             {

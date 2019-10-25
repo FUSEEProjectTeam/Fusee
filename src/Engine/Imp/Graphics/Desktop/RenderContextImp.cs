@@ -683,6 +683,33 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
+        public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            var firstTexUnit = 0;
+
+            for (int i = 0; i < texIds.Length; i++)
+            {
+                if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
+                {
+                    texUnit = _textureCount++;
+                    _shaderParam2TexUnit[iParam] = texUnit;
+                }
+                if (i == 0)
+                    firstTexUnit = texUnit;
+            }
+
+            GL.Uniform1(iParam, firstTexUnit);
+            GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit);
+
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texIds[0]).TexHandle);
+        }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
         {

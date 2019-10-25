@@ -230,6 +230,13 @@ namespace Fusee.Engine.Common
         void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
 
         /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
+        void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds);
+
+        /// <summary>
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
