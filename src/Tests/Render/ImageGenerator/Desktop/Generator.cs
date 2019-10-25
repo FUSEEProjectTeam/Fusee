@@ -29,9 +29,9 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         private const float Damping = 0.8f;
 
         private SceneContainer _model;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
 
@@ -54,8 +54,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_model);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_model);
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
 
