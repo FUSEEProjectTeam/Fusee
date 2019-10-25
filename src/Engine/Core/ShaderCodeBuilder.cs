@@ -1437,8 +1437,7 @@ namespace Fusee.Engine.Core
         /// </summary>        
         /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
         /// <param name="kernelLength">SSAO kernel size.</param>
-        /// <param name="screenParams">Width and Height of the screen.</param>
-        /// <param name="clipPlaneDist">Distances to near and far clipping planes.</param>        
+        /// <param name="screenParams">Width and Height of the screen.</param>        
         public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
         {
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
@@ -1703,8 +1702,7 @@ namespace Fusee.Engine.Core
             });
 
         }
-
-
+        
         private static string DeferredLightningVS()
         {
             var vert = new StringBuilder();
@@ -1924,7 +1922,8 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
-        /// <param name="shadowMap">The shadow map.</param>            
+        /// <param name="shadowMap">The shadow map.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
         {
@@ -1986,7 +1985,8 @@ namespace Fusee.Engine.Core
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
         /// <param name="lc">The light component.</param>
-        /// <param name="shadowMap">The shadow map.</param>       
+        /// <param name="shadowMap">The shadow map.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap, float4 backgroundColor)
         {
@@ -2035,8 +2035,6 @@ namespace Fusee.Engine.Core
                         SourceBlend = Blend.One,
                         DestinationBlend = Blend.One,
                         ZFunc = Compare.LessEqual,
-
-
                     }
                 }
             },
@@ -2047,10 +2045,10 @@ namespace Fusee.Engine.Core
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
         /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>              
+        /// <param name="lc">The light component.</param>  
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor)
         {
-
             var effectParams = new List<EffectParameterDeclaration>()
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},

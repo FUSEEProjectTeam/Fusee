@@ -669,8 +669,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[hParam] = texUnit;
             }
             gl.Uniform1i(hParam, texUnit);
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
-            //gl.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
+            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));            
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
         }
 
@@ -697,7 +696,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             gl.Uniform1i(hParam, firstTexUnit);
             gl.ActiveTexture((uint)(TEXTURE0 + firstTexUnit));
-
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texIds[0]).TexHandle);
         }
 
@@ -716,8 +714,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[hParam] = texUnit;
             }
             gl.Uniform1i(hParam, texUnit);
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
-            //gl.BindTexture(TextureTarget.TextureCubeMap, ((Texture)texId).handle);
+            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));          
             gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
         }
 

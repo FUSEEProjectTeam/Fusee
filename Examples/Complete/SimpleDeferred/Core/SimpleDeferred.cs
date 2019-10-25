@@ -40,8 +40,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private float3 _cameraPos;
         private bool _keys;
 
-        private const float twoPi = M.Pi * 2.0f;
-        private readonly TexRes _texRes = TexRes.MID_RES;
+        private const float twoPi = M.Pi * 2.0f;       
 
         private TransformComponent _sunTransform;
 
@@ -93,20 +92,20 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     _sunTransform,
                     _sun,
                 },
-                    Children = new ChildList()
-                    {
-                        new SceneNodeContainer()
-                        {
-                            Components = new List<SceneComponentContainer>()
-                            {
-                                new TransformComponent
-                                {
-                                    Scale = float3.One/2f
-                                },
-                                new Cube()
-                            }
-                        }
-                    }
+                    //Children = new ChildList()
+                    //{
+                    //    new SceneNodeContainer()
+                    //    {
+                    //        Components = new List<SceneComponentContainer>()
+                    //        {
+                    //            new TransformComponent
+                    //            {
+                    //                Scale = float3.One/2f
+                    //            },
+                    //            new Cube()
+                    //        }
+                    //    }
+                    //}
 
                 },
                 new SceneNodeContainer()
@@ -174,7 +173,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             });
 
             // Wrap a SceneRenderer around the scene.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene, _texRes, perspectiveProjComp);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             //_sceneRenderer = new SceneRendererForward(_rocketScene);
 
             // Wrap a SceneRenderer around the GUI.
@@ -194,7 +193,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             //    rotate = true;
             //}
 
-            _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f), 0, 0));
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f), 0, 0));
 
             var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
             if (deg < 0)
