@@ -1947,6 +1947,54 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             return gBuffer;
         }
 
+        /// <summary>
+        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        {
+            ChangeFramebufferTexture2D(renderTarget, type, null); //TODO: ckeck if "null" is the equivalent to the zero texture (handle = 0) in OpenGL Core
+        }
+
+        /// <summary>
+        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="texHandle">The gpu handle of the texture.</param>
+        public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
+        {
+            ChangeFramebufferTexture2D(renderTarget, type, ((TextureHandle)texHandle).TexHandle);
+        }
+
+        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, RenderTargetTextureTypes type, WebGLTexture handle)
+        {
+            var boundFbo = (WebGLFramebuffer)gl2.GetParameter(FRAMEBUFFER_BINDING);
+            var rtFbo = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
+
+            var isCurrentFbo = true;
+
+            if (boundFbo != rtFbo)
+            {
+                isCurrentFbo = false;
+                gl2.BindFramebuffer(FRAMEBUFFER, rtFbo);
+            }
+
+            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
+            var thisTexPos = (int)type;
+
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null || depthTexPos < thisTexPos)
+                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)type, TEXTURE_2D, handle, 0);
+            else if (depthTexPos > thisTexPos)
+                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(thisTexPos - 1), TEXTURE_2D, handle, 0);
+
+            if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
+                throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");
+
+            if (!isCurrentFbo)
+                gl2.BindFramebuffer(FRAMEBUFFER, boundFbo);
+        }
 
         /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 

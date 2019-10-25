@@ -6,7 +6,6 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -27,21 +26,6 @@ namespace Fusee.Engine.Core
     public class SceneRendererDeferred : SceneRendererForward
     {
         /// <summary>
-        /// The distance to the near clipping plane of the current projection matrix.
-        /// </summary>
-        public float ZNear { get; private set; }
-
-        /// <summary>
-        /// The distance to the far clipping plane of the current projection matrix.
-        /// </summary>
-        public float ZFar { get; private set; }
-
-        /// <summary>
-        /// The vertical field of view of the current projection matrix.
-        /// </summary>
-        public float Fov { get; private set; }
-
-        /// <summary>
         /// Sets the GL.ClearColor
         /// </summary>
         public float4 BackgroundColor { get; private set; }
@@ -61,12 +45,46 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
         /// </summary>
-        public bool FxaaOn { get { return _fxaaOn; } set { _needToRecreateLightingMatOther = true; _needToRecreateLightingMatPoint = true; _needToRecreateLightingMatNoShadow = true; _fxaaOn = value; } }
+        public bool FxaaOn
+        { 
+            get 
+            { 
+                return _fxaaOn; 
+            } 
+            set 
+            { 
+                _needToRecreateLightingMatOther = _needToRecreateLightingMatPoint = _needToRecreateLightingMatNoShadow = _needToSetSSAOTex =  true; 
+                _fxaaOn = value; 
+            } 
+        }
         private bool _fxaaOn = true;
+        
+        /// <summary>
+        /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
+        /// </summary>
+        public bool SsaoOn 
+        { 
+            get 
+            {
+                return _ssaoOn; 
+            } 
+            set 
+            { 
+                if(value == false)                
+                    _rc.DetachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);                    
+                else                
+                    _rc.ReattachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);                
+                _ssaoOn = value;
+                _needToSetSSAOTex = true;
+            } 
+        }
+        private bool _ssaoOn = true;
 
         private bool _needToRecreateLightingMatOther = false;
         private bool _needToRecreateLightingMatPoint = false;
         private bool _needToRecreateLightingMatNoShadow = false;
+
+        private bool _needToSetSSAOTex = false;
 
         private float4 _texClearColor = new float4(0, 0, 0, 0);
         private readonly SceneContainer _quadScene = new SceneContainer();
@@ -220,10 +238,7 @@ namespace Fusee.Engine.Core
         /// <param name="pc">The visited ProjectionComponent.</param>
         [VisitMethod]
         public new void RenderProjection(ProjectionComponent pc)
-        {
-            Fov = pc.Fov;
-            ZNear = pc.ZNear;
-            ZFar = pc.ZFar;
+        {            
             base.RenderProjection(pc);
 
             if (_currentPass == DeferredPasses.GEOMETRY)            
@@ -484,6 +499,12 @@ namespace Fusee.Engine.Core
                 UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect);
                 _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
 
+                if (_needToSetSSAOTex) 
+                {                    
+                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn? 1 : 0 );
+                    _needToSetSSAOTex = false;
+                }
+
                 //Set background color only in last light pass to NOT blend the color (additive).
                 if (i == LightViseratorResults.Count - 1)
                     _lightingPassEffect.SetEffectParam("BackgroundColor", BackgroundColor);
@@ -553,24 +574,27 @@ namespace Fusee.Engine.Core
             rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
 
-            //Pass 2: SSAO
-            _currentPass = DeferredPasses.SSAO;
-            if (_ssaoTexEffect == null)
-                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
-            _quadShaderEffectComp.Effect = _ssaoTexEffect;
-            rc.SetRenderTarget(_ssaoRenderTexture);
-            Traverse(_quadScene.Children);
+            if (_ssaoOn)
+            {
+                //Pass 2: SSAO
+                _currentPass = DeferredPasses.SSAO;
+                if (_ssaoTexEffect == null)
+                    _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
+                _quadShaderEffectComp.Effect = _ssaoTexEffect;
+                rc.SetRenderTarget(_ssaoRenderTexture);
+                Traverse(_quadScene.Children);
 
-            //Pass 3: Blur SSAO Texture
-            _currentPass = DeferredPasses.SSAO_BLUR;
-            if (_blurEffect == null)
-                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
-            _quadShaderEffectComp.Effect = _blurEffect;
-            rc.SetRenderTarget(_blurRenderTarget);
-            Traverse(_quadScene.Children);
+                //Pass 3: Blur SSAO Texture
+                _currentPass = DeferredPasses.SSAO_BLUR;
+                if (_blurEffect == null)
+                    _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
+                _quadShaderEffectComp.Effect = _blurEffect;
+                rc.SetRenderTarget(_blurRenderTarget);
+                Traverse(_quadScene.Children);
 
-            //Set blurred SSAO Texture as SSAO Texture in gBuffer
-            _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextureTypes.G_SSAO);
+                //Set blurred SSAO Texture as SSAO Texture in gBuffer
+                _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextureTypes.G_SSAO);
+            }
 
             _currentPass = DeferredPasses.LIGHTING;
 

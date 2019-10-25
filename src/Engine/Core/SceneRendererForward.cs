@@ -26,7 +26,7 @@ namespace Fusee.Engine.Core
         /// Light results, collected from the scene in the Viserator.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
-        {
+        {            
             get
             {
                 return _lightResults;

@@ -1013,7 +1013,7 @@ namespace Fusee.Engine.Core
             {
                 ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
                 texHandles.Add(textureHandle);
-            }            
+            }
             _rci.SetShaderParamTextureArray(param, texHandles.ToArray());
         }
 
@@ -1173,7 +1173,7 @@ namespace Fusee.Engine.Core
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
-        
+
         internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
         {
             CompiledShaderEffect sFxParam;
@@ -1219,7 +1219,7 @@ namespace Fusee.Engine.Core
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             sFxParam.Parameters = new Dictionary<string, object>();
             sFxParam.ParamsPerPass = new List<List<EffectParam>>();
-            
+
             for (var i = 0; i < nPasses; i++)
             {
                 var shaderParamInfos = GetShaderParamList(sFxParam.CompiledShaders[i]).ToList();
@@ -1323,7 +1323,7 @@ namespace Fusee.Engine.Core
         {
             return _rci.GetShaderParamList(program._spi);
         }
-        
+
         /// <summary>
         /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
         /// </summary>
@@ -1575,7 +1575,7 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableTexture tex)
         {
-            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);                        
+            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
         }
 
@@ -1585,8 +1585,29 @@ namespace Fusee.Engine.Core
         /// <param name="tex">The render texture.</param>
         public void SetRenderTarget(IWritableCubeMap tex)
         {
-            var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);            
-            _rci.SetRenderTarget(tex, texHandle);            
+            var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);
+            _rci.SetRenderTarget(tex, texHandle);
+        }
+
+        /// <summary>
+        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        {
+            _rci.DetachTextureFromFbo(renderTarget, type);
+        }
+
+        /// <summary>
+        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
+        public void ReattachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        {
+            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)renderTarget.RenderTextures[(int)type]);
+            _rci.ReatatchTextureFromFbo(renderTarget, type, texHandle);
         }
 
         /// <summary>
@@ -1611,7 +1632,7 @@ namespace Fusee.Engine.Core
             try
             {
                 for (i = 0; i < nPasses; i++)
-                {                   
+                {
                     _allCompiledShaderEffects.TryGetValue(_currentShaderEffect, out var compiledShaderEffect);
 
                     // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
@@ -1704,8 +1725,8 @@ namespace Fusee.Engine.Core
             else if (param.Value is ITexture)
             {
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
-            }            
-            
+            }
+
         }
         /// <summary>
         /// Returns the hardware capabilities.

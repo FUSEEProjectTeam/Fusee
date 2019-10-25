@@ -78,7 +78,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
             var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000008f };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 8f };
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 5f };
 
             _sunTransform = new TransformComponent() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
 
@@ -174,6 +174,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the scene.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            //_sceneRenderer.SsaoOn = false;
+
             //_sceneRenderer = new SceneRendererForward(_rocketScene);
 
             // Wrap a SceneRenderer around the GUI.
@@ -225,6 +227,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
                 _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G))
+                _sceneRenderer.SsaoOn = !_sceneRenderer.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -306,7 +311,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             viewMatrix = float4x4.Transpose(viewMatrix);
-
             return viewMatrix;
         }
 

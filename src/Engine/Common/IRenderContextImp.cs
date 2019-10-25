@@ -80,6 +80,10 @@ namespace Fusee.Engine.Common
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteRenderBuffer(IBufferHandle bh);
 
+        void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type);
+
+        void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle);
+
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
         /// </summary>

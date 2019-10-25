@@ -1775,6 +1775,7 @@ namespace Fusee.Engine.Core
 
             frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
             frag.Append("uniform int PassNo;\n");
+            frag.Append("uniform int SsaoOn;\n");
 
             frag.Append("uniform vec4 BackgroundColor;\n");
 
@@ -1816,8 +1817,13 @@ namespace Fusee.Engine.Core
             // then calculate lighting as usual
             vec3 lighting = vec3(0,0,0);
 
-            if(PassNo == 0){
-                vec3 ambient = vec3(0.2 * DiffuseColor * Occlusion); // 0.2 = ssao strength 
+            if(PassNo == 0)
+            {
+                vec3 ambient = vec3(0.2 * DiffuseColor);
+
+                if(SsaoOn == 1)
+                    ambient *= Occlusion;
+
                 lighting += ambient;
             }
 
@@ -1917,18 +1923,9 @@ namespace Fusee.Engine.Core
             return frag.ToString();
         }
 
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>
-        /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
-        /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
+        private static List<EffectParameterDeclaration> DefferedLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
         {
-
-            var effectParams = new List<EffectParameterDeclaration>()
+            return new List<EffectParameterDeclaration>()
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
@@ -1953,8 +1950,22 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
                 new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "PassNo", Value = 0},
-                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
+                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor},
+                new EffectParameterDeclaration { Name = "SsaoOn", Value = 1},
             };
+        }
+
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMap">The shadow map.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
+        {
+            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
 
             effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
@@ -1973,13 +1984,13 @@ namespace Fusee.Engine.Core
                         SourceBlend = Blend.One,
                         DestinationBlend = Blend.One,
                         ZFunc = Compare.LessEqual,
-
-
                     }
                 }
             },
             effectParams.ToArray());
         }
+                      
+
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
         /// </summary> 
@@ -1990,34 +2001,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap, float4 backgroundColor)
         {
-
-            var effectParams = new List<EffectParameterDeclaration>()
-            {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
-                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
-                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
-            };
+            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
 
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowMap });
 
@@ -2049,33 +2033,7 @@ namespace Fusee.Engine.Core
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor)
         {
-            var effectParams = new List<EffectParameterDeclaration>()
-            {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
-                new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.outerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.innerConeAngle", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "light.direction", Value = float3.Zero},
-                new EffectParameterDeclaration { Name = "light.lightType", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
-                new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
-                new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
-                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor}
-            };
+            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
 
             return new ShaderEffect(new[]
             {

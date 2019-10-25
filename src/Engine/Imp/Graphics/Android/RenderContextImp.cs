@@ -1840,6 +1840,55 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
+        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        {
+            ChangeFramebufferTexture2D(renderTarget, type, 0);
+        }
+
+        /// <summary>
+        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="texHandle">The gpu handle of the texture.</param>
+        public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
+        {
+            ChangeFramebufferTexture2D(renderTarget, type, ((TextureHandle)texHandle).TexHandle);
+        }
+
+        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, RenderTargetTextureTypes type, int handle)
+        {
+            GL.GetInteger(GetPName.FramebufferBinding, out var boundFbo);
+            var rtFbo = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
+
+            var isCurrentFbo = true;
+
+            if (boundFbo != rtFbo)
+            {
+                isCurrentFbo = false;
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, rtFbo);
+            }
+
+            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
+            var thisTexPos = (int)type;
+
+            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null || depthTexPos < thisTexPos)
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (int)type, TextureTarget.Texture2D, handle, 0);
+            else if (depthTexPos > thisTexPos)
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (thisTexPos - 1), TextureTarget.Texture2D, handle, 0);
+
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+                throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");
+
+            if (!isCurrentFbo)
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFbo);
+        }
+
+        /// <summary>
         /// Set the Viewport of the rendering output window by x,y position and width,height parameters. 
         /// The Viewport is the portion of the final image window.
         /// </summary>
