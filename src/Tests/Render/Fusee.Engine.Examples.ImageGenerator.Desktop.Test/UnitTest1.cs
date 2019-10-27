@@ -15,10 +15,9 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             string fuseeRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
             fuseeRoot = Path.GetFullPath(Path.Combine(fuseeRoot, "..", "..", "..", "..", "..")); ; 
             string referencePath = Path.GetFullPath(Path.Combine(fuseeRoot, @"src\Tests\Render\Fusee.Engine.Examples.ImageGenerator.Desktop.Test\References\reference.png"));
-            string imageGeneratorPath = Path.GetFullPath(Path.Combine(fuseeRoot, @"bin\Debug\Tests\Render\ImageGenerator"));
-            string imagePath = Path.GetFullPath(Path.Combine(imageGeneratorPath, "shoottest.png"));
+            string imagePath = Path.GetFullPath(Path.Combine(fuseeRoot, @"bin\Debug\Tests\Render\ImageGenerator.Test\shoottest.png"));
 
-            //Program.Main(new string[] { "shoottest.png" });
+            Program.Main(new string[] { "shoottest.png" });
 
             var reference = new Bitmap(referencePath);
             var image = new Bitmap(imagePath);

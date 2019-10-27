@@ -120,7 +120,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
                 // Done
                 Console.Error.WriteLine($"SUCCESS: Image {opts.Output} generated.");
-                Environment.Exit((int)ErrorCode.Success);
+                //Environment.Exit((int)ErrorCode.Success);
             })
             // ERROR on the command line
             .WithNotParsed(errs =>
