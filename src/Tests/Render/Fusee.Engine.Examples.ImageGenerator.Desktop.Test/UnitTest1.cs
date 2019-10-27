@@ -1,16 +1,27 @@
 using System;
 using Xunit;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
+using System.Diagnostics;
 
-namespace Fusee.Engine.Examples.ImageGenerator.Desktop.Test
+namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 {
     public class UnitTest1
     {
         [Fact]
         public void Test1()
         {
-            var reference = new Bitmap(@"D:\Repos\Fusee\src\Tests\Render\ImageGenerator\Desktop\Assets\reference.png");
-            var image = new Bitmap(@"D:\Repos\Fusee\bin\Debug\Tests\Render\ImageGenerator\shoottest.png");
+            string fuseeRoot = Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
+            fuseeRoot = Path.GetFullPath(Path.Combine(fuseeRoot, "..", "..", "..", "..", "..")); ; 
+            string referencePath = Path.GetFullPath(Path.Combine(fuseeRoot, @"src\Tests\Render\Fusee.Engine.Examples.ImageGenerator.Desktop.Test\References\reference.png"));
+            string imageGeneratorPath = Path.GetFullPath(Path.Combine(fuseeRoot, @"bin\Debug\Tests\Render\ImageGenerator"));
+            string imagePath = Path.GetFullPath(Path.Combine(imageGeneratorPath, "shoottest.png"));
+
+            //Program.Main(new string[] { "shoottest.png" });
+
+            var reference = new Bitmap(referencePath);
+            var image = new Bitmap(imagePath);
 
             var count = 0;
 
