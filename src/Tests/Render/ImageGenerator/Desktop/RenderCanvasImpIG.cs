@@ -251,11 +251,19 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         public void OpenLink(string link)
         {
             if (link.StartsWith("http://"))
-                Process.Start(link);
+            {
+                //UseShellExecute needs to be set to true in .net 3.0. See:https://github.com/dotnet/corefx/issues/33714
+                ProcessStartInfo psi = new ProcessStartInfo
+                {
+                    FileName = link,
+                    UseShellExecute = true
+                };
+                Process.Start(psi);
+            }
         }
 
         /// <summary>
-        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initilization purposes.
+        /// Implementation Tasks: Runs this application instance. This function should not be called more than once as its only for initialization purposes.
         /// </summary>
         public void Run()
         {
@@ -355,7 +363,6 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         #region Fields
 
         private RenderCanvasImpIG _renderCanvasImp;
-        private float _deltaTime;
 
         /// <summary>
         /// Gets the delta time.
@@ -365,10 +372,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         /// <value>
         /// The delta time in milliseconds.
         /// </value>
-        public float DeltaTime
-        {
-            get { return _deltaTime; }
-        }
+        public float DeltaTime { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [blending].
@@ -477,7 +481,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
-            _deltaTime = (float)e.Time;
+            DeltaTime = (float)e.Time;
 
             if (_renderCanvasImp != null)
                 _renderCanvasImp.DoRender();

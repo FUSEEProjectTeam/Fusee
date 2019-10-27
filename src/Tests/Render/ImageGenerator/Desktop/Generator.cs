@@ -21,7 +21,6 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             InitCanvas();
         }
 
-
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
 
@@ -31,9 +30,14 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         private SceneContainer _model;
         private SceneRendererForward _sceneRenderer;
 
+        private const float ZNear = 1f;
+        private const float ZFar = 1000;
+        private float _fovy = M.PiOver4;
+
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
         private bool _keys;
 
@@ -41,6 +45,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         public override void Init()
         {
             _gui = CreateGui();
+            Resize(new ResizeEventArgs(Width, Height));
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -49,9 +54,6 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
             // Load the rocket model
             _model = AssetStorage.Get<SceneContainer>("Model.fus");
-
-            var projComp = _model.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_model);
@@ -65,62 +67,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
-            /* INPUT
-            // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-            {
-                _keys = true;
-            }
-
-            if (Mouse.LeftButton)
-            {
-                _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
-            else
-            {
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-            */
-
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            RC.View = mtxCam * mtxRot;
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.ModelView;
-
-            /* INPUT
-            // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-            */
+            _sih.View = RC.View;
 
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
@@ -134,6 +87,9 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -150,56 +106,37 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 psTex,
                 //Set the diffuse texture you want to use.
                 guiFuseeLogo,
-                //_fontMap.Image,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                new MinMaxRect
-                {
-                    Min = new float2(0, 1), //Anchor is in the lower left corner of the parent.
-                    Max = new float2(0, 1) //Anchor is in the lower right corner of the parent
-                },
-                //Define Offset and therefor the size of the element.
-                //Min: distance to this elements Min anchor.
-                //Max: distance to this elements Max anchor.
-                new MinMaxRect
-                {
-                    Min = new float2(0, -0.5f),
-                    Max = new float2(1.75f, 0)
-                });
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
-            var latoFontMap = new FontMap(fontLato, 36);
+            var guiLatoBlack = new FontMap(fontLato, 18);
+
             var text = new TextNodeContainer(
                 "FUSEE Simple Example",
                 "ButtonText",
                 vsTex,
                 psTex,
-                new MinMaxRect
-                {
-                    Min = new float2(0, 0),
-                    Max = new float2(1, 0)
-                },
-                new MinMaxRect
-                {
-                    Min = new float2(4f, 0f),
-                    Max = new float2(-4, 0.5f)
-                },
-                latoFontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), 0.25f);
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
-                CanvasRenderMode.SCREEN,
+                _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-8, -4.5f),
-                    Max = new float2(8, 4.5f)
-                }
-            )
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
             {
-                
                 Children = new ChildList()
                 {
                     //Simple Texture Node, contains the fusee logo.
@@ -208,6 +145,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 }
             };
 
+            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasProjComp);
 
             return new SceneContainer
             {
@@ -233,6 +172,5 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         {
             OpenLink("http://fusee3d.org");
         }
-
     }
 }

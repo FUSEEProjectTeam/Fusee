@@ -79,8 +79,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                         Decoder = delegate (string id, object storage)
                         {
                             if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                            var ser = new Serializer();
-                            return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                            return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
                         },
                         Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                     });
@@ -106,6 +105,8 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 var mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
                 var win = new OpenTK.GameWindow(640, 480, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
                 */
+
+                //app.Run();
 
                 // Initialize canvas/app and canvas implementor
                 app.DoInit();
