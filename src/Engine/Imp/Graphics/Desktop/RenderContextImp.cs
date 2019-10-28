@@ -2012,10 +2012,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (capability)
             {
-                case HardwareCapability.DefferedPossible:
+                case HardwareCapability.CAN_RENDER_DEFFERED:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-                case HardwareCapability.Buffersize:
-                    throw new NotImplementedException("Not yet.");
+                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                    return 1U;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }

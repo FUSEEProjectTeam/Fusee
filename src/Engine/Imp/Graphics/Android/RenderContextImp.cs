@@ -1923,12 +1923,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             switch (capability)
             {
-                case HardwareCapability.DefferedPossible:
+                case HardwareCapability.CAN_RENDER_DEFFERED:
                     return !GL.GetString(StringName.Extensions).Contains("EXT_framebuffer_object") ? 0U : 1U;
-                case HardwareCapability.Buffersize:
-                    float outVar;
-                    GL.GetFloat(All.BufferSize, out outVar);
-                    return BitConverter.ToUInt32(BitConverter.GetBytes(outVar), 0);
+                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                    return 0U; //Android uses OpenGL es, where no geometry shaders can be used.
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }

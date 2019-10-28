@@ -2031,10 +2031,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             switch (capability)
             {
-                case HardwareCapability.DefferedPossible:
+                case HardwareCapability.CAN_RENDER_DEFFERED:
                     return 0U;
-                case HardwareCapability.Buffersize:
-                    return 0;
+                case HardwareCapability.CAN_USE_GEOMETRY_SHADERS:
+                    return 0U; //WASM uses OpenGL es, where no geometry shaders can be used.
                 default:
                     throw new ArgumentOutOfRangeException(nameof(capability), capability, null);
             }

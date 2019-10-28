@@ -25,6 +25,15 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class SceneRendererDeferred : SceneRendererForward
     {
+        internal class ShadowParams
+        {
+            // For omni directional shadow mapping there will be six LightSpaceMatrices
+            // to allow the creation of the cube map in one pass.
+            public float4x4[] LightSpaceMats;
+            public IWritableTexture ShadowMap;
+            public float2 ClipPlanesForLightMat;
+        }
+
         /// <summary>
         /// Sets the GL.ClearColor
         /// </summary>
@@ -46,37 +55,37 @@ namespace Fusee.Engine.Core
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
         /// </summary>
         public bool FxaaOn
-        { 
-            get 
-            { 
-                return _fxaaOn; 
-            } 
-            set 
-            { 
-                _needToRecreateLightingMatOther = _needToRecreateLightingMatPoint = _needToRecreateLightingMatNoShadow = _needToSetSSAOTex =  true; 
-                _fxaaOn = value; 
-            } 
+        {
+            get
+            {
+                return _fxaaOn;
+            }
+            set
+            {
+                _needToRecreateLightingMatOther = _needToRecreateLightingMatPoint = _needToRecreateLightingMatNoShadow = _needToSetSSAOTex = true;
+                _fxaaOn = value;
+            }
         }
         private bool _fxaaOn = true;
-        
+
         /// <summary>
         /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
         /// </summary>
-        public bool SsaoOn 
-        { 
-            get 
+        public bool SsaoOn
+        {
+            get
             {
-                return _ssaoOn; 
-            } 
-            set 
-            { 
-                if(value == false)                
-                    _rc.DetachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);                    
-                else                
-                    _rc.ReattachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);                
+                return _ssaoOn;
+            }
+            set
+            {
+                if (value == false)
+                    _rc.DetachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);
+                else
+                    _rc.ReattachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);
                 _ssaoOn = value;
                 _needToSetSSAOTex = true;
-            } 
+            }
         }
         private bool _ssaoOn = true;
 
@@ -113,23 +122,16 @@ namespace Fusee.Engine.Core
         private readonly ShaderEffect _shadowEffect;
         private ShaderEffect _shadowCubeMapEffect;
 
-        internal class ShadowParams
-        {
-            // For omni directional shadow mapping there will be six LightSpaceMatrices
-            // to allow the creation of the cube map in one pass.
-            public float4x4[] LightSpaceMats;
-            public IWritableTexture ShadowMap;
-            public float2 ClipPlanesForLightMat;
-        }
-
         private float4x4 _thisScenesProjection = float4x4.Identity;
+
+        private bool _canUseGeometryShaders;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
         /// </summary>
         /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>       
         public SceneRendererDeferred(SceneContainer sc) : base(sc)
-        { 
+        {
             _gBufferRenderTarget = new RenderTarget(_texRes);
             _gBufferRenderTarget.SetPositionTex();
             _gBufferRenderTarget.SetAlbedoSpecularTex();
@@ -155,7 +157,7 @@ namespace Fusee.Engine.Core
 
             _shadowEffect = ShaderCodeBuilder.ShadowMapEffect();
 
-            //TODO: For deferred rendering we need a other ShaderEffect as we would in forward rendering. At the moment this conversion is done in the SceneRendererDeferred as a first step.
+            // TODO: For deferred rendering we need a other ShaderEffect as we would in forward rendering. At the moment this conversion is done in the SceneRendererDeferred as a first step.
             // Can we avoid this? Maybe if we (implement) and use the upcoming "shader shard" system?
             // 
             // Current situation:
@@ -176,10 +178,10 @@ namespace Fusee.Engine.Core
                 oldEffect.GetEffectParam("DiffuseMix", out object mix);
 
                 var renderTargetMat = new ShaderEffectComponent();
-                if (tex != null)                
-                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, (float)mix, (Texture)tex);                
-                else                
-                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, 1f);                
+                if (tex != null)
+                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, (float)mix, (Texture)tex);
+                else
+                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, 1f);
 
                 child.RemoveComponent<ShaderEffectComponent>();
 
@@ -238,11 +240,11 @@ namespace Fusee.Engine.Core
         /// <param name="pc">The visited ProjectionComponent.</param>
         [VisitMethod]
         public new void RenderProjection(ProjectionComponent pc)
-        {            
+        {
             base.RenderProjection(pc);
 
-            if (_currentPass == DeferredPasses.GEOMETRY)            
-                _quadScene.Children[0].Components[0] = pc;           
+            if (_currentPass == DeferredPasses.GEOMETRY)
+                _quadScene.Children[0].Components[0] = pc;
 
             _thisScenesProjection = _rc.Projection;
         }
@@ -323,9 +325,9 @@ namespace Fusee.Engine.Core
 
                     float3 frustumCenter = float3.Zero;
 
-                    foreach (var corner in frustumCorners)                    
+                    foreach (var corner in frustumCorners)
                         frustumCenter += corner.xyz;
-                    
+
                     frustumCenter /= 8;
 
                     var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
@@ -339,7 +341,7 @@ namespace Fusee.Engine.Core
                     lightSpaceMatrices[0] = lightProjection * lightView;
                     break;
 
-                case LightType.Point:                   
+                case LightType.Point:
                     lightPos = lr.WorldSpacePos;
                     zNear = 1f;
                     zFar = zNear + lr.Light.MaxDistance;
@@ -407,7 +409,7 @@ namespace Fusee.Engine.Core
             return outParams;
         }
 
-        private void UpdateLightAndShadowParams(Tuple<SceneNodeContainer, LightResult> lightVisRes, ShaderEffect effect)
+        private void UpdateLightAndShadowParams(Tuple<SceneNodeContainer, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)
         {
             var lightRes = lightVisRes.Item2;
             var light = lightRes.Light;
@@ -437,8 +439,8 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);
             effect.SetEffectParam("light.bias", light.Bias);
 
-            if (light.IsCastingShadows)
-            {
+            if (isCastingShadows) //we don't use light.IsCastingShadows because we could need to skip the shadow calculation because of hardware capabilities.
+            {                
                 var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
                 if (lightVisRes.Item2.Light.Type != LightType.Point)
@@ -451,7 +453,6 @@ namespace Fusee.Engine.Core
             }
         }
 
-        //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass. 
         /// <summary>
         /// Renders one pass for each light and blends the results together. 
         /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implementation a dynamic number of lights.
@@ -460,12 +461,15 @@ namespace Fusee.Engine.Core
         private void RenderLightPasses()
         {
             var lightPassCnt = 0;
+            
             for (int i = 0; i < LightViseratorResults.Count; i++)
             {
+                var isCastingShadows = false;
                 var lightVisRes = LightViseratorResults[i];
-                if (!lightVisRes.Item2.Light.Active) continue;
 
-                if (lightVisRes.Item2.Light.IsCastingShadows)
+                if (!lightVisRes.Item2.Light.Active)  continue;
+
+                if ((lightVisRes.Item2.Light.IsCastingShadows && lightVisRes.Item2.Light.Type != LightType.Point) || (lightVisRes.Item2.Light.IsCastingShadows && lightVisRes.Item2.Light.Type == LightType.Point && _canUseGeometryShaders))
                 {
                     var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
@@ -484,6 +488,8 @@ namespace Fusee.Engine.Core
                         _lightingPassEffect = _lightingPassEffectOther;
                     else
                         _lightingPassEffect = _lightingPassEffectPoint;
+
+                    isCastingShadows = true;
                 }
                 else
                 {
@@ -496,18 +502,21 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect = _lightingPassEffectNoShadow;
                 }
 
-                UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect);
+                UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
                 _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
 
-                if (_needToSetSSAOTex) 
-                {                    
-                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn? 1 : 0 );
+                if (_needToSetSSAOTex)
+                {
+                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn ? 1 : 0);
                     _needToSetSSAOTex = false;
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
                 if (i == LightViseratorResults.Count - 1)
                     _lightingPassEffect.SetEffectParam("BackgroundColor", BackgroundColor);
+                else                
+                    _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
+                
 
                 _quadShaderEffectComp.Effect = _lightingPassEffect;
                 Traverse(_quadScene.Children);
@@ -525,20 +534,21 @@ namespace Fusee.Engine.Core
             AccumulateLight();
             _rc.EnableDepthClamp();
 
+            _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CAN_USE_GEOMETRY_SHADERS) == 1U ? true : false;
+
             BackgroundColor = _rc.ClearColor;
             _rc.ClearColor = _texClearColor;
 
             var screenWidth = _rc.ViewportWidth;
             var screenHeight = _rc.ViewportHeight;
-
-            //TODO: if platform != Desktop ignore point lights - because a geometry shader is used to create the (cube) shadow map in one pass.
+           
             //Create shadow textures in GBuffer RenderTarget and one RenderTarget for each shadow map.
             _rc.Viewport(0, 0, (int)_shadowMapRes, (int)_shadowMapRes, false);
             _currentPass = DeferredPasses.SHADOW;
             _rc.SetShaderEffect(_shadowEffect);
             foreach (var lightVisRes in LightViseratorResults)
             {
-                if (!lightVisRes.Item2.Light.IsCastingShadows || !lightVisRes.Item2.Light.Active) continue;
+                if (!lightVisRes.Item2.Light.IsCastingShadows || !lightVisRes.Item2.Light.Active || (lightVisRes.Item2.Light.Type == LightType.Point && !_canUseGeometryShaders)) continue;
 
                 var key = new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light);
                 var shadowParams = CreateShadowParams(lightVisRes.Item2, key);

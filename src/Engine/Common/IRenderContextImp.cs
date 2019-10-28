@@ -582,13 +582,14 @@ namespace Fusee.Engine.Common
     public enum HardwareCapability
     {
         /// <summary>
-        /// Checks if deferred rendering with EXT_FRAMEBUFFER is possible
+        /// Checks if deferred rendering with frame buffer objects is possible
         /// </summary>
-        DefferedPossible,
+        CAN_RENDER_DEFFERED,
+
         /// <summary>
-        /// Returns the buffersize of the hardware
+        /// Checks if geometry shaders can be used.
         /// </summary>
-        Buffersize
+        CAN_USE_GEOMETRY_SHADERS
     }
 
     /// <summary>
