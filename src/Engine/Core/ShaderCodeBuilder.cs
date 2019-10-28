@@ -854,6 +854,7 @@ namespace Fusee.Engine.Core
             methodBody.Add("");
             //methodBody.AddRange(gammaCorrection); // - Disable GammaCorrection for better colors
             methodBody.Add("");
+
             methodBody.Add("return lighting;");
 
             _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "ApplyLight",
@@ -902,7 +903,7 @@ namespace Fusee.Engine.Core
                 "",
                 "     // -- geometric attenuation",
                 "     //[Schlick's approximation of Smith's shadow equation]",
-                "     float k= roughnessValue * sqrt(2.0/3.14159265);",
+                "     float k= roughnessValue * sqrt(0.5 * 3.14159265);",
                 "     float one_minus_k= 1.0 - k;",
                 "     float geoAtt = ( NdotL / (NdotL * one_minus_k + k) ) * ( NdotV / (NdotV * one_minus_k + k) );",
                 "",
@@ -1380,7 +1381,7 @@ namespace Fusee.Engine.Core
             frag.Append(EsPrecision());
             frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
             frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
-            frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize / 2.0f)}\n");
+            frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize * 0.5)}\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
 
@@ -1498,7 +1499,7 @@ namespace Fusee.Engine.Core
             float bias = 0.005;
             ");
 
-            frag.AppendLine($"vec2 noiseScale = vec2(ScreenParams.x/4.0, ScreenParams.y/4.0);");
+            frag.AppendLine($"vec2 noiseScale = vec2(ScreenParams.x * 0.25, ScreenParams.y * 0.25);");
             frag.AppendLine($"vec3 randomVec = texture(NoiseTex, vTexCoords * noiseScale).xyz;");
 
             frag.AppendLine($"vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal));");
@@ -1702,7 +1703,7 @@ namespace Fusee.Engine.Core
             });
 
         }
-        
+
         private static string DeferredLightningVS()
         {
             var vert = new StringBuilder();
@@ -1989,7 +1990,7 @@ namespace Fusee.Engine.Core
             },
             effectParams.ToArray());
         }
-                      
+
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
@@ -2239,8 +2240,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One},
                 new EffectParameterDeclaration { Name = "LightType", Value = 0},
-
-            }); ;
+            });
         }
 
         private static string ShadowCalculation()
@@ -2259,7 +2259,7 @@ namespace Fusee.Engine.Core
 
                 float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);
             
-                vec2 texelSize = vec2(1.0, 1.0) / vec2(textureSize(shadowMap, 0));
+                vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
                 
                 //use this for using sampler2DShadow (automatic PCF) instead of sampler2D
                 //float depth = texture(shadowMap, projCoords.xyz).r; 
@@ -2287,7 +2287,6 @@ namespace Fusee.Engine.Core
                 
             float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias)
             {
-
                 vec3 sampleOffsetDirections[20] = vec3[]
                 (
                    vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
@@ -2303,7 +2302,7 @@ namespace Fusee.Engine.Core
                 float currentDepth = length(fragToLight);
 
                 float shadow = 0.0;
-                float thisBias   = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);//0.15;
+                float thisBias   = max(bias * (1.0 - dot(normal, lightDir)), bias * 0.01);//0.15;
                 int samples  = 20;
                 vec3 camPos = FUSEE_IV[3].xyz;
                 float viewDistance = length(camPos - fragPos);
