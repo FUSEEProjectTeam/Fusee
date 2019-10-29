@@ -6,6 +6,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -104,7 +105,8 @@ namespace Fusee.Engine.Core
 
         private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light         
        
-        private float4x4 _thisScenesProjection = float4x4.Identity;
+        private float4x4 _thisScenesProjectionMat = float4x4.Identity;
+        private ProjectionComponent _thisScenesProjection;
 
         private DeferredPasses _currentPass;
 
@@ -234,12 +236,126 @@ namespace Fusee.Engine.Core
             if (_currentPass == DeferredPasses.GEOMETRY)
                 _quadScene.Children[0].Components[0] = pc;
 
-            _thisScenesProjection = _rc.Projection;
+            _thisScenesProjectionMat = _rc.Projection;
+            _thisScenesProjection = pc;
         }
 
         #endregion
 
         #region Shadow mapping
+
+        private IEnumerable<float> GetClippingPlanesOfSplitFrustums(float zNear, float zFar, int numberOfSplits, float lambda = 0.5f)
+        {
+            for (int i = 0; i < numberOfSplits + 1; i++)
+            {
+                var splitOverNoOfSplits = i / numberOfSplits;
+                yield return SplitClipPlane(zNear, zFar, splitOverNoOfSplits, lambda);
+            }
+        }
+
+        private float SplitClipPlaneUniform(float zNear, float zFar, float splitOverNoOfSplits)
+        {
+            return zNear + (zFar - zNear) * splitOverNoOfSplits;
+        }
+
+        private float SplitClipPlaneLog(float zNear, float zFar, float splitOverNoOfSplits)
+        {
+            return zNear * (float)System.Math.Pow((zFar / zNear), splitOverNoOfSplits);
+        }
+
+        //0 > lambda > 1
+        private float SplitClipPlane(float zNear, float zFar, float splitOverNoOfSplits, float lambda)
+        {
+            return lambda * SplitClipPlaneLog(zNear, zFar, splitOverNoOfSplits) + (1 - lambda) * SplitClipPlaneUniform(zNear, zFar, splitOverNoOfSplits);
+        }
+
+        private AABBf FrustumAABBLightSpace(float4x4 lightView, float4[] frustumCorners)
+        {
+            for (int i = 0; i < frustumCorners.Length; i++)
+            {
+                var corner = frustumCorners[i];
+                corner = lightView * corner; //light space frustum corners
+                frustumCorners[i] = corner;
+            }
+
+            var lightSpaceFrustumAABB = new AABBf(frustumCorners[0].xyz, frustumCorners[0].xyz);
+            foreach (var p in frustumCorners)
+            {
+                lightSpaceFrustumAABB |= p.xyz;
+            }
+
+            return lightSpaceFrustumAABB;
+        }
+
+        private float4[] GetWorldSpaceFrustumCorners(float4x4 projectionMatrix)
+        {
+            //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
+            //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
+            //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
+            var invViewProjection = float4x4.Invert(projectionMatrix * _rc.View);
+
+            var frustumCorners = new float4[8];
+
+            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
+            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
+            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
+            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
+            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
+            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
+            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
+            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
+
+            for (int i = 0; i < frustumCorners.Length; i++)
+            {
+                var corner = frustumCorners[i];
+                corner /= corner.w; //world space frustum corners               
+                frustumCorners[i] = corner;
+            }
+
+            return frustumCorners;
+        }
+
+        private IEnumerable<float4x4> AllFrustumSplitLightProjectionMatrices(int numberOfSplits)
+        {
+            var clipPlanes = GetClippingPlanesOfSplitFrustums(_thisScenesProjection.ZNear, _thisScenesProjection.ZFar, numberOfSplits).ToList();
+
+            for (int i = 0; i < clipPlanes.Count - 1; i++)
+            {
+                var zNear = clipPlanes[i];
+                var zFar = clipPlanes[i] + 1;
+                var fov = _thisScenesProjection.Fov;
+                var aspect = _thisScenesProjection.Width / _thisScenesProjection.Height;
+                yield return float4x4.CreatePerspectiveFieldOfView(fov, aspect, zNear, zFar);
+            }
+        }
+
+        private IEnumerable<float4[]> AllFrustumSplitCornersWorldSpace(int numberOfSplits)
+        {
+            var allSplitProjectionMatrices = AllFrustumSplitLightProjectionMatrices(numberOfSplits).ToList();
+
+            for (int i = 0; i < allSplitProjectionMatrices.Count; i++)
+            {
+                yield return GetWorldSpaceFrustumCorners(allSplitProjectionMatrices[i]);
+            }
+        }
+
+        private IEnumerable<AABBf> AllFrustumSplitAABBsLightSpace(int numberOfSplits, float4x4 lightView)
+        {
+            var frustumCorners = AllFrustumSplitCornersWorldSpace(numberOfSplits).ToList();
+            for (int i = 0; i < frustumCorners.Count; i++)
+            {
+                yield return FrustumAABBLightSpace(lightView, frustumCorners[i]);
+            }           
+        }
+
+        //TODO: PROBLEM Without cascaded shadow maps and a large frustum we get a large AABB, possibly spanning the whole scene and therefore imprecise shadows.
+        private float4x4 GetProjectionForParallelLight(float4x4 lightView, float4[] frustumCorners, out float2 clipPlanes)
+        {
+            var lightSpaceFrustumAABB = FrustumAABBLightSpace(lightView, frustumCorners);
+
+            clipPlanes = new float2(lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.min.z + lightSpaceFrustumAABB.Size.z);
+            return float4x4.CreateOrthographic(lightSpaceFrustumAABB.Size.x, lightSpaceFrustumAABB.Size.y, lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.max.z + lightSpaceFrustumAABB.min.z);
+        }
 
         private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNodeContainer, LightComponent> key)
         {
@@ -248,6 +364,7 @@ namespace Fusee.Engine.Core
             float4x4 lightProjection;
 
             float4x4[] lightSpaceMatrices;
+
             if (lr.Light.Type != LightType.Point)
                 lightSpaceMatrices = new float4x4[1];
             else
@@ -260,23 +377,9 @@ namespace Fusee.Engine.Core
             {
                 case LightType.Parallel:
 
-                    // TODO: implement cascaded shadow maps.
+                    var frustumCorners = GetWorldSpaceFrustumCorners(_thisScenesProjectionMat);
 
-                    var n = System.Math.Abs(_thisScenesProjection.M34 / (_thisScenesProjection.M33 + 1.0f));
-                    var f = System.Math.Abs(_thisScenesProjection.M34 / (_thisScenesProjection.M33 - 1.0f));
-
-                    var frustumCorners = GetWorldSpaceFrustumCorners();
-
-                    float3 frustumCenter = float3.Zero;
-
-                    foreach (var corner in frustumCorners)
-                        frustumCenter += corner.xyz;
-
-                    frustumCenter /= 8;
-
-                    var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
-
-                    lightPos = frustumCenter + (-lightDir * (f - n));//lr.WorldSpacePos;    
+                    lightPos = lr.WorldSpacePos;    
                     var target = lightPos + float3.Normalize(lr.Rotation * float3.UnitZ);
                     lightView = float4x4.LookAt(lightPos, target, float3.Normalize(lr.Rotation * float3.UnitY));
                     lightProjection = GetProjectionForParallelLight(lightView, frustumCorners, out var clipPlanes);
@@ -320,7 +423,7 @@ namespace Fusee.Engine.Core
                     break;
                 case LightType.Legacy:
                     lightView = _rc.View;
-                    lightProjection = GetProjectionForParallelLight(lightView, GetWorldSpaceFrustumCorners(), out var clipPlanesLegacy); ;
+                    lightProjection = GetProjectionForParallelLight(lightView, GetWorldSpaceFrustumCorners(_thisScenesProjectionMat), out var clipPlanesLegacy); ;
                     zNear = clipPlanesLegacy.x;
                     zFar = clipPlanesLegacy.y;
                     lightSpaceMatrices[0] = lightProjection * lightView;
@@ -352,54 +455,7 @@ namespace Fusee.Engine.Core
 
             return outParams;
         }
-
-        private float4[] GetWorldSpaceFrustumCorners()
-        {
-            //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
-            //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
-            //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
-            var invViewProjection = float4x4.Invert(_thisScenesProjection * _rc.View);
-
-            var frustumCorners = new float4[8];
-
-            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
-            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
-            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
-            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
-            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
-            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
-            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
-
-            for (int i = 0; i < frustumCorners.Length; i++)
-            {
-                var corner = frustumCorners[i];
-                corner /= corner.w; //world space frustum corners               
-                frustumCorners[i] = corner;
-            }
-
-            return frustumCorners;
-        }
-
-        //TODO: PROBLEM Without cascaded shadow maps and a large frustum we get a large AABB, possibly spanning the whole scene and therefore imprecise shadows.
-        private float4x4 GetProjectionForParallelLight(float4x4 lightView, float4[] frustumCorners, out float2 clipPlanes)
-        {
-            for (int i = 0; i < frustumCorners.Length; i++)
-            {
-                var corner = frustumCorners[i];
-                corner = lightView * corner; //light space frustum corners
-                frustumCorners[i] = corner;
-            }
-
-            var lightSpaceFrustumAABB = new AABBf(frustumCorners[0].xyz, frustumCorners[0].xyz);
-            foreach (var p in frustumCorners)
-            {
-                lightSpaceFrustumAABB |= p.xyz;
-            }
-
-            clipPlanes = new float2(lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.min.z + lightSpaceFrustumAABB.Size.z);
-            return float4x4.CreateOrthographic(lightSpaceFrustumAABB.Size.x, lightSpaceFrustumAABB.Size.y, lightSpaceFrustumAABB.min.z, lightSpaceFrustumAABB.max.z + lightSpaceFrustumAABB.min.z);
-        }        
+                
 
         #endregion
 
