@@ -571,6 +571,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         }
 
         /// <summary>
+        /// Sets a <see cref="float2" /> array shader parameter.
+        /// </summary>
+        /// <param name="param">The parameter.</param>
+        /// <param name="val">The value.</param>
+        public unsafe void SetShaderParam(IShaderParam param, float2[] val)
+        {
+            fixed (float2* pFlt = &val[0])
+                GL.Uniform2(((ShaderParam)param).handle, val.Length, (float*)pFlt);
+        }
+
+        /// <summary>
         /// Sets a <see cref="float3" /> shader parameter.
         /// </summary>
         /// <param name="param">The parameter.</param>

@@ -1193,8 +1193,6 @@ namespace Fusee.Engine.Core
                     param.Value = changedValue;
                 }
             }
-
-
         }
 
         /// <summary>
@@ -1379,6 +1377,21 @@ namespace Fusee.Engine.Core
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
         public void SetShaderParam(IShaderParam param, float2 val)
+        {
+            _rci.SetShaderParam(param, val);
+        }
+
+        /// <summary>
+        /// Sets the shader parameter to a float3 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float2 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>        
+        public void SetShaderParam(IShaderParam param, float2[] val)
         {
             _rci.SetShaderParam(param, val);
         }
@@ -1682,6 +1695,13 @@ namespace Fusee.Engine.Core
             }
             else if (param.Info.Type == typeof(float2))
             {
+                if (param.Info.Size > 1)
+                {
+                    // param is an array
+                    var paramArray = (float2[])param.Value;
+                    SetShaderParam(param.Info.Handle, paramArray);
+                    return;
+                }
                 SetShaderParam(param.Info.Handle, (float2)param.Value);
             }
             else if (param.Info.Type == typeof(float3))
