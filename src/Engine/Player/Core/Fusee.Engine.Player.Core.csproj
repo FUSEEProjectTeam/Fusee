@@ -21,8 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Assets\FuseeText.png" />
-    <None Include="Assets\Lato-Black.ttf" />
-    <None Include="Assets\Model.fus" />
+    <Content Include="Assets\*" />
   </ItemGroup>
 </Project>
