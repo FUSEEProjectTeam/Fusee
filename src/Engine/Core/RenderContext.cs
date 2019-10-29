@@ -1227,6 +1227,10 @@ namespace Fusee.Engine.Core
 
                 foreach (var paramNew in shaderParamInfos)
                 {
+                    if(paramNew.Name == "ShadowCubeMap")
+                    {
+                        var t = 1;
+                    }
 
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out object initValue))
                     {
@@ -1710,17 +1714,17 @@ namespace Fusee.Engine.Core
             {
                 SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
-            else if (param.Info.Type == typeof(IWritableTexture[]))
-            {
-                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
-            }
             else if (param.Value is IWritableCubeMap)
             {
                 SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
             }
-            else if (param.Value is IWritableTexture)
+            else if (param.Value is IWritableTexture[])
             {
-                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
+                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
+            }
+            else if (param.Value is IWritableTexture)
+            {                
+                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));                
             }
             else if (param.Value is ITexture)
             {

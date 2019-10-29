@@ -1769,7 +1769,7 @@ namespace Fusee.Engine.Core
             if (lc.IsCastingShadows)
             {
                 if (lc.Type != LightType.Point)
-                    frag.Append("uniform sampler2D ShadowMap;\n");
+                    frag.Append($"uniform sampler2D ShadowMap;\n");
                 else
                     frag.Append("uniform samplerCube ShadowCubeMap;\n");
             }
@@ -2191,27 +2191,12 @@ namespace Fusee.Engine.Core
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(EsPrecision());
 
-            frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)};\n");
-            frag.Append("uniform vec2 LightMatClipPlanes;\n");
+            frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)};\n");            
             frag.Append("uniform int LightType;\n");
-
-            frag.Append(@"
-                    
-            float LinearizeDepth(float depth)
-            {
-                float z = depth * 2.0 - 1.0; // Back to NDC 
-                return (2.0 * LightMatClipPlanes.x * LightMatClipPlanes.y) / (LightMatClipPlanes.y + LightMatClipPlanes.x - z * (LightMatClipPlanes.y - LightMatClipPlanes.x));
-            }
-
-            ");
 
             frag.Append(@"void main()
             {  
                 float d = gl_FragCoord.z;
-                //if(LightType == 2 || LightType == 3)
-                //{
-                //    d = LinearizeDepth(gl_FragCoord.z);
-                //}
                 
             ");
             frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)} = vec4(d, d, d, 1.0);\n");
@@ -2237,8 +2222,7 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One},
+                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},                
                 new EffectParameterDeclaration { Name = "LightType", Value = 0},
             });
         }
