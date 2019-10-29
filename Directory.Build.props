@@ -1,16 +1,10 @@
 <Project>
   <PropertyGroup>
-    <!-- Use FuseeRoot to overwrite the seach path for dependencies. -->
-    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\</FuseeRoot>
-    
-    <FuseeBuildRoot>$(MSBuildThisFileDirectory)..\</FuseeBuildRoot>
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>    
     <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
     <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)\</FuseeEngineRoot>
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
    
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
 
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
@@ -18,7 +12,16 @@
     <Version>0.7.0.0</Version>
     <AssemblyVersion>0.7.0.0</AssemblyVersion>
     <FileVersion>0.7.0.0</FileVersion>
-    <Copyright>Copyright © 2013-2019 The FUSEE Project Team</Copyright>
-    <Copyright>Copyright © 2013-today The FUSEE Project Team</Copyright>
+    <Copyright>Copyright © 2013-today</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
+    <PackageIcon>images\icon.png</PackageIcon>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon256WithText.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true'" />
+  </ItemGroup>
 </Project>

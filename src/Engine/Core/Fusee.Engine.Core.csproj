@@ -24,9 +24,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
-    <None Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
-    <None Include="Assets\Shader\PixelShader.frag" />
-    <None Include="Assets\Shader\VertexShader.vert" />
+    <Content Include="Assets\*" />
   </ItemGroup>
 </Project>
