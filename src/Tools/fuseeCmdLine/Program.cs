@@ -11,7 +11,6 @@ using Fusee.Engine.Core;
 using System.Text.RegularExpressions;
 using System.Globalization;
 using System.Text;
-using System.Security;
 using Fusee.Base.Core;
 using Fusee.Base.Common;
 using Path = System.IO.Path;
@@ -98,7 +97,7 @@ namespace Fusee.Tools.fuseeCmdLine
             Machine,
         }
 
-        [Verb("install", HelpText = "Register this instance of FUSEE as the current installation - by default this invokes four steps: (1 -f) Set the \"FuseeRoot\" environment variable. (2 -p) Add the fusee.exe directory to the \"PATH\" environment variable. (3 -d) Register the 'dotnet new fusee' template. (4 -b) Install the blender add-on. The -u option undoes the respective step.")]
+        [Verb("install", HelpText = "Install the blender add-on. The -u option undoes the respective step.")]
         public class Install
         {
             [Option('t', "type", Default = InstallationType.User, HelpText = "Machine-wide or per-user installation. '-t User' will set \"FuseeRoot\" and \"PATH\" for the current user only and will install the Blender Add-on below <user>/Appdata/Roaming/Blender Foundation. '-t Machine' will set \"FuseeRoot\" and \"PATH\" for all users and install the Blender Add-on below 'Program Files/Blender Foundation'. Start shell (cmd or powershell) as Administrator for machine-wide installation")]
@@ -106,15 +105,6 @@ namespace Fusee.Tools.fuseeCmdLine
 
             [Option('u', "uninstall", Default = false, HelpText = "De-Register this FUSEE installation. This will only de-register this FUSEE instance (deregister the 'dotnet new fusee' template, remove fusee.exe from the \"PATH\" and remove the \"FuseeRoot\" environment varable). This will NOT delete the contents of the installation folder.")]
             public bool Uninstall { get; set; }
-
-            [Option('f', "fuseeroot", Default = false, HelpText = "Only set/delete the FuseeRoot environment variable.")]
-            public bool FuseeRoot { get; set; }
-
-            [Option('p', "path", Default = false, HelpText = "Only add/remove this FUSEE instance to the PATH environment variable.")]
-            public bool PathEnv { get; set; }
-
-            [Option('d', "dotnet", Default = false, HelpText = "Only install/uninstall the dotnet core FUSEE template.")]
-            public bool Dotnet { get; set; }
 
             [Option('b', "blender", Default = false, HelpText = "Only install/uninstall the Blender FUSEE Add-on.")]
             public bool Blender { get; set; }
@@ -750,13 +740,10 @@ namespace Fusee.Tools.fuseeCmdLine
                     string templateDir = Path.Combine(fuseeRoot, "dis", "DnTemplate"); 
 
                     // Set the individual installation steps (currently four). If NONE of them is set, select ALL OF THEM.
-                    bool instFuseeRoot = opts.FuseeRoot;
-                    bool instPathEnv = opts.PathEnv;
-                    bool instDotnet = opts.Dotnet;
                     bool instBlender = opts.Blender;
-                    if (!(instFuseeRoot || instPathEnv || instDotnet || instBlender))
+                    if (!(instBlender))
                     {
-                        instDotnet = instBlender = true;
+                        instBlender = true;
                     }
 
                     ErrorCode exitCode = ErrorCode.Success;
@@ -764,123 +751,6 @@ namespace Fusee.Tools.fuseeCmdLine
                     // Install or uninstall ? 
                     if (!opts.Uninstall)
                     {
-                        // INSTALL
-                        // Set the FuseeRoot Environment variable
-                        if (instFuseeRoot)
-                        {
-                            try
-                            {
-                                Environment.SetEnvironmentVariable("FuseeRoot", fuseeRoot, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
-                                Console.Error.WriteLine($"SUCCESS: \"FuseeRoot\" environment variable set to {fuseeRoot}.");
-                            }
-                            catch (SecurityException /* ex */)
-                            {
-                                Console.Error.WriteLine($"ERROR: Insufficient privileges to set the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe\n");
-                                exitCode = ErrorCode.InsufficentPrivileges;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to set the \"FuseeRoot\" environment variable.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
-                        // Add us to the PATH so fusee.exe can be called from anywhere. Be careful with the PATH. Check if fusee is already registered there.
-                        if (instPathEnv)
-                        {
-                            try
-                            {
-                                var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
-                                string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
-
-                                int alreadyRegistered = 0;
-                                List<string> fuseePaths = new List<string>();
-                                if (!string.IsNullOrEmpty(pathVariable))
-                                {
-                                    var pathContents = pathVariable.Split(new char[] { ';' });
-                                    foreach (var path in pathContents)
-                                    {
-                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
-                                        if (pathProcessed == fuseeCmdLineRoot)
-                                            alreadyRegistered++;
-                                        else if (pathProcessed.ToLower().Contains("fusee"))
-                                            fuseePaths.Add(pathProcessed);
-                                    }
-                                }
-
-                                if (fuseePaths.Count > 0)
-                                {
-                                    Console.Error.WriteLine($"WARNING: the \"PATH\" Variable already references the following FUSEE instances:");
-                                    foreach (var fuseePath in fuseePaths)
-                                    {
-                                        Console.Error.WriteLine($"\t{fuseePath}");
-                                    }
-                                    Console.Error.WriteLine("\tfusee.exe will NOT alter the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instance(s) first.");
-                                }
-                                else if (alreadyRegistered >= 1)
-                                {
-                                    if (alreadyRegistered == 1)
-                                        Console.Error.WriteLine($"The \"PATH\" Variable already contains this FUSEE instance. \"PATH\" will not be altered\n");
-                                    else
-                                        Console.Error.WriteLine($"WARNING: The \"PATH\" Variable already contains this FUSEE instance MULTIPLE TIMES. Please check the contents of your \"PATH\" manually. \"PATH\" will not be altered\n");
-                                }
-                                else
-                                {
-                                    pathVariable += $";{fuseeCmdLineRoot}";
-                                    Environment.SetEnvironmentVariable("PATH", pathVariable, target);
-                                    Console.Error.WriteLine($"SUCCESS: \"PATH\" environment variable now contains {fuseeCmdLineRoot}");
-                                }
-                            }
-                            catch (SecurityException /* ex */)
-                            {
-                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe.");
-                                exitCode = ErrorCode.InsufficentPrivileges;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to set the \"PATH\" environment variable.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
-                        // Install the dotnet new fusee template
-                        if (instDotnet)
-                        {
-                            try
-                            {
-                                using (Process cmd = Process.Start(new ProcessStartInfo
-                                {
-                                    FileName = "dotnet",
-                                    Arguments = $"new --install \"{templateDir}\"",
-                                    UseShellExecute = false,
-                                    WorkingDirectory = Directory.GetCurrentDirectory(),
-                                    RedirectStandardOutput = true,
-                                }))
-                                {
-                                    string output = cmd.StandardOutput.ReadToEnd();
-                                    cmd.WaitForExit();
-                                    if (output.ToLower().Contains("fusee"))
-                                    {
-                                        Console.Error.WriteLine("SUCCESS: Installed the \"dotnet new fusee\" template to DotNet. Call \"dotnet new --list\" to see the list of installed templates");
-                                    }
-                                    else
-                                    {
-                                        Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.");
-                                        exitCode = ErrorCode.InternalError;
-                                    }
-                                }
-                            }
-                            catch (FileNotFoundException ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: {ex.FileName} not found. Make sure .NET Core 2.0 or higher is installed.");
-                            }
-                           catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to install the dotnet new fusee template from {templateDir}.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
                         // Install the Blender AddOn
                         if (instBlender)
                         {
@@ -1004,138 +874,6 @@ namespace Fusee.Tools.fuseeCmdLine
                             catch (Exception ex)
                             {
                                 Console.Error.WriteLine($"ERROR: Unable to uninstall the FUSEE Blender Add-on.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
-
-                        // Uninstall the dotnet new fusee template
-                        // If anything went wrong during installation: 
-                        // Manually uninstall template: https://dotnetthoughts.net/create-a-dot-net-new-project-template-in-dot-net-core/
-                        //  - mainly says: Remove your template in all json files below 
-                        //    C:\Users\[USERNAME]\.templateengine\dotnetcli\
-                        if (instDotnet)
-                        {
-                            try
-                            {
-                                using (Process cmd = Process.Start(new ProcessStartInfo
-                                {
-                                    FileName = "dotnet",
-                                    Arguments = $"new --uninstall \"{templateDir}\"",
-                                    UseShellExecute = false,
-                                    WorkingDirectory = Directory.GetCurrentDirectory(),
-                                    RedirectStandardOutput = true,
-                                }))
-                                {
-                                    string output = cmd.StandardOutput.ReadToEnd();
-                                    cmd.WaitForExit();
-                                    if (output.ToLower().Contains("fusee"))
-                                    {
-                                        Console.Error.WriteLine($"ERROR: Unable to remove the \"dotnet new fusee\" template from {templateDir}.");
-                                        exitCode = ErrorCode.InternalError;
-                                    }
-                                    else
-                                    {
-                                        Console.Error.WriteLine($"SUCCESS: Removed the \"dotnet new fusee\" template from {templateDir}.");
-                                    }
-                                }
-                            }
-                            catch (FileNotFoundException ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: {ex.FileName} not found. Make sure .NET Core 2.0 or higher is installed.");
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to uninstall the \"dotnet new fusee\" template at {templateDir}.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
-                        // Remove us from the PATH. Be careful with the PATH. 
-                        if (instPathEnv)
-                        {
-                            try
-                            {
-                                var target = (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine;
-                                string pathVariable = Environment.GetEnvironmentVariable("PATH", target);
-
-                                int alreadyRegistered = 0;
-                                List<string> remainingPaths = new List<string>();
-                                List<string> fuseePaths = new List<string>();
-                                if (!string.IsNullOrEmpty(pathVariable))
-                                {
-                                    var pathContents = pathVariable.Split(new char[] { ';' });
-                                    foreach (var path in pathContents)
-                                    {
-                                        var pathProcessed = FileTools.PathAddTrailingSeperator(path);
-                                        if (pathProcessed == fuseeCmdLineRoot)
-                                            alreadyRegistered++;
-                                        else
-                                        {
-                                            if (pathProcessed.ToLower().Contains("fusee"))
-                                                fuseePaths.Add(pathProcessed);
-
-                                            remainingPaths.Add(path);
-                                        }
-                                    }
-                                }
-
-                                if (fuseePaths.Count > 1)
-                                {
-                                    Console.Error.WriteLine($"WARNING: The \"PATH\" Variable references these additional FUSEE instances:");
-                                    foreach (var fuseePath in fuseePaths)
-                                    {
-                                        Console.Error.WriteLine($"\t{fuseePath}");
-                                    }
-                                    Console.Error.WriteLine("\tfusee.exe will NOT remove these additional FUSEE references from the \"PATH\" variable. Please check the contents of your \"PATH\" manually or de-install the other fusee instances.");
-                                }
-
-                                if (alreadyRegistered == 0)
-                                {
-                                    Console.Error.WriteLine($"WARNING: The \"PATH\" Variable does not contain this FUSEE instance. \"PATH\" will not be altered\n");
-                                }
-                                else
-                                {
-                                    var newPathVariable = "";
-                                    for (int i = 0; ; i++)
-                                    {
-                                        newPathVariable += remainingPaths[i];
-                                        if (i == remainingPaths.Count - 1)
-                                            break;
-                                        newPathVariable += ";";
-                                    }
-                                    Environment.SetEnvironmentVariable("PATH", newPathVariable, target);
-                                    Console.Error.WriteLine($"SUCCESS: Removed this FUSEE instance from the \"PATH\" variable");
-                                }
-                            }
-                            catch (SecurityException /* ex */)
-                            {
-                                Console.Error.WriteLine($"ERROR: Insufficient privileges to alter the \"PATH\" environment variable. Run the shell as Administrator before calling fusee.exe.");
-                                exitCode = ErrorCode.InsufficentPrivileges;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to alter the \"PATH\" environment variable.\n{ex}");
-                                exitCode = ErrorCode.InternalError;
-                            }
-                        }
-
-                        // Remove the FuseeRoot variable
-                        if (instFuseeRoot)
-                        {
-                            try
-                            {
-                                Environment.SetEnvironmentVariable("FuseeRoot", null, (opts.InstType == InstallationType.User) ? EnvironmentVariableTarget.User : EnvironmentVariableTarget.Machine);
-                                Console.Error.WriteLine($"SUCCESS: Removed the \"FuseeRoot\" environment variable");
-                            }
-                            catch (SecurityException /* ex */)
-                            {
-                                Console.Error.WriteLine($"ERROR: Insufficient privileges to delete the \"FuseeRoot\" environment variable. Run the shell as Administrator before calling fusee.exe.");
-                                exitCode = ErrorCode.InsufficentPrivileges;
-                            }
-                            catch (Exception ex)
-                            {
-                                Console.Error.WriteLine($"ERROR: Unable to delete the \"FuseeRoot\" environment variable.\n{ex}");
                                 exitCode = ErrorCode.InternalError;
                             }
                         }
