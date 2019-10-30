@@ -756,7 +756,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     bool instBlender = opts.Blender;
                     if (!(instFuseeRoot || instPathEnv || instDotnet || instBlender))
                     {
-                        instFuseeRoot = instPathEnv = instDotnet = instBlender = true;
+                        instDotnet = instBlender = true;
                     }
 
                     ErrorCode exitCode = ErrorCode.Success;
