@@ -130,11 +130,10 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     filepath : StringProperty(subtype='FILE_PATH')
 
     #get FuseeRoot environment variable
-    fusee_Root = os.environ['FuseeRoot']
-    tool_Path = 'bin\\Debug\\Tools\\fusee.exe'
+    tool_Path = 'fusee.exe'
     isRoot = None
     # path of fusee.exe
-    convtool_path = os.path.join(fusee_Root, tool_Path)
+    convtool_path = tool_Path
 
     def draw(self, context):
         layout = self.layout
@@ -153,8 +152,6 @@ class ExportFUS(bpy.types.Operator, ExportHelper):
     def execute(self, context):
         #check if all paths are set
         if not self.filepath:
-            raise Exception("filepath not set")
-        elif  not self.fusee_Root:
             raise Exception("filepath not set")
         else:
             #save current state
