@@ -3,7 +3,7 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>fusee</AssemblyName>
-    <PackageId>Fusee.Tools.fuseeCmdLine</PackageId>
+    <PackageId>Fusee.Tools.CmdLine</PackageId>
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>
