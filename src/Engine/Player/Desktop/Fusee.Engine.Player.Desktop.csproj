@@ -5,8 +5,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>flayer</ToolCommandName>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>

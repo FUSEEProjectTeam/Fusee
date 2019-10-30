@@ -18,7 +18,14 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
-  </ItemGroup>  
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="tools/netcoreapp3.0/any" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
