@@ -11,4 +11,5 @@ echo Building distribution.
 dotnet pack Fusee.Engine.sln -c Release-NuGet -o bin\Release\nuget --include-source
 dotnet pack src\Meta\nuget\Core\Core.csproj -c Release -o bin\Release\nuget --include-source
 dotnet pack src\Meta\nuget\Desktop\Desktop.csproj -c Release -o bin\Release\nuget --include-source
+dotnet pack dis\DnTemplate\DnTemplate.csproj -c Release -o bin\Release\nuget
 endlocal
