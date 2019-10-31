@@ -135,7 +135,7 @@ namespace Fusee.Engine.Core
     }
 
     /// <summary>
-    /// Compiler for ShaderCode. Takes a MaterialComponent, evaluates input parameters and creates pixel and vertexshader
+    /// Compiler for ShaderCode. Takes a MaterialComponent, evaluates input parameters and creates pixel and vertex shader
     /// </summary>
     public class ShaderCodeBuilder
     {
@@ -148,6 +148,9 @@ namespace Fusee.Engine.Core
         private List<string> _pixelShader;
         private readonly bool _renderWithShadows;
 
+        //The maximal number of lights we can render when using the forward pipeline.
+        private const int _numberOfLightsForward = 8;
+
         // ReSharper disable once InconsistentNaming
         /// <summary>
         /// The complete VertexShader
@@ -156,7 +159,7 @@ namespace Fusee.Engine.Core
 
         // ReSharper disable once InconsistentNaming
         /// <summary>
-        /// The complete Pixelshader
+        /// The complete pixel shader
         /// </summary>
         public string PS { get; }
 
@@ -167,11 +170,10 @@ namespace Fusee.Engine.Core
         /// <param name="mc">The MaterialCpmponent</param>
         /// <param name="mesh">The Mesh</param>
         /// <param name="wc">Teh WeightComponent</param>
-        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>
-        /// <param name="numberOfLights">The number of lights in the scene. Needs to be predefined because it's a #define parameter in the shader code, used for looping through the lights.</param>
-        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, int numberOfLights, WeightComponent wc = null,
+        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>        
+        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, WeightComponent wc = null,
             bool renderWithShadows = false)
-            : this(mc, mesh, numberOfLights, LightingCalculationMethod.SIMPLE, wc, renderWithShadows)
+            : this(mc, mesh, LightingCalculationMethod.SIMPLE, wc, renderWithShadows)
         {
         }
 
@@ -241,9 +243,8 @@ namespace Fusee.Engine.Core
         /// <param name="mesh">The Mesh</param>
         /// <param name="wc">The WeightComponent</param>
         /// <param name="lightingCalculation">Method of light calculation; simple BLINN PHONG or advanced physically based</param>
-        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>
-        /// <param name="numberOfLights">The number of lights in the scene. Needs to be predefined because it's a #define parameter in the shader code, used for looping through the lights.</param>
-        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, int numberOfLights,
+        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>        
+        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh,
             LightingCalculationMethod lightingCalculation = LightingCalculationMethod.SIMPLE,
             WeightComponent wc = null, bool renderWithShadows = false)
         {
@@ -267,7 +268,7 @@ namespace Fusee.Engine.Core
             AnalzyeMaterialParams(mc);
             CreateVertexShader(wc);
             VS = string.Join("\n", _vertexShader);
-            CreatePixelShader_new(mc, numberOfLights);
+            CreatePixelShader_new(mc);
             PS = string.Join("\n", _pixelShader);
 
             // Uber Shader - test purposes!
@@ -508,11 +509,11 @@ namespace Fusee.Engine.Core
 
         #region CreatePixelShader
 
-        private void CreatePixelShader_new(MaterialComponent mc, int numberOfLights)
+        private void CreatePixelShader_new(MaterialComponent mc)
         {
             _pixelShader.Add(Version());
 
-            AddPixelAttributes(numberOfLights);
+            AddPixelAttributes();
             AddPixelUniforms();
             AddTextureChannels();
 
@@ -560,12 +561,11 @@ namespace Fusee.Engine.Core
 
         }
 
-        private void AddPixelAttributes(int numberOfLights)
+        private void AddPixelAttributes()
         {
             _pixelShader.Add(EsPrecision());
 
-            // legacy code, should be larger one by default!
-            _pixelShader.Add($"#define MAX_LIGHTS {numberOfLights}");
+            // legacy code, should be larger one by default!            
             _pixelShader.Add(LightStructDeclaration());
 
             _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewDir"));
@@ -940,7 +940,7 @@ namespace Fusee.Engine.Core
             var methodBody = new List<string>
             {
                 "vec4 result = ambientLighting(0.2);", //ambient component
-                "for(int i = 0; i < MAX_LIGHTS;i++)",
+                $"for(int i = 0; i < {_numberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
                 "vec3 currentPosition = allLights[i].position;",
@@ -973,7 +973,7 @@ namespace Fusee.Engine.Core
 
         private static string LightStructDeclaration()
         {
-            return @"
+            var lightStruct = @"
             struct Light 
             {
                 vec3 position;
@@ -990,8 +990,9 @@ namespace Fusee.Engine.Core
                 int isCastingShadows;
                 float bias;
             };
-            uniform Light allLights[MAX_LIGHTS];
             ";
+            return lightStruct + $"uniform Light allLights[{_numberOfLightsForward}];";
+            
         }
 
         private static string Version()
@@ -1727,7 +1728,7 @@ namespace Fusee.Engine.Core
             }");
 
             return vert.ToString();
-        }
+        }        
 
         private static string DeferredLightningFS(LightComponent lc)
         {
@@ -2586,29 +2587,28 @@ namespace Fusee.Engine.Core
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
         /// <param name="mc">The MaterialComponent</param> 
-        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param> 
-        /// <param name="numberOfLights">The number of lights in the scene. Needs to be predefined because it's a #define parameter in the shader code, used for looping through the lights.</param>
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null, int numberOfLights = 1)
+        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             ShaderCodeBuilder scb = null;
 
             //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
-                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, numberOfLights, wc);
+                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
             }
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
-                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, numberOfLights, LightingCalculationMethod.SIMPLE, wc);
+                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
             }
             else
             {
-                scb = new ShaderCodeBuilder(mc, null, numberOfLights, wc); // TODO, CurrentNode.GetWeights() != null); 
+                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null); 
             }
 
-            var effectParameters = AssembleEffectParamers(mc, numberOfLights);
+            var effectParameters = AssembleEffectParamers(mc);
 
             if (scb == null) throw new Exception("Material could not be evaluated or be built!");
             var ret = new ShaderEffect(new[]
@@ -2633,7 +2633,7 @@ namespace Fusee.Engine.Core
             return ret;
         }
 
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc, int numberOfLights)
+        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -2727,7 +2727,7 @@ namespace Fusee.Engine.Core
                 });
             }
 
-            for (int i = 0; i < numberOfLights; i++)
+            for (int i = 0; i < _numberOfLightsForward; i++)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
