@@ -93,7 +93,8 @@ namespace Fusee.Engine.Core
         //The following ShaderEffects cache all possible ShaderEffects, needed to render the lighting passes.
         private ShaderEffect _lightingPassEffectPoint; //needed when a point light is rendered;
         private ShaderEffect _lightingPassEffectOther; //needed when a light of another type is rendered;
-        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;              
+        private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
+        private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;           
 
         private readonly RenderTarget _gBufferRenderTarget;
         private readonly RenderTarget _blurRenderTarget;
@@ -246,7 +247,7 @@ namespace Fusee.Engine.Core
 
         #region Shadow mapping
 
-        private IEnumerable<float> GetClippingPlanesOfSplitFrustums(float zNear, float zFar, int numberOfSplits, float lambda = 0.5f)
+        private IEnumerable<float> GetClippingPlanesOfSplitFrustums(float zNear, float zFar, int numberOfSplits, float lambda = 0.4f)
         {
             for (int i = 0; i < numberOfSplits + 1; i++)
             {
@@ -328,7 +329,7 @@ namespace Fusee.Engine.Core
                 _shadowParamClipPlanes[i] = new float2(zNear, zFar);
                 var fov = _thisScenesProjection.Fov;
                 var aspect = _thisScenesProjection.Width / _thisScenesProjection.Height;
-                yield return float4x4.CreatePerspectiveFieldOfView(fov, aspect, zNear, zFar);
+                yield return float4x4.CreatePerspectiveFieldOfView(fov * 2, aspect, zNear, zFar);
             }
         }
 
@@ -336,10 +337,8 @@ namespace Fusee.Engine.Core
         {
             var allSplitProjectionMatrices = AllFrustumSplitLightProjectionMatrices(numberOfSplits).ToList();
 
-            for (int i = 0; i < allSplitProjectionMatrices.Count; i++)
-            {
-                yield return GetWorldSpaceFrustumCorners(allSplitProjectionMatrices[i]);
-            }
+            for (int i = 0; i < allSplitProjectionMatrices.Count; i++)            
+                yield return GetWorldSpaceFrustumCorners(allSplitProjectionMatrices[i]);            
         }
 
         private IEnumerable<AABBf> AllFrustumSplitAABBsLightSpace(int numberOfSplits, float4x4 lightView)
@@ -353,14 +352,13 @@ namespace Fusee.Engine.Core
 
         private float4x4 CropMatrix(AABBf lightSpaceAABB)
         {
-            var scaleX = 2f / (lightSpaceAABB.max.x - lightSpaceAABB.min.x);
-            var scaleY = 2f / (lightSpaceAABB.max.y - lightSpaceAABB.min.y);
-
+            lightSpaceAABB.min.z = 0;
+            var scaleX = 2.0f / (lightSpaceAABB.max.x - lightSpaceAABB.min.x);
+            var scaleY = 2.0f / (lightSpaceAABB.max.y - lightSpaceAABB.min.y);
             var offsetX = -0.5f * (lightSpaceAABB.max.x + lightSpaceAABB.min.x) * scaleX;
             var offsetY = -0.5f * (lightSpaceAABB.max.y + lightSpaceAABB.min.y) * scaleY;
-
             var scaleZ = 1.0f / (lightSpaceAABB.max.z - lightSpaceAABB.min.z);
-            var offsetZ = lightSpaceAABB.min.z * scaleZ;
+            var offsetZ = -lightSpaceAABB.min.z * scaleZ;
 
             return new float4x4(scaleX, 0, 0, offsetX,
                                 0, scaleY, 0, offsetY,
@@ -378,10 +376,10 @@ namespace Fusee.Engine.Core
         private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNodeContainer, LightComponent> key)
         {
             float4x4[] lightSpaceMatrices;
-            const int numberOfSplitFrustums = 4;
+            const int numberOfCascades = 4;
 
             if (lr.Light.Type == LightType.Parallel)
-                lightSpaceMatrices = new float4x4[numberOfSplitFrustums];
+                lightSpaceMatrices = new float4x4[numberOfCascades];
             else if (lr.Light.Type != LightType.Point)
                 lightSpaceMatrices = new float4x4[1];
             else
@@ -392,29 +390,18 @@ namespace Fusee.Engine.Core
             {
                 case LightType.Parallel:
                     {
-                        _shadowParamClipPlanes = new float2[numberOfSplitFrustums];
-
-                        //var frustumCorners = GetWorldSpaceFrustumCorners(_thisScenesProjectionMat);
-                        //var n = System.Math.Abs(_thisScenesProjectionMat.M34 / (_thisScenesProjectionMat.M33 + 1.0f));
-                        //var f = System.Math.Abs(_thisScenesProjectionMat.M34 / (_thisScenesProjectionMat.M33 - 1.0f));
-
-                        //float3 frustumCenter = float3.Zero;
-                        //foreach (var corner in frustumCorners)
-                        //{
-                        //    frustumCenter += corner.xyz;
-                        //}
-                        //frustumCenter /= 8;
+                        _shadowParamClipPlanes = new float2[numberOfCascades];
 
                         var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
 
-                        var lightPos = /*frustumCenter + (-lightDir * (f - n));//*/lr.WorldSpacePos;
-                        var target = lightPos + float3.Normalize(lr.Rotation * float3.UnitZ);
+                        var lightPos = lr.WorldSpacePos;
+                        var target = lightPos + lightDir;
                         var lightView = float4x4.LookAt(lightPos, target, float3.Normalize(lr.Rotation * float3.UnitY));
 
                         //see: https://developer.nvidia.com/gpugems/GPUGems3/gpugems3_ch10.html and https://developer.download.nvidia.com/SDK/10.5/opengl/src/cascaded_shadow_maps/doc/cascaded_shadow_maps.pdf
                         if (_thisScenesProjection != null)
                         {
-                            var allSplitFrustumAABBs = AllFrustumSplitAABBsLightSpace(numberOfSplitFrustums, lightView).ToList();
+                            var allSplitFrustumAABBs = AllFrustumSplitAABBsLightSpace(numberOfCascades, lightView).ToList();
                             
                             if (allSplitFrustumAABBs.Count <= 1)
                             {
@@ -427,18 +414,8 @@ namespace Fusee.Engine.Core
                             {
                                 for (int i = 0; i < allSplitFrustumAABBs.Count; i++)
                                 {                                    
-                                    var aabbLightSpace = allSplitFrustumAABBs[i];                                    
-                                    var projection = float4x4.CreateOrthographic(aabbLightSpace.Size.x, aabbLightSpace.Size.y, 0, aabbLightSpace.max.z);
-
-                                    var camPos = _rc.InvView.Column3.xyz;
-                                    var camForward = float3.Normalize(_rc.View.Row2.xyz);
-                                    float3 cascadeHalfVec = camForward * (0.5f * _shadowParamClipPlanes[i].y);
-                                    float3 cascadeProjCenter = camPos + cascadeHalfVec;
-                                    float3 cascadeLightPos = cascadeProjCenter + (-lightDir * (_shadowParamClipPlanes[i].y - _shadowParamClipPlanes[i].x)); //move projection center along the inverted light direction
-                                    float3 cascadeTarget = cascadeProjCenter + lightDir * _thisScenesProjection.ZFar;
-                                    var cascadeLightView = float4x4.LookAt(cascadeLightPos, cascadeTarget, float3.Normalize(lr.Rotation * float3.UnitY));
-
-                                    lightSpaceMatrices[i] = projection * cascadeLightView;
+                                    var aabbLightSpace = allSplitFrustumAABBs[i]; 
+                                    lightSpaceMatrices[i] = CropMatrix(aabbLightSpace) * lightView;
                                 }
                             }
                         }
@@ -509,8 +486,8 @@ namespace Fusee.Engine.Core
                         }
                     case LightType.Parallel:
                         {
-                            var shadowMaps = new IWritableTexture[numberOfSplitFrustums];
-                            for (int i = 0; i < numberOfSplitFrustums; i++)
+                            var shadowMaps = new IWritableTexture[numberOfCascades];
+                            for (int i = 0; i < numberOfCascades; i++)
                             {
                                 var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)_shadowMapRes, (int)_shadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
                                 shadowMaps[i] = shadowMap;
@@ -702,16 +679,37 @@ namespace Fusee.Engine.Core
                     var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
 
                     if ((_lightingPassEffectOther == null) && lightVisRes.Item2.Light.Type != LightType.Point)
-                        _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMaps[0], _texClearColor);
+                    {
+                        if (_lightingPassEffectCascaded == null && lightVisRes.Item2.Light.Type == LightType.Parallel) 
+                        {
+                            var shadowMaps = Array.ConvertAll(shadowParams.ShadowMaps, tex => (WritableTexture)tex);
+                            _lightingPassEffectCascaded = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, shadowMaps,shadowParams.ClipPlanesForLightMat, shadowMaps.Length, _texClearColor);
+                        }
+                        else
+                        {
+                            _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMaps[0], _texClearColor);
+                        }
+                    }
 
                     if ((_lightingPassEffectPoint == null) && lightVisRes.Item2.Light.Type == LightType.Point)
                         _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableCubeMap)shadowParams.ShadowMaps[0], _texClearColor);
 
-                    if (lightVisRes.Item2.Light.Type != LightType.Point)
-                        _lightingPassEffect = _lightingPassEffectOther;
-                    else
-                        _lightingPassEffect = _lightingPassEffectPoint;
-
+                    switch (lightVisRes.Item2.Light.Type)
+                    {
+                        
+                        case LightType.Parallel:
+                            _lightingPassEffect = _lightingPassEffectCascaded;
+                            break;
+                        case LightType.Point:
+                            _lightingPassEffect = _lightingPassEffectPoint;
+                            break;
+                        case LightType.Spot:                            
+                        case LightType.Legacy:
+                            _lightingPassEffect = _lightingPassEffectOther;
+                            break;
+                        default:
+                            break;
+                    }
                     isCastingShadows = true;
                 }
                 else
@@ -722,6 +720,7 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect = _lightingPassEffectNoShadow;
                 }
 
+               
                 UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
                 _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
 
@@ -784,6 +783,11 @@ namespace Fusee.Engine.Core
                         effect.SetEffectParam("ShadowCubeMap", (WritableCubeMap)shadowParams.ShadowMaps[0]);
                         break;
                     case LightType.Parallel:
+                        var shadowMaps = Array.ConvertAll(shadowParams.ShadowMaps, tex => (WritableTexture)tex);
+                        effect.SetEffectParam("ShadowMaps[0]", shadowMaps);
+                        effect.SetEffectParam("ClipPlanes[0]", shadowParams.ClipPlanesForLightMat);
+                        effect.SetEffectParam("LightSpaceMatrices[0]", shadowParams.LightSpaceMatrices);
+                        break;
                     case LightType.Spot:
                     case LightType.Legacy:
                         effect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);

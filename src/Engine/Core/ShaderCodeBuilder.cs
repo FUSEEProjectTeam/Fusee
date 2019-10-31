@@ -1963,9 +1963,9 @@ namespace Fusee.Engine.Core
             frag.Append("uniform mat4 FUSEE_ITV;\n");
            
             frag.Append($"uniform sampler2D[{numberOfCascades}] ShadowMaps;\n");
-            frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");
+            frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");            
 
-            frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
+            frag.Append($"uniform mat4x4[{numberOfCascades}] LightSpaceMatrices;\n");
             frag.Append("uniform int PassNo;\n");
             frag.Append("uniform int SsaoOn;\n");
 
@@ -2073,15 +2073,34 @@ namespace Fusee.Engine.Core
             if (lc.IsCastingShadows)
             {
                 //TODO: iterate clip planes and choose shadow map for this frag. Use this shadow map in ShadowCalculation()  
+
+                frag.Append(@"
+                int thisFragmentsCascade = 0;
+                float fragDepth = FragPos.z;
+                
+                ");
+
+                
+                frag.Append($"for (int i = 0; i < {numberOfCascades}; i++)\n");
+                frag.Append(
+                @"{
+                    vec2 thisCascadesClipPlanes = ClipPlanes[i];
+                    if(fragDepth < thisCascadesClipPlanes.y)
+                    {                        
+                        thisFragmentsCascade = i;
+                        break;
+                    }
+                }
+                ");
+
                 frag.Append(@"
                 // shadow                
                 if (light.isCastingShadows == 1)
                 {
-                    vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
-                    shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir,  light.bias);                    
+                    vec4 posInLightSpace = (LightSpaceMatrices[thisFragmentsCascade] * FUSEE_IV) * FragPos;
+                    shadow = ShadowCalculation(ShadowMaps[thisFragmentsCascade], posInLightSpace, Normal, lightDir,  light.bias);                    
                 }                
-                ");
-               
+                ");               
             }
 
             frag.Append(@"
@@ -2094,6 +2113,19 @@ namespace Fusee.Engine.Core
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
+
+                if(thisFragmentsCascade == 0)
+                    lighting *= vec3(1,0.3f,0.3f);
+                else if(thisFragmentsCascade == 1)
+                    lighting *= vec3(0.3f,1,0.3f);
+                else if(thisFragmentsCascade == 2)
+                    lighting *= vec3(0.3f,0.3f,1);
+                else if(thisFragmentsCascade == 3)
+                    lighting *= vec3(1,1,0.3f);
+                else if(thisFragmentsCascade == 4)
+                    lighting *= vec3(1,0.3,1);
+                else if(thisFragmentsCascade == 5)
+                    lighting *= vec3(1,0.3f,1);
             }              
             ");
 
@@ -2180,7 +2212,7 @@ namespace Fusee.Engine.Core
         /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades,float4 backgroundColor)
         {
             var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -2193,7 +2225,7 @@ namespace Fusee.Engine.Core
                 new EffectPassDeclaration
                 {
                     VS = DeferredLightningVS(),
-                    PS = DeferredLightningFS(lc),
+                    PS = DeferredLightningFSCascaded(lc, numberOfCascades),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,

@@ -226,7 +226,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An ITextureHandle that can be used for texturing in the shader. In this implementation, the handle is an integer-value which is necessary for OpenTK.</returns>
         public ITextureHandle CreateTexture(IWritableTexture img)
         {
-            int id = GL.GenTexture();            
+            int id = GL.GenTexture();
             GL.BindTexture(TextureTarget.Texture2D, id);
 
             var glMinMagFilter = GetMinMagFilter(img.FilterMode);
@@ -695,26 +695,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
-        public void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
+        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
         {
-            int iParam = ((ShaderParam)param).handle;
-            var firstTexUnit = 0;
+            int iParam = ((ShaderParam)param).handle;           
+            int[] texUnitArray = new int[texIds.Length];
+
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
+            {
+                firstTexUnit = _textureCount + 1;
+                _textureCount += texIds.Length;
+                _shaderParam2TexUnit[iParam] = firstTexUnit;
+            }
 
             for (int i = 0; i < texIds.Length; i++)
             {
-                if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
-                {
-                    texUnit = _textureCount++;
-                    _shaderParam2TexUnit[iParam] = texUnit;
-                }
-                if (i == 0)
-                    firstTexUnit = texUnit;
+                texUnitArray[i] = firstTexUnit + i;
+
+                GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
+                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texIds[i]).TexHandle);
             }
 
-            GL.Uniform1(iParam, firstTexUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit);
-
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texIds[0]).TexHandle);
+            fixed (int* pFlt = &texUnitArray[0])
+                GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
         }
 
         /// <summary>
