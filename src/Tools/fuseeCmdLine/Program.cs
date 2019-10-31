@@ -186,24 +186,24 @@ namespace Fusee.Tools.fuseeCmdLine
                         TryAddDir(assetDirs, Path.Combine(ExeDir, "Assets"));
                     }
 
-                    if (args.Length >= 1)
+                    if (!string.IsNullOrEmpty(opts.Input))
                     {
-                        if (File.Exists(args[0]))
+                        if (File.Exists(opts.Input))
                         {
-                            TryAddDir(assetDirs, Path.GetDirectoryName(args[0]));
-                            if (Path.GetExtension(args[0]).ToLower().Contains("fus"))
+                            TryAddDir(assetDirs, Path.GetDirectoryName(opts.Input));
+                            if (Path.GetExtension(opts.Input).ToLower().Contains("fus"))
                             {
                                 // A .fus file - open it.
-                                modelFile = Path.GetFileName(args[0]);
+                                modelFile = Path.GetFileName(opts.Input);
                             }
                             else
                             {
                                 // See if the passed argument is an entire Fusee App DLL
                                 try
                                 {
-                                    Assembly asm = Assembly.LoadFrom(args[0]);
+                                    Assembly asm = Assembly.LoadFrom(opts.Input);
                                     tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                                    TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(args[0]), "Assets"));
+                                    TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(opts.Input), "Assets"));
                                 }
                                 catch (Exception e)
                                 {
@@ -213,7 +213,7 @@ namespace Fusee.Tools.fuseeCmdLine
                         }
                         else
                         {
-                            Diagnostics.Log($"Cannot open {args[0]}.");
+                            Diagnostics.Log($"Cannot open {opts.Input}.");
                         }
                     }
 
