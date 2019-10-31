@@ -1924,6 +1924,185 @@ namespace Fusee.Engine.Core
             return frag.ToString();
         }
 
+        private static string DeferredLightningFSCascaded(LightComponent lc, int numberOfCascades)
+        {
+            // Fragment shader ------------------------------
+            var frag = new StringBuilder();
+            frag.Append(Version());
+            frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
+            frag.Append(EsPrecision());
+
+            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
+            {
+                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
+            }
+
+            frag.Append(@"struct Light 
+            {
+                vec3 position;
+                vec3 positionWorldSpace;
+                vec4 intensities;
+                vec3 direction;
+                vec3 directionWorldSpace;
+                float maxDistance;
+                float strength;
+                float outerConeAngle;
+                float innerConeAngle;
+                int lightType;
+                int isActive;
+                int isCastingShadows;
+                float bias;
+            };
+            uniform Light light;
+            ");
+
+            frag.Append("uniform mat4 FUSEE_IV;\n");
+            frag.Append("uniform mat4 FUSEE_V;\n");
+            frag.Append("uniform mat4 FUSEE_MV;\n");
+            frag.Append("uniform mat4 FUSEE_ITV;\n");
+           
+            frag.Append($"uniform sampler2D[{numberOfCascades}] ShadowMaps;\n");
+            frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");
+
+            frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
+            frag.Append("uniform int PassNo;\n");
+            frag.Append("uniform int SsaoOn;\n");
+
+            frag.Append("uniform vec4 BackgroundColor;\n");
+
+            frag.Append($"in vec2 vTexCoords;\n");
+            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)};\n");
+
+            //Shadow calculation
+            //-------------------------------------- 
+            if (lc.Type != LightType.Point)
+                frag.Append(ShadowCalculation());
+            else
+                frag.Append(ShadowCalculationCubeMap());
+
+            frag.Append(@"void main()
+            {
+            ");
+
+            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
+            //Do not do calculations for the background - is there a smarter way (stencil buffer)?
+            //---------------------------------------
+            frag.Append(@"
+            if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)      
+            {
+            ");
+
+            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = BackgroundColor;");
+            frag.AppendLine(@"  return;
+            }
+            ");
+
+            frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, vTexCoords).rgb;");
+
+            //Lighting calculation
+            //-------------------------
+            frag.Append(@"
+            // then calculate lighting as usual
+            vec3 lighting = vec3(0,0,0);
+
+            if(PassNo == 0)
+            {
+                vec3 ambient = vec3(0.2 * DiffuseColor);
+
+                if(SsaoOn == 1)
+                    ambient *= Occlusion;
+
+                lighting += ambient;
+            }
+
+            vec3 camPos = FUSEE_IV[3].xyz;
+            vec3 viewDir = normalize(-FragPos.xyz);
+
+           
+            if(light.isActive == 1)
+            {
+                float shadow = 0.0;
+
+                vec3 lightColor = light.intensities.xyz;
+                vec3 lightPosition = light.position;
+                vec3 lightDir = normalize(lightPosition - FragPos.xyz);                
+
+                //attenuation
+                float attenuation = 1.0;
+                switch(light.lightType)
+                {
+                    //Point
+                    case 0:
+                    {
+                        float distanceToLight = length(lightPosition - FragPos.xyz); 
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
+                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);                        
+
+                        break;
+                    }
+                    //Parallel
+                    case 1:
+                        lightDir = -light.direction;
+                        break;
+                    //Spot
+                    case 2:
+                    {                           
+                        //point component
+                        float distanceToLight = length(lightPosition - FragPos.xyz); 
+                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
+                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
+                        
+                        //cone component
+                        vec3 coneDir = light.direction;
+                        float lightToSurfaceAngleCos = dot(coneDir, -lightDir); 
+                        
+                        float epsilon = cos(light.innerConeAngle) - cos(light.outerConeAngle);
+                        float t = (lightToSurfaceAngleCos - cos(light.outerConeAngle)) / epsilon;
+                        attenuation *= clamp(t, 0.0, 1.0);
+                        break;
+                    }
+                    case 3:
+                        break;
+                }
+                ");
+
+            if (lc.IsCastingShadows)
+            {
+                //TODO: iterate clip planes and choose shadow map for this frag. Use this shadow map in ShadowCalculation()  
+                frag.Append(@"
+                // shadow                
+                if (light.isCastingShadows == 1)
+                {
+                    vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
+                    shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir,  light.bias);                    
+                }                
+                ");
+               
+            }
+
+            frag.Append(@"
+                // diffuse 
+                vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
+                lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);
+            
+                // specular
+                vec3 reflectDir = reflect(-lightDir, Normal);  
+                float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
+                vec3 specular = SpecularStrength * spec * lightColor;
+                lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
+            }              
+            ");
+
+            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
+
+            frag.Append("}");
+
+            return frag.ToString();
+        }
+
         private static List<EffectParameterDeclaration> DefferedLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
         {
             return new List<EffectParameterDeclaration>()
@@ -1991,6 +2170,42 @@ namespace Fusee.Engine.Core
             effectParams.ToArray());
         }
 
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMaps">The cascaded shadow maps.</param>
+        /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, float4 backgroundColor)
+        {
+            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
+
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
+            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
+            effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = DeferredLightningVS(),
+                    PS = DeferredLightningFS(lc),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },
+            effectParams.ToArray());
+        }
 
         /// <summary>
         /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
