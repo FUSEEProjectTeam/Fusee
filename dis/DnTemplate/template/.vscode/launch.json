@@ -9,9 +9,8 @@
             "type": "coreclr",
             "request": "launch", 
             "preLaunchTask": "build",
-            "program": "${env:FuseeRoot}/bin/Debug/Player/Desktop/Fusee.Engine.Player.Desktop.exe",
-            "args": ["${workspaceRoot}/bin/Debug/Fusee_App.dll"],
-            "cwd": "${env:FuseeRoot}bin/Debug/Player/Desktop",
+            "program": "fusee.exe",
+            "args": ["player", "-i", "${workspaceRoot}/bin/Debug/Fusee_App.dll"],
             "stopAtEntry": false,
             "console": "externalTerminal"
         }

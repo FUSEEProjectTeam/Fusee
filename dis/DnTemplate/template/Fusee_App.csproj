@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputPath>$(BaseOutputPath)\</OutputPath>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Assets\**\*">
@@ -9,29 +9,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Base.Common.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Base.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Math.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Serialization.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Xene.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.Common.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.Core.dll">
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="$(FuseeEngineRoot)/bin/Debug/Libraries/Fusee.Engine.GUI.dll">
-      <Private>False</Private>
-    </Reference>    
+    <PackageReference Include="Fusee.Desktop" Version="0.7.0" />
   </ItemGroup>
 </Project>
