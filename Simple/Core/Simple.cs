@@ -18,7 +18,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -73,14 +73,12 @@ namespace Fusee.Examples.Simple.Core
 
             if (Mouse.LeftButton)
             {
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
             }
             else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
             {
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
 
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -88,31 +86,31 @@ namespace Fusee.Examples.Simple.Core
                 _moveX = _speed * Keyboard.LeftRightAxis * DeltaTime;
                 _moveZ = _speed * Keyboard.UpDownAxis * DeltaTime;
             }
-            else
-            {
-                var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                _moveX *= curDamp;
-                _moveZ *= curDamp;
-            }
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            _angleVert += _angleVelVert % 360;
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
-            float _ballX = _ball.Translation.x;
-            float _ballY = _ball.Translation.y;
-            float _ballZ = _ball.Translation.z;
-            var mtxCam = float4x4.LookAt(_ballX + 50, _ballY + 50, _ballZ + 50, _ballX, _ballY, _ballZ, _ballX, 1, _ballZ);
-            RC.View = mtxCam * mtxRot;
+
+
+            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z -10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            RC.View = mtxCam;
 
             //move the ball
-            _ballX += _moveX;
-            _ballZ += _moveZ;
+            if (Keyboard.LeftRightAxis != 0)
+            {
+                _ball.Translation.x += _moveX * M.Sin(_angleVert);
+                _ball.Translation.z -= _moveX * M.Cos(_angleVert);
+            }
+            if(Keyboard.UpDownAxis != 0)
+            {
+                _ball.Translation.x += _moveZ * M.Cos(_angleVert);
+                _ball.Translation.z += _moveZ * M.Sin(_angleVert);
+
+            }
 
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
+                //Set the view matrix for the interaction handler.
+                _sih.View = RC.View;
 
             // Constantly check for interactive objects.
             if(!Mouse.Desc.Contains("Android"))
