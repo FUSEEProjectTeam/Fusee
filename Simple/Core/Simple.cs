@@ -18,7 +18,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert;
+        private static float _angleVert = 0, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -80,11 +80,15 @@ namespace Fusee.Examples.Simple.Core
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
-
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+            else
             {
-                _moveX = _speed * Keyboard.LeftRightAxis * DeltaTime;
-                _moveZ = _speed * Keyboard.UpDownAxis * DeltaTime;
+                _angleVelVert = 0;
+            }
+
+            if (Keyboard.ADAxis != 0 || Keyboard.WSAxis != 0)
+            {
+                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
+                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
             }
             _angleVert += _angleVelVert % 360;
 
@@ -96,12 +100,13 @@ namespace Fusee.Examples.Simple.Core
             RC.View = mtxCam;
 
             //move the ball
-            if (Keyboard.LeftRightAxis != 0)
+            if (Keyboard.ADAxis != 0)
             {
                 _ball.Translation.x += _moveX * M.Sin(_angleVert);
                 _ball.Translation.z -= _moveX * M.Cos(_angleVert);
+
             }
-            if(Keyboard.UpDownAxis != 0)
+            if(Keyboard.WSAxis != 0)
             {
                 _ball.Translation.x += _moveZ * M.Cos(_angleVert);
                 _ball.Translation.z += _moveZ * M.Sin(_angleVert);
