@@ -31,12 +31,12 @@ namespace Fusee.Serialization
         /// <summary>
         /// The width of the current viewport. Gets set automatically.
         /// </summary>
-        public int Width { get; private set; }
+        public int Width { get; set; }
 
         /// <summary>
         /// The height of the current viewport. Gets set automatically.
         /// </summary>
-        public int Height { get; private set; }
+        public int Height { get; set; }
 
         /// <summary>
         /// Vertical field of view.        
@@ -69,16 +69,6 @@ namespace Fusee.Serialization
             ZNear = zNear;
             Width = 1;
             Height = 1;
-        }
-
-        /// <summary>
-        /// Is called when the window is resized.        
-        /// </summary>
-        public void Resize(int width, int height)
-        {
-            Width = width;
-            Height = height;
-
         }
 
     }

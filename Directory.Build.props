@@ -12,6 +12,16 @@
     <Version>0.7.0.0</Version>
     <AssemblyVersion>0.7.0.0</AssemblyVersion>
     <FileVersion>0.7.0.0</FileVersion>
-    <Copyright>Copyright © 2013-today The FUSEE Project Team</Copyright>
+    <Copyright>Copyright © 2013-today</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
+    <PackageIcon>images\icon.png</PackageIcon>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon256WithText.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true'" />
+  </ItemGroup>
 </Project>

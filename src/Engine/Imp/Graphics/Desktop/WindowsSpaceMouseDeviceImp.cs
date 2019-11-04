@@ -16,7 +16,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     public class WindowsSpaceMouseDriverImp : IInputDriverImp
     {
         GameWindow _gameWindow;
-       
+
         WindowsSpaceMouseInputDeviceImp _SMI;
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseDriverImp"/> class.
@@ -143,7 +143,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp
     {
-        
+
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
@@ -205,7 +205,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private IntPtr SpaceMouseWindowsProc(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam)
         {
             // TODO
-            if(_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
+            if (_current3DConnexionDevice != null && !_current3DConnexionDevice.IsDisposed)
                 _current3DConnexionDevice.ProcessWindowMessage((int)Msg, wParam, lParam);
 
             return CallWindowProc(_oldWndProc, hWnd, Msg, wParam, lParam);
@@ -400,7 +400,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 yield break;
             }
         }
-        
+
 
         /// <summary>
         /// All axes are event based.
@@ -429,7 +429,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 //ButtonValueChanged(this, new ButtonValueChangedArgs { Button = Button2.ButtonDesc, Pressed });
             }
         }
-        
+
 
         /// <summary>
         /// This device does not implement any Buttons.
@@ -459,6 +459,4 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 #pragma warning restore 0067
 
     }
-    
-    
 }

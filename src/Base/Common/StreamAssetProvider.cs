@@ -8,7 +8,7 @@ namespace Fusee.Base.Common
     /// Asset provider base class for implementing asset providers based on streams. 
     /// Used to implement FileAssetProvider and Android ApkAssetProviders.
     /// </summary>
-    public abstract class StreamAssetProvider: IAssetProvider
+    public abstract class StreamAssetProvider : IAssetProvider
     {
         private readonly Dictionary<Type, AssetHandler> _assetHandlers;
 
@@ -67,7 +67,7 @@ namespace Fusee.Base.Common
                 if (_assetHandlers.TryGetValue(type, out handler))
                 {
                     object ret;
-                    if (null != (ret = handler.Decoder(id, stream)))
+                     if (null != (ret = handler.Decoder(id, stream)))
                     {
                         // Return in using will dispose the used object, which is what we want...
                         return ret;

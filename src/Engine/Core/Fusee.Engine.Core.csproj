@@ -11,9 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
@@ -26,9 +24,6 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\Shader\Blinn\Blinn_CalculatePixelColor.frag" />
-    <None Include="Assets\Shader\Blinn\Blinn_CalculateVertexPosition.vert" />
-    <None Include="Assets\Shader\PixelShader.frag" />
-    <None Include="Assets\Shader\VertexShader.vert" />
+    <Content Include="Assets\*" />
   </ItemGroup>
 </Project>

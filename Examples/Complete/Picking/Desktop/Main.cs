@@ -13,23 +13,6 @@ namespace Fusee.Examples.Picking.Desktop
     {
         public static void Main()
         {
-            /*
-            SimpleType st = new SimpleType {Header = new SceneHeaderTest
-            {
-                Version = 1,
-                Generator = "Test",
-                CreatedBy = "Patrick",
-                CreationDate = "13-12-2016",
-            } };
-            var seri = new Serializer();
-            // var schem = ProtoBuf.Serializer.GetProto<SimpleType>();
-
-            using (FileStream str = new FileStream("FuseeSimpleType.st", System.IO.FileMode.Create))
-            {
-                seri.Serialize(str, st);
-            }
-            */
-
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
@@ -52,8 +35,7 @@ namespace Fusee.Examples.Picking.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        var ser = new Serializer();
-                        return new ConvertSceneGraph().Convert(ser.Deserialize((Stream)storage, null, typeof(SceneContainer)) as SceneContainer);
+                        return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

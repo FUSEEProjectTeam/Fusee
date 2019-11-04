@@ -12,12 +12,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262.dll" Link="Natives\freetype262.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
-    <None Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Debug.*'))" />
+    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262.dll" Link="Natives\freetype262.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Release.*'))" />
+    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype262d.dll" Link="Natives\freetype262d.dll" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('$(Configuration)', '^Debug.*'))" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="SharpFont">

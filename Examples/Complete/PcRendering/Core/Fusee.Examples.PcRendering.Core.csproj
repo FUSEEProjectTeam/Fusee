@@ -1,0 +1,55 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
+    <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\PcRendering\Core\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+  </ItemGroup>
+
+  
+
+  <ItemGroup>
+    <Reference Include="Fusee.Base.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Base.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.GUI">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.GUI.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.Common">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.Common.dll</HintPath>
+    </Reference>   
+    <Reference Include="Fusee.Pointcloud.OoCFileReaderWriter">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.OoCFileReaderWriter.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Pointcloud.PointAccessorCollections">
+      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Pointcloud.PointAccessorCollections.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

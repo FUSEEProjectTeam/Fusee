@@ -146,7 +146,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// Implements a Gamepad Control option only works for XBox Gamepads
     /// </summary>
     /// /// <remarks>
-    /// The current implementation does not fire the <see cref="NewDeviceConnected"/> and  <see cref="DeviceDisconnected"/>
+    /// The current implementation does not fire the <see cref="RenderCanvasInputDriverImp.NewDeviceConnected"/> and  <see cref="RenderCanvasInputDriverImp.DeviceDisconnected"/>
     /// events. This driver will always report one connected GamePad no matter how many physical devices are connected
     /// to the machine. If no physical GamePad is present all of its axes and buttons will return 0 or false.
     /// </remarks>
@@ -916,7 +916,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Id => GetType().FullName;
 
         /// <summary>
-        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to akquire mouse axis information.
+        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to acquire mouse axis information.
         /// </summary>
 #pragma warning disable 0067
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
@@ -956,14 +956,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All mouse buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
             throw new InvalidOperationException(
-                $"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
+                $"Unsupported axis {iButtonId}. This device does not support any to-be polled axes at all.");
         }
 
         /// <summary>

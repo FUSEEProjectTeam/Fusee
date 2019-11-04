@@ -4,8 +4,18 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Generates a polygonal circle.
+    /// </summary>
     public class Circle : Mesh
-    {        
+    {
+        /// <summary>
+        /// Creates a new instance of type 'Circle'.
+        /// </summary>
+        /// <param name="fill">Indicates if the circle should be filled.</param>
+        /// <param name="segments">Indicates how many segments the circle should have.</param>
+        /// <param name="fillPercentage">Determines if it is a full circle (default, 100%).</param>
+        /// <param name="thickness">Indicates the thickness of the (not filled) circle.</param>
         public Circle(bool fill = false, int segments = 20, float fillPercentage = 100, float thickness = 0.1f)
         {            
             var verts = new List<float3>();

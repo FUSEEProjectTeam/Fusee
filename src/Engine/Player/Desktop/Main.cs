@@ -108,11 +108,10 @@ namespace Fusee.Engine.Player.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        var ser = new Serializer();
 
-                        var scene = ser.Deserialize((Stream) storage, null, typeof(SceneContainer)) ;
+                        var scene = ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream) storage) ;
 
-                        var container = scene as SceneContainer;
+                        var container = scene;
 
                         return new ConvertSceneGraph().Convert(container);
                     },
