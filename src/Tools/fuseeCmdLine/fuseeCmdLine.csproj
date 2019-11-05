@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,6 +7,7 @@
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>fusee</ToolCommandName>
+    <PackageTags>dotnet;tools;fusee</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>
