@@ -128,6 +128,13 @@ namespace Fusee.Tools.fuseeCmdLine
             public string List { get; set; }
         }
 
+        [Verb("pack", HelpText = "Packs a compiled Fusee-App into one .fuz-File.")]
+        public class Pack
+        {
+            [Value(0, HelpText = "Input Fusee-App .dll", MetaName = "Input", Required = true)]
+            public string Input { get; set; }
+        }
+
         // "Globals"
         static string fuseeCmdLineRoot = null;
         static string fuseeRoot = null;
@@ -165,9 +172,16 @@ namespace Fusee.Tools.fuseeCmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Player, Publish, Server, Install, ProtoSchema, WebViewer>(args)
+            var result = Parser.Default.ParseArguments<Pack, Player, Publish, Server, Install, ProtoSchema, WebViewer>(args)
+            #region Pack
+                .WithParsed<Pack>(opts =>
+                {
+                    
+                })
+            #endregion
 
-                // Called with the PROTOSCHEMA verb
+            #region Player
+                // Called with the Player verb
                 .WithParsed<Player>(opts =>
                 {
                     Console.WriteLine("Starting player ...");
@@ -306,7 +320,9 @@ namespace Fusee.Tools.fuseeCmdLine
                         app.Run();
                     }
                 })
-                
+            #endregion
+
+            #region ProtoShema
                 // Called with the PROTOSCHEMA verb
                 .WithParsed<ProtoSchema>(opts =>
                 {
@@ -341,7 +357,9 @@ namespace Fusee.Tools.fuseeCmdLine
                         Console.WriteLine(schema);
                     }
                 })
+            #endregion
 
+            #region Publish
                 // Called with the PUBLISH verb
                 .WithParsed<Publish>(opts =>
                 {
@@ -668,7 +686,9 @@ namespace Fusee.Tools.fuseeCmdLine
 
                     }
                 })
+            #endregion
 
+            #region Server
                 // Called with the SERVER verb
                 .WithParsed<Server>(opts =>
                 {
@@ -738,14 +758,14 @@ namespace Fusee.Tools.fuseeCmdLine
                     
                     // Environment.Exit(0);
                 })
+            #endregion
 
-
+            #region Install
                 // Called with the INSTALL verb
                 .WithParsed<Install>(opts =>
                 {
                     // Find FuseeRoot from this assembly
                     InitFuseeDirectories();
-                    string templateDir = Path.Combine(fuseeRoot, "dis", "DnTemplate"); 
 
                     // Set the individual installation steps (currently four). If NONE of them is set, select ALL OF THEM.
                     bool instBlender = opts.Blender;
@@ -894,8 +914,7 @@ namespace Fusee.Tools.fuseeCmdLine
 
                     Environment.Exit((int) exitCode);
                 })
-
-
+            #endregion
 
                 // ERROR on the command line
                 .WithNotParsed(errs =>
