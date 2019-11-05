@@ -26,6 +26,11 @@ namespace Fusee.Serialization
             base.InsertItem(index, snc);
         }
 
+        /// <summary>
+        /// Sets an item at the specified position in the scene node container.
+        /// </summary>
+        /// <param name="index">The position int the scene node container.</param>
+        /// <param name="snc">The scene node container in which the item should be set.</param>
         protected override void SetItem(int index, SceneNodeContainer snc)
         {
             AddSnc(snc);

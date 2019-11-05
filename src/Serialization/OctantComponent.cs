@@ -58,6 +58,9 @@ namespace Fusee.Serialization
         /// </summary>
         public int PosInHierarchyTex;
 
+        /// <summary>
+        /// The visible child indices in byte.
+        /// </summary>
         public byte VisibleChildIndices; 
 
         /// <summary>

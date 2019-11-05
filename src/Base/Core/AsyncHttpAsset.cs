@@ -228,11 +228,26 @@ namespace Fusee.Base.Core
         UserState3
     }
 
+    /// <summary>
+    /// The asset handler.
+    /// </summary>
     public struct AsyncAssetHandler
     {
+        /// <summary>
+        /// The asset load type.
+        /// </summary>
         public Type ReturnedType;
+        /// <summary>
+        /// The asset decoder.
+        /// </summary>
         public AsyncAssetDecoder Decoder;
     }
 
+    /// <summary>
+    /// The asset decoder
+    /// </summary>
+    /// <param name="id">The asset id.</param>
+    /// <param name="data">The asset data.</param>
+    /// <param name="callback">The decoded asset data.</param>
     public delegate void AsyncAssetDecoder(string id, object data, Action<object> callback);
 }

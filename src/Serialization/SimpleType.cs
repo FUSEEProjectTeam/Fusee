@@ -2,9 +2,15 @@
 
 namespace Fusee.Serialization
 {
+    /// <summary>
+    /// Generates a simple scene header.
+    /// </summary>
     [ProtoContract]
     public class SimpleType
     {
+        /// <summary>
+        /// The scene header (Test).
+        /// </summary>
         [ProtoMember(1)]
         public SceneHeaderTest Header;
     }

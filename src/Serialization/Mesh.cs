@@ -300,6 +300,10 @@ namespace Fusee.Serialization
         /// </summary>
         public bool Active = true;
 
+
+        /// <summary>
+        /// The mesh type.
+        /// </summary>
         [ProtoMember(11)]
         public int MeshType = 0;
      
