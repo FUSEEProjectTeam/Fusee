@@ -170,6 +170,8 @@ namespace Fusee.Tools.fuseeCmdLine
                 // Called with the PROTOSCHEMA verb
                 .WithParsed<Player>(opts =>
                 {
+                    Console.WriteLine("Starting player ...");
+
                     // Inject Fusee.Engine.Base InjectMe dependencies
                     IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
@@ -188,6 +190,8 @@ namespace Fusee.Tools.fuseeCmdLine
 
                     if (!string.IsNullOrEmpty(opts.Input))
                     {
+                        Console.WriteLine("File: " + opts.Input);
+
                         if (File.Exists(opts.Input))
                         {
                             TryAddDir(assetDirs, Path.GetDirectoryName(opts.Input));
@@ -215,6 +219,10 @@ namespace Fusee.Tools.fuseeCmdLine
                         {
                             Diagnostics.Log($"Cannot open {opts.Input}.");
                         }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Fusee test scene. Use '-i <filename>' to view .fus files or Fusee .dlls.");
                     }
 
                     if (tApp == null)
