@@ -80,6 +80,25 @@ namespace Fusee.Examples.Simple.Core
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
+            else if(Keyboard.UpDownAxis != 0 || Keyboard.LeftRightAxis != 0)
+            {
+                if (Keyboard.UpDownAxis > 0)
+                {
+                    _angleVert = M.Pi;
+                }
+                else if (Keyboard.UpDownAxis < 0)
+                {
+                    _angleVert = 0;
+                }
+                else if (Keyboard.LeftRightAxis > 0)
+                {
+                    _angleVert =  0.5f * M.Pi;
+                }
+                else if (Keyboard.LeftRightAxis < 0)
+                {
+                    _angleVert = 1.5f * M.Pi;
+                }
+            }
             else
             {
                 _angleVelVert = 0;
@@ -90,7 +109,7 @@ namespace Fusee.Examples.Simple.Core
                 _moveX = _speed * Keyboard.ADAxis * DeltaTime;
                 _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
             }
-            _angleVert += _angleVelVert % 360;
+            _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
             // Create the camera matrix and set it as the current ModelView transformation
             _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
@@ -104,6 +123,9 @@ namespace Fusee.Examples.Simple.Core
             {
                 _ball.Translation.x += _moveX * M.Sin(_angleVert);
                 _ball.Translation.z -= _moveX * M.Cos(_angleVert);
+                
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert),0, -_moveX * M.Sin(_angleVert)));
+
 
             }
             if(Keyboard.WSAxis != 0)
@@ -111,6 +133,7 @@ namespace Fusee.Examples.Simple.Core
                 _ball.Translation.x += _moveZ * M.Cos(_angleVert);
                 _ball.Translation.z += _moveZ * M.Sin(_angleVert);
 
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert), 0, -_moveZ * M.Cos(_angleVert)));
             }
 
 
