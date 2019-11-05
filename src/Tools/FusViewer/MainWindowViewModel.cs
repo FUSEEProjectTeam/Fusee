@@ -17,6 +17,8 @@ using System.Threading;
 using Fusee.Base.Core;
 using Fusee.Base.Common;
 using Fusee.Engine.Core;
+using System.Windows.Data;
+using System.Globalization;
 
 namespace FusViewer.ViewModel
 {    
@@ -608,5 +610,7 @@ namespace FusViewer.ViewModel
         public string Name { get; set; }
         public string Desc { get; set; }
     }
+
+   
 }
 
