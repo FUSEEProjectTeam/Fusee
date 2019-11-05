@@ -1876,6 +1876,7 @@ namespace Fusee.Engine.Core
                         break;
                     }
                     case 3:
+                        lightDir = -light.direction;
                         break;
                 }
                 ");
@@ -2066,6 +2067,7 @@ namespace Fusee.Engine.Core
                         break;
                     }
                     case 3:
+                        lightDir = -light.direction;
                         break;
                 }
                 ");
@@ -2114,18 +2116,18 @@ namespace Fusee.Engine.Core
                 vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
 
-                if(thisFragmentsCascade == 0)
-                    lighting *= vec3(1,0.3f,0.3f);
-                else if(thisFragmentsCascade == 1)
-                    lighting *= vec3(0.3f,1,0.3f);
-                else if(thisFragmentsCascade == 2)
-                    lighting *= vec3(0.3f,0.3f,1);
-                else if(thisFragmentsCascade == 3)
-                    lighting *= vec3(1,1,0.3f);
-                else if(thisFragmentsCascade == 4)
-                    lighting *= vec3(1,0.3,1);
-                else if(thisFragmentsCascade == 5)
-                    lighting *= vec3(1,0.3f,1);
+                //if(thisFragmentsCascade == 0)
+                //    lighting *= vec3(1,0.3f,0.3f);
+                //else if(thisFragmentsCascade == 1)
+                //    lighting *= vec3(0.3f,1,0.3f);
+                //else if(thisFragmentsCascade == 2)
+                //    lighting *= vec3(0.3f,0.3f,1);
+                //else if(thisFragmentsCascade == 3)
+                //    lighting *= vec3(1,1,0.3f);
+                //else if(thisFragmentsCascade == 4)
+                //    lighting *= vec3(1,0.3,1);
+                //else if(thisFragmentsCascade == 5)
+                //    lighting *= vec3(1,0.3f,1);
             }              
             ");
 
