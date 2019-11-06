@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -41,6 +41,7 @@
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
     <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
     <!-- Input files part of the Addon -->
