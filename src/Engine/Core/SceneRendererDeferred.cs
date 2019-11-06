@@ -74,7 +74,7 @@ namespace Fusee.Engine.Core
         /// With this, the lambda value specifies a weight that adapts the logarithmic view frustum split according to the far planes of a uniform split.
         /// A value in the range [0;1] is expected. If it falls outside this range the value is clamped.
         /// </summary>
-        public float PssmLambda = 0.6f;
+        public float PssmLambda = 0.4f;
 
         /// <summary>
         /// The number of shadow maps, generated when using cascaded shadow mapping for parallel lights.

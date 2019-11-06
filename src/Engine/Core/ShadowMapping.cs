@@ -176,7 +176,7 @@ namespace Fusee.Engine.Core
         /// <param name="width">The window width in px.</param>
         /// <param name="height">The window height in px.</param>
         /// <param name="fov">The field of view of the camera.</param>              
-        private static IEnumerable<Tuple<float4x4, float2>> CascadesLightProjectionMatrices(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov)
+        private static IEnumerable<Tuple<float4x4, float2>> CascadesProjectionMatrices(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov)
         {
             var clipPlanes = GetClippingPlanesOfSplitFrustums(zNear, zFar, numberOfCascades, lambda).ToList();
             
@@ -203,7 +203,7 @@ namespace Fusee.Engine.Core
         /// <param name="view">The view matrix.</param> 
         private static IEnumerable<Tuple<float4[], float2>> CascadeCornersWorldSpace(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov, float4x4 view)
         {
-            var allSplitProjectionMatrices = CascadesLightProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);
+            var allSplitProjectionMatrices = CascadesProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);
 
             foreach (Tuple<float4x4, float2> tuple in allSplitProjectionMatrices)
                 yield return new Tuple<float4[], float2>(GetWorldSpaceFrustumCorners(tuple.Item1, view),tuple.Item2);

@@ -1890,7 +1890,7 @@ namespace Fusee.Engine.Core
                     if (light.isCastingShadows == 1)
                     {
                         vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
-                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir,  light.bias);                    
+                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir, light.bias, 1.0);                    
                     }                
                     ");
                 }
@@ -1900,7 +1900,7 @@ namespace Fusee.Engine.Core
                     // shadow       
                     if (light.isCastingShadows == 1)
                     {
-                        shadow = ShadowCalculationCubeMap(ShadowCubeMap, (FUSEE_IV * FragPos).xyz, light.positionWorldSpace, light.maxDistance, Normal, lightDir, light.bias);
+                        shadow = ShadowCalculationCubeMap(ShadowCubeMap, (FUSEE_IV * FragPos).xyz, light.positionWorldSpace, light.maxDistance, Normal, lightDir, light.bias, 2.0);
                     }
                     ");
                 }
@@ -2077,21 +2077,28 @@ namespace Fusee.Engine.Core
                 //TODO: iterate clip planes and choose shadow map for this frag. Use this shadow map in ShadowCalculation()  
 
                 frag.Append(@"
-                int thisFragmentsCascade = 0;
+                int thisFragmentsFirstCascade = -1;
+                int thisFragmentsSecondCascade = -1;
                 float fragDepth = FragPos.z;
                 
                 ");
 
-                
-                frag.Append($"for (int i = 0; i < {numberOfCascades}; i++)\n");
+                frag.AppendLine($"int numberOfCascades = {numberOfCascades};");
+                frag.Append($"for (int i = 0; i < numberOfCascades; i++)\n");
                 frag.Append(
                 @"{
-                    vec2 thisCascadesClipPlanes = ClipPlanes[i];
-                    if(fragDepth < thisCascadesClipPlanes.y)
+                    vec2 cp1 = ClipPlanes[i];
+                    if(fragDepth < cp1.y)
                     {                        
-                        thisFragmentsCascade = i;
+                        thisFragmentsFirstCascade = i;  
+                        if(i + 1 <= numberOfCascades - 1)
+                        {
+                            vec2 cp2 = ClipPlanes[i+1];
+                            if(fragDepth < cp2.y)                                                 
+                                thisFragmentsSecondCascade = i+1;
+                        }
                         break;
-                    }
+                    }                    
                 }
                 ");
 
@@ -2099,9 +2106,28 @@ namespace Fusee.Engine.Core
                 // shadow                
                 if (light.isCastingShadows == 1)
                 {
-                    vec4 posInLightSpace = (LightSpaceMatrices[thisFragmentsCascade] * FUSEE_IV) * FragPos;
-                    shadow = ShadowCalculation(ShadowMaps[thisFragmentsCascade], posInLightSpace, Normal, lightDir,  light.bias);                    
-                }                
+                    vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * FUSEE_IV) * FragPos;
+                    float shadow1 = ShadowCalculation(ShadowMaps[thisFragmentsFirstCascade], posInLightSpace1, Normal, lightDir,  light.bias, 1.0);                   
+
+                    //blend cascades to avoid hard cuts between them
+                    if(thisFragmentsSecondCascade != -1)
+                    {  
+                        float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps        
+
+                        vec4 posInLightSpace2 = (LightSpaceMatrices[thisFragmentsSecondCascade] * FUSEE_IV) * FragPos;
+                        float shadow2 = ShadowCalculation(ShadowMaps[thisFragmentsSecondCascade], posInLightSpace2, Normal, lightDir, light.bias, 1.0);    
+                        float z = ClipPlanes[thisFragmentsFirstCascade].y - ClipPlanes[thisFragmentsFirstCascade].x;
+                        float percent = (100.0/z * (fragDepth - ClipPlanes[thisFragmentsFirstCascade].x));
+                        float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
+
+                        if(percent >= blendStartPercent)
+                            shadow = mix(shadow1, shadow2, percentNormalized);
+                        else
+                            shadow = shadow1;
+                    }
+                    else                    
+                        shadow = shadow1;
+                }                              
                 ");               
             }
 
@@ -2116,18 +2142,53 @@ namespace Fusee.Engine.Core
                 vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
 
-                //if(thisFragmentsCascade == 0)
-                //    lighting *= vec3(1,0.3f,0.3f);
-                //else if(thisFragmentsCascade == 1)
-                //    lighting *= vec3(0.3f,1,0.3f);
-                //else if(thisFragmentsCascade == 2)
-                //    lighting *= vec3(0.3f,0.3f,1);
-                //else if(thisFragmentsCascade == 3)
-                //    lighting *= vec3(1,1,0.3f);
-                //else if(thisFragmentsCascade == 4)
-                //    lighting *= vec3(1,0.3,1);
-                //else if(thisFragmentsCascade == 5)
-                //    lighting *= vec3(1,0.3f,1);
+
+                //vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
+                //vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
+                //vec3 cascadeColor = vec3(1.0,1.0,1.0);
+                
+                //if(thisFragmentsFirstCascade == 0)
+                //    cascadeColor1 = vec3(1,0.3f,0.3f);
+                //else if(thisFragmentsFirstCascade == 1)
+                //     cascadeColor1 = vec3(0.3f,1,0.3f);
+                //else if(thisFragmentsFirstCascade == 2)
+                //    cascadeColor1 = vec3(0.3f,0.3f,1);
+                //else if(thisFragmentsFirstCascade == 3)
+                //    cascadeColor1 = vec3(1,1,0.3f);
+                //else if(thisFragmentsFirstCascade == 4)
+                //    cascadeColor1 = vec3(1,0.3,1);
+                //else if(thisFragmentsFirstCascade == 5)
+                //    cascadeColor1 = vec3(1,0.3f,1);                
+                
+                //if(thisFragmentsSecondCascade == 0)
+                //    cascadeColor2 = vec3(1,0.3f,0.3f);
+                //else if(thisFragmentsSecondCascade == 1)
+                //     cascadeColor2 = vec3(0.3f,1,0.3f);
+                //else if(thisFragmentsSecondCascade == 2)
+                //    cascadeColor2 = vec3(0.3f,0.3f,1);
+                //else if(thisFragmentsSecondCascade == 3)
+                //    cascadeColor2 = vec3(1,1,0.3f);
+                //else if(thisFragmentsSecondCascade == 4)
+                //    cascadeColor2 = vec3(1,0.3,1);
+                //else if(thisFragmentsSecondCascade == 5)
+                //    cascadeColor2 = vec3(1,0.3f,1);
+
+                //if(thisFragmentsSecondCascade != -1)
+                //{
+                //    float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
+                //    float z = ClipPlanes[thisFragmentsFirstCascade].y;
+                //    float percent = (100.0/z * fragDepth);
+                //    float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
+                //    if(percent >= blendStartPercent)
+                //        cascadeColor = mix(cascadeColor1, cascadeColor2, percentNormalized);
+                //    else
+                //        cascadeColor = cascadeColor1;
+                //}
+                //else
+                //{
+                //    cascadeColor = cascadeColor1;
+                //}
+                //lighting *= cascadeColor;
             }              
             ");
 
@@ -2481,12 +2542,11 @@ namespace Fusee.Engine.Core
         {
             return @"
                 
-            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, float bias)
+            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, float bias, float pcfKernelHalfSize)
             {
-                float shadow = 0.0;
-                float pcfKernel = 1.0;
-                int pcfLoop = int(pcfKernel);
-                float pcfKernelSize = pcfKernel + pcfKernel + 1.0;
+                float shadow = 0.0;                
+                int pcfLoop = int(pcfKernelHalfSize);
+                float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;
                 pcfKernelSize *= pcfKernelSize;
 
                 // perform perspective divide
@@ -2523,19 +2583,18 @@ namespace Fusee.Engine.Core
         {
             return @"
                 
-            float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias)
-            {
-                float pcfKernel = 2.0;
-                float pcfKernelSize = pcfKernel + pcfKernel + 1.0;
+            float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias, float pcfKernelHalfSize)
+            {               
+                float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;
                 pcfKernelSize *= pcfKernelSize;
 
                 vec3 sampleOffsetDirections[20] = vec3[]
                 (
-                   vec3( pcfKernel,  pcfKernel,  pcfKernel), vec3( pcfKernel, -pcfKernel,  pcfKernel), vec3(-pcfKernel, -pcfKernel,  pcfKernel), vec3(-pcfKernel,  pcfKernel,  pcfKernel), 
-                   vec3( pcfKernel,  pcfKernel, -pcfKernel), vec3( pcfKernel, -pcfKernel, -pcfKernel), vec3(-pcfKernel, -pcfKernel, -pcfKernel), vec3(-pcfKernel,  pcfKernel, -pcfKernel),
-                   vec3( pcfKernel,  pcfKernel,  0), vec3( pcfKernel, -pcfKernel,  0), vec3(-pcfKernel, -pcfKernel,  0), vec3(-pcfKernel,  pcfKernel,  0),
-                   vec3( pcfKernel,  0,  pcfKernel), vec3(-pcfKernel,  0,  pcfKernel), vec3( pcfKernel,  0, -pcfKernel), vec3(-pcfKernel,  0, -pcfKernel),
-                   vec3( 0,  pcfKernel,  pcfKernel), vec3( 0, -pcfKernel,  pcfKernel), vec3( 0, -pcfKernel, -pcfKernel), vec3( 0,  pcfKernel, -pcfKernel)
+                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize,  pcfKernelHalfSize), vec3( pcfKernelHalfSize, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize,  pcfKernelHalfSize), 
+                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize, -pcfKernelHalfSize), vec3( pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize, -pcfKernelHalfSize),
+                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize,  0), vec3( pcfKernelHalfSize, -pcfKernelHalfSize,  0), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize,  0), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize,  0),
+                   vec3( pcfKernelHalfSize,  0,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  0,  pcfKernelHalfSize), vec3( pcfKernelHalfSize,  0, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  0, -pcfKernelHalfSize),
+                   vec3( 0,  pcfKernelHalfSize,  pcfKernelHalfSize), vec3( 0, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3( 0, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3( 0,  pcfKernelHalfSize, -pcfKernelHalfSize)
                 );
 
                 // get vector between fragment position and light position
