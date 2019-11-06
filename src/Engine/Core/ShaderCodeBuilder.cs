@@ -2484,6 +2484,10 @@ namespace Fusee.Engine.Core
             float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, float bias)
             {
                 float shadow = 0.0;
+                float pcfKernel = 1.0;
+                int pcfLoop = int(pcfKernel);
+                float pcfKernelSize = pcfKernel + pcfKernel + 1.0;
+                pcfKernelSize *= pcfKernelSize;
 
                 // perform perspective divide
                 vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;
@@ -2499,15 +2503,15 @@ namespace Fusee.Engine.Core
                 //float depth = texture(shadowMap, projCoords.xyz).r; 
                 //shadow += (currentDepth - thisBias) > depth ? 1.0 : 0.0;
                 
-                for(int x = -1; x <= 1; ++x)
+                for(int x = -pcfLoop; x <= pcfLoop; ++x)
                 {
-                    for(int y = -1; y <= 1; ++y)
+                    for(int y = -pcfLoop; y <= pcfLoop; ++y)
                     {
                         float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
                         shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;        
                     }    
                 }
-                shadow /= 9.0;
+                shadow /= pcfKernelSize;
 
                 return shadow;
             }
@@ -2521,13 +2525,17 @@ namespace Fusee.Engine.Core
                 
             float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias)
             {
+                float pcfKernel = 2.0;
+                float pcfKernelSize = pcfKernel + pcfKernel + 1.0;
+                pcfKernelSize *= pcfKernelSize;
+
                 vec3 sampleOffsetDirections[20] = vec3[]
                 (
-                   vec3( 1,  1,  1), vec3( 1, -1,  1), vec3(-1, -1,  1), vec3(-1,  1,  1), 
-                   vec3( 1,  1, -1), vec3( 1, -1, -1), vec3(-1, -1, -1), vec3(-1,  1, -1),
-                   vec3( 1,  1,  0), vec3( 1, -1,  0), vec3(-1, -1,  0), vec3(-1,  1,  0),
-                   vec3( 1,  0,  1), vec3(-1,  0,  1), vec3( 1,  0, -1), vec3(-1,  0, -1),
-                   vec3( 0,  1,  1), vec3( 0, -1,  1), vec3( 0, -1, -1), vec3( 0,  1, -1)
+                   vec3( pcfKernel,  pcfKernel,  pcfKernel), vec3( pcfKernel, -pcfKernel,  pcfKernel), vec3(-pcfKernel, -pcfKernel,  pcfKernel), vec3(-pcfKernel,  pcfKernel,  pcfKernel), 
+                   vec3( pcfKernel,  pcfKernel, -pcfKernel), vec3( pcfKernel, -pcfKernel, -pcfKernel), vec3(-pcfKernel, -pcfKernel, -pcfKernel), vec3(-pcfKernel,  pcfKernel, -pcfKernel),
+                   vec3( pcfKernel,  pcfKernel,  0), vec3( pcfKernel, -pcfKernel,  0), vec3(-pcfKernel, -pcfKernel,  0), vec3(-pcfKernel,  pcfKernel,  0),
+                   vec3( pcfKernel,  0,  pcfKernel), vec3(-pcfKernel,  0,  pcfKernel), vec3( pcfKernel,  0, -pcfKernel), vec3(-pcfKernel,  0, -pcfKernel),
+                   vec3( 0,  pcfKernel,  pcfKernel), vec3( 0, -pcfKernel,  pcfKernel), vec3( 0, -pcfKernel, -pcfKernel), vec3( 0,  pcfKernel, -pcfKernel)
                 );
 
                 // get vector between fragment position and light position
@@ -2537,11 +2545,12 @@ namespace Fusee.Engine.Core
 
                 float shadow = 0.0;
                 float thisBias   = max(bias * (1.0 - dot(normal, lightDir)), bias * 0.01);//0.15;
-                int samples  = 20;
+                int samples = 20;
                 vec3 camPos = FUSEE_IV[3].xyz;
                 float viewDistance = length(camPos - fragPos);
 
-                float diskRadius = (1.0 + (viewDistance / farPlane)) / 25.0;
+                    
+                float diskRadius = 0.5; //(1.0 + (viewDistance / farPlane)) / pcfKernelSize;
                 for(int i = 0; i < samples; ++i)
                 {
                     float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
