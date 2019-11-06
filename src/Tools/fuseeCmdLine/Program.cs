@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -15,6 +15,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Common;
 using Path = System.IO.Path;
 using Fusee.Base.Imp.Desktop;
+using System.IO.Compression;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -175,7 +176,29 @@ namespace Fusee.Tools.fuseeCmdLine
             #region Pack
                 .WithParsed<Pack>(opts =>
                 {
-                    
+                    if (!string.IsNullOrWhiteSpace(opts.Input) && Path.GetExtension(opts.Input).ToLower().Equals(".dll"))
+                    {
+                        var path = Path.GetDirectoryName(opts.Input);
+                        var appname = Path.GetFileNameWithoutExtension(opts.Input);
+
+                        var zipfile = appname + ".fuz";
+
+                        var temppath = Path.GetTempPath();
+
+                        var zipfilepath = Path.Combine(path, zipfile);
+                        var zipfiletemppath = Path.Combine(temppath, zipfile);
+
+                        if (File.Exists(Path.Combine(zipfilepath)))
+                            File.Delete(Path.Combine(zipfilepath));
+
+                        if (File.Exists(Path.Combine(zipfiletemppath)))
+                            File.Delete(Path.Combine(zipfiletemppath));
+
+                        ZipFile.CreateFromDirectory(path, zipfiletemppath, CompressionLevel.Optimal, false);
+                        File.Move(zipfiletemppath, zipfilepath);
+
+                        Console.WriteLine("Packed to: " + zipfilepath);
+                    }
                 })
             #endregion
 
@@ -207,25 +230,42 @@ namespace Fusee.Tools.fuseeCmdLine
 
                         if (File.Exists(opts.Input))
                         {
-                            TryAddDir(assetDirs, Path.GetDirectoryName(opts.Input));
-                            if (Path.GetExtension(opts.Input).ToLower().Contains("fus"))
+                            var ext = Path.GetExtension(opts.Input).ToLower();
+                            var filepath = opts.Input;
+
+                            TryAddDir(assetDirs, Path.GetDirectoryName(filepath));
+                            switch (ext)
                             {
-                                // A .fus file - open it.
-                                modelFile = Path.GetFileName(opts.Input);
-                            }
-                            else
-                            {
-                                // See if the passed argument is an entire Fusee App DLL
-                                try
-                                {
-                                    Assembly asm = Assembly.LoadFrom(opts.Input);
-                                    tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                                    TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(opts.Input), "Assets"));
-                                }
-                                catch (Exception e)
-                                {
-                                    Diagnostics.Log(e.ToString());
-                                }
+                                case ".fus":
+                                    modelFile = Path.GetFileName(filepath);
+                                    break;
+
+                                case ".fuz":
+                                    var appname = Path.GetFileNameWithoutExtension(filepath);
+                                    var tmppath = Path.GetTempPath();
+
+                                    var apppath = Path.Combine(tmppath, "FuseeApp_" + appname);
+
+                                    if (Directory.Exists(apppath))
+                                        Directory.Delete(apppath, true);
+
+                                    ZipFile.ExtractToDirectory(filepath, apppath);
+
+                                    filepath = Path.Combine(apppath, appname + ".dll");
+                                    goto default;
+
+                                default:
+                                    try
+                                    {
+                                        Assembly asm = Assembly.LoadFrom(filepath);
+                                        tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                                        TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
+                                    }
+                                    catch (Exception e)
+                                    {
+                                        Diagnostics.Log(e.ToString());
+                                    }
+                                    break;
                             }
                         }
                         else
