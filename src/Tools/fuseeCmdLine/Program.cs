@@ -16,6 +16,7 @@ using Fusee.Base.Common;
 using Path = System.IO.Path;
 using Fusee.Base.Imp.Desktop;
 using System.IO.Compression;
+using System.Net;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -28,6 +29,7 @@ namespace Fusee.Tools.fuseeCmdLine
         OutputFile = -4,
         PlatformNotHandled = -5,
         InsufficentPrivileges = -6,
+        CouldNotDownloadInputFile = -7,
 
         InternalError = -42,
     }
@@ -48,7 +50,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [Verb("player", HelpText = "Output the protobuf schema for the .fus file format.")]
         public class Player
         {
-            [Value(0, HelpText = "Path to .fus or .dll-FUSEE app.", MetaName = "Input", Required = false)]
+            [Value(0, HelpText = "Path or url to .fus/.fuz file or Fusee-App .dll.", MetaName = "Input", Required = false)]
             public string Input { get; set; }
         }
 
@@ -206,6 +208,59 @@ namespace Fusee.Tools.fuseeCmdLine
                 // Called with the Player verb
                 .WithParsed<Player>(opts =>
                 {
+                    var input = opts.Input;
+
+                    if (Uri.IsWellFormedUriString(input, UriKind.Absolute))
+                    {
+                        var uri = new Uri(input);
+
+                        if (uri.Scheme.Equals("fusee") || uri.Scheme.Equals("http") || uri.Scheme.Equals("https"))
+                        {
+                            var filename = Path.GetFileName(uri.LocalPath);
+
+                            if (!string.IsNullOrWhiteSpace(filename))
+                            {
+                                var tempfilepath = Path.Combine(Path.GetTempPath(), filename);
+
+                                if (File.Exists(tempfilepath))
+                                    File.Delete(tempfilepath);
+
+                                if (uri.Scheme.Equals("fusee"))
+                                {
+                                    string uriWithoutScheme = uri.Host + uri.PathAndQuery + uri.Fragment;
+                                    bool status = false;
+                                    Console.WriteLine("Trying to download via https");
+                                    status = DownloadFile("https://" + uriWithoutScheme, tempfilepath);
+                                    if (!status)
+                                    {
+                                        Console.WriteLine("Trying to download via http");
+                                        status = DownloadFile("http://" + uriWithoutScheme, tempfilepath);
+                                    }
+                                    if (!status)
+                                    {
+                                        Environment.Exit((int)ErrorCode.CouldNotDownloadInputFile);
+                                    }
+                                    else
+                                    {
+                                        input = tempfilepath;
+                                    }
+                                }
+                                else
+                                {
+                                    bool status = DownloadFile(uri.ToString(), tempfilepath);
+                                    if (!status)
+                                    {
+                                        Environment.Exit((int)ErrorCode.CouldNotDownloadInputFile);
+                                    }
+                                    else
+                                    {
+                                        input = tempfilepath;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
                     Console.WriteLine("Starting player ...");
 
                     // Inject Fusee.Engine.Base InjectMe dependencies
@@ -224,14 +279,14 @@ namespace Fusee.Tools.fuseeCmdLine
                         TryAddDir(assetDirs, Path.Combine(ExeDir, "Assets"));
                     }
 
-                    if (!string.IsNullOrEmpty(opts.Input))
+                    if (!string.IsNullOrEmpty(input))
                     {
-                        Console.WriteLine("File: " + opts.Input);
+                        Console.WriteLine("File: " + input);
 
-                        if (File.Exists(opts.Input))
+                        if (File.Exists(input))
                         {
-                            var ext = Path.GetExtension(opts.Input).ToLower();
-                            var filepath = opts.Input;
+                            var ext = Path.GetExtension(input).ToLower();
+                            var filepath = input;
 
                             TryAddDir(assetDirs, Path.GetDirectoryName(filepath));
                             switch (ext)
@@ -275,7 +330,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     }
                     else
                     {
-                        Console.WriteLine("Fusee test scene. Use '-i <filename>' to view .fus files or Fusee .dlls.");
+                        Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
                     }
 
                     if (tApp == null)
@@ -1077,6 +1132,31 @@ namespace Fusee.Tools.fuseeCmdLine
                     return dirName;
             }
             return "";
+        }
+
+        private static bool DownloadFile(string uri, string localfile)
+        {
+            bool status = false;
+
+            using (var client = new WebClient())
+            {
+                try
+                {
+                    Console.Write("Downloading: " + uri);
+
+                    client.DownloadFile(uri, localfile);
+                    status = true;
+
+                    Console.WriteLine(" - SUCCESS");
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(" - FAILD");
+                    status = false;
+                }
+            }
+
+            return status;
         }
 
         private static Dictionary<string, int> ReadAssemblySizes(string fileContents)
