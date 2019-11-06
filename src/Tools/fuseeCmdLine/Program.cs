@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -47,8 +47,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [Verb("player", HelpText = "Output the protobuf schema for the .fus file format.")]
         public class Player
         {
-            [Option('i', "input",
-                HelpText = "Path to .fus or .dll-FUSEE app.")]
+            [Value(0, HelpText = "Path to .fus or .dll-FUSEE app.", MetaName = "Input", Required = false)]
             public string Input { get; set; }
         }
 
