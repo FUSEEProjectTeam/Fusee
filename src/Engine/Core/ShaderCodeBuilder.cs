@@ -1705,7 +1705,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        private static string DeferredLightningVS()
+        private static string DeferredLightingVS()
         {
             var vert = new StringBuilder();
             vert.Append(Version());
@@ -1730,7 +1730,7 @@ namespace Fusee.Engine.Core
             return vert.ToString();
         }        
 
-        private static string DeferredLightningFS(LightComponent lc)
+        private static string DeferredLightingFS(LightComponent lc)
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
@@ -1926,7 +1926,7 @@ namespace Fusee.Engine.Core
             return frag.ToString();
         }
 
-        private static string DeferredLightningFSCascaded(LightComponent lc, int numberOfCascades)
+        private static string DeferredLightingFSCascaded(LightComponent lc, int numberOfCascades)
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
@@ -2112,7 +2112,7 @@ namespace Fusee.Engine.Core
                     //blend cascades to avoid hard cuts between them
                     if(thisFragmentsSecondCascade != -1)
                     {  
-                        float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps        
+                        float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade-1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps        
 
                         vec4 posInLightSpace2 = (LightSpaceMatrices[thisFragmentsSecondCascade] * FUSEE_IV) * FragPos;
                         float shadow2 = ShadowCalculation(ShadowMaps[thisFragmentsSecondCascade], posInLightSpace2, Normal, lightDir, light.bias, 1.0);    
@@ -2175,7 +2175,7 @@ namespace Fusee.Engine.Core
 
                 //if(thisFragmentsSecondCascade != -1)
                 //{
-                //    float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
+                //    float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
                 //    float z = ClipPlanes[thisFragmentsFirstCascade].y;
                 //    float percent = (100.0/z * fragDepth);
                 //    float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
@@ -2250,8 +2250,8 @@ namespace Fusee.Engine.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = DeferredLightningVS(),
-                    PS = DeferredLightningFS(lc),
+                    VS = DeferredLightingVS(),
+                    PS = DeferredLightingFS(lc),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
@@ -2287,8 +2287,8 @@ namespace Fusee.Engine.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = DeferredLightningVS(),
-                    PS = DeferredLightningFSCascaded(lc, numberOfCascades),
+                    VS = DeferredLightingVS(),
+                    PS = DeferredLightingFSCascaded(lc, numberOfCascades),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
@@ -2321,8 +2321,8 @@ namespace Fusee.Engine.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = DeferredLightningVS(),
-                    PS = DeferredLightningFS(lc),
+                    VS = DeferredLightingVS(),
+                    PS = DeferredLightingFS(lc),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
@@ -2351,8 +2351,8 @@ namespace Fusee.Engine.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = DeferredLightningVS(),
-                    PS = DeferredLightningFS(lc),
+                    VS = DeferredLightingVS(),
+                    PS = DeferredLightingFS(lc),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,

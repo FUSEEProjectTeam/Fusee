@@ -1,8 +1,5 @@
-﻿using Fusee.Base.Common;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -184,6 +181,16 @@ namespace Fusee.Engine.Core
             {
                 var cascadeNear = clipPlanes[i];
                 var cascadeFar = clipPlanes[i + 1];
+
+                //Subtract buffer value from cascades near plane to avoid artifacts from blending cascades.
+                if (i > 0)
+                {
+                    float bufferPercent = 100 - System.Math.Max(85.0f - (5.0f * (i-1)), 50.0f); //The same function (max) must be used in the shader while blending the cascades.
+                    var zPrecedingCascade = clipPlanes[i] - clipPlanes[i - 1];
+                    var bufferLength = zPrecedingCascade / 100 * bufferPercent;
+                    cascadeNear -= bufferLength;
+                }
+
                 var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);                
                 var aspect = width / height;
                 yield return new Tuple<float4x4, float2>(float4x4.CreatePerspectiveFieldOfView(fov * 2, aspect, cascadeNear, cascadeFar), thisCascadesClipPlanes);
