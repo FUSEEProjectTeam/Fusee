@@ -21,7 +21,7 @@ namespace Fusee.Math.Core
         [ProtoMember(2)] public float3 Max;
 
         /// <summary>
-        ///     The roation of the oriented bounding box
+        ///     The rotation of the oriented bounding box
         /// </summary>
         [ProtoMember(3)] public float4x4 Rotation;
 
@@ -52,7 +52,7 @@ namespace Fusee.Math.Core
         /// <param name="max_">the maximum x y and z values</param>
         /// <param name="rotation_">the rotation of this box</param>
         /// <param name="translation_">the translation of this box</param>
-        /// <param name="translation_">the size of this box</param>
+        /// <param name="size_">the size of this box</param>
         public OBBf(float3 min_, float3 max_, float4x4 rotation_, float3 translation_, float3 size_)
         {
             Min = min_;

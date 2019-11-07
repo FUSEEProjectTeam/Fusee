@@ -155,21 +155,7 @@ namespace Fusee.Math.Core
                     - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
                     Row0.w * Row1.z * Row2.y * Row3.x;
             }
-        }
-
-        public double[] AsArray
-        {
-            get
-            {
-                return new double[]
-                {
-                    M11, M12, M13, M14,
-                    M21, M22, M23, M24,
-                    M31, M32, M33, M34,
-                    M41, M42, M43, M44
-                };
-            }
-        }
+        }        
 
         /// <summary>
         /// The first column of this matrix
@@ -435,7 +421,11 @@ namespace Fusee.Math.Core
 
         #region double[] ToArray()
 
-        private double[] ToArray()
+        /// <summary>
+        /// Returns the matrix as double array.
+        /// </summary>
+        /// <returns></returns>
+        public double[] ToArray()
         {
             return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
         }
@@ -787,8 +777,7 @@ namespace Fusee.Math.Core
         /// <param name="bottom">Bottom edge of the view frustum</param>
         /// <param name="top">Top edge of the view frustum</param>
         /// <param name="zNear">Distance to the near clip plane</param>
-        /// <param name="zFar">Distance to the far clip plane</param>
-        /// <param name="result">A projection matrix that transforms camera space to raster space</param>
+        /// <param name="zFar">Distance to the far clip plane</param>       
         /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
         /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value will be
         /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform 
@@ -796,7 +785,7 @@ namespace Fusee.Math.Core
         /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this 
         /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed 
         /// camera coordinate system.</remarks>
-        /// <exception cref="System.ArgumentOutOfRangeException">
+        /// <exception cref="ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
         /// <list type="bullet">
         /// <item>zNear is negative or zero</item>

@@ -262,8 +262,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Adds a scalar to a instance.
         /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="scalar">The scalar.</param>
+        /// <param name="vec">The first instance.</param>
+        /// <param name="scale">The scalar.</param>
         /// <returns>
         /// The result of the calculation.
         /// </returns>
@@ -294,8 +294,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Adds a scalar from a instance.
         /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="scalar">The scalar.</param>
+        /// <param name="vec">The first instance.</param>
+        /// <param name="scale">The scalar.</param>
         /// <returns>
         /// The result of the calculation.
         /// </returns>

@@ -39,11 +39,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
   </ItemGroup>
 </Project>

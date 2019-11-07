@@ -10,19 +10,19 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Texture implements <see cref="IImageData"/> and is used inside <see cref="RenderContext"/> to render bitmaps in fusee.
     /// </summary>
-    public class Texture : ITexture, IDisposable
+    public class Texture : ITexture
     {
         #region RenderContext Asset Management
-        // Event of mesh Data changes
+        
         /// <summary>
         /// TextureChanged event notifies observing TextureManager about property changes and the Texture's disposal.
         /// </summary>
-        public event EventHandler<TextureDataEventArgs> TextureChanged;
+        public event EventHandler<TextureEventArgs> TextureChanged;
 
         /// <summary>
         /// SessionUniqueIdentifier is used to verify a Textures's uniqueness in the current session.
         /// </summary>
-        public readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
+        public Suid SessionUniqueIdentifier { get; private set; }
         #endregion
 
         private readonly ImageData _imageData;
@@ -69,7 +69,44 @@ namespace Fusee.Engine.Core
         /// </value>
         public bool IsEmpty => (Width <= 0 || Height <= 0);
 
+        /// <summary>
+        /// Specifies if mipmaps are created for this texture.
+        /// </summary>
+        public bool DoGenerateMipMaps
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Specifies the texture's wrap mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureWrapMode WrapMode
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Specifies the texture's filter mode, see <see cref="TextureWrapMode"/>.
+        /// </summary>
+        public TextureFilterMode FilterMode
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Type of the render texture, <see cref="RenderTargetTextureTypes"/>.
+        /// </summary>
+        public RenderTargetTextureTypes TextureType { get; private set; }
+
         #endregion
+
+        /// <summary>
+        /// Creates a new instance of type Texture.
+        /// </summary>
+        protected Texture() { }
 
         /// <summary>
         /// Constructor initializes a Texture from a pixelData byte buffer, width and height in pixels and <see cref="ImagePixelFormat"/>.
@@ -78,21 +115,35 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in pixels.</param>
         /// <param name="height">Height in pixels.</param>
         /// <param name="colorFormat">Provides additional information about pixel encoding.</param>
-        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat)
+        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
+        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
+        /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
+        public Texture(byte[] pixelData, int width, int height, ImagePixelFormat colorFormat, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
+            SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(pixelData, width, height, colorFormat);
+            DoGenerateMipMaps = generateMipMaps;
+            FilterMode = filterMode;
+            WrapMode = wrapMode;            
         }
 
         /// <summary>
         /// Initialize a Texture from an existing IImageData. The input IImageData will be copied into this Texture via <seealso cref="Blt"/> command.
         /// </summary>
         /// <param name="imageData">The existing <see cref="IImageData"/> that will be copied to initialize a Texture instance.</param>
-        public Texture(IImageData imageData)
+        /// <param name="generateMipMaps">Defines if mipmaps are created.</param>
+        /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
+        /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
+        public Texture(IImageData imageData, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT)
         {
+            SessionUniqueIdentifier = Suid.GenerateSuid();
             _imageData = new ImageData(
                 new byte[imageData.Width * imageData.Height * imageData.PixelFormat.BytesPerPixel],
                 imageData.Width, imageData.Height, imageData.PixelFormat);
             _imageData.Blt(0,0, imageData);
+            DoGenerateMipMaps = generateMipMaps;
+            FilterMode = filterMode;
+            WrapMode = wrapMode;
         }
 
         /// <summary>
@@ -125,11 +176,7 @@ namespace Fusee.Engine.Core
                 return;
 
             // Fire Texture Changed Event -> Update TextureRegion on GPU
-            var del = this.TextureChanged;
-            if (del != null)
-            {
-                del(this, new TextureDataEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
-            }
+            this.TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.RegionChanged, xDst, yDst, width, height));
         }
 
         /// <summary>
@@ -151,11 +198,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public void Dispose()
         {
-            var del = TextureChanged;
-            if (del != null)
-            {
-                del(this, new TextureDataEventArgs(this, TextureChangedEnum.Disposed));
-            }
+            TextureChanged?.Invoke(this, new TextureEventArgs(this, TextureChangedEnum.Disposed));
         }
 
         /// <summary>

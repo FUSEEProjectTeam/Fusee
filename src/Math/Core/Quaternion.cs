@@ -154,6 +154,9 @@ namespace Fusee.Math.Core
             return ToAxisAngle(this);
         }
 
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>        
         public float4x4 ToRotMat()
         {
             return ToRotMat(this);
@@ -418,6 +421,11 @@ namespace Fusee.Math.Core
             return m1 * m2;
         }
 
+        /// <summary>
+        /// Angle axis representation of the given quaternion.
+        /// </summary>
+        /// <param name="quat">The quaternion to transform.</param>
+        /// <returns></returns>
         public static float4 ToAxisAngle(Quaternion quat)
         {
             Quaternion q = quat;
@@ -574,34 +582,39 @@ namespace Fusee.Math.Core
         }
 
         //TODO: Figure out why this is here!
-        public static float3 FromQuatToEuler(Quaternion q1)
+        /// <summary>
+        /// Gets the euler angles from a given quaternion.
+        /// </summary>
+        /// <param name="quat">The quaternion.</param>
+        /// <returns></returns>
+        public static float3 FromQuatToEuler(Quaternion quat)
         {
-            float sqw = q1.w * q1.w;
-            float sqx = q1.x * q1.x;
-            float sqy = q1.y * q1.y;
-            float sqz = q1.z * q1.z;
-            float unit = sqx + sqy + sqz + sqw; // if normalised is one, otherwise is correction factor
-            float test = q1.x * q1.w - q1.y * q1.z;
+            float sqw = quat.w * quat.w;
+            float sqx = quat.x * quat.x;
+            float sqy = quat.y * quat.y;
+            float sqz = quat.z * quat.z;
+            float unit = sqx + sqy + sqz + sqw; // if normalized this is one, otherwise it is the correction factor
+            float test = quat.x * quat.w - quat.y * quat.z;
             float3 v = new float3();
 
             if (test > 0.4995f * unit)
             { // singularity at north pole
-                v.y = M.RadiansToDegrees((float) (2f * System.Math.Atan2(q1.y, q1.x)));
+                v.y = M.RadiansToDegrees((float) (2f * System.Math.Atan2(quat.y, quat.x)));
                 v.x = M.RadiansToDegrees((float) (System.Math.PI / 2f));
                 v.z = 0;
                 return NormalizeAngles(v);
             }
             if (test < -0.4995f * unit)
             { // singularity at south pole
-                v.y = M.RadiansToDegrees((float) (-2f * System.Math.Atan2(q1.y, q1.x)));
+                v.y = M.RadiansToDegrees((float) (-2f * System.Math.Atan2(quat.y, quat.x)));
                 v.x = M.RadiansToDegrees((float) (-System.Math.PI / 2));
                 v.z = 0;
                 return NormalizeAngles(v);
             }
-            Quaternion q = new Quaternion(q1.w, q1.z, q1.x, q1.y);
-            v.y = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.w + 2f * q.y * q.z, 1 - 2f * (q.z * q.z + q.w * q.w)));     // Yaw
-            v.x = M.RadiansToDegrees((float)System.Math.Asin(2f * (q.x * q.z - q.w * q.y)));                             // Pitch
-            v.z = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.y + 2f * q.z * q.w, 1 - 2f * (q.y * q.y + q.z * q.z)));      // Roll
+            Quaternion q = new Quaternion(quat.w, quat.z, quat.x, quat.y);
+            v.y = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.w + 2f * q.y * q.z, 1 - 2f * (q.z * q.z + q.w * q.w)));  // Yaw
+            v.x = M.RadiansToDegrees((float)System.Math.Asin(2f * (q.x * q.z - q.w * q.y)));                                        // Pitch
+            v.z = M.RadiansToDegrees((float)System.Math.Atan2(2f * q.x * q.y + 2f * q.z * q.w, 1 - 2f * (q.y * q.y + q.z * q.z)));  // Roll
             return NormalizeAngles(v);
         }
 

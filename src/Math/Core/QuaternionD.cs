@@ -154,6 +154,9 @@ namespace Fusee.Math.Core
             return ToAxisAngle(this);
         }
 
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>       
         public double4x4 ToRotMat()
         {
             return ToRotMat(this);

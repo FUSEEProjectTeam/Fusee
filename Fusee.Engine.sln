@@ -88,14 +88,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{BA542BBF-9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Math.Core.Test", "src\Tests\Math\Fusee.Math.Core.Test\Fusee.Math.Core.Test.csproj", "{61892547-20E6-4FE6-AA22-1CD0C82BB361}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Pointcloud", "Pointcloud", "{8C47F1F4-295D-4E6F-8478-4D33DB4F4484}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Reader", "Reader", "{7BB75433-DF58-47AF-9592-81504E1C3470}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.Common", "src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj", "{2D738255-B745-4C23-BD5F-EE2AC731BC93}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Pointcloud.Reader.LASReader", "src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj", "{5EB680E7-9DC9-415A-B9A1-5DCA7DF42901}"
-EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -466,9 +458,6 @@ Global
 		{26808B4A-9F15-47F0-B147-E744241B79D2} = {15338FBD-C26A-45E2-ACF8-202DA51448CB}
 		{BA542BBF-9BDD-4B41-9550-BE7570280F3A} = {F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361} = {BA542BBF-9BDD-4B41-9550-BE7570280F3A}
-		{7BB75433-DF58-47AF-9592-81504E1C3470} = {8C47F1F4-295D-4E6F-8478-4D33DB4F4484}
-		{2D738255-B745-4C23-BD5F-EE2AC731BC93} = {8C47F1F4-295D-4E6F-8478-4D33DB4F4484}
-		{5EB680E7-9DC9-415A-B9A1-5DCA7DF42901} = {7BB75433-DF58-47AF-9592-81504E1C3470}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

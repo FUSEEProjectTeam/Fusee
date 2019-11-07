@@ -8,25 +8,24 @@ namespace Fusee.Engine.Core
     {
         private readonly IRenderContextImp _renderContextImp;
 
-        private Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
+        private readonly Stack<ITextureHandle> _toBeDeletedTextureHandles = new Stack<ITextureHandle>();
 
-        private Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
+        private readonly Dictionary<Suid, ITextureHandle> _identifierToTextureHandleDictionary = new Dictionary<Suid, ITextureHandle>();
 
         private void Remove(ITextureHandle textureHandle)
         {
             _renderContextImp.RemoveTextureHandle(textureHandle);
         }
 
-        private void TextureChanged(object sender, TextureDataEventArgs textureDataEventArgs)
+        private void TextureChanged(object sender, TextureEventArgs textureDataEventArgs)
         {
-            ITextureHandle toBeUpdatedTextureHandle;
             if (!_identifierToTextureHandleDictionary.TryGetValue(textureDataEventArgs.Texture.SessionUniqueIdentifier,
-                out toBeUpdatedTextureHandle))
+                out ITextureHandle toBeUpdatedTextureHandle))
             {
                 throw new KeyNotFoundException("Texture is not registered.");
             }
 
-            Texture texture = textureDataEventArgs.Texture;
+            ITextureBase texture = textureDataEventArgs.Texture;
 
             switch (textureDataEventArgs.ChangedEnum)
             {
@@ -39,17 +38,49 @@ namespace Fusee.Engine.Core
                     //_reusableIdentifiers.Push(textureDataEventArgs.Texture.Identifier);
                     break;
                 case TextureChangedEnum.RegionChanged:
-                    _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, texture,
-                        textureDataEventArgs.XStart, textureDataEventArgs.YStart, textureDataEventArgs.Width,
-                        textureDataEventArgs.Height);
+                    //TODO: An IWritableTexture has no implementation of UpdateTextureRegion (yet)
+                    if (texture.GetType() == typeof(ITexture))
+                    {
+                        _renderContextImp.UpdateTextureRegion(toBeUpdatedTextureHandle, (ITexture)texture,
+                            textureDataEventArgs.XStart, textureDataEventArgs.YStart, textureDataEventArgs.Width,
+                            textureDataEventArgs.Height);
+                    }
                     break;
             }
         }
 
-        private ITextureHandle RegisterNewTexture(Texture texture, bool repeat)
+        private ITextureHandle RegisterNewTexture(WritableCubeMap texture)
         {
             // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
-            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture, repeat);
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, textureHandle);
+
+            return textureHandle;
+
+        }
+
+        private ITextureHandle RegisterNewTexture(WritableTexture texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
+
+            // Setup handler to observe changes of the texture data and dispose event (deallocation)
+            texture.TextureChanged += TextureChanged;
+
+            _identifierToTextureHandleDictionary.Add(texture.SessionUniqueIdentifier, textureHandle);
+
+            return textureHandle;
+
+        }
+
+        private ITextureHandle RegisterNewTexture(Texture texture)
+        {
+            // Configure newly created TextureHandle to reflect Texture's properties on GPU (allocate buffers)
+            ITextureHandle textureHandle = _renderContextImp.CreateTexture(texture);
 
             // Setup handler to observe changes of the texture data and dispose event (deallocation)
             texture.TextureChanged += TextureChanged;
@@ -68,18 +99,35 @@ namespace Fusee.Engine.Core
             _renderContextImp = renderContextImp;
         }
 
-        public ITextureHandle GetTextureHandleFromTexture(Texture texture, bool repeat = false)
+        public ITextureHandle GetTextureHandleFromTexture(Texture texture)
         {
-            ITextureHandle foundTextureHandle;
-            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out foundTextureHandle))
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out ITextureHandle foundTextureHandle))
             {
-                return RegisterNewTexture(texture, repeat);
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureHandle;
+        }
+
+        public ITextureHandle GetWritableCubeMapHandleFromTexture(WritableCubeMap texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            {
+                return RegisterNewTexture(texture);
+            }
+            return foundTextureHandle;
+        }
+
+        public ITextureHandle GetWritableTextureHandleFromTexture(WritableTexture texture)
+        {
+            if (!_identifierToTextureHandleDictionary.TryGetValue(texture.SessionUniqueIdentifier, out var foundTextureHandle))
+            {
+                return RegisterNewTexture(texture);
             }
             return foundTextureHandle;
         }
 
         /// <summary>
-        /// Call this method on the mainthread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
+        /// Call this method on the main thread after RenderContext.Render in order to cleanup all not used Buffers from GPU memory.
         /// </summary>
         public void Cleanup()
         {

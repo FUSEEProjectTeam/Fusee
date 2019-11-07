@@ -185,11 +185,11 @@ namespace Fusee.Math.Core
         }
 
         [Fact]
-        public void AsArray_Instance()
+        public void ToArray_Instance()
         {
             var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
-            var actual = mat.AsArray;
+            var actual = mat.ToArray();
 
             Assert.Equal(new float[] { 1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1 }, actual);
         }

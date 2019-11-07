@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Player.Desktop</PackageId>
@@ -7,6 +7,7 @@
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
+
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Player\Desktop\</OutputPath>
   </PropertyGroup>
@@ -49,4 +50,5 @@
   <ItemGroup>
     <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="tools/netcoreapp3.0/any" />
   </ItemGroup>
+      
 </Project>

@@ -84,9 +84,8 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <value>
         /// The length.
-        /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// </value>        
+        /// <seealso cref="LengthSquared" />
         public double Length
         {
             get
@@ -105,8 +104,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length squared.
         /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
+        /// <see cref="Length" />       
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.

@@ -43,32 +43,33 @@ namespace Fusee.Engine.Core
     /// static interface). 
     /// </summary>
     /// <remarks>
-    /// Use the input instanmce in cases where you actually need an 
+    /// Use the input instance in cases where you actually need an 
     /// object to pass around (although there is no such use case in FUSEE code at all).
     /// Use the static access in all other cases to reduce typing Input.Instance
     /// over and over again. Use <code>using static Fusee.Engine.Core.Input</code> to
     /// directly access <see cref="Keyboard"/>, <see cref="Mouse"/>, <see cref="Touch"/>, 
-    /// without even typing a namespace or classname.
+    /// without even typing a namespace or class name.
     /// </remarks>
     public class Input
     {
         private readonly Dictionary<string, IInputDriverImp> _inputDrivers;
         /// <summary>
-        /// Retrieves the the input driver implementations currently registered.
+        /// Retrieves the input driver implementations currently registered.
         /// </summary>
         /// <value>
-        /// The input driver implmementations.
+        /// The input driver implementations.
         /// </value>
         /// <remarks>
         /// This is an instance method. Use <see cref="Drivers"/> for a static-over-singleton access
         /// to the same functionality.
         /// </remarks>
         public IEnumerable<IInputDriverImp> InputDrivers => _inputDrivers.Values;
+
         /// <summary>
-        /// Retrieves the the input driver implementations currently registered.
+        /// Retrieves the input driver implementations currently registered.
         /// </summary>
         /// <value>
-        /// The input driver implmementations.
+        /// The input driver implementations.
         /// </value>
         /// <remarks>
         /// This is a static method. Use <see cref="InputDrivers"/> for an instance method 
@@ -76,18 +77,23 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public static IEnumerable<IInputDriverImp> Drivers => Instance._inputDrivers.Values;
 
-        private readonly Dictionary<string, InputDevice> _inputDevices;
         /// <summary>
         /// Returns the values of an input device.
         /// </summary>
         public IEnumerable<InputDevice> InputDevices => _inputDevices.Values;
+
         /// <summary>
         /// Returns the input device values.
         /// </summary>
         public static IEnumerable<InputDevice> Devices => Instance._inputDevices.Values;
 
-        private readonly List<SpecialDeviceCreator> _specialDeviceCreators;
-        public readonly SixDOFDevice spaceMouseInput;
+        /// <summary>
+        /// The input of the space mouse.
+        /// </summary>
+        public readonly SixDOFDevice SpaceMouseInput;
+
+        private readonly Dictionary<string, InputDevice> _inputDevices; 
+        private readonly List<SpecialDeviceCreator> _specialDeviceCreators;       
 
         /// <summary>
         /// Gets the input devices of a certain type. Shortcut for
@@ -107,7 +113,7 @@ namespace Fusee.Engine.Core
         /// <typeparam name="TDevice">The type of the devices to find.</typeparam>
         /// <returns>The input devices of the specified type</returns>
         /// <remarks>
-        /// This is a static method. Use <see cref="GetInputDevices{TDevice}"/> for an insatnce method 
+        /// This is a static method. Use <see cref="GetInputDevices{TDevice}"/> for an instance method 
         /// to the same functionality.
         /// </remarks>
         public static IEnumerable<TDevice> GetDevices<TDevice>() where TDevice : InputDevice => Instance.GetInputDevices<TDevice>();
@@ -130,7 +136,7 @@ namespace Fusee.Engine.Core
         /// <typeparam name="TDevice">The type of the device to find.</typeparam>
         /// <returns>The first device matching the given type, or null if no such device is currently present.</returns>
         /// <remarks>
-        /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an insatnce method 
+        /// This is a static method. Use <see cref="GetInputDevice{TDevice}"/> for an instance method 
         /// to the same functionality.
         /// </remarks>
         public static TDevice GetDevice<TDevice>(int deviceid = 0) where TDevice : InputDevice => Instance.GetInputDevice<TDevice>(deviceid);
@@ -176,7 +182,7 @@ namespace Fusee.Engine.Core
         /// The keyboard (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="KeyboardInput"/> for an insatnce property 
+        /// This is a static property. Use <see cref="KeyboardInput"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static KeyboardDevice Keyboard => Instance.KeyboardInput;
@@ -192,6 +198,7 @@ namespace Fusee.Engine.Core
         /// to the same functionality.
         /// </remarks>
         public TouchDevice TouchInput => GetInputDevice<TouchDevice>(0);
+
         /// <summary>
         /// Retrieves the first touch device (if present).
         /// </summary>
@@ -199,7 +206,7 @@ namespace Fusee.Engine.Core
         /// The touch device (or null).
         /// </value>
         /// <remarks>
-        /// This is a static property. Use <see cref="TouchInput"/> for an insatnce property 
+        /// This is a static property. Use <see cref="TouchInput"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static TouchDevice Touch => Instance.TouchInput;
@@ -217,7 +224,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is connected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceConnected
@@ -250,7 +257,7 @@ namespace Fusee.Engine.Core
         /// Occurs when a device such as a gamepad is disconnected.
         /// </summary>
         /// <remarks>
-        /// This is a static event. Use <see cref="DeviceConnected"/> for an insatnce property 
+        /// This is a static event. Use <see cref="DeviceConnected"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static event EventHandler<DeviceConnectionArgs> DeviceDisconnected
@@ -391,7 +398,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="inputDriver">The new input driver to add.</param>
         /// <remarks>
-        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an insatnce property 
+        /// This is a static method. Use <see cref="AddInputDriverImp"/> for an instance property 
         /// to the same functionality.
         /// </remarks>
         public static void AddDriverImp(IInputDriverImp inputDriver) => Instance.AddInputDriverImp(inputDriver);

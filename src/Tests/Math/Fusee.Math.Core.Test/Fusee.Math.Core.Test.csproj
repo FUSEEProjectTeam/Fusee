@@ -24,4 +24,5 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
+
 </Project>

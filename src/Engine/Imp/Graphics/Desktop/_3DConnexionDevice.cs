@@ -376,9 +376,9 @@ namespace _3DconnexionDriver
         /// </summary>
         public event EventHandler<MotionEventArgs> Motion;
 
-        /// <summary>
-        /// Event when Device changes. Doesn't work yet
-        /// </summary>
+        ///// <summary>
+        ///// Event when Device changes. Doesn't work yet
+        ///// </summary>
         //public event EventHandler<DeviceChangeEventArgs> DeviceChange;
 
         /// <summary>
@@ -669,9 +669,6 @@ namespace _3DconnexionDriver
         }
     }
 
-
-
-
     public class _3DxException : Exception
     {
         public _3DxException(string message)
@@ -684,8 +681,6 @@ namespace _3DconnexionDriver
         {
         }
     }
-
-
 
     public class DeviceChangeEventArgs : EventArgs
     {

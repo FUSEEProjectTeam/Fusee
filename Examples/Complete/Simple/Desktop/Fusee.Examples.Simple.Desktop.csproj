@@ -1,15 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Simple.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Simple.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
+    <StartupObject>Fusee.Examples.Simple.Desktop.Simple</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
