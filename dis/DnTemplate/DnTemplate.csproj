@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Template\dotnet</OutputPath>
+    <OutputPath>$(MSBuildThisFileDirectory)\bin</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
