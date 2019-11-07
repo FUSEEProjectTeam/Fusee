@@ -1,4 +1,4 @@
-<Project  Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Picking.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Picking.Desktop</PackageId>
