@@ -30,7 +30,6 @@ namespace Fusee.Base.Core
         /// <param name="msg">The message</param>
         /// <param name="ex">A possible exception</param>
         /// <param name="args">Possible arguments</param>
-        /// <returns></returns>
         public delegate string Formater(string callingMethod, SeverityLevel lvl, string msg, Exception ex = null, object[] args = null);
 
         /// <summary>
@@ -158,7 +157,7 @@ namespace Fusee.Base.Core
         public static void SetMinTextFileLoggingSeverityLevel(SeverityLevel lvl)
         {
             if (!_useFile)            
-                Warn("Level set without enabled text file logging. Please enable textfile logging fist via LogToTextFile(true)");
+                Warn("Level set without enabled text file logging. Please enable text file logging fist via LogToTextFile(true)");
 
             _minLogLevelFile = lvl;
         }
