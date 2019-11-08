@@ -30,5 +30,11 @@
     <PackageReference Include="WebAssembly.Bindings" Version="0.1.0-preview1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
 
 </Project>

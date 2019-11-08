@@ -15,12 +15,6 @@
 
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.3" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
 </Project>
