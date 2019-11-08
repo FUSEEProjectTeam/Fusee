@@ -145,8 +145,7 @@ namespace Fusee.Engine.Core
         private MeshProbs _meshProbs;
         private MaterialType _materialType = MaterialType.Material;
         private List<string> _vertexShader;
-        private List<string> _pixelShader;
-        private readonly bool _renderWithShadows;
+        private List<string> _pixelShader;        
 
         //The maximal number of lights we can render when using the forward pipeline.
         private const int _numberOfLightsForward = 8;
@@ -249,8 +248,7 @@ namespace Fusee.Engine.Core
             WeightComponent wc = null, bool renderWithShadows = false)
         {
             // Set Lighting calculation & shadow
-            _lightingCalculationMethod = lightingCalculation;
-            _renderWithShadows = renderWithShadows;
+            _lightingCalculationMethod = lightingCalculation;            
 
             _vertexShader = new List<string>();
             _pixelShader = new List<string>();
@@ -298,7 +296,6 @@ namespace Fusee.Engine.Core
 
         #region AnalyzeMaterialParams
 
-
         private void AnalzyeMaterialParams(MaterialComponent mc)
         {
             _materialProbs = new MaterialProbs
@@ -324,7 +321,6 @@ namespace Fusee.Engine.Core
             if (mc.GetType() == typeof(MaterialLightComponent))
                 _materialType = MaterialType.MaterialLightComponent;
         }
-
 
         private void AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
         {
@@ -377,7 +373,6 @@ namespace Fusee.Engine.Core
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vB"));
             }
 
-
             if (_materialProbs.HasSpecular)
                 _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
 
@@ -402,16 +397,11 @@ namespace Fusee.Engine.Core
             if (_meshProbs.HasColors)
             {
                 _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuColor"));
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vColors"));
+                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vColor"));
             }
 
-            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "camPos"));
-            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vMVNormal"));
+            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vCamPos"));            
             _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewPos"));
-
-            if (_renderWithShadows)
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "shadowLight"));
-
         }
 
         private void AddVertexUniforms(WeightComponent wc)
@@ -433,9 +423,6 @@ namespace Fusee.Engine.Core
             }
 
             _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
-
-            if (_renderWithShadows)
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "shadowMVP"));
         }
 
         private void AddVertexMain()
@@ -468,28 +455,25 @@ namespace Fusee.Engine.Core
                     "newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;");
 
                 // At this point the normal is in World space - transform back to model space                
-                _vertexShader.Add("vMVNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
+                _vertexShader.Add("vNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
             }
 
             if (_materialProbs.HasSpecular)
             {
-                _vertexShader.Add("vec3 camPos = FUSEE_IMV[3].xyz;");
+                _vertexShader.Add("vec3 vCamPos = FUSEE_IMV[3].xyz;");
 
                 _vertexShader.Add(_meshProbs.HasWeightMap
-                    ? "vViewDir = normalize(camPos - vec3(newVertex));"
-                    : "vViewDir = normalize(camPos - fuVertex);");
+                    ? "vViewDir = normalize(vCamPos - vec3(newVertex));"
+                    : "vViewDir = normalize(vCamPos - fuVertex);");
             }
 
             if (_meshProbs.HasUVs)
                 _vertexShader.Add("vUV = fuUV;");
 
             if (_meshProbs.HasNormals && !_meshProbs.HasWeightMap)
-                _vertexShader.Add("vMVNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
+                _vertexShader.Add("vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
 
             _vertexShader.Add("vViewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
-
-            if (_renderWithShadows)
-                _vertexShader.Add("shadowLight = shadowMVP * vViewPos;");
 
             if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
             {
@@ -549,9 +533,6 @@ namespace Fusee.Engine.Core
                     throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {_materialType}");
             }
 
-            if (_renderWithShadows)
-                AddShadowMethod();
-
             AddApplyLightMethod(mc);
             AddPixelBody();
 
@@ -572,28 +553,21 @@ namespace Fusee.Engine.Core
             _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewPos"));
 
             if (_meshProbs.HasNormals)
-            {
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vMVNormal"));
+            {               
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vNormal"));
             }
             if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
             {
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "vT"));
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vB"));
-
             }
-
 
             if (_meshProbs.HasUVs)
                 _pixelShader.Add(GLSL.CreateIn(Type.Vec2, "vUV"));
 
-            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "camPos"));
-
-            if (_renderWithShadows)
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "shadowLight"));
+            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vCamPos"));
 
             _pixelShader.Add(GLSL.CreateOut(Type.Vec4, "fragmentColor"));
-
         }
 
         private void AddPixelUniforms()
@@ -651,7 +625,6 @@ namespace Fusee.Engine.Core
         {
             var methodBody = new List<string>
             {
-
                 "return vec4(DiffuseColor.xyz * ambientCoefficient, 1.0);"
             };
 
@@ -705,28 +678,7 @@ namespace Fusee.Engine.Core
                     GLSL.CreateVar(Type.Vec4, "intensities")
                 }, methodBody));
 
-        }
-
-        private void AddShadowMethod()
-        {
-            var methodBody = new List<string>
-            {
-                "// perform perspective divide for ortographic!",
-                "vec3 projCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;",
-                "projCoords = projCoords * 0.5 + 0.5; // map to [0,1]",
-                "float currentDepth = projCoords.z;",
-                "float pcfDepth = texture(firstPassTex, projCoords.xy).r;",
-                "float shadow = 0.0;",
-                "shadow = currentDepth - 0.01 > pcfDepth ? 1.0 : 0.0;",
-                "if (projCoords.z > 1.0)",
-                "   shadow = 0.0;",
-                "",
-                "return shadow;"
-            };
-
-            _pixelShader.Add(GLSL.CreateMethod(Type.Float, "CalcShadowFactor",
-                new[] { GLSL.CreateVar(Type.Vec4, "fragPosLightSpace") }, methodBody));
-        }
+        }        
 
         private void AddApplyLightMethod(MaterialComponent mc)
         {
@@ -745,18 +697,18 @@ namespace Fusee.Engine.Core
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
                 $"vec3 N = ((texture(BumpTexture, vUV).rgb * 2.0) - 1.0f) * vec3({BumpIntensityName}, {BumpIntensityName}, 1.0);",
-                "N = (N.x * vec3(vT)) + (N.y * vB) + (N.z * vMVNormal);",
+                "N = (N.x * vec3(vT)) + (N.y * vB) + (N.z * vNormal);",
                 "N = normalize(N);"
             };
 
             var normals = new List<string>
             {
-                "vec3 N = normalize(vMVNormal);"
+                "vec3 N = normalize(vNormal);"
             };
 
             var applyLightParamsWithoutNormals = new List<string>
             {
-                //"vec3 N = normalize(vMVNormal);",
+                //"vec3 N = normalize(vNormal);",
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
                 "if(lightType == 1){L = -normalize(direction);}",
                 "else{ L = normalize(position - vViewPos);}",
@@ -764,9 +716,7 @@ namespace Fusee.Engine.Core
                 "if(lightType == 3) {",
                 "   L = normalize(vec3(0.0,0.0,-1.0));",
                 "}",
-                "vec2 o_texcoords = vUV;",
-                "",
-                _renderWithShadows ? "float shadowFactor = CalcShadowFactor(shadowLight);" : "",
+                "vec2 o_texcoords = vUV;",               
                 "",
                 "vec4 Idif = vec4(0);",
                 "vec4 Ispe = vec4(0);",
@@ -795,19 +745,15 @@ namespace Fusee.Engine.Core
             };
 
             var pointLight = new List<string>
-            {
-                _renderWithShadows
-                    ? "lighting = (1.0-shadowFactor) * (Idif * att) + (Ispe * att) ;"
-                    : "lighting = (Idif * att) + (Ispe * att);",
+            {              
+                "lighting = (Idif * att) + (Ispe * att);",
                 "lighting *= strength;"
             };
 
             //No attenuation!
             var parallelLight = new List<string>
-            {
-                _renderWithShadows
-                    ? "lighting = (1.0-shadowFactor) * Idif + Ispe;"
-                    : "lighting = Idif + Ispe;",
+            { 
+               "lighting = Idif + Ispe;",
                 "lighting *= strength;"
             };
 
@@ -821,9 +767,8 @@ namespace Fusee.Engine.Core
 
             "att *= clamp(t, 0.0, 1.0);",
             "",
-                _renderWithShadows
-                    ? "lighting = (1.0-shadowFactor) * (Idif * att) + (Ispe * att) ;"
-                    : "lighting = (Idif * att) + (Ispe * att);",
+               
+                "lighting = (Idif * att) + (Ispe * att);",
                 "lighting *= strength;"
             };
 
