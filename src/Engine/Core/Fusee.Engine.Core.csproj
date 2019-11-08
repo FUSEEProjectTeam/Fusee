@@ -46,4 +46,8 @@
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
   </ItemGroup>
+  
+  <ItemGroup>
+    <Folder Include="ShaderShards\Geometry\" />
+  </ItemGroup>
 </Project>

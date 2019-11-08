@@ -4,21 +4,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
     public static class Includes
     {
-        public static Dictionary<string, string> GetFieldValues(System.Type type)
-        {
-            return type
-                      .GetProperties(BindingFlags.Public | BindingFlags.Static)
-                      .Where(f => f.PropertyType == typeof(string))
-                      .ToDictionary(f => f.Name,
-                                    f => (string)f.GetValue(null));
-        }
-
         public static string ParseIncludes(string rawShaderString)
         {           
             var fields = GetFieldValues(typeof(UniformNameDeclarations));
@@ -66,6 +56,15 @@ namespace Fusee.Engine.Core.ShaderShards
             }
 
             return String.Join("\n", refinedShader);
+        }
+
+        private static Dictionary<string, string> GetFieldValues(Type type)
+        {
+            return type
+                      .GetProperties(BindingFlags.Public | BindingFlags.Static)
+                      .Where(f => f.PropertyType == typeof(string))
+                      .ToDictionary(f => f.Name,
+                                    f => (string)f.GetValue(null));
         }
     }
 }
