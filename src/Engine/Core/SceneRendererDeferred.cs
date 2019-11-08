@@ -9,17 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace Fusee.Engine.Core
-{
-    enum DeferredPasses
-    {
-        GEOMETRY,
-        SSAO,
-        SSAO_BLUR,
-        SHADOW,
-        FXAA,
-        LIGHTING
-    }
-
+{    
     /// <summary>
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
@@ -113,7 +103,7 @@ namespace Fusee.Engine.Core
 
         private ProjectionComponent _thisScenesProjection;
 
-        private DeferredPasses _currentPass;
+        private RenderPasses _currentPass;
 
         //_shadowMapRes is set to ShadowMapRes at the end of each Render call to allow resolution changes at runtime.
         private TexRes _shadowMapRes = TexRes.MID_RES;
@@ -221,7 +211,7 @@ namespace Fusee.Engine.Core
             if (HasNumberOfLightsChanged)
                 HasNumberOfLightsChanged = false;
 
-            if (_currentPass != DeferredPasses.SHADOW)
+            if (_currentPass != RenderPasses.SHADOW)
             {
                 _rc.SetShaderEffect(shaderComponent.Effect);
                 _state.Effect = shaderComponent.Effect;
@@ -238,7 +228,7 @@ namespace Fusee.Engine.Core
         {
             base.RenderProjection(pc);
 
-            if (_currentPass == DeferredPasses.GEOMETRY)
+            if (_currentPass == RenderPasses.GEOMETRY)
                 _quadScene.Children[0].Components[0] = pc;
             
             _thisScenesProjection = pc;
@@ -414,7 +404,7 @@ namespace Fusee.Engine.Core
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.           
             _rc.Viewport(0, 0, (int)_shadowMapRes, (int)_shadowMapRes, false);
-            _currentPass = DeferredPasses.SHADOW;
+            _currentPass = RenderPasses.SHADOW;
             _rc.SetShaderEffect(_shadowEffect);
 
             foreach (var lightVisRes in LightViseratorResults)
@@ -472,14 +462,14 @@ namespace Fusee.Engine.Core
 
             //Pass 1: Geometry pass
             _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
-            _currentPass = DeferredPasses.GEOMETRY;
+            _currentPass = RenderPasses.GEOMETRY;
             rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
 
             if (_ssaoOn)
             {
                 //Pass 2: SSAO
-                _currentPass = DeferredPasses.SSAO;
+                _currentPass = RenderPasses.SSAO;
                 if (_ssaoTexEffect == null)
                     _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
                 _quadShaderEffectComp.Effect = _ssaoTexEffect;
@@ -487,7 +477,7 @@ namespace Fusee.Engine.Core
                 Traverse(_quadScene.Children);
 
                 //Pass 3: Blur SSAO Texture
-                _currentPass = DeferredPasses.SSAO_BLUR;
+                _currentPass = RenderPasses.SSAO_BLUR;
                 if (_blurEffect == null)
                     _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
                 _quadShaderEffectComp.Effect = _blurEffect;
@@ -498,7 +488,7 @@ namespace Fusee.Engine.Core
                 _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextureTypes.G_SSAO);
             }
 
-            _currentPass = DeferredPasses.LIGHTING;
+            _currentPass = RenderPasses.LIGHTING;
 
             //Pass 4 & 5: FXAA and Lighting
             if (!FxaaOn)
@@ -513,7 +503,7 @@ namespace Fusee.Engine.Core
                 rc.SetRenderTarget(_lightedSceneRenderTarget);
                 RenderLightPasses();
 
-                _currentPass = DeferredPasses.FXAA;
+                _currentPass = RenderPasses.FXAA;
 
                 _rc.Viewport(0, 0, screenWidth, screenHeight);
                 if (_fxaaEffect == null)

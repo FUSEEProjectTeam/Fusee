@@ -169,7 +169,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="mc">The MaterialCpmponent</param>
         /// <param name="mesh">The Mesh</param>
-        /// <param name="wc">Teh WeightComponent</param>
+        /// <param name="wc">The WeightComponent</param>
         /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>        
         public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, WeightComponent wc = null,
             bool renderWithShadows = false)
@@ -2273,6 +2273,7 @@ namespace Fusee.Engine.Core
         /// <param name="lc">The light component.</param>
         /// <param name="shadowMaps">The cascaded shadow maps.</param>
         /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
+        /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades,float4 backgroundColor)
@@ -2607,11 +2608,10 @@ namespace Fusee.Engine.Core
                 int samples = 20;
                 vec3 camPos = FUSEE_IV[3].xyz;
                 float viewDistance = length(camPos - fragPos);
-
                     
                 float diskRadius = 0.5; //(1.0 + (viewDistance / farPlane)) / pcfKernelSize;
                 for(int i = 0; i < samples; ++i)
-                {
+                { 
                     float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
                     closestDepth *= farPlane;   // Undo mapping [0;1]
                     if(currentDepth - thisBias > closestDepth)

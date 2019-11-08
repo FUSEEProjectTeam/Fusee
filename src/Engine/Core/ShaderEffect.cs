@@ -5,36 +5,87 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
+
     /// <summary>
-    /// An effect pass declaration contains the vertex and pixel shader source code as well as a <see cref="RenderStateSet"/>
+    /// An effect pass declaration contains the relevant shader source code as well as a <see cref="RenderStateSet"/>
     /// declaration for the rendering pass declared by this instance.
     /// </summary>
-    public struct EffectPassDeclaration
+    public interface IEffectPassDeclarationBase
     {
         /// <summary>
         /// The  <see cref="RenderStateSet"/> of the current effect pass.  
         /// </summary>
-        public RenderStateSet StateSet;
+        RenderStateSet StateSet { get; set; }
         /// <summary>
-        /// Vertexshader as string
+        /// Vertex shader as string
         /// </summary>
         // ReSharper disable InconsistentNaming
-        public string VS;
+        string VS { get; set; }
 
         /// <summary>
         /// Geometry-shader as string
         /// </summary>
-        public string GS;
+        string GS { get; set; }
+
+    }
+
+    /// <summary>
+    /// An effect pass declaration contains the vertex, pixel and geometry shader source code as well as a <see cref="RenderStateSet"/>
+    /// declaration for the rendering pass declared by this instance.
+    /// </summary>
+    public struct EffectPassDeclaration : IEffectPassDeclarationBase
+    {
+        /// <summary>
+        /// The  <see cref="RenderStateSet"/> of the current effect pass.  
+        /// </summary>
+        public RenderStateSet StateSet { get; set; }
+        /// <summary>
+        /// Vertex shader as string
+        /// </summary>
+        // ReSharper disable InconsistentNaming
+        public string VS { get; set; }
 
         /// <summary>
-        /// Pixel- or fragmentshader as string
+        /// Geometry-shader as string
         /// </summary>
-        public string PS;
+        public string GS { get; set; }
+
+        /// <summary>
+        /// Pixel- or fragment shader as string
+        /// </summary>
+        public string PS { get; set; }
         // ReSharper restore InconsistentNaming
     }
 
     /// <summary>
-    /// A datatype for the list of (uniform) parameters possibliy occurring in one of the shaders in the various passes.
+    /// A "proto" effect pass declaration contains the vertex and geometry shader source code as well as a partial  Fragment Shader, that is completed in a pre-pass, depending whether we render forward or deferred.
+    /// It also contains a <see cref="RenderStateSet"/> declaration for the rendering pass declared by this instance.
+    /// </summary>
+    public struct EffectPassDeclarationProto : IEffectPassDeclarationBase
+    {
+        /// <summary>
+        /// The  <see cref="RenderStateSet"/> of the current effect pass.  
+        /// </summary>
+        public RenderStateSet StateSet { get; set; }
+        /// <summary>
+        /// Vertex shader as string
+        /// </summary>
+        // ReSharper disable InconsistentNaming
+        public string VS { get; set; }
+
+        /// <summary>
+        /// Geometry-shader as string
+        /// </summary>
+        public string GS { get; set; }
+
+        /// <summary>
+        /// Partial Fragment Shader, that is completed in a pre-pass, depending whether we render forward or deferred.
+        /// </summary>
+        public string ProtoPS { get; set; }
+    }
+
+    /// <summary>
+    /// A data type for the list of (uniform) parameters possibly occurring in one of the shaders in the various passes.
     /// Each of this array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
     /// parameter's type.
     /// </summary>
@@ -50,10 +101,8 @@ namespace Fusee.Engine.Core
         public object Value;
     }
 
-
     /// <summary>
-    /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and a
-    /// pair of Pixel and Vertex Shader Programs (the code running on the GPU).
+    /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
     public class ShaderEffect : DynamicObject, IDisposable
@@ -61,26 +110,27 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The uniform parameter and value of a <see cref="ShaderEffect"/>
         /// </summary>
-        public readonly Dictionary<string, object> ParamDecl;
+        public Dictionary<string, object> ParamDecl { get; protected set; }
 
         /// <summary>
         /// List of <see cref="RenderStateSet"/>
         /// </summary>
-        public readonly RenderStateSet[] States;
+        public RenderStateSet[] States { get; protected set; }
 
         /// <summary>
-        /// Vertexshaders of all passes
+        /// Vertex shaders of all passes
         /// </summary>
-        public readonly string[] VertexShaderSrc;
+        public string[] VertexShaderSrc { get; protected set; }
+
         /// <summary>
-        /// Pixel- or fragmentshader of all passes
+        /// Pixel- or fragment shader of all passes
         /// </summary>
-        public readonly string[] PixelShaderSrc;
+        public string[] PixelShaderSrc { get; protected set; }
 
         /// <summary>
         /// Geometry of all passes
         /// </summary>
-        public readonly string[]GeometryShaderSrc;
+        public string[] GeometryShaderSrc { get; protected set; }
 
         // Event ShaderEffect changes
         /// <summary>
@@ -93,17 +143,19 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
 
+        protected ShaderEffect() { }
+
         /// <summary>
         /// The constructor to create a shader effect.
         /// </summary>
         /// <param name="effectPasses">The ordered array of <see cref="EffectPassDeclaration"/> items. The first item
         /// in the array is the first pass applied to rendered geometry, and so on.</param>
-        /// <param name="effectParameters">A list of (uniform) parameters possibliy occurring in one of the shaders in the various passes.
+        /// <param name="effectParameters">A list of (uniform) parameters possibly occurring in one of the shaders in the various passes.
         /// Each array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
         /// parameter's type.
         /// </param>
         /// <remarks>Make sure to list any parameter in any of the different passes' shaders you want to change later on in the effectParameters
-        /// list. Shaders must not contain paramaeters with names listed in the effectParameters but declared with different types than those of 
+        /// list. Shaders must not contain parameters with names listed in the effectParameters but declared with different types than those of 
         /// the respective default values given here.</remarks>
         public ShaderEffect(EffectPassDeclaration[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
@@ -113,12 +165,14 @@ namespace Fusee.Engine.Core
             var nPasses = effectPasses.Length;
 
             States = new RenderStateSet[nPasses];
-            
+
             VertexShaderSrc = new string[nPasses];
             PixelShaderSrc = new string[nPasses];
             GeometryShaderSrc = new string[nPasses];
 
-            for (int i = 0; i < nPasses; i++)
+            ParamDecl = new Dictionary<string, object>();
+
+            for (int i = 0; i < effectPasses.Length; i++)
             {
                 States[i] = effectPasses[i].StateSet;
                 VertexShaderSrc[i] = effectPasses[i].VS;
@@ -126,12 +180,10 @@ namespace Fusee.Engine.Core
                 GeometryShaderSrc[i] = effectPasses[i].GS;
             }
 
-            ParamDecl = new Dictionary<string, object>();
-
             if (effectParameters != null)
             {
                 foreach (var param in effectParameters)
-                {                   
+                {
                     ParamDecl.Add(param.Name, param.Value);
                 }
             }
@@ -192,12 +244,12 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public object GetEffectParam(string name)
         {
-                object pa;
-                if (ParamDecl.TryGetValue(name, out pa))
-                {
-                    return pa;
-                }
-                return null;
+            object pa;
+            if (ParamDecl.TryGetValue(name, out pa))
+            {
+                return pa;
+            }
+            return null;
         }
 
         /// <summary>
@@ -214,7 +266,7 @@ namespace Fusee.Engine.Core
             {
                 obj = pa;
             }
-            
+
         }
 
         // This property returns the number of elements
@@ -264,40 +316,90 @@ namespace Fusee.Engine.Core
 
             if (!ParamDecl.TryGetValue(binder.Name, out result))
                 return false;
-            
+
             SetEffectParam(binder.Name, value);
 
             return true;
         }
 
         internal class ShaderEffectEventArgs : EventArgs
-    {
-        internal ShaderEffect Effect { get; }
-        internal ShaderEffectChangedEnum Changed { get; }
-        internal EffectParam EffectParameter { get; }
-        internal string ChangedEffectName { get;  }
-        internal object ChangedEffectValue { get; }
-
-        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
         {
-            Effect = effect;
-            Changed = changed;
+            internal ShaderEffect Effect { get; }
+            internal ShaderEffectChangedEnum Changed { get; }
+            internal EffectParam EffectParameter { get; }
+            internal string ChangedEffectName { get; }
+            internal object ChangedEffectValue { get; }
 
-            if (changedName == null || changedValue == null) return;
+            internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
+            {
+                Effect = effect;
+                Changed = changed;
 
-            ChangedEffectName = changedName;
-            ChangedEffectValue = changedValue;
+                if (changedName == null || changedValue == null) return;
+
+                ChangedEffectName = changedName;
+                ChangedEffectValue = changedValue;
+            }
+        }
+
+        internal enum ShaderEffectChangedEnum
+        {            
+            DISPOSE = 0,
+            UNIFORM_VAR_UPDATED,
+            UNIFORM_VAR_ADDED            
         }
     }
 
-    internal enum ShaderEffectChangedEnum
-    {
-        // ReSharper disable InconsistentNaming
-        DISPOSE = 0,
-        UNIFORM_VAR_UPDATED,
-        UNIFORM_VAR_ADDED
-        // ReSharper restore InconsistentNaming
-    }
 
+    /// <summary>
+    /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
+    /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
+    /// </summary>
+    public class ShaderEffectProtoPixel : ShaderEffect
+    {  
+        public ShaderEffectProtoPixel(EffectPassDeclarationProto[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
+        {
+            if (effectPasses == null || effectPasses.Length == 0)
+                throw new ArgumentNullException(nameof(effectPasses), "must not be null and must contain at least one pass");
+
+            var nPasses = effectPasses.Length;
+
+            States = new RenderStateSet[nPasses];
+
+            VertexShaderSrc = new string[nPasses];
+            PixelShaderSrc = new string[nPasses];
+            GeometryShaderSrc = new string[nPasses];
+
+            ParamDecl = new Dictionary<string, object>();
+
+            if (effectParameters != null)
+            {
+                foreach (var param in effectParameters)
+                {
+                    ParamDecl.Add(param.Name, param.Value);
+                }
+            }
+
+            for (int i = 0; i < nPasses; i++)
+            {
+                States[i] = effectPasses[i].StateSet;
+                VertexShaderSrc[i] = effectPasses[i].VS;
+                GeometryShaderSrc[i] = effectPasses[i].GS;
+                //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.
+            }
+        }
+
+        ///Called by the SceneVisitor in the pre-pass to create the correct fragment shader whether we render forward or deferred.
+        public void CreateFragmentShader(bool doRenderForward)
+        {
+            if (doRenderForward)
+            {
+
+            }
+            else
+            {
+
+            }
+        }
     }
 }
