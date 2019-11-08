@@ -1,65 +1,34 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-    internal struct MeshProbs
-    {
-        public bool HasVertices;
-        public bool HasNormals;
-        public bool HasUVs;
-        public bool HasColors;
-        public bool HasWeightMap;
-        public bool HasTangents;
-        public bool HasBiTangents;
-    }
-
-    internal struct MaterialProbs
-    {
-        public bool HasDiffuse;
-        public bool HasDiffuseTexture;
-        public bool HasSpecular;
-        public bool HasSpecularTexture;
-        public bool HasEmissive;
-        public bool HasEmissiveTexture;
-        public bool HasBump;
-        public bool HasApplyLightString;
-    }
-
-    internal enum MaterialType
-    {
-        Material,
-        MaterialLightComponent,
-        MaterialPbrComponent
-    }
-
-    internal enum Type
-    {
-        Mat3,
-        Mat4,
-        Vec2,
-        Vec3,
-        Vec4,
-        Boolean,
-        Float,
-        Int,
-        Sampler2D,
-        Void
-    }
-
     // ReSharper disable once InconsistentNaming
     internal class GLSL
     {
+        internal enum Type
+        {
+            Mat3,
+            Mat4,
+            Vec2,
+            Vec3,
+            Vec4,
+            Boolean,
+            Float,
+            Int,
+            Sampler2D,
+            Void
+        }
+
         public static string CreateUniform(Type type, string varName)
         {
             return $"uniform {DecodeType(type)} {varName};";
@@ -137,502 +106,315 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Compiler for ShaderCode. Takes a MaterialComponent, evaluates input parameters and creates pixel and vertex shader
     /// </summary>
-    public class ShaderCodeBuilder
+    public static class ShaderCodeBuilder
     {
-        private readonly LightingCalculationMethod _lightingCalculationMethod;
-
-        private MaterialProbs _materialProbs;
-        private MeshProbs _meshProbs;
-        private MaterialType _materialType = MaterialType.Material;
-        private List<string> _vertexShader;
-        private List<string> _pixelShader;        
-
-        //The maximal number of lights we can render when using the forward pipeline.
-        private const int _numberOfLightsForward = 8;
-
-        // ReSharper disable once InconsistentNaming
-        /// <summary>
-        /// The complete VertexShader
-        /// </summary>
-        public string VS { get; }
-
-        // ReSharper disable once InconsistentNaming
-        /// <summary>
-        /// The complete pixel shader
-        /// </summary>
-        public string PS { get; }
-
-        /// <summary>
-        /// LEGACY CONSTRUCTOR
-        /// Creates vertex and pixel shader for given material, mesh, weight; light calculation is simple per default
-        /// </summary>
-        /// <param name="mc">The MaterialCpmponent</param>
-        /// <param name="mesh">The Mesh</param>
-        /// <param name="wc">The WeightComponent</param>
-        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>        
-        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh, WeightComponent wc = null,
-            bool renderWithShadows = false)
-            : this(mc, mesh, LightingCalculationMethod.SIMPLE, wc, renderWithShadows)
-        {
-        }
-
-        public static Dictionary<string, string> GetFieldValues(object obj)
-        {
-            return obj.GetType()
-                      .GetProperties(BindingFlags.Public | BindingFlags.Static)
-                      .Where(f => f.PropertyType == typeof(string))
-                      .ToDictionary(f => f.Name,
-                                    f => (string)f.GetValue(null));
-        }
-
-        private string ParseIncludes(string rawShaderString)
-        {
-            var fields = GetFieldValues(this);
-
-            var refinedShader = new List<string>();
-
-            var allLines = rawShaderString.Split(new[] { '\r', '\n' });
-            foreach (var line in allLines)
-            {
-                // if we have one or more includes we need to replace them                
-                if (line.Contains("#include"))
-                {
-                    var includeLine = line.Replace(@"#include ", string.Empty);
-                    includeLine = includeLine.Replace("\"", string.Empty);
-                    var fileFromInclude = includeLine;
-                    var foundFile = "";
-                    try
-                    {
-                        foundFile = AssetStorage.Get<string>("Assets/Shader/" + fileFromInclude);
-                        if (foundFile == null)
-                            throw new FileNotFoundException(foundFile);
-                    }
-                    catch (FileNotFoundException e)
-                    {
-                        Diagnostics.Log($"[ShaderCodeBuilder.cs] Error file #include {e.FileName} not found!");
-                    }
-                    refinedShader.Add(foundFile);
-                }
-                else
-                {
-                    refinedShader.Add(line);
-                }
-            }
-
-
-            // replace all names
-            foreach (var field in fields)
-            {
-                for (var i = 0; i < refinedShader.Count; i++)
-                {
-                    if (refinedShader[i].Contains(field.Key))
-                    {
-                        refinedShader[i] = refinedShader[i].Replace(field.Key, field.Value);
-                    }
-                }
-            }
-
-            return String.Join("\n", refinedShader);
-        }
-
-        /// <summary>
-        /// Creates vertex and pixel shader for given material, mesh, weight; light calculation is simple per default
-        /// </summary>
-        /// <param name="mc">The MaterialCpmponent</param>
-        /// <param name="mesh">The Mesh</param>
-        /// <param name="wc">The WeightComponent</param>
-        /// <param name="lightingCalculation">Method of light calculation; simple BLINN PHONG or advanced physically based</param>
-        /// <param name="renderWithShadows">Should the resulting shader include shadow calculation</param>        
-        public ShaderCodeBuilder(MaterialComponent mc, Mesh mesh,
-            LightingCalculationMethod lightingCalculation = LightingCalculationMethod.SIMPLE,
-            WeightComponent wc = null, bool renderWithShadows = false)
-        {
-            // Set Lighting calculation & shadow
-            _lightingCalculationMethod = lightingCalculation;            
-
-            _vertexShader = new List<string>();
-            _pixelShader = new List<string>();
-            /* 
-            // here we read and parse out vert and pixel shader
-            var pixelShaderRaw = AssetStorage.Get<string>("Assets/Shader/PixelShader.frag"); 
-            var vertexShaderRaw = AssetStorage.Get<string>("Assets/Shader/VertexShader.vert");
-
-            VS = ParseIncludes(vertexShaderRaw);
-            PS = ParseIncludes(pixelShaderRaw);
-            */
-
-            AnalyzeMaterialType(mc);
-            AnalyzeMesh(mesh, wc);
-            AnalzyeMaterialParams(mc);
-            CreateVertexShader(wc);
-            VS = string.Join("\n", _vertexShader);
-            CreatePixelShader_new(mc);
-            PS = string.Join("\n", _pixelShader);
-
-            // Uber Shader - test purposes!
-            //VS = AssetStorage.Get<string>("Shader/UberVertex.vert");
-            //PS = AssetStorage.Get<string>("Shader/UberFragment.frag");
-
-            //Diagnostics.Log(PS);
-            //Diagnostics.Log(VS);
-        }
-
-        private static void AddTabsToMethods(ref List<string> list)
-        {
-            var indent = false;
-            for (var i = 0; i < list.Count; i++)
-            {
-                var s = list[i];
-                if (list[i].Contains("}"))
-                    break;
-
-                if (indent)
-                    list[i] = "   " + s;
-
-                if (list[i].Contains("{"))
-                    indent = true;
-            }
-        }
-
-        #region AnalyzeMaterialParams
-
-        private void AnalzyeMaterialParams(MaterialComponent mc)
-        {
-            _materialProbs = new MaterialProbs
-            {
-                HasDiffuse = mc.HasDiffuse,
-                HasDiffuseTexture = mc.HasDiffuse && mc.Diffuse.Texture != null,
-                HasSpecular = mc.HasSpecular,
-                HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
-                HasEmissive = mc.HasEmissive,
-                HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasBump = mc.HasBump,
-                HasApplyLightString = _materialType == MaterialType.MaterialLightComponent &&
-                                      (string.IsNullOrEmpty((mc as MaterialLightComponent)?.ApplyLightString))
-
-            };
-        }
-
-        private void AnalyzeMaterialType(MaterialComponent mc)
-        {
-            if (mc.GetType() == typeof(MaterialPBRComponent))
-                _materialType = MaterialType.MaterialPbrComponent;
-
-            if (mc.GetType() == typeof(MaterialLightComponent))
-                _materialType = MaterialType.MaterialLightComponent;
-        }
-
-        private void AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
-        {
-            _meshProbs = new MeshProbs
-            {
-                HasVertices = mesh == null || mesh.Vertices != null && mesh.Vertices.Length > 0, // if no mesh => true
-                HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
-                HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
-                HasColors = false,
-                HasWeightMap = wc != null,
-                HasTangents = mesh == null || (mesh.Tangents != null && mesh.Tangents.Length > 1),
-                HasBiTangents = mesh == null || (mesh.BiTangents != null && mesh.BiTangents.Length > 1)
-            };
-        }
-
-        #endregion
-
         #region CreateVertexShader
 
-        private void CreateVertexShader(WeightComponent wc)
+        public static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
         {
+            var vertexShader = new List<string>();
             // Version
-            _vertexShader.Add(Version());
+            vertexShader.Add(HeaderShard.Version());
 
             // Head
-            AddVertexAttributes(wc);
-            AddVertexUniforms(wc);
+            AddVertexAttributes(wc, effectProps, vertexShader);
+            AddVertexUniforms(effectProps, vertexShader);
 
             // Main
-            AddVertexMain();
+            AddVertexMain(effectProps, vertexShader);
 
-            AddTabsToMethods(ref _vertexShader);
+            AddTabsToMethods(vertexShader);
+
+            return string.Join("\n", vertexShader);
         }
 
-
-        private void AddVertexAttributes(WeightComponent wc)
+        private static void AddVertexAttributes(WeightComponent wc, ShaderEffectProps effectProps, List<string> vertexShader)
         {
-            if (_meshProbs.HasWeightMap)
-                _vertexShader.Add($"#define BONES {wc.Joints.Count}");
+            if (effectProps.MeshProbs.HasWeightMap)
+                vertexShader.Add($"#define BONES {wc.Joints.Count}");
 
-            if (_meshProbs.HasVertices)
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuVertex"));
+            if (effectProps.MeshProbs.HasVertices)
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuVertex"));
 
-            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, ShaderCodeBuilderHelper.TangentAttribName));
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, ShaderCodeBuilderHelper.BitangentAttribName));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.TangentAttribName));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.BitangentAttribName));
 
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vT"));
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vB"));
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec4, "vT"));
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vB"));
             }
 
-            if (_materialProbs.HasSpecular)
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewDir"));
+            if (effectProps.MatProbs.HasSpecular)
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vViewDir"));
 
-            if (_meshProbs.HasWeightMap)
+            if (effectProps.MeshProbs.HasWeightMap)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneIndex"));
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuBoneWeight"));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuBoneIndex"));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuBoneWeight"));
             }
 
-            if (_meshProbs.HasNormals)
+            if (effectProps.MeshProbs.HasNormals)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec3, "fuNormal"));
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vNormal"));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuNormal"));
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vNormal"));
             }
 
-            if (_meshProbs.HasUVs)
+            if (effectProps.MeshProbs.HasUVs)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec2, "fuUV"));
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec2, "vUV"));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec2, "fuUV"));
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec2, "vUV"));
             }
 
-            if (_meshProbs.HasColors)
+            if (effectProps.MeshProbs.HasColors)
             {
-                _vertexShader.Add(GLSL.CreateIn(Type.Vec4, "fuColor"));
-                _vertexShader.Add(GLSL.CreateOut(Type.Vec4, "vColor"));
+                vertexShader.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuColor"));
+                vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec4, "vColor"));
             }
 
-            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vCamPos"));            
-            _vertexShader.Add(GLSL.CreateOut(Type.Vec3, "vViewPos"));
+            vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vCamPos"));            
+            vertexShader.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vViewPos"));
         }
 
-        private void AddVertexUniforms(WeightComponent wc)
+        private static void AddVertexUniforms(ShaderEffectProps effectProps, List<string> vertexShader)
         {
-            _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MVP"));
+            vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MVP"));
 
-            if (_meshProbs.HasNormals)
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
+            if (effectProps.MeshProbs.HasNormals)
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV"));
 
-            if (_materialProbs.HasSpecular && !_meshProbs.HasWeightMap)
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
+            if (effectProps.MatProbs.HasSpecular && !effectProps.MeshProbs.HasWeightMap)
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"));
 
-            if (_meshProbs.HasWeightMap)
+            if (effectProps.MeshProbs.HasWeightMap)
             {
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_V"));
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_P"));
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
-                _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_BONES[BONES]"));
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V"));
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_P"));
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"));
+                vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_BONES[BONES]"));
             }
 
-            _vertexShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
+            vertexShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MV"));
         }
 
-        private void AddVertexMain()
+        private static void AddVertexMain(ShaderEffectProps effectProps, List<string> vertexShader)
         {
             // Main
-            _vertexShader.Add("void main() {");
+            vertexShader.Add("void main() {");
 
-            _vertexShader.Add("gl_PointSize = 10.0;");
+            vertexShader.Add("gl_PointSize = 10.0;");
 
-            if (_meshProbs.HasNormals && _meshProbs.HasWeightMap)
+            if (effectProps.MeshProbs.HasNormals && effectProps.MeshProbs.HasWeightMap)
             {
-                _vertexShader.Add("vec4 newVertex;");
-                _vertexShader.Add("vec4 newNormal;");
-                _vertexShader.Add(
+                vertexShader.Add("vec4 newVertex;");
+                vertexShader.Add("vec4 newNormal;");
+                vertexShader.Add(
                     "newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;");
 
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;");
-                _vertexShader.Add(
+                vertexShader.Add(
                     "newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;");
 
                 // At this point the normal is in World space - transform back to model space                
-                _vertexShader.Add("vNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
+                vertexShader.Add("vNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
             }
 
-            if (_materialProbs.HasSpecular)
+            if (effectProps.MatProbs.HasSpecular)
             {
-                _vertexShader.Add("vec3 vCamPos = FUSEE_IMV[3].xyz;");
+                vertexShader.Add("vec3 vCamPos = FUSEE_IMV[3].xyz;");
 
-                _vertexShader.Add(_meshProbs.HasWeightMap
+                vertexShader.Add(effectProps.MeshProbs.HasWeightMap
                     ? "vViewDir = normalize(vCamPos - vec3(newVertex));"
                     : "vViewDir = normalize(vCamPos - fuVertex);");
             }
 
-            if (_meshProbs.HasUVs)
-                _vertexShader.Add("vUV = fuUV;");
+            if (effectProps.MeshProbs.HasUVs)
+                vertexShader.Add("vUV = fuUV;");
 
-            if (_meshProbs.HasNormals && !_meshProbs.HasWeightMap)
-                _vertexShader.Add("vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
+            if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
+                vertexShader.Add("vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
 
-            _vertexShader.Add("vViewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
+            vertexShader.Add("vViewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
 
-            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
-                _vertexShader.Add($"vT = {ShaderCodeBuilderHelper.TangentAttribName};");
-                _vertexShader.Add($"vB = {ShaderCodeBuilderHelper.BitangentAttribName};");
+                vertexShader.Add($"vT = {UniformNameDeclarations.TangentAttribName};");
+                vertexShader.Add($"vB = {UniformNameDeclarations.BitangentAttribName};");
             }
 
-            _vertexShader.Add(_meshProbs.HasWeightMap
+            vertexShader.Add(effectProps.MeshProbs.HasWeightMap
             ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
             : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
 
             // End of main
-            _vertexShader.Add("}");
+            vertexShader.Add("}");
         }
 
         #endregion
 
-        #region CreatePixelShader
+        #region CreatePixelShader        
 
-        private void CreatePixelShader_new(MaterialComponent mc)
+        public static string CreatePixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
         {
-            _pixelShader.Add(Version());
+            var pixelShader = new List<string>
+            {
+                HeaderShard.Version(),
+                HeaderShard.EsPrecision()
+            };
 
-            AddPixelAttributes();
-            AddPixelUniforms();
-            AddTextureChannels();
+            AddPixelInParams(effectProps, pixelShader);
 
-            switch (_materialType)
+            pixelShader.Add(LightingShard.LightStructDeclaration());
+            
+            pixelShader.Add(GLSL.CreateOut(GLSL.Type.Vec4, "oFragmentColor"));
+
+            AddFuseeUniforms(effectProps, pixelShader);
+            AddMatProbsUniforms(effectProps, pixelShader);            
+
+            //---- LIGHTING ---//
+            //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
+            switch (effectProps.MatType)
             {
                 case MaterialType.Material:
                 case MaterialType.MaterialLightComponent:
-                    AddAmbientLightMethod();
-                    if (_materialProbs.HasDiffuse)
-                        AddDiffuseLightMethod();
-                    if (_materialProbs.HasSpecular)
-                        AddSpecularLightMethod();
+                    AddAmbientLightMethod(pixelShader);
+                    if (effectProps.MatProbs.HasDiffuse)
+                        AddDiffuseLightMethod(effectProps, pixelShader);
+                    if (effectProps.MatProbs.HasSpecular)
+                        AddSpecularLightMethod(pixelShader);
                     break;
                 case MaterialType.MaterialPbrComponent:
-                    if (_lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
+                    if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
                     {
-                        AddAmbientLightMethod();
-                        if (_materialProbs.HasDiffuse)
-                            AddDiffuseLightMethod();
-                        if (_materialProbs.HasSpecular)
-                            AddSpecularLightMethod();
+                        AddAmbientLightMethod(pixelShader);
+                        if (effectProps.MatProbs.HasDiffuse)
+                            AddDiffuseLightMethod(effectProps, pixelShader);
+                        if (effectProps.MatProbs.HasSpecular)
+                            AddSpecularLightMethod(pixelShader);
                     }
                     else
                     {
-                        AddAmbientLightMethod();
-                        if (_materialProbs.HasDiffuse)
-                            AddDiffuseLightMethod();
-                        if (_materialProbs.HasSpecular)
-                            AddPbrSpecularLightMethod(mc as MaterialPBRComponent);
+                        AddAmbientLightMethod(pixelShader);
+                        if (effectProps.MatProbs.HasDiffuse)
+                            AddDiffuseLightMethod(effectProps, pixelShader);
+                        if (effectProps.MatProbs.HasSpecular)
+                            AddPbrSpecularLightMethod(mc as MaterialPBRComponent, pixelShader);
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {_materialType}");
+                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
             }
 
-            AddApplyLightMethod(mc);
-            AddPixelBody();
+            //Wraps all the lighting methods into a single one
+            AddApplyLightMethod(mc, effectProps, pixelShader);
+            //--------------------------------------//
 
-            AddTabsToMethods(ref _pixelShader);
+            //Calculates the lighting for all lights by using the above method
+            AddPixelMainMethod(effectProps, pixelShader);
 
-            //Diagnostics.Log(string.Join("\n", _pixelShader));
+            AddTabsToMethods(pixelShader);
 
+            return string.Join("\n", pixelShader);
         }
 
-        private void AddPixelAttributes()
+        private static void AddPixelInParams(ShaderEffectProps effectProps, List<string> pixelShader)
         {
-            _pixelShader.Add(EsPrecision());
+            pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vViewDir"));
+            pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vViewPos"));
 
-            // legacy code, should be larger one by default!            
-            _pixelShader.Add(LightStructDeclaration());
+            if (effectProps.MeshProbs.HasColors)
+                pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vColor"));
 
-            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewDir"));
-            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vViewPos"));
-
-            if (_meshProbs.HasNormals)
-            {               
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vNormal"));
-            }
-            if (_meshProbs.HasTangents && _meshProbs.HasBiTangents)
+            if (effectProps.MeshProbs.HasNormals)                         
+            pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vNormal"));
+            
+            if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec4, "vT"));
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vB"));
+                pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec4, "vT"));
+                pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vB"));
             }
 
-            if (_meshProbs.HasUVs)
-                _pixelShader.Add(GLSL.CreateIn(Type.Vec2, "vUV"));
+            if (effectProps.MeshProbs.HasUVs)
+                pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec2, "vUV"));
 
-            _pixelShader.Add(GLSL.CreateIn(Type.Vec3, "vCamPos"));
-
-            _pixelShader.Add(GLSL.CreateOut(Type.Vec4, "fragmentColor"));
+            pixelShader.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vCamPos"));
         }
 
-        private void AddPixelUniforms()
+        private static void AddFuseeUniforms(ShaderEffectProps effectProps, List<string> pixelShader)
         {
-            _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_MV"));
-            _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IMV"));
-            _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_IV"));
-            _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_V"));
+            pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MV"));
+            pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"));
+            pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IV"));
+            pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V"));
 
-            if (_materialProbs.HasBump)
-                _pixelShader.Add(GLSL.CreateUniform(Type.Mat4, "FUSEE_ITMV"));
+            if (effectProps.MatProbs.HasBump)
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV"));
 
             // Multipass
-            _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, "firstPassTex"));
+            pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, "firstPassTex"));
 
             // Multipass-Env
             // returnString += "uniform samplerCube envMap;\n";
         }
 
-        private void AddTextureChannels()
+        private static void AddMatProbsUniforms(ShaderEffectProps effectProps, List<string> pixelShader)
         {
-            if (_materialProbs.HasSpecular)
+            if (effectProps.MatProbs.HasSpecular)
             {
-                _pixelShader.Add(GLSL.CreateUniform(Type.Float, SpecularShininessName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Float, SpecularIntensityName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, SpecularColorName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensityName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColorName));
             }
 
-            if (_materialProbs.HasBump)
+            if (effectProps.MatProbs.HasDiffuse)
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColorName));
+
+            if (effectProps.MatProbs.HasEmissive)
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
+
+            //Textures
+            if (effectProps.MatProbs.HasBump)
             {
-                _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, BumpTextureName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Float, BumpIntensityName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
             }
 
-            if (_materialProbs.HasDiffuse)
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, DiffuseColorName));
-
-            if (_materialProbs.HasDiffuseTexture)
+            if (effectProps.MatProbs.HasDiffuseTexture)
             {
-                _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, DiffuseTextureName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Float, DiffuseMixName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTextureName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMixName));
             }
 
-            if (_materialProbs.HasEmissive)
-                _pixelShader.Add(GLSL.CreateUniform(Type.Vec4, EmissiveColorName));
-
-            if (_materialProbs.HasEmissiveTexture)
+            if (effectProps.MatProbs.HasEmissiveTexture)
             {
-                _pixelShader.Add(GLSL.CreateUniform(Type.Sampler2D, EmissiveTextureName));
-                _pixelShader.Add(GLSL.CreateUniform(Type.Float, EmissiveMixName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTextureName));
+                pixelShader.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMixName));
             }
-        }
+        }                
 
-        private void AddAmbientLightMethod()
+        private static void AddAmbientLightMethod(List<string> pixelShader)
         {
             var methodBody = new List<string>
             {
                 "return vec4(DiffuseColor.xyz * ambientCoefficient, 1.0);"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "ambientLighting",
-                new[] { GLSL.CreateVar(Type.Float, "ambientCoefficient") }, methodBody));
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Vec4, "ambientLighting",
+                new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient") }, methodBody));
         }
 
-        private void AddDiffuseLightMethod()
+        private static void AddDiffuseLightMethod(ShaderEffectProps effectProps, List<string> pixelShader)
         {
             var methodBody = new List<string>
             {
@@ -640,25 +422,24 @@ namespace Fusee.Engine.Core
             };
 
             //TODO: Test alpha blending between diffuse and texture
-            if (_materialProbs.HasDiffuseTexture)
+            if (effectProps.MatProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"vec4 blendedCol = mix({DiffuseColorName}, texture({DiffuseTextureName}, vUV), {DiffuseMixName});" +
+                    $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, vUV), {UniformNameDeclarations.DiffuseMixName});" +
                     $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
             else
-                methodBody.Add($"return vec4({DiffuseColorName}.rgb * intensities.rgb * max(diffuseTerm, 0.0), 1.0);");
+                methodBody.Add($"return vec4({UniformNameDeclarations.DiffuseColorName}.rgb * intensities.rgb * max(diffuseTerm, 0.0), 1.0);");
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "diffuseLighting",
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Vec4, "diffuseLighting",
                 new[]
                 {
-                    GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"),
-                    GLSL.CreateVar(Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"),
+                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
                 }, methodBody));
 
         }
 
-        private void AddSpecularLightMethod()
+        private static void AddSpecularLightMethod(List<string> pixelShader)
         {
-
             var methodBody = new List<string>
             {
                 "float specularTerm = 0.0;",
@@ -666,25 +447,27 @@ namespace Fusee.Engine.Core
                 "{",
                 "   // half vector",
                 "   vec3 H = normalize(V + L);",
-                $"  specularTerm = pow(max(0.0, dot(H, N)), {SpecularShininessName});",
+                $"  specularTerm = pow(max(0.0, dot(H, N)), {UniformNameDeclarations.SpecularShininessName});",
                 "}",
-                $"return vec4(({SpecularColorName}.rgb * {SpecularIntensityName} * intensities.rgb) * specularTerm, 1.0);"
+                $"return vec4(({UniformNameDeclarations.SpecularColorName}.rgb * {UniformNameDeclarations.SpecularIntensityName} * intensities.rgb) * specularTerm, 1.0);"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "specularLighting",
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Vec4, "specularLighting",
                 new[]
                 {
-                    GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"), GLSL.CreateVar(Type.Vec3, "V"),
-                    GLSL.CreateVar(Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
+                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
                 }, methodBody));
 
         }        
 
-        private void AddApplyLightMethod(MaterialComponent mc)
+        private static void AddApplyLightMethod(MaterialComponent mc, ShaderEffectProps effectProps, List<string> pixelShader)
         {
-            if (_materialProbs.HasApplyLightString)
-                _pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
-
+            if (effectProps.MatProbs.HasApplyLightString)
+            {
+                pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
+                return;
+            }
 
             /*  var bumpNormals = new List<string>
               {
@@ -696,7 +479,7 @@ namespace Fusee.Engine.Core
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, vUV).rgb * 2.0) - 1.0f) * vec3({BumpIntensityName}, {BumpIntensityName}, 1.0);",
+                $"vec3 N = ((texture(BumpTexture, vUV).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
                 "N = (N.x * vec3(vT)) + (N.y * vB) + (N.z * vNormal);",
                 "N = normalize(N);"
             };
@@ -724,16 +507,16 @@ namespace Fusee.Engine.Core
             };
 
             var applyLightParams = new List<string>();
-            applyLightParams.AddRange(_materialProbs.HasBump ? bumpNormals : normals);
+            applyLightParams.AddRange(effectProps.MatProbs.HasBump ? bumpNormals : normals);
 
             applyLightParams.AddRange(applyLightParamsWithoutNormals);
 
 
-            if (_materialProbs.HasDiffuse)
+            if (effectProps.MatProbs.HasDiffuse)
                 applyLightParams.Add("Idif = diffuseLighting(N, L, intensities);");
 
 
-            if (_materialProbs.HasSpecular)
+            if (effectProps.MatProbs.HasSpecular)
                 applyLightParams.Add("Ispe = specularLighting(N, L, V, intensities);");
 
 
@@ -802,20 +585,20 @@ namespace Fusee.Engine.Core
 
             methodBody.Add("return lighting;");
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "ApplyLight",
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Vec4, "ApplyLight",
                 new[]
                 {
-                    GLSL.CreateVar(Type.Vec3, "position"), GLSL.CreateVar(Type.Vec4, "intensities"),
-                    GLSL.CreateVar(Type.Vec3, "direction"), GLSL.CreateVar(Type.Float, "maxDistance"),
-                    GLSL.CreateVar(Type.Float, "strength"), GLSL.CreateVar(Type.Float, "outerConeAngle"),
-                    GLSL.CreateVar(Type.Float, "innerConeAngle"), GLSL.CreateVar(Type.Int, "lightType"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "position"), GLSL.CreateVar(GLSL.Type.Vec4, "intensities"),
+                    GLSL.CreateVar(GLSL.Type.Vec3, "direction"), GLSL.CreateVar(GLSL.Type.Float, "maxDistance"),
+                    GLSL.CreateVar(GLSL.Type.Float, "strength"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle"),
+                    GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Int, "lightType"),
                 }, methodBody));
         }
 
         /// <summary>
         /// Replaces Specular Calculation with Cook-Torrance-Shader
         /// </summary>
-        private void AddPbrSpecularLightMethod(MaterialPBRComponent mc)
+        private static void AddPbrSpecularLightMethod(MaterialPBRComponent mc, List<string> pixelShader)
         {
             var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
@@ -861,31 +644,31 @@ namespace Fusee.Engine.Core
                 "     // -- fresnel",
                 "     // [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]",
                 "     float fresnel = pow(1.0 - VdotH, 5.0);",
-                $"    fresnel = clamp((50.0 * {SpecularColorName}.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
+                $"    fresnel = clamp((50.0 * {UniformNameDeclarations.SpecularColorName}.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
                 "",
                 $"     specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);",
                 "     ",
                 "}",
                 "",
-                $"return intensities * {SpecularColorName} * (k + specular * (1.0-k));"
+                $"return intensities * {UniformNameDeclarations.SpecularColorName} * (k + specular * (1.0-k));"
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Vec4, "specularLighting",
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Vec4, "specularLighting",
                 new[]
                 {
-                    GLSL.CreateVar(Type.Vec3, "N"), GLSL.CreateVar(Type.Vec3, "L"), GLSL.CreateVar(Type.Vec3, "V"),
-                    GLSL.CreateVar(Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
+                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
                 }, methodBody));
         }
 
-        private void AddPixelBody()
+        private static void AddPixelMainMethod(ShaderEffectProps effectProps, List<string> pixelShader)
         {
-            string fragColorAlpha = _materialProbs.HasDiffuse ? $"{DiffuseColorName}.w" : "1.0";
+            string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.DiffuseColorName}.w" : "1.0";
 
             var methodBody = new List<string>
             {
                 "vec4 result = ambientLighting(0.2);", //ambient component
-                $"for(int i = 0; i < {_numberOfLightsForward};i++)",
+                $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
                 "vec3 currentPosition = allLights[i].position;",
@@ -900,52 +683,32 @@ namespace Fusee.Engine.Core
                 "currentAttenuation, currentStrength, currentOuterConeAngle, currentInnerConeAngle, currentLightType);",
                 "}",
 
-                 _materialProbs.HasDiffuseTexture ? $"fragmentColor = result;" : $"fragmentColor = vec4(result.rgb, {DiffuseColorName}.w);",
+                 effectProps.MatProbs.HasDiffuseTexture ? $"oFragmentColor = result;" : $"oFragmentColor = vec4(result.rgb, {UniformNameDeclarations.DiffuseColorName}.w);",
 
             };
 
-            _pixelShader.Add(GLSL.CreateMethod(Type.Void, "main",
+            pixelShader.Add(GLSL.CreateMethod(GLSL.Type.Void, "main",
                 new[] { "" }, methodBody));
         }
 
-        private static string EsPrecision()
-        {
-            /*return "#ifdef GL_ES\n" +
-                   "    precision highp float;\n" +
-                   "#endif\n\n";*/
-            return "precision highp float; \n";
-        }
-
-        private static string LightStructDeclaration()
-        {
-            var lightStruct = @"
-            struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };
-            ";
-            return lightStruct + $"uniform Light allLights[{_numberOfLightsForward}];";
-            
-        }
-
-        private static string Version()
-        {
-            return "#version 300 es\n";
-        }
-
         #endregion
+
+        private static void AddTabsToMethods(List<string> list)
+        {
+            var indent = false;
+            for (var i = 0; i < list.Count; i++)
+            {
+                var s = list[i];
+                if (list[i].Contains("}"))
+                    break;
+
+                if (indent)
+                    list[i] = "   " + s;
+
+                if (list[i].Contains("{"))
+                    indent = true;
+            }
+        }
 
         #region Deferred
 
@@ -998,8 +761,8 @@ namespace Fusee.Engine.Core
         {
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
 
@@ -1018,8 +781,8 @@ namespace Fusee.Engine.Core
 
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(Version());
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.EsPrecision());
             frag.Append($"#define LIGHTED_SCENE_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)}\n");
             frag.Append($"#define EDGE_THRESHOLD_MIN 0.0625\n");
             frag.Append($"#define EDGE_THRESHOLD_MAX 0.125\n");
@@ -1303,8 +1066,8 @@ namespace Fusee.Engine.Core
 
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
 
@@ -1323,8 +1086,8 @@ namespace Fusee.Engine.Core
 
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(Version());
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.EsPrecision());
             frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
             frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
             frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize * 0.5)}\n");
@@ -1392,8 +1155,8 @@ namespace Fusee.Engine.Core
 
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
 
@@ -1412,8 +1175,8 @@ namespace Fusee.Engine.Core
 
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(Version());
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.EsPrecision());
             frag.Append($"#define KERNEL_LENGTH {kernelLength}\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
@@ -1528,8 +1291,8 @@ namespace Fusee.Engine.Core
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
 
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
                 uniform mat4 FUSEE_M;
@@ -1565,8 +1328,8 @@ namespace Fusee.Engine.Core
 
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(Version());
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.EsPrecision());
 
             var texCount = 0;
 
@@ -1653,8 +1416,8 @@ namespace Fusee.Engine.Core
         private static string DeferredLightingVS()
         {
             var vert = new StringBuilder();
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
                 
@@ -1679,9 +1442,9 @@ namespace Fusee.Engine.Core
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(Version());
+            frag.Append(HeaderShard.Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.EsPrecision());
 
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
             {
@@ -1875,9 +1638,9 @@ namespace Fusee.Engine.Core
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(Version());
+            frag.Append(HeaderShard.Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.EsPrecision());
 
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
             {
@@ -2144,7 +1907,7 @@ namespace Fusee.Engine.Core
             return frag.ToString();
         }
 
-        private static List<EffectParameterDeclaration> DefferedLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
+        private static List<EffectParameterDeclaration> DeferredLightingEffectParams(RenderTarget srcRenderTarget, float4 backgroundColor)
         {
             return new List<EffectParameterDeclaration>()
             {
@@ -2186,7 +1949,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
         {
-            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
             effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
@@ -2223,7 +1986,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades,float4 backgroundColor)
         {
-            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
             effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
@@ -2259,7 +2022,7 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap, float4 backgroundColor)
         {
-            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowMap });
 
@@ -2291,7 +2054,7 @@ namespace Fusee.Engine.Core
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
         public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor)
         {
-            var effectParams = DefferedLightingEffectParams(srcRenderTarget, backgroundColor);
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
             return new ShaderEffect(new[]
             {
@@ -2425,8 +2188,8 @@ namespace Fusee.Engine.Core
         {
             // Vertex shader ------------------------------
             var vert = new StringBuilder();
-            vert.Append(Version());
-            vert.Append(EsPrecision());
+            vert.Append(HeaderShard.Version());
+            vert.Append(HeaderShard.EsPrecision());
 
             vert.Append(@"
                 
@@ -2444,9 +2207,9 @@ namespace Fusee.Engine.Core
 
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(Version());
+            frag.Append(HeaderShard.Version());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(EsPrecision());
+            frag.Append(HeaderShard.EsPrecision());
 
             frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)};\n");            
             frag.Append("uniform int LightType;\n");
@@ -2595,7 +2358,6 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-
             return MakeShaderEffectFromMatComp(temp);
         }
 
@@ -2626,7 +2388,6 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-
             return MakeShaderEffectFromMatComp(temp);
         }
 
@@ -2639,32 +2400,45 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
-            ShaderCodeBuilder scb = null;
+            string vs = "";
+            string ps = "";
+
+            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
 
             //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
             if (mc.GetType() == typeof(MaterialLightComponent))
             {
-                if (mc is MaterialLightComponent lightMat) scb = new ShaderCodeBuilder(lightMat, null, wc);
+                if (mc is MaterialLightComponent lightMat) 
+                { 
+                    vs = CreateVertexShader(wc, effectProps); 
+                    ps = CreatePixelShader(lightMat, effectProps, LightingCalculationMethod.SIMPLE); 
+                }
             }
             else if (mc.GetType() == typeof(MaterialPBRComponent))
             {
-                if (mc is MaterialPBRComponent pbrMaterial) scb = new ShaderCodeBuilder(pbrMaterial, null, LightingCalculationMethod.SIMPLE, wc);
+                if (mc is MaterialPBRComponent pbrMaterial) 
+                {
+                    vs = CreateVertexShader(wc, effectProps);
+                    ps = CreatePixelShader(pbrMaterial, effectProps, LightingCalculationMethod.SIMPLE);
+                }
             }
             else
             {
-                scb = new ShaderCodeBuilder(mc, null, wc); // TODO, CurrentNode.GetWeights() != null); 
+                vs = CreateVertexShader(wc, effectProps);
+                ps = CreatePixelShader(mc, effectProps, LightingCalculationMethod.SIMPLE);
             }
 
             var effectParameters = AssembleEffectParamers(mc);
 
-            if (scb == null) throw new Exception("Material could not be evaluated or be built!");
+            if (vs == string.Empty || ps == string.Empty) throw new Exception("Material could not be evaluated or be built!");
+
             var ret = new ShaderEffect(new[]
                 {
                     new EffectPassDeclaration
                     {
-                        VS = scb.VS, 
+                        VS = vs, 
                         //VS = VsBones, 
-                        PS = scb.PS,
+                        PS = ps,
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,
@@ -2677,6 +2451,7 @@ namespace Fusee.Engine.Core
                 },
                 effectParameters
             );
+            
             return ret;
         }
 
@@ -2688,19 +2463,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = DiffuseColorName,
+                    Name = UniformNameDeclarations.DiffuseColorName,
                     Value = mc.Diffuse.Color
                 });
                 if (mc.Diffuse.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = DiffuseMixName,
+                        Name = UniformNameDeclarations.DiffuseMixName,
                         Value = mc.Diffuse.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = DiffuseTextureName,
+                        Name = UniformNameDeclarations.DiffuseTextureName,
                         Value = LoadTexture(mc.Diffuse.Texture)
                     });
                 }
@@ -2710,29 +2485,29 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = SpecularColorName,
+                    Name = UniformNameDeclarations.SpecularColorName,
                     Value = mc.Specular.Color
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = SpecularShininessName,
+                    Name = UniformNameDeclarations.SpecularShininessName,
                     Value = mc.Specular.Shininess
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = SpecularIntensityName,
+                    Name = UniformNameDeclarations.SpecularIntensityName,
                     Value = mc.Specular.Intensity
                 });
                 if (mc.Specular.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = SpecularMixName,
+                        Name = UniformNameDeclarations.SpecularMixName,
                         Value = mc.Specular.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = SpecularTextureName,
+                        Name = UniformNameDeclarations.SpecularTextureName,
                         Value = LoadTexture(mc.Specular.Texture)
                     });
                 }
@@ -2742,19 +2517,19 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = EmissiveColorName,
+                    Name = UniformNameDeclarations.EmissiveColorName,
                     Value = mc.Emissive.Color
                 });
                 if (mc.Emissive.Texture != null)
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = EmissiveMixName,
+                        Name = UniformNameDeclarations.EmissiveMixName,
                         Value = mc.Emissive.Mix
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = EmissiveTextureName,
+                        Name = UniformNameDeclarations.EmissiveTextureName,
                         Value = LoadTexture(mc.Emissive.Texture)
                     });
                 }
@@ -2764,17 +2539,17 @@ namespace Fusee.Engine.Core
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = BumpIntensityName,
+                    Name = UniformNameDeclarations.BumpIntensityName,
                     Value = mc.Bump.Intensity
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = BumpTextureName,
+                    Name = UniformNameDeclarations.BumpTextureName,
                     Value = LoadTexture(mc.Bump.Texture)
                 });
             }
 
-            for (int i = 0; i < _numberOfLightsForward; i++)
+            for (int i = 0; i < LightingShard.NumberOfLightsForward; i++)
             {
                 effectParameters.Add(new EffectParameterDeclaration
                 {
@@ -2893,100 +2668,7 @@ namespace Fusee.Engine.Core
             return new Texture(new ImageData());
         }
 
-        #endregion
-
-        #region StaticUniformVariablesNames
-
-        /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixelshaders
-        /// </summary>
-        public static string AmbientStrengthName { get; } = "AmbientStrength";
-
-        /// <summary>
-        /// The var name for the uniform DiffuseColor variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseColorName { get; } = "DiffuseColor";
-
-        /// <summary>
-        /// The var name for the uniform SpecularColor variable within the pixelshaders
-        /// </summary>
-        public static string SpecularColorName { get; } = "SpecularColor";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveColor variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveColorName { get; } = "EmissiveColor";
-
-
-        /// <summary>
-        /// The var name for the uniform DiffuseTexture variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseTextureName { get; } = "DiffuseTexture";
-
-        /// <summary>
-        /// The var name for the uniform SpecularTexture variable within the pixelshaders
-        /// </summary>
-        public static string SpecularTextureName { get; } = "SpecularTexture";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveTexture variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveTextureName { get; } = "EmissiveTexture";
-
-        /// <summary>
-        /// The var name for the uniform BumpTexture variable within the pixelshaders
-        /// </summary>
-        public static string BumpTextureName { get; } = "BumpTexture";
-
-        /// <summary>
-        /// The var name for the uniform DiffuseMix variable within the pixelshaders
-        /// </summary>
-        public static string DiffuseMixName { get; } = "DiffuseMix";
-
-        /// <summary>
-        /// The var name for the uniform SpecularMix variable within the pixelshaders
-        /// </summary>
-        public static string SpecularMixName { get; } = "SpecularMix";
-
-        /// <summary>
-        /// The var name for the uniform EmissiveMix variable within the pixelshaders
-        /// </summary>
-        public static string EmissiveMixName { get; } = "EmissiveMix";
-
-        /// <summary>
-        /// The var name for the uniform SpecularShininess variable within the pixelshaders
-        /// </summary>
-        public static string SpecularShininessName { get; } = "SpecularShininess";
-
-        /// <summary>
-        /// The var name for the uniform SpecularIntensity variable within the pixelshaders
-        /// </summary>
-        public static string SpecularIntensityName { get; } = "SpecularIntensity";
-
-        /// <summary>
-        /// The var name for the uniform BumpIntensity variable within the pixelshaders
-        /// </summary>
-        public static string BumpIntensityName { get; } = "BumpIntensity";
-
-        /// <summary>
-        /// The var name for the uniform LightDirection variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightDirection is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightDirectionName { get; } = "LightDirection";
-
-        /// <summary>
-        /// The var name for the uniform LightColor variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightColor is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightColorName { get; } = "LightColor";
-
-        /// <summary>
-        /// The var name for the uniform LightIntensity variable within the pixelshaders
-        /// </summary>
-        [Obsolete("LightIntensity is no longer in use, adress: uniform Light allLights[MAX_LIGHTS]")]
-        public static string LightIntensityName { get; } = "LightIntensity";
-
-        #endregion
+        #endregion        
 
     }
 }

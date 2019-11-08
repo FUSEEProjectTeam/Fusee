@@ -2,6 +2,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
@@ -307,9 +308,9 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = (float4) effect.GetEffectParam(ShaderCodeBuilder.DiffuseColorName);
+            var color = (float4) effect.GetEffectParam(UniformNameDeclarations.DiffuseColorName);
             color.w = alpha;
-            effect.SetEffectParam(ShaderCodeBuilder.DiffuseColorName, color);              
+            effect.SetEffectParam(UniformNameDeclarations.DiffuseColorName, color);              
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

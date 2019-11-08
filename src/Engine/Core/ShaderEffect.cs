@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -198,7 +199,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Is called when GC of this shadereffect kicks in
+        /// Is called when GC of this shader effect kicks in
         /// </summary>
         public void Dispose()
         {
@@ -356,7 +357,12 @@ namespace Fusee.Engine.Core
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
     public class ShaderEffectProtoPixel : ShaderEffect
-    {  
+    {
+        /// <summary>
+        /// The effect probs are the basis on which we can decide what kind of shards this effect supports.
+        /// </summary>
+        public ShaderEffectProps EffectProps { get; set; }
+
         public ShaderEffectProtoPixel(EffectPassDeclarationProto[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
             if (effectPasses == null || effectPasses.Length == 0)

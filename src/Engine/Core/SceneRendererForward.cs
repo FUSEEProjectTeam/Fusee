@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -275,6 +276,9 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
+
+                var effectProbs = ShaderShardUtil.CollectEffectProps(null, defaultMat);
+
                 _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
                 _rc.SetShaderEffect(_defaultEffect);
             }

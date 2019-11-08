@@ -5,6 +5,7 @@ using Fusee.Xene;
 using Fusee.Math.Core;
 using System.Linq;
 using System;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -177,7 +178,7 @@ namespace Fusee.Engine.Core
 
             var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
 
-            if (currentNodeEffect?.Effect.GetEffectParam(ShaderCodeBuilder.BumpTextureName) != null)
+            if (currentNodeEffect?.Effect.GetEffectParam(UniformNameDeclarations.BumpTextureName) != null)
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -239,7 +240,6 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
-
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
             return mat;
@@ -247,7 +247,6 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialLightComponent mc)
         {
             if (_lightMatMap.TryGetValue(mc, out var mat)) return mat;
-
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights());
             _lightMatMap.Add(mc, mat);
             return mat;
@@ -256,7 +255,6 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
         {
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights());
             _pbrComponent.Add(mc, mat);
             return mat;
