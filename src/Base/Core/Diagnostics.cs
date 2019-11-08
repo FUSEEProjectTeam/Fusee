@@ -259,7 +259,7 @@ namespace Fusee.Base.Core
         public static void Debug(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
         {
             if (_useFile && _minLogLevelFile <= SeverityLevel.DEBUG)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message, ex, args));
+                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.DEBUG, message, ex, args));
 
             if (_minLogLevelConsole <= SeverityLevel.DEBUG)
                 Console.WriteLine(_format(callerName, SeverityLevel.DEBUG, message, ex, args));
@@ -310,7 +310,7 @@ namespace Fusee.Base.Core
         public static void Info(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
         {
             if (_useFile && _minLogLevelFile <= SeverityLevel.INFO)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message, ex, args));
+                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.INFO, message, ex, args));
 
             if (_minLogLevelConsole <= SeverityLevel.INFO)
                 Console.WriteLine(_format(callerName, SeverityLevel.INFO, message, ex, args));
@@ -362,7 +362,7 @@ namespace Fusee.Base.Core
         public static void Warn(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
         {
             if (_useFile && _minLogLevelFile <= SeverityLevel.WARN)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message, ex, args));
+                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.WARN, message, ex, args));
 
             if (_minLogLevelConsole <= SeverityLevel.WARN)
                 Console.WriteLine(_format(callerName, SeverityLevel.WARN, message, ex, args));
@@ -418,7 +418,7 @@ namespace Fusee.Base.Core
             var callingMethod = stackTrace.GetFrame(1).GetMethod().Name;
 
             if (_useFile && _minLogLevelFile <= SeverityLevel.ERROR)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message, ex, args));
+                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.ERROR, message, ex, args));
 
             if (_minLogLevelConsole <= SeverityLevel.ERROR)
                 Console.WriteLine(_format(callerName, SeverityLevel.ERROR, message, ex, args));
@@ -469,7 +469,7 @@ namespace Fusee.Base.Core
         public static void Fatal(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
         {
             if (_useFile && _minLogLevelFile <= SeverityLevel.FATAL)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message, ex, args));
+                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.FATAL, message, ex, args));
 
             if (_minLogLevelConsole <= SeverityLevel.FATAL)
                 Console.WriteLine(_format(callerName, SeverityLevel.FATAL, message, ex, args));
