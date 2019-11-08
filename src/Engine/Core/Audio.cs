@@ -34,7 +34,7 @@ namespace Fusee.Engine.Core
             {
                 if (value == null)
                 {
-                    Diagnostics.Log("WARNING: No Audio implementation set. To enable Audio functionality inject an appropriate implementation of IAudioImp in your platform specific application main module.");
+                    Diagnostics.Warn("WARNING: No Audio implementation set. To enable Audio functionality inject an appropriate implementation of IAudioImp in your platform specific application main module.");
                     _audioImp = new DummyAudioImp();
                 }
                 else
