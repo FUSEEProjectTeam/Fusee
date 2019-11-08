@@ -3,8 +3,6 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.MeshingAround.Android</RootNamespace>
     <AssemblyName>Fusee.Examples.MeshingAround.Android</AssemblyName>
-    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\</FuseeEngineRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <!-- Build into main FUSEE bin directory -->
