@@ -22,6 +22,15 @@ namespace Fusee.Base.Core
         private static SeverityLevel _minLogLevelConsole;
         private static Formater _format;
 
+        /// <summary>
+        ///     The methods used for formating messages
+        /// </summary>
+        /// <param name="callingMethod">The calling method</param>
+        /// <param name="lvl">The severity level</param>
+        /// <param name="msg">The message</param>
+        /// <param name="ex">A possible exception</param>
+        /// <param name="args">Possible arguments</param>
+        /// <returns></returns>
         public delegate string Formater(string callingMethod, SeverityLevel lvl, string msg, Exception ex = null, object[] args = null);
 
         /// <summary>
@@ -161,6 +170,15 @@ namespace Fusee.Base.Core
         public static void SetMinConsoleLoggingSeverityLevel(SeverityLevel lvl)
         {
             _minLogLevelConsole = lvl;
+        }
+
+        /// <summary>
+        ///     Update the format of the logging messages
+        /// </summary>
+        /// <param name="formater"></param>
+        public static void SetFormat(Formater formater)
+        {
+            _format = formater;
         }
 
         /// <summary>
