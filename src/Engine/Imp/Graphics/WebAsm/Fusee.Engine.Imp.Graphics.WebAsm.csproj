@@ -1,34 +1,27 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-    <PropertyGroup>
-      <RootNamespace>Fusee.Engine.Imp.Graphics.WebAsm</RootNamespace>
-      <PackageId>Fusee.Engine.Imp.Graphics.WebAsm</PackageId>
-      <TargetFramework>netstandard2.0</TargetFramework>
-      <DefineConstants>PLATFORM_WebAsm</DefineConstants>
+  <PropertyGroup>
+    <RootNamespace>Fusee.Engine.Imp.Graphics.WebAsm</RootNamespace>
+    <PackageId>Fusee.Engine.Imp.Graphics.WebAsm</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>PLATFORM_WebAsm</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
-    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
-  </PropertyGroup>
-  
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
-
-    <ItemGroup>
-      <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-      <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-      <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-      <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-    </ItemGroup>
-
-
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.3" />
     <PackageReference Include="WebAssembly.Bindings" Version="0.1.0-preview1" />
   </ItemGroup>
-
-
 </Project>

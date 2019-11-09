@@ -108,8 +108,8 @@ namespace Fusee.Examples.Bone.Core
             //{
             //    bindingMatrices.Add(float4x4.Identity);
             //}
-            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[1].Children[2].GetComponent<WeightComponent>();
+            var mesh = _scene.Children[2].Children[2].GetComponent<Mesh>();
+            var wm = _scene.Children[2].Children[2].GetComponent<WeightComponent>();
             var WeightMap = new List<VertexWeightList>();
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -131,7 +131,7 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
+            var weightMapFromScene = _scene.Children[2].Children[2].Components[1];
 
             //_scene.Children.Insert(0, new SceneNodeContainer()
             //{
@@ -238,13 +238,6 @@ namespace Fusee.Examples.Bone.Core
                     _sceneScale = float4x4.Identity;
             }
 
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate
-            {
-                projComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
-
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
         }
@@ -344,7 +337,7 @@ namespace Fusee.Examples.Bone.Core
             RC.Projection = mtxOffset * _projection;
 
             // move one bone
-            var translation = _scene.Children[1].Children[1].GetComponent<TransformComponent>();
+            var translation = _scene.Children[2].Children[1].GetComponent<TransformComponent>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 

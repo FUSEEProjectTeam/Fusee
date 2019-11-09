@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -48,15 +48,7 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
-
-            //Add resize delegate
-            var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate 
-            {
-                projComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");                 
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -195,12 +187,7 @@ namespace Fusee.Examples.Simple.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate 
-            {
-                canvasProjComp.Resize(Width, Height);
-                RC.Viewport(0, 0, Width, Height);
-            });
+            canvas.Components.Insert(0, canvasProjComp);            
 
             return new SceneContainer
             {

@@ -300,6 +300,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
         {
+            pc.Width = _rc.ViewportWidth;
+            pc.Height = _rc.ViewportHeight;
             _rc.Projection = pc.Matrix();
         }
 
