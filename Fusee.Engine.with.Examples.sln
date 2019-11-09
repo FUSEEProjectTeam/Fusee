@@ -414,6 +414,9 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.ImageGenerator.Desktop.Test", "src\Tests\Render\Fusee.Engine.Examples.ImageGenerator.Desktop.Test\Fusee.Engine.Examples.ImageGenerator.Desktop.Test.csproj", "{B053ED47-3A82-475D-B75D-336C026F953E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Examples.ImageGenerator.Desktop", "src\Tests\Render\ImageGenerator\Desktop\Fusee.Engine.Examples.ImageGenerator.Desktop.csproj", "{81D2BA3C-8297-4944-8A3E-2C60F59D5BC1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E23994A2-8DA9-408A-877A-71E7168FE25D} = {E23994A2-8DA9-408A-877A-71E7168FE25D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

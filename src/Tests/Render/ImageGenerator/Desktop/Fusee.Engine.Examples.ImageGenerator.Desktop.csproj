@@ -26,6 +26,7 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\Simple\Core\Fusee.Examples.Simple.Core.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK">

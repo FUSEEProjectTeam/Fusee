@@ -86,15 +86,16 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Generator();
+                var app = new Fusee.Examples.Simple.Core.Simple();
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var cimp = new RenderCanvasImpIG(opts.Width, opts.Height);
                 cimp.EnableBlending = true;
                 app.CanvasImplementor = cimp;
+                var cimp2 = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
-                // Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
-                // Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(cimp2));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp2));
                 // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
                 // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
                 // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
