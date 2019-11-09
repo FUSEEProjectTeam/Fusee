@@ -11,13 +11,44 @@ namespace Fusee.Engine.GUI
     /// </summary>
     public enum AnchorPos
     {
+        /// <summary>
+        /// Anchors to the lower left corner of the parent element.
+        /// </summary>
         DOWN_DOWN_LEFT,     //Min = Max = 0,0
+
+        /// <summary>
+        /// Anchors to the lower right corner of the parent element.
+        /// </summary>
         DOWN_DOWN_RIGHT,    //Min = Max = 1,0
+
+        /// <summary>
+        /// Anchors to the upper left corner of the parent element.
+        /// </summary>
         TOP_TOP_LEFT,       //Min = Max = 0,1
+
+        /// <summary>
+        /// Anchors to the upper right corner of the parent element.
+        /// </summary>
         TOP_TOP_RIGHT,      //Min = Max = 1,1
+
+        /// <summary>
+        /// Stretches across all of the parent element.
+        /// </summary>
         STRETCH_ALL,        //Min = 0, 0 and Max = 1, 1
+
+        /// <summary>
+        /// Stretches horizontally, but keeps its size vertically.
+        /// </summary>
         STRETCH_HORIZONTAL, //Min = 0,0 and Max = 1,0
+
+        /// <summary>
+        /// Stretches vertically, but keeps its size horizontally.
+        /// </summary>
         STRETCH_VERTICAL,   //Min = 0,0 and Max = 0,1
+
+        /// <summary>
+        /// Anchors to the middle of the parent element.
+        /// </summary>
         MIDDLE              //Min = Max = 0.5, 0.5
     }
 
@@ -26,6 +57,11 @@ namespace Fusee.Engine.GUI
     /// </summary>
     public static class UIElementPosition
     {
+        /// <summary>
+        /// Sets the anchor position in percent as a <see cref="MinMaxRect"/> depending on its <see cref="AnchorPos"/>
+        /// </summary>
+        /// <param name="anchorPos">The anchor point of the UI element.</param>
+        /// <returns>The <see cref="MinMaxRect"/> containing the anchor position in percent.</returns>
         public static MinMaxRect GetAnchors(AnchorPos anchorPos)
         {
             switch (anchorPos)
@@ -82,6 +118,15 @@ namespace Fusee.Engine.GUI
             }
         }
 
+        /// <summary>
+        /// Calculates the offset between an element and their parent element and therefore its size.
+        /// </summary>
+        /// <param name="anchorPos">The anchor point of the element.</param>
+        /// <param name="posOnParent">The position on the parent element.</param>
+        /// <param name="parentHeight">The height of the parent element.</param>
+        /// <param name="parentWidth">The width of the parent element.</param>
+        /// <param name="guiElementDim">The dimensions of the element along the x and y axis.</param>
+        /// <returns></returns>
         public static MinMaxRect CalcOffsets(AnchorPos anchorPos, float2 posOnParent, float parentHeight, float parentWidth, float2 guiElementDim)
         {
             switch (anchorPos)
