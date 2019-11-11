@@ -1,4 +1,5 @@
 ﻿using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
@@ -41,6 +42,12 @@ namespace Fusee.Engine.Core.ShaderShards
 
     public static class ShaderShardUtil
     {
+        public static string MainMethod(IList<string> methodBody)
+        {
+            return GLSL.CreateMethod(GLSL.Type.Void, "main",
+                new[] { "" }, methodBody);
+        }
+
         public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
         {
             var matType = AnalyzeMaterialType(mc);
@@ -96,5 +103,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 HasBiTangents = mesh == null || (mesh.BiTangents != null && mesh.BiTangents.Length > 1)
             };
         }
+
+
     }
 }
