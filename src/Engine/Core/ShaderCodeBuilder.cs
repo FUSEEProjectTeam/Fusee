@@ -1389,7 +1389,7 @@ namespace Fusee.Engine.Core
             //--------------------------------------//
 
             //Calculates the lighting for all lights by using the above method
-            pixelShader.Add(LightingShard.FragMainMethod(effectProps));
+            pixelShader.Add(FragMainShard.ForwardLighting(effectProps));
 
             return string.Join("\n", pixelShader);
         }

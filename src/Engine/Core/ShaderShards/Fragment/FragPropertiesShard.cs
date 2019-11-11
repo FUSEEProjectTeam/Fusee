@@ -95,7 +95,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             return GLSL.CreateOut(GLSL.Type.Vec4, "oFragmentColor");
         }
-
         public static string FixedNumberLightArray()
         {
             return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
