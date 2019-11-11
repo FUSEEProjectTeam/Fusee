@@ -56,9 +56,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 int isActive;
                 int isCastingShadows;
                 float bias;
-            };
+            };           
             ";
-            return lightStruct + $"uniform Light allLights[{NumberOfLightsForward}];";
+            return lightStruct;
 
         }
 
