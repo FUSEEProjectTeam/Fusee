@@ -118,6 +118,7 @@ namespace Fusee.Engine.Core
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
         public static ShaderEffect FXAARenderTargetEffect(RenderTarget srcRenderTarget, float2 screenParams)
         {
+            //TODO: #define constants to uniforms
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
@@ -135,6 +136,44 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
                 new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
+            });
+
+        }
+
+        /// <summary>
+        /// Shader effect for the ssao pass.
+        /// </summary>        
+        /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
+        /// <param name="kernelLength">SSAO kernel size.</param>
+        /// <param name="screenParams">Width and Height of the screen.</param>        
+        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
+        {
+            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength); //TODO: is there a smart way to set #define KERNEL_LENGTH in file?
+            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("Deferred.vert"),
+                    PS = AssetStorage.Get<string>("SSAO.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+
+                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
+                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
+                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
+                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
             });
 
         }
@@ -215,121 +254,6 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = ssaoRenderTex},
 
-            });
-
-        }
-
-        /// <summary>
-        /// Shader effect for the ssao pass.
-        /// </summary>        
-        /// <param name="geomPassRenderTarget">RenderTarget filled in the previous geometry pass.</param>
-        /// <param name="kernelLength">SSAO kernel size.</param>
-        /// <param name="screenParams">Width and Height of the screen.</param>        
-        public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
-        {
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
-            var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
-
-            //--------- Fragment shader ----------- //
-            var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
-            frag.Append(HeaderShard.EsPrecision());
-            frag.Append($"#define KERNEL_LENGTH {kernelLength}\n");
-
-            frag.Append($"in vec2 vTexCoords;\n");
-
-            frag.Append($"uniform vec2 ScreenParams;\n");
-            frag.Append($"uniform vec3[KERNEL_LENGTH] SSAOKernel;\n");
-            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_POSITION)};\n");
-            frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_NORMAL)};\n");
-            frag.Append($"uniform sampler2D NoiseTex;\n");
-            frag.Append($"uniform mat4 FUSEE_P;\n");
-
-            frag.Append($"out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
-
-            frag.Append("void main() {");
-            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
-
-            frag.Append(@"
-            if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)
-                discard;
-            ");
-
-            frag.AppendLine($"vec3 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords).xyz;");
-
-            //SSAO
-            //-------------------------------------- -
-            frag.Append(@"
-            float radius = 5.0;
-            float occlusion = 0.0;
-            float bias = 0.005;
-            ");
-
-            frag.AppendLine($"vec2 noiseScale = vec2(ScreenParams.x * 0.25, ScreenParams.y * 0.25);");
-            frag.AppendLine($"vec3 randomVec = texture(NoiseTex, vTexCoords * noiseScale).xyz;");
-
-            frag.AppendLine($"vec3 tangent = normalize(randomVec - Normal * dot(randomVec, Normal));");
-            frag.AppendLine($"vec3 bitangent = cross(Normal, tangent);");
-            frag.AppendLine($"mat3 tbn = mat3(tangent, bitangent, Normal);");
-
-            frag.Append(@"
-
-            for (int i = 0; i < KERNEL_LENGTH; ++i) 
-            {
-             // get sample position:
-             vec3 sampleVal = tbn * SSAOKernel[i];
-             sampleVal = sampleVal * radius + FragPos.xyz;
-
-             // project sample position:
-             vec4 offset = vec4(sampleVal, 1.0);
-             offset = FUSEE_P * offset;		
-             offset.xy /= offset.w;
-             offset.xy = offset.xy * 0.5 + 0.5;
-
-             // get sample depth:
-             // ----- EXPENSIVE TEXTURE LOOKUP - graphics card workload goes up and frame rate goes down the nearer the camera is to the model.
-             // keyword: dependent texture look up, see also: https://stackoverflow.com/questions/31682173/strange-performance-behaviour-with-ssao-algorithm-using-opengl-and-glsl
-            ");
-
-            frag.AppendLine($"float sampleDepth = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, offset.xy).z;");
-            frag.Append(@"           
-
-             // range check & accumulate:
-             float rangeCheck = smoothstep(0.0, 1.0, radius / abs(FragPos.z - sampleDepth));
-             occlusion += (sampleDepth <= sampleVal.z + bias ? 1.0 : 0.0) * rangeCheck;
-            }
-
-            occlusion = clamp(1.0 - (occlusion / float(KERNEL_LENGTH)), 0.0, 1.0);           
-
-            ");
-
-            frag.Append($"{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)} = vec4(occlusion, occlusion, occlusion, 1.0);");
-
-            frag.Append("}");
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = frag.ToString(),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
-                }
-            },
-            new[]
-            {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
-
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
-                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
-                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
-                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
             });
 
         }
