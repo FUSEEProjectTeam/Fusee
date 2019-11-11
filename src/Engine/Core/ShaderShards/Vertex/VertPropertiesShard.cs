@@ -7,16 +7,13 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
     public static class VertPropertiesShard
     {
-        public static string InAndOutParams(WeightComponent wc, ShaderEffectProps effectProps)
+        public static string InAndOutParams(ShaderEffectProps effectProps)
         {
             var vertProps = new List<string>
             {
                 GLSL.CreateOut(GLSL.Type.Vec3, "vCamPos"),
                 GLSL.CreateOut(GLSL.Type.Vec3, "vViewPos")
             };
-
-            if (effectProps.MeshProbs.HasWeightMap)
-                vertProps.Add($"#define BONES {wc.Joints.Count}");
 
             if (effectProps.MeshProbs.HasVertices)
                 vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuVertex"));
