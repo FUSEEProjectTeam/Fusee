@@ -3102,6 +3102,11 @@ Global
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -3109,7 +3114,6 @@ Global
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|x86.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3120,6 +3124,11 @@ Global
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug-WebAsm|x86.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release|x64.ActiveCfg = Release|Any CPU
@@ -3127,7 +3136,6 @@ Global
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release|x86.ActiveCfg = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release|x86.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Android|x64.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3138,11 +3146,11 @@ Global
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-Desktop|x86.Build.0 = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.Build.0 = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.Build.0 = Release|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
