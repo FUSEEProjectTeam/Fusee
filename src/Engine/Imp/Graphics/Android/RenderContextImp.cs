@@ -8,7 +8,7 @@ using Fusee.Math.Core;
 using Fusee.Engine.Common;
 using OpenTK.Graphics.ES31;
 using System.Linq;
-
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Imp.Graphics.Android
 {
@@ -385,14 +385,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.AttachShader(program, vertexObject);
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.VertexAttribLocation, ShaderCodeBuilderHelper.VertexAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.ColorAttribLocation, ShaderCodeBuilderHelper.ColorAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.UvAttribLocation, ShaderCodeBuilderHelper.UvAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.NormalAttribLocation, ShaderCodeBuilderHelper.NormalAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.TangentAttribLocation, ShaderCodeBuilderHelper.TangentAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneIndexAttribLocation, ShaderCodeBuilderHelper.BoneIndexAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BoneWeightAttribLocation, ShaderCodeBuilderHelper.BoneWeightAttribName);
-            GL.BindAttribLocation(program, ShaderCodeBuilderHelper.BitangentAttribLocation, ShaderCodeBuilderHelper.BitangentAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.VertexAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.ColorAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.UvAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.NormalAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.TangentAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndexAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeightAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
             GL.LinkProgram(program);
             return new ShaderProgramImp { Program = program };
@@ -1121,61 +1121,61 @@ namespace Fusee.Engine.Imp.Graphics.Android
         {
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.VertexAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.VertexAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).VertexBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.VertexAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
 
             }
             if (((MeshImp)mr).ColorBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.ColorAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.ColorAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).ColorBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0,
+                GL.VertexAttribPointer(AttributeLocations.ColorAttribLocation, 4, VertexAttribPointerType.UnsignedByte, true, 0,
                     IntPtr.Zero);
             }
 
             if (((MeshImp)mr).UVBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.UvAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.UvAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).UVBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
+                GL.VertexAttribPointer(AttributeLocations.UvAttribLocation, 2, VertexAttribPointerType.Float, false, 0, IntPtr.Zero);
             }
 
             if (((MeshImp)mr).NormalBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.NormalAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.NormalAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).NormalBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.NormalAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
             if (((MeshImp)mr).BoneIndexBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.BoneIndexAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.BoneIndexAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneIndexBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.BoneIndexAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
             if (((MeshImp)mr).BoneWeightBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.BoneWeightAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.BoneWeightAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BoneWeightBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.BoneWeightAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
             if (((MeshImp)mr).TangentBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.TangentAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.TangentAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).TangentBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.TangentAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.TangentAttribLocation, 4, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
 
             if (((MeshImp)mr).BitangentBufferObject != 0)
             {
-                GL.EnableVertexAttribArray(ShaderCodeBuilderHelper.BitangentAttribLocation);
+                GL.EnableVertexAttribArray(AttributeLocations.BitangentAttribLocation);
                 GL.BindBuffer(BufferTarget.ArrayBuffer, ((MeshImp)mr).BitangentBufferObject);
-                GL.VertexAttribPointer(ShaderCodeBuilderHelper.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
+                GL.VertexAttribPointer(AttributeLocations.BitangentAttribLocation, 3, VertexAttribPointerType.Float, false, 0,
                     IntPtr.Zero);
             }
 
@@ -1224,22 +1224,22 @@ namespace Fusee.Engine.Imp.Graphics.Android
             if (((MeshImp)mr).VertexBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(ShaderCodeBuilderHelper.VertexAttribLocation);
+                GL.DisableVertexAttribArray(AttributeLocations.VertexAttribLocation);
             }
             if (((MeshImp)mr).ColorBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(ShaderCodeBuilderHelper.ColorAttribLocation);
+                GL.DisableVertexAttribArray(AttributeLocations.ColorAttribLocation);
             }
             if (((MeshImp)mr).NormalBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(ShaderCodeBuilderHelper.NormalAttribLocation);
+                GL.DisableVertexAttribArray(AttributeLocations.NormalAttribLocation);
             }
             if (((MeshImp)mr).UVBufferObject != 0)
             {
                 GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-                GL.DisableVertexAttribArray(ShaderCodeBuilderHelper.UvAttribLocation);
+                GL.DisableVertexAttribArray(AttributeLocations.UvAttribLocation);
             }
         }
 
