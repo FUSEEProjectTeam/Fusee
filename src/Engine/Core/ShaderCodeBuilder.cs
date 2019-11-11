@@ -13,13 +13,11 @@ using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
 {
-
     /// <summary>
     /// Compiler for ShaderCode. Takes a MaterialComponent, evaluates input parameters and creates pixel and vertex shader
     /// </summary>
     public static class ShaderCodeBuilder
-    {
-        
+    {        
         #region Deferred
 
         /// <summary>
@@ -61,15 +59,25 @@ namespace Fusee.Engine.Core
         /// <param name="screenParams">Width and Height of the screen.</param>        
         public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
         {
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength); //TODO: is there a smart way to set #define KERNEL_LENGTH in file?
+            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength); 
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
 
-            return new ShaderEffect(new[]
+            //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
+            var ps = AssetStorage.Get<string>("SSAO.frag");
+
+            if (kernelLength != 64)
             {
+                var lines = ps.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                lines[1] = $"#define KERNEL_LENGTH {kernelLength}";
+                ps = string.Join("\n", lines);
+            }
+
+            return new ShaderEffect(new[]
+            {                
                 new EffectPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = AssetStorage.Get<string>("SSAO.frag"),
+                    PS = ps,
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
@@ -310,24 +318,8 @@ namespace Fusee.Engine.Core
                 frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
             }
 
-            frag.Append(@"struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };
-            uniform Light light;
-            ");
+            frag.Append(LightingShard.LightStructDeclaration());
+            frag.Append("uniform Light light;");
 
             frag.Append("uniform mat4 FUSEE_IV;\n");
             frag.Append("uniform mat4 FUSEE_V;\n");
@@ -506,24 +498,8 @@ namespace Fusee.Engine.Core
                 frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
             }
 
-            frag.Append(@"struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };
-            uniform Light light;
-            ");
+            frag.Append(LightingShard.LightStructDeclaration());
+            frag.Append("uniform Light light;");
 
             frag.Append("uniform mat4 FUSEE_IV;\n");
             frag.Append("uniform mat4 FUSEE_V;\n");
@@ -941,74 +917,6 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
         {
-            // Vertex shader ------------------------------
-            var vert = new StringBuilder();
-            vert.AppendLine("#version 330 core");
-
-            vert.Append(@"                
-            
-            uniform mat4 FUSEE_M;              
-            in vec3 fuVertex; 
-            ");
-
-            vert.Append(@"
-            void main() 
-            {                
-                gl_Position = FUSEE_M * vec4(fuVertex, 1.0);               
-
-            }");
-
-            //Geometry shader ------------------------------
-            var geom = new StringBuilder();
-            geom.AppendLine("#version 330 core");
-            geom.Append(@"
-                layout (triangles) in;
-                layout (triangle_strip, max_vertices=18) out;
-
-                uniform mat4 LightSpaceMatrices[6];
-
-                out vec4 FragPos;
-
-                void main()
-                {
-                    for(int face = 0; face < 6; face++)
-                    {
-                        gl_Layer = face; // built-in variable that specifies to which face we render.
-                        for(int i = 0; i < 3; ++i) // for each triangle's vertices
-                        {
-                            FragPos = gl_in[i].gl_Position;
-                            gl_Position = LightSpaceMatrices[face] * FragPos;
-                            EmitVertex();
-                        }    
-                        EndPrimitive();
-                    }
-                }  
-
-            ");
-
-            // Fragment shader ------------------------------
-            var frag = new StringBuilder();
-            frag.Append("#version 330 core\n");
-
-            frag.Append("in vec4 FragPos;\n");
-            frag.Append("uniform vec2 LightMatClipPlanes;\n");
-            frag.Append("uniform vec3 LightPos;\n");
-
-            frag.Append(@"
-            void main()
-            {
-                // get distance between fragment and light source
-                float lightDistance = length(FragPos.xyz - LightPos);
-    
-                // map to [0;1] range by dividing by far_plane
-                lightDistance = lightDistance / LightMatClipPlanes.y;
-    
-                // write this as modified depth                
-                gl_FragDepth = lightDistance;
-            }  
-                
-            ");
-
             var effectParamDecls = new List<EffectParameterDeclaration>
             {
                 new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity },
@@ -1022,9 +930,9 @@ namespace Fusee.Engine.Core
             {
                 new EffectPassDeclaration
                 {
-                    VS = vert.ToString(),
-                    GS = geom.ToString(),
-                    PS = frag.ToString(),
+                    VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
+                    GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
+                    PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
@@ -1043,49 +951,12 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public static ShaderEffect ShadowMapEffect()
         {
-            // Vertex shader ------------------------------
-            var vert = new StringBuilder();
-            vert.Append(HeaderShard.Version());
-            vert.Append(HeaderShard.EsPrecision());
-
-            vert.Append(@"
-                
-            uniform mat4 LightSpaceMatrix;
-            uniform mat4 FUSEE_M;              
-            in vec3 fuVertex; 
-            ");
-
-            vert.Append(@"
-            void main() 
-            {                
-                gl_Position = LightSpaceMatrix* FUSEE_M * vec4(fuVertex, 1.0);               
-
-            }");
-
-            // Fragment shader ------------------------------
-            var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
-            frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(HeaderShard.EsPrecision());
-
-            frag.Append($"layout (location = {0}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)};\n");            
-            frag.Append("uniform int LightType;\n");
-
-            frag.Append(@"void main()
-            {  
-                float d = gl_FragCoord.z;
-                
-            ");
-            frag.AppendLine($" {Enum.GetName(typeof(RenderTargetTextureTypes), (int)RenderTargetTextureTypes.G_DEPTH)} = vec4(d, d, d, 1.0);\n");
-            frag.Append(@"}
-            ");
-
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
-                    VS = vert.ToString(),
-                    PS = frag.ToString(),
+                    VS = AssetStorage.Get<string>("ShadowMap.vert"),
+                    PS = AssetStorage.Get<string>("ShadowMap.frag"),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
@@ -1462,13 +1333,14 @@ namespace Fusee.Engine.Core
             {
                 HeaderShard.Version(),
                 HeaderShard.EsPrecision(),
+               
+                LightingShard.LightStructDeclaration(),
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
                 FragPropertiesShard.MatPropsUniforms(effectProps),
-                FragPropertiesShard.ColorOut(),
-
-                LightingShard.LightStructDeclaration(),
+                FragPropertiesShard.FixedNumberLightArray(),
+                FragPropertiesShard.ColorOut(),                
             };
 
             //---- LIGHTING ---//
