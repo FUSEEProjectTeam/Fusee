@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>

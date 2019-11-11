@@ -322,9 +322,4 @@ namespace Fusee.Tools.fuseeCmdLine
             p.outputStream.WriteLine("postbody: <pre>{0}</pre>", data);
         }
     }
-
-
 }
-
-
-

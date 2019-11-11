@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.UI.Core</RootNamespace>
     <PackageId>Fusee.Examples.UI.Core</PackageId>
@@ -8,6 +8,14 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\UI\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Contnet Update="Assets\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
