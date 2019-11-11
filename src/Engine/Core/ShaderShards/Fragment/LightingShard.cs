@@ -316,5 +316,103 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Int, "lightType"),
                 }, methodBody);
         }
+
+        public static string ShadowCalculation()
+        {
+            var methodBody = new List<string>()
+            {
+                "float shadow = 0.0;",
+                "int pcfLoop = int(pcfKernelHalfSize);",
+                "float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;",
+                "pcfKernelSize *= pcfKernelSize;",
+
+                "// perform perspective divide",
+                "vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;",
+                "projCoords = projCoords * 0.5 + 0.5;",
+                "//float closestDepth = texture(shadowMap, projCoords.xy).r;",
+                "float currentDepth = projCoords.z;",
+
+                "float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias / 100.0);",
+
+                "vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));",
+
+                "//use this for using sampler2DShadow (automatic PCF) instead of sampler2D",
+                "//float depth = texture(shadowMap, projCoords.xyz).r;",
+                "//shadow += (currentDepth - thisBias) > depth ? 1.0 : 0.0;",
+
+                "for (int x = -pcfLoop; x <= pcfLoop; ++x)",
+                "{",
+                    "for (int y = -pcfLoop; y <= pcfLoop; ++y)",
+                    "{",
+                        "float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r;",
+                        "shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;",
+                    "}",
+                "}",
+                "shadow /= pcfKernelSize;",
+
+                "return shadow;"
+            };
+
+            return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
+            {
+                GLSL.CreateVar(GLSL.Type.Sampler2D, "shadowMap"), 
+                GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"), 
+                GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
+                GLSL.CreateVar(GLSL.Type.Float, "bias"),
+                GLSL.CreateVar(GLSL.Type.Float, "pcfKernelHalfSize")
+            }, methodBody);
+        }
+
+        public static string ShadowCalculationCubeMap()
+        {
+            var methodBody = new List<string>()
+            {
+                "float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;",
+            "pcfKernelSize *= pcfKernelSize;",
+
+            "vec3 sampleOffsetDirections[20] = vec3[]",
+            "(",
+               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize),",
+               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize),",
+               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, 0), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, 0),",
+               "vec3(pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(pcfKernelHalfSize, 0, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, -pcfKernelHalfSize),",
+               "vec3(0, pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(0, pcfKernelHalfSize, -pcfKernelHalfSize)",
+            ");",
+
+            "// get vector between fragment position and light position",
+            "vec3 fragToLight = (fragPos - lightPos) * -1.0;",
+            "// now get current linear depth as the length between the fragment and light position",
+            "float currentDepth = length(fragToLight);",
+
+            "float shadow = 0.0;",
+            "float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias * 0.01);//0.15;",
+            "int samples = 20;",
+            "vec3 camPos = FUSEE_IV[3].xyz;",
+            "float viewDistance = length(camPos - fragPos);",
+
+            "float diskRadius = 0.5; //(1.0 + (viewDistance / farPlane)) / pcfKernelSize;",
+            "for (int i = 0; i < samples; ++i)",
+            "{",
+                "float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;",
+                "closestDepth *= farPlane;   // Undo mapping [0;1]",
+                "if (currentDepth - thisBias > closestDepth)",
+                    "shadow += 1.0;",
+            "}",
+            "shadow /= float(samples);",
+            "return shadow;"
+            };
+            return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculationCubeMap", new[]
+            {
+                GLSL.CreateVar(GLSL.Type.SamplerCube, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "fragPos"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "lightPos"),
+                GLSL.CreateVar(GLSL.Type.Float, "farPlane"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
+                GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
+                GLSL.CreateVar(GLSL.Type.Float, "bias"),
+                GLSL.CreateVar(GLSL.Type.Float, "pcfKernelHalfSize")
+            }, methodBody);            
+        }
     }
 }

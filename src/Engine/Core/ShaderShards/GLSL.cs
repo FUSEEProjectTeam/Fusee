@@ -18,6 +18,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Float,
             Int,
             Sampler2D,
+            SamplerCube,
             Void
         }
 
@@ -106,6 +107,8 @@ namespace Fusee.Engine.Core.ShaderShards
                     return "int";
                 case Type.Sampler2D:
                     return "sampler2D";
+                case Type.SamplerCube:
+                    return "samplerCube";
                 case Type.Void:
                     return "void";
                 default:

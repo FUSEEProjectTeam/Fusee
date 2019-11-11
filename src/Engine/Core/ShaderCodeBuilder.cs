@@ -19,94 +19,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public static class ShaderCodeBuilder
     {
-        #region CreateVertexShader
-
-        public static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
-        {
-            var vertexShader = new List<string>
-            {
-                HeaderShard.Version(),
-                HeaderShard.DefineBones(effectProps, wc),
-                VertPropertiesShard.Uniforms(effectProps),
-                VertPropertiesShard.InAndOutParams(effectProps),
-            };
-
-            // Main            
-            vertexShader.Add(VertOut.VertexMain(effectProps));
-
-            return string.Join("\n", vertexShader);
-        }
-        #endregion
-
-        #region CreatePixelShader        
-
-        public static string CreatePixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
-        {
-            var pixelShader = new List<string>
-            {
-                HeaderShard.Version(),
-                HeaderShard.EsPrecision(),
-
-                FragPropertiesShard.InParams(effectProps),
-                FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps),
-                FragPropertiesShard.ColorOut(),
-
-                LightingShard.LightStructDeclaration(),                     
-            };
-
-            //---- LIGHTING ---//
-            if (effectProps.MatProbs.HasApplyLightString)
-            {
-                pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
-            }
-            else
-            {
-                //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
-                switch (effectProps.MatType)
-                {
-                    case MaterialType.Material:
-                    case MaterialType.MaterialLightComponent:
-                        pixelShader.Add(LightingShard.AmbientLightMethod());
-                        if (effectProps.MatProbs.HasDiffuse)
-                            pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                        if (effectProps.MatProbs.HasSpecular)
-                            pixelShader.Add(LightingShard.SpecularLightMethod());
-                        break;
-                    case MaterialType.MaterialPbrComponent:
-                        if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
-                        {
-                            pixelShader.Add(LightingShard.AmbientLightMethod());
-                            if (effectProps.MatProbs.HasDiffuse)
-                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                            if (effectProps.MatProbs.HasSpecular)
-                                pixelShader.Add(LightingShard.SpecularLightMethod());
-                        }
-                        else
-                        {
-                            pixelShader.Add(LightingShard.AmbientLightMethod());
-                            if (effectProps.MatProbs.HasDiffuse)
-                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                            if (effectProps.MatProbs.HasSpecular)
-                                pixelShader.Add(LightingShard.PbrSpecularLightMethod((MaterialPBRComponent)mc));
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
-                }
-
-                pixelShader.Add(LightingShard.ApplyLightMethod(mc, effectProps));
-            }
-            //--------------------------------------//
-
-            //Calculates the lighting for all lights by using the above method
-            pixelShader.Add(LightingShard.FragMainMethod(effectProps));
-
-            return string.Join("\n", pixelShader);
-        }        
-
-        #endregion
-
+        
         #region Deferred
 
         /// <summary>
@@ -198,7 +111,6 @@ namespace Fusee.Engine.Core
                     blurKernelSize = 8.0f;
                     break;
             }
-
             
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
@@ -206,7 +118,7 @@ namespace Fusee.Engine.Core
             frag.Append(HeaderShard.EsPrecision());
             frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
             frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
-            frag.Append($"#define KERNEL_SIZE_HALF {(blurKernelSize * 0.5)}\n");
+            frag.Append($"#define KERNEL_SIZE_HALF {blurKernelSize * 0.5}\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
 
@@ -442,9 +354,9 @@ namespace Fusee.Engine.Core
             //Shadow calculation
             //-------------------------------------- 
             if (lc.Type != LightType.Point)
-                frag.Append(ShadowCalculation());
+                frag.Append(LightingShard.ShadowCalculation());
             else
-                frag.Append(ShadowCalculationCubeMap());
+                frag.Append(LightingShard.ShadowCalculationCubeMap());
 
             frag.Append(@"void main()
             {
@@ -633,9 +545,9 @@ namespace Fusee.Engine.Core
             //Shadow calculation
             //-------------------------------------- 
             if (lc.Type != LightType.Point)
-                frag.Append(ShadowCalculation());
+                frag.Append(LightingShard.ShadowCalculation());
             else
-                frag.Append(ShadowCalculationCubeMap());
+                frag.Append(LightingShard.ShadowCalculationCubeMap());
 
             frag.Append(@"void main()
             {
@@ -1192,91 +1104,6 @@ namespace Fusee.Engine.Core
             });
         }
 
-        private static string ShadowCalculation()
-        {
-            return @"
-                
-            float ShadowCalculation(sampler2D shadowMap, vec4 fragPosLightSpace, vec3 normal, vec3 lightDir, float bias, float pcfKernelHalfSize)
-            {
-                float shadow = 0.0;                
-                int pcfLoop = int(pcfKernelHalfSize);
-                float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;
-                pcfKernelSize *= pcfKernelSize;
-
-                // perform perspective divide
-                vec4 projCoords = fragPosLightSpace / fragPosLightSpace.w;
-                projCoords = projCoords * 0.5 + 0.5; 
-                //float closestDepth = texture(shadowMap, projCoords.xy).r;
-                float currentDepth = projCoords.z;  
-
-                float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias/100.0);
-            
-                vec2 texelSize = 1.0 / vec2(textureSize(shadowMap, 0));
-                
-                //use this for using sampler2DShadow (automatic PCF) instead of sampler2D
-                //float depth = texture(shadowMap, projCoords.xyz).r; 
-                //shadow += (currentDepth - thisBias) > depth ? 1.0 : 0.0;
-                
-                for(int x = -pcfLoop; x <= pcfLoop; ++x)
-                {
-                    for(int y = -pcfLoop; y <= pcfLoop; ++y)
-                    {
-                        float pcfDepth = texture(shadowMap, projCoords.xy + vec2(x, y) * texelSize).r; 
-                        shadow += (currentDepth - thisBias) > pcfDepth ? 1.0 : 0.0;        
-                    }    
-                }
-                shadow /= pcfKernelSize;
-
-                return shadow;
-            }
-
-            ";
-        }
-
-        private static string ShadowCalculationCubeMap()
-        {
-            return @"
-                
-            float ShadowCalculationCubeMap(samplerCube shadowMap, vec3 fragPos, vec3 lightPos, float farPlane, vec3 normal, vec3 lightDir, float bias, float pcfKernelHalfSize)
-            {               
-                float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;
-                pcfKernelSize *= pcfKernelSize;
-
-                vec3 sampleOffsetDirections[20] = vec3[]
-                (
-                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize,  pcfKernelHalfSize), vec3( pcfKernelHalfSize, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize,  pcfKernelHalfSize), 
-                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize, -pcfKernelHalfSize), vec3( pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize, -pcfKernelHalfSize),
-                   vec3( pcfKernelHalfSize,  pcfKernelHalfSize,  0), vec3( pcfKernelHalfSize, -pcfKernelHalfSize,  0), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize,  0), vec3(-pcfKernelHalfSize,  pcfKernelHalfSize,  0),
-                   vec3( pcfKernelHalfSize,  0,  pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  0,  pcfKernelHalfSize), vec3( pcfKernelHalfSize,  0, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize,  0, -pcfKernelHalfSize),
-                   vec3( 0,  pcfKernelHalfSize,  pcfKernelHalfSize), vec3( 0, -pcfKernelHalfSize,  pcfKernelHalfSize), vec3( 0, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3( 0,  pcfKernelHalfSize, -pcfKernelHalfSize)
-                );
-
-                // get vector between fragment position and light position
-                vec3 fragToLight = (fragPos - lightPos) * -1.0;                
-                // now get current linear depth as the length between the fragment and light position
-                float currentDepth = length(fragToLight);
-
-                float shadow = 0.0;
-                float thisBias   = max(bias * (1.0 - dot(normal, lightDir)), bias * 0.01);//0.15;
-                int samples = 20;
-                vec3 camPos = FUSEE_IV[3].xyz;
-                float viewDistance = length(camPos - fragPos);
-                    
-                float diskRadius = 0.5; //(1.0 + (viewDistance / farPlane)) / pcfKernelSize;
-                for(int i = 0; i < samples; ++i)
-                { 
-                    float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;
-                    closestDepth *= farPlane;   // Undo mapping [0;1]
-                    if(currentDepth - thisBias > closestDepth)
-                        shadow += 1.0;
-                }
-                shadow /= float(samples);
-                return shadow;
-            }
-
-            ";
-        }
-
         #endregion
 
         #region Make ShaderEffect
@@ -1613,7 +1440,88 @@ namespace Fusee.Engine.Core
             return new Texture(new ImageData());
         }
 
-        #endregion        
+        private static string CreateVertexShader(WeightComponent wc, ShaderEffectProps effectProps)
+        {
+            var vertexShader = new List<string>
+            {
+                HeaderShard.Version(),
+                HeaderShard.DefineBones(effectProps, wc),
+                VertPropertiesShard.Uniforms(effectProps),
+                VertPropertiesShard.InAndOutParams(effectProps),
+            };
+
+            // Main            
+            vertexShader.Add(VertOut.VertexMain(effectProps));
+
+            return string.Join("\n", vertexShader);
+        }
+
+        private static string CreatePixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        {
+            var pixelShader = new List<string>
+            {
+                HeaderShard.Version(),
+                HeaderShard.EsPrecision(),
+
+                FragPropertiesShard.InParams(effectProps),
+                FragPropertiesShard.FuseeUniforms(effectProps),
+                FragPropertiesShard.MatPropsUniforms(effectProps),
+                FragPropertiesShard.ColorOut(),
+
+                LightingShard.LightStructDeclaration(),
+            };
+
+            //---- LIGHTING ---//
+            if (effectProps.MatProbs.HasApplyLightString)
+            {
+                pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
+            }
+            else
+            {
+                //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
+                switch (effectProps.MatType)
+                {
+                    case MaterialType.Material:
+                    case MaterialType.MaterialLightComponent:
+                        pixelShader.Add(LightingShard.AmbientLightMethod());
+                        if (effectProps.MatProbs.HasDiffuse)
+                            pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
+                        if (effectProps.MatProbs.HasSpecular)
+                            pixelShader.Add(LightingShard.SpecularLightMethod());
+                        break;
+                    case MaterialType.MaterialPbrComponent:
+                        if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
+                        {
+                            pixelShader.Add(LightingShard.AmbientLightMethod());
+                            if (effectProps.MatProbs.HasDiffuse)
+                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
+                            if (effectProps.MatProbs.HasSpecular)
+                                pixelShader.Add(LightingShard.SpecularLightMethod());
+                        }
+                        else
+                        {
+                            pixelShader.Add(LightingShard.AmbientLightMethod());
+                            if (effectProps.MatProbs.HasDiffuse)
+                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
+                            if (effectProps.MatProbs.HasSpecular)
+                                pixelShader.Add(LightingShard.PbrSpecularLightMethod((MaterialPBRComponent)mc));
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
+                }
+
+                pixelShader.Add(LightingShard.ApplyLightMethod(mc, effectProps));
+            }
+            //--------------------------------------//
+
+            //Calculates the lighting for all lights by using the above method
+            pixelShader.Add(LightingShard.FragMainMethod(effectProps));
+
+            return string.Join("\n", pixelShader);
+        }
+
+        #endregion
 
     }
 }
