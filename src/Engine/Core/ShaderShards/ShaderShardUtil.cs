@@ -8,6 +8,7 @@ namespace Fusee.Engine.Core.ShaderShards
         public MeshProps MeshProbs;
         public MaterialProps MatProbs;
         public MaterialType MatType;
+        public PBRProps PBRProps;
     }
 
     public struct MeshProps
@@ -29,15 +30,31 @@ namespace Fusee.Engine.Core.ShaderShards
         public bool HasSpecularTexture;
         public bool HasEmissive;
         public bool HasEmissiveTexture;
-        public bool HasBump;
-        public bool HasApplyLightString;
+        public bool HasBump;        
     }
 
     public enum MaterialType
     {
-        Material,
-        MaterialLightComponent,
+        Material,        
         MaterialPbrComponent
+    }
+
+    public struct PBRProps
+    {
+        /// <summary>
+        /// This float describes the roughness of the material
+        /// </summary>       
+        public float RoughnessValue;
+
+        /// <summary>
+        /// This float describes the fresnel reflectance of the material
+        /// </summary>        
+        public float FresnelReflectance;
+
+        /// <summary>
+        /// This float describes the difusse fraction of the material
+        /// </summary>       
+        public float DiffuseFraction;
     }
 
     public static class ShaderShardUtil
@@ -51,19 +68,27 @@ namespace Fusee.Engine.Core.ShaderShards
         public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
         {
             var matType = AnalyzeMaterialType(mc);
-            
-            //TODO: obsolete with shader shard system
-            var hasApplyLightString = matType == MaterialType.MaterialLightComponent && (string.IsNullOrEmpty((mc as MaterialLightComponent)?.ApplyLightString));
+
+            PBRProps pbrProps = new PBRProps();
+
+            if (mc.GetType() == typeof(MaterialPBRComponent)) 
+            {
+                var mpbr = (MaterialPBRComponent)mc;
+                pbrProps.DiffuseFraction = mpbr.DiffuseFraction;
+                pbrProps.FresnelReflectance = mpbr.FresnelReflectance;
+                pbrProps.RoughnessValue = mpbr.RoughnessValue;               
+            }
 
             return new ShaderEffectProps()
             {
                 MatType = matType,
-                MatProbs = AnalzyeMaterialParams(mc, hasApplyLightString),
-                MeshProbs = AnalyzeMesh(mesh, wc)
+                MatProbs = AnalzyeMaterialParams(mc),
+                MeshProbs = AnalyzeMesh(mesh, wc),
+                PBRProps = pbrProps
             };            
         }
 
-        private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc, bool hasApplyLightString)
+        private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc)
         {
             return new MaterialProps
             {
@@ -73,8 +98,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
                 HasEmissive = mc.HasEmissive,
                 HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasBump = mc.HasBump,
-                HasApplyLightString = hasApplyLightString
+                HasBump = mc.HasBump                
             };
         }
 
@@ -82,9 +106,6 @@ namespace Fusee.Engine.Core.ShaderShards
         {
             if (mc.GetType() == typeof(MaterialPBRComponent))
                 return MaterialType.MaterialPbrComponent;
-
-            if (mc.GetType() == typeof(MaterialLightComponent))
-                return MaterialType.MaterialLightComponent;
 
             return MaterialType.Material;
         }

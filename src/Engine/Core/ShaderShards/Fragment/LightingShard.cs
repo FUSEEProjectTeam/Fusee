@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Fusee.Serialization;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
@@ -9,7 +8,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     {
         ///The maximal number of lights we can render when using the forward pipeline.
         public const int NumberOfLightsForward = 8;
-              
 
         public static string LightStructDeclaration()
         {
@@ -33,6 +31,48 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             ";
             return lightStruct;
 
+        }
+
+        public static string AssembleLightingMethods(ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        {
+            var lighting = new List<string>();
+
+            //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
+            switch (effectProps.MatType)
+            {
+                case MaterialType.Material:                
+                    lighting.Add(AmbientLightMethod());
+                    if (effectProps.MatProbs.HasDiffuse)
+                        lighting.Add(DiffuseLightMethod(effectProps));
+                    if (effectProps.MatProbs.HasSpecular)
+                        lighting.Add(SpecularLightMethod());
+                    break;
+                case MaterialType.MaterialPbrComponent:
+                    if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
+                    {
+                        lighting.Add(AmbientLightMethod());
+                        if (effectProps.MatProbs.HasDiffuse)
+                            lighting.Add(DiffuseLightMethod(effectProps));
+                        if (effectProps.MatProbs.HasSpecular)
+                            lighting.Add(SpecularLightMethod());
+                    }
+                    else
+                    {
+                        lighting.Add(AmbientLightMethod());
+                        if (effectProps.MatProbs.HasDiffuse)
+                            lighting.Add(DiffuseLightMethod(effectProps));
+                        if (effectProps.MatProbs.HasSpecular)
+                            lighting.Add(PbrSpecularLightMethod(effectProps));
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
+            }
+
+            lighting.Add(ApplyLightMethod(effectProps));
+
+
+            return string.Join("\n", lighting);
         }
 
         public static string AmbientLightMethod()
@@ -96,15 +136,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Replaces Specular Calculation with Cook-Torrance-Shader
         /// </summary>
-        public static string PbrSpecularLightMethod(MaterialPBRComponent mc)
+        public static string PbrSpecularLightMethod(ShaderEffectProps effectProps)
         {
             var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             var delta = 0.0000001;
 
-            var roughness = mc.RoughnessValue + delta; // always float, never int!
-            var fresnel = mc.FresnelReflectance + delta;
-            var k = mc.DiffuseFraction + delta;
+            var roughness = effectProps.PBRProps.RoughnessValue + delta; // always float, never int!
+            var fresnel = effectProps.PBRProps.FresnelReflectance + delta;
+            var k = effectProps.PBRProps.DiffuseFraction + delta;
 
             var methodBody = new List<string>
             {
@@ -162,7 +202,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one
         /// </summary>
-        public static string ApplyLightMethod(MaterialComponent mc, ShaderEffectProps effectProps)
+        public static string ApplyLightMethod(ShaderEffectProps effectProps)
         {
             /*  var bumpNormals = new List<string>
               {
@@ -328,8 +368,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             return GLSL.CreateMethod(GLSL.Type.Float, "ShadowCalculation", new[]
             {
-                GLSL.CreateVar(GLSL.Type.Sampler2D, "shadowMap"), 
-                GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"), 
+                GLSL.CreateVar(GLSL.Type.Sampler2D, "shadowMap"),
+                GLSL.CreateVar(GLSL.Type.Vec4, "fragPosLightSpace"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "normal"),
                 GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
                 GLSL.CreateVar(GLSL.Type.Float, "bias"),
@@ -385,7 +425,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"),
                 GLSL.CreateVar(GLSL.Type.Float, "bias"),
                 GLSL.CreateVar(GLSL.Type.Float, "pcfKernelHalfSize")
-            }, methodBody);            
+            }, methodBody);
         }
     }
 }

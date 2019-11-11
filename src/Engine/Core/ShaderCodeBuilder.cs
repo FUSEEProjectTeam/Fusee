@@ -1050,15 +1050,7 @@ namespace Fusee.Engine.Core
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
 
             //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
-            if (mc.GetType() == typeof(MaterialLightComponent))
-            {
-                if (mc is MaterialLightComponent lightMat) 
-                { 
-                    vs = CreateVertexShader(wc, effectProps); 
-                    ps = CreatePixelShader(lightMat, effectProps, LightingCalculationMethod.SIMPLE); 
-                }
-            }
-            else if (mc.GetType() == typeof(MaterialPBRComponent))
+            if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 if (mc is MaterialPBRComponent pbrMaterial) 
                 {
@@ -1344,54 +1336,30 @@ namespace Fusee.Engine.Core
                 FragPropertiesShard.ColorOut(),                
             };
 
-            //---- LIGHTING ---//
-            if (effectProps.MatProbs.HasApplyLightString)
-            {
-                pixelShader.Add((mc as MaterialLightComponent)?.ApplyLightString);
-            }
-            else
-            {
-                //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
-                switch (effectProps.MatType)
-                {
-                    case MaterialType.Material:
-                    case MaterialType.MaterialLightComponent:
-                        pixelShader.Add(LightingShard.AmbientLightMethod());
-                        if (effectProps.MatProbs.HasDiffuse)
-                            pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                        if (effectProps.MatProbs.HasSpecular)
-                            pixelShader.Add(LightingShard.SpecularLightMethod());
-                        break;
-                    case MaterialType.MaterialPbrComponent:
-                        if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
-                        {
-                            pixelShader.Add(LightingShard.AmbientLightMethod());
-                            if (effectProps.MatProbs.HasDiffuse)
-                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                            if (effectProps.MatProbs.HasSpecular)
-                                pixelShader.Add(LightingShard.SpecularLightMethod());
-                        }
-                        else
-                        {
-                            pixelShader.Add(LightingShard.AmbientLightMethod());
-                            if (effectProps.MatProbs.HasDiffuse)
-                                pixelShader.Add(LightingShard.DiffuseLightMethod(effectProps));
-                            if (effectProps.MatProbs.HasSpecular)
-                                pixelShader.Add(LightingShard.PbrSpecularLightMethod((MaterialPBRComponent)mc));
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
-                }
-
-                pixelShader.Add(LightingShard.ApplyLightMethod(mc, effectProps));
-            }
-            //--------------------------------------//
+            LightingShard.AssembleLightingMethods(effectProps, lightingCalculationMethod);
+           
 
             //Calculates the lighting for all lights by using the above method
             pixelShader.Add(FragMainShard.ForwardLighting(effectProps));
 
             return string.Join("\n", pixelShader);
+        }
+
+        private static string CreateProtoPixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        {
+            var protoPixelShader = new List<string>
+            {
+                HeaderShard.Version(),
+                HeaderShard.EsPrecision(),
+
+                LightingShard.LightStructDeclaration(),
+
+                FragPropertiesShard.InParams(effectProps),
+                FragPropertiesShard.FuseeUniforms(effectProps),
+                FragPropertiesShard.MatPropsUniforms(effectProps),                
+            };
+            
+            return string.Join("\n", protoPixelShader);
         }
 
         #endregion

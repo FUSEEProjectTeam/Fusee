@@ -20,7 +20,6 @@ namespace Fusee.Engine.Core
         private SceneNodeContainer _currentNode;
 
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
-        private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
@@ -62,8 +61,7 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
                         
-            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
-            _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
+            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();            
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
             _boneContainers = new Stack<SceneNodeContainer>();
 
@@ -133,17 +131,6 @@ namespace Fusee.Engine.Core
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
-        }
-
-        /// <summary>
-        /// Converts the materials light component.
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(MaterialLightComponent matComp)
-        {
-            var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         /// <summary>
@@ -242,13 +229,6 @@ namespace Fusee.Engine.Core
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
             mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
-            return mat;
-        }
-        private ShaderEffect LookupMaterial(MaterialLightComponent mc)
-        {
-            if (_lightMatMap.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights());
-            _lightMatMap.Add(mc, mat);
             return mat;
         }
 
