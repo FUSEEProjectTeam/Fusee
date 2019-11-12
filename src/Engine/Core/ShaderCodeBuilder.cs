@@ -22,15 +22,13 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// ShaderEffect for rendering into the textures given in a RenderTarget (Geometry Pass).
-        /// </summary>
-        /// <param name="rt">The RenderTarget</param>
+        /// </summary>       
         /// <param name="diffuseMix">Constant for mixing a single albedo color with a color read from a texture.</param>
         /// <param name="diffuseTex">The texture, containing diffuse colors.</param>
         /// <returns></returns>
-        public static ShaderEffect GBufferTextureEffect(RenderTarget rt, float diffuseMix, Texture diffuseTex = null)
+        [Obsolete("Not needed due to proto pixel shader!")]
+        public static ShaderEffect GBufferTextureEffect(float diffuseMix, Texture diffuseTex = null)
         {
-            var textures = rt.RenderTextures;
-
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
 
@@ -42,8 +40,7 @@ namespace Fusee.Engine.Core
                 uniform mat4 FUSEE_MV;
                 uniform mat4 FUSEE_MVP;
                 uniform mat4 FUSEE_ITM;
-                uniform mat4 FUSEE_ITMV;
-                uniform vec4 DiffuseColor;
+                uniform mat4 FUSEE_ITMV;               
 
                 in vec3 fuVertex;
                 in vec3 fuNormal;
@@ -61,10 +58,8 @@ namespace Fusee.Engine.Core
                 void main() 
                 {
                     vPos = FUSEE_MV * vec4(fuVertex.xyz, 1.0);
-                    vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz;
-                    vColor = DiffuseColor;
+                    vNormal = (FUSEE_ITMV * vec4(fuNormal, 0.0)).xyz;                   
                     vUv = fuUV;
-
                     gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);
 
                 }");
@@ -74,7 +69,7 @@ namespace Fusee.Engine.Core
             frag.Append(HeaderShard.Version());
             frag.Append(HeaderShard.EsPrecision());
 
-            frag.Append(FragPropertiesShard.GBufferOut(rt));
+            frag.Append(FragPropertiesShard.GBufferOut());
 
             frag.Append(@"
                 in vec4 vPos;
@@ -86,6 +81,7 @@ namespace Fusee.Engine.Core
             if (diffuseTex != null)
             {
                 frag.Append(@"
+                uniform vec4 DiffuseColor;
                 uniform sampler2D DiffuseTexture;
                 uniform float DiffuseMix;"
                 );
@@ -93,9 +89,9 @@ namespace Fusee.Engine.Core
 
             frag.AppendLine("void main() {");
 
-            for (int i = 0; i < textures.Length; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length; i++)
             {
-                var tex = textures[i];
+                var tex = UniformNameDeclarations.DeferredRenderTextures[i];
                 if (tex == null) continue;
 
                 switch (i)
@@ -105,9 +101,9 @@ namespace Fusee.Engine.Core
                         break;
                     case 1: //ALBEDO_SPECULAR
                         if (diffuseTex != null)
-                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(mix(vColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), vColor.a);");
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(mix(DiffuseColor.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), DiffuseColor.a);");
                         else
-                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vColor;");
+                            frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = DiffuseColor;");
                         break;
                     case 2: //NORMAL
                         frag.AppendLine($"{Enum.GetName(typeof(RenderTargetTextureTypes), i)} = vec4(normalize(vNormal.xyz), 1.0);");
@@ -303,8 +299,7 @@ namespace Fusee.Engine.Core
 
             });
 
-        }
-       
+        }       
         
         private static string DeferredLightingFS(LightComponent lc)
         {
@@ -314,10 +309,7 @@ namespace Fusee.Engine.Core
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(HeaderShard.EsPrecision());
 
-            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
-            {
-                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
-            }
+            frag.Append(FragPropertiesShard.DeferredUniforms());
 
             frag.Append(LightingShard.LightStructDeclaration());
             frag.Append("uniform Light light;");
@@ -1011,6 +1003,32 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        {
+            MaterialComponent temp = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = diffuseColor
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = specularColor,
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
+                }
+            };
+            return MakeShaderEffectFromMatCompProto(temp);
+        }
+
+        /// <summary>
+        ///     Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="texName">Name of the texture you want to use.</param>
         /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
@@ -1035,6 +1053,37 @@ namespace Fusee.Engine.Core
             return MakeShaderEffectFromMatComp(temp);
         }
 
+        /// <summary>
+        ///     Builds a simple shader effect with diffuse and specular color.
+        /// </summary>
+        /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
+        /// <param name="specularColor">The specular color for the resulting effect.</param>
+        /// <param name="shininess">The resulting effect's shininess.</param>
+        /// <param name="texName">Name of the texture you want to use.</param>
+        /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
+        /// <param name="specularIntensity">The resulting effects specular intensity.</param>
+        /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
+        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        {
+            MaterialComponent temp = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = diffuseColor,
+                    Texture = texName,
+                    Mix = diffuseMix
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = specularColor,
+                    Shininess = shininess,
+                    Intensity = specularIntensity,
+                }
+            };
+            
+            return MakeShaderEffectFromMatCompProto(temp);
+        }
+
         /// <summary> 
         /// Creates a ShaderEffectComponent from a MaterialComponent 
         /// </summary> 
@@ -1052,16 +1101,16 @@ namespace Fusee.Engine.Core
             //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
             if (mc.GetType() == typeof(MaterialPBRComponent))
             {
-                if (mc is MaterialPBRComponent pbrMaterial) 
+                if (mc is MaterialPBRComponent) 
                 {
                     vs = CreateVertexShader(wc, effectProps);
-                    ps = CreatePixelShader(pbrMaterial, effectProps, LightingCalculationMethod.SIMPLE);
+                    ps = CreatePixelShader(effectProps, LightingCalculationMethod.ADVANCED);
                 }
             }
             else
             {
                 vs = CreateVertexShader(wc, effectProps);
-                ps = CreatePixelShader(mc, effectProps, LightingCalculationMethod.SIMPLE);
+                ps = CreatePixelShader(effectProps, LightingCalculationMethod.SIMPLE);
             }
 
             var effectParameters = AssembleEffectParamers(mc);
@@ -1088,6 +1137,62 @@ namespace Fusee.Engine.Core
                 effectParameters
             );
             
+            return ret;
+        }
+
+        /// <summary> 
+        /// Creates a ShaderEffectComponent from a MaterialComponent 
+        /// </summary> 
+        /// <param name="mc">The MaterialComponent</param> 
+        /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
+        /// <returns></returns> 
+        /// <exception cref="Exception"></exception> 
+        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
+        {
+            string vs = "";
+            string ps = "";
+
+            var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
+
+            //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
+            if (mc.GetType() == typeof(MaterialPBRComponent))
+            {
+                if (mc is MaterialPBRComponent)
+                {
+                    vs = CreateVertexShader(wc, effectProps);
+                    ps = CreateProtoPixelShader(effectProps);
+                }
+            }
+            else
+            {
+                vs = CreateVertexShader(wc, effectProps);
+                ps = CreateProtoPixelShader(effectProps);
+            }
+
+            var effectParameters = AssembleEffectParamers(mc);
+
+            if (vs == string.Empty || ps == string.Empty) throw new Exception("Material could not be evaluated or be built!");
+
+            var ret = new ShaderEffectProtoPixel(new[]
+                {
+                    new EffectPassDeclarationProto
+                    {
+                        VS = vs, 
+                        //VS = VsBones, 
+                        ProtoPS = ps,
+                        StateSet = new RenderStateSet
+                        {
+                            ZEnable = true,
+                            AlphaBlendEnable = true,
+                            SourceBlend = Blend.SourceAlpha,
+                            DestinationBlend = Blend.InverseSourceAlpha,
+                            BlendOperation = BlendOperation.Add,
+                        }
+                    }
+                },
+                effectParameters
+            );
+            ret.EffectProps = effectProps;
             return ret;
         }
 
@@ -1320,7 +1425,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", vertexShader);
         }
 
-        private static string CreatePixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        private static string CreatePixelShader(ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
         {
             var pixelShader = new List<string>
             {
@@ -1333,11 +1438,9 @@ namespace Fusee.Engine.Core
                 FragPropertiesShard.FuseeUniforms(effectProps),
                 FragPropertiesShard.MatPropsUniforms(effectProps),
                 FragPropertiesShard.FixedNumberLightArray(),
-                FragPropertiesShard.ColorOut(),                
-            };
-
-            LightingShard.AssembleLightingMethods(effectProps, lightingCalculationMethod);
-           
+                FragPropertiesShard.ColorOut(),
+                LightingShard.AssembleLightingMethods(effectProps, lightingCalculationMethod)
+            };      
 
             //Calculates the lighting for all lights by using the above method
             pixelShader.Add(FragMainShard.ForwardLighting(effectProps));
@@ -1345,14 +1448,12 @@ namespace Fusee.Engine.Core
             return string.Join("\n", pixelShader);
         }
 
-        private static string CreateProtoPixelShader(MaterialComponent mc, ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        private static string CreateProtoPixelShader(ShaderEffectProps effectProps)
         {
             var protoPixelShader = new List<string>
             {
                 HeaderShard.Version(),
-                HeaderShard.EsPrecision(),
-
-                LightingShard.LightStructDeclaration(),
+                HeaderShard.EsPrecision(),                
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),

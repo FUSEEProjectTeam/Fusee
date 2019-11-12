@@ -12,7 +12,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             var vertProps = new List<string>
             {
                 GLSL.CreateOut(GLSL.Type.Vec3, "vCamPos"),
-                GLSL.CreateOut(GLSL.Type.Vec3, "vViewPos")
+                GLSL.CreateOut(GLSL.Type.Vec4, "vPos")
             };
 
             if (effectProps.MeshProbs.HasVertices)

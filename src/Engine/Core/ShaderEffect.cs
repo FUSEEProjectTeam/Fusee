@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Dynamic;
+using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
@@ -238,7 +240,7 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Returns the value of a given shadereffect variable
+        /// Returns the value of a given shader effect variable
         /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
@@ -254,7 +256,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns the value of a given shadereffect variable
+        /// Returns the value of a given shader effect variable
         /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>
         /// </summary>
         /// <param name="name">Name of the uniform variable</param>
@@ -359,9 +361,11 @@ namespace Fusee.Engine.Core
     public class ShaderEffectProtoPixel : ShaderEffect
     {
         /// <summary>
-        /// The effect probs are the basis on which we can decide what kind of shards this effect supports.
+        /// The effect props are the basis on which we can decide what kind of shards this effect supports.
         /// </summary>
         public ShaderEffectProps EffectProps { get; set; }
+
+        private readonly EffectPassDeclarationProto[] _effectPasses;
 
         public ShaderEffectProtoPixel(EffectPassDeclarationProto[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
@@ -386,6 +390,8 @@ namespace Fusee.Engine.Core
                 }
             }
 
+            _effectPasses = effectPasses;
+
             for (int i = 0; i < nPasses; i++)
             {
                 States[i] = effectPasses[i].StateSet;
@@ -395,16 +401,45 @@ namespace Fusee.Engine.Core
             }
         }
 
-        ///Called by the SceneVisitor in the pre-pass to create the correct fragment shader whether we render forward or deferred.
+        /// <summary>
+        ///Called by the SceneVisitor in the pre-pass to create the correct fragment shader, whether we render forward or deferred.
+        /// </summary>
         public void CreateFragmentShader(bool doRenderForward)
         {
             if (doRenderForward)
             {
+                for (int i = 0; i < _effectPasses.Length; i++)
+                {
+                    var lightingMethod = !EffectProps.DoRenderPhysicallyBased ? LightingCalculationMethod.SIMPLE : LightingCalculationMethod.ADVANCED;
+                    var pxBody = new List<string>()
+                    {
+                        LightingShard.LightStructDeclaration(),
+                        FragPropertiesShard.FixedNumberLightArray(),
+                        FragPropertiesShard.ColorOut(),
+                        LightingShard.AssembleLightingMethods(EffectProps, lightingMethod),
+                        FragMainShard.ForwardLighting(EffectProps)
+                    };
 
+                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
+                }
             }
             else
             {
-
+                for (int i = 0; i < _effectPasses.Length; i++)
+                {
+                    var pxBody = new List<string>()
+                    {
+                        FragPropertiesShard.GBufferOut(),                        
+                        FragMainShard.RenderToGBuffer(EffectProps)
+                    };
+                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
+                    
+                    States[i] = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    };                    
+                }
             }
         }
     }

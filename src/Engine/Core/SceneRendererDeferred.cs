@@ -143,37 +143,9 @@ namespace Fusee.Engine.Core
 
             _shadowEffect = ShaderCodeBuilder.ShadowMapEffect();
 
-            // TODO: For deferred rendering we need a other ShaderEffect as we would in forward rendering. At the moment this conversion is done in the SceneRendererDeferred as a first step.
-            // Can we avoid this? Maybe if we (implement) and use the upcoming "shader shard" system?
-            // 
-            // Current situation:
-            // Case 1 Scene is loaded from fus file: if we'd know in the SceneConverter whether we render deferred or forward, we could create the correct ShaderEffect there.
-            // Case 2 The user does create a scene programmatically: at the moment he needs to know that he has to use a GBufferTextureEffect for deferred rendering. In this case this additional traversal is obsolete.
-            // When and how do we want to decide if we render forward or deferred?
-            foreach (var child in sc.Children)
-            {
-                var oldEffectComp = child.GetComponent<ShaderEffectComponent>();
-                if (oldEffectComp == null) continue;
-                var oldEffect = oldEffectComp.Effect;
-
-                var col = (float4)oldEffect.GetEffectParam("DiffuseColor");
-                var specStrength = (float)oldEffect.GetEffectParam("SpecularIntensity");
-                col.a = specStrength;
-
-                oldEffect.GetEffectParam("DiffuseTexture", out object tex);
-                oldEffect.GetEffectParam("DiffuseMix", out object mix);
-
-                var renderTargetMat = new ShaderEffectComponent();
-                if (tex != null)
-                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, (float)mix, (Texture)tex);
-                else
-                    renderTargetMat.Effect = ShaderCodeBuilder.GBufferTextureEffect(_gBufferRenderTarget, 1f);
-
-                child.RemoveComponent<ShaderEffectComponent>();
-
-                child.Components.Insert(1, renderTargetMat);
-                renderTargetMat.Effect.SetEffectParam("DiffuseColor", col);
-            }
+            //Pre-pass to build the geometry pass shader effect from
+            var buildFrag = new ProtoToFrag(_sc, false);
+            buildFrag.BuildFragmentShaders();
 
             _quadScene = new SceneContainer()
             {

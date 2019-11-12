@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Fusee.Engine.Common;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -114,6 +115,14 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string BumpIntensityName { get; } = "BumpIntensity";
 
         public static string LightIntensityName { get; } = "LightIntensity";
-        
+
+        public static string[] DeferredRenderTextures { get; } = new []
+        {
+            Enum.GetName(typeof(RenderTargetTextureTypes), 0),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 1),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 2),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 3),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 4),
+        };
     }
 }

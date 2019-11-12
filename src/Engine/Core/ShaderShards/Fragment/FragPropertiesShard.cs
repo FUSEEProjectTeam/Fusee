@@ -11,7 +11,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var pxIn = new List<string>
             {
                 GLSL.CreateIn(GLSL.Type.Vec3, "vViewDir"),
-                GLSL.CreateIn(GLSL.Type.Vec3, "vViewPos"),
+                GLSL.CreateIn(GLSL.Type.Vec4, "vPos"),
                 GLSL.CreateIn(GLSL.Type.Vec3, "vCamPos")
             };
 
@@ -95,21 +95,35 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             return GLSL.CreateOut(GLSL.Type.Vec4, "oFragmentColor");
         }
+
         public static string FixedNumberLightArray()
         {
             return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
         }
 
-        public static string GBufferOut(RenderTarget rt)
+        public static string GBufferOut()
         {
             var outs = new List<string>();
             var texCount = 0;
-            for (int i = 0; i < rt.RenderTextures.Length; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length - 1; i++)
             {
-                var tex = rt.RenderTextures[i];
-                if (tex == null) continue;
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];               
 
-                outs.Add($"layout (location = {texCount}) out vec4 {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
+                outs.Add($"layout (location = {texCount}) out vec4 {texName};\n");
+                texCount++;
+            }
+            return string.Join("\n", outs);
+        }
+
+        public static string DeferredUniforms()
+        {
+            var outs = new List<string>();
+            var texCount = 0;
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length; i++)
+            {
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+
+                outs.Add($"uniform sampler2D {texName};\n");
                 texCount++;
             }
             return string.Join("\n", outs);

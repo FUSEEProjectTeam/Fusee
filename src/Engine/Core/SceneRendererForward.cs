@@ -130,7 +130,9 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            //AccumulateLight();
+
+            var buildFrag = new ProtoToFrag(_sc, true);
+            buildFrag.BuildFragmentShaders();
 
             _state = new RendererState();
             InitAnimations(_sc);
@@ -297,6 +299,7 @@ namespace Fusee.Engine.Core
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTarget);
+
             Traverse(_sc.Children);
         }
 

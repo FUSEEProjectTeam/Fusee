@@ -5,6 +5,15 @@ namespace Fusee.Engine.Core.ShaderShards
 {
     public struct ShaderEffectProps
     {
+        public bool DoRenderPhysicallyBased 
+        { 
+            get 
+            { 
+                return PBRProps.RoughnessValue == 0 && PBRProps.DiffuseFraction == 0 && PBRProps.FresnelReflectance == 0; 
+            } 
+            private set { } 
+        }
+
         public MeshProps MeshProbs;
         public MaterialProps MatProbs;
         public MaterialType MatType;

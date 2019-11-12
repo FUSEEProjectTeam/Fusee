@@ -9,6 +9,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         ///The maximal number of lights we can render when using the forward pipeline.
         public const int NumberOfLightsForward = 8;
 
+
+
         public static string LightStructDeclaration()
         {
             var lightStruct = @"
@@ -229,8 +231,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 //"vec3 N = normalize(vNormal);",
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
                 "if(lightType == 1){L = -normalize(direction);}",
-                "else{ L = normalize(position - vViewPos);}",
-                "vec3 V = normalize(-vViewPos.xyz);",
+                "else{ L = normalize(position - vPos.xyz);}",
+                "vec3 V = normalize(-vPos.xyz);",
                 "if(lightType == 3) {",
                 "   L = normalize(vec3(0.0,0.0,-1.0));",
                 "}",
@@ -257,7 +259,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var attenuation = new List<string>
             {
-                "float distanceToLight = length(position - vViewPos.xyz);",
+                "float distanceToLight = length(position - vPos.xyz);",
                 "float distance = pow(distanceToLight / maxDistance, 2.0);",
                 "float att = (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
             };

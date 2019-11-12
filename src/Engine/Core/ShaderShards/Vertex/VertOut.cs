@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -54,7 +53,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
             if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
                 vertMainBody.Add("vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
 
-            vertMainBody.Add("vViewPos = (FUSEE_MV * vec4(fuVertex, 1.0)).xyz;");
+            vertMainBody.Add("vPos = (FUSEE_MV * vec4(fuVertex, 1.0));");
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
