@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Net.Http.Headers;
 using System.Runtime.CompilerServices;
-using System.Xml.Serialization;
 
 namespace Fusee.Base.Core
 {
@@ -16,11 +13,28 @@ namespace Fusee.Base.Core
         #region Fields
 
         private static Stopwatch _daWatch;
-        private static bool _useFile;
-        private static string _fileName;
-        private static SeverityLevel _minLogLevelFile;
-        private static SeverityLevel _minLogLevelConsole;
-        private static Formater _format;
+        private static bool _useFile = true;
+        private static string _fileName = "Fusee.Log.txt";
+        private static SeverityLevel _minLogLevelFile = SeverityLevel.ERROR;
+        private static SeverityLevel _minLogLevelConsole = SeverityLevel.WARN;
+        private static SeverityLevel _minLogLevelDebug = SeverityLevel.TRACE;
+
+        private static Formater _format = (caller, lvl, msg, ex, args) =>
+                    {
+                        ColorConsoleOutput(lvl);
+
+                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] [{caller}()] {msg}";
+                        f += (ex != null ? $",\nException: {ex}" : "");
+                        if (args != null)
+                        {
+                            f += "\nArguments:\n";
+
+                            foreach (var a in args)
+                                f += $"{a}\n";
+                        }
+
+                        return f + "\n";
+                    };
 
         /// <summary>
         ///     The methods used for formating messages
@@ -50,18 +64,23 @@ namespace Fusee.Base.Core
                     _daWatch = new Stopwatch();
                     _daWatch.Start();
                 }
-                return (1000.0 * ((double)_daWatch.ElapsedTicks)) / ((double) Stopwatch.Frequency);
+                return (1000.0 * ((double)_daWatch.ElapsedTicks)) / ((double)Stopwatch.Frequency);
             }
         }
 
+        /// <summary>
+        ///     The severity level at which logging is enabled
+        /// </summary>
         public enum SeverityLevel
         {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
             TRACE = 0,
             DEBUG,
             INFO,
             WARN,
             ERROR,
             FATAL
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         }
 
         private static string SeverityLevelToString(SeverityLevel lvl)
@@ -111,31 +130,7 @@ namespace Fusee.Base.Core
         }
 
         #endregion
-        
-        static Diagnostics()
-        {
-            _useFile = true;
-            _fileName = "Fusee.Log.txt";
-            _minLogLevelFile = SeverityLevel.ERROR;
-            _minLogLevelConsole = SeverityLevel.TRACE;
 
-            _format = (caller, lvl, msg, ex, args) =>
-            {
-                ColorConsoleOutput(lvl);
-
-                var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] [{caller}()] {msg}";
-                f += (ex != null ? $",\nException: {ex}" : "");
-                if(args != null)
-                {
-                    f += "\nArguments:\n";
-
-                    foreach (var a in args)
-                        f += $"{a}\n";
-                }
-
-                return f + "\n";
-            };
-        }
 
         #region Members
 
@@ -148,15 +143,16 @@ namespace Fusee.Base.Core
         {
             _useFile = logToTxtFile;
             _fileName = (logFileName == string.Empty ? "Fusee.Log.txt" : logFileName);
+            if (_useFile && !File.Exists(_fileName)) File.Create(_fileName);
         }
 
         /// <summary>
-        ///     Change the min logging severity level before logging is placed within the log txt file
+        ///     Change the min logging severity level before logging is placed within the log text file
         /// </summary>
         /// <param name="lvl"></param>
         public static void SetMinTextFileLoggingSeverityLevel(SeverityLevel lvl)
         {
-            if (!_useFile)            
+            if (!_useFile)
                 Warn("Level set without enabled text file logging. Please enable text file logging fist via LogToTextFile(true)");
 
             _minLogLevelFile = lvl;
@@ -172,6 +168,15 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
+        ///     Change the min logging severity level before logging is written to the debug output
+        /// </summary>
+        /// <param name="lvl"></param>
+        public static void SetMinDebugOutputLoggingSeverityLevel(SeverityLevel lvl)
+        {
+            _minLogLevelDebug = lvl;
+        }
+
+        /// <summary>
         ///     Update the format of the logging messages
         /// </summary>
         /// <param name="formater"></param>
@@ -180,8 +185,22 @@ namespace Fusee.Base.Core
             _format = formater;
         }
 
+        private static void Writer(object o, SeverityLevel logLevel, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        {
+            if (_useFile && _minLogLevelFile <= logLevel)
+                File.AppendAllText(_fileName, _format(callerName, logLevel, o.ToString(), ex, args));
+
+            if (_minLogLevelConsole <= logLevel && Console.Out != null)
+                Console.WriteLine(_format(callerName, logLevel, o.ToString()));
+
+            if (_minLogLevelDebug <= logLevel)
+                System.Diagnostics.Debug.WriteLine(_format(callerName, logLevel, o.ToString(), ex, args));
+
+            Console.ResetColor();
+        }
+
         /// <summary>
-        /// Log a debug output message to the respective output console.
+        ///     Log a debug output message to the respective output console.
         /// </summary>
         /// <param name="o">The object to log. Will be converted to a string.</param>
         /// <param name="logLevel">The level to log, see <see cref="SeverityLevel"></see> for a list</param>
@@ -189,295 +208,95 @@ namespace Fusee.Base.Core
         [Obsolete("Please use the new logging methods (Trace, Debug, ...) instead")]
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "")
         {
-            o += $"\n[{callerName}()] INFO: Diagnostics.Log is deprecated, please use the new logging methods (Trace, Debug, ...)\n";
-
-            if (_useFile && _minLogLevelFile <= logLevel)
-                File.AppendAllText(_fileName, _format(callerName, logLevel, o.ToString()));
-            
-            if (_minLogLevelConsole <= logLevel)
-                Console.WriteLine(_format(callerName, logLevel, o.ToString()));
-
-            Console.ResetColor();
+#if LOG_TRACE || LOG_DEBUG || LOG_INFO || LOG_WARN || LOG_ERROR || LOG_FATAL
+            Writer(o, logLevel);
+#endif
         }
+
 
         /// <summary>
         ///     Log a trace event
         /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Trace(string message, [CallerMemberName] string callerName = "")
+        /// <param name="o">The object to write</param>
+        /// <param name="ex">A possible exception, optional</param>
+        /// <param name="args">Possible arguments, optional</param>
+        /// <param name="callerName">The calling method</param>       
+        public static void Trace(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.TRACE)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.TRACE, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.TRACE)
-                Console.WriteLine(_format(callerName, SeverityLevel.TRACE, message));
-
-            Console.ResetColor();
+#if LOG_TRACE
+            Writer(o, SeverityLevel.TRACE, ex, args);
+#endif
         }
 
         /// <summary>
         ///     Log a debug event
         /// </summary>
-        /// <param name="message">The message</param>    
-        /// <param name="callerName">The calling method</param>
-        public static void Debug(string message, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.DEBUG)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.DEBUG, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.DEBUG)
-                Console.WriteLine(_format(callerName, SeverityLevel.DEBUG, message));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log a debug event
-        /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="ex">A possible exception</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Debug(string message, Exception ex, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.DEBUG)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.DEBUG, message, ex));
-
-            if (_minLogLevelConsole <= SeverityLevel.DEBUG)
-                Console.WriteLine(_format(callerName, SeverityLevel.DEBUG, message, ex));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log a debug event
-        /// </summary>
-        /// <param name="message">The message</param>
+        /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Debug(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>       
+        public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.DEBUG)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.DEBUG, message, ex, args));
-
-            if (_minLogLevelConsole <= SeverityLevel.DEBUG)
-                Console.WriteLine(_format(callerName, SeverityLevel.DEBUG, message, ex, args));
-
-            Console.ResetColor();
+#if LOG_DEBUG
+            Writer(o, SeverityLevel.DEBUG, ex, args);
+#endif
         }
 
         /// <summary>
         ///     Log an info event
         /// </summary>
-        /// <param name="message">The message</param>     
-        /// <param name="callerName">The calling method</param>
-        public static void Info(string message, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.INFO)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.INFO, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.INFO)
-                Console.WriteLine(_format(callerName, SeverityLevel.INFO, message));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log an info event
-        /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="ex">A possible exception</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Info(string message, Exception ex, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.INFO)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.INFO, message, ex));
-
-            if (_minLogLevelConsole <= SeverityLevel.INFO)
-                Console.WriteLine(_format(callerName, SeverityLevel.INFO, message, ex));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log an info event
-        /// </summary>
-        /// <param name="message">The message</param>
+        /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Info(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>       
+        public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.INFO)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.INFO, message, ex, args));
-
-            if (_minLogLevelConsole <= SeverityLevel.INFO)
-                Console.WriteLine(_format(callerName, SeverityLevel.INFO, message, ex, args));
-
-            Console.ResetColor();
-        }
-
-
-        /// <summary>
-        ///     Log a warning event
-        /// </summary>
-        /// <param name="message">The message</param>    
-        /// <param name="callerName">The calling method</param>
-        public static void Warn(string message, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.WARN)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.WARN, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.WARN)
-                Console.WriteLine(_format(callerName, SeverityLevel.WARN, message));
-
-            Console.ResetColor();
+#if LOG_INFO
+            Writer(o, SeverityLevel.INFO, ex, args);
+#endif
         }
 
         /// <summary>
         ///     Log a warning event
         /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="ex">A possible exception</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Warn(string message, Exception ex, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.WARN)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.WARN, message, ex));
-
-            if (_minLogLevelConsole <= SeverityLevel.WARN)
-                Console.WriteLine(_format(callerName, SeverityLevel.WARN, message, ex));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log a warning event
-        /// </summary>
-        /// <param name="message">The message</param>
+        /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Warn(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>       
+        public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.WARN)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.WARN, message, ex, args));
-
-            if (_minLogLevelConsole <= SeverityLevel.WARN)
-                Console.WriteLine(_format(callerName, SeverityLevel.WARN, message, ex, args));
-
-            Console.ResetColor();
-        }
-
-
-
-        /// <summary>
-        ///     Log an error event
-        /// </summary>
-        /// <param name="message">The message</param> 
-        /// <param name="callerName">The calling method</param>
-        public static void Error(string message, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.ERROR)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.ERROR, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.ERROR)
-                Console.WriteLine(_format(callerName, SeverityLevel.ERROR, message));
-
-            Console.ResetColor();
+#if LOG_WARN
+            Writer(o, SeverityLevel.WARN, ex, args);
+#endif
         }
 
         /// <summary>
         ///     Log an error event
         /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="ex">A possible exception</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Error(string message, Exception ex, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.ERROR)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.ERROR, message, ex));
-
-            if (_minLogLevelConsole <= SeverityLevel.ERROR)
-                Console.WriteLine(_format(callerName, SeverityLevel.ERROR, message, ex));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log an error event
-        /// </summary>
-        /// <param name="message">The message</param>
+        /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Error(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>       
+        public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            StackTrace stackTrace = new StackTrace();
-            var callingMethod = stackTrace.GetFrame(1).GetMethod().Name;
-
-            if (_useFile && _minLogLevelFile <= SeverityLevel.ERROR)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.ERROR, message, ex, args));
-
-            if (_minLogLevelConsole <= SeverityLevel.ERROR)
-                Console.WriteLine(_format(callerName, SeverityLevel.ERROR, message, ex, args));
-
-            Console.ResetColor();
+#if LOG_ERROR
+            Writer(o, SeverityLevel.ERROR, ex, args);
+#endif
         }
 
         /// <summary>
         ///     Log a fatal event
         /// </summary>
-        /// <param name="message">The message</param>  
-        /// <param name="callerName">The calling method</param>
-        public static void Fatal(string message, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.FATAL)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.FATAL, message));
-
-            if (_minLogLevelConsole <= SeverityLevel.FATAL)
-                Console.WriteLine(_format(callerName, SeverityLevel.FATAL, message));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log a fatal event
-        /// </summary>
-        /// <param name="message">The message</param>
-        /// <param name="ex">A possible exception</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Fatal(string message, Exception ex, [CallerMemberName] string callerName = "")
-        {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.FATAL)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.FATAL, message, ex));
-
-            if (_minLogLevelConsole <= SeverityLevel.FATAL)
-                Console.WriteLine(_format(callerName, SeverityLevel.FATAL, message, ex));
-
-            Console.ResetColor();
-        }
-
-        /// <summary>
-        ///     Log a fatal event
-        /// </summary>
-        /// <param name="message">The message</param>
+        /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        public static void Fatal(string message, Exception ex, object[] args, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>       
+        public static void Fatal(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
-            if (_useFile && _minLogLevelFile <= SeverityLevel.FATAL)
-                File.AppendAllText(_fileName, _format(callerName, SeverityLevel.FATAL, message, ex, args));
-
-            if (_minLogLevelConsole <= SeverityLevel.FATAL)
-                Console.WriteLine(_format(callerName, SeverityLevel.FATAL, message, ex, args));
-
-            Console.ResetColor();
+#if LOG_FATAL
+            Writer(o, SeverityLevel.FATAL, ex, args);
+#endif
         }
-
-
         #endregion
     }
 }
