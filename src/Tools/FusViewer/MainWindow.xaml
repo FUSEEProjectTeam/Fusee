@@ -1,0 +1,50 @@
+﻿<Window x:Class="FusViewer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:viewModel="clr-namespace:FusViewer.ViewModel"
+        xmlns:Fusee="clr-namespace:Fusee.Serialization;assembly=Fusee.Serialization"
+        xmlns:local="clr-namespace:FusViewer"
+        mc:Ignorable="d"
+        Title="FusViewer" Height="450" Width="800">
+    <Window.DataContext>
+        <viewModel:MainWindowViewModel />
+    </Window.DataContext>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10*"/>
+            <RowDefinition Height="90*" />
+            <RowDefinition Height="10*" />
+        </Grid.RowDefinitions>
+        <Button Command="{Binding OpenFusFile}"  VerticalAlignment="Center" HorizontalAlignment="Center" Width="300" Content="Open *.fus" Margin="5"/>
+        <TextBox Text="{Binding PathToFile}" IsReadOnly="True" VerticalAlignment="Center" HorizontalAlignment="Stretch" Grid.Column="1" Margin="20 0 20 0"/>
+        <TreeView  Grid.Row="1" Grid.ColumnSpan="2" Margin="5" ItemsSource="{Binding SceneAsTreeView}" Background="{x:Null}" >
+            <TreeView.Resources>             
+                <HierarchicalDataTemplate DataType="{x:Type viewModel:TreeItem}" ItemsSource="{Binding Children}">
+                    <StackPanel Orientation="Vertical" Margin="0,0,0,7">
+                        <Label Content="{Binding Title}" Background="#FF6AF39B" />
+                        <TreeView Visibility="{Binding Path=Components, TargetNullValue=Collapsed}" ItemsSource="{Binding Components}" BorderBrush="{x:Null}" Background="#FFDFFFDF" Margin="0,0,0,7">
+                            <TreeView.Resources>
+                                <DataTemplate DataType="{x:Type viewModel:TreeComponentItem}">
+                                    <Grid>
+                                        <Label Content="{Binding AsString}"/>
+                                    </Grid>                                   
+                                </DataTemplate>
+                            </TreeView.Resources>
+                        </TreeView>
+                    </StackPanel>
+                </HierarchicalDataTemplate>
+            </TreeView.Resources>
+        </TreeView>
+        <!--<Button Grid.Column="0" Grid.Row="2" IsEnabled="{Binding FusLoaded}" Command="{Binding ViewInPlayer}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="150" Content="View in player" Margin="5"/>-->
+
+        <Button Grid.Column="1" Grid.Row="2" IsEnabled="{Binding FusLoaded}" Command="{Binding SaveAsJSON}" VerticalAlignment="Center" HorizontalAlignment="Center" Width="150" Content="Save as *.json" Margin="5"/>
+      
+    </Grid>
+   
+</Window>
