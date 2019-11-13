@@ -291,6 +291,34 @@ namespace Fusee.Engine.Core
             Traverse(_sc.Children);
         }
 
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="renderTexture">Optional parameter: set this if you want to render to a texture.</param>
+        public void Render(RenderContext rc, WritableTexture renderTexture = null)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget(renderTexture);
+            Traverse(_sc.Children);
+        }
+
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>
+        
+        public void Render(RenderContext rc)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget();
+            Traverse(_sc.Children);
+        }
+
         #region Visitors
 
         /// <summary>

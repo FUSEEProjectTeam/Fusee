@@ -130,7 +130,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
                     //    LoadNode(GetMeshsForNode, PtAcc, ref orderdToLoad);
                     //}
 
-                    Diagnostics.Log("Finished loading.");
+                    Diagnostics.Debug("Finished loading.");
                 }
             });
             loadingThread.Start();

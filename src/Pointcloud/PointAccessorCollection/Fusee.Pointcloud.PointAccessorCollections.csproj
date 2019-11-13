@@ -1,37 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <OutputType>Library</OutputType>
-    <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>Fusee.Pointcloud.PointAccessorCollections</RootNamespace>
     <PackageId>Fusee.Pointcloud.PointAccessorCollections</PackageId>
-    <ApplicationIcon />
-    <StartupObject />
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Pointcloud PointAccessorCollections</Description>
   </PropertyGroup>
 
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Libraries\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
+    <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
-    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" />
-    <ProjectReference Include="$(FuseeRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj" />
-  </ItemGroup>
 
-  <ItemGroup>
-    <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
-    </Reference>    
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>    
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" >
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Reader\LASReader\Fusee.Pointcloud.Reader.LASReader.csproj" >
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

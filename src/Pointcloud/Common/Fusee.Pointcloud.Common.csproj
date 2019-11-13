@@ -1,10 +1,10 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Pointcloud.Common</RootNamespace>
     <PackageId>Fusee.Pointcloud.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <OutputType>Library</OutputType>
-  </PropertyGroup> 
+    <Description>Fusee Pointcloud Common</Description>
+  </PropertyGroup>
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
@@ -13,34 +13,19 @@
 
   <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.3" />
-    <Reference Include="Fusee.Math.Core">
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Common">
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Engine.Core">
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.Serialization">
-      <HintPath>$(FuseeRoot)bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
-    </Reference>    
+    
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" >
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Assets\" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Assets\PointCloud.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\PointCloud.vert">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\PointDepth.frag">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>   
 </Project>
