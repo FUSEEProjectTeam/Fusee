@@ -23,7 +23,7 @@ namespace Fusee.Base.Core
                     {
                         ColorConsoleOutput(lvl);
 
-                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != null ? "[" + callerFile + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
+                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + callerFile + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
                         f += (ex != null ? $",\nException: {ex}" : "");
                         if (args != null)
                         {
@@ -223,8 +223,8 @@ namespace Fusee.Base.Core
 
 
         /// <summary>
-        ///     Log a trace event
-        ///     Per default only visible within the Visual Studio debug console
+        ///     Log a trace event.
+        ///     Per default only visible within the Visual Studio debug console.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -238,8 +238,8 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        ///     Log a debug event
-        ///     Per default only visible within the Visual Studio debug console
+        ///     Log a debug event.
+        ///     Per default only visible within the Visual Studio debug console.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -253,8 +253,8 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        ///     Log an info event
-        ///     Per default visible within the Visual Studio debug console and the console window
+        ///     Log an info event.
+        ///     Per default visible within the Visual Studio debug console and the console window.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -270,8 +270,8 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        ///     Log a warning event
-        ///     Per default visible within the Visual Studio debug console and the console window
+        ///     Log a warning event.
+        ///     Per default visible within the Visual Studio debug console and the console window.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -287,8 +287,8 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        ///     Log an error event
-        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file
+        ///     Log an error event.
+        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -304,8 +304,8 @@ namespace Fusee.Base.Core
         }
 
         /// <summary>
-        ///     Log a fatal event
-        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file
+        ///     Log a fatal event.
+        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
