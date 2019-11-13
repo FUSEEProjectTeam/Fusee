@@ -132,6 +132,12 @@ namespace Fusee.Base.Core
         #endregion
 
 
+        static Diagnostics()
+        {
+            // Overwrite file
+            File.Create(_fileName).Close();
+        }
+
         #region Members
 
         /// <summary>
@@ -143,7 +149,7 @@ namespace Fusee.Base.Core
         {
             _useFile = logToTxtFile;
             _fileName = (logFileName == string.Empty ? "Fusee.Log.txt" : logFileName);
-            if (_useFile && !File.Exists(_fileName)) File.Create(_fileName);
+            if (_useFile && !File.Exists(_fileName)) File.Create(_fileName).Close();
         }
 
         /// <summary>
