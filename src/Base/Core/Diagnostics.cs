@@ -16,14 +16,14 @@ namespace Fusee.Base.Core
         private static bool _useFile = true;
         private static string _fileName = "Fusee.Log.txt";
         private static SeverityLevel _minLogLevelFile = SeverityLevel.ERROR;
-        private static SeverityLevel _minLogLevelConsole = SeverityLevel.WARN;
-        private static SeverityLevel _minLogLevelDebug = SeverityLevel.TRACE;
+        private static SeverityLevel _minLogLevelConsole = SeverityLevel.INFO;
+        private static SeverityLevel _minLogLevelDebug;
 
-        private static Formater _format = (caller, lvl, msg, ex, args) =>
+        private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
                     {
                         ColorConsoleOutput(lvl);
 
-                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] [{caller}()] {msg}";
+                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != null ? "[" + callerFile + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
                         f += (ex != null ? $",\nException: {ex}" : "");
                         if (args != null)
                         {
@@ -40,11 +40,13 @@ namespace Fusee.Base.Core
         ///     The methods used for formating messages
         /// </summary>
         /// <param name="callingMethod">The calling method</param>
+        /// <param name="lineNumber">The line number of the calling file</param>
+        /// <param name="sourceFilePath">The calling file</param>
         /// <param name="lvl">The severity level</param>
         /// <param name="msg">The message</param>
         /// <param name="ex">A possible exception</param>
         /// <param name="args">Possible arguments</param>
-        public delegate string Formater(string callingMethod, SeverityLevel lvl, string msg, Exception ex = null, object[] args = null);
+        public delegate string Formater(string callingMethod, int lineNumber, string sourceFilePath, SeverityLevel lvl, string msg, Exception ex = null, object[] args = null);
 
         /// <summary>
         /// High precision timer values.
@@ -191,16 +193,16 @@ namespace Fusee.Base.Core
             _format = formater;
         }
 
-        private static void Writer(object o, SeverityLevel logLevel, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        private static void Writer(object o, SeverityLevel logLevel, Exception ex = null, object[] args = null, string callerName = "", int sourceLineNumber = 0, string sourceFilePath = "")
         {
             if (_useFile && _minLogLevelFile <= logLevel)
-                File.AppendAllText(_fileName, _format(callerName, logLevel, o.ToString(), ex, args));
+                File.AppendAllText(_fileName, _format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString(), ex, args));
 
             if (_minLogLevelConsole <= logLevel && Console.Out != null)
-                Console.WriteLine(_format(callerName, logLevel, o.ToString()));
+                Console.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString()));
 
             if (_minLogLevelDebug <= logLevel)
-                System.Diagnostics.Debug.WriteLine(_format(callerName, logLevel, o.ToString(), ex, args));
+                System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString(), ex, args));
 
             Console.ResetColor();
         }
@@ -212,16 +214,17 @@ namespace Fusee.Base.Core
         /// <param name="logLevel">The level to log, see <see cref="SeverityLevel"></see> for a list</param>
         /// <param name="callerName">The calling method</param>
         [Obsolete("Please use the new logging methods (Trace, Debug, ...) instead")]
-        public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "")
+        public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
 #if LOG_TRACE || LOG_DEBUG || LOG_INFO || LOG_WARN || LOG_ERROR || LOG_FATAL
-            Writer(o, logLevel);
+            Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
 
 
         /// <summary>
         ///     Log a trace event
+        ///     Per default only visible within the Visual Studio debug console
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -230,12 +233,13 @@ namespace Fusee.Base.Core
         public static void Trace(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
 #if LOG_TRACE
-            Writer(o, SeverityLevel.TRACE, ex, args);
+            Writer(o, SeverityLevel.TRACE, ex, args, callerName);
 #endif
         }
 
         /// <summary>
         ///     Log a debug event
+        ///     Per default only visible within the Visual Studio debug console
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -244,63 +248,77 @@ namespace Fusee.Base.Core
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
         {
 #if LOG_DEBUG
-            Writer(o, SeverityLevel.DEBUG, ex, args);
+            Writer(o, SeverityLevel.DEBUG, ex, args, callerName);
 #endif
         }
 
         /// <summary>
         ///     Log an info event
+        ///     Per default visible within the Visual Studio debug console and the console window
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
-        public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>       
+        public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
 #if LOG_INFO
-            Writer(o, SeverityLevel.INFO, ex, args);
+            Writer(o, SeverityLevel.INFO, ex, args, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
 
         /// <summary>
         ///     Log a warning event
+        ///     Per default visible within the Visual Studio debug console and the console window
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
-        public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>       
+        public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
 #if LOG_WARN
-            Writer(o, SeverityLevel.WARN, ex, args);
+            Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
 
         /// <summary>
         ///     Log an error event
+        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
-        public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>       
+        public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
 #if LOG_ERROR
-            Writer(o, SeverityLevel.ERROR, ex, args);
+            Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
 
         /// <summary>
         ///     Log a fatal event
+        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
-        public static void Fatal(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>       
+        public static void Fatal(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
+            if (sourceFilePath == null)
+                throw new ArgumentNullException(nameof(sourceFilePath));
 #if LOG_FATAL
-            Writer(o, SeverityLevel.FATAL, ex, args);
+            Writer(o, SeverityLevel.FATAL, ex, args, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
         #endregion
