@@ -20,6 +20,19 @@
 
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 
+    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\</FuseeEngineRoot>
+
+    <FuseeProjectRoot>$(MSBuildThisFileDirectory)\</FuseeProjectRoot>
+
+    <!--Build into main FUSEE bin directory-->
+    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
+
+    <!--Build into local bin directory-->
+    <!--<BaseOutputPath>$(FuseeProjectRoot)\bin\$(Configuration)</BaseOutputPath>-->
+
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+
     <!--
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Bump.Core</RootNamespace>
     <PackageId>Fusee.Examples.Bump.Core</PackageId>
@@ -8,6 +8,10 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Bump\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Contnet Update="Assets\**\*" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">

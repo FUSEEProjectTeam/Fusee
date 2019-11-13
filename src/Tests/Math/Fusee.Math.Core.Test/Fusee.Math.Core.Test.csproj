@@ -11,7 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="xunit" Version="2.4.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
       <PrivateAssets>all</PrivateAssets>
@@ -20,7 +20,9 @@
   </ItemGroup>
 
   <ItemGroup> 
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 
 </Project>

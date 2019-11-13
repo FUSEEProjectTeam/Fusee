@@ -20,7 +20,7 @@
     ///     <description>Abstracts 3D Drawing functionality from the underlying hardware-API (e.g. OpenGL).</description>
     ///   </item>
     ///   <item>
-    ///     <term><see cref="SceneRenderer"/></term>
+    ///     <term><see cref="SceneRendererForward"/></term>
     ///     <description>Visits a scene graph's items and renders each item's contribution to a render context.</description>
     ///   </item>
     /// </list>

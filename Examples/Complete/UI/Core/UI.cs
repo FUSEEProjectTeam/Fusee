@@ -13,7 +13,7 @@ using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Examples.UI.Core
 {
-    [FuseeApplication(Name = "FUSEE UI Example", Description = "A very ui example.")]
+    [FuseeApplication(Name = "FUSEE UI Example")]
     public class UI : RenderCanvas
     {
         // angle variables
@@ -23,7 +23,7 @@ namespace Fusee.Examples.UI.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
 
@@ -227,8 +227,6 @@ namespace Fusee.Examples.UI.Core
 
             var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
             var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-
             canvas.Components.Insert(0,projComp);
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
@@ -367,7 +365,7 @@ namespace Fusee.Examples.UI.Core
             _sih = new SceneInteractionHandler(_scene);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRendererForward(_scene);
         }
 
 

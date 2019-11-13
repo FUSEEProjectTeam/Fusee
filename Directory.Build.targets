@@ -30,11 +30,11 @@
     <ItemGroup>
       <_CopyNativeItems Include="$(ProjectDir)Natives\*.*" />
       <!-- Getting all files that have no Build Action and are linked to the project -->
-      <_AllNoneItemsWithLinks Include="@(None->HasMetadata('Link'))" />
+      <_AllContentItemsWithLinks Include="@(Content->HasMetadata('Link'))" />
       <!-- Going through all those files and checking if the path they are linked to starts with Natives -->
-      <_AllNoneItemsWithLinksAndNativesAsPath Include="@(_AllNoneItemsWithLinks)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Link)', '^Natives\\.+'))" />
+      <_AllContentItemsWithLinksAndNativesAsPath Include="@(_AllContentItemsWithLinks)" Condition="$([System.Text.RegularExpressions.Regex]::IsMatch('%(Link)', '^Natives\\.+'))" />
       <!-- Merge the linked natives with the files in the folder -->
-      <_CopyNativeItems Include="@(_AllNoneItemsWithLinksAndNativesAsPath)" />
+      <_CopyNativeItems Include="@(_AllContentItemsWithLinksAndNativesAsPath)" />
     </ItemGroup>
     <Copy SourceFiles="@(_CopyNativeItems)" DestinationFolder="$(FuseeNativeDestination)" />
   </Target>

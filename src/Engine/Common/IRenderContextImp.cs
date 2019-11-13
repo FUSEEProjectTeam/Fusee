@@ -36,9 +36,23 @@ namespace Fusee.Engine.Common
         float ClearDepth { set; get; }
 
         /// <summary>
+        /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
+        /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
+        /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
+        /// </summary>
+        void EnableDepthClamp();
+
+        /// <summary>
+        /// Disables depths clamping. <seealso cref="EnableDepthClamp"/>
+        /// </summary>
+        void DisableDepthClamp();
+
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
+        /// <param name="gs">A string containing the geometry shader source.</param>
         /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
         /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
         /// <remarks>
@@ -46,13 +60,25 @@ namespace Fusee.Engine.Common
         /// The result is already compiled to code executable on the GPU. <see cref="IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        IShaderProgramImp CreateShader(string vs, string ps);
+        IShaderProgramImp CreateShader(string vs, string ps, string gs = null);
 
         /// <summary>
         /// Removes given shaderprogramm from GPU
         /// </summary>
         /// <param name="sp"></param>
         void RemoveShader(IShaderProgramImp sp);
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a framebuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        void DeleteFrameBuffer(IBufferHandle bh);
+
+        /// <summary>
+        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// </summary>
+        /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
+        void DeleteRenderBuffer(IBufferHandle bh);
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
@@ -73,7 +99,7 @@ namespace Fusee.Engine.Common
         /// <param name="paramName">Name of the shader parameter.</param>
         /// <returns>A handle object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
         /// <remarks>
-        /// The returned handle can be used to assign values to a (uniform) shader paramter.
+        /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
@@ -207,16 +233,9 @@ namespace Fusee.Engine.Common
         /// Sets a Shader Parameter to a created texture.
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateWritableTexture method</param>
-        /// <param name="gHandle">The GBufferHandle</param>
-        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, GBufferHandle gHandle);
+        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
+        void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId);
 
-        /// <summary>
-        /// Updates the texture from video the given video stream.
-        /// </summary>
-        /// <param name="stream">The video stream to retrieve an individual image.</param>
-        /// <param name="tex">The texture to fill with the image from the video.</param>
-        void UpdateTextureFromVideoStream(IVideoStreamImp stream, ITextureHandle tex);
 
         /// <summary>
         /// Updates the given region of a texture with te passed image data.
@@ -236,12 +255,20 @@ namespace Fusee.Engine.Common
         /// Method should be called after LoadImage method to process
         /// the BitmapData an make them available for the shader.
         /// </remarks>
-        /// <param name="imageData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>
-        /// <param name="repeat">Indicating if the texture should be clamped or repeated.</param>
-        /// <returns>
-        /// An ITexture that can be used for texturing in the shader.
-        /// </returns>
-        ITextureHandle CreateTexture(ITexture imageData, bool repeat);
+        /// <param name="img">An <see cref="ITexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(ITexture img);
+
+        /// <summary>
+        /// Creates a new cube map and binds it to the shader.
+        /// </summary>        
+        /// <param name="img">An <see cref="IWritableCubeMap"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(IWritableCubeMap img);
+
+        /// <summary>
+        /// Creates a new texture and binds it to the shader.
+        /// </summary>      
+        /// <param name="img">An <see cref="IWritableTexture"/>, containing necessary information for the upload to the graphics card.</param>       
+        ITextureHandle CreateTexture(IWritableTexture img);
 
         /// <summary>
         /// Removes the TextureHandle's buffers and textures from the graphics card's memory
@@ -257,70 +284,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="width"></param>
         void SetLineWidth(float width);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="texture"></param>
-        void CopyDepthBufferFromDeferredBuffer(ITextureHandle texture);
-
-        /// <summary>
-        /// Creates a new writable texture and binds it to the shader.
-        /// This is done by creating a framebuffer and a renderbuffer (if needed).
-        /// All bufferhandles are returned with the texture.
-        /// For binding this texture call <see cref="SetRenderTarget"/>
-        /// <param name="width"></param>
-        /// <param name="height"></param>SetRenderTarget
-        /// <param name="textureFormat">The format of writable texture (e.g. Depthbuffer, G-Buffer, ...)</param>
-        /// </summary>
-        /// <returns>
-        /// An <see cref="ITextureHandle"/>ITextureHandle that can be used for of screen rendering
-        /// </returns>
-        ITextureHandle CreateWritableTexture(int width, int height, WritableTextureFormat textureFormat);
-
-        /*
-        /// <summary>
-        /// Creates a new Image with a specified size and color.
-        /// </summary>
-        /// <param name="width">The width of the image.</param>
-        /// <param name="height">The height of the image.</param>
-        /// <param name="color">The color of the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing.</returns>
-        ImageData CreateImage(int width, int height, ColorUint color);
-
-        /// <summary>
-        /// Maps a text in a specific font on an image.
-        /// </summary>
-        /// <param name="imgData">The ImageData struct with the PixelData from the image.</param>
-        /// <param name="fontName">The name of the text-font.</param>
-        /// <param name="fontSize">The size of the text-font.</param>
-        /// <param name="text">The text that sould be mapped on the iamge.</param>
-        /// <param name="textColor">The color of the text-font.</param>
-        /// <param name="startPosX">The horizontal start-position of the text on the image.</param>
-        /// <param name="startPosY">The vertical start-position of the text on the image.</param>
-        /// <returns>An ImageData struct containing all necessary information for further processing</returns>
-        ImageData TextOnImage(ImageData imgData, string fontName, float fontSize, String text, string textColor,
-            float startPosX, float startPosY);
-
-        /// <summary>
-        /// Loads a font file (*.ttf) and processes it with the given font size.
-        /// </summary>
-        /// <param name="stream">The stream to read font data from.</param>
-        /// <param name="size">The font size.</param>
-        /// <returns>An <see cref="IFont"/> containing all necessary information for further processing.</returns>
-        IFont LoadFont(Stream stream, uint size);
-
-        /// <summary>
-        /// Fixes the kerning of a text (if possible).
-        /// </summary>
-        /// <param name="font">The <see cref="IFont"/> containing information about the font.</param>
-        /// <param name="vertices">The vertices.</param>
-        /// <param name="text">The text.</param>
-        /// <param name="scaleX">The scale x (OpenGL scaling factor).</param>
-        /// <returns>The fixed vertices as an array of <see cref="float3"/>.</returns>
-        float3[] FixTextKerning(IFont font, float3[] vertices, string text, float scaleX);
-        */
-
+        
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
         /// </summary>
@@ -415,123 +379,6 @@ namespace Fusee.Engine.Common
         /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
         void SetShader(IShaderProgramImp shaderProgramImp);
 
-        /* #region Atomic Buffer Operations
-
-         #region Atomic Buffer Create Operations
-
-         /// <summary>
-         /// Binds the vertices onto the GL Rendercontext and returns an VertexBuffer index.
-         /// </summary>
-         /// <param name="vertices">The vertices.</param>
-         /// <exception cref="System.ArgumentException">Vertices must not be null or empty</exception>
-         /// <returns>A valid VertexBuffer Handle, otherwise 0.</returns>
-         int CreateVertexBuffer(float3[] vertices);
-
-         /// <summary>
-         /// Binds the normals onto the GL Rendercontext and returns an NormalBuffer index.
-         /// </summary>
-         /// <param name="normals">The normals.</param>
-         /// <exception cref="System.ArgumentException">Normals must not be null or empty</exception>
-         /// <returns>A valid NormalBuffer Handle, otherwise 0.</returns>
-         int CreateNormalBuffer(float3[] normals);
-
-         /// <summary>
-         /// Binds the UV coordinates onto the GL Rendercontext and returns an UVBuffer index.
-         /// </summary>
-         /// <param name="uvs">The UV's.</param>
-         /// <exception cref="System.ArgumentException">UVs must not be null or empty</exception>
-         /// <returns>A valid UVBuffer Handle, otherwise 0.</returns>
-         int CreateUvBuffer(float2[] uvs);
-
-         /// <summary>
-         /// Binds the colors onto the GL Rendercontext and returns an ColorBuffer index.
-         /// </summary>
-         /// <param name="colors">The colors.</param>
-         /// <exception cref="System.ArgumentException">colors must not be null or empty</exception>
-         /// <returns>A valid ColorBuffer Handle, otherwise 0.</returns>
-         int CreateColorBuffer(uint[] colors);
-
-         /// <summary>
-         /// Binds the triangles onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="triangleIndices">The triangle indices.</param>
-         /// <exception cref="System.ArgumentException">triangleIndices must not be null or empty</exception>
-         /// <returns>A valid TriangleBuffer Handle, otherwise 0.</returns>
-         int CreateTriangleBuffer(ushort[] triangleIndices);
-
-         /// <summary>
-         /// Binds the boneindices onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="boneIndices">The boneindices.</param>
-         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
-         /// <returns>A valid BoneIndexBuffer Handle, otherwise 0.</returns>
-         int CreateBoneIndexBuffer(float4[] boneIndices);
-
-         /// <summary>
-         /// Binds the boneweights onto the GL Rendercontext and returns an ElementBuffer index.
-         /// </summary>
-         /// <param name="boneWeights">The boneweights.</param>
-         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
-         /// <returns>A valid BoneWeightsBuffer Handle, otherwise 0.</returns>
-         int CreateBoneWeightsBuffer(float4[] boneWeights);
-
-         #endregion
-
-
-         #region Atomic Buffer Delete Operations
-         /// <summary>
-         /// Deletes the vertex buffer associated with the handle.
-         /// </summary>
-         /// <param name="vertexBufferHandle">The vertexBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteVertices(int vertexBufferHandle);
-
-         /// <summary>
-         /// Deletes the normals buffer associated with the handle.
-         /// </summary>
-         /// <param name="normalsBufferHandle">The normalsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteNormals(int normalsBufferHandle);
-
-         /// <summary>
-         /// Deletes the colors buffer associated with the handle.
-         /// </summary>
-         /// <param name="colorsBufferHandle">The colorsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteColors(int colorsBufferHandle);
-
-         /// <summary>
-         /// Deletes the UVs buffer associated with the handle.
-         /// </summary>
-         /// <param name="uvsBufferHandle">The uvsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteUVs(int uvsBufferHandle);
-
-         /// <summary>
-         /// Deletes the triangles buffer associated with the handle.
-         /// </summary>
-         /// <param name="trianglesBufferHandle">The trianglesBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteTriangles(int trianglesBufferHandle);
-
-         /// <summary>
-         /// Deletes the bone weights buffer associated with the handle.
-         /// </summary>
-         /// <param name="boneWeightsBufferHandle">The boneWeightsBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteBoneWeights(int boneWeightsBufferHandle);
-
-         /// <summary>
-         /// Deletes the bone indices buffer associated with the handle.
-         /// </summary>
-         /// <param name="boneIndicesBufferHandle">The boneIndicesBufferHandle in GPU memory should be deleted.</param>
-         /// <returns>True when the delete operation has been sucessful, false when the the handle does not exist.</returns>
-         bool DeleteBoneIndices(int boneIndicesBufferHandle);
-
-         #endregion
-
-         #endregion*/
-
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.
         /// </summary>
@@ -611,8 +458,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Renders the specified mesh.
         /// </summary>
-        /// <param name="mr">The mesh that should be rendered.</param>
-        /// <param name="type">The OpenGL primitive type that should be renderer (triangle, quads, points, etc.)</param>
+        /// <param name="mr">The mesh that should be rendered.</param>        
         /// <remarks>
         /// Passes geometry to be pushed through the rendering pipeline. <see cref="IMeshImp"/> for a description how geometry is made up.
         /// The geometry is transformed and rendered by the currently active shader program.
@@ -639,6 +485,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <returns>The <see cref="IMeshImp" /> instance.</returns>
         IMeshImp CreateMeshImp();
+
         /// <summary>
         /// Sets the specified render state to the given setting.
         /// </summary>
@@ -654,18 +501,25 @@ namespace Fusee.Engine.Common
         uint GetRenderState(RenderState renderState);
 
         /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// Renders into the given textures of the RenderTarget.
         /// </summary>
-        /// <param name="textureHandle">The textureHandle as target</param>
-        ///// <param name="deferredNormalPass">If this is true, the framebuffer will be set to the mainscreen but before this, the content of the z-Buffer is copied from the first pass to the current pass.</param>
-        void SetRenderTarget(ITextureHandle textureHandle);
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="texHandles">The texture handles, associated with the given textures. Each handle should be created by the TextureManager in the RenderContext.</param>
+        void SetRenderTarget(IRenderTarget renderTarget, ITextureHandle[] texHandles);
 
         /// <summary>
-        /// Sets the RenderTarget, if texture is null rendertarget is the main screen, otherwise the picture will be rendered onto given texture
+        /// Renders into the given texture.
         /// </summary>
-        /// <param name="texture">The texture as target</param>
-        /// <param name="position">The texture position within a cubemap</param>
-        void SetCubeMapRenderTarget(ITextureHandle texture, int position);
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        void SetRenderTarget(IWritableTexture tex, ITextureHandle texHandle);
+
+        /// <summary>
+        /// Renders into the given texture.
+        /// </summary>
+        /// <param name="tex">The texture.</param>
+        /// <param name="texHandle">The texture handle, associated with the given texture. Should be created by the TextureManager in the RenderContext.</param>
+        void SetRenderTarget(IWritableCubeMap tex, ITextureHandle texHandle);
 
         /*
          * TODO: NO tangent space normal maps at this time...

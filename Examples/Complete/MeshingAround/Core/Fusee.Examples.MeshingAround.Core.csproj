@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.MeshingAround.Core</RootNamespace>
     <PackageId>Fusee.Examples.MeshingAround.Core</PackageId>
@@ -8,6 +8,10 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\MeshingAround\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Contnet Update="Assets\**\*" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">

@@ -23,16 +23,26 @@
     <VisualStudioVersion Condition=" '$(VisualStudioVersion)' == '' ">10.0</VisualStudioVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="proto\bcl_pb2.py" />
+    <Compile Include="proto\protobuf_net\bcl_pb2.py" />
+    <Compile Include="proto\protobuf_net\protogen_pb2.py" />
     <Compile Include="proto\Scene_pb2.py" />
     <Compile Include="SerializeData.py" />
     <Compile Include="__init__.py" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="proto" />
+    <InterpreterReference Include="Global|PythonCore|3.5-32" />
   </ItemGroup>
   <ItemGroup>
-    <InterpreterReference Include="Global|PythonCore|3.5-32" />
+    <Folder Include="proto\" />
+    <Folder Include="proto\protobuf_net\" />
+    <Folder Include="proto_src\" />
+    <Folder Include="proto_src\protobuf-net\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="proto_src\protobuf-net\bcl.proto" />
+    <Content Include="proto_src\protobuf-net\protogen.proto" />
+    <Content Include="proto_src\Readme.md" />
+    <Content Include="proto_src\Scene.proto" />
   </ItemGroup>
   <!-- Import Project="$(MSBuildExtensionsPath32)\MSBuildCommunityTasks\MSBuild.Community.Tasks.Targets" /-->
   <!-- RE-GENERATING THE PROTBUF SERIALIZATION PYTHON CODE AND ZIPPING THE BLENDER ADDON DOES NOT WORK. PYTHON PROJECTS JUST DONT INVOKE THE BUILD TARGET. 

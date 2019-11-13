@@ -10,6 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Contnet Update="Assets\**\*" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Reference Include="Fusee.Base.Common">
       <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
     </Reference>

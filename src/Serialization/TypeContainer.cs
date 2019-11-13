@@ -23,7 +23,7 @@ namespace Fusee.Serialization
         public string Name;
 
         /// <summary>
-        /// The type of the key-values stored in this ShaderComponent.
+        /// The type of the key-values stored in this TypeContainer.
         /// </summary>
         [ProtoMember(2)]
         public TypeId TypeId;

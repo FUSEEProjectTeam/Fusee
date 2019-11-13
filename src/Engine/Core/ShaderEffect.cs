@@ -20,6 +20,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         // ReSharper disable InconsistentNaming
         public string VS;
+
+        /// <summary>
+        /// Geometry-shader as string
+        /// </summary>
+        public string GS;
+
         /// <summary>
         /// Pixel- or fragmentshader as string
         /// </summary>
@@ -71,6 +77,11 @@ namespace Fusee.Engine.Core
         /// </summary>
         public readonly string[] PixelShaderSrc;
 
+        /// <summary>
+        /// Geometry of all passes
+        /// </summary>
+        public readonly string[]GeometryShaderSrc;
+
         // Event ShaderEffect changes
         /// <summary>
         /// ShaderEffect event notifies observing ShaderEffectManager about property changes and the ShaderEffects's disposal.
@@ -105,12 +116,14 @@ namespace Fusee.Engine.Core
             
             VertexShaderSrc = new string[nPasses];
             PixelShaderSrc = new string[nPasses];
+            GeometryShaderSrc = new string[nPasses];
 
             for (int i = 0; i < nPasses; i++)
             {
                 States[i] = effectPasses[i].StateSet;
                 VertexShaderSrc[i] = effectPasses[i].VS;
                 PixelShaderSrc[i] = effectPasses[i].PS;
+                GeometryShaderSrc[i] = effectPasses[i].GS;
             }
 
             ParamDecl = new Dictionary<string, object>();
@@ -186,7 +199,24 @@ namespace Fusee.Engine.Core
                 }
                 return null;
         }
-     
+
+        /// <summary>
+        /// Returns the value of a given shadereffect variable
+        /// <remarks>THIS IS NOT THE ACTUAL UNIFORM VALUE</remarks>
+        /// </summary>
+        /// <param name="name">Name of the uniform variable</param>
+        /// /// <param name="obj">The value. Return null if no parameter was found.</param>
+        /// <returns></returns>
+        public void GetEffectParam(string name, out object obj)
+        {
+            obj = null;
+            if (ParamDecl.TryGetValue(name, out object pa))
+            {
+                obj = pa;
+            }
+            
+        }
+
         // This property returns the number of elements
         // in the inner dictionary.
         /// <summary>

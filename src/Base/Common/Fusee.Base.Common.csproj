@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Base.Common</RootNamespace>
     <PackageId>Fusee.Base.Common</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Description>Fusee Base Common</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -12,6 +13,10 @@
 
   <ItemGroup>    
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 </Project>
  

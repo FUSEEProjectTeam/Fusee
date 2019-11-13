@@ -10,7 +10,32 @@ namespace Fusee.Engine.Core
     /// Instances are used in the effects system to set a couple of states before a render pass is performed.
     /// </summary>
     public class RenderStateSet
-    {
+    { 
+        public static RenderStateSet Default
+        {
+            get
+            {
+                return new RenderStateSet()
+                {
+                    AlphaBlendEnable = false,
+                    BlendFactor = float4.Zero,
+                    BlendOperation = BlendOperation.Add,
+                    BlendOperationAlpha = BlendOperation.Add,
+                    DestinationBlend = Blend.Zero,
+                    DestinationBlendAlpha = Blend.Zero,
+                    SourceBlend = Blend.One,
+                    SourceBlendAlpha = Blend.One,
+
+                    CullMode = Cull.Counterclockwise,
+                    Clipping = true,
+                    FillMode = FillMode.Solid,
+                    ZEnable = true,
+                    ZFunc = Compare.Less,
+                    ZWriteEnable = true
+                };
+            }
+        }
+
         private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
 
         public void SetRenderStates(Dictionary<uint, uint> renderStateContainer)

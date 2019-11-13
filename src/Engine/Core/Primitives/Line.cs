@@ -13,7 +13,9 @@ namespace Fusee.Engine.Core
         /// Creates a instance of type 'Line'.
         /// </summary>
         /// <param name="points">The vertices, the line should connect.</param>
-        /// <param name="lineThickness">The thickness of the line.</param>       
+        /// <param name="lineThickness">The thickness of the line.</param>
+        /// <param name="rectWidth"></param>
+        /// <param name="rectHeight"></param>       
         public Line(List<float3> points, float lineThickness, float rectWidth = 1, float rectHeight = 1)
         {
             var segmentCache = new float3[4];

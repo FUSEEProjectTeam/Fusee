@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputPath>$(FuseeEngineRoot)\bin\$(Configuration)\Tools</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Fusee.Desktop" Version="0.7.0" />
+  </ItemGroup>
+</Project>

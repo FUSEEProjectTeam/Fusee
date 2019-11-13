@@ -422,11 +422,13 @@ namespace Fusee.Xene
                 Type paramType = parameters[0].ParameterType;
                 if (typeof(SceneComponentContainer).IsAssignableFrom(paramType))
                 {
-                    _visitors.Components[paramType] = VisitorCallerFactory.MakeComponentVisitor(methodInfo);
+                    if (_visitors.Components.ContainsKey(paramType)) continue;
+                    _visitors.Components.Add(paramType, VisitorCallerFactory.MakeComponentVisitor(methodInfo));
                 }
                 else if (typeof(SceneNodeContainer).IsAssignableFrom(paramType))
                 {
-                    _visitors.Nodes[paramType] = VisitorCallerFactory.MakeNodeVistor(methodInfo);
+                    if (_visitors.Nodes.ContainsKey(paramType)) continue;
+                    _visitors.Nodes.Add(paramType, VisitorCallerFactory.MakeNodeVistor(methodInfo));
                 }
             }
             _visitorMap.Add(myType, _visitors);

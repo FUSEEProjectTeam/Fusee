@@ -3,23 +3,26 @@
     <RootNamespace>Fusee.Examples.Simple.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Simple.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <OutputType>WinExe</OutputType>
+    <OutputType>Exe</OutputType>
     <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Simple\Desktop\</OutputPath>
+    <StartupObject>Fusee.Examples.Simple.Desktop.Simple</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+    <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj" />
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj">
-      <Name>Fusee.Examples.Simple.Core</Name>
-    </ProjectReference>
+    <PackageReference Include="OpenTK" Version="2.0.0" />
+    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
 
   <ItemGroup>
@@ -47,14 +50,8 @@
     <Reference Include="Fusee.Engine.Imp.Graphics.Desktop">
       <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Desktop.dll</HintPath>
     </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

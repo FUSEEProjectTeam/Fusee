@@ -1,4 +1,4 @@
-<Project  Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Picking.Core</RootNamespace>
     <PackageId>Fusee.Examples.Picking.Core</PackageId>
@@ -8,6 +8,10 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\Picking\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Contnet Update="Assets\**\*" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">

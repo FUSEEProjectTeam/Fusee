@@ -43,7 +43,10 @@ project and directly use them out of Blender to enable debugging see "Developmen
 		* C:\ .. \Python\PythonXx\
 		* C:\ .. \Python\PythonXx\Scripts\
 		
-### How to generate new .proto files
+### How to manually generate new .proto files
+
+> NOTE: The steps described below refer to FUSEE's self-built protobuf-net. The current FUSEE version utilizes protobuf-net directly from NuGet and already implements all .proto and .py generation tasks below within the build (see [fuseeCmdLine.csproj](../../../fuseeCmdLine/fuseeCmdLine.csproj)). For an explanation of the automated build process see [protoc_src](proto_src/README.md).
+
 1. Make sure a working fusee.exe exists at  %FuseeRoot%\bin\Debug\Tools\.
 2. open the CMD-Window and either change to the the directory where the fusee.exe is located or simply drag the fusee.exe file into the CMD-Window.     
 In both cases you have to add the following command: `protoschema -o $OUTPUT_PATH`. This will create a .proto-file in your `$OUTPUT_PATH`.     
@@ -110,14 +113,14 @@ how to attach to Blender in Visual Studio's Attach Debugger dialog.
 
 # Backlog
 
-* Apply modifiers to objects such as Subdivision Surface
-* Check Hierarchies and transformations
-* Export smoothed normals
-* Include Protobbuf-Python compiler into build to automatically generate 'Scene_pb2.py'
-* Update to Python 3.6 64 bit (for Fusion) and latest Blender 64 bit (2.78b)
-* Check Textures with different Settings
-* Allow for higher shiniess values. Probably requires to better understand Cycles' BRDF nodes first
-* Include bump map information
-* Include Key frame information
-* Include skeleton and weight information
-* Include Lights
+-[x] Apply modifiers to objects such as Subdivision Surface
+-[x] Check Hierarchies and transformations
+-[x] Export smoothed normals
+-[x] Include Protobbuf-Python compiler into build to automatically generate 'Scene_pb2.py'
+-[x] Update to Python 3.6 64 bit (for Fusion) and latest Blender 64 bit (2.78b)
+-[x] Check Textures with different Settings
+-[x] Allow for higher shiniess values. Probably requires to better understand Cycles' BRDF nodes first
+-[x] Include bump map information
+-[?] Include Key frame information
+-[?] Include skeleton and weight information
+-[ ] Include Lights

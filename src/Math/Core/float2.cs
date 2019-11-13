@@ -1,13 +1,9 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>
     /// Represents a 2D vector using two single-precision floating-point numbers.
     /// </summary>
@@ -872,8 +868,4 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float2> Parse { get; set; }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

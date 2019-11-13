@@ -1,5 +1,3 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
@@ -42,9 +40,7 @@ namespace Fusee.Math.Core
     /// </remarks> 
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
-    // ReSharper disable InconsistentNaming
     public struct float4x4 : IEquatable<float4x4>
-    // ReSharper restore InconsistentNaming
     {
         #region Fields
 
@@ -183,23 +179,6 @@ namespace Fusee.Math.Core
                     Row0.w * Row1.x * Row2.z * Row3.y
                     - Row0.w * Row1.y * Row2.z * Row3.x + Row0.w * Row1.y * Row2.x * Row3.z - Row0.w * Row1.z * Row2.x * Row3.y +
                     Row0.w * Row1.z * Row2.y * Row3.x;
-            }
-        }
-
-        /// <summary>
-        ///     Returns this matrix as an array
-        /// </summary>
-        public float[] AsArray
-        {
-            get
-            {
-                return new float[]
-                {
-                    M11, M12, M13, M14,
-                    M21, M22, M23, M24,
-                    M31, M32, M33, M34,
-                    M41, M42, M43, M44
-                };
             }
         }
 
@@ -467,13 +446,14 @@ namespace Fusee.Math.Core
 
         #region float[] ToArray()
 
-        // ReSharper disable UnusedMember.Local
+        /// <summary>
+        /// Returns the matrix as float array.
+        /// </summary>
+        /// <returns></returns>
         public float[] ToArray()
         {
-            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
-            // return new float[] { M11, M21, M31, M41, M12, M22, M32, M42, M13, M23, M33, M43, M14, M24, M34, M44 };
+            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };            
         }
-        // ReSharper restore UnusedMember.Local
 
         #endregion
 
@@ -545,8 +525,7 @@ namespace Fusee.Math.Core
         /// Build a rotation matrix from the specified axis/angle rotation.
         /// </summary>
         /// <param name="axis">The axis to rotate about.</param>
-        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>
-        /// <param name="inDegrees">Whether the angle is given in degrees or radians (Default false).</param>
+        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>       
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
@@ -798,9 +777,13 @@ namespace Fusee.Math.Core
         }
 
         //see Blender mathutils and Graphic Gems IV p. 222-229
+        /// <summary>
+        /// Returns the euler angles from a given rotation matrix.
+        /// </summary>
+        /// <param name="rotMat">The roation matrix.</param>        
         public static float3 RotMatToEuler(float4x4 rotMat)
         {
-            //Matrix is beeing handled as a multidimentional array to ensure that the rotation order can be changed easily in the future.
+            //Matrix is being handled as a multi-dimensional array to ensure that the rotation order can be changed easily in the future.
             var m = new[] { rotMat.Row0.ToArray(), rotMat.Row1.ToArray(), rotMat.Row2.ToArray(), rotMat.Row3.ToArray() };
 
             var eul1 = new float[3];
@@ -1835,9 +1818,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1904,5 +1885,3 @@ namespace Fusee.Math.Core
         public static Converter<string, float4x4> Parse { get; set; }
     }
 }
-
-#pragma warning restore 1591
