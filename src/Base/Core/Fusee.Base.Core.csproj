@@ -10,13 +10,10 @@
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
-  
-  <ItemGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
         <DefineConstants>TRACE;DEBUG;LOG_TRACE;LOG_DEBUG;LOG_INFO;LOG_WARN;LOG_ERROR;LOG_FATAL</DefineConstants>
     </PropertyGroup>
-
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
         <DefineConstants>LOG_WARN;LOG_ERROR;LOG_FATAL</DefineConstants>
