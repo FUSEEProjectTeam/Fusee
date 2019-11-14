@@ -53,8 +53,14 @@ namespace Fusee.Serialization
         /// </summary>
         public double ProjectedScreenSize { get; private set; }
 
+        /// <summary>
+        /// Position of the component in the hierarchy.
+        /// </summary>
         public int PosInHierarchyTex;
 
+        /// <summary>
+        /// The visible child indices in byte.
+        /// </summary>
         public byte VisibleChildIndices; 
 
         /// <summary>
@@ -70,6 +76,11 @@ namespace Fusee.Serialization
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
 
+        /// <summary>
+        /// Returns wether the given float4x4 intersects with the planes
+        /// </summary>
+        /// <param name="vf"></param>
+        /// <returns></returns>
         public bool Intersects(float4x4 vf)
         {            
             var planes = new float4[6];

@@ -99,6 +99,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x, y, or z, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 2).</param>
+        /// <returns>The x or y component of the float3.</returns>
         public float this[int idx]
         {
             get {

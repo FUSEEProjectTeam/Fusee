@@ -319,6 +319,7 @@ namespace Fusee.Engine.Common
         /// Binds the bitangents onto the GL Rendercontext and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
+        /// <param name = "bitangents">THe bitangents.</param>
         /// <exception cref="System.ArgumentException">BiTangents must not be null or empty</exception>
         /// <exception cref="System.ApplicationException"></exception>
         void SetBiTangents(IMeshImp mr, float3[] bitangents);
@@ -581,19 +582,58 @@ namespace Fusee.Engine.Common
     }
 
     /// <summary>
-    ///     This is the primitive type used by the RenderContext internally to distinguish between the different OpenGL primitives
+    /// This is the primitive type used by the RenderContext internally to distinguish between the different OpenGL primitives
     /// </summary>
     public enum OpenGLPrimitiveType
     {
+        /// <summary>
+        /// Relates to OpenGl GL_TRIANGLES.
+        /// </summary>
         TRIANGLES = 0,
+
+        /// <summary>
+        /// Relates to OpenGl GL_TRIANGLES_STRIP.
+        /// </summary>
         TRIANGLE_STRIP,
+
+        /// <summary>
+        /// Relates to OpenGl GL_TRIANGLES_FAN.
+        /// </summary>
         TRIANGLE_FAN,
+
+        /// <summary>
+        /// Relates to OpenGl GL_QUADS.
+        /// </summary>
         QUADS,
+
+        /// <summary>
+        /// Relates to OpenGl GL_QUADS_STRIP.
+        /// </summary>
         QUAD_STRIP,
+
+        /// <summary>
+        /// Relates to OpenGl GL_POINTS.
+        /// </summary>
         POINT,
+
+        /// <summary>
+        /// Relates to OpenGl GL_LINES.
+        /// </summary>
         LINES,
+
+        /// <summary>
+        /// Relates to OpenGl GL_LINE_STRIP.
+        /// </summary>
         LINE_STRIP,
+
+        /// <summary>
+        /// Relates to OpenGl GL_LINE_LOOP.
+        /// </summary>
         LINE_LOOP,
+
+        /// <summary>
+        /// Relates to OpenGl GL_PATCHES.
+        /// </summary>
         PATCHES
     }
 }

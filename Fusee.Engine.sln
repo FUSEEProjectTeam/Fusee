@@ -91,6 +91,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Math", "Math", "{BA542BBF-9
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Math.Core.Test", "src\Tests\Math\Fusee.Math.Core.Test\Fusee.Math.Core.Test.csproj", "{61892547-20E6-4FE6-AA22-1CD0C82BB361}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FusViewer", "src\Tools\FusViewer\FusViewer.csproj", "{609D3703-8874-44A3-ABE4-8BDEE8F55A89}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -396,6 +398,17 @@ Global
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -431,6 +444,7 @@ Global
 		{26808B4A-9F15-47F0-B147-E744241B79D2} = {15338FBD-C26A-45E2-ACF8-202DA51448CB}
 		{BA542BBF-9BDD-4B41-9550-BE7570280F3A} = {F81FE3E2-E1B1-488F-AC5F-6E6D8CF9893F}
 		{61892547-20E6-4FE6-AA22-1CD0C82BB361} = {BA542BBF-9BDD-4B41-9550-BE7570280F3A}
+		{609D3703-8874-44A3-ABE4-8BDEE8F55A89} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}
