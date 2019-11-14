@@ -11,7 +11,14 @@ namespace Fusee.Serialization
     /// </summary>
     public class AddChildEventArgs : EventArgs
     {
+        /// <summary>
+        /// Returns the scene node container.
+        /// </summary>
         public SceneNodeContainer Snc { get; }
+        /// <summary>
+        /// Adds eventa arguements to a scene node container.
+        /// </summary>
+        /// <param name="snc">The scene node container <see cref="SceneNodeContainer"></see>/></param>
         public AddChildEventArgs(SceneNodeContainer snc)
         {
             Snc = snc;
