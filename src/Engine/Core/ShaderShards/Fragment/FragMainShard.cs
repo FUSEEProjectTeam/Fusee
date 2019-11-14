@@ -1,12 +1,19 @@
 ﻿using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
+    /// <summary>
+    /// Collection of Shader Shards, describing the Main method of a fragment shader.
+    /// </summary>
     public static class FragMainShard
     {
+        /// <summary>
+        /// Lighting Main method for forward rendering.
+        /// </summary>
+        /// <param name="effectProps">The <see cref="ShaderEffectProps"/> which function as a basis to build the correct lighting method.</param>
+        /// <returns></returns>
         public static string ForwardLighting(ShaderEffectProps effectProps)
         {
             string fragColorAlpha = effectProps.MatProbs.HasDiffuse ? $"{UniformNameDeclarations.DiffuseColorName}.w" : "1.0";
@@ -35,7 +42,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return ShaderShardUtil.MainMethod(fragMainBody);
         }
 
-        public static string RenderToGBuffer(ShaderEffectProps effectProps)
+        /// <summary>
+        /// The main method for rendering into a G-Buffer object.
+        /// </summary>
+        /// <param name="hasDiffuseTex">Basis for calculating the albedo color.</param>
+        /// <returns></returns>
+        public static string RenderToGBuffer(bool hasDiffuseTex)
         {
             var fragMainBody = new List<string>();            
 
@@ -49,7 +61,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         fragMainBody.Add($"{texName} = vec4(vPos.xyz, vPos.w);");
                         break;
                     case 1: //ALBEDO_SPECULAR
-                        if (effectProps.MatProbs.HasDiffuseTexture)
+                        if (hasDiffuseTex)
                             fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColorName}.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), {UniformNameDeclarations.SpecularIntensityName});");
                         else
                             fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColorName}.xyz, {UniformNameDeclarations.SpecularIntensityName});");

@@ -3,8 +3,17 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
-    public static class VertOut
+    /// <summary>
+    /// Collection of Shader Shards, describing the Main method of a vertex shader.
+    /// </summary>
+    public static class VertMainShard
     {
+        /// <summary>
+        /// Creates the main method for the vertex shader, used in forward rendering.
+        /// The naming of the out parameters is the same as in the <see cref="VertPropertiesShard"/>.
+        /// </summary>
+        /// <param name="effectProps">The <see cref="ShaderEffectProps"/> is the basis to decide, which calculations need to be made. E.g. do we have a weight map? If so, adjust the gl_Position.</param>
+        /// <returns></returns>
         public static string VertexMain(ShaderEffectProps effectProps)
         {
             var vertMainBody = new List<string>

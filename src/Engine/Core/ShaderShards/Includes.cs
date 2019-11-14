@@ -33,7 +33,7 @@ namespace Fusee.Engine.Core.ShaderShards
                     }
                     catch (FileNotFoundException e)
                     {
-                        Diagnostics.Log($"[ShaderCodeBuilder.cs] Error file #include {e.FileName} not found!");
+                        Diagnostics.Error($"File #include {e.FileName} not found!");
                     }
                     refinedShader.Add(foundFile);
                 }
@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 }
             }
 
-            return String.Join("\n", refinedShader);
+            return string.Join("\n", refinedShader);
         }
 
         private static Dictionary<string, string> GetFieldValues(Type type)

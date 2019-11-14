@@ -1,10 +1,13 @@
 ﻿using Fusee.Engine.Common;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards
 {
+    //TODO: define names for "standard" varying parameters?
+    /// <summary>
+    /// Collection of uniform parameter names, as they should be used in the Shader Shards to make them compatible to each other.
+    /// </summary>
     public static class UniformNameDeclarations
     {
         #region Fusee internal
@@ -34,11 +37,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// </summary>
         public static readonly string BitangentAttribName = "fuBitangent";
         /// <summary>
-        /// The boneweight attribute name.
+        /// The bone weight attribute name.
         /// </summary>
         public static readonly string BoneWeightAttribName = "fuBoneWeight";
         /// <summary>
-        /// The boneindex attribute name.
+        /// The bone index attribute name.
         /// </summary>
         public static readonly string BoneIndexAttribName = "fuBoneIndex";
 
@@ -113,10 +116,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The var name for the uniform BumpIntensity variable within the pixel shaders
         /// </summary>
         public static string BumpIntensityName { get; } = "BumpIntensity";
-
-        public static string LightIntensityName { get; } = "LightIntensity";
-
-        public static string[] DeferredRenderTextures { get; } = new []
+      
+        /// <summary>
+        /// List of all possible render texture names.
+        /// </summary>
+        public static List<string> DeferredRenderTextures { get; } = new List<string>()
         {
             Enum.GetName(typeof(RenderTargetTextureTypes), 0),
             Enum.GetName(typeof(RenderTargetTextureTypes), 1),

@@ -5,8 +5,16 @@ using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
+    /// <summary>
+    /// Collection of Shader Shards, describing possible in, out and uniform properties of a vertex shader.
+    /// </summary>
     public static class VertPropertiesShard
     {
+        /// <summary>
+        /// Creates the in (with prefix "fu") and out parameters of the vertex shader, depending on the given ShaderEffectProps.
+        /// </summary>
+        /// <param name="effectProps">>The ShaderEffectProps.</param>
+        /// <returns></returns>
         public static string InAndOutParams(ShaderEffectProps effectProps)
         {
             var vertProps = new List<string>
@@ -56,8 +64,13 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
 
             return string.Join("\n", vertProps);
         }
-
-        public static string Uniforms(ShaderEffectProps effectProps)
+        
+        /// <summary>
+        /// Returns the pre defined Fusee uniform parameters of a vertex shader, depending on the given ShaderEffectProps.
+        /// </summary>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
+        /// <returns></returns>
+        public static string FuseeUniforms(ShaderEffectProps effectProps)
         {
             var uniforms = new List<string> 
             {

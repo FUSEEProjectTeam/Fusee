@@ -22,22 +22,22 @@ namespace Fusee.Engine.Core.ShaderShards
             Void
         }
 
-        public static string CreateUniform(Type type, string varName)
+        internal static string CreateUniform(Type type, string varName)
         {
             return $"uniform {DecodeType(type)} {varName};";
         }
 
-        public static string CreateOut(Type type, string varName)
+        internal static string CreateOut(Type type, string varName)
         {
             return $"out {DecodeType(type)} {varName};";
         }
 
-        public static string CreateIn(Type type, string varName)
+        internal static string CreateIn(Type type, string varName)
         {
             return $"in  {DecodeType(type)} {varName};";
         }
 
-        public static string CreateVar(Type type, string varName)
+        internal static string CreateVar(Type type, string varName)
         {
             return $"{DecodeType(type)} {varName}";
         }
@@ -67,7 +67,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="methodParams"></param>
         /// <param name="method">method body goes here</param>
         /// <returns></returns>
-        public static string CreateMethod(Type returnType, string methodName, string[] methodParams,
+        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams,
             IList<string> method)
         {
             method = method.Select(x => "   " + x).ToList(); // One Tab indent

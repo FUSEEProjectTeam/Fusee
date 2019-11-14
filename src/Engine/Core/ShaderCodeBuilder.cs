@@ -32,8 +32,8 @@ namespace Fusee.Engine.Core
             //------------ vertex shader ------------------//
             var vert = new StringBuilder();
 
-            vert.Append(HeaderShard.Version());
-            vert.Append(HeaderShard.EsPrecision());
+            vert.Append(HeaderShard.Version300Es());
+            vert.Append(HeaderShard.EsPrecisionHighpFloat());
 
             vert.Append(@"
                 uniform mat4 FUSEE_M;
@@ -66,8 +66,8 @@ namespace Fusee.Engine.Core
 
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
-            frag.Append(HeaderShard.EsPrecision());
+            frag.Append(HeaderShard.Version300Es());
+            frag.Append(HeaderShard.EsPrecisionHighpFloat());
 
             frag.Append(FragPropertiesShard.GBufferOut());
 
@@ -245,8 +245,8 @@ namespace Fusee.Engine.Core
             
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
-            frag.Append(HeaderShard.EsPrecision());
+            frag.Append(HeaderShard.Version300Es());
+            frag.Append(HeaderShard.EsPrecisionHighpFloat());
             frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
             frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
             frag.Append($"#define KERNEL_SIZE_HALF {blurKernelSize * 0.5}\n");
@@ -305,9 +305,9 @@ namespace Fusee.Engine.Core
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.Version300Es());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(HeaderShard.EsPrecision());
+            frag.Append(HeaderShard.EsPrecisionHighpFloat());
 
             frag.Append(FragPropertiesShard.DeferredUniforms());
 
@@ -482,9 +482,9 @@ namespace Fusee.Engine.Core
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version());
+            frag.Append(HeaderShard.Version300Es());
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(HeaderShard.EsPrecision());
+            frag.Append(HeaderShard.EsPrecisionHighpFloat());
 
             for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
             {
@@ -1413,14 +1413,14 @@ namespace Fusee.Engine.Core
         {
             var vertexShader = new List<string>
             {
-                HeaderShard.Version(),
+                HeaderShard.Version300Es(),
                 HeaderShard.DefineBones(effectProps, wc),
-                VertPropertiesShard.Uniforms(effectProps),
+                VertPropertiesShard.FuseeUniforms(effectProps),
                 VertPropertiesShard.InAndOutParams(effectProps),
             };
 
             // Main            
-            vertexShader.Add(VertOut.VertexMain(effectProps));
+            vertexShader.Add(VertMainShard.VertexMain(effectProps));
 
             return string.Join("\n", vertexShader);
         }
@@ -1429,8 +1429,8 @@ namespace Fusee.Engine.Core
         {
             var pixelShader = new List<string>
             {
-                HeaderShard.Version(),
-                HeaderShard.EsPrecision(),
+                HeaderShard.Version300Es(),
+                HeaderShard.EsPrecisionHighpFloat(),
                
                 LightingShard.LightStructDeclaration(),
 
@@ -1452,8 +1452,8 @@ namespace Fusee.Engine.Core
         {
             var protoPixelShader = new List<string>
             {
-                HeaderShard.Version(),
-                HeaderShard.EsPrecision(),                
+                HeaderShard.Version300Es(),
+                HeaderShard.EsPrecisionHighpFloat(),                
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),

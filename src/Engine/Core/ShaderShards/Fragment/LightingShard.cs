@@ -4,13 +4,18 @@ using System.Globalization;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
+    /// <summary>
+    /// Collection of Shader Shards, describing the struct for a Light and different methods for light and shadow calculation.
+    /// </summary>
     public static class LightingShard
     {
         ///The maximal number of lights we can render when using the forward pipeline.
         public const int NumberOfLightsForward = 8;
-
-
-
+         
+        /// <summary>
+        /// Struct, that describes a Light object in the shader code./>
+        /// </summary>
+        /// <returns></returns>
         public static string LightStructDeclaration()
         {
             var lightStruct = @"
@@ -32,9 +37,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             };           
             ";
             return lightStruct;
-
         }
 
+        /// <summary>
+        /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
+        /// </summary>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
+        /// <param name="lightingCalculationMethod">The LightingCalculationMethod.</param>       
         public static string AssembleLightingMethods(ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
         {
             var lighting = new List<string>();
@@ -49,7 +58,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(SpecularLightMethod());
                     break;
-                case MaterialType.MaterialPbrComponent:
+                case MaterialType.MaterialPbr:
                     if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
                     {
                         lighting.Add(AmbientLightMethod());
@@ -77,6 +86,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return string.Join("\n", lighting);
         }
 
+        /// <summary>
+        /// Method for calculation the ambient lighting component.
+        /// </summary>       
         public static string AmbientLightMethod()
         {
             var methodBody = new List<string>
@@ -88,6 +100,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient") }, methodBody));
         }
 
+        /// <summary>
+        /// Method for calculation the diffuse lighting component.
+        /// </summary>       
         public static string DiffuseLightMethod(ShaderEffectProps effectProps)
         {
             var methodBody = new List<string>
@@ -112,6 +127,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         }
 
+
+        /// <summary>
+        /// Method for calculation the specular lighting component.
+        /// </summary>       
         public static string SpecularLightMethod()
         {
             var methodBody = new List<string>
@@ -136,7 +155,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
-        /// Replaces Specular Calculation with Cook-Torrance-Shader
+        /// Method for calculation the specular lighting component.
+        /// Replaces the standard specular calculation with the Cook-Torrance-Shader
         /// </summary>
         public static string PbrSpecularLightMethod(ShaderEffectProps effectProps)
         {
@@ -202,7 +222,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
-        /// Wraps all the lighting methods into a single one
+        /// Wraps all the lighting methods into a single one.
         /// </summary>
         public static string ApplyLightMethod(ShaderEffectProps effectProps)
         {
@@ -332,6 +352,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 }, methodBody);
         }
 
+        /// <summary>
+        /// Creates the method for calculating whether a fragment is in shadow or not, by using a shadow map (sampler2D).
+        /// </summary>
+        /// <returns></returns>
         public static string ShadowCalculation()
         {
             var methodBody = new List<string>()
@@ -379,6 +403,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             }, methodBody);
         }
 
+        /// <summary>
+        /// Creates the method for calculating whether a fragment is in shadow or not, by using a shadow map (sampler2DCube).
+        /// The cube map is used when calculating the shadows for a point light.
+        /// </summary>
+        /// <returns></returns>
         public static string ShadowCalculationCubeMap()
         {
             var methodBody = new List<string>()

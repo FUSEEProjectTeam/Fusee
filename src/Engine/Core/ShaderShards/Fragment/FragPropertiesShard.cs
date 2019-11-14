@@ -4,8 +4,16 @@ using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
+    /// <summary>
+    /// Collection of Shader Shards, describing possible in, out and uniform properties of a fragment shader.
+    /// </summary>
     public static class FragPropertiesShard
     {
+        /// <summary>
+        /// Returns the in parameters for a ShaderEffect, depending on the given ShaderEffectProps.
+        /// </summary>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
+        /// <returns></returns>
         public static string InParams(ShaderEffectProps effectProps)
         {
             var pxIn = new List<string>
@@ -33,6 +41,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return string.Join("\n", pxIn);
         }
 
+        /// <summary>
+        /// Returns the pre defined Fusee uniform parameters of a fragment shader, depending on the given ShaderEffectProps.
+        /// </summary>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
+        /// <returns></returns>
         public static string FuseeUniforms(ShaderEffectProps effectProps)
         {
             var pxFusUniforms = new List<string>
@@ -52,37 +65,42 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return string.Join("\n", pxFusUniforms);
         }
 
-        public static string MatPropsUniforms(ShaderEffectProps effectProps)
+        /// <summary>
+        /// Returns all uniforms, as they are given in the <see cref="MaterialProps"/> object.
+        /// </summary>
+        /// <param name="matProps">The MaterialProps.</param>
+        /// <returns></returns>
+        public static string MatPropsUniforms(MaterialProps matProps)
         {
             var matPropUnifroms = new List<string>();
 
-            if (effectProps.MatProbs.HasSpecular)
+            if (matProps.HasSpecular)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensityName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColorName));
             }
 
-            if (effectProps.MatProbs.HasDiffuse)
+            if (matProps.HasDiffuse)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColorName));
 
-            if (effectProps.MatProbs.HasEmissive)
+            if (matProps.HasEmissive)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
 
             //Textures
-            if (effectProps.MatProbs.HasBump)
+            if (matProps.HasBump)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
             }
 
-            if (effectProps.MatProbs.HasDiffuseTexture)
+            if (matProps.HasDiffuseTexture)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMixName));
             }
 
-            if (effectProps.MatProbs.HasEmissiveTexture)
+            if (matProps.HasEmissiveTexture)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMixName));
@@ -91,21 +109,50 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return string.Join("\n", matPropUnifroms);
         }
 
+        /// <summary>
+        /// Creates the uniform texture parameters for the lighting pass, as used in deferred rendering.
+        /// </summary>
+        /// <returns></returns>
+        public static string DeferredUniforms()
+        {
+            var outs = new List<string>();
+            var texCount = 0;
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            {
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+
+                outs.Add($"uniform sampler2D {texName};\n");
+                texCount++;
+            }
+            return string.Join("\n", outs);
+        }
+
+        /// <summary>
+        /// Creates a single color (vec4) out parameter.
+        /// </summary>       
         public static string ColorOut()
         {
             return GLSL.CreateOut(GLSL.Type.Vec4, "oFragmentColor");
         }
 
+        /// <summary>
+        /// Creates the "allLights" uniform array, as it is used in forward rendering.
+        /// </summary>
+        /// <returns></returns>
         public static string FixedNumberLightArray()
         {
             return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
         }
 
+        /// <summary>
+        /// Creates the out parameters for rendering into a G-Buffer object.
+        /// </summary>
+        /// <returns></returns>
         public static string GBufferOut()
         {
             var outs = new List<string>();
             var texCount = 0;
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length - 1; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count - 1; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];               
 
@@ -115,18 +162,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             return string.Join("\n", outs);
         }
 
-        public static string DeferredUniforms()
-        {
-            var outs = new List<string>();
-            var texCount = 0;
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length; i++)
-            {
-                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
-
-                outs.Add($"uniform sampler2D {texName};\n");
-                texCount++;
-            }
-            return string.Join("\n", outs);
-        }
+        
     }
 }
