@@ -10,7 +10,7 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
-
+using System.Drawing;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -28,12 +28,9 @@ namespace Fusee.Examples.Simple.Core
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private const float _speed = 7;
-        private int[,] arr = new int[,]{{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1},
-                                        { 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1},
-                                        { 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1},
-                                        { 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-                                        { 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1},
-        };
+        Bitmap bitmap
+        //private int[,] arr = new int[,]
+        
 
     //other var
     private SceneRendererForward _sceneRenderer;
@@ -74,7 +71,6 @@ namespace Fusee.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
-
 
             if (Mouse.LeftButton)
             {
