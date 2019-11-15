@@ -44,7 +44,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <param name="lightingCalculationMethod">The LightingCalculationMethod.</param>       
-        public static string AssembleLightingMethods(ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        public static string AssembleLightingMethods(ShaderEffectProps effectProps)
         {
             var lighting = new List<string>();
 
@@ -59,22 +59,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         lighting.Add(SpecularLightMethod());
                     break;
                 case MaterialType.MaterialPbr:
-                    if (lightingCalculationMethod != LightingCalculationMethod.ADVANCED)
-                    {
-                        lighting.Add(AmbientLightMethod());
-                        if (effectProps.MatProbs.HasDiffuse)
-                            lighting.Add(DiffuseLightMethod(effectProps));
-                        if (effectProps.MatProbs.HasSpecular)
-                            lighting.Add(SpecularLightMethod());
-                    }
-                    else
-                    {
-                        lighting.Add(AmbientLightMethod());
-                        if (effectProps.MatProbs.HasDiffuse)
-                            lighting.Add(DiffuseLightMethod(effectProps));
-                        if (effectProps.MatProbs.HasSpecular)
-                            lighting.Add(PbrSpecularLightMethod(effectProps));
-                    }
+                    
+                    lighting.Add(AmbientLightMethod());
+                    if (effectProps.MatProbs.HasDiffuse)
+                        lighting.Add(DiffuseLightMethod(effectProps));
+                    if (effectProps.MatProbs.HasSpecular)
+                        lighting.Add(PbrSpecularLightMethod(effectProps));
+                    
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
@@ -154,6 +145,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         }
 
+        //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally uses this lighting method for the specular component.
+        //This is not the same lighting method as is used in Blender and will therefor only produce approximately visually correct results.
         /// <summary>
         /// Method for calculation the specular lighting component.
         /// Replaces the standard specular calculation with the Cook-Torrance-Shader
@@ -163,16 +156,17 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
 
             var delta = 0.0000001;
+            var diffuseFractionDelta = 0.99999; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
 
             var roughness = effectProps.PBRProps.RoughnessValue + delta; // always float, never int!
             var fresnel = effectProps.PBRProps.FresnelReflectance + delta;
-            var k = effectProps.PBRProps.DiffuseFraction + delta;
+            var k = effectProps.PBRProps.DiffuseFraction == 0 ? diffuseFractionDelta : effectProps.PBRProps.DiffuseFraction + delta;
 
             var methodBody = new List<string>
             {
                 $"float roughnessValue = {roughness.ToString(nfi)}; // 0 : smooth, 1: rough", // roughness 
                 $"float F0 = {fresnel.ToString(nfi)}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender
-                $"float k = 1.0-{k.ToString(nfi)}; // metaliness", // metaliness from Blender
+                $"float k = 1.0-{k.ToString(nfi)};",
                 "float NdotL = max(dot(N, L), 0.0);",
                 "float specular = 0.0;",
                 "float BlinnSpecular = 0.0;",

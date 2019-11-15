@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Vertex shader as string
         /// </summary>
-        // ReSharper disable InconsistentNaming
+        /// 
         string VS { get; set; }
 
         /// <summary>
@@ -56,8 +56,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Pixel- or fragment shader as string
         /// </summary>
-        public string PS { get; set; }
-        // ReSharper restore InconsistentNaming
+        public string PS { get; set; }        
     }
 
     /// <summary>
@@ -367,6 +366,11 @@ namespace Fusee.Engine.Core
 
         private readonly EffectPassDeclarationProto[] _effectPasses;
 
+        /// <summary>
+        /// Creates a new instance of type ShaderEffectProtoPixel.
+        /// </summary>
+        /// <param name="effectPasses"></param>
+        /// <param name="effectParameters"></param>
         public ShaderEffectProtoPixel(EffectPassDeclarationProto[] effectPasses, IEnumerable<EffectParameterDeclaration> effectParameters)
         {
             if (effectPasses == null || effectPasses.Length == 0)
@@ -410,13 +414,12 @@ namespace Fusee.Engine.Core
             {
                 for (int i = 0; i < _effectPasses.Length; i++)
                 {
-                    var lightingMethod = !EffectProps.DoRenderPhysicallyBased ? LightingCalculationMethod.SIMPLE : LightingCalculationMethod.ADVANCED;
                     var pxBody = new List<string>()
                     {
                         LightingShard.LightStructDeclaration(),
                         FragPropertiesShard.FixedNumberLightArray(),
                         FragPropertiesShard.ColorOut(),
-                        LightingShard.AssembleLightingMethods(EffectProps, lightingMethod),
+                        LightingShard.AssembleLightingMethods(EffectProps),
                         FragMainShard.ForwardLighting(EffectProps)
                     };
 

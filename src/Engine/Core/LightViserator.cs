@@ -7,28 +7,6 @@ using Fusee.Xene;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// All supported lightning calculation methods LegacyShaderCodeBuilder.cs supports.
-    /// </summary>
-    // ReSharper disable InconsistentNaming
-    public enum LightingCalculationMethod
-    {
-        /// <summary> 
-        /// Simple Blinn-Phong shading without fresnel and distribution function
-        /// </summary>
-        SIMPLE,
-
-        /// <summary>
-        /// Physical based shading
-        /// </summary>
-        ADVANCED,
-
-        /// <summary>
-        /// Physical based shading with environment cube map algorithm
-        /// </summary>
-        ADVANCEDENVMAP
-    }
-
-    /// <summary>
     /// This struct saves a light and all its parameters, as found by a Viserator.
     /// </summary>
     public struct LightResult

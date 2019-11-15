@@ -368,7 +368,9 @@ namespace Fusee.Engine.Core
 
             _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CAN_USE_GEOMETRY_SHADERS) == 1U ? true : false;
 
-            BackgroundColor = _rc.ClearColor;
+            if(_rc.ClearColor != _texClearColor)
+                BackgroundColor = _rc.ClearColor;
+
             _rc.ClearColor = _texClearColor;
 
             var screenWidth = _rc.ViewportWidth;

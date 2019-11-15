@@ -51,7 +51,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var fragMainBody = new List<string>();            
 
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length - 1; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count - 1; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 

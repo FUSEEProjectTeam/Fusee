@@ -89,7 +89,7 @@ namespace Fusee.Engine.Core
 
             frag.AppendLine("void main() {");
 
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Length; i++)
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var tex = UniformNameDeclarations.DeferredRenderTextures[i];
                 if (tex == null) continue;
@@ -1097,20 +1097,19 @@ namespace Fusee.Engine.Core
             string ps = "";
 
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-
-            //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
+            
             if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 if (mc is MaterialPBRComponent) 
                 {
                     vs = CreateVertexShader(wc, effectProps);
-                    ps = CreatePixelShader(effectProps, LightingCalculationMethod.ADVANCED);
+                    ps = CreatePixelShader(effectProps);
                 }
             }
             else
             {
                 vs = CreateVertexShader(wc, effectProps);
-                ps = CreatePixelShader(effectProps, LightingCalculationMethod.SIMPLE);
+                ps = CreatePixelShader(effectProps);
             }
 
             var effectParameters = AssembleEffectParamers(mc);
@@ -1153,8 +1152,7 @@ namespace Fusee.Engine.Core
             string ps = "";
 
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-
-            //TODO: LightingCalculationMethod does not seem to have an effect right now.. see ShaderCodeBuilder constructor.
+            
             if (mc.GetType() == typeof(MaterialPBRComponent))
             {
                 if (mc is MaterialPBRComponent)
@@ -1425,7 +1423,7 @@ namespace Fusee.Engine.Core
             return string.Join("\n", vertexShader);
         }
 
-        private static string CreatePixelShader(ShaderEffectProps effectProps, LightingCalculationMethod lightingCalculationMethod)
+        private static string CreatePixelShader(ShaderEffectProps effectProps)
         {
             var pixelShader = new List<string>
             {
@@ -1436,10 +1434,10 @@ namespace Fusee.Engine.Core
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps),
+                FragPropertiesShard.MatPropsUniforms(effectProps.MatProbs),
                 FragPropertiesShard.FixedNumberLightArray(),
                 FragPropertiesShard.ColorOut(),
-                LightingShard.AssembleLightingMethods(effectProps, lightingCalculationMethod)
+                LightingShard.AssembleLightingMethods(effectProps)
             };      
 
             //Calculates the lighting for all lights by using the above method
@@ -1457,7 +1455,7 @@ namespace Fusee.Engine.Core
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps),                
+                FragPropertiesShard.MatPropsUniforms(effectProps.MatProbs),                
             };
             
             return string.Join("\n", protoPixelShader);

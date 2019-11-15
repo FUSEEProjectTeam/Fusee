@@ -9,18 +9,6 @@ namespace Fusee.Engine.Core.ShaderShards
     public struct ShaderEffectProps
     {
         /// <summary>
-        /// Do we do a physically based lighting calculation?
-        /// </summary>
-        public bool DoRenderPhysicallyBased 
-        { 
-            get 
-            { 
-                return PBRProps.RoughnessValue == 0 && PBRProps.DiffuseFraction == 0 && PBRProps.FresnelReflectance == 0; 
-            } 
-            private set { } 
-        }
-
-        /// <summary>
         /// Collection of bools, describing the mesh properties.
         /// </summary>
         public MeshProps MeshProbs;
@@ -34,11 +22,6 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The type of the material.
         /// </summary>
         public MaterialType MatType;
-
-        /// <summary>
-        /// Collection of float values, used to do a physically based lighting calculation.
-        /// </summary>
-        public PBRProps PBRProps;
     }
 
     /// <summary>
@@ -128,34 +111,13 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The Standard material.
         /// </summary>
-        Material,   
+        Standard,   
         
         /// <summary>
         /// A material for physically based lighting.
         /// </summary>
         MaterialPbr
-    }
-
-    /// <summary>
-    /// Collection of float values, used to do a physically based lighting calculation.
-    /// </summary>
-    public struct PBRProps
-    {
-        /// <summary>
-        /// This float describes the roughness of the material
-        /// </summary>       
-        public float RoughnessValue;
-
-        /// <summary>
-        /// This float describes the fresnel reflectance of the material
-        /// </summary>        
-        public float FresnelReflectance;
-
-        /// <summary>
-        /// This float describes the diffuse fraction of the material
-        /// </summary>       
-        public float DiffuseFraction;
-    }
+    }    
 
     /// <summary>
     /// Provides utility methods to write and use Shader Shards.
@@ -181,25 +143,13 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="wc">The weights.</param>
         /// <returns></returns>
         public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
-        {
-            var matType = AnalyzeMaterialType(mc);
-
-            PBRProps pbrProps = new PBRProps();
-
-            if (mc.GetType() == typeof(MaterialPBRComponent)) 
-            {
-                var mpbr = (MaterialPBRComponent)mc;
-                pbrProps.DiffuseFraction = mpbr.DiffuseFraction;
-                pbrProps.FresnelReflectance = mpbr.FresnelReflectance;
-                pbrProps.RoughnessValue = mpbr.RoughnessValue;               
-            }
-
+        {           
             return new ShaderEffectProps()
             {
-                MatType = matType,
+                MatType = AnalyzeMaterialType(mc),
                 MatProbs = AnalzyeMaterialParams(mc),
                 MeshProbs = AnalyzeMesh(mesh, wc),
-                PBRProps = pbrProps
+                
             };            
         }
 
@@ -222,7 +172,7 @@ namespace Fusee.Engine.Core.ShaderShards
             if (mc.GetType() == typeof(MaterialPBRComponent))
                 return MaterialType.MaterialPbr;
 
-            return MaterialType.Material;
+            return MaterialType.Standard;
         }
 
         //TODO: At the moment the ShaderCodebuilder doesn't get meshes and therefor we always have the default values. Do we need (or want this here)? This would mean we have a relation of the ShaderEffect to the Mesh.....
