@@ -68,39 +68,49 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Returns all uniforms, as they are given in the <see cref="MaterialProps"/> object.
         /// </summary>
-        /// <param name="matProps">The MaterialProps.</param>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string MatPropsUniforms(MaterialProps matProps)
+        public static string MatPropsUniforms(ShaderEffectProps effectProps)
         {
             var matPropUnifroms = new List<string>();
 
-            if (matProps.HasSpecular)
+            if (effectProps.MatProbs.HasSpecular)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensityName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColorName));
+
+                if (effectProps.MatType == MaterialType.MaterialPbr)
+                {
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.RoughnessValue));
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.FresnelReflectance));
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseFraction));
+                }
+                else if(effectProps.MatType == MaterialType.Standard)
+                { 
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensityName));                    
+                }
             }
 
-            if (matProps.HasDiffuse)
+            if (effectProps.MatProbs.HasDiffuse)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColorName));
 
-            if (matProps.HasEmissive)
+            if (effectProps.MatProbs.HasEmissive)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
 
             //Textures
-            if (matProps.HasBump)
+            if (effectProps.MatProbs.HasBump)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.BumpTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.BumpIntensityName));
             }
 
-            if (matProps.HasDiffuseTexture)
+            if (effectProps.MatProbs.HasDiffuseTexture)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMixName));
             }
 
-            if (matProps.HasEmissiveTexture)
+            if (effectProps.MatProbs.HasEmissiveTexture)
             {
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.EmissiveTextureName));
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.EmissiveMixName));
@@ -152,9 +162,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var outs = new List<string>();
             var texCount = 0;
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count - 1; i++)
+
+            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
-                var texName = UniformNameDeclarations.DeferredRenderTextures[i];               
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+
+                if (texName == ssaoString) continue;
 
                 outs.Add($"layout (location = {texCount}) out vec4 {texName};\n");
                 texCount++;

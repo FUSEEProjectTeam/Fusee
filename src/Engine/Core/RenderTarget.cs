@@ -63,6 +63,11 @@ namespace Fusee.Engine.Core
             RenderTextures[(int)tex] = srcTex ?? throw new ArgumentException("Texture from source target is null!");
         }
 
+        public void SetTexture(WritableTexture src, RenderTargetTextureTypes tex)
+        {
+            RenderTextures[(int)tex] = src ?? throw new ArgumentException("Texture from source target is null!");
+        }
+
         /// <summary>
         /// Generates a position texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
@@ -76,7 +81,7 @@ namespace Fusee.Engine.Core
         /// </summary>       
         public void SetAlbedoSpecularTex()
         {
-            RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR] = WritableTexture.CreateAlbedoSpecularTex((int)TextureResolution, (int)TextureResolution);
+            RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO] = WritableTexture.CreateAlbedoTex((int)TextureResolution, (int)TextureResolution);
         }
 
         /// <summary>
@@ -101,7 +106,15 @@ namespace Fusee.Engine.Core
         public void SetSSAOTex()
         { 
             RenderTextures[(int)RenderTargetTextureTypes.G_SSAO] = WritableTexture.CreateSSAOTex((int)TextureResolution, (int)TextureResolution);
-        }        
+        }
+
+        /// <summary>
+        /// Generates a specular texture and sets it at the correct position in the RenderTextures Array.
+        /// </summary>        
+        public void SetSpecularTex()
+        {
+            RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR] = WritableTexture.CreateSpecularTex((int)TextureResolution, (int)TextureResolution);
+        }
 
         // Public implementation of Dispose pattern callable by consumers.
         public void Dispose()

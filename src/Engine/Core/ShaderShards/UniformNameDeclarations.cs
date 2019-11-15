@@ -113,9 +113,24 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string SpecularIntensityName { get; } = "SpecularIntensity";
 
         /// <summary>
+        /// [PBR (Cook-Torrance) only] Describes the roughness of the material
+        /// </summary>       
+        public static string RoughnessValue { get; } = "RoughnessValue";
+
+        /// <summary>
+        /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material
+        /// </summary>        
+        public static string FresnelReflectance { get; } = "FresnelReflectance";
+
+        /// <summary>
+        /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material
+        /// </summary>       
+        public static string DiffuseFraction { get; } = "DiffuseFraction";
+
+        /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders
         /// </summary>
-        public static string BumpIntensityName { get; } = "BumpIntensity";
+        public static string BumpIntensityName { get; } = "BumpIntensityName";
       
         /// <summary>
         /// List of all possible render texture names.
@@ -127,6 +142,7 @@ namespace Fusee.Engine.Core.ShaderShards
             Enum.GetName(typeof(RenderTargetTextureTypes), 2),
             Enum.GetName(typeof(RenderTargetTextureTypes), 3),
             Enum.GetName(typeof(RenderTargetTextureTypes), 4),
+            Enum.GetName(typeof(RenderTargetTextureTypes), 5),
         };
     }
 }

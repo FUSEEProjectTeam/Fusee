@@ -1899,15 +1899,17 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
 
             int depthCnt = 0;
+           
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
             {
-                var attachments = new List<DrawBuffersEnum>();
+                var attachments = new List<DrawBuffersEnum>();               
 
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
+                    attachments.Add(DrawBuffersEnum.ColorAttachment0 + i);
 
                     var texHandle = texHandles[i];
                     if (texHandle == null) continue;
@@ -1919,9 +1921,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                     else
                         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
-
-                    attachments.Add(DrawBuffersEnum.ColorAttachment0 + i);
-
                 }
                 GL.DrawBuffers(attachments.Count, attachments.ToArray());
             }

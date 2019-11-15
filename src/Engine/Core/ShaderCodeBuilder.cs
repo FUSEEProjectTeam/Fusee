@@ -146,11 +146,11 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// If rendered with FXAA we'll need an additional (final) pass, that takes the lighted scene, rendered to a texture, as input.
         /// </summary>
-        /// <param name="srcRenderTarget">RenderTarget, that contains a single texture in the Albedo/Specular channel, that contains the lighted scene.</param>
+        /// <param name="srcTex">RenderTarget, that contains a single texture in the Albedo/Specular channel, that contains the lighted scene.</param>
         /// <param name="screenParams">The width and height of the screen.</param>       
         // see: http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
         // http://blog.simonrodriguez.fr/articles/30-07-2016_implementing_fxaa.html
-        public static ShaderEffect FXAARenderTargetEffect(RenderTarget srcRenderTarget, float2 screenParams)
+        public static ShaderEffect FXAARenderTargetEffect(WritableTexture srcTex, float2 screenParams)
         {
             //TODO: #define constants to uniforms
             return new ShaderEffect(new[]
@@ -168,7 +168,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
                 new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
             });
 
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
 
                 new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
                 new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
@@ -256,7 +256,7 @@ namespace Fusee.Engine.Core
             frag.Append($"uniform sampler2D SSAO_INPUT_TEX;\n");
 
 
-            frag.Append($"out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
+            frag.Append($"layout (location = 0) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
 
             frag.Append("void main() {");
 
@@ -334,7 +334,7 @@ namespace Fusee.Engine.Core
             frag.Append("uniform vec4 BackgroundColor;\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
-            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)};\n");
+            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)};\n");
 
             //Shadow calculation
             //-------------------------------------- 
@@ -355,14 +355,14 @@ namespace Fusee.Engine.Core
             {
             ");
 
-            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = BackgroundColor;");
+            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = BackgroundColor;");
             frag.AppendLine(@"  return;
             }
             ");
 
             frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
-            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).a;");
             frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, vTexCoords).rgb;");
 
             //Lighting calculation
@@ -471,7 +471,7 @@ namespace Fusee.Engine.Core
             }              
             ");
 
-            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
+            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = vec4(lighting, 1.0);");
 
             frag.Append("}");
 
@@ -509,7 +509,7 @@ namespace Fusee.Engine.Core
             frag.Append("uniform vec4 BackgroundColor;\n");
 
             frag.Append($"in vec2 vTexCoords;\n");
-            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)};\n");
+            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)};\n");
 
             //Shadow calculation
             //-------------------------------------- 
@@ -530,14 +530,14 @@ namespace Fusee.Engine.Core
             {
             ");
 
-            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = BackgroundColor;");
+            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = BackgroundColor;");
             frag.AppendLine(@"  return;
             }
             ");
 
             frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
-            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString()}, vTexCoords).a;");
+            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).rgb;");
+            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).a;");
             frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, vTexCoords).rgb;");
 
             //Lighting calculation
@@ -728,7 +728,7 @@ namespace Fusee.Engine.Core
             }              
             ");
 
-            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO_SPECULAR)} = vec4(lighting, 1.0);");
+            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = vec4(lighting, 1.0);");
 
             frag.Append("}");
 
@@ -741,7 +741,7 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO_SPECULAR]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
@@ -1222,33 +1222,64 @@ namespace Fusee.Engine.Core
 
             if (mc.HasSpecular)
             {
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = UniformNameDeclarations.SpecularColorName,
-                    Value = mc.Specular.Color
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = UniformNameDeclarations.SpecularShininessName,
-                    Value = mc.Specular.Shininess
-                });
-                effectParameters.Add(new EffectParameterDeclaration
-                {
-                    Name = UniformNameDeclarations.SpecularIntensityName,
-                    Value = mc.Specular.Intensity
-                });
-                if (mc.Specular.Texture != null)
+                if (mc.GetType() == typeof(MaterialComponent))
                 {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularMixName,
-                        Value = mc.Specular.Mix
+                        Name = UniformNameDeclarations.SpecularColorName,
+                        Value = mc.Specular.Color
                     });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
-                        Name = UniformNameDeclarations.SpecularTextureName,
-                        Value = LoadTexture(mc.Specular.Texture)
+                        Name = UniformNameDeclarations.SpecularShininessName,
+                        Value = mc.Specular.Shininess
                     });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = UniformNameDeclarations.SpecularIntensityName,
+                        Value = mc.Specular.Intensity
+                    });
+                    if (mc.Specular.Texture != null)
+                    {
+                        effectParameters.Add(new EffectParameterDeclaration
+                        {
+                            Name = UniformNameDeclarations.SpecularMixName,
+                            Value = mc.Specular.Mix
+                        });
+                        effectParameters.Add(new EffectParameterDeclaration
+                        {
+                            Name = UniformNameDeclarations.SpecularTextureName,
+                            Value = LoadTexture(mc.Specular.Texture)
+                        });
+                    }
+                }
+                else if(mc.GetType() == typeof(MaterialPBRComponent))
+                {
+                    var mcPbr = (MaterialPBRComponent)mc;
+
+                    var delta = 0.0000001f;
+                    var diffuseFractionDelta = 0.99999f; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
+
+                    var roughness = mcPbr.RoughnessValue + delta; // always float, never int!
+                    var fresnel = mcPbr.FresnelReflectance + delta;
+                    var df = mcPbr.DiffuseFraction == 0 ? diffuseFractionDelta : mcPbr.DiffuseFraction + delta;
+
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = UniformNameDeclarations.RoughnessValue,
+                        Value = roughness
+                    }); 
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = UniformNameDeclarations.FresnelReflectance,
+                        Value = fresnel
+                    });
+                    effectParameters.Add(new EffectParameterDeclaration
+                    {
+                        Name = UniformNameDeclarations.DiffuseFraction,
+                        Value = df
+                    });
+
                 }
             }
 
@@ -1434,7 +1465,7 @@ namespace Fusee.Engine.Core
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps.MatProbs),
+                FragPropertiesShard.MatPropsUniforms(effectProps),
                 FragPropertiesShard.FixedNumberLightArray(),
                 FragPropertiesShard.ColorOut(),
                 LightingShard.AssembleLightingMethods(effectProps)
@@ -1455,7 +1486,7 @@ namespace Fusee.Engine.Core
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps.MatProbs),                
+                FragPropertiesShard.MatPropsUniforms(effectProps),                
             };
             
             return string.Join("\n", protoPixelShader);

@@ -91,13 +91,12 @@ namespace Fusee.Engine.Core
         private ShaderEffect _lightingPassEffectNoShadow; //needed when a light of another type is rendered without shadows;         
         private ShaderEffect _lightingPassEffectCascaded; //needed when a parallel light is rendered with cascaded shadow mapping;           
 
-        private readonly RenderTarget _gBufferRenderTarget;
-        private readonly RenderTarget _blurRenderTarget;
-        private readonly RenderTarget _ambientLightedSceneRenderTarget;
-        private readonly RenderTarget _lightedSceneRenderTarget;
+        private readonly RenderTarget _gBufferRenderTarget; 
 
         //This texture caches the SSAO texture object when detaching it from the fbo on the gpu in order to turn SAO off at runtime.
         private readonly WritableTexture _ssaoRenderTexture;
+        private readonly WritableTexture _blurRenderTex;
+        private readonly WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
         private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light
 
@@ -123,23 +122,15 @@ namespace Fusee.Engine.Core
             _gBufferRenderTarget.SetAlbedoSpecularTex();
             _gBufferRenderTarget.SetNormalTex();
             _gBufferRenderTarget.SetDepthTex(TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LEQUAL);
+            _gBufferRenderTarget.SetSpecularTex();
 
             _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.NEAREST);
-
-            _blurRenderTarget = new RenderTarget(_texRes);
-            _blurRenderTarget.SetSSAOTex();
-
-            _lightedSceneRenderTarget = new RenderTarget(_texRes);
-            _lightedSceneRenderTarget.SetAlbedoSpecularTex();
-
-            _ambientLightedSceneRenderTarget = new RenderTarget(_texRes);
-
+            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.NEAREST);
+            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.LINEAR);
+                      
             _shadowparams = new Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams>();
 
-            _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;
-            _blurRenderTarget.DeleteBuffers += DeleteBuffers;
-            _lightedSceneRenderTarget.DeleteBuffers += DeleteBuffers;
-            _ambientLightedSceneRenderTarget.DeleteBuffers += DeleteBuffers;
+            _gBufferRenderTarget.DeleteBuffers += DeleteBuffers;            
 
             _shadowEffect = ShaderCodeBuilder.ShadowMapEffect();
 
@@ -455,11 +446,11 @@ namespace Fusee.Engine.Core
                 if (_blurEffect == null)
                     _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
                 _quadShaderEffectComp.Effect = _blurEffect;
-                rc.SetRenderTarget(_blurRenderTarget);
+                rc.SetRenderTarget(_blurRenderTex);
                 Traverse(_quadScene.Children);
 
                 //Set blurred SSAO Texture as SSAO Texture in gBuffer
-                _gBufferRenderTarget.SetTextureFromRenderTarget(_blurRenderTarget, RenderTargetTextureTypes.G_SSAO);
+                _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.G_SSAO);
             }
 
             _currentPass = RenderPasses.LIGHTING;
@@ -474,14 +465,14 @@ namespace Fusee.Engine.Core
             }
             else
             {
-                rc.SetRenderTarget(_lightedSceneRenderTarget);
+                rc.SetRenderTarget(_lightedSceneTex);
                 RenderLightPasses();
 
                 _currentPass = RenderPasses.FXAA;
 
                 _rc.Viewport(0, 0, screenWidth, screenHeight);
                 if (_fxaaEffect == null)
-                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneRenderTarget, new float2((float)_texRes, (float)_texRes));
+                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)_texRes, (float)_texRes));
                 _quadShaderEffectComp.Effect = _fxaaEffect;
 
                 rc.SetRenderTarget();

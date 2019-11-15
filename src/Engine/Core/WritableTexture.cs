@@ -137,14 +137,25 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Create a texture that is intended to save albedo (rgb channels) and specular (alpha channel) information.
+        /// Create a texture that is intended to save albedo (rgb channels) information.
         /// </summary>
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <returns></returns>
-        public static WritableTexture CreateAlbedoSpecularTex(int width, int height)
+        public static WritableTexture CreateAlbedoTex(int width, int height)
         {
-            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO_SPECULAR, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+            return new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
+        }
+
+        /// <summary>
+        /// Create a texture that is intended to save specular information, depending on whether standard or physically based calculation is used.
+        /// </summary>
+        /// <param name="width">Width in px.</param>
+        /// <param name="height">Height in px.</param>
+        /// <returns></returns>
+        public static WritableTexture CreateSpecularTex(int width, int height)
+        {
+            return new WritableTexture(RenderTargetTextureTypes.G_SPECULAR, new ImagePixelFormat(ColorFormat.RGBA), width, height, false);
         }
 
         /// <summary>

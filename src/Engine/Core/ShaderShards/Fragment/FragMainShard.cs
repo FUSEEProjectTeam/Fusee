@@ -45,33 +45,48 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// The main method for rendering into a G-Buffer object.
         /// </summary>
-        /// <param name="hasDiffuseTex">Basis for calculating the albedo color.</param>
+        /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string RenderToGBuffer(bool hasDiffuseTex)
+        public static string RenderToGBuffer(ShaderEffectProps effectProps)
         {
-            var fragMainBody = new List<string>();            
+            var fragMainBody = new List<string>();
 
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count - 1; i++)
+            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+                if (texName == ssaoString) continue;
 
                 switch (i)
                 {
-                    case 0: //POSITION
+                    case (int)RenderTargetTextureTypes.G_POSITION:
                         fragMainBody.Add($"{texName} = vec4(vPos.xyz, vPos.w);");
                         break;
-                    case 1: //ALBEDO_SPECULAR
-                        if (hasDiffuseTex)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColorName}.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), {UniformNameDeclarations.SpecularIntensityName});");
+                    case (int)RenderTargetTextureTypes.G_ALBEDO:
+                        if (effectProps.MatProbs.HasDiffuseTexture)
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColorName}.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), 1.0);");
                         else
-                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColorName}.xyz, {UniformNameDeclarations.SpecularIntensityName});");
+                            fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColorName}.xyz, 1.0);");
                         break;
-                    case 2: //NORMAL
+                    case (int)RenderTargetTextureTypes.G_NORMAL:
                         fragMainBody.Add($"{texName} = vec4(normalize(vNormal.xyz), 1.0);");
                         break;
-                    case 3: //DEPTH
+                    case (int)RenderTargetTextureTypes.G_DEPTH:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");
                         break;
+                    case (int)RenderTargetTextureTypes.G_SPECULAR:
+                        {
+                            if (effectProps.MatType == MaterialType.MaterialPbr)
+                            {
+                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.RoughnessValue}, {UniformNameDeclarations.FresnelReflectance}, {UniformNameDeclarations.DiffuseFraction}, 1.0);");
+                            }
+                            else if (effectProps.MatType == MaterialType.Standard)
+                            {
+                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularIntensityName}, {UniformNameDeclarations.SpecularShininessName}, 1.0, 1.0);");
+                            }
+                            break;
+                        }
                 }
             }
 

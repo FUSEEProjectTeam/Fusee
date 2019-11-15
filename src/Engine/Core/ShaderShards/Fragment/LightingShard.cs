@@ -42,8 +42,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
         /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
-        /// <param name="lightingCalculationMethod">The LightingCalculationMethod.</param>       
+        /// <param name="effectProps">The ShaderEffectProps.</param>        
         public static string AssembleLightingMethods(ShaderEffectProps effectProps)
         {
             var lighting = new List<string>();
@@ -51,15 +50,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
             switch (effectProps.MatType)
             {
-                case MaterialType.Material:                
+                case MaterialType.Standard:                
                     lighting.Add(AmbientLightMethod());
                     if (effectProps.MatProbs.HasDiffuse)
                         lighting.Add(DiffuseLightMethod(effectProps));
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(SpecularLightMethod());
                     break;
-                case MaterialType.MaterialPbr:
-                    
+                case MaterialType.MaterialPbr:                    
                     lighting.Add(AmbientLightMethod());
                     if (effectProps.MatProbs.HasDiffuse)
                         lighting.Add(DiffuseLightMethod(effectProps));
@@ -153,20 +151,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string PbrSpecularLightMethod(ShaderEffectProps effectProps)
         {
-            var nfi = new NumberFormatInfo { NumberDecimalSeparator = "." };
-
-            var delta = 0.0000001;
-            var diffuseFractionDelta = 0.99999; //The value of the diffuse fraction is (incorrectly) the "Metallic" value of the Principled BSDF Material. If it is zero the result here will be by far to bright.
-
-            var roughness = effectProps.PBRProps.RoughnessValue + delta; // always float, never int!
-            var fresnel = effectProps.PBRProps.FresnelReflectance + delta;
-            var k = effectProps.PBRProps.DiffuseFraction == 0 ? diffuseFractionDelta : effectProps.PBRProps.DiffuseFraction + delta;
-
             var methodBody = new List<string>
             {
-                $"float roughnessValue = {roughness.ToString(nfi)}; // 0 : smooth, 1: rough", // roughness 
-                $"float F0 = {fresnel.ToString(nfi)}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender
-                $"float k = 1.0-{k.ToString(nfi)};",
+                $"float roughnessValue = {UniformNameDeclarations.RoughnessValue}; // 0 : smooth, 1: rough", // roughness 
+                $"float F0 = {UniformNameDeclarations.FresnelReflectance}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender
+                $"float k = 1.0-{UniformNameDeclarations.DiffuseFraction};",
                 "float NdotL = max(dot(N, L), 0.0);",
                 "float specular = 0.0;",
                 "float BlinnSpecular = 0.0;",

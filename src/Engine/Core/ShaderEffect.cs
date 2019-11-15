@@ -433,7 +433,7 @@ namespace Fusee.Engine.Core
                     var pxBody = new List<string>()
                     {
                         FragPropertiesShard.GBufferOut(),                        
-                        FragMainShard.RenderToGBuffer(EffectProps.MatProbs.HasDiffuseTexture)
+                        FragMainShard.RenderToGBuffer(EffectProps)
                     };
                     PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
                     
