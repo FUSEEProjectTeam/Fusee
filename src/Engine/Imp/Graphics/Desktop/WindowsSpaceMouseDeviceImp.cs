@@ -264,7 +264,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             catch (Exception ex)
             {
-                Diagnostics.Log("Trouble initializing the SpaceMouse. Probably due to not-installed driver.\n" + ex);
+                Diagnostics.Error("Trouble initializing the SpaceMouse. Probably due to not-installed driver.\n", ex);
                 _current3DConnexionDevice = null;
             }
 

@@ -1225,11 +1225,6 @@ namespace Fusee.Engine.Core
 
                 foreach (var paramNew in shaderParamInfos)
                 {
-                    if(paramNew.Name == "ShadowCubeMap")
-                    {
-                        var t = 1;
-                    }
-
                     if (ef.ParamDecl.TryGetValue(paramNew.Name, out object initValue))
                     {
                         if (initValue == null)
@@ -1305,7 +1300,7 @@ namespace Fusee.Engine.Core
                     else
                     {
                         // This should not happen due to shader compiler optimization
-                        Diagnostics.Log($"Warning: uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
+                        Diagnostics.Warn($"Uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
                     }
                 }
             }

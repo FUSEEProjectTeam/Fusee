@@ -679,7 +679,7 @@ namespace Fusee.Engine.Core
             if (strength > 1.0 || strength < 0.0)
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
-                Diagnostics.Log("WARNING: strength of the light will be clamped between 0 and 1.");
+                Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
             var lightParamStrings = _lightPararamStringsAllLights[position];

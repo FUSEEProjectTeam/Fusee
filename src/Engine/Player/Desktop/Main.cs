@@ -124,7 +124,7 @@ namespace Fusee.Engine.Player.Desktop
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Fatal($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {
