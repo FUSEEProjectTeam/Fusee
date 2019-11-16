@@ -10,7 +10,6 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
-using System.Drawing;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -28,7 +27,6 @@ namespace Fusee.Examples.Simple.Core
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private const float _speed = 7;
-        Bitmap bitmap;
         //private int[,] arr = new int[,]
         
 
@@ -47,6 +45,7 @@ namespace Fusee.Examples.Simple.Core
         // Init is called on startup. 
         public override void Init()
         {
+
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
             // Create the interaction handler
