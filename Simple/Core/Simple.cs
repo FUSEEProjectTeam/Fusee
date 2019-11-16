@@ -28,7 +28,7 @@ namespace Fusee.Examples.Simple.Core
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private const float _speed = 7;
-        Bitmap bitmap
+        Bitmap bitmap;
         //private int[,] arr = new int[,]
         
 
