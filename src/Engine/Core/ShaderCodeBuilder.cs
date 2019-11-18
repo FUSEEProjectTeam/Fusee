@@ -14,7 +14,7 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Compiler for ShaderCode. Takes a MaterialComponent, evaluates input parameters and creates pixel and vertex shader
+    /// Provides a collection of ShaderEffects.
     /// </summary>
     public static class ShaderCodeBuilder
     {
@@ -475,13 +475,18 @@ namespace Fusee.Engine.Core
                 // diffuse 
                 vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
                 lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);
-            
-                // specular
-                vec3 reflectDir = reflect(-lightDir, Normal);  
-                float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
-                vec3 specular = SpecularStrength * spec * lightColor;
-                lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
              ");
+
+            frag.Append(@"
+                // specular
+                vec3 specularVars = texture(G_SPECULAR, vTexCoords).rgb;
+                float shininess = specularVars.r * 256.0;
+                float specularStrength = specularVars.g;
+                vec3 reflectDir = reflect(-lightDir, Normal);  
+                float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+                vec3 specular = specularStrength * spec * lightColor;
+                lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
+             ");            
 
             if (isCascaded && debugCascades)
             {
@@ -648,6 +653,7 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
+                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},

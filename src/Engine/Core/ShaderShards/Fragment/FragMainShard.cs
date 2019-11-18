@@ -83,7 +83,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                             }
                             else if (effectProps.MatType == MaterialType.Standard)
                             {
-                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularIntensityName}, {UniformNameDeclarations.SpecularShininessName}, 1.0, 1.0);");
+                                fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.SpecularIntensityName}, {UniformNameDeclarations.SpecularShininessName}/256.0, 1.0, 1.0);");
                             }
                             break;
                         }

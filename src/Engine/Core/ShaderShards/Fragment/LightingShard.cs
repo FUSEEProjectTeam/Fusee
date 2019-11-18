@@ -113,7 +113,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"),
                     GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
                 }, methodBody);
-
         }
 
 
@@ -127,9 +126,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "float specularTerm = 0.0;",
                 "if(dot(N, L) > 0.0)",
                 "{",
-                "   // half vector",
-                "   vec3 H = normalize(V + L);",
-                $"  specularTerm = pow(max(0.0, dot(H, N)), {UniformNameDeclarations.SpecularShininessName});",
+                "   // half vector",   
+                    "vec3 reflectDir = reflect(-L, N);",
+                $"  specularTerm = pow(max(0.0, dot(V, reflectDir)), {UniformNameDeclarations.SpecularShininessName});",
                 "}",
                 $"return vec4(({UniformNameDeclarations.SpecularColorName}.rgb * {UniformNameDeclarations.SpecularIntensityName} * intensities.rgb) * specularTerm, 1.0);"
             };
