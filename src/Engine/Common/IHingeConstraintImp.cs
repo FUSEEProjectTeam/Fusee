@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
@@ -10,13 +10,11 @@ namespace Fusee.Engine.Common
     public enum HingeFlags
     {
 #pragma warning disable 1591
-#pragma warning disable CA1712 // Do not prefix enum values with type name
         HingeFlagsStopCfm = 1,
 
         HingeFlagsStopErp = 2,
         HingeFlagsNormCfm = 4
 #pragma warning restore 1591
-#pragma warning restore CA1712 // Do not prefix enum values with type name
 
     };
 
