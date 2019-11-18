@@ -8,10 +8,12 @@ namespace Fusee.Engine.Common
     public enum PointToPointFlags
     {
 #pragma warning disable 1591
+#pragma warning disable CA1712 // Do not prefix enum values with type name
         PointToPointFlagsErp = 1,
         PointToPointFlagsStopErp = 2,
         PointToPointFlagsCfm = 3,
         PointToPointFlagsStopCfm = 4
+#pragma warning restore CA1712 // Do not prefix enum values with type name
 #pragma warning restore 1591
     };
 

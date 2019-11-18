@@ -16,7 +16,7 @@ namespace Fusee.Base.Core
         private static bool _useFile = true;
         private static string _fileName = "Fusee.Log.txt";
         private static SeverityLevel _minLogLevelFile = SeverityLevel.ERROR;
-        private static SeverityLevel _minLogLevelConsole = SeverityLevel.INFO;
+        private static SeverityLevel _minLogLevelConsole = SeverityLevel.WARN;
         private static SeverityLevel _minLogLevelDebug;
 
         private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
@@ -25,6 +25,7 @@ namespace Fusee.Base.Core
 
                         var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + callerFile + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
                         f += (ex != null ? $",\nException: {ex}" : "");
+                        f += (ex != null && ex.InnerException != null ? $",\nInner exception: {ex.InnerException}" : "");
                         if (args != null)
                         {
                             f += "\nArguments:\n";
@@ -76,12 +77,9 @@ namespace Fusee.Base.Core
         public enum SeverityLevel
         {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-            TRACE = 0,
-            DEBUG,
-            INFO,
+            DEBUG = 0,           
             WARN,
-            ERROR,
-            FATAL
+            ERROR,            
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         }
 
@@ -89,18 +87,12 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
-                case SeverityLevel.TRACE:
-                    return "Trace";
                 case SeverityLevel.DEBUG:
                     return "Debug";
-                case SeverityLevel.INFO:
-                    return "Info";
                 case SeverityLevel.WARN:
                     return "Warning";
                 case SeverityLevel.ERROR:
                     return "Error";
-                case SeverityLevel.FATAL:
-                    return "Fatal";
             }
 
             return "error while parsing severity level";
@@ -110,23 +102,14 @@ namespace Fusee.Base.Core
         {
             switch (lvl)
             {
-                case SeverityLevel.TRACE:
-                    Console.ForegroundColor = ConsoleColor.White;
-                    break;
                 case SeverityLevel.DEBUG:
-                    Console.ForegroundColor = ConsoleColor.Cyan;
-                    break;
-                case SeverityLevel.INFO:
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.ForegroundColor = ConsoleColor.Green;
                     break;
                 case SeverityLevel.WARN:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
                     break;
                 case SeverityLevel.ERROR:
                     Console.ForegroundColor = ConsoleColor.Red;
-                    break;
-                case SeverityLevel.FATAL:
-                    Console.ForegroundColor = ConsoleColor.Magenta;
                     break;
             }
         }
@@ -195,14 +178,16 @@ namespace Fusee.Base.Core
 
         private static void Writer(object o, SeverityLevel logLevel, Exception ex = null, object[] args = null, string callerName = "", int sourceLineNumber = 0, string sourceFilePath = "")
         {
+            var msg = o == null ? "<null>" : o.ToString();
+
             if (_useFile && _minLogLevelFile <= logLevel)
-                File.AppendAllText(_fileName, _format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString(), ex, args));
+                File.AppendAllText(_fileName, _format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
             if (_minLogLevelConsole <= logLevel && Console.Out != null)
-                Console.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString()));
+                Console.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg));
 
-            if (_minLogLevelDebug <= logLevel)
-                System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, o.ToString(), ex, args));
+            if (_minLogLevelDebug <= logLevel || Console.Out == null) // when there is no console present (android, wasm, etc. log anything to debug output
+                System.Diagnostics.Debug.WriteLine(_format(callerName, sourceLineNumber, sourceFilePath, logLevel, msg, ex, args));
 
             Console.ResetColor();
         }
@@ -213,27 +198,13 @@ namespace Fusee.Base.Core
         /// <param name="o">The object to log. Will be converted to a string.</param>
         /// <param name="logLevel">The level to log, see <see cref="SeverityLevel"></see> for a list</param>
         /// <param name="callerName">The calling method</param>
-        [Obsolete("Please use the new logging methods (Trace, Debug, ...) instead")]
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>
+        [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-#if LOG_TRACE || LOG_DEBUG || LOG_INFO || LOG_WARN || LOG_ERROR || LOG_FATAL
+#if LOG_DEBUG || LOG_WARN || LOG_ERROR
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
-#endif
-        }
-
-
-        /// <summary>
-        ///     Log a trace event.
-        ///     Per default only visible within the Visual Studio debug console.
-        /// </summary>
-        /// <param name="o">The object to write</param>
-        /// <param name="ex">A possible exception, optional</param>
-        /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
-        public static void Trace(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
-        {
-#if LOG_TRACE
-            Writer(o, SeverityLevel.TRACE, ex, args, callerName);
 #endif
         }
 
@@ -252,22 +223,6 @@ namespace Fusee.Base.Core
 #endif
         }
 
-        /// <summary>
-        ///     Log an info event.
-        ///     Per default visible within the Visual Studio debug console and the console window.
-        /// </summary>
-        /// <param name="o">The object to write</param>
-        /// <param name="ex">A possible exception, optional</param>
-        /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>       
-        public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
-        {
-#if LOG_INFO
-            Writer(o, SeverityLevel.INFO, ex, args, callerName, sourceLineNumber, sourceFilePath);
-#endif
-        }
 
         /// <summary>
         ///     Log a warning event.
@@ -303,24 +258,6 @@ namespace Fusee.Base.Core
 #endif
         }
 
-        /// <summary>
-        ///     Log a fatal event.
-        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file.
-        /// </summary>
-        /// <param name="o">The object to write</param>
-        /// <param name="ex">A possible exception, optional</param>
-        /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>       
-        public static void Fatal(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
-        {
-            if (sourceFilePath == null)
-                throw new ArgumentNullException(nameof(sourceFilePath));
-#if LOG_FATAL
-            Writer(o, SeverityLevel.FATAL, ex, args, callerName, sourceLineNumber, sourceFilePath);
-#endif
-        }
         #endregion
     }
 }

@@ -133,14 +133,14 @@ namespace Fusee.Tools.fuseeCmdLine
                             }
                             catch (Exception e)
                             {
-                                Diagnostics.Log(e.ToString());
+                                Diagnostics.Error("Error opening assembly", e);
                             }
                             break;
                     }
                 }
                 else
                 {
-                    Diagnostics.Log($"Cannot open {input}.");
+                    Diagnostics.Warn($"Cannot open {input}.");
                 }
             }
             else
@@ -158,7 +158,7 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(e.ToString());
+                    Diagnostics.Warn("Not in deployed mode", e);
                 }
                 // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
                 if (tApp == null)
@@ -202,7 +202,7 @@ namespace Fusee.Tools.fuseeCmdLine
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Warn($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {

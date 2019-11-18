@@ -234,7 +234,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
-            Diagnostics.Log(GL.GetErrorCode());
+            Diagnostics.Debug(GL.GetErrorCode());
 
             return texID;
         }
@@ -270,7 +270,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
-            Diagnostics.Log(GL.GetErrorCode());
+            Diagnostics.Debug(GL.GetErrorCode());
 
             return texID;
         }
@@ -350,7 +350,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
         {
             if (gs != null)
-                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+                Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
 
             int statusCode;
             StringBuilder info = new StringBuilder(512);
@@ -1368,7 +1368,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         {
                             case FillMode.Point:
                             case FillMode.Wireframe:
-                                Diagnostics.Log("SetRenderState(RenderState.FillMode): Trying to set unsupported FillMode (PolygonMode) on Android. Not supported by OpenGL ES 3.0.");
+                                Diagnostics.Warn("SetRenderState(RenderState.FillMode): Trying to set unsupported FillMode (PolygonMode) on Android. Not supported by OpenGL ES 3.0.");
                                 break;
                             case FillMode.Solid:
                                 break;
@@ -1536,7 +1536,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             {
                 case RenderState.FillMode:
                     {
-                        Diagnostics.Log("GetRenderState(RenderState.FillMode): FillMode (PolygonMode) on Android is not supported by OpenGL ES 3.0. Returning FillMode.Solid.");
+                        Diagnostics.Warn("GetRenderState(RenderState.FillMode): FillMode (PolygonMode) on Android is not supported by OpenGL ES 3.0. Returning FillMode.Solid.");
                         return (uint)FillMode.Solid;
                     }
                 case RenderState.CullMode:
