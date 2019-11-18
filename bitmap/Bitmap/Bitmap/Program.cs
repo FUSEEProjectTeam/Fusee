@@ -14,6 +14,7 @@ namespace Bitmape
             int[,] image = new int[img.Width, img.Height];
             for (int j = 5; j < img.Height; j += y)
             {
+                Console.Write("{");
                 for (int i = 5; i < img.Width; i += x)
                 {
                     Color pixel = img.GetPixel(i, j);
@@ -22,13 +23,29 @@ namespace Bitmape
                     {
                         image[i, j] = 1;
                     }
+                    else if(pixel.Equals(Color.FromArgb(255,0,255,0)))
+                    {
+                        image[i, j] = -1;
+                    }
+                    else if (pixel.Equals(Color.FromArgb(255, 255, 0, 0)))
+                    {
+                        image[i, j] = 2;
+                    }
                     else
                     {
                         image[i, j] = 0;
                     }
-                    Console.Write(image[i, j]);
+                    if(i + x > img.Width)
+                    {
+                        Console.Write(image[i, j]);
+                    }
+                    else
+                    {
+                        Console.Write(image[i, j] + ",");
+                    }
                     if(x == 25) { x++; } else { x--; }
                 }
+                Console.Write("},");
                 Console.WriteLine();
                 if (y == 25) { y++; } else { y--; }
             }

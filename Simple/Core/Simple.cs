@@ -27,11 +27,43 @@ namespace Fusee.Examples.Simple.Core
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private const float _speed = 7;
-        //private int[,] arr = new int[,]
-        
+        private TransformComponent[,] walls;
+        private int[,] bmp = new int[,] {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
+                                        {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+                                        {1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1},
+                                        {1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,1},
+                                        {1,0,1,1,1,1,1,0,1,1,0,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1},
+                                        {1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,2},
+                                        {1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1},
+                                        {1,0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1},
+                                        {1,0,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,1,1,0,1,0,1,1,1,1,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
+                                        {1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,0,1},
+                                        {1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,0,0,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,1,1},
+                                        {1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1},
+                                        {1,1,1,1,1,0,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,0,1},
+                                        {1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,1},
+                                        {1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,0,1,0,1},
+                                        {1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1},
+                                        {1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                        {1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1},
+                                        {2,-1,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,1},
+                                        {1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1,0,1,1,1,1,1,0,1,1,1,0,1,1,1},
+                                        {1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,0,1,0,1},
+                                        {1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1},
+                                        {1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1},
+                                        {1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
+                                        {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
 
-    //other var
-    private SceneRendererForward _sceneRenderer;
+
+
+        //other var
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -55,8 +87,7 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _scene = AssetStorage.Get<SceneContainer>("Maze.fus");                 
-
+            _scene = CreateScene();
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -80,7 +111,7 @@ namespace Fusee.Examples.Simple.Core
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
-            else if(Keyboard.UpDownAxis != 0 || Keyboard.LeftRightAxis != 0)
+            else if (Keyboard.UpDownAxis != 0 || Keyboard.LeftRightAxis != 0)
             {
                 if (Keyboard.UpDownAxis > 0)
                 {
@@ -92,7 +123,7 @@ namespace Fusee.Examples.Simple.Core
                 }
                 else if (Keyboard.LeftRightAxis > 0)
                 {
-                    _angleVert =  0.5f * M.Pi;
+                    _angleVert = 0.5f * M.Pi;
                 }
                 else if (Keyboard.LeftRightAxis < 0)
                 {
@@ -115,7 +146,7 @@ namespace Fusee.Examples.Simple.Core
             _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
 
 
-            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z -10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
             RC.View = mtxCam;
 
             //move the ball
@@ -123,12 +154,12 @@ namespace Fusee.Examples.Simple.Core
             {
                 _ball.Translation.x += _moveX * M.Sin(_angleVert);
                 _ball.Translation.z -= _moveX * M.Cos(_angleVert);
-                
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert),0, -_moveX * M.Sin(_angleVert)));
+
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert), 0, -_moveX * M.Sin(_angleVert)));
 
 
             }
-            if(Keyboard.WSAxis != 0)
+            if (Keyboard.WSAxis != 0)
             {
                 _ball.Translation.x += _moveZ * M.Cos(_angleVert);
                 _ball.Translation.z += _moveZ * M.Sin(_angleVert);
@@ -137,18 +168,18 @@ namespace Fusee.Examples.Simple.Core
             }
 
 
-                //Set the view matrix for the interaction handler.
-                _sih.View = RC.View;
+            //Set the view matrix for the interaction handler.
+            _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            if(!Mouse.Desc.Contains("Android"))
+            if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-               
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -220,7 +251,7 @@ namespace Fusee.Examples.Simple.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);            
+            canvas.Components.Insert(0, canvasProjComp);
 
             return new SceneContainer
             {
@@ -245,6 +276,25 @@ namespace Fusee.Examples.Simple.Core
         public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
+        }
+        SceneContainer CreateScene()
+        {
+            for (int j = 0; j < bmp.GetLength(1); j++)
+            {
+                for (int i = 0; i < bmp.GetLength(0); i++)
+                {
+                    if (i % 2 == 0 && j % 2 == 0)
+                    {
+                        walls[i, j] = new TransformComponent
+                        {
+                            Translation = new float3()
+                        };
+                    }
+                }
+            };
+            return SceneContainer{
+                AssetStorage.Get<SceneContainer>("Maze.fus");
+            }
         }
     }
 }
