@@ -182,7 +182,7 @@ namespace Fusee.Engine.Core
         /// <param name="screenParams">Width and Height of the screen.</param>        
         public static ShaderEffect SSAORenderTargetTextureEffect(RenderTarget geomPassRenderTarget, int kernelLength, float2 screenParams)
         {
-            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength); 
+            var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);
             var ssaoNoiseTex = SSAOHelper.CreateNoiseTex(16);
 
             //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
@@ -196,7 +196,7 @@ namespace Fusee.Engine.Core
             }
 
             return new ShaderEffect(new[]
-            {                
+            {
                 new EffectPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
@@ -242,7 +242,7 @@ namespace Fusee.Engine.Core
                     blurKernelSize = 8.0f;
                     break;
             }
-            
+
             //--------- Fragment shader ----------- //
             var frag = new StringBuilder();
             frag.Append(HeaderShard.Version300Es());
@@ -299,9 +299,9 @@ namespace Fusee.Engine.Core
 
             });
 
-        }       
-        
-        private static string DeferredLightingFS(LightComponent lc)
+        }
+
+        private static string DeferredLightingFS(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             // Fragment shader ------------------------------
             var frag = new StringBuilder();
@@ -319,15 +319,26 @@ namespace Fusee.Engine.Core
             frag.Append("uniform mat4 FUSEE_MV;\n");
             frag.Append("uniform mat4 FUSEE_ITV;\n");
 
-            if (lc.IsCastingShadows)
+            if (!isCascaded)
             {
-                if (lc.Type != LightType.Point)
-                    frag.Append($"uniform sampler2D ShadowMap;\n");
-                else
-                    frag.Append("uniform samplerCube ShadowCubeMap;\n");
+                if (lc.IsCastingShadows)
+                {
+                    if (lc.Type != LightType.Point)
+                        frag.Append($"uniform sampler2D ShadowMap;\n");
+                    else
+                        frag.Append("uniform samplerCube ShadowCubeMap;\n");
+                }
+
+                frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
+            }
+            else
+            {
+                frag.Append($"uniform sampler2D[{numberOfCascades}] ShadowMaps;\n");
+                frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");
+
+                frag.Append($"uniform mat4x4[{numberOfCascades}] LightSpaceMatrices;\n");
             }
 
-            frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
             frag.Append("uniform int PassNo;\n");
             frag.Append("uniform int SsaoOn;\n");
 
@@ -435,27 +446,7 @@ namespace Fusee.Engine.Core
 
             if (lc.IsCastingShadows)
             {
-                if (lc.Type != LightType.Point)
-                {
-                    frag.Append(@"
-                    // shadow                
-                    if (light.isCastingShadows == 1)
-                    {
-                        vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
-                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir, light.bias, 1.0);                    
-                    }                
-                    ");
-                }
-                else
-                {
-                    frag.Append(@"
-                    // shadow       
-                    if (light.isCastingShadows == 1)
-                    {
-                        shadow = ShadowCalculationCubeMap(ShadowCubeMap, (FUSEE_IV * FragPos).xyz, light.positionWorldSpace, light.maxDistance, Normal, lightDir, light.bias, 2.0);
-                    }
-                    ");
-                }
+                frag.Append(GetShadow(lc, isCascaded, numberOfCascades));
             }
 
             frag.Append(@"
@@ -468,8 +459,14 @@ namespace Fusee.Engine.Core
                 float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
                 vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
-            }              
-            ");
+             ");
+
+            if (isCascaded && debugCascades)
+            {
+                frag.Append(DebugCascades());
+            }
+
+            frag.AppendLine("}"); 
 
             frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = vec4(lighting, 1.0);");
 
@@ -478,140 +475,11 @@ namespace Fusee.Engine.Core
             return frag.ToString();
         }
 
-        private static string DeferredLightingFSCascaded(LightComponent lc, int numberOfCascades)
+        private static string GetShadow(LightComponent lc, bool isCascaded, int numberOfCascades = 0)
         {
-            // Fragment shader ------------------------------
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version300Es());
-            frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(HeaderShard.EsPrecisionHighpFloat());
-
-            for (int i = 0; i < Enum.GetNames(typeof(RenderTargetTextureTypes)).Length; i++)
+            if (isCascaded)
             {
-                frag.Append($"uniform sampler2D {Enum.GetName(typeof(RenderTargetTextureTypes), i)};\n");
-            }
-
-            frag.Append(LightingShard.LightStructDeclaration());
-            frag.Append("uniform Light light;");
-
-            frag.Append("uniform mat4 FUSEE_IV;\n");
-            frag.Append("uniform mat4 FUSEE_V;\n");
-            frag.Append("uniform mat4 FUSEE_MV;\n");
-            frag.Append("uniform mat4 FUSEE_ITV;\n");
-           
-            frag.Append($"uniform sampler2D[{numberOfCascades}] ShadowMaps;\n");
-            frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");            
-
-            frag.Append($"uniform mat4x4[{numberOfCascades}] LightSpaceMatrices;\n");
-            frag.Append("uniform int PassNo;\n");
-            frag.Append("uniform int SsaoOn;\n");
-
-            frag.Append("uniform vec4 BackgroundColor;\n");
-
-            frag.Append($"in vec2 vTexCoords;\n");
-            frag.Append($"layout (location = {0}) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)};\n");
-
-            //Shadow calculation
-            //-------------------------------------- 
-            if (lc.Type != LightType.Point)
-                frag.Append(LightingShard.ShadowCalculation());
-            else
-                frag.Append(LightingShard.ShadowCalculationCubeMap());
-
-            frag.Append(@"void main()
-            {
-            ");
-
-            frag.AppendLine($"vec3 Normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, vTexCoords).rgb;");
-            //Do not do calculations for the background - is there a smarter way (stencil buffer)?
-            //---------------------------------------
-            frag.Append(@"
-            if(Normal.x == 0.0 && Normal.y == 0.0 && Normal.z == 0.0)      
-            {
-            ");
-
-            frag.AppendLine($"  o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = BackgroundColor;");
-            frag.AppendLine(@"  return;
-            }
-            ");
-
-            frag.AppendLine($"vec4 FragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, vTexCoords);");
-            frag.AppendLine($"vec3 DiffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).rgb;");
-            frag.AppendLine($"float SpecularStrength = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, vTexCoords).a;");
-            frag.AppendLine($"vec3 Occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, vTexCoords).rgb;");
-
-            //Lighting calculation
-            //-------------------------
-            frag.Append(@"
-            // then calculate lighting as usual
-            vec3 lighting = vec3(0,0,0);
-
-            if(PassNo == 0)
-            {
-                vec3 ambient = vec3(0.2 * DiffuseColor);
-
-                if(SsaoOn == 1)
-                    ambient *= Occlusion;
-
-                lighting += ambient;
-            }
-
-            vec3 camPos = FUSEE_IV[3].xyz;
-            vec3 viewDir = normalize(-FragPos.xyz);
-
-           
-            if(light.isActive == 1)
-            {
-                float shadow = 0.0;
-
-                vec3 lightColor = light.intensities.xyz;
-                vec3 lightPosition = light.position;
-                vec3 lightDir = normalize(lightPosition - FragPos.xyz);                
-
-                //attenuation
-                float attenuation = 1.0;
-                switch(light.lightType)
-                {
-                    //Point
-                    case 0:
-                    {
-                        float distanceToLight = length(lightPosition - FragPos.xyz); 
-                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
-                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);                        
-
-                        break;
-                    }
-                    //Parallel
-                    case 1:
-                        lightDir = -light.direction;
-                        break;
-                    //Spot
-                    case 2:
-                    {                           
-                        //point component
-                        float distanceToLight = length(lightPosition - FragPos.xyz); 
-                        float distance = pow(distanceToLight/light.maxDistance, 2.0);
-                        attenuation = (clamp(1.0 - pow(distance,2.0), 0.0, 1.0)) / (pow(distance,2.0) + 1.0);
-                        
-                        //cone component
-                        vec3 coneDir = light.direction;
-                        float lightToSurfaceAngleCos = dot(coneDir, -lightDir); 
-                        
-                        float epsilon = cos(light.innerConeAngle) - cos(light.outerConeAngle);
-                        float t = (lightToSurfaceAngleCos - cos(light.outerConeAngle)) / epsilon;
-                        attenuation *= clamp(t, 0.0, 1.0);
-                        break;
-                    }
-                    case 3:
-                        lightDir = -light.direction;
-                        break;
-                }
-                ");
-
-            if (lc.IsCastingShadows)
-            {
-                //TODO: iterate clip planes and choose shadow map for this frag. Use this shadow map in ShadowCalculation()  
-
                 frag.Append(@"
                 int thisFragmentsFirstCascade = -1;
                 int thisFragmentsSecondCascade = -1;
@@ -664,73 +532,89 @@ namespace Fusee.Engine.Core
                     else                    
                         shadow = shadow1;
                 }                              
-                ");               
+                ");
+            }
+            else
+            {
+                if (lc.Type != LightType.Point)
+                {
+                    frag.Append(@"
+                    // shadow                
+                    if (light.isCastingShadows == 1)
+                    {
+                        vec4 posInLightSpace = (LightSpaceMatrix * FUSEE_IV) * FragPos;
+                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, Normal, lightDir, light.bias, 1.0);                    
+                    }                
+                    ");
+                }
+                else
+                {
+                    frag.Append(@"
+                    // shadow       
+                    if (light.isCastingShadows == 1)
+                    {
+                        shadow = ShadowCalculationCubeMap(ShadowCubeMap, (FUSEE_IV * FragPos).xyz, light.positionWorldSpace, light.maxDistance, Normal, lightDir, light.bias, 2.0);
+                    }
+                    ");
+                }
             }
 
-            frag.Append(@"
-                // diffuse 
-                vec3 diffuse = max(dot(Normal, lightDir), 0.0) * DiffuseColor * lightColor;
-                lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);
-            
-                // specular
-                vec3 reflectDir = reflect(-lightDir, Normal);  
-                float spec = pow(max(dot(viewDir, reflectDir), 0.0), 100.0);
-                vec3 specular = SpecularStrength * spec * lightColor;
-                lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
+            return frag.ToString();
+        }
 
-                //vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
-                //vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
-                //vec3 cascadeColor = vec3(1.0,1.0,1.0);
-                
-                //if(thisFragmentsFirstCascade == 0)
-                //    cascadeColor1 = vec3(1,0.3f,0.3f);
-                //else if(thisFragmentsFirstCascade == 1)
-                //     cascadeColor1 = vec3(0.3f,1,0.3f);
-                //else if(thisFragmentsFirstCascade == 2)
-                //    cascadeColor1 = vec3(0.3f,0.3f,1);
-                //else if(thisFragmentsFirstCascade == 3)
-                //    cascadeColor1 = vec3(1,1,0.3f);
-                //else if(thisFragmentsFirstCascade == 4)
-                //    cascadeColor1 = vec3(1,0.3,1);
-                //else if(thisFragmentsFirstCascade == 5)
-                //    cascadeColor1 = vec3(1,0.3f,1);                
-                
-                //if(thisFragmentsSecondCascade == 0)
-                //    cascadeColor2 = vec3(1,0.3f,0.3f);
-                //else if(thisFragmentsSecondCascade == 1)
-                //     cascadeColor2 = vec3(0.3f,1,0.3f);
-                //else if(thisFragmentsSecondCascade == 2)
-                //    cascadeColor2 = vec3(0.3f,0.3f,1);
-                //else if(thisFragmentsSecondCascade == 3)
-                //    cascadeColor2 = vec3(1,1,0.3f);
-                //else if(thisFragmentsSecondCascade == 4)
-                //    cascadeColor2 = vec3(1,0.3,1);
-                //else if(thisFragmentsSecondCascade == 5)
-                //    cascadeColor2 = vec3(1,0.3f,1);
+        private static string DebugCascades()
+        {
+            var frag = new StringBuilder();
+            frag.Append(@"                     
 
-                //if(thisFragmentsSecondCascade != -1)
-                //{
-                //    float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
-                //    float z = ClipPlanes[thisFragmentsFirstCascade].y;
-                //    float percent = (100.0/z * fragDepth);
-                //    float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
-                //    if(percent >= blendStartPercent)
-                //        cascadeColor = mix(cascadeColor1, cascadeColor2, percentNormalized);
-                //    else
-                //        cascadeColor = cascadeColor1;
-                //}
-                //else
-                //{
-                //    cascadeColor = cascadeColor1;
-                //}
-                //lighting *= cascadeColor;
-            }              
-            ");
+            vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
+            vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
+            vec3 cascadeColor = vec3(1.0,1.0,1.0);
 
-            frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = vec4(lighting, 1.0);");
+            if(thisFragmentsFirstCascade == 0)
+                cascadeColor1 = vec3(1,0.3f,0.3f);
+            else if(thisFragmentsFirstCascade == 1)
+                    cascadeColor1 = vec3(0.3f,1,0.3f);
+            else if(thisFragmentsFirstCascade == 2)
+                cascadeColor1 = vec3(0.3f,0.3f,1);
+            else if(thisFragmentsFirstCascade == 3)
+                cascadeColor1 = vec3(1,1,0.3f);
+            else if(thisFragmentsFirstCascade == 4)
+                cascadeColor1 = vec3(1,0.3,1);
+            else if(thisFragmentsFirstCascade == 5)
+                cascadeColor1 = vec3(1,0.3f,1);                
 
-            frag.Append("}");
+            if(thisFragmentsSecondCascade == 0)
+                cascadeColor2 = vec3(1,0.3f,0.3f);
+            else if(thisFragmentsSecondCascade == 1)
+                    cascadeColor2 = vec3(0.3f,1,0.3f);
+            else if(thisFragmentsSecondCascade == 2)
+                cascadeColor2 = vec3(0.3f,0.3f,1);
+            else if(thisFragmentsSecondCascade == 3)
+                cascadeColor2 = vec3(1,1,0.3f);
+            else if(thisFragmentsSecondCascade == 4)
+                cascadeColor2 = vec3(1,0.3,1);
+            else if(thisFragmentsSecondCascade == 5)
+                cascadeColor2 = vec3(1,0.3f,1);
 
+            if(thisFragmentsSecondCascade != -1)
+            {
+                float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
+                float z = ClipPlanes[thisFragmentsFirstCascade].y;
+                float percent = (100.0/z * fragDepth);
+                float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
+                if(percent >= blendStartPercent)
+                    cascadeColor = mix(cascadeColor1, cascadeColor2, percentNormalized);
+                else
+                    cascadeColor = cascadeColor1;
+            }
+            else
+            {
+                cascadeColor = cascadeColor1;
+            }
+            lighting *= cascadeColor;
+                      
+                ");
             return frag.ToString();
         }
 
@@ -811,7 +695,7 @@ namespace Fusee.Engine.Core
         /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
         /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
         /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades,float4 backgroundColor)
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
@@ -824,7 +708,7 @@ namespace Fusee.Engine.Core
                 new EffectPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = DeferredLightingFSCascaded(lc, numberOfCascades),
+                    PS = DeferredLightingFS(lc, true, numberOfCascades),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = true,
@@ -962,7 +846,7 @@ namespace Fusee.Engine.Core
             {
                 new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "LightType", Value = 0},
             });
         }
@@ -1079,7 +963,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            
+
             return MakeShaderEffectFromMatCompProto(temp);
         }
 
@@ -1103,7 +987,7 @@ namespace Fusee.Engine.Core
                 {
                     new EffectPassDeclaration
                     {
-                        VS = vs,                         
+                        VS = vs,
                         PS = ps,
                         StateSet = new RenderStateSet
                         {
@@ -1117,7 +1001,7 @@ namespace Fusee.Engine.Core
                 },
                 effectParameters
             );
-            
+
             return ret;
         }
 
@@ -1195,7 +1079,7 @@ namespace Fusee.Engine.Core
                 });
 
                 if (mc.GetType() == typeof(MaterialComponent))
-                {                    
+                {
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.SpecularShininessName,
@@ -1220,7 +1104,7 @@ namespace Fusee.Engine.Core
                         });
                     }
                 }
-                else if(mc.GetType() == typeof(MaterialPBRComponent))
+                else if (mc.GetType() == typeof(MaterialPBRComponent))
                 {
                     var mcPbr = (MaterialPBRComponent)mc;
 
@@ -1235,7 +1119,7 @@ namespace Fusee.Engine.Core
                     {
                         Name = UniformNameDeclarations.RoughnessValue,
                         Value = roughness
-                    }); 
+                    });
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.FresnelReflectance,
@@ -1427,7 +1311,7 @@ namespace Fusee.Engine.Core
             {
                 HeaderShard.Version300Es(),
                 HeaderShard.EsPrecisionHighpFloat(),
-               
+
                 LightingShard.LightStructDeclaration(),
 
                 FragPropertiesShard.InParams(effectProps),
@@ -1436,7 +1320,7 @@ namespace Fusee.Engine.Core
                 FragPropertiesShard.FixedNumberLightArray(),
                 FragPropertiesShard.ColorOut(),
                 LightingShard.AssembleLightingMethods(effectProps)
-            };      
+            };
 
             //Calculates the lighting for all lights by using the above method
             pixelShader.Add(FragMainShard.ForwardLighting(effectProps));
@@ -1449,13 +1333,13 @@ namespace Fusee.Engine.Core
             var protoPixelShader = new List<string>
             {
                 HeaderShard.Version300Es(),
-                HeaderShard.EsPrecisionHighpFloat(),                
+                HeaderShard.EsPrecisionHighpFloat(),
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeUniforms(effectProps),
-                FragPropertiesShard.MatPropsUniforms(effectProps),                
+                FragPropertiesShard.MatPropsUniforms(effectProps),
             };
-            
+
             return string.Join("\n", protoPixelShader);
         }
 
