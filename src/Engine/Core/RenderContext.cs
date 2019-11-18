@@ -172,6 +172,7 @@ namespace Fusee.Engine.Core
 
             public IShaderParam FUSEE_IV;
             public IShaderParam FUSEE_IMV;
+            public IShaderParam FUSEE_ITV;
             public IShaderParam FUSEE_IP;
             public IShaderParam FUSEE_IMVP;
 
@@ -839,6 +840,9 @@ namespace Fusee.Engine.Core
             // Todo: Add inverted versions for M and V
             if (_currentShaderParams.FUSEE_IMV != null)
                 SetFXParam("FUSEE_IMV", InvModelView);
+
+            if (_currentShaderParams.FUSEE_ITV != null)
+                SetFXParam("FUSEE_ITV", InvTransView);
 
             if (_currentShaderParams.FUSEE_IP != null)
                 SetFXParam("FUSEE_IP", InvProjection);

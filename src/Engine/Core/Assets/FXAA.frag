@@ -6,7 +6,7 @@
 #define SUBPIXEL_QUALITY 0.75
 
 precision highp float; 
-in vec2 vTexCoords;
+in vec2 vUV;
 uniform sampler2D LIGHTED_SCENE_TEX;
 uniform vec2 ScreenParams;
 out vec4 oColor;
@@ -41,16 +41,16 @@ void main()
     // ---- 0. Detecting where to apply FXAA
 
     vec2 inverseScreenSize = vec2(1.0/ScreenParams.x, 1.0/ScreenParams.y);
-    vec3 colorCenter = texture(LIGHTED_SCENE_TEX, vTexCoords).rgb;
+    vec3 colorCenter = texture(LIGHTED_SCENE_TEX, vUV).rgb;
 
     // Luma at the current fragment
     float lumaCenter = rgb2luma(colorCenter);
 
     // Luma at the four direct neighbours of the current fragment.
-    float lumaDown = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(0,-1)).rgb);
-    float lumaUp = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(0,1)).rgb);
-    float lumaLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(-1,0)).rgb);
-    float lumaRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(1,0)).rgb);
+    float lumaDown = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(0,-1)).rgb);
+    float lumaUp = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(0,1)).rgb);
+    float lumaLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(-1,0)).rgb);
+    float lumaRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(1,0)).rgb);
 
     // Find the maximum and minimum luma around the current fragment.
     float lumaMin = min(lumaCenter,min(min(lumaDown,lumaUp),min(lumaLeft,lumaRight)));
@@ -69,10 +69,10 @@ void main()
     // ---- 1. Choosing Edge direction (vertical or horizontal)
 
     // Query the 4 remaining corners lumas.
-    float lumaDownLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(-1,-1)).rgb);
-    float lumaUpRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(1,1)).rgb);
-    float lumaUpLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(-1,1)).rgb);
-    float lumaDownRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vTexCoords, ivec2(1,-1)).rgb);
+    float lumaDownLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(-1,-1)).rgb);
+    float lumaUpRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(1,1)).rgb);
+    float lumaUpLeft = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(-1,1)).rgb);
+    float lumaDownRight = rgb2luma(textureOffset(LIGHTED_SCENE_TEX, vUV, ivec2(1,-1)).rgb);
 
     // Combine the four edges lumas (using intermediary variables for future computations with the same values).
     float lumaDownUp = lumaDown + lumaUp;
@@ -124,7 +124,7 @@ void main()
     }
 
     // Shift UV in the correct direction by half a pixel.
-    vec2 currentUv = vTexCoords;
+    vec2 currentUv = vUV;
     if(isHorizontal)
     {
         currentUv.y += stepLength * 0.5;
@@ -197,8 +197,8 @@ void main()
     // ---- 5. Estimating offset.
 
     // Compute the distances to each extremity of the edge.
-    float distance1 = isHorizontal ? (vTexCoords.x - uv1.x) : (vTexCoords.y - uv1.y);
-    float distance2 = isHorizontal ? (uv2.x - vTexCoords.x) : (uv2.y - vTexCoords.y);
+    float distance1 = isHorizontal ? (vUV.x - uv1.x) : (vUV.y - uv1.y);
+    float distance2 = isHorizontal ? (uv2.x - vUV.x) : (uv2.y - vUV.y);
 
     // In which direction is the extremity of the edge closer ?
     bool isDirection1 = distance1 < distance2;
@@ -236,7 +236,7 @@ void main()
 
     // ---- 6. Final read
     // Compute the final UV coordinates.
-    vec2 finalUv = vTexCoords;
+    vec2 finalUv = vUV;
 
     if(isHorizontal)
     {

@@ -10,6 +10,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class FragPropertiesShard
     {
         /// <summary>
+        /// The standard name for the fragment shader output.
+        /// </summary>
+        public static string OutColorName = "oFragmentColor";
+
+        /// <summary>
         /// Returns the in parameters for a ShaderEffect, depending on the given ShaderEffectProps.
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
@@ -18,49 +23,44 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var pxIn = new List<string>
             {
-                GLSL.CreateIn(GLSL.Type.Vec3, "vViewDir"),
-                GLSL.CreateIn(GLSL.Type.Vec4, "vPos"),
-                GLSL.CreateIn(GLSL.Type.Vec3, "vCamPos")
+                GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.ViewDirection),
+                GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Position),
+                GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.CameraPosition)
             };
 
             if (effectProps.MeshProbs.HasColors)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vColor"));
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Color));
 
             if (effectProps.MeshProbs.HasNormals)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vNormal"));
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Normal));
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec4, "vT"));
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, "vB"));
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
             }
 
             if (effectProps.MeshProbs.HasUVs)
-                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec2, "vUV"));
+                pxIn.Add(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
 
             return string.Join("\n", pxIn);
         }
 
         /// <summary>
         /// Returns the pre defined Fusee uniform parameters of a fragment shader, depending on the given ShaderEffectProps.
-        /// </summary>
-        /// <param name="effectProps">The ShaderEffectProps.</param>
+        /// </summary>       
         /// <returns></returns>
-        public static string FuseeUniforms(ShaderEffectProps effectProps)
+        public static string FuseeMatrixUniforms()
         {
             var pxFusUniforms = new List<string>
             {
                 GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MV"),
                 GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"),
+                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITV"),
                 GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V")
+                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V"),
+                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV")
             };
-
-            if (effectProps.MatProbs.HasBump)
-                pxFusUniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV"));
-
-            // Multipass
-            pxFusUniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, "firstPassTex"));
 
             return string.Join("\n", pxFusUniforms);
         }
@@ -142,7 +142,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>       
         public static string ColorOut()
         {
-            return GLSL.CreateOut(GLSL.Type.Vec4, "oFragmentColor");
+            return GLSL.CreateOut(GLSL.Type.Vec4, OutColorName);
         }
 
         /// <summary>
@@ -174,8 +174,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 texCount++;
             }
             return string.Join("\n", outs);
-        }
-
-        
+        }        
     }
 }

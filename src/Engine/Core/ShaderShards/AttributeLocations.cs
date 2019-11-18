@@ -1,7 +1,7 @@
 ﻿namespace Fusee.Engine.Core.ShaderShards
 {
     /// <summary>
-    /// Declares the pre defined uniform parameter with the "fu" prefix, such as "fuVertex", "fuNormal" and so on.
+    /// Declares buffer locations.
     /// </summary>
     public static class AttributeLocations
     {

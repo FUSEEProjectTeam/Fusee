@@ -18,46 +18,46 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var vertProps = new List<string>
             {
-                GLSL.CreateOut(GLSL.Type.Vec3, "vCamPos"),
-                GLSL.CreateOut(GLSL.Type.Vec4, "vPos")
+                GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.CameraPosition),
+                GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Position)
             };
            
-            vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuVertex"));
+            vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Vertex));
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
                 vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.TangentAttribName));
                 vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.BitangentAttribName));
 
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, "vT"));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vB"));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Tangent));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Bitangent));
             }
 
             if (effectProps.MatProbs.HasSpecular)
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vViewDir"));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.ViewDirection));
 
             if (effectProps.MeshProbs.HasWeightMap)
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuBoneIndex"));
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuBoneWeight"));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneIndex));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.BoneWeight));
             }
 
             if (effectProps.MeshProbs.HasNormals)
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuNormal"));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, "vNormal"));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, UniformNameDeclarations.Normal));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec3, VaryingNameDeclarations.Normal));
             }
 
             if (effectProps.MeshProbs.HasUVs)
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec2, "fuUV"));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec2, "vUV"));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec2, UniformNameDeclarations.TextureCoordinates));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
             }
 
             if (effectProps.MeshProbs.HasColors)
             {
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, "fuColor"));
-                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, "vColor"));
+                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec4, UniformNameDeclarations.Color));
+                vertProps.Add(GLSL.CreateOut(GLSL.Type.Vec4, VaryingNameDeclarations.Color));
             }
 
             return string.Join("\n", vertProps);

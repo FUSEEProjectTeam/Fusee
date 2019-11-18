@@ -82,7 +82,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                "return vec4(DiffuseColor.xyz * ambientCoefficient, 1.0);"
+                $"return vec4({UniformNameDeclarations.DiffuseColorName}.xyz * ambientCoefficient, 1.0);"
             };
 
             return (GLSL.CreateMethod(GLSL.Type.Vec4, "ambientLighting",
@@ -102,7 +102,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             //TODO: Test alpha blending between diffuse and texture
             if (effectProps.MatProbs.HasDiffuseTexture)
                 methodBody.Add(
-                    $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, vUV), {UniformNameDeclarations.DiffuseMixName});" +
+                    $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMixName});" +
                     $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
             else
                 methodBody.Add($"return vec4({UniformNameDeclarations.DiffuseColorName}.rgb * intensities.rgb * max(diffuseTerm, 0.0), 1.0);");
@@ -218,14 +218,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
-                $"vec3 N = ((texture(BumpTexture, vUV).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
-                "N = (N.x * vec3(vT)) + (N.y * vB) + (N.z * vNormal);",
+                $"vec3 N = ((texture(BumpTexture, {VaryingNameDeclarations.TextureCoordinates}).rgb * 2.0) - 1.0f) * vec3({UniformNameDeclarations.BumpIntensityName}, {UniformNameDeclarations.BumpIntensityName}, 1.0);",
+                $"N = (N.x * vec3({VaryingNameDeclarations.Tangent})) + (N.y * {VaryingNameDeclarations.Bitangent}) + (N.z * {VaryingNameDeclarations.Normal});",
                 "N = normalize(N);"
             };
 
             var normals = new List<string>
             {
-                "vec3 N = normalize(vNormal);"
+                $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
             };
 
             var applyLightParamsWithoutNormals = new List<string>
@@ -233,12 +233,15 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 //"vec3 N = normalize(vNormal);",
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
                 "if(lightType == 1){L = -normalize(direction);}",
-                "else{ L = normalize(position - vPos.xyz);}",
-                "vec3 V = normalize(-vPos.xyz);",
+                $"else",
+                "{",
+                $"   L = normalize(position - {VaryingNameDeclarations.Position}.xyz);",
+                "}",
+                $"vec3 V = normalize(-{VaryingNameDeclarations.Position}.xyz);",
                 "if(lightType == 3) {",
                 "   L = normalize(vec3(0.0,0.0,-1.0));",
                 "}",
-                "vec2 o_texcoords = vUV;",
+                $"vec2 o_texcoords = {VaryingNameDeclarations.TextureCoordinates};",
                 "",
                 "vec4 Idif = vec4(0);",
                 "vec4 Ispe = vec4(0);",
@@ -261,7 +264,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var attenuation = new List<string>
             {
-                "float distanceToLight = length(position - vPos.xyz);",
+                $"float distanceToLight = length(position - {VaryingNameDeclarations.Position}.xyz);",
                 "float distance = pow(distanceToLight / maxDistance, 2.0);",
                 "float att = (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
             };

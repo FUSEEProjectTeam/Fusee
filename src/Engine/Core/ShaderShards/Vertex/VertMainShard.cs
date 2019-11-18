@@ -26,25 +26,25 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add("vec4 newVertex;");
                 vertMainBody.Add("vec4 newNormal;");
                 vertMainBody.Add(
-                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuVertex, 1.0) ) * fuBoneWeight.x ;");
+                    $"newVertex = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.x)] * vec4({UniformNameDeclarations.Vertex}, 1.0) ) * {UniformNameDeclarations.BoneWeight}.x ;");
                 vertMainBody.Add(
-                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.x)] * vec4(fuNormal, 0.0)) * fuBoneWeight.x;");
+                    $"newNormal = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.x)] * vec4({UniformNameDeclarations.Normal}, 0.0)) * {UniformNameDeclarations.BoneWeight}.x;");
                 vertMainBody.Add(
-                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuVertex, 1.0)) * fuBoneWeight.y + newVertex;");
+                    $"newVertex = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.y)] * vec4({UniformNameDeclarations.Vertex}, 1.0)) * {UniformNameDeclarations.BoneWeight}.y + newVertex;");
                 vertMainBody.Add(
-                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.y)] * vec4(fuNormal, 0.0)) * fuBoneWeight.y + newNormal;");
+                    $"newNormal = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.y)] * vec4({UniformNameDeclarations.Normal}, 0.0)) * {UniformNameDeclarations.BoneWeight}.y + newNormal;");
                 vertMainBody.Add(
-                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuVertex, 1.0)) * fuBoneWeight.z + newVertex;");
+                    $"newVertex = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.z)] * vec4({UniformNameDeclarations.Vertex}, 1.0)) * {UniformNameDeclarations.BoneWeight}.z + newVertex;");
 
                 vertMainBody.Add(
-                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.z)] * vec4(fuNormal, 0.0)) * fuBoneWeight.z + newNormal;");
+                    $"newNormal = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.z)] * vec4({UniformNameDeclarations.Normal}, 0.0)) * {UniformNameDeclarations.BoneWeight}.z + newNormal;");
                 vertMainBody.Add(
-                    "newVertex = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuVertex, 1.0)) * fuBoneWeight.w + newVertex;");
+                    $"newVertex = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.w)] * vec4({UniformNameDeclarations.Vertex}, 1.0)) * {UniformNameDeclarations.BoneWeight}.w + newVertex;");
                 vertMainBody.Add(
-                    "newNormal = (FUSEE_BONES[int(fuBoneIndex.w)] * vec4(fuNormal, 0.0)) * fuBoneWeight.w + newNormal;");
+                    $"newNormal = (FUSEE_BONES[int({UniformNameDeclarations.BoneIndex}.w)] * vec4({UniformNameDeclarations.Normal}, 0.0)) * {UniformNameDeclarations.BoneWeight}.w + newNormal;");
 
                 // At this point the normal is in World space - transform back to model space                
-                vertMainBody.Add("vNormal = mat3(FUSEE_ITMV) * newNormal.xyz;");
+                vertMainBody.Add($"{VaryingNameDeclarations.Normal} = mat3(FUSEE_ITMV) * newNormal.xyz;");
             }
 
             if (effectProps.MatProbs.HasSpecular)
@@ -52,27 +52,27 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 vertMainBody.Add("vec3 vCamPos = FUSEE_IMV[3].xyz;");
 
                 vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
-                    ? "vViewDir = normalize(vCamPos - vec3(newVertex));"
-                    : "vViewDir = normalize(vCamPos - fuVertex);");
+                    ? $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - vec3(newVertex));"
+                    : $"{VaryingNameDeclarations.ViewDirection} = normalize({VaryingNameDeclarations.CameraPosition} - {UniformNameDeclarations.Vertex});");
             }
 
             if (effectProps.MeshProbs.HasUVs)
-                vertMainBody.Add("vUV = fuUV;");
+                vertMainBody.Add($"{VaryingNameDeclarations.TextureCoordinates} = fuUV;");
 
             if (effectProps.MeshProbs.HasNormals && !effectProps.MeshProbs.HasWeightMap)
-                vertMainBody.Add("vNormal = normalize(mat3(FUSEE_ITMV) * fuNormal);");
+                vertMainBody.Add($"{VaryingNameDeclarations.Normal} = normalize(mat3(FUSEE_ITMV) * {UniformNameDeclarations.Normal});");
 
-            vertMainBody.Add("vPos = (FUSEE_MV * vec4(fuVertex, 1.0));");
+            vertMainBody.Add($"{VaryingNameDeclarations.Position} = (FUSEE_MV * vec4({UniformNameDeclarations.Vertex}, 1.0));");
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {
-                vertMainBody.Add($"vT = {UniformNameDeclarations.TangentAttribName};");
-                vertMainBody.Add($"vB = {UniformNameDeclarations.BitangentAttribName};");
+                vertMainBody.Add($"{VaryingNameDeclarations.Tangent} = {UniformNameDeclarations.TangentAttribName};");
+                vertMainBody.Add($"{VaryingNameDeclarations.Bitangent} = {UniformNameDeclarations.BitangentAttribName};");
             }
 
             vertMainBody.Add(effectProps.MeshProbs.HasWeightMap
             ? "gl_Position = FUSEE_MVP * vec4(vec3(newVertex), 1.0);"
-            : "gl_Position = FUSEE_MVP * vec4(fuVertex, 1.0);");
+            : $"gl_Position = FUSEE_MVP * vec4({UniformNameDeclarations.Vertex}, 1.0);");
 
             return ShaderShardUtil.MainMethod(vertMainBody);
         }

@@ -61,16 +61,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 switch (i)
                 {
                     case (int)RenderTargetTextureTypes.G_POSITION:
-                        fragMainBody.Add($"{texName} = vec4(vPos.xyz, vPos.w);");
+                        fragMainBody.Add($"{texName} = vec4({VaryingNameDeclarations.Position});");
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
                         if (effectProps.MatProbs.HasDiffuseTexture)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColorName}.xyz, texture(DiffuseTexture, vUv).xyz, DiffuseMix), 1.0);");
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColorName}.xyz, texture(DiffuseTexture, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMixName}), 1.0);");
                         else
                             fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColorName}.xyz, 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.G_NORMAL:
-                        fragMainBody.Add($"{texName} = vec4(normalize(vNormal.xyz), 1.0);");
+                        fragMainBody.Add($"{texName} = vec4(normalize({VaryingNameDeclarations.Normal}.xyz), 1.0);");
                         break;
                     case (int)RenderTargetTextureTypes.G_DEPTH:
                         fragMainBody.Add($"{texName} = vec4(gl_FragCoord.z, gl_FragCoord.z, gl_FragCoord.z, 1.0);");

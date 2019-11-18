@@ -1,4 +1,5 @@
-﻿#version 330 core
+﻿#version 300 es
+precision highp float; 
 in vec4 FragPos;
 uniform vec2 LightMatClipPlanes;
 uniform vec3 LightPos;

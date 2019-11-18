@@ -396,13 +396,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.AttachShader(program, vertexObject);
 
             // enable GLSL (ES) shaders to use fuVertex, fuColor and fuNormal attributes
-            GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.VertexAttribName);
-            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.ColorAttribName);
-            GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.UvAttribName);
-            GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.NormalAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.VertexAttribLocation, UniformNameDeclarations.Vertex);
+            GL.BindAttribLocation(program, AttributeLocations.ColorAttribLocation, UniformNameDeclarations.Color);
+            GL.BindAttribLocation(program, AttributeLocations.UvAttribLocation, UniformNameDeclarations.TextureCoordinates);
+            GL.BindAttribLocation(program, AttributeLocations.NormalAttribLocation, UniformNameDeclarations.Normal);
             GL.BindAttribLocation(program, AttributeLocations.TangentAttribLocation, UniformNameDeclarations.TangentAttribName);
-            GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndexAttribName);
-            GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeightAttribName);
+            GL.BindAttribLocation(program, AttributeLocations.BoneIndexAttribLocation, UniformNameDeclarations.BoneIndex);
+            GL.BindAttribLocation(program, AttributeLocations.BoneWeightAttribLocation, UniformNameDeclarations.BoneWeight);
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
             GL.LinkProgram(program); //Must be called AFTER BindAttribLocation

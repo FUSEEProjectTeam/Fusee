@@ -15,19 +15,19 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The vertex attribute name.
         /// </summary>
-        public static readonly string VertexAttribName = "fuVertex";
+        public static readonly string Vertex = "fuVertex";
         /// <summary>
         /// The color attribute name.
         /// </summary>
-        public static readonly string ColorAttribName = "fuColor";
+        public static readonly string Color = "fuColor";
         /// <summary>
         /// The normal attribute name.
         /// </summary>
-        public static readonly string NormalAttribName = "fuNormal";
+        public static readonly string Normal = "fuNormal";
         /// <summary>
         /// The uv attribute name.
         /// </summary>
-        public static readonly string UvAttribName = "fuUV";
+        public static readonly string TextureCoordinates = "fuUV";
         /// <summary>
         /// The tangent attribute name.
         /// </summary>
@@ -39,11 +39,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The bone weight attribute name.
         /// </summary>
-        public static readonly string BoneWeightAttribName = "fuBoneWeight";
+        public static readonly string BoneWeight = "fuBoneWeight";
         /// <summary>
         /// The bone index attribute name.
         /// </summary>
-        public static readonly string BoneIndexAttribName = "fuBoneIndex";
+        public static readonly string BoneIndex = "fuBoneIndex";
 
         #endregion
 
