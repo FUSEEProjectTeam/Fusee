@@ -53,16 +53,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 case MaterialType.Standard:                
                     lighting.Add(AmbientLightMethod());
                     if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseLightMethod(effectProps));
+                        lighting.Add(DiffuseLightMethod());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(SpecularLightMethod());
                     break;
                 case MaterialType.MaterialPbr:                    
                     lighting.Add(AmbientLightMethod());
                     if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseLightMethod(effectProps));
+                        lighting.Add(DiffuseLightMethod());
                     if (effectProps.MatProbs.HasSpecular)
-                        lighting.Add(PbrSpecularLightMethod(effectProps));
+                        lighting.Add(PbrSpecularLightMethod());
                     
                     break;
                 default:
@@ -82,36 +82,27 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>
             {
-                $"return vec4({UniformNameDeclarations.DiffuseColorName}.xyz * ambientCoefficient, 1.0);"
+                $"return vec4(color.xyz * ambientCoefficient, 1.0);"
             };
 
             return (GLSL.CreateMethod(GLSL.Type.Vec4, "ambientLighting",
-                new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient") }, methodBody));
+                new[] { GLSL.CreateVar(GLSL.Type.Float, "ambientCoefficient"), GLSL.CreateVar(GLSL.Type.Vec4, "color") }, methodBody));
         }
 
         /// <summary>
         /// Method for calculation the diffuse lighting component.
         /// </summary>       
-        public static string DiffuseLightMethod(ShaderEffectProps effectProps)
+        public static string DiffuseLightMethod()
         {
             var methodBody = new List<string>
             {
-                "float diffuseTerm = dot(N, L);"
+                "return max(dot(N, L), 0.0);"
+
             };
-
-            //TODO: Test alpha blending between diffuse and texture
-            if (effectProps.MatProbs.HasDiffuseTexture)
-                methodBody.Add(
-                    $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMixName});" +
-                    $"return blendedCol * max(diffuseTerm, 0.0) * intensities;");
-            else
-                methodBody.Add($"return vec4({UniformNameDeclarations.DiffuseColorName}.rgb * intensities.rgb * max(diffuseTerm, 0.0), 1.0);");
-
-            return GLSL.CreateMethod(GLSL.Type.Vec4, "diffuseLighting",
+            return GLSL.CreateMethod(GLSL.Type.Float, "diffuseLighting",
                 new[]
                 {
-                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L")                    
                 }, methodBody);
         }
 
@@ -128,16 +119,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "{",
                 "   // half vector",   
                     "vec3 reflectDir = reflect(-L, N);",
-                $"  specularTerm = pow(max(0.0, dot(V, reflectDir)), {UniformNameDeclarations.SpecularShininessName});",
+                $"  specularTerm = pow(max(0.0, dot(V, reflectDir)), shininess);",
                 "}",
-                $"return vec4(({UniformNameDeclarations.SpecularColorName}.rgb * {UniformNameDeclarations.SpecularIntensityName} * intensities.rgb) * specularTerm, 1.0);"
+                "return specularTerm;"                
             };
 
-            return GLSL.CreateMethod(GLSL.Type.Vec4, "specularLighting",
+            return GLSL.CreateMethod(GLSL.Type.Float, "specularLighting",
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities"), GLSL.CreateVar(GLSL.Type.Float, "shininess")
                 }, methodBody);
 
         }
@@ -148,13 +139,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Method for calculation the specular lighting component.
         /// Replaces the standard specular calculation with the Cook-Torrance-Shader
         /// </summary>
-        public static string PbrSpecularLightMethod(ShaderEffectProps effectProps)
+        public static string PbrSpecularLightMethod()
         {
             var methodBody = new List<string>
             {
                 $"float roughnessValue = {UniformNameDeclarations.RoughnessValue}; // 0 : smooth, 1: rough", // roughness 
-                $"float F0 = {UniformNameDeclarations.FresnelReflectance}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender
-                $"float k = 1.0-{UniformNameDeclarations.DiffuseFraction};",
+                $"float F0 = {UniformNameDeclarations.FresnelReflectance}; // fresnel reflectance at normal incidence", // fresnel => Specular from Blender                
                 "float NdotL = max(dot(N, L), 0.0);",
                 "float specular = 0.0;",
                 "float BlinnSpecular = 0.0;",
@@ -199,7 +189,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 new[]
                 {
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L"), GLSL.CreateVar(GLSL.Type.Vec3, "V"),
-                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities")
+                    GLSL.CreateVar(GLSL.Type.Vec4, "intensities"), GLSL.CreateVar(GLSL.Type.Float, "k")
                 }, methodBody);
         }
 
@@ -253,14 +243,31 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             applyLightParams.AddRange(applyLightParamsWithoutNormals);
 
-
             if (effectProps.MatProbs.HasDiffuse)
-                applyLightParams.Add("Idif = diffuseLighting(N, L, intensities);");
-
+            {
+                //TODO: Test alpha blending between diffuse and texture
+                if (effectProps.MatProbs.HasDiffuseTexture)
+                    applyLightParams.Add(
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMixName});" +
+                        $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
+                else
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColorName}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");                
+            }
 
             if (effectProps.MatProbs.HasSpecular)
-                applyLightParams.Add("Ispe = specularLighting(N, L, V, intensities);");
-
+            {
+                if (effectProps.MatType == MaterialType.Standard)
+                {
+                    applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, intensities, {UniformNameDeclarations.SpecularShininessName});");
+                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColorName}.rgb * { UniformNameDeclarations.SpecularIntensityName} *intensities.rgb) *specularTerm, 1.0);");
+                }
+                else if(effectProps.MatType == MaterialType.MaterialPbr)
+                {
+                    applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
+                    applyLightParams.Add("float specular = specularLighting(N, L, V, intensities, k);");
+                    applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColorName} * (k + specular * (1.0 - k));");
+                }
+            }
 
             var attenuation = new List<string>
             {

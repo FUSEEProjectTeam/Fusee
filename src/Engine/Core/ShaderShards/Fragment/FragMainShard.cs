@@ -20,7 +20,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var fragMainBody = new List<string>
             {
-                "vec4 result = ambientLighting(0.2);", //ambient component
+                $"vec4 result = ambientLighting(0.2, {UniformNameDeclarations.DiffuseColorName});", //ambient component
                 $"for(int i = 0; i < {LightingShard.NumberOfLightsForward};i++)",
                 "{",
                 "if(allLights[i].isActive == 0) continue;",
