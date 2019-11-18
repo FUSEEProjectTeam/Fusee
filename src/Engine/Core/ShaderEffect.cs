@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Dynamic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
@@ -91,6 +92,7 @@ namespace Fusee.Engine.Core
     /// Each of this array entry consists of the parameter's name and its initial value. The concrete type of the object also indicates the
     /// parameter's type.
     /// </summary>
+    [DebuggerDisplay("Name = {Name}")]
     public struct EffectParameterDeclaration
     {
         /// <summary>

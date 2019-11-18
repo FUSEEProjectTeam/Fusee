@@ -279,8 +279,6 @@ namespace Fusee.Engine.Core
                     }
                 };
 
-                var effectProbs = ShaderShardUtil.CollectEffectProps(null, defaultMat);
-
                 _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
                 _rc.SetShaderEffect(_defaultEffect);
             }

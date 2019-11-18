@@ -22,9 +22,8 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 GLSL.CreateOut(GLSL.Type.Vec3, "vCamPos"),
                 GLSL.CreateOut(GLSL.Type.Vec4, "vPos")
             };
-
-            if (effectProps.MeshProbs.HasVertices)
-                vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuVertex"));
+           
+            vertProps.Add(GLSL.CreateIn(GLSL.Type.Vec3, "fuVertex"));
 
             if (effectProps.MeshProbs.HasTangents && effectProps.MeshProbs.HasBiTangents)
             {

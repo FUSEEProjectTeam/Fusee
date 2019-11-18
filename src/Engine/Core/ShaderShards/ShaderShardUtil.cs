@@ -28,9 +28,7 @@ namespace Fusee.Engine.Core.ShaderShards
     /// Collection of bools, describing the mesh properties.
     /// </summary>
     public struct MeshProps
-    {
-        public bool HasVertices;
-
+    {        
         /// <summary>
         /// Does this mesh have normals?
         /// </summary>
@@ -179,8 +177,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static MeshProps AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
         {
             return new MeshProps
-            {
-                HasVertices = mesh == null || mesh.Vertices != null && mesh.Vertices.Length > 0, // if no mesh => true
+            {                
                 HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
                 HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
                 HasColors = false,

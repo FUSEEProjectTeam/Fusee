@@ -678,7 +678,6 @@ namespace Fusee.Engine.Core
                 vec3 specular = SpecularStrength * spec * lightColor;
                 lighting += (1.0 - shadow) * (specular * attenuation * light.strength);
 
-
                 //vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
                 //vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
                 //vec3 cascadeColor = vec3(1.0,1.0,1.0);
@@ -1093,35 +1092,18 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
-            string vs = "";
-            string ps = "";
-
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-            
-            if (mc.GetType() == typeof(MaterialPBRComponent))
-            {
-                if (mc is MaterialPBRComponent) 
-                {
-                    vs = CreateVertexShader(wc, effectProps);
-                    ps = CreatePixelShader(effectProps);
-                }
-            }
-            else
-            {
-                vs = CreateVertexShader(wc, effectProps);
-                ps = CreatePixelShader(effectProps);
-            }
-
+            var vs = CreateVertexShader(wc, effectProps);
+            var ps = CreatePixelShader(effectProps);
             var effectParameters = AssembleEffectParamers(mc);
 
-            if (vs == string.Empty || ps == string.Empty) throw new Exception("Material could not be evaluated or be built!");
+            if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
             var ret = new ShaderEffect(new[]
                 {
                     new EffectPassDeclaration
                     {
-                        VS = vs, 
-                        //VS = VsBones, 
+                        VS = vs,                         
                         PS = ps,
                         StateSet = new RenderStateSet
                         {
@@ -1148,28 +1130,12 @@ namespace Fusee.Engine.Core
         /// <exception cref="Exception"></exception> 
         public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
         {
-            string vs = "";
-            string ps = "";
-
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
-            
-            if (mc.GetType() == typeof(MaterialPBRComponent))
-            {
-                if (mc is MaterialPBRComponent)
-                {
-                    vs = CreateVertexShader(wc, effectProps);
-                    ps = CreateProtoPixelShader(effectProps);
-                }
-            }
-            else
-            {
-                vs = CreateVertexShader(wc, effectProps);
-                ps = CreateProtoPixelShader(effectProps);
-            }
-
+            string vs = CreateVertexShader(wc, effectProps);
+            string ps = CreateProtoPixelShader(effectProps);
             var effectParameters = AssembleEffectParamers(mc);
 
-            if (vs == string.Empty || ps == string.Empty) throw new Exception("Material could not be evaluated or be built!");
+            if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
             var ret = new ShaderEffectProtoPixel(new[]
                 {
@@ -1222,13 +1188,14 @@ namespace Fusee.Engine.Core
 
             if (mc.HasSpecular)
             {
-                if (mc.GetType() == typeof(MaterialComponent))
+                effectParameters.Add(new EffectParameterDeclaration
                 {
-                    effectParameters.Add(new EffectParameterDeclaration
-                    {
-                        Name = UniformNameDeclarations.SpecularColorName,
-                        Value = mc.Specular.Color
-                    });
+                    Name = UniformNameDeclarations.SpecularColorName,
+                    Value = mc.Specular.Color
+                });
+
+                if (mc.GetType() == typeof(MaterialComponent))
+                {                    
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.SpecularShininessName,
