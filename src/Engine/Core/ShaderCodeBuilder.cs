@@ -105,6 +105,8 @@ namespace Fusee.Engine.Core
         /// <param name="ssaoRenderTex">The non blurred ssao texture.</param>        
         public static ShaderEffect SSAORenderTargetBlurEffect(WritableTexture ssaoRenderTex)
         {
+            //TODO: is there a smart(er) way to set #define KERNEL_LENGTH in file?
+            var frag = AssetStorage.Get<string>("SimpleBlur.frag");
             float blurKernelSize;
             switch (ssaoRenderTex.Width)
             {
@@ -120,49 +122,19 @@ namespace Fusee.Engine.Core
                     break;
             }
 
-            //--------- Fragment shader ----------- //
-            var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version300Es());
-            frag.Append(HeaderShard.EsPrecisionHighpFloat());
-            frag.Append($"#define SSAO_INPUT_TEX {Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)}\n");
-            frag.Append($"#define KERNEL_SIZE {blurKernelSize.ToString("0.0", CultureInfo.InvariantCulture)}\n");
-            frag.Append($"#define KERNEL_SIZE_HALF {blurKernelSize * 0.5}\n");
-
-            frag.Append($"in vec2 vTexCoords;\n");
-
-            frag.Append($"uniform sampler2D SSAO_INPUT_TEX;\n");
-
-
-            frag.Append($"layout (location = 0) out vec4 o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)};\n");
-
-            frag.Append("void main() {");
-
-            frag.Append(@"
-            vec2 texelSize = 1.0 / vec2(textureSize(SSAO_INPUT_TEX, 0));
-            float result = 0.0;
-            for (int x = -KERNEL_SIZE_HALF; x < KERNEL_SIZE_HALF; ++x) 
+            if (blurKernelSize != 4.0f)
             {
-                for (int y = -KERNEL_SIZE_HALF; y < KERNEL_SIZE_HALF; ++y) 
-                {
-                    vec2 offset = vec2(float(x), float(y)) * texelSize;
-                    result += texture(SSAO_INPUT_TEX, vTexCoords + offset).r;
-                }
+                var lines = frag.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
+                lines[2] = $"#define KERNEL_SIZE_HALF {blurKernelSize * 0.5}";
+                frag = string.Join("\n", lines);
             }
-
-            result = result / (KERNEL_SIZE * KERNEL_SIZE);
-            
-            ");
-
-            frag.Append($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_SSAO)} = vec4(result, result, result, 1.0);");
-
-            frag.Append("}");
 
             return new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = frag.ToString(),
+                    PS = frag,
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
@@ -172,7 +144,7 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = ssaoRenderTex},
+                new EffectParameterDeclaration { Name = "InputTex", Value = ssaoRenderTex},
 
             });
 

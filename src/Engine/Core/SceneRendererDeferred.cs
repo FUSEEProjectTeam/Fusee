@@ -25,12 +25,12 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Sets the Shadow Map resolution.
         /// </summary>
-        public TexRes ShadowMapRes = TexRes.MID_RES;
+        public TexRes ShadowMapRes { get; private set; } = TexRes.MID_RES;
 
         /// <summary>
         /// Sets the G-Buffer texture resolution.
         /// </summary>
-        public TexRes TexRes = TexRes.MID_RES;
+        public TexRes TexRes { get; private set; } = TexRes.HIGH_RES;
 
         /// <summary>
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
@@ -104,29 +104,28 @@ namespace Fusee.Engine.Core
 
         private RenderPasses _currentPass;
 
-        //_shadowMapRes is set to ShadowMapRes at the end of each Render call to allow resolution changes at runtime.
-        private TexRes _shadowMapRes = TexRes.MID_RES;
-        //_texRes is set to TexRes at the end of each Render call to allow resolution changes at runtime.
-        private TexRes _texRes = TexRes.MID_RES;
-
         private bool _canUseGeometryShaders;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
         /// </summary>
-        /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>       
-        public SceneRendererDeferred(SceneContainer sc) : base(sc)
+        /// <param name="sc">The SceneContainer, containing the scene that gets rendered.</param>
+        /// <param name="texRes">The g-buffer texture resolution.</param>
+        /// <param name="shadowMapRes">The shadow map resolution.</param>       
+        public SceneRendererDeferred(SceneContainer sc, TexRes texRes = TexRes.MID_RES, TexRes shadowMapRes = TexRes.MID_RES) : base(sc)
         {
-            _gBufferRenderTarget = new RenderTarget(_texRes);
+            TexRes = texRes;
+            ShadowMapRes = shadowMapRes;
+            _gBufferRenderTarget = new RenderTarget(TexRes);
             _gBufferRenderTarget.SetPositionTex();
             _gBufferRenderTarget.SetAlbedoSpecularTex();
             _gBufferRenderTarget.SetNormalTex();
             _gBufferRenderTarget.SetDepthTex(TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LEQUAL);
             _gBufferRenderTarget.SetSpecularTex();
 
-            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.NEAREST);
-            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.NEAREST);
-            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.fRGB32), (int)_texRes, (int)_texRes, false, TextureFilterMode.LINEAR);
+            _ssaoRenderTexture = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.NEAREST);
+            _blurRenderTex = new WritableTexture(RenderTargetTextureTypes.G_SSAO, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.NEAREST);
+            _lightedSceneTex = new WritableTexture(RenderTargetTextureTypes.G_ALBEDO, new ImagePixelFormat(ColorFormat.fRGB32), (int)TexRes, (int)TexRes, false, TextureFilterMode.LINEAR);
                       
             _shadowparams = new Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams>();
 
@@ -304,7 +303,7 @@ namespace Fusee.Engine.Core
                 {                    
                     case LightType.Point:
                         {
-                            var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)_shadowMapRes, (int)_shadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
+                            var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
                             outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap } };
                             break;
                         }
@@ -314,7 +313,7 @@ namespace Fusee.Engine.Core
                             var shadowMaps = new IWritableTexture[NumberOfCascades];
                             for (int i = 0; i < NumberOfCascades; i++)
                             {
-                                var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)_shadowMapRes, (int)_shadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
+                                var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
                                 shadowMaps[i] = shadowMap;
                             }
                             outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = shadowMaps };
@@ -323,7 +322,7 @@ namespace Fusee.Engine.Core
                     case LightType.Spot:
                     
                         {
-                            var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)_shadowMapRes, (int)_shadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
+                            var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, TextureCompareFunc.GL_LESS);
                             outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap } };
                             break;
                         }
@@ -368,7 +367,7 @@ namespace Fusee.Engine.Core
             var screenHeight = _rc.ViewportHeight;
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.           
-            _rc.Viewport(0, 0, (int)_shadowMapRes, (int)_shadowMapRes, false);
+            _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
             _currentPass = RenderPasses.SHADOW;
             _rc.SetShaderEffect(_shadowEffect);
 
@@ -436,7 +435,7 @@ namespace Fusee.Engine.Core
                 //Pass 2: SSAO
                 _currentPass = RenderPasses.SSAO;
                 if (_ssaoTexEffect == null)
-                    _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)_texRes, (float)_texRes));
+                    _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
                 _quadShaderEffectComp.Effect = _ssaoTexEffect;
                 rc.SetRenderTarget(_ssaoRenderTexture);
                 Traverse(_quadScene.Children);
@@ -472,16 +471,13 @@ namespace Fusee.Engine.Core
 
                 _rc.Viewport(0, 0, screenWidth, screenHeight);
                 if (_fxaaEffect == null)
-                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)_texRes, (float)_texRes));
+                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
                 _quadShaderEffectComp.Effect = _fxaaEffect;
 
                 rc.SetRenderTarget();
 
                 Traverse(_quadScene.Children);
             }
-
-            _texRes = TexRes;
-            _shadowMapRes = ShadowMapRes;
         }
 
         /// <summary>

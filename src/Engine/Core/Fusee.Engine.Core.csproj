@@ -21,6 +21,7 @@
     <None Remove="Assets\ShadowCubeMap.frag" />
     <None Remove="Assets\ShadowCubeMap.geom" />
     <None Remove="Assets\ShadowMap.frag" />
+    <None Remove="Assets\SimpleBlur.frag" />
     <Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
   </ItemGroup>
   
