@@ -23,9 +23,11 @@ namespace Fusee.Base.Core
                     {
                         ColorConsoleOutput(lvl);
 
-                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + callerFile + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
+                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
+                        
                         f += (ex != null ? $",\nException: {ex}" : "");
-                        f += (ex != null && ex.InnerException != null ? $",\nInner exception: {ex.InnerException}" : "");
+                        f += (ex?.InnerException != null ? $",\nInner exception: {ex.InnerException}" : "");
+                        
                         if (args != null)
                         {
                             f += "\nArguments:\n";
