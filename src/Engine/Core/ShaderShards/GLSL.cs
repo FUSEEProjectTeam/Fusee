@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core.ShaderShards
             return string.Join("\n", tmpList);
         }
 
-        private static string DecodeType(Type type)
+        internal static string DecodeType(Type type)
         {
             switch (type)
             {

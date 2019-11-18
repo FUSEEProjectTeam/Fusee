@@ -303,36 +303,11 @@ namespace Fusee.Engine.Core
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
             frag.Append(HeaderShard.EsPrecisionHighpFloat());
 
-            frag.Append(FragPropertiesShard.DeferredUniforms());            
+            frag.Append(FragPropertiesShard.DeferredTextureUniforms());            
             frag.Append(FragPropertiesShard.FuseeMatrixUniforms());
 
             frag.Append(LightingShard.LightStructDeclaration());
-            frag.Append("uniform Light light;");
-
-            if (!isCascaded)
-            {
-                if (lc.IsCastingShadows)
-                {
-                    if (lc.Type != LightType.Point)
-                        frag.Append($"uniform sampler2D ShadowMap;\n");
-                    else
-                        frag.Append("uniform samplerCube ShadowCubeMap;\n");
-                }
-
-                frag.Append("uniform mat4x4 LightSpaceMatrix;\n");
-            }
-            else
-            {
-                frag.Append($"uniform sampler2D[{numberOfCascades}] ShadowMaps;\n");
-                frag.Append($"uniform vec2[{numberOfCascades}] ClipPlanes;\n");
-
-                frag.Append($"uniform mat4x4[{numberOfCascades}] LightSpaceMatrices;\n");
-            }
-
-            frag.Append("uniform int PassNo;\n");
-            frag.Append("uniform int SsaoOn;\n");
-
-            frag.Append("uniform vec4 BackgroundColor;\n");
+            frag.Append(FragPropertiesShard.DeferredLightAndShadowUniforms(lc, isCascaded, numberOfCascades));
 
             frag.Append($"in vec2 {VaryingNameDeclarations.TextureCoordinates};\n");
             frag.Append(FragPropertiesShard.ColorOut());

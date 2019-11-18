@@ -1,4 +1,6 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
+using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
 
@@ -123,18 +125,57 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Creates the uniform texture parameters for the lighting pass, as used in deferred rendering.
         /// </summary>
         /// <returns></returns>
-        public static string DeferredUniforms()
+        public static string DeferredTextureUniforms()
         {
-            var outs = new List<string>();
+            var uniforms = new List<string>();
             var texCount = 0;
             for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
-                outs.Add($"uniform sampler2D {texName};\n");
+                uniforms.Add($"uniform sampler2D {texName};\n");
                 texCount++;
             }
-            return string.Join("\n", outs);
+            return string.Join("\n", uniforms);
+        }
+
+        /// <summary>
+        /// Creates the uniforms for the deferred lighting pass for one light.
+        /// </summary>
+        /// <param name="lc">The light component, needed to decide if we have a Shadow Cube Map or a standard shadow map.</param>
+        /// <param name="isCascaded">If cascaded shadow mapping is used, this should be set to true.</param>
+        /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.<param>        
+        public static string DeferredLightAndShadowUniforms(LightComponent lc, bool isCascaded, int numberOfCascades)
+        {
+            var uniforms = new List<string>
+            {
+                "uniform Light light;"
+            };
+
+            if (!isCascaded)
+            {
+                if (lc.IsCastingShadows)
+                {
+                    if (lc.Type != LightType.Point)
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, "ShadowMap"));                        
+                    else
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, "ShadowCubeMap"));                    
+                }
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "LightSpaceMatrix"));                
+            }
+            else
+            {
+                //No implementation for GLSL.CreateArrayUniform yet...
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Sampler2D)}[{numberOfCascades}] ShadowMaps;\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Vec2)}[{numberOfCascades}] ClipPlanes;\n");
+                uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
+            }
+
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "PassNo"));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "SsaoOn"));
+
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, "BackgroundColor"));
+            return string.Join("\n", uniforms);
         }
 
         /// <summary>
