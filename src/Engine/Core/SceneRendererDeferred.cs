@@ -513,7 +513,7 @@ namespace Fusee.Engine.Core
                                 if (_canUseGeometryShaders)
                                 {
                                     if ((_lightingPassEffectPoint == null))
-                                        _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableCubeMap)shadowParams.ShadowMaps[0], _texClearColor);
+                                        _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMaps[0]);
                                     
                                     _lightingPassEffect = _lightingPassEffectPoint;
                                 }
@@ -544,7 +544,7 @@ namespace Fusee.Engine.Core
                                 else
                                 {
                                     if (_lightingPassEffectOther == null)
-                                        _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMaps[0], _texClearColor);
+                                        _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
                                     
                                     _lightingPassEffect = _lightingPassEffectOther;
                                 }
@@ -553,7 +553,7 @@ namespace Fusee.Engine.Core
                         case LightType.Spot:
                             {
                                 if (_lightingPassEffectOther == null)
-                                    _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, (WritableTexture)shadowParams.ShadowMaps[0], _texClearColor);
+                                    _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
 
                                 _lightingPassEffect = _lightingPassEffectOther;
                                 break;

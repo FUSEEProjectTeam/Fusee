@@ -23,7 +23,7 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
+        private SceneRendererDeferred _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
@@ -40,7 +40,7 @@ namespace Fusee.Examples.Simple.Core
         public override void Init()
         {
             _gui = CreateGui();
-            Resize(new ResizeEventArgs(Width, Height));
+           
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -48,10 +48,12 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");                 
+            _rocketScene = AssetStorage.Get<SceneContainer>("pbr_test.fus");
+            //_rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            
             _guiRenderer = new SceneRendererForward(_gui);
         }
 

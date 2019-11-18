@@ -300,6 +300,151 @@ namespace Fusee.Engine.Core
             });
 
         }
+        
+        /// <summary>
+        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMap">The shadow map.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor, IWritableTexture shadowMap = null)
+        {
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
+
+            if (lc.IsCastingShadows)
+            {
+                if (lc.Type != LightType.Point) 
+                {
+                    effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
+                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = (WritableTexture)shadowMap }); 
+                }
+                else                
+                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = (WritableCubeMap)shadowMap });                
+            }
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("Deferred.vert"),
+                    PS = DeferredLightingFS(lc),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },
+            effectParams.ToArray());
+        }
+
+        /// <summary>
+        /// [Parallel light only] ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
+        /// </summary> 
+        /// <param name="srcRenderTarget">The source render target.</param>
+        /// <param name="lc">The light component.</param>
+        /// <param name="shadowMaps">The cascaded shadow maps.</param>
+        /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
+        /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
+        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
+        /// <returns></returns>
+        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
+        {
+            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
+
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
+            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
+            effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("Deferred.vert"),
+                    PS = DeferredLightingFS(lc, true, numberOfCascades),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = true,
+                        ZEnable = true,
+                        BlendOperation = BlendOperation.Add,
+                        SourceBlend = Blend.One,
+                        DestinationBlend = Blend.One,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },
+            effectParams.ToArray());
+        }
+        
+        /// <summary>
+        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
+        /// </summary>
+        /// <returns></returns>
+        public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
+        {
+            var effectParamDecls = new List<EffectParameterDeclaration>
+            {
+                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One },
+                new EffectParameterDeclaration { Name = "LightPos", Value = float3.One },
+                new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
+            };
+
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
+                    GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
+                    PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                        CullMode = Cull.Clockwise,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },
+            effectParamDecls.ToArray());
+        }
+
+        /// <summary>
+        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
+        /// </summary>
+        /// <returns></returns>
+        public static ShaderEffect ShadowMapEffect()
+        {
+            return new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("ShadowMap.vert"),
+                    PS = AssetStorage.Get<string>("ShadowMap.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                        CullMode = Cull.Clockwise,
+                        ZFunc = Compare.LessEqual,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "LightType", Value = 0},
+            });
+        }
 
         private static string DeferredLightingFS(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
@@ -466,7 +611,7 @@ namespace Fusee.Engine.Core
                 frag.Append(DebugCascades());
             }
 
-            frag.AppendLine("}"); 
+            frag.AppendLine("}");
 
             frag.AppendLine($"o{Enum.GetName(typeof(RenderTargetTextureTypes), RenderTargetTextureTypes.G_ALBEDO)} = vec4(lighting, 1.0);");
 
@@ -648,207 +793,6 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor},
                 new EffectParameterDeclaration { Name = "SsaoOn", Value = 1},
             };
-        }
-
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>
-        /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
-        /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture shadowMap, float4 backgroundColor)
-        {
-            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
-
-            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
-            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = shadowMap });
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = DeferredLightingFS(lc),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            effectParams.ToArray());
-        }
-
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass. Shadow is calculated with cascaded shadow maps.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>
-        /// <param name="shadowMaps">The cascaded shadow maps.</param>
-        /// <param name="clipPlanes">The clip planes of the frustums. Each frustum is associated with one shadow map.</param>
-        /// <param name="numberOfCascades">The number of sub-frustums, used for cascaded shadow mapping.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>            
-        /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableTexture[] shadowMaps, float2[] clipPlanes, int numberOfCascades, float4 backgroundColor)
-        {
-            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
-
-            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
-            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
-            effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = DeferredLightingFS(lc, true, numberOfCascades),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            effectParams.ToArray());
-        }
-
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>
-        /// <param name="shadowMap">The shadow map.</param>
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
-        /// <returns></returns>
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, WritableCubeMap shadowMap, float4 backgroundColor)
-        {
-            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
-
-            effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = shadowMap });
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = DeferredLightingFS(lc),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            effectParams.ToArray());
-        }
-
-        /// <summary>
-        /// ShaderEffect that performs the lighting calculation according to the textures from the Geometry Pass.
-        /// </summary> 
-        /// <param name="srcRenderTarget">The source render target.</param>
-        /// <param name="lc">The light component.</param>  
-        /// <param name="backgroundColor">Sets the background color. Could be replaced with a texture or other sky color calculations in the future.</param>       
-        public static ShaderEffect DeferredLightingPassEffect(RenderTarget srcRenderTarget, LightComponent lc, float4 backgroundColor)
-        {
-            var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("Deferred.vert"),
-                    PS = DeferredLightingFS(lc),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = true,
-                        ZEnable = true,
-                        BlendOperation = BlendOperation.Add,
-                        SourceBlend = Blend.One,
-                        DestinationBlend = Blend.One,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            effectParams.ToArray());
-        }
-
-        /// <summary>
-        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
-        /// </summary>
-        /// <returns></returns>
-        public static ShaderEffect ShadowCubeMapEffect(float4x4[] lightSpaceMatrices)
-        {
-            var effectParamDecls = new List<EffectParameterDeclaration>
-            {
-                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity },
-                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity },
-                new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One },
-                new EffectParameterDeclaration { Name = "LightPos", Value = float3.One },
-                new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
-            };
-
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("ShadowCubeMap.vert"),
-                    GS = AssetStorage.Get<string>("ShadowCubeMap.geom"),
-                    PS = AssetStorage.Get<string>("ShadowCubeMap.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                        CullMode = Cull.Clockwise,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            effectParamDecls.ToArray());
-        }
-
-        /// <summary>
-        /// ShaderEffect that renders the depth map from a lights point of view - this depth map is used as a shadow map.
-        /// </summary>
-        /// <returns></returns>
-        public static ShaderEffect ShadowMapEffect()
-        {
-            return new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("ShadowMap.vert"),
-                    PS = AssetStorage.Get<string>("ShadowMap.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                        CullMode = Cull.Clockwise,
-                        ZFunc = Compare.LessEqual,
-                    }
-                }
-            },
-            new[]
-            {
-                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightType", Value = 0},
-            });
         }
 
         #endregion
