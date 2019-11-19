@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
@@ -123,6 +123,10 @@ namespace Fusee.Base.Core
         {
             // Overwrite file
             File.Create(_fileName).Close();
+
+#if LOG_DEBUG
+            SetMinConsoleLoggingSeverityLevel(SeverityLevel.DEBUG);
+#endif
         }
 
         #region Members
