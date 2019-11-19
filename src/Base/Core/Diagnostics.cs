@@ -207,11 +207,10 @@ namespace Fusee.Base.Core
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>
         [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
+        [Conditional("LOG_DEBUG"), Conditional("LOG_WARN"), Conditional("LOG_ERROR")]
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-#if LOG_DEBUG || LOG_WARN || LOG_ERROR
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
-#endif
         }
 
         /// <summary>
@@ -222,11 +221,10 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>       
+        [Conditional("LOG_DEBUG")]
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-#if LOG_DEBUG
             Writer(o, SeverityLevel.DEBUG, ex, args, callerName, sourceLineNumber, sourceFilePath);
-#endif
         }
 
 
@@ -240,11 +238,10 @@ namespace Fusee.Base.Core
         /// <param name="callerName">The calling method</param>
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>       
+        [Conditional("LOG_WARN")]
         public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-#if LOG_WARN
             Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
-#endif
         }
 
         /// <summary>
@@ -257,11 +254,10 @@ namespace Fusee.Base.Core
         /// <param name="callerName">The calling method</param>
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>       
+        [Conditional("LOG_ERROR")]
         public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
-#if LOG_ERROR
             Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);
-#endif
         }
 
         #endregion
