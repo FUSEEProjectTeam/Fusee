@@ -290,13 +290,42 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>
-        /// <param name="renderTarget">Optional parameter: set this if you want to render to one or more textures.</param>
+        /// <param name="renderTarget">Optional parameter: set this if you want to render to a g-buffer.</param>
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
             SetContext(rc);
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTarget);
+
+            Traverse(_sc.Children);
+        }
+
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="renderTexture">Optional parameter: set this if you want to render to a texture.</param>
+        public void Render(RenderContext rc, WritableTexture renderTexture = null)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget(renderTexture);
+
+            Traverse(_sc.Children);
+        }
+
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>       
+        public void Render(RenderContext rc)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget();
 
             Traverse(_sc.Children);
         }

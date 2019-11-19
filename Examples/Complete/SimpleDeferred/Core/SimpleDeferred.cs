@@ -55,7 +55,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         {
             _cameraPos = new float3(0, 20, -10);
             _gui = CreateGui();
-
+            
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 

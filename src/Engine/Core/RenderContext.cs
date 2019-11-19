@@ -1564,7 +1564,7 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null render target is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        public void SetRenderTarget(RenderTarget renderTarget = null)
+        internal void SetRenderTarget(RenderTarget renderTarget = null)
         {
             ITextureHandle[] texHandles = null;
             if (renderTarget != null)
@@ -1586,7 +1586,7 @@ namespace Fusee.Engine.Core
         ///  Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        public void SetRenderTarget(IWritableTexture tex)
+        internal void SetRenderTarget(IWritableTexture tex)
         {
             var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
@@ -1596,7 +1596,7 @@ namespace Fusee.Engine.Core
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        public void SetRenderTarget(IWritableCubeMap tex)
+        internal void SetRenderTarget(IWritableCubeMap tex)
         {
             var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);
             _rci.SetRenderTarget(tex, texHandle);

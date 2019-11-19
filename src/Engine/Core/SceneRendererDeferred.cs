@@ -350,7 +350,7 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>        
-        public void Render(RenderContext rc)
+        public new void Render(RenderContext rc)
         {
             SetContext(rc);
             AccumulateLight();

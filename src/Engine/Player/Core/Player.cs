@@ -55,8 +55,6 @@ namespace Fusee.Engine.Player.Core
 
         private GamePadDevice _gamePad;
 
-
-
         // Init is called on startup. 
         public override void Init()
         {
@@ -89,12 +87,9 @@ namespace Fusee.Engine.Player.Core
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
-
            
             // Register the input devices that are not already given.
             _gamePad = GetDevice<GamePadDevice>(0);
-
-
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -121,8 +116,7 @@ namespace Fusee.Engine.Player.Core
                     _sceneScale = float4x4.CreateScale(200.0f / maxScale);
                 else
                     _sceneScale = float4x4.Identity;
-            }
-
+            }            
             
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
