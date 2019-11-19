@@ -79,7 +79,7 @@ namespace Fusee.Engine.Core.ShaderShards
             };
             tmpList.AddRange(method);
             tmpList.Add("}");
-
+            tmpList.Add("\n");
             AddTabsToMethods(tmpList);
 
             return string.Join("\n", tmpList);

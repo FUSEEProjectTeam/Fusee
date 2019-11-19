@@ -322,9 +322,9 @@ namespace Fusee.Engine.Core
 
             //Lighting methods
             //------------------------------------------
-            frag.Append(LightingShard.AmbientLightMethod());
-            frag.Append(LightingShard.SpecularLightMethod());
-            frag.Append(LightingShard.DiffuseLightMethod());
+            frag.Append(LightingShard.AmbientComponent());
+            frag.Append(LightingShard.SpecularComponent());
+            frag.Append(LightingShard.DiffuseComponent());
 
             frag.Append(@"void main()
             {

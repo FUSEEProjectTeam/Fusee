@@ -45,22 +45,25 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <param name="effectProps">The ShaderEffectProps.</param>        
         public static string AssembleLightingMethods(ShaderEffectProps effectProps)
         {
-            var lighting = new List<string>();
+            var lighting = new List<string>
+            {
+                AttenuationPointComponent(),
+                AttenuationConeComponent(),
+                AmbientComponent()
+            };
 
             //Adds methods to the PS that calculate the single light components (ambient, diffuse, specular)
             switch (effectProps.MatType)
             {
-                case MaterialType.Standard:                
-                    lighting.Add(AmbientLightMethod());
+                case MaterialType.Standard:
                     if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseLightMethod());
+                        lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
-                        lighting.Add(SpecularLightMethod());
+                        lighting.Add(SpecularComponent());
                     break;
-                case MaterialType.MaterialPbr:                    
-                    lighting.Add(AmbientLightMethod());
+                case MaterialType.MaterialPbr:
                     if (effectProps.MatProbs.HasDiffuse)
-                        lighting.Add(DiffuseLightMethod());
+                        lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
                         lighting.Add(PbrSpecularLightMethod());
                     
@@ -69,8 +72,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
             }
 
-            lighting.Add(ApplyLightMethod(effectProps));
-
+            lighting.Add(ApplyLightMethodForward(effectProps));
 
             return string.Join("\n", lighting);
         }
@@ -78,7 +80,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Method for calculation the ambient lighting component.
         /// </summary>       
-        public static string AmbientLightMethod()
+        public static string AmbientComponent()
         {
             var methodBody = new List<string>
             {
@@ -92,7 +94,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Method for calculation the diffuse lighting component.
         /// </summary>       
-        public static string DiffuseLightMethod()
+        public static string DiffuseComponent()
         {
             var methodBody = new List<string>
             {
@@ -105,12 +107,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Vec3, "N"), GLSL.CreateVar(GLSL.Type.Vec3, "L")                    
                 }, methodBody);
         }
-
-
+        
         /// <summary>
         /// Method for calculation the specular lighting component.
         /// </summary>       
-        public static string SpecularLightMethod()
+        public static string SpecularComponent()
         {
             var methodBody = new List<string>
             {
@@ -131,6 +132,43 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     GLSL.CreateVar(GLSL.Type.Vec4, "intensities"), GLSL.CreateVar(GLSL.Type.Float, "shininess")
                 }, methodBody);
 
+        }
+
+        /// <summary>
+        /// Calculates the attenuation of a point light.
+        /// </summary>
+        /// <returns></returns>
+        public static string AttenuationPointComponent()
+        {
+            var methodBody = new List<string>
+            {
+                $"float distanceToLight = length(lightPos - fragPos);",
+                "float distance = pow(distanceToLight / lightMaxDistance, 2.0);",
+                "return (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
+            };
+
+            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationPointComponent",
+                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "fragPos"), GLSL.CreateVar(GLSL.Type.Vec3, "lightPos"), GLSL.CreateVar(GLSL.Type.Float, "lightMaxDistance") }, methodBody));
+        }
+
+        /// <summary>
+        /// Calculates the cone component of the attenuation of a spot light.
+        /// </summary>
+        /// <returns></returns>
+        public static string AttenuationConeComponent()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 coneDir = lightDir;",
+                "float lightToSurfaceAngleCos = dot(coneDir, -fragToLightDir);",
+
+                "float epsilon = cos(innerConeAngle) - cos(outerConeAngle);",
+                "float t = (lightToSurfaceAngleCos - cos(outerConeAngle)) / epsilon;",
+                "return clamp(t, 0.0, 1.0);"
+            };
+
+            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationConeComponent",
+                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
         }
 
         //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally uses this lighting method for the specular component.
@@ -196,15 +234,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
-        public static string ApplyLightMethod(ShaderEffectProps effectProps)
+        public static string ApplyLightMethodForward(ShaderEffectProps effectProps)
         {
-            /*  var bumpNormals = new List<string>
-              {
-                  "///////////////// BUMP MAPPING, object space ///////////////////",
-                  $"vec3 bumpNormalsDecoded = normalize(texture(BumpTexture, vUV).rgb * 2.0 - 1.0) * (1.0-{BumpIntensityName});",
-                  "vec3 N = normalize(vec3(bumpNormalsDecoded.x, bumpNormalsDecoded.y, -bumpNormalsDecoded.z));"
-              }; */
-
             var bumpNormals = new List<string>
             {
                 "///////////////// BUMP MAPPING, tangent space ///////////////////",
@@ -218,12 +249,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 $"vec3 N = normalize({VaryingNameDeclarations.Normal});"
             };
 
-            var applyLightParamsWithoutNormals = new List<string>
+            var fragToLightDirAndLightInit = new List<string>
             {
-                //"vec3 N = normalize(vNormal);",
                 "vec3 L = vec3(0.0, 0.0, 0.0);",
                 "if(lightType == 1){L = -normalize(direction);}",
-                $"else",
+                "else",
                 "{",
                 $"   L = normalize(position - {VaryingNameDeclarations.Position}.xyz);",
                 "}",
@@ -240,8 +270,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var applyLightParams = new List<string>();
             applyLightParams.AddRange(effectProps.MatProbs.HasBump ? bumpNormals : normals);
-
-            applyLightParams.AddRange(applyLightParamsWithoutNormals);
+            applyLightParams.AddRange(fragToLightDirAndLightInit);
 
             if (effectProps.MatProbs.HasDiffuse)
             {
@@ -269,15 +298,9 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 }
             }
 
-            var attenuation = new List<string>
-            {
-                $"float distanceToLight = length(position - {VaryingNameDeclarations.Position}.xyz);",
-                "float distance = pow(distanceToLight / maxDistance, 2.0);",
-                "float att = (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
-            };
-
             var pointLight = new List<string>
             {
+                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance);",
                 "lighting = (Idif * att) + (Ispe * att);",
                 "lighting *= strength;"
             };
@@ -291,14 +314,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             var spotLight = new List<string>
             { 
-            //cone component 
-            "float lightToSurfaceAngleCos = dot(direction, -L);",
-
-            "float epsilon = cos(innerConeAngle) - cos(outerConeAngle);",
-            "float t = (lightToSurfaceAngleCos - cos(outerConeAngle)) / epsilon;",
-
-            "att *= clamp(t, 0.0, 1.0);",
-            "",
+                $"float att = attenuationPointComponent({VaryingNameDeclarations.Position}.xyz, position, maxDistance) * attenuationConeComponent(direction, L, innerConeAngle, outerConeAngle);",
 
                 "lighting = (Idif * att) + (Ispe * att);",
                 "lighting *= strength;"
@@ -315,7 +331,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             methodBody.AddRange(applyLightParams);
             methodBody.Add("vec4 lighting = vec4(0);");
             methodBody.Add("");
-            methodBody.AddRange(attenuation);
+            //methodBody.AddRange(attenuation);
             methodBody.Add("if(lightType == 0) // PointLight");
             methodBody.Add("{");
             methodBody.AddRange(pointLight);
