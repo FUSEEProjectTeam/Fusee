@@ -79,8 +79,8 @@ namespace Fusee.Examples.Simple.Core
         {
             SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
             SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
-            //SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
-            //SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
+            SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
+            SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
             //SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
             SceneNodeContainer maze = new SceneNodeContainer
             {
@@ -106,13 +106,30 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 4.1f, 2, countY * 4.1f)
+                                        Translation = new float3(countX * 2f, 2, countY * 2.6f)
                                     },
+                                    cornerstone.GetComponent<ShaderEffectComponent>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
 
                         }
                         );
+                    }
+                    else if (countX % 2 == 0 && countY % 2 == 1 && bmp[countX, countY]== 1)
+                    {
+                        maze.Children.Add(new SceneNodeContainer
+                        {
+                            Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(countX * 2 , 2, countY * 2.5f)
+                                    },
+                                    wallZ.GetComponent<Mesh>()
+                                },
+
+                        }
+);
                     }
                 }
             }
@@ -201,7 +218,9 @@ namespace Fusee.Examples.Simple.Core
 
 
             //var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
-            RC.View = float4x4.CreateTranslation(0, -10, 50) * float4x4.CreateRotationY(_angleVert);
+            var mtxRot = float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(50 * M.Cos(_angleVert), 50, 50 * M.Sin(_angleVert), 50, 0, 50, 0, 1, 0);
+            RC.View = mtxCam;
 
             //move the ball
             //if (Keyboard.ADAxis != 0)
