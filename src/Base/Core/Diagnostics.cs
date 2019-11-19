@@ -222,10 +222,10 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>       
-        public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "")
+        public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
 #if LOG_DEBUG
-            Writer(o, SeverityLevel.DEBUG, ex, args, callerName);
+            Writer(o, SeverityLevel.DEBUG, ex, args, callerName, sourceLineNumber, sourceFilePath);
 #endif
         }
 
