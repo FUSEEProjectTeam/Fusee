@@ -26,25 +26,11 @@
     <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true'" />
   </ItemGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-        <DefineConstants>TRACE;DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Desktop|AnyCPU'">
-        <DefineConstants>PLATFORM_DESKTOP;TRACE;DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Android|AnyCPU'">
-        <DefineConstants>PLATFORM_ANDROID;TRACE;DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
-    </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <DefineConstants>TRACE;DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
+  </PropertyGroup>
 
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-        <DefineConstants>LOG_ERROR</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Desktop|AnyCPU'">
-        <DefineConstants>PLATFORM_DESKTOP;LOG_ERROR</DefineConstants>
-    </PropertyGroup>
-    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-Android|AnyCPU'">
-        <DefineConstants>PLATFORM_ANDROID;LOG_ERROR</DefineConstants>
-    </PropertyGroup>
-
-
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DefineConstants>LOG_ERROR</DefineConstants>
+  </PropertyGroup>
 </Project>
