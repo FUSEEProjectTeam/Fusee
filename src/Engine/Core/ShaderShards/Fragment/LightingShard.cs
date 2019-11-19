@@ -1,6 +1,9 @@
-﻿using System;
+﻿using Fusee.Base.Common;
+using Fusee.Engine.Common;
+using Fusee.Serialization;
+using System;
 using System.Collections.Generic;
-using System.Globalization;
+using System.Text;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
 {
@@ -65,14 +68,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (effectProps.MatProbs.HasDiffuse)
                         lighting.Add(DiffuseComponent());
                     if (effectProps.MatProbs.HasSpecular)
-                        lighting.Add(PbrSpecularLightMethod());
+                        lighting.Add(PbrSpecularComponent());
                     
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"Material Type unknown or incorrect: {effectProps.MatType}");
             }
 
-            lighting.Add(ApplyLightMethodForward(effectProps));
+            lighting.Add(ApplyLightForward(effectProps));
 
             return string.Join("\n", lighting);
         }
@@ -134,50 +137,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
         }
 
-        /// <summary>
-        /// Calculates the attenuation of a point light.
-        /// </summary>
-        /// <returns></returns>
-        public static string AttenuationPointComponent()
-        {
-            var methodBody = new List<string>
-            {
-                $"float distanceToLight = length(lightPos - fragPos);",
-                "float distance = pow(distanceToLight / lightMaxDistance, 2.0);",
-                "return (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
-            };
-
-            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationPointComponent",
-                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "fragPos"), GLSL.CreateVar(GLSL.Type.Vec3, "lightPos"), GLSL.CreateVar(GLSL.Type.Float, "lightMaxDistance") }, methodBody));
-        }
-
-        /// <summary>
-        /// Calculates the cone component of the attenuation of a spot light.
-        /// </summary>
-        /// <returns></returns>
-        public static string AttenuationConeComponent()
-        {
-            var methodBody = new List<string>
-            {
-                "vec3 coneDir = lightDir;",
-                "float lightToSurfaceAngleCos = dot(coneDir, -fragToLightDir);",
-
-                "float epsilon = cos(innerConeAngle) - cos(outerConeAngle);",
-                "float t = (lightToSurfaceAngleCos - cos(outerConeAngle)) / epsilon;",
-                "return clamp(t, 0.0, 1.0);"
-            };
-
-            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationConeComponent",
-                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
-        }
-
         //TODO: At the moment Blender's Principled BSDF material gets translated into a MaterialPBR and internally uses this lighting method for the specular component.
         //This is not the same lighting method as is used in Blender and will therefor only produce approximately visually correct results.
         /// <summary>
         /// Method for calculation the specular lighting component.
         /// Replaces the standard specular calculation with the Cook-Torrance-Shader
         /// </summary>
-        public static string PbrSpecularLightMethod()
+        public static string PbrSpecularComponent()
         {
             var methodBody = new List<string>
             {
@@ -214,13 +180,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 "     // -- fresnel",
                 "     // [Schlick 1994, An Inexpensive BRDF Model for Physically-Based Rendering]",
                 "     float fresnel = pow(1.0 - VdotH, 5.0);",
-                $"    fresnel = clamp((50.0 * {UniformNameDeclarations.SpecularColorName}.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
+                $"    fresnel = clamp((50.0 * {UniformNameDeclarations.SpecularColor}.y), 0.0, 1.0) * fresnel + (1.0 - fresnel);",
                 "",
                 $"     specular = (fresnel * geoAtt * roughness) / (NdotV * NdotL * 3.14);",
                 "     ",
                 "}",
                 "",
-                $"return intensities * {UniformNameDeclarations.SpecularColorName} * (k + specular * (1.0-k));"
+                $"return intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0-k));"
             };
 
             return GLSL.CreateMethod(GLSL.Type.Vec4, "specularLighting",
@@ -232,9 +198,46 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
+        /// Calculates the attenuation of a point light.
+        /// </summary>
+        /// <returns></returns>
+        public static string AttenuationPointComponent()
+        {
+            var methodBody = new List<string>
+            {
+                $"float distanceToLight = length(lightPos - fragPos);",
+                "float distance = pow(distanceToLight / lightMaxDistance, 2.0);",
+                "return (clamp(1.0 - pow(distance, 2.0), 0.0, 1.0)) / (pow(distance, 2.0) + 1.0);",
+            };
+
+            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationPointComponent",
+                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "fragPos"), GLSL.CreateVar(GLSL.Type.Vec3, "lightPos"), GLSL.CreateVar(GLSL.Type.Float, "lightMaxDistance") }, methodBody));
+        }
+
+        /// <summary>
+        /// Calculates the cone component of the attenuation of a spot light.
+        /// </summary>
+        /// <returns></returns>
+        public static string AttenuationConeComponent()
+        {
+            var methodBody = new List<string>
+            {
+                "vec3 coneDir = lightDir;",
+                "float lightToSurfaceAngleCos = dot(coneDir, -fragToLightDir);",
+
+                "float epsilon = cos(innerConeAngle) - cos(outerConeAngle);",
+                "float t = (lightToSurfaceAngleCos - cos(outerConeAngle)) / epsilon;",
+                "return clamp(t, 0.0, 1.0);"
+            };
+
+            return (GLSL.CreateMethod(GLSL.Type.Float, "attenuationConeComponent",
+                new[] { GLSL.CreateVar(GLSL.Type.Vec3, "lightDir"), GLSL.CreateVar(GLSL.Type.Vec3, "fragToLightDir"), GLSL.CreateVar(GLSL.Type.Float, "innerConeAngle"), GLSL.CreateVar(GLSL.Type.Float, "outerConeAngle") }, methodBody));
+        }
+        
+        /// <summary>
         /// Wraps all the lighting methods into a single one.
         /// </summary>
-        public static string ApplyLightMethodForward(ShaderEffectProps effectProps)
+        public static string ApplyLightForward(ShaderEffectProps effectProps)
         {
             var bumpNormals = new List<string>
             {
@@ -277,10 +280,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 //TODO: Test alpha blending between diffuse and texture
                 if (effectProps.MatProbs.HasDiffuseTexture)
                     applyLightParams.Add(
-                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColorName}, texture({UniformNameDeclarations.DiffuseTextureName}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMixName});" +
+                        $"vec4 blendedCol = mix({UniformNameDeclarations.DiffuseColor}, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}), {UniformNameDeclarations.DiffuseMix});" +
                         $"Idif = blendedCol * diffuseLighting(N, L) * intensities;");
                 else
-                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColorName}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");                
+                    applyLightParams.Add($"Idif = vec4({UniformNameDeclarations.DiffuseColor}.rgb * intensities.rgb * diffuseLighting(N, L), 1.0);");                
             }
 
             if (effectProps.MatProbs.HasSpecular)
@@ -288,13 +291,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (effectProps.MatType == MaterialType.Standard)
                 {
                     applyLightParams.Add($"float specularTerm = specularLighting(N, L, V, intensities, {UniformNameDeclarations.SpecularShininessName});");
-                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColorName}.rgb * { UniformNameDeclarations.SpecularIntensityName} *intensities.rgb) *specularTerm, 1.0);");
+                    applyLightParams.Add($"Ispe = vec4(({ UniformNameDeclarations.SpecularColor}.rgb * { UniformNameDeclarations.SpecularStrength} *intensities.rgb) *specularTerm, 1.0);");
                 }
                 else if(effectProps.MatType == MaterialType.MaterialPbr)
                 {
                     applyLightParams.Add($"float k = 1.0 - {UniformNameDeclarations.DiffuseFraction};");
                     applyLightParams.Add("float specular = specularLighting(N, L, V, intensities, k);");
-                    applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColorName} * (k + specular * (1.0 - k));");
+                    applyLightParams.Add($"Ispe = intensities * {UniformNameDeclarations.SpecularColor} * (k + specular * (1.0 - k));");
                 }
             }
 
@@ -361,6 +364,120 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
+        /// Wraps all the lighting methods into a single one. For deferred rendering, this equals the "main" method.
+        /// </summary>
+        public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
+        {
+            var methodBody = new List<string>();
+            methodBody.Add($"vec3 normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+
+            //Do not do calculations for the background - is there a smarter way (stencil buffer)?
+            //---------------------------------------
+            methodBody.AddRange(
+            new List<string>()
+            {
+            "if(normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)",
+            "{"
+            });
+            methodBody.Add($"    {FragPropertiesShard.OutColorName} = BackgroundColor;");
+            methodBody.Add(@"    return;");
+            methodBody.Add("}");
+
+            methodBody.Add($"vec4 fragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, {VaryingNameDeclarations.TextureCoordinates});");
+            methodBody.Add($"vec4 diffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec3 specularVars = texture({RenderTargetTextureTypes.G_SPECULAR.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+
+            //Lighting calculation
+            //-------------------------            
+
+            methodBody.AddRange(new List<string>()
+            {
+            "// then calculate lighting as usual",
+            "vec3 lighting = vec3(0,0,0);",
+            "",
+            "if(PassNo == 0)",
+            "{",
+            "   vec3 ambient = ambientLighting(0.2, diffuseColor).xyz;",
+                "",
+            "   if(SsaoOn == 1)",
+            "      ambient *= occlusion;",
+
+            "   lighting += ambient;",
+            "}",
+            "",
+            "if(light.isActive == 1)",
+            "{",
+            "   float shadow = 0.0;",
+            "",
+            "    vec3 lightColor = light.intensities.xyz;",
+            "    vec3 lightPosition = light.position;",
+            "    vec3 lightDir = normalize(lightPosition - fragPos.xyz);",
+            "",
+            "    //attenuation",
+            "    float attenuation = 1.0;",
+            "switch (light.lightType)",
+            "{",
+            "    //Point",
+            "    case 0:",
+            "        {",
+            "            attenuation = attenuationPointComponent(fragPos.xyz, lightPosition, light.maxDistance);",
+            "           break;",
+            "        }",
+            "    //Parallel",
+            "   case 1:",
+            "       lightDir = -light.direction;",
+            "        break;",
+            "    //Spot",
+            "    case 2:",
+            "       {",
+            "           attenuation = attenuationPointComponent(fragPos.xyz, lightPosition, light.maxDistance) * attenuationConeComponent(light.direction, lightDir, light.innerConeAngle, light.outerConeAngle);",
+            "           break;",
+            "       }",
+            "   case 3:",
+            "        lightDir = -light.direction;",
+            "        break;",
+            "}"
+            });
+
+            if (lc.IsCastingShadows)
+            {
+                methodBody.Add(GetShadow(lc, isCascaded, numberOfCascades));
+            }
+
+            // diffuse 
+            methodBody.AddRange(
+            new List<string>() {
+            "vec3 diffuse = diffuseLighting(normal, lightDir) * diffuseColor.xyz * lightColor;",
+            "lighting += (1.0 - shadow) * (diffuse * attenuation * light.strength);"
+            });
+
+            // specular            
+            methodBody.AddRange(
+            new List<string>() {
+            "vec3 viewDir = normalize(-fragPos.xyz);",
+            "float shininess = specularVars.r * 256.0;",
+            "float specularStrength = specularVars.g;",
+            "",
+            "float specularTerm = specularLighting(normal, lightDir, viewDir, diffuseColor, shininess);",
+            "",
+            "vec3 specular = specularStrength * specularTerm * lightColor;",
+            "lighting += (1.0 - shadow) * (specular * attenuation * light.strength);"
+            });
+
+            if (isCascaded && debugCascades)
+            {
+                methodBody.Add(ColorDebugCascades());
+            }
+
+            methodBody.Add("}");
+
+            methodBody.Add($"{FragPropertiesShard.OutColorName} = vec4(lighting, 1.0);");
+
+            return ShaderShardUtil.MainMethod(methodBody);
+        }
+
+        /// <summary>
         /// Creates the method for calculating whether a fragment is in shadow or not, by using a shadow map (sampler2D).
         /// </summary>
         /// <returns></returns>
@@ -420,16 +537,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var methodBody = new List<string>()
             {
-                "float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;",
+            "float pcfKernelSize = pcfKernelHalfSize + pcfKernelHalfSize + 1.0;",
             "pcfKernelSize *= pcfKernelSize;",
 
             "vec3 sampleOffsetDirections[20] = vec3[]",
             "(",
-               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize),",
-               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize),",
-               "vec3(pcfKernelHalfSize, pcfKernelHalfSize, 0), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, 0),",
-               "vec3(pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(pcfKernelHalfSize, 0, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, -pcfKernelHalfSize),",
-               "vec3(0, pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(0, pcfKernelHalfSize, -pcfKernelHalfSize)",
+            "   vec3(pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, pcfKernelHalfSize),",
+            "   vec3(pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, -pcfKernelHalfSize),",
+            "   vec3(pcfKernelHalfSize, pcfKernelHalfSize, 0), vec3(pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, -pcfKernelHalfSize, 0), vec3(-pcfKernelHalfSize, pcfKernelHalfSize, 0),",
+            "   vec3(pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, pcfKernelHalfSize), vec3(pcfKernelHalfSize, 0, -pcfKernelHalfSize), vec3(-pcfKernelHalfSize, 0, -pcfKernelHalfSize),",
+            "   vec3(0, pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, pcfKernelHalfSize), vec3(0, -pcfKernelHalfSize, -pcfKernelHalfSize), vec3(0, pcfKernelHalfSize, -pcfKernelHalfSize)",
             ");",
 
             "// get vector between fragment position and light position",
@@ -440,16 +557,16 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "float shadow = 0.0;",
             "float thisBias = max(bias * (1.0 - dot(normal, lightDir)), bias * 0.01);//0.15;",
             "int samples = 20;",
-            "vec3 camPos = FUSEE_IV[3].xyz;",
+            $"vec3 camPos = {UniformNameDeclarations.IView}[3].xyz;",
             "float viewDistance = length(camPos - fragPos);",
 
             "float diskRadius = 0.5; //(1.0 + (viewDistance / farPlane)) / pcfKernelSize;",
             "for (int i = 0; i < samples; ++i)",
             "{",
-                "float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;",
-                "closestDepth *= farPlane;   // Undo mapping [0;1]",
-                "if (currentDepth - thisBias > closestDepth)",
-                    "shadow += 1.0;",
+            "   float closestDepth = texture(shadowMap, fragToLight + sampleOffsetDirections[i] * diskRadius).r;",
+            "   closestDepth *= farPlane;   // Undo mapping [0;1]",
+            "   if (currentDepth - thisBias > closestDepth)",
+            "       shadow += 1.0;",
             "}",
             "shadow /= float(samples);",
             "return shadow;"
@@ -465,6 +582,154 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 GLSL.CreateVar(GLSL.Type.Float, "bias"),
                 GLSL.CreateVar(GLSL.Type.Float, "pcfKernelHalfSize")
             }, methodBody);
+        }
+
+        private static string GetShadow(LightComponent lc, bool isCascaded, int numberOfCascades = 0)
+        {
+            var frag = new StringBuilder();
+            if (isCascaded)
+            {
+                frag.Append(@"
+                int thisFragmentsFirstCascade = -1;
+                int thisFragmentsSecondCascade = -1;
+                float fragDepth = fragPos.z;
+                
+                ");
+
+                frag.AppendLine($"int numberOfCascades = {numberOfCascades};");
+                frag.Append($"for (int i = 0; i < numberOfCascades; i++)\n");
+                frag.Append(
+                @"{
+                    vec2 cp1 = ClipPlanes[i];
+                    if(fragDepth < cp1.y)
+                    {                        
+                        thisFragmentsFirstCascade = i;  
+                        if(i + 1 <= numberOfCascades - 1)
+                        {
+                            vec2 cp2 = ClipPlanes[i+1];
+                            if(fragDepth < cp2.y)                                                 
+                                thisFragmentsSecondCascade = i+1;
+                        }
+                        break;
+                    }                    
+                }
+                ");
+
+                frag.Append(@"
+                // shadow                
+                if (light.isCastingShadows == 1)
+                {
+                ");
+                 frag.AppendLine($"vec4 posInLightSpace1 = (LightSpaceMatrices[thisFragmentsFirstCascade] * {UniformNameDeclarations.IView}) * fragPos;");
+                 frag.Append(@"
+                    float shadow1 = ShadowCalculation(ShadowMaps[thisFragmentsFirstCascade], posInLightSpace1, normal, lightDir,  light.bias, 1.0);                   
+
+                    //blend cascades to avoid hard cuts between them
+                    if(thisFragmentsSecondCascade != -1)
+                    {  
+                        float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade-1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps        
+                    ");
+                frag.AppendLine($"vec4 posInLightSpace2 = (LightSpaceMatrices[thisFragmentsSecondCascade] * {UniformNameDeclarations.IView}) * fragPos;");
+                frag.Append(@"
+                        float shadow2 = ShadowCalculation(ShadowMaps[thisFragmentsSecondCascade], posInLightSpace2, normal, lightDir, light.bias, 1.0);    
+                        float z = ClipPlanes[thisFragmentsFirstCascade].y - ClipPlanes[thisFragmentsFirstCascade].x;
+                        float percent = (100.0/z * (fragDepth - ClipPlanes[thisFragmentsFirstCascade].x));
+                        float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
+
+                        if(percent >= blendStartPercent)
+                            shadow = mix(shadow1, shadow2, percentNormalized);
+                        else
+                            shadow = shadow1;
+                    }
+                    else                    
+                        shadow = shadow1;
+                }                              
+                ");
+            }
+            else
+            {
+                if (lc.Type != LightType.Point)
+                {
+                    frag.Append(@"
+                    // shadow                
+                    if (light.isCastingShadows == 1)
+                    {
+                    ");
+                    frag.AppendLine($"  vec4 posInLightSpace = (LightSpaceMatrix * {UniformNameDeclarations.IView}) * fragPos;");
+                    frag.Append(@"
+                        shadow = ShadowCalculation(ShadowMap, posInLightSpace, normal, lightDir, light.bias, 1.0);                    
+                    }                
+                    ");
+                }
+                else
+                {
+                    frag.Append(@"
+                    // shadow       
+                    if (light.isCastingShadows == 1)
+                    {
+                    ");
+                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, light.positionWorldSpace, light.maxDistance, normal, lightDir, light.bias, 2.0);");
+                    frag.AppendLine("}");                    
+                }
+            }
+
+            return frag.ToString();
+        }
+
+        private static string ColorDebugCascades()
+        {
+            var frag = new StringBuilder();
+            frag.Append(@"                     
+
+            vec3 cascadeColor1 = vec3(0.0,0.0,0.0);
+            vec3 cascadeColor2 = vec3(0.0,0.0,0.0);
+            vec3 cascadeColor = vec3(1.0,1.0,1.0);
+
+            if(thisFragmentsFirstCascade == 0)
+                cascadeColor1 = vec3(1,0.3f,0.3f);
+            else if(thisFragmentsFirstCascade == 1)
+                    cascadeColor1 = vec3(0.3f,1,0.3f);
+            else if(thisFragmentsFirstCascade == 2)
+                cascadeColor1 = vec3(0.3f,0.3f,1);
+            else if(thisFragmentsFirstCascade == 3)
+                cascadeColor1 = vec3(1,1,0.3f);
+            else if(thisFragmentsFirstCascade == 4)
+                cascadeColor1 = vec3(1,0.3,1);
+            else if(thisFragmentsFirstCascade == 5)
+                cascadeColor1 = vec3(1,0.3f,1);                
+
+            if(thisFragmentsSecondCascade == 0)
+                cascadeColor2 = vec3(1,0.3f,0.3f);
+            else if(thisFragmentsSecondCascade == 1)
+                    cascadeColor2 = vec3(0.3f,1,0.3f);
+            else if(thisFragmentsSecondCascade == 2)
+                cascadeColor2 = vec3(0.3f,0.3f,1);
+            else if(thisFragmentsSecondCascade == 3)
+                cascadeColor2 = vec3(1,1,0.3f);
+            else if(thisFragmentsSecondCascade == 4)
+                cascadeColor2 = vec3(1,0.3,1);
+            else if(thisFragmentsSecondCascade == 5)
+                cascadeColor2 = vec3(1,0.3f,1);
+
+            if(thisFragmentsSecondCascade != -1)
+            {
+                float blendStartPercent = max(85.0 - (5.0 * float(thisFragmentsFirstCascade -1)), 50.0); //the farther away the cascade, the earlier we blend the shadow maps   
+                float z = ClipPlanes[thisFragmentsFirstCascade].y;
+                float percent = (100.0/z * fragDepth);
+                float percentNormalized = (percent - blendStartPercent) / (100.0 - blendStartPercent);
+                if(percent >= blendStartPercent)
+                    cascadeColor = mix(cascadeColor1, cascadeColor2, percentNormalized);
+                else
+                    cascadeColor = cascadeColor1;
+            }
+            else
+            {
+                cascadeColor = cascadeColor1;
+            }
+            lighting *= cascadeColor;
+                      
+                ");
+            return frag.ToString();
         }
     }
 }

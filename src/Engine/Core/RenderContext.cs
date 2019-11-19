@@ -188,7 +188,6 @@ namespace Fusee.Engine.Core
             // ReSharper restore InconsistentNaming
         };
 
-
         #endregion
 
         #region Matrix Fields
@@ -799,8 +798,6 @@ namespace Fusee.Engine.Core
 
             //_debugShader = Shaders.GetColorShader(this);
             //_debugColor = _debugShader.GetShaderParam("color");
-
-
         }
 
         #endregion

@@ -42,23 +42,6 @@ namespace Fusee.Engine.Core.ShaderShards
             return $"{DecodeType(type)} {varName}";
         }
 
-        private static void AddTabsToMethods(List<string> list)
-        {
-            var indent = false;
-            for (var i = 0; i < list.Count; i++)
-            {
-                var s = list[i];
-                if (list[i].Contains("}"))
-                    break;
-
-                if (indent)
-                    list[i] = "   " + s;
-
-                if (list[i].Contains("{"))
-                    indent = true;
-            }
-        }
-
         /// <summary>
         /// Creates a GLSL method
         /// </summary>
@@ -67,8 +50,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="methodParams"></param>
         /// <param name="method">method body goes here</param>
         /// <returns></returns>
-        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams,
-            IList<string> method)
+        internal static string CreateMethod(Type returnType, string methodName, string[] methodParams, IList<string> method)
         {
             method = method.Select(x => "   " + x).ToList(); // One Tab indent
 
@@ -113,6 +95,23 @@ namespace Fusee.Engine.Core.ShaderShards
                     return "void";
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
+
+        private static void AddTabsToMethods(List<string> list)
+        {
+            var indent = false;
+            for (var i = 0; i < list.Count; i++)
+            {
+                var s = list[i];
+                if (list[i].Contains("}"))
+                    break;
+
+                if (indent)
+                    list[i] = "   " + s;
+
+                if (list[i].Contains("{"))
+                    indent = true;
             }
         }
     }

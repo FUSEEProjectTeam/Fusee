@@ -1,7 +1,6 @@
 ﻿using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Serialization;
-using System;
 using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Fragment
@@ -12,9 +11,39 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class FragPropertiesShard
     {
         /// <summary>
-        /// The standard name for the fragment shader output.
+        /// The standard name for the fragment shader color output.
         /// </summary>
         public static string OutColorName = "oFragmentColor";
+
+        /// <summary>
+        /// Creates a single color (vec4) out parameter.
+        /// </summary>       
+        public static string ColorOut()
+        {
+            return GLSL.CreateOut(GLSL.Type.Vec4, OutColorName);
+        }
+
+        /// <summary>
+        /// Creates the out parameters for rendering into a G-Buffer object.
+        /// </summary>
+        /// <returns></returns>
+        public static string GBufferOut()
+        {
+            var outs = new List<string>();
+            var texCount = 0;
+
+            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
+            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
+            {
+                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
+
+                if (texName == ssaoString) continue;
+
+                outs.Add($"layout (location = {texCount}) out vec4 {texName};\n");
+                texCount++;
+            }
+            return string.Join("\n", outs);
+        }
 
         /// <summary>
         /// Returns the in parameters for a ShaderEffect, depending on the given ShaderEffectProps.
@@ -56,12 +85,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             var pxFusUniforms = new List<string>
             {
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV")
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITView),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IView),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView)
             };
 
             return string.Join("\n", pxFusUniforms);
@@ -72,13 +101,13 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="effectProps">The ShaderEffectProps.</param>
         /// <returns></returns>
-        public static string MatPropsUniforms(ShaderEffectProps effectProps)
+        public static string MaterialPropsUniforms(ShaderEffectProps effectProps)
         {
             var matPropUnifroms = new List<string>();
 
             if (effectProps.MatProbs.HasSpecular)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColorName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.SpecularColor));
 
                 if (effectProps.MatType == MaterialType.MaterialPbr)
                 {
@@ -89,12 +118,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 else if(effectProps.MatType == MaterialType.Standard)
                 { 
                     matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularShininessName));
-                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularIntensityName));                    
+                    matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.SpecularStrength));                    
                 }
             }
 
             if (effectProps.MatProbs.HasDiffuse)
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColorName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.DiffuseColor));
 
             if (effectProps.MatProbs.HasEmissive)
                 matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.EmissiveColorName));
@@ -108,8 +137,8 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
             if (effectProps.MatProbs.HasDiffuseTexture)
             {
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTextureName));
-                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMixName));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.DiffuseTexture));
+                matPropUnifroms.Add(GLSL.CreateUniform(GLSL.Type.Float, UniformNameDeclarations.DiffuseMix));
             }
 
             if (effectProps.MatProbs.HasEmissiveTexture)
@@ -133,7 +162,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             {
                 var texName = UniformNameDeclarations.DeferredRenderTextures[i];
 
-                uniforms.Add($"uniform sampler2D {texName};\n");
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, texName));
                 texCount++;
             }
             return string.Join("\n", uniforms);
@@ -179,42 +208,12 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         }
 
         /// <summary>
-        /// Creates a single color (vec4) out parameter.
-        /// </summary>       
-        public static string ColorOut()
-        {
-            return GLSL.CreateOut(GLSL.Type.Vec4, OutColorName);
-        }
-
-        /// <summary>
         /// Creates the "allLights" uniform array, as it is used in forward rendering.
         /// </summary>
         /// <returns></returns>
         public static string FixedNumberLightArray()
         {
             return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
-        }
-
-        /// <summary>
-        /// Creates the out parameters for rendering into a G-Buffer object.
-        /// </summary>
-        /// <returns></returns>
-        public static string GBufferOut()
-        {
-            var outs = new List<string>();
-            var texCount = 0;
-
-            var ssaoString = RenderTargetTextureTypes.G_SSAO.ToString();
-            for (int i = 0; i < UniformNameDeclarations.DeferredRenderTextures.Count; i++)
-            {
-                var texName = UniformNameDeclarations.DeferredRenderTextures[i];
-
-                if (texName == ssaoString) continue;
-
-                outs.Add($"layout (location = {texCount}) out vec4 {texName};\n");
-                texCount++;
-            }
-            return string.Join("\n", outs);
         }        
     }
 }

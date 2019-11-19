@@ -8,6 +8,11 @@ namespace Fusee.Engine.Core.ShaderShards
     public static class HeaderShard
     {
         /// <summary>
+        /// Name of the number of bones preprocessor directive.
+        /// </summary>
+        public static string BoneDefineVar = "BONES";
+
+        /// <summary>
         /// Sets the precision to highp float.
         /// </summary>
         public static string EsPrecisionHighpFloat()
@@ -29,7 +34,7 @@ namespace Fusee.Engine.Core.ShaderShards
         public static string DefineBones(ShaderEffectProps effectProps, WeightComponent wc)
         {
             if (effectProps.MeshProbs.HasWeightMap)
-                return $"#define BONES {wc.Joints.Count}";
+                return $"#define {BoneDefineVar} {wc.Joints.Count}";
             else return "";
         }
     }

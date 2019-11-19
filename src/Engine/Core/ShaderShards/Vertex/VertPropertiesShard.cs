@@ -1,6 +1,4 @@
-﻿using Fusee.Serialization;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace Fusee.Engine.Core.ShaderShards.Vertex
 {
@@ -72,22 +70,22 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
         {
             var uniforms = new List<string> 
             {
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MV"),
-                GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_MVP")
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelView),
+                GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ModelViewProjection)
             };
 
             if (effectProps.MeshProbs.HasNormals)
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_ITMV"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.ITModelView));
 
             if (effectProps.MatProbs.HasSpecular && !effectProps.MeshProbs.HasWeightMap)
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
 
             if (effectProps.MeshProbs.HasWeightMap)
             {
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_V"));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_P"));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_IMV"));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_BONES[BONES]"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Projection));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones+"["+ HeaderShard.BoneDefineVar+"]"));
             }
 
             return string.Join("\n", uniforms);
