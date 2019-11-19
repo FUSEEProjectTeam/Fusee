@@ -56,6 +56,7 @@
     <Compile Include="TexturePixelInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Fusee.Engine.Imp.Graphics.Android.nuspec" />
     <None Include="Resources\AboutResources.txt" />
   </ItemGroup>
   <ItemGroup>
