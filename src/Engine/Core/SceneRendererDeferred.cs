@@ -30,7 +30,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Sets the G-Buffer texture resolution.
         /// </summary>
-        public TexRes TexRes { get; private set; } = TexRes.HIGH_RES;
+        public TexRes TexRes { get; private set; } = TexRes.MID_RES;
 
         /// <summary>
         /// Determines if the scene gets rendered with Fast Approximate Anti Aliasing.
@@ -368,8 +368,7 @@ namespace Fusee.Engine.Core
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.           
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
-            _currentPass = RenderPasses.SHADOW;
-            _rc.SetShaderEffect(_shadowEffect);
+            _currentPass = RenderPasses.SHADOW;            
 
             foreach (var lightVisRes in LightViseratorResults)
             {
@@ -402,6 +401,7 @@ namespace Fusee.Engine.Core
                             {
                                 _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[i]);
                                 _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+                                _rc.SetShaderEffect(_shadowEffect);
 
                                 rc.SetRenderTarget(shadowParams.ShadowMaps[i]);
                                 Traverse(_sc.Children);
@@ -413,6 +413,7 @@ namespace Fusee.Engine.Core
                         {
                             _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);
                             _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
+                            _rc.SetShaderEffect(_shadowEffect);
 
                             rc.SetRenderTarget(shadowParams.ShadowMaps[0]);
                             Traverse(_sc.Children);
