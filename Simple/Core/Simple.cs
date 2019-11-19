@@ -26,14 +26,14 @@ namespace Fusee.Examples.Simple.Core
         private TransformComponent _ball;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
-        //private int countX = 0;
+        private TransformComponent mazeTransform =new TransformComponent();
         private const float _speed = 7;
         private TransformComponent[,] wallsTransform;
         private int[,] bmp = new int[,] {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                         {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
                                         {1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1},
                                         {1,0,1,0,0,0,0,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,0,0,1,0,1,0,1},
-                                        {1,0,1,1,1,1,1,0,1,1,0,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1},
+                                        {1,0,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1},
                                         {1,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,0,0,2},
                                         {1,1,1,1,1,0,1,0,1,1,1,1,1,0,1,0,1,1,1,0,1,0,1,0,1,0,1,1,1,1,1},
                                         {1,0,0,0,1,0,1,0,1,0,0,0,0,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1},
@@ -77,53 +77,54 @@ namespace Fusee.Examples.Simple.Core
 
         SceneContainer CreateScene()
         {
-            for (int j = 0; j < bmp.GetLength(1); j++)
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
+            SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
+            //SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
+            //SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
+            //SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
+            SceneNodeContainer maze = new SceneNodeContainer
+            {
+                Components = new List<SceneComponentContainer>
+                {
+                    // TRANSFROM COMPONENT
+                    mazeTransform,
+
+                    // SHADER EFFECT COMPONENT
+                    cornerstone.GetComponent<ShaderEffectComponent>(),
+                },
+                Children = new ChildList()
+            };
+            for (int countY = 0; countY < bmp.GetLength(1); countY++)
             {
                 for (int countX = 0; countX < bmp.GetLength(0); countX++)
                 {
-                    if (countX % 2 == 0 && j % 2 == 0)
+                    if (countX % 2 == 0 && countY % 2 == 0 && bmp[countX, countY] == 1)
                     {
-                        wallsTransform[countX, j] = new TransformComponent
+                        maze.Children.Add(new SceneNodeContainer
                         {
-                            Translation = new float3(countX * 41, 0, j * 41)
-                        };
+                            Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(countX * 4.1f, 2, countY * 4.1f)
+                                    },
+                                    cornerstone.GetComponent<Mesh>()
+                                },
+
+                        }
+                        );
                     }
                 }
             }
-            return new SceneContainer
-            {
+            return new SceneContainer{
                 Children = new List<SceneNodeContainer>
                 {
-                    //for (int j = 0; j < bmp.GetLength(1); j++)
-                    //{
-                    //    for (int i = 0; i < bmp.GetLength(0); i++)
-                    //    {
-                    //        if (i % 2 == 0 && j % 2 == 0)
-                    //        {
-
-                    //            new SceneNodeContainer
-                    //            {
-                    //                Components = new List<SceneComponentContainer>
-                    //                {
-                    //                    // TRANSFROM COMPONENT
-                    //                    wallsTransform[i,j],
-
-                    //                    // SHADER EFFECT COMPONENT
-                    //                    new ShaderEffectComponent
-                    //                    {
-                    //                        Effect = AssetStorage.Get<ShaderEffect>("cornerstone.fus")
-                    //                    },
-
-                    //                    // MESH COMPONENT
-                    //                    AssetStorage.Get<Mesh>("cornerstone.fus")
-                    //                }
-                    //            };
-                    //        }
-                    //    }
-                    //}
+                    mazeScene.Children.First(),
+                    maze
                 }
             };
         }
+                    
 
  
         // Init is called on startup. 
@@ -196,29 +197,29 @@ namespace Fusee.Examples.Simple.Core
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
+            //_ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
 
 
-            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
-            RC.View = mtxCam;
+            //var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            RC.View = float4x4.CreateTranslation(0, -10, 50) * float4x4.CreateRotationY(_angleVert);
 
             //move the ball
-            if (Keyboard.ADAxis != 0)
-            {
-                _ball.Translation.x += _moveX * M.Sin(_angleVert);
-                _ball.Translation.z -= _moveX * M.Cos(_angleVert);
+            //if (Keyboard.ADAxis != 0)
+            //{
+            //    _ball.Translation.x += _moveX * M.Sin(_angleVert);
+            //    _ball.Translation.z -= _moveX * M.Cos(_angleVert);
 
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert), 0, -_moveX * M.Sin(_angleVert)));
+            //    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert), 0, -_moveX * M.Sin(_angleVert)));
 
 
-            }
-            if (Keyboard.WSAxis != 0)
-            {
-                _ball.Translation.x += _moveZ * M.Cos(_angleVert);
-                _ball.Translation.z += _moveZ * M.Sin(_angleVert);
+            //}
+            //if (Keyboard.WSAxis != 0)
+            //{
+            //    _ball.Translation.x += _moveZ * M.Cos(_angleVert);
+            //    _ball.Translation.z += _moveZ * M.Sin(_angleVert);
 
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert), 0, -_moveZ * M.Cos(_angleVert)));
-            }
+            //    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert), 0, -_moveZ * M.Cos(_angleVert)));
+            //}
 
 
             //Set the view matrix for the interaction handler.
