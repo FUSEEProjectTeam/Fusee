@@ -1811,9 +1811,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         private int CreateFrameBuffer(IRenderTarget renderTarget, ITextureHandle[] texHandles)
         {
-            GL.GenFramebuffers(1, out int gBuffer);
+            GL.GenBuffers(1, out int gBuffer);
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
 
+            int depthCnt = 0;
 
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
@@ -1824,15 +1825,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
+                    attachments.Add(DrawBufferMode.ColorAttachment0 + i);
+
                     var texHandle = texHandles[i];
                     if (texHandle == null) continue;
 
-                    GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
-                    attachments.Add(DrawBufferMode.ColorAttachment0 + i);
-
+                    if (i == depthTexPos)
+                    {
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment + (depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
+                        depthCnt++;
+                    }
+                    else
+                        GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (i - depthCnt), TextureTarget.Texture2D, ((TextureHandle)texHandle).TexHandle, 0);
                 }
                 GL.DrawBuffers(attachments.Count, attachments.ToArray());
-
             }
             else //If a frame-buffer only has a depth texture we don't need draw buffers
             {

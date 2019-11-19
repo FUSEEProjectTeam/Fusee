@@ -1917,6 +1917,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             gl2.BindFramebuffer(FRAMEBUFFER, gBuffer);
 
             int depthCnt = 0;
+
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
@@ -1926,6 +1927,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)
                 {
+                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
 
                     var texHandle = texHandles[i];
                     if (texHandle == null) continue;
@@ -1937,9 +1939,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     }
                     else
                         gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(i - depthCnt), TEXTURE_2D, ((TextureHandle)texHandle).TexHandle, 0);
-
-                    attachments.Add(COLOR_ATTACHMENT0 + (uint)i);
-
                 }
                 gl2.DrawBuffers(attachments.ToArray());
             }
