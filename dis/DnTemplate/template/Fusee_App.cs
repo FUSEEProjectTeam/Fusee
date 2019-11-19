@@ -9,10 +9,11 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FuseeApp
 {
-
     [FuseeApplication(Name = "Fusee_App", Description = "Yet another FUSEE App.")]
     public class Fusee_App : RenderCanvas
     {
@@ -29,7 +30,7 @@ namespace FuseeApp
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private bool _keys;
 
@@ -41,16 +42,14 @@ namespace FuseeApp
 
             // Load the rocket model
             _rocketScene = AssetStorage.Get<SceneContainer>("RocketModel.fus");
-            AddResizeDelegate(delegate { _rocketScene.Children[0].GetComponent<ProjectionComponent>().Resize(Width, Height); });
-
+            
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -88,25 +87,19 @@ namespace FuseeApp
                 }
             }
 
-
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current ModelView transformation
+            // Create the camera matrix and set it as the current View transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0.2f, -6, 0, 1.5f, 0, 0, 1, 0);
-            RC.ModelView = mtxCam * mtxRot;
+            var mtxCam = float4x4.LookAt(0, 2, -8, 0, 1.5f, 0, 0, 1, 0);
+            RC.View = mtxCam * mtxRot;
 
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
-
+            // Tick any animations and Render the scene loaded in Init()
+            _sceneRenderer.Render(RC);            
+            
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        private InputDevice Creator(IInputDeviceImp device)
-        {
-            throw new NotImplementedException();
         }
     }
 }
