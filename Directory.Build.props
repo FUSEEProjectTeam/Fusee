@@ -27,10 +27,10 @@
   </ItemGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>TRACE;DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
+    <DefineConstants>$(DefineConstants);DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DefineConstants>LOG_ERROR</DefineConstants>
+    <DefineConstants>$(DefineConstants);LOG_ERROR</DefineConstants>
   </PropertyGroup>
 </Project>
