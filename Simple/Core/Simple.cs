@@ -26,8 +26,9 @@ namespace Fusee.Examples.Simple.Core
         private TransformComponent _ball;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
+        //private int countX = 0;
         private const float _speed = 7;
-        private TransformComponent[,] walls;
+        private TransformComponent[,] wallsTransform;
         private int[,] bmp = new int[,] {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
                                         {1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1},
                                         {1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1},
@@ -74,6 +75,57 @@ namespace Fusee.Examples.Simple.Core
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
+        SceneContainer CreateScene()
+        {
+            for (int j = 0; j < bmp.GetLength(1); j++)
+            {
+                for (int countX = 0; countX < bmp.GetLength(0); countX++)
+                {
+                    if (countX % 2 == 0 && j % 2 == 0)
+                    {
+                        wallsTransform[countX, j] = new TransformComponent
+                        {
+                            Translation = new float3(countX * 41, 0, j * 41)
+                        };
+                    }
+                }
+            }
+            return new SceneContainer
+            {
+                Children = new List<SceneNodeContainer>
+                {
+                    //for (int j = 0; j < bmp.GetLength(1); j++)
+                    //{
+                    //    for (int i = 0; i < bmp.GetLength(0); i++)
+                    //    {
+                    //        if (i % 2 == 0 && j % 2 == 0)
+                    //        {
+
+                    //            new SceneNodeContainer
+                    //            {
+                    //                Components = new List<SceneComponentContainer>
+                    //                {
+                    //                    // TRANSFROM COMPONENT
+                    //                    wallsTransform[i,j],
+
+                    //                    // SHADER EFFECT COMPONENT
+                    //                    new ShaderEffectComponent
+                    //                    {
+                    //                        Effect = AssetStorage.Get<ShaderEffect>("cornerstone.fus")
+                    //                    },
+
+                    //                    // MESH COMPONENT
+                    //                    AssetStorage.Get<Mesh>("cornerstone.fus")
+                    //                }
+                    //            };
+                    //        }
+                    //    }
+                    //}
+                }
+            };
+        }
+
+ 
         // Init is called on startup. 
         public override void Init()
         {
@@ -86,6 +138,7 @@ namespace Fusee.Examples.Simple.Core
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
+            wallsTransform = new TransformComponent[bmp.GetLength(0), bmp.GetLength(1)];
             // Load the rocket model
             _scene = CreateScene();
             // Wrap a SceneRenderer around the model.
@@ -276,25 +329,6 @@ namespace Fusee.Examples.Simple.Core
         public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
-        }
-        SceneContainer CreateScene()
-        {
-            for (int j = 0; j < bmp.GetLength(1); j++)
-            {
-                for (int i = 0; i < bmp.GetLength(0); i++)
-                {
-                    if (i % 2 == 0 && j % 2 == 0)
-                    {
-                        walls[i, j] = new TransformComponent
-                        {
-                            Translation = new float3()
-                        };
-                    }
-                }
-            };
-            return SceneContainer{
-                AssetStorage.Get<SceneContainer>("Maze.fus");
-            }
         }
     }
 }
