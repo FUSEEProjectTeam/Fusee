@@ -13,15 +13,6 @@
   
   <ItemGroup>
     <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
-    <None Remove="Assets\Shader\FXAA.frag" />
-    <None Remove="Assets\Shader\FXAA.vert" />
-    <None Remove="Assets\Shader\ShadowCubeMap.vert" />
-    <None Remove="Assets\Shader\ShadowMap.vert" />
-    <None Remove="Assets\Shader\SSAO.frag" />
-    <None Remove="Assets\ShadowCubeMap.frag" />
-    <None Remove="Assets\ShadowCubeMap.geom" />
-    <None Remove="Assets\ShadowMap.frag" />
-    <None Remove="Assets\SimpleBlur.frag" />
     <Content Include="NuGet\Fusee.Engine.Core.targets" PackagePath="build\Fusee.Engine.Core.targets" />
   </ItemGroup>
   
@@ -54,9 +45,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-  </ItemGroup>
-  
-  <ItemGroup>
-    <Folder Include="ShaderShards\Geometry\" />
   </ItemGroup>
 </Project>
