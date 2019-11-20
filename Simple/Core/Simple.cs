@@ -81,7 +81,7 @@ namespace Fusee.Examples.Simple.Core
             SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
             SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
-            //SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
+            SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
             SceneNodeContainer maze = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>
@@ -106,12 +106,12 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2f, 2, countY * 2.6f)
+                                        Translation = new float3(countX * 2.5f, 2, countY * 2.5f)
                                     },
                                     cornerstone.GetComponent<ShaderEffectComponent>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
-
+                            Name = "Cornerstone"
                         }
                         );
                     }
@@ -123,13 +123,46 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2 , 2, countY * 2.5f)
+                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
                                     },
                                     wallZ.GetComponent<Mesh>()
                                 },
+                            Name = "WallZ"
 
                         }
-);
+                        );
+                    }
+                    else if (countX % 2 == 1 && countY % 2 == 0 && bmp[countX, countY] == 1)
+                    {
+                        maze.Children.Add(new SceneNodeContainer
+                        {
+                            Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
+                                    },
+                                    wallX.GetComponent<Mesh>()
+                                },
+                            Name = "WallX"
+                        }
+                        );
+                    }
+                    else if (countX % 2 == 1 && countY % 2 == 1 && bmp[countX, countY] == -1)
+                    {
+                        maze.Children.Add(new SceneNodeContainer
+                        {
+                            Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
+                                    },
+                                    ball.GetComponent<Mesh>()
+                                },
+                            Name = "Ball"
+                        }
+                        );
                     }
                 }
             }
@@ -182,63 +215,56 @@ namespace Fusee.Examples.Simple.Core
                 var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
-            else if (Keyboard.UpDownAxis != 0 || Keyboard.LeftRightAxis != 0)
-            {
-                if (Keyboard.UpDownAxis > 0)
-                {
-                    _angleVert = M.Pi;
-                }
-                else if (Keyboard.UpDownAxis < 0)
-                {
-                    _angleVert = 0;
-                }
-                else if (Keyboard.LeftRightAxis > 0)
-                {
-                    _angleVert = 0.5f * M.Pi;
-                }
-                else if (Keyboard.LeftRightAxis < 0)
-                {
-                    _angleVert = 1.5f * M.Pi;
-                }
-            }
             else
             {
                 _angleVelVert = 0;
             }
 
-            if (Keyboard.ADAxis != 0 || Keyboard.WSAxis != 0)
+            if (Keyboard.ADAxis != 0)
             {
                 _moveX = _speed * Keyboard.ADAxis * DeltaTime;
+
+            }
+            else if(Keyboard.WSAxis != 0)
+            {
                 _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
             }
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
             // Create the camera matrix and set it as the current ModelView transformation
-            //_ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
+            _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
 
 
-            //var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
-            var mtxRot = float4x4.CreateRotationX(_angleVert);
-            var mtxCam = float4x4.LookAt(50 * M.Cos(_angleVert), 50, 50 * M.Sin(_angleVert), 50, 0, 50, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
             RC.View = mtxCam;
 
             //move the ball
-            //if (Keyboard.ADAxis != 0)
-            //{
-            //    _ball.Translation.x += _moveX * M.Sin(_angleVert);
-            //    _ball.Translation.z -= _moveX * M.Cos(_angleVert);
+            var deg = 0.0f;
+            if(_angleVert % (0.5f * M.Pi) <= 0.25f * M.Pi)
+            {
+                deg =-(_angleVert % (0.5f * M.Pi));
+            }
+            else
+            {
+                deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
+            }
 
-            //    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert), 0, -_moveX * M.Sin(_angleVert)));
+            if (Keyboard.ADAxis != 0)
+            {
+                _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
+                _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
+
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert + deg), 0, -_moveX * M.Sin(_angleVert + deg)));
 
 
-            //}
-            //if (Keyboard.WSAxis != 0)
-            //{
-            //    _ball.Translation.x += _moveZ * M.Cos(_angleVert);
-            //    _ball.Translation.z += _moveZ * M.Sin(_angleVert);
+            }
+            else if (Keyboard.WSAxis != 0)
+            {
+                _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
+                _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
 
-            //    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert), 0, -_moveZ * M.Cos(_angleVert)));
-            //}
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
+            }
 
 
             //Set the view matrix for the interaction handler.
