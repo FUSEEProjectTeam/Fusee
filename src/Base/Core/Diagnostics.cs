@@ -81,7 +81,8 @@ namespace Fusee.Base.Core
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
             DEBUG = 0,           
             WARN,
-            ERROR,            
+            ERROR,
+            NONE = 42
 #pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
         }
 
@@ -95,6 +96,8 @@ namespace Fusee.Base.Core
                     return "Warning";
                 case SeverityLevel.ERROR:
                     return "Error";
+                case SeverityLevel.NONE:
+                    return "None";
             }
 
             return "error while parsing severity level";
