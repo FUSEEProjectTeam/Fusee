@@ -15,9 +15,9 @@ namespace Fusee.Base.Core
         private static Stopwatch _daWatch;
         private static bool _useFile = true;
         private static string _fileName = "Fusee.Log.txt";
-        private static SeverityLevel _minLogLevelFile = SeverityLevel.ERROR;
-        private static SeverityLevel _minLogLevelConsole = SeverityLevel.WARN;
-        private static SeverityLevel _minLogLevelDebug;
+        private static SeverityLevel _minLogLevelFile = SeverityLevel.NONE;
+        private static SeverityLevel _minLogLevelConsole = SeverityLevel.DEBUG;
+        private static SeverityLevel _minLogLevelDebug = SeverityLevel.DEBUG;
 
         private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
                     {
@@ -124,12 +124,6 @@ namespace Fusee.Base.Core
 
         static Diagnostics()
         {
-            // Overwrite file
-            File.Create(_fileName).Close();
-
-#if LOG_DEBUG
-            SetMinConsoleLoggingSeverityLevel(SeverityLevel.DEBUG);
-#endif
         }
 
         #region Members
