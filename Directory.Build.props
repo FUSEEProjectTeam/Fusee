@@ -5,7 +5,7 @@
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
    
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-
+      
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
     <Product>FUSEE</Product>

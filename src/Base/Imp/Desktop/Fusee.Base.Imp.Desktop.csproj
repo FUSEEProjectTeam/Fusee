@@ -3,7 +3,7 @@
     <RootNamespace>Fusee.Base.Imp.Desktop</RootNamespace>
     <PackageId>Fusee.Base.Imp.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <Description>Fusee Base Imp Desktop</Description>
   </PropertyGroup>
 

@@ -24,7 +24,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <DefineConstants>DEBUG;TRACE;PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <MonoDroidLinkMode>None</MonoDroidLinkMode>
@@ -43,7 +43,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
-    <DefineConstants>TRACE;PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_ANDROID</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>

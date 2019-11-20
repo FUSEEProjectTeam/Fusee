@@ -208,7 +208,7 @@ namespace Fusee.Engine.Core
                     }
                     catch (FileNotFoundException e)
                     {
-                        Diagnostics.Log($"[ShaderCodeBuilder.cs] Error file #include {e.FileName} not found!");
+                        Diagnostics.Error($"[ShaderCodeBuilder.cs] Error file #include {e.FileName} not found!");
                     }
                     refinedShader.Add(foundFile);
                 }

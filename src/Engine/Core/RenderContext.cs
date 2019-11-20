@@ -1143,7 +1143,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                Diagnostics.Log(ef.PixelShaderSrc[0]);
+                Diagnostics.Error("Error while compiling shader for pass ", ex, new string[] { ef.VertexShaderSrc[0], ef.PixelShaderSrc[0] });
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
@@ -1287,7 +1287,7 @@ namespace Fusee.Engine.Core
                     else
                     {
                         // This should not happen due to shader compiler optimization
-                        Diagnostics.Log($"Warning: uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
+                        Diagnostics.Warn($"uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
                     }
                 }
             }
