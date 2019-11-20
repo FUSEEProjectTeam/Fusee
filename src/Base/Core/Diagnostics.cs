@@ -135,6 +135,8 @@ namespace Fusee.Base.Core
         /// <param name="logFileName"></param>
         public static void LogToTextFile(bool logToTxtFile, string logFileName = "")
         {
+            throw new NotImplementedException("File logging is not yet implemented");
+
             _useFile = logToTxtFile;
             _fileName = (logFileName == string.Empty ? "Fusee.Log.txt" : logFileName);
             if (_useFile && !File.Exists(_fileName)) File.Create(_fileName).Close();
