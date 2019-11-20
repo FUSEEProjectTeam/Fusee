@@ -204,7 +204,7 @@ namespace Fusee.Base.Core
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>
         [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
-        [Conditional("LOG_DEBUG"), Conditional("LOG_WARN"), Conditional("LOG_ERROR")]
+        [Conditional("DEBUG")]
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, logLevel, null, null, callerName, sourceLineNumber, sourceFilePath);
@@ -212,13 +212,13 @@ namespace Fusee.Base.Core
 
         /// <summary>
         ///     Log a debug event.
-        ///     Per default only visible within the Visual Studio debug console.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>       
-        [Conditional("LOG_DEBUG")]
+        [Conditional("DEBUG")]
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.DEBUG, ex, args, callerName, sourceLineNumber, sourceFilePath);
@@ -227,15 +227,15 @@ namespace Fusee.Base.Core
 
         /// <summary>
         ///     Log a warning event.
-        ///     Per default visible within the Visual Studio debug console and the console window.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug builds.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>
         /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>       
-        [Conditional("LOG_WARN")]
+        /// <param name="sourceFilePath"></param>
+        [Conditional("DEBUG")]
         public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
@@ -243,7 +243,7 @@ namespace Fusee.Base.Core
 
         /// <summary>
         ///     Log an error event.
-        ///     Per default visible within the Visual Studio debug console, the console window and it's written into the log file.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug and release builds.
         /// </summary>
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
@@ -251,7 +251,6 @@ namespace Fusee.Base.Core
         /// <param name="callerName">The calling method</param>
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>       
-        [Conditional("LOG_ERROR")]
         public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);

@@ -25,12 +25,4 @@
   <ItemGroup>
     <Content Include="$(FuseeEngineRoot)\art\Deliverables\FuseeIcon128WithTextSquare.png" Link="NuGet\icon.png" PackagePath="images\icon.png" Condition="$(IsPackable) == 'true'" />
   </ItemGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <DefineConstants>$(DefineConstants);DEBUG;LOG_DEBUG;LOG_WARN;LOG_ERROR</DefineConstants>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <DefineConstants>$(DefineConstants);LOG_ERROR</DefineConstants>
-  </PropertyGroup>
 </Project>
