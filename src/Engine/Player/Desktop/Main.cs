@@ -60,13 +60,13 @@ namespace Fusee.Engine.Player.Desktop
                         }
                         catch (Exception e)
                         {
-                            Diagnostics.Log(e.ToString());
+                            Diagnostics.Debug("No entire Fusee App DLL recived. Continuing.", e);
                         }
                     }
                 }
                 else
                 {
-                    Diagnostics.Log($"Cannot open {args[0]}.");
+                    Diagnostics.Error($"Cannot open {args[0]}.");
                 }
             }
 
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Player.Desktop
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(e.ToString());
+                    Diagnostics.Debug("Not in deployment mode", e);
                 }
                 // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
                 if (tApp == null)
@@ -108,11 +108,10 @@ namespace Fusee.Engine.Player.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        var ser = new Serializer();
 
-                        var scene = ser.Deserialize((Stream) storage, null, typeof(SceneContainer)) ;
+                        var scene = ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream) storage) ;
 
-                        var container = scene as SceneContainer;
+                        var container = scene;
 
                         return new ConvertSceneGraph().Convert(container);
                     },
@@ -125,7 +124,7 @@ namespace Fusee.Engine.Player.Desktop
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Warn($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {

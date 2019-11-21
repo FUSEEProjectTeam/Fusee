@@ -1,13 +1,9 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>Represents a 4D vector using four single-precision floating-point numbers.</summary>
     /// <remarks>
     /// The float4 structure is suitable for interoperation with unmanaged code requiring four consecutive floats.
@@ -166,6 +162,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x, y, z, or w, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 3).</param>
+        /// <returns>The x or y component of the float4.</returns>
         public float this[int idx]
         {
             get
@@ -772,9 +773,7 @@ namespace Fusee.Math.Core
         /// <returns>A System.Int32 containing the unique hashcode for this instance.</returns>
         public override int GetHashCode()
         {
-// ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
-// ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -882,8 +881,4 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float4> Parse { get; set; }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

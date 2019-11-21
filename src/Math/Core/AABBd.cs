@@ -1,8 +1,6 @@
 ﻿using ProtoBuf;
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace Fusee.Math.Core
 {
@@ -35,7 +33,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a tranformation on the bounding box. After the tranformation another
+        ///     Applies a transformation on the bounding box. After the transformation another
         ///     axis alignes bounding box results. This is done by transforming all eight
         ///     vertices of the box and re-aligning to the axes afterwards.
         /// </summary>

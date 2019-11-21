@@ -329,7 +329,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <summary>
         /// Initializes a new instance of the <see cref="TouchDeviceImp" /> class.
         /// </summary>
-        /// <param name="view">The game window to hook on to reveive 
+        /// <param name="view">The game window to hook on to revive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public TouchDeviceImp(View view)
         {
@@ -480,7 +480,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
 
         /// <summary>
-        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch tevice :-).
+        /// Returns <see cref="DeviceCategory.Touch"/>, just because it's a touch device :-).
         /// </summary>
         public DeviceCategory Category => DeviceCategory.Touch;
 
@@ -525,7 +525,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         }
 
         /// <summary>
-        /// Retrieves the button count. One button for each of the up to five supported touchpoints signalling that the touchpoint currently has contact.
+        /// Retrieves the button count. One button for each of the up to five supported touchpoints signaling that the touchpoint currently has contact.
         /// </summary>
         /// <value>
         /// The button count.
@@ -714,12 +714,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>No return, always throws.</returns>
         public float GetAxis(int iAxisId)
         {
-            throw new InvalidOperationException($"Unsopported axis {iAxisId}. This device does not support any axis at all.");
+            throw new InvalidOperationException($"Unsupported axis {iAxisId}. This device does not support any axis at all.");
         }
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All keyboard buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
@@ -926,7 +926,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         public string Id => GetType().FullName;
 
         /// <summary>
-        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to akquire mouse axis information.
+        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to acquire mouse axis information.
         /// </summary>
         #pragma warning disable 0067
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
@@ -966,14 +966,14 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         /// <summary>
         /// This device does not support to-be-polled-buttons. All mouse buttons are event-driven. Listen to the <see cref="ButtonValueChanged"/>
-        /// event to reveive keyboard notifications from this device.
+        /// event to revive keyboard notifications from this device.
         /// </summary>
         /// <param name="iButtonId">No matter what you specify here, you'll evoke an exception.</param>
         /// <returns>No return, always throws.</returns>
         public bool GetButton(int iButtonId)
         {
             throw new InvalidOperationException(
-                $"Unsopported axis {iButtonId}. This device does not support any to-be polled axes at all.");
+                $"Unsupported axis {iButtonId}. This device does not support any to-be polled axes at all.");
         }
 
         /* TODO: find something appropriate on Android

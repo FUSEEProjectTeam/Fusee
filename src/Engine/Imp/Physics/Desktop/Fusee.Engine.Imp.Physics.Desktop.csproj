@@ -3,6 +3,7 @@
     <RootNamespace>Fusee.Engine.Imp.Physics.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Physics.Desktop</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -19,4 +20,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
   </ItemGroup>
+
 </Project>

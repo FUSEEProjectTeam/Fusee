@@ -193,6 +193,10 @@ PublishScripts/
 *.nuget.props
 *.nuget.targets
 
+# Exception for needed Wasm NuGet Packages 
+!**/[Pp]ackages/Mono.WebAssembly*
+!**/[Pp]ackages/WebAssembly*
+
 # Microsoft Azure Build Output
 csx/
 *.build.csdef

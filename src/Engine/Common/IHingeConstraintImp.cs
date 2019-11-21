@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Common
@@ -15,6 +15,7 @@ namespace Fusee.Engine.Common
         HingeFlagsStopErp = 2,
         HingeFlagsNormCfm = 4
 #pragma warning restore 1591
+
     };
 
     /// <summary>

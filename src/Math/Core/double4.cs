@@ -1,5 +1,3 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 
@@ -144,6 +142,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x, y, z, or w depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 3).</param>
+        /// <returns>The x or y component of the double4.</returns>
         public double this[int idx]
         {
             get
@@ -194,9 +197,8 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <value>
         /// The length.
-        /// </value>
-        /// <see cref="LengthFast" />
-        ///   <seealso cref="LengthSquared" />
+        /// </value>        
+        /// <seealso cref="LengthSquared" />
         public double Length
         {
             get
@@ -215,8 +217,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length squared.
         /// </value>
-        /// <see cref="Length" />
-        ///   <seealso cref="LengthFast" />
+        /// <see cref="Length" />        
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -623,7 +624,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Multiplies a vector by the components a vector (scale).
         /// </summary>
-        /// <param name="vector">Left operand.</param>
+        /// <param name="vec">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <returns>
         /// Result of the operation.
@@ -753,7 +754,7 @@ namespace Fusee.Math.Core
         #endregion
 
         #region Color
-        // ReSharper disable InconsistentNaming
+
         /// <summary>
         /// The red component (same as x)
         /// </summary>
@@ -798,7 +799,7 @@ namespace Fusee.Math.Core
             get { return w; }
             set { w = value; }
         }
-        // ReSharper restore InconsistentNaming
+
         #endregion
 
         #endregion
@@ -832,5 +833,3 @@ namespace Fusee.Math.Core
         public static Converter<string, double4> Parse { get; set; }
     }
 }
-
-#pragma warning restore 1591

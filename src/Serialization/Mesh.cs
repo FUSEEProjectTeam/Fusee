@@ -5,7 +5,7 @@ using ProtoBuf;
 namespace Fusee.Serialization
 {
     /// <summary>
-    /// Provides the abillity to create or interact directly with the point data.
+    /// Provides the ability to create or interact directly with the point data.
     /// </summary>
 
     [ProtoContract]
@@ -300,6 +300,10 @@ namespace Fusee.Serialization
         /// </summary>
         public bool Active = true;
 
+
+        /// <summary>
+        /// The mesh type.
+        /// </summary>
         [ProtoMember(11)]
         public int MeshType = 0;
      
@@ -334,7 +338,7 @@ namespace Fusee.Serialization
         }
 
         /// <summary>
-        /// Destructor calls <see cref="Dispose"/> in order to fire MeshChanged event.
+        /// Destructor calls <see cref="Dispose()"/> in order to fire MeshChanged event.
         /// </summary>
         ~Mesh()
         {

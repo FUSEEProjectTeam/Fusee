@@ -143,7 +143,7 @@ namespace Fusee.Engine.Core
                 }
                 
                 // Create the font atlas (the texture containing ALL glyphs)
-                _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity));
+                _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity), false);
                
                 var offX = 0;
                 var offY = 0;

@@ -22,7 +22,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public float U, V;
         /// <summary>
-        /// The model view matrix.
+        /// The model matrix.
         /// </summary>
         public float4x4 Model;
         /// <summary>

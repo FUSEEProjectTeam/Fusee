@@ -1,15 +1,9 @@
 <Project>
   <PropertyGroup>
-    <FuseeRoot Condition=" '$(FuseeRoot)' == '' ">$(MSBuildThisFileDirectory)..\..\..\</FuseeRoot>
-    <!-- Build into main FUSEE bin directory -->
-    <FuseeBuildRoot>$(FuseeRoot)</FuseeBuildRoot>
-    <!-- Build into local bin directory -->
-    <!-- <FuseeBuildRoot>$(MSBuildThisFileDirectory)</FuseeBuildRoot> -->
-    <BaseOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)</BaseOutputPath>
     <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\</FuseeEngineRoot>
+    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">$(MSBuildThisFileDirectory)..\..\..\</FuseeEngineRoot>
 
-    <FuseeProjectRoot>$(MSBuildThisFileDirectory)\</FuseeProjectRoot>
+    <FuseeProjectRoot>$(MSBuildThisFileDirectory)</FuseeProjectRoot>
 
     <!--Build into main FUSEE bin directory-->
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>

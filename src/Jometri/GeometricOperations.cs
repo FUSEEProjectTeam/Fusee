@@ -270,7 +270,7 @@ namespace Fusee.Jometri
             }
         }
 
-        //For an explanation of this algorythm see: http://blog.element84.com/polygon-winding.html
+        //For an explanation of this algorithm see: http://blog.element84.com/polygon-winding.html
         /// <summary>
         /// Checks whether a polygon, parallel to the xy plane, has a ccw winding.
         /// This method does NOT support polygons parallel to the yz or xz plane!

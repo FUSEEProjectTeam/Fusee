@@ -8,12 +8,20 @@
     /// <para>
     /// All classes and their properties are decorated with Protobuf.net
     /// attributes to mark them as serializable in the Google Protobuf 
-    /// format (v2). The Protobuf.net compiler generates serialization 
-    /// code directly from these classes. This automatically generated 
-    /// serialization code can be found in Fusee.SerializationSerializer.dll.
+    /// binary format.
     /// </para>
     /// <para>
-    /// Serialized FUSEE scenegraphs are stored in *.fus files. The three
+    /// Serialized FUSEE scenegraphs are stored in *.fus files. 
+    /// </para>
+    /// <para>
+    /// In Addition Protobuf.net's Serializer class can
+    /// generate a .proto schema from the attributed C# classes. This .proto
+    /// schema can then be used to generate serializer/deserializer code for
+    /// different languages. This is how the Blender .fus exporter Add-In 
+    /// implemented in python serializes into the .fus format.
+    /// </para>
+    /// <para>
+    /// The three
     /// main building block types for scenegraphs are 
     /// <list type="bullet">
     ///   <item>
