@@ -349,8 +349,9 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Renders the scene.
         /// </summary>
-        /// <param name="rc">The <see cref="RenderContext"/>.</param>        
-        public new void Render(RenderContext rc)
+        /// <param name="rc">The <see cref="RenderContext"/>.</param>
+        /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>        
+        public new void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
             AccumulateLight();
@@ -458,9 +459,16 @@ namespace Fusee.Engine.Core
             //Pass 4 & 5: FXAA and Lighting
             if (!FxaaOn)
             {
-                _rc.Viewport(0, 0, screenWidth, screenHeight);
-
-                rc.SetRenderTarget();
+                if (renderTex == null)
+                {
+                    _rc.Viewport(0, 0, screenWidth, screenHeight);
+                    rc.SetRenderTarget();
+                }
+                else
+                {
+                    _rc.Viewport(0, 0, renderTex.Width, renderTex.Height);
+                    rc.SetRenderTarget(renderTex);
+                }
                 RenderLightPasses();
             }
             else
@@ -470,15 +478,25 @@ namespace Fusee.Engine.Core
 
                 _currentPass = RenderPasses.FXAA;
 
-                _rc.Viewport(0, 0, screenWidth, screenHeight);
+                int width = renderTex == null ? screenWidth : renderTex.Width;
+                int height = renderTex == null ? screenHeight : renderTex.Height;
+
+                _rc.Viewport(0, 0, width, height);
                 if (_fxaaEffect == null)
                     _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
                 _quadShaderEffectComp.Effect = _fxaaEffect;
 
-                rc.SetRenderTarget();
+                if(renderTex == null)
+                    rc.SetRenderTarget();
+                else
+                    rc.SetRenderTarget(renderTex);
 
                 Traverse(_quadScene.Children);
             }
+
+            //Reset viewport to screen width and height, to allow other scenes (e.g. the gui) to render correctly.
+            if(renderTex != null)
+                _rc.Viewport(0, 0, screenWidth, screenHeight);
         }
 
         /// <summary>
