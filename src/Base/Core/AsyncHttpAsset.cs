@@ -97,7 +97,7 @@ namespace Fusee.Base.Core
 
             if (!_assetHandlers.ContainsKey(Type))
             {
-                Diagnostics.Log(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
+                Diagnostics.Warn(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
                 Type = typeof(byte[]);
             }
 
@@ -123,12 +123,12 @@ namespace Fusee.Base.Core
 
         private void AsyncHttpAsset_onDone(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Done");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Done");
         }
 
         private void AsyncHttpAsset_onFail(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
         }
 
         /// <summary>

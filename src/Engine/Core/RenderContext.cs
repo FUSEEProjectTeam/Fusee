@@ -1160,7 +1160,7 @@ namespace Fusee.Engine.Core
             }
             catch (Exception ex)
             {
-                Diagnostics.Debug(ef.PixelShaderSrc[0], ex);
+                Diagnostics.Error("Error while compiling shader for pass ", ex, new string[] { ef.VertexShaderSrc[0], ef.PixelShaderSrc[0] });
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 

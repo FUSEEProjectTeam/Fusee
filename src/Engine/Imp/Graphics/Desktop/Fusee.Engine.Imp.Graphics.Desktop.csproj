@@ -3,7 +3,7 @@
     <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Graphics.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <Description>Fusee Engine Imp Graphics Desktop</Description>
   </PropertyGroup>
