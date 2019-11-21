@@ -250,20 +250,6 @@ namespace FusViewer.ViewModel
         }
 
         /// <summary>
-        /// Converts the materials light component.
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(MaterialLightComponent matComp)
-        {
-            _currentNode.Components.Add(new TreeComponentItem
-            {
-                Name = "Material Light Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
-            });
-        }
-
-        /// <summary>
         /// Converts the physically based rendering component
         /// </summary>
         /// <param name="matComp"></param>
@@ -448,20 +434,6 @@ namespace FusViewer.ViewModel
             _currentNode.Components.Add(new JSONComponentItem
             {
                 Name = "Material Component",
-                Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
-            });
-        }
-
-        /// <summary>
-        /// Converts the materials light component.
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(MaterialLightComponent matComp)
-        {
-            _currentNode.Components.Add(new JSONComponentItem
-            {
-                Name = "Material Light Component",
                 Desc = $"{matComp.Name}, Diffuse: {matComp.Diffuse.Color}, Specular: {matComp.Specular.Color}"
             });
         }

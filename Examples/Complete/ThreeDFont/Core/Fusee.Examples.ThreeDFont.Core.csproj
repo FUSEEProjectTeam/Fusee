@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Contnet Update="Assets\**\*" />
+    <Content Include="Assets\**\*" />
   </ItemGroup>
 
   <ItemGroup>
