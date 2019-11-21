@@ -278,7 +278,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (scanlines.Current != null)
                 {
                     var lineBytes = scanlines.Current.GetScanLineBytes();
-                    Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
+                    System.Buffer.BlockCopy(lineBytes, 0, bytes, offset, lineBytes.Length);
                     offset += lineBytes.Length;
                 }
 
@@ -1319,7 +1319,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texId">The tex identifier.</param>
         public void GetBufferContent(Common.Rectangle quad, ITextureHandle texId)
         {
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).Handle);
+            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
             GL.CopyTexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba, quad.Left, quad.Top, quad.Width, quad.Height, 0);
         }
 
