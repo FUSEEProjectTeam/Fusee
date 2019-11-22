@@ -87,6 +87,10 @@ namespace Fusee.Engine.GUI
                 Traverse(_pickRes);
         }
 
+        /// <summary>
+        /// Invokes an interaction on a given button.
+        /// </summary>
+        /// <param name="btn">The button to invoke an interaction on.</param>
         [VisitMethod]
         public void InvokeInteraction(GUIButton btn)
         {

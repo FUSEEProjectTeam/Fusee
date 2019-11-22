@@ -3,8 +3,6 @@
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Simple.Android</RootNamespace>
     <AssemblyName>Fusee.Examples.Simple.Android</AssemblyName>
-    <FuseeEngineRoot Condition=" '$(FuseeRoot)' != '' ">$(FuseeRoot)\</FuseeEngineRoot>
-    <FuseeEngineRoot Condition=" '$(FuseeEngineRoot)' == '' ">..\..\..\</FuseeEngineRoot>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <!-- Build into main FUSEE bin directory -->

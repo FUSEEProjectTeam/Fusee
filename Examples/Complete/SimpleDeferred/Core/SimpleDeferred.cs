@@ -39,15 +39,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private float3 _cameraPos;
         private bool _keys;
-        private EventHandler<ResizeEventArgs> _resizeDel;
 
-        private const float twoPi = M.Pi * 2.0f;
-        private readonly TexRes _texRes = TexRes.MID_RES;
+        private const float twoPi = M.Pi * 2.0f;       
 
         private TransformComponent _sunTransform;
 
         private float4 _backgroundColorDay;
         private float4 _backgroundColorNight;
+        private float4 _backgroundColor;
 
         private LightComponent _sun;
 
@@ -56,13 +55,13 @@ namespace Fusee.Examples.SimpleDeferred.Core
         {
             _cameraPos = new float3(0, 20, -10);
             _gui = CreateGui();
-
+            
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = _backgroundColorDay = new float4(0.9f, 0.95f, 1, 1);
-            _backgroundColorNight = new float4(0, 0, 0.09f, 1);
+            RC.ClearColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
+            _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
             //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
@@ -79,9 +78,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
             var redLight = new LightComponent() { Type = LightType.Point, Color = new float4(1, 0, 0, 1), MaxDistance = 150, Active = true, IsCastingShadows = false, Bias = 0.015f };
             var blueLight = new LightComponent() { Type = LightType.Spot, Color = new float4(0, 0, 1, 1), MaxDistance = 1000, Active = true, OuterConeAngle = 25, InnerConeAngle = 5, IsCastingShadows = true, Bias = 0.000008f };
-            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 8f };
+            var greenLight = new LightComponent() { Type = LightType.Point, Color = new float4(0, 1, 0, 1), MaxDistance = 600, Active = true, IsCastingShadows = true, Bias = 0f };
 
-            _sunTransform = new TransformComponent() { Translation = new float3(0, 10, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };                        
+            _sunTransform = new TransformComponent() { Translation = new float3(0, 2000, 0), Rotation = new float3(M.DegreesToRadians(90), 0, 0), Scale = new float3(500, 500, 500) };
 
             var aLotOfLights = new ChildList
             {
@@ -92,7 +91,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 {
                     _sunTransform,
                     _sun,
-                    //new Cube()
                 },
                     //Children = new ChildList()
                     //{
@@ -100,9 +98,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     //    {
                     //        Components = new List<SceneComponentContainer>()
                     //        {
-                    //            new TransformComponent 
+                    //            new TransformComponent
                     //            {
-                    //                Translation = float3.UnitZ,
                     //                Scale = float3.One/2f
                     //            },
                     //            new Cube()
@@ -163,7 +160,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 {
                     new TransformComponent(){ Translation = new float3(0, 100, 150)},
                     greenLight,
-                    
+
                 }
                 },
             };
@@ -176,9 +173,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             });
 
             // Wrap a SceneRenderer around the scene.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene, _texRes, perspectiveProjComp);
-            //_sceneRenderer = new SceneRendererForward(_rocketScene);
-
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+           
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
         }
@@ -196,27 +192,29 @@ namespace Fusee.Examples.SimpleDeferred.Core
             //    rotate = true;
             //}
 
-            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.1f), 0, 0));
-            //Diagnostics.Log(_sunTransform.Rotation);
+            //_sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(0.5f), 0, 0));
 
-            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x));
+            var deg = (M.RadiansToDegrees(_sunTransform.Rotation.x)) - 90;
             if (deg < 0)
                 deg = (360 + deg);
 
-            var lerp = deg / 360;
+            var normalizedDeg = (deg) / 360;
+            float localLerp;
 
-            if (deg <= 180)
+            if (normalizedDeg <= 0.5)
             {
-                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorDay, _backgroundColorNight, lerp / 0.5f);
-                _sun.Strength = M.Lerp(1, 0, lerp / 0.5f);
-                //Diagnostics.Log(lerp / 0.5f);
+                _backgroundColor = _backgroundColorDay;
+                localLerp = normalizedDeg / 0.5f;
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorDay.xyz, _backgroundColorNight.xyz, localLerp);
             }
             else
             {
-                _sceneRenderer.BackgroundColor = float4.Lerp(_backgroundColorNight, _backgroundColorDay, (lerp - 0.5f) / (1 - 0.5f));
-                _sun.Strength = M.Lerp(0, 1, (lerp - 0.5f) / (1 - 0.5f));
-                //Diagnostics.Log((lerp - 0.5f) / (1 - 0.5f));
+                _backgroundColor = _backgroundColorNight;
+                localLerp = (normalizedDeg - 0.5f) / (0.5f);
+                _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
             }
+           
+            RC.ClearColor = _backgroundColor;
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -226,6 +224,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             if (Keyboard.IsKeyDown(KeyCodes.F))
                 _sceneRenderer.FxaaOn = !_sceneRenderer.FxaaOn;
+
+            if (Keyboard.IsKeyDown(KeyCodes.G))
+                _sceneRenderer.SsaoOn = !_sceneRenderer.SsaoOn;
 
             if (Mouse.LeftButton)
             {
@@ -307,7 +308,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             );
 
             viewMatrix = float4x4.Transpose(viewMatrix);
-
             return viewMatrix;
         }
 
@@ -374,7 +374,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);            
+            canvas.Components.Insert(0, canvasProjComp);
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

@@ -1,4 +1,4 @@
-<Project  Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Bone.Desktop</RootNamespace>
     <PackageId>Fusee.Examples.Bone.Desktop</PackageId>
@@ -13,13 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="2.0.0" />
-    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+    <ProjectReference Include="..\Core\Fusee.Examples.Bone.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.Bone.Core.csproj" />
+    <PackageReference Include="OpenTK" Version="2.0.0" />
+    <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,7 +52,5 @@
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
-
   </ItemGroup>
 </Project>

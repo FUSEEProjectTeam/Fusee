@@ -137,18 +137,16 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
     /// <summary>
     /// SMI input device implementation for the Windows platform. This implementation directly
-    /// sniffes at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
+    /// sniffs at the render window's message pump (identified by the <see cref="GameWindow"/> parameter passed
     /// to the constructor) to receive 
     /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.
     /// </summary>
     public class WindowsSpaceMouseInputDeviceImp : IInputDeviceImp
     {
-
         private HandleRef _handle;
         private readonly GameWindow _gameWindow;
         private readonly _3DconnexionDevice _current3DConnexionDevice;
-
-
+        
         #region Windows handling
         // This helper static method is required because the 32-bit version of user32.dll does not contain this API
         // (on any versions of Windows), so linking the method will fail at run-time. The bridge dispatches the request
@@ -240,13 +238,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             return _gameWindow.Height;
         }
         #endregion
-
-
-
+               
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsSpaceMouseInputDeviceImp" /> class.
         /// </summary>
-        /// <param name="gameWindow">The game window to hook on to reveive 
+        /// <param name="gameWindow">The game window to hook on to receive 
         /// <a href="https://msdn.microsoft.com/en-us/library/windows/desktop/hh454904(v=vs.85).aspx">WM_POINTER</a> messages.</param>
         public WindowsSpaceMouseInputDeviceImp(GameWindow gameWindow)
         {
@@ -264,7 +260,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
             catch (Exception ex)
             {
-                Diagnostics.Log("Trouble initializing the SpaceMouse. Probably due to not-installed driver.\n" + ex);
+                Diagnostics.Warn("Trouble initializing the SpaceMouse. Probably due to missing driver.\n" + ex);
                 _current3DConnexionDevice = null;
             }
 
@@ -408,7 +404,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
-        /// Event to listen to to get the SDOF motion.
+        /// Event to listen to get the SDOF motion.
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="args"></param>

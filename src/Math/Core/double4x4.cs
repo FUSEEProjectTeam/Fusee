@@ -612,6 +612,11 @@ namespace Fusee.Math.Core
             }
         }
 
+        /// <summary>
+        /// Takes a rotation matrix and returns its euler angle representation as a double3.
+        /// </summary>
+        /// <param name="rotMat">The given rotation matrix.</param>
+        /// <returns> The euler representation as a double3. </returns>
         //see Blender mathutils and Graphic Gems IV p. 222-229
         public static double3 RotMatToEuler(double4x4 rotMat)
         {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
@@ -32,7 +32,7 @@ namespace FuseeApp
         private const float Damping = 0.8f;
 
         private SceneContainer _scene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
         private TransformComponent _lowerAxleTransform;
         private TransformComponent _middleAxleTransform;
         private TransformComponent _upperAxleTransform;
@@ -73,10 +73,8 @@ namespace FuseeApp
 
             _open = false;
 
-            AddResizeDelegate(delegate { _scene.Children[0].GetComponent<ProjectionComponent>().Resize(Width, Height); });
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_scene);
+            _sceneRenderer = new SceneRendererForward(_scene);
         }
 
         // RenderAFrame is called once a frame

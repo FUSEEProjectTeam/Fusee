@@ -44,6 +44,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x and y, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 1).</param>
+        /// <returns>The x or y component of the double2.</returns>
         public double this[int idx]
         {
             get

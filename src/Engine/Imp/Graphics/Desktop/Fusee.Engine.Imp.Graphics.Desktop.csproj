@@ -3,8 +3,9 @@
     <RootNamespace>Fusee.Engine.Imp.Graphics.Desktop</RootNamespace>
     <PackageId>Fusee.Engine.Imp.Graphics.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
-    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Description>Fusee Engine Imp Graphics Desktop</Description>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -16,12 +17,22 @@
     <PackageReference Include="OpenTK" Version="2.0.0" />
     <PackageReference Include="OpenTK.GLControl" Version="1.1.2349.61993" />
     <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
-  </ItemGroup>  
+  </ItemGroup>
+
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
   </ItemGroup>
 
   <Import Project="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems" Label="Shared" />
