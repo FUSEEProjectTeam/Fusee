@@ -762,7 +762,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (value)
                 {
                     GL.Enable(EnableCap.Blend);
-                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                 }
                 else
                 {
@@ -848,7 +848,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //if (Keyboard[OpenTK.Input.Key.Escape])
             //this.Exit();
 
-            if (Keyboard[OpenTK.Input.Key.F11])
+            if (OpenTK.Input.Keyboard.GetState()[OpenTK.Input.Key.F11])
                 WindowState = (WindowState != WindowState.Fullscreen) ? WindowState.Fullscreen : WindowState.Normal;
         }
 
