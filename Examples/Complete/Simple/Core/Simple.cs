@@ -16,11 +16,6 @@ namespace Fusee.Examples.Simple.Core
     [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
     public class Simple : RenderCanvas
     {
-        public void DoInit()
-        {
-            InitCanvas();
-        }
-
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
 

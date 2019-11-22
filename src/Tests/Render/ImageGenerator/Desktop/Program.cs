@@ -50,6 +50,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
     public class Program
     {
+        private static dynamic example;
+
+        public static void setExample(dynamic ex)
+        {
+            example = ex;
+        }
+
         public static void Main(string[] args)
         {
             var result = Parser.Default.ParseArguments<ShootOptions>(args)
@@ -86,56 +93,31 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
 
                 AssetStorage.RegisterProvider(fap);
 
-                var app = new Fusee.Examples.Simple.Core.Simple();
+                var app = example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new RenderCanvasImpIG(opts.Width, opts.Height);
+                var cimp = new Imp.Graphics.Desktop.RenderCanvasImp(opts.Width, opts.Height);
                 cimp.EnableBlending = true;
                 app.CanvasImplementor = cimp;
-                var cimp2 = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp();
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(cimp2));
-                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp2));
-                // app.InputImplementor = new Fusee.Engine.Imp.Graphics.Desktop.InputImp(app.CanvasImplementor);
-                // app.AudioImplementor = new Fusee.Engine.Imp.Sound.Desktop.AudioImp();
-                // app.NetworkImplementor = new Fusee.Engine.Imp.Network.Desktop.NetworkImp();
-                // app.InputDriverImplementor = new Fusee.Engine.Imp.Input.Desktop.InputDriverImp();
-                // app.VideoManagerImplementor = ImpFactory.CreateIVideoManagerImp();
-
-                /*
-                var mode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 0, 0, ColorFormat.Empty, 1);
-                var win = new OpenTK.GameWindow(640, 480, mode, "", OpenTK.GameWindowFlags.Default, OpenTK.DisplayDevice.Default, 3, 0, GraphicsContextFlags.Default);
-                */
-
-                //app.Run();
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(cimp));
+                Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 
                 // Initialize canvas/app and canvas implementor
                 app.DoInit();
-                cimp.DoInit();
 
                 // Render a single frame and save it
-                cimp.DoResize(opts.Width, opts.Height);
-                cimp.DoRender();
-                var bmp = cimp.ShootCurrentFrame();
+                var bmp = cimp.ShootCurrentFrame(opts.Width, opts.Height);
                 bmp.Save(opts.Output, System.Drawing.Imaging.ImageFormat.Png);
 
                 // Done
                 Console.Error.WriteLine($"SUCCESS: Image {opts.Output} generated.");
-                //Environment.Exit((int)ErrorCode.Success);
             })
             // ERROR on the command line
             .WithNotParsed(errs =>
             {
-                /*foreach (var error in errs)
-                {
-                    Console.Error.WriteLine(error);
-                }
-                */
                 Environment.Exit((int)ErrorCode.CommandLineSyntax);
             });
-            // Do not Start the app
-            // Don't call 
-            //app.Run();
         }
     }
 }
