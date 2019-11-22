@@ -128,6 +128,16 @@ namespace Fusee.Tools.fuseeCmdLine
                             try
                             {
                                 Assembly asm = Assembly.LoadFrom(filepath);
+
+                                // Comparing our version with the version of the referenced Fusee.Serialization
+                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var ourversion = Assembly.GetEntryAssembly().GetName().Version;
+
+                                if (serversion != ourversion)
+                                {
+                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                }
+
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
                                 TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
                             }
