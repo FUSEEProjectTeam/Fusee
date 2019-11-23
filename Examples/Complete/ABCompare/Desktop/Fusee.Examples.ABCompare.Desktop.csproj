@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Examples.ABCompare.Desktop</RootNamespace>
+    <PackageId>Fusee.Examples.ABCompare.Desktop</PackageId>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Examples\ABCompare\Desktop\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Fusee.Base.Common">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Base.Core">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Base.Imp.Desktop">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Base.Imp.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Serialization">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Common">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Core">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Math.Core">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Math.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Engine.Imp.Graphics.Desktop">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Engine.Imp.Graphics.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Fusee.Xene">
+      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
+    </Reference>
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Fusee.Examples.ABCompare.Core.csproj" />
+  </ItemGroup>
+</Project>
