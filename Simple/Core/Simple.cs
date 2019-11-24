@@ -17,7 +17,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleVert = 0, _angleVelVert;
+        private static float _angleVert = 0.5f * M.Pi, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -26,6 +26,7 @@ namespace Fusee.Examples.Simple.Core
         private TransformComponent _ball;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
+        private bool keykeymoveX = false, keymoveZ = false;
         private TransformComponent mazeTransform =new TransformComponent();
         private const float _speed = 7;
         private TransformComponent[,] wallsTransform;
@@ -82,6 +83,7 @@ namespace Fusee.Examples.Simple.Core
             SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
             SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
+            SceneNodeContainer ground = mazeScene.Children.FindNodes(n => n.Name == "Ground").First();
             SceneNodeContainer maze = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>
@@ -94,6 +96,20 @@ namespace Fusee.Examples.Simple.Core
                 },
                 Children = new ChildList()
             };
+            maze.Children.Add(new SceneNodeContainer
+            {
+                Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(0, -0.5f, 0)
+                                    },
+                                    ground.GetComponent<ShaderEffectComponent>(),
+                                    ground.GetComponent<Mesh>()
+                                },
+                Name = "Ground"
+            }
+                        );
             for (int countY = 0; countY < bmp.GetLength(1); countY++)
             {
                 for (int countX = 0; countX < bmp.GetLength(0); countX++)
@@ -125,6 +141,7 @@ namespace Fusee.Examples.Simple.Core
                                     {
                                         Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
                                     },
+                                    wallZ.GetComponent<ShaderEffectComponent>(),
                                     wallZ.GetComponent<Mesh>()
                                 },
                             Name = "WallZ"
@@ -142,6 +159,7 @@ namespace Fusee.Examples.Simple.Core
                                     {
                                         Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
                                     },
+                                    wallX.GetComponent<ShaderEffectComponent>(),
                                     wallX.GetComponent<Mesh>()
                                 },
                             Name = "WallX"
@@ -158,6 +176,7 @@ namespace Fusee.Examples.Simple.Core
                                     {
                                         Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
                                     },
+                                    ball.GetComponent<ShaderEffectComponent>(),
                                     ball.GetComponent<Mesh>()
                                 },
                             Name = "Ball"
@@ -220,15 +239,6 @@ namespace Fusee.Examples.Simple.Core
                 _angleVelVert = 0;
             }
 
-            if (Keyboard.ADAxis != 0)
-            {
-                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
-
-            }
-            else if(Keyboard.WSAxis != 0)
-            {
-                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
-            }
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
             // Create the camera matrix and set it as the current ModelView transformation
@@ -251,6 +261,7 @@ namespace Fusee.Examples.Simple.Core
 
             if (Keyboard.ADAxis != 0)
             {
+                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
                 _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
                 _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
 
@@ -260,6 +271,7 @@ namespace Fusee.Examples.Simple.Core
             }
             else if (Keyboard.WSAxis != 0)
             {
+                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
                 _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
                 _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
 
