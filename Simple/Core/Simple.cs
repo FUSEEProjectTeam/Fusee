@@ -211,6 +211,8 @@ namespace Fusee.Examples.Simple.Core
         {
             //create BoundingBox
             makebox();
+            translation = new float2[bmp.GetLength(0), bmp.GetLength(1)];
+
 
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
@@ -390,37 +392,37 @@ namespace Fusee.Examples.Simple.Core
                 deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
             }
 
-            if (Keyboard.ADAxis != 0 && _moveZ <= 0.1f && _moveZ >= -0.1f)
+            if(!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
             {
-                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
-                _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
-                _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
+                if (Keyboard.ADAxis != 0 && collision())
+                {
+                    _moveX = _speed * Keyboard.ADAxis * DeltaTime;
+                    _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
+                    _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
 
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert + deg), 0, -_moveX * M.Sin(_angleVert + deg)));
+                    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert + deg), 0, -_moveX * M.Sin(_angleVert + deg)));
 
 
+                }
+                if (Keyboard.WSAxis != 0)
+                {
+                    _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
+                    _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
+                    _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
+
+                    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
+                }
             }
-            if (Keyboard.WSAxis != 0 && _moveX <= 0.1f && _moveX >= -0.1f)
-            {
-                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
-                _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
-                _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
-
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
-            }
+            
 
         }
         public bool collision()
         {
-            if(!(_ball.Translation.x >= translation[ballbmp[0], ballbmp[1]].x - wallZbox.x/2))
-            {
-               
-            }
-            if(!(_ball.Translation.x <= translation[ballbmp[0], ballbmp[1]].x + wallZbox.x / 2))
-            {
 
+            if (!(_ball.Translation.x <= translation[ballbmp[0], ballbmp[1]].x + wallZbox.x / 2))
+            {
+                return false;
             }
-
                 return true;
         }
         public void makebox()
