@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>$ext_safeprojectname$.Desktop</RootNamespace>
+    <PackageId>$ext_safeprojectname$.Desktop</PackageId>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <DefineConstants>PLATFORM_DESKTOP</DefineConstants>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\bin\Desktop</OutputPath>
+    <StartupObject>$ext_safeprojectname$.Desktop</StartupObject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fusee.Desktop" Version="0.7.4" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Name>Core</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
