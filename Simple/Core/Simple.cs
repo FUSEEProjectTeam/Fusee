@@ -28,7 +28,7 @@ namespace Fusee.Examples.Simple.Core
         private float2 wallXbox;
         private float2 groundbox;
         private float2[,] translation = new float2[31, 31];
-        private float2 ballbmp;
+        private int[] ballbmp;
 
         private float4x4 mtxCam;
         private float deg;
@@ -258,6 +258,8 @@ namespace Fusee.Examples.Simple.Core
 
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
+            findball();
+            collision();
             ballmovement();
 
 
@@ -410,10 +412,16 @@ namespace Fusee.Examples.Simple.Core
         }
         public bool collision()
         {
+            if(!(_ball.Translation.x >= translation[ballbmp[0], ballbmp[1]].x - wallZbox.x/2))
+            {
+               
+            }
+            if(!(_ball.Translation.x <= translation[ballbmp[0], ballbmp[1]].x + wallZbox.x / 2))
+            {
 
+            }
 
-
-            return true;
+                return true;
         }
         public void makebox()
         {
@@ -461,7 +469,7 @@ namespace Fusee.Examples.Simple.Core
                 {
                     if (bmp[countX, countY] == -1)
                     {
-                        ballbmp = new float2(countX, countY);
+                        ballbmp = new int[] { countX, countY };
                     }
                 }
             }
