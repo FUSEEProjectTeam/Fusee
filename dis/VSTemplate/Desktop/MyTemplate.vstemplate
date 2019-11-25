@@ -1,0 +1,24 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>FUSEE Desktop Projaect</Name>
+		<Description>This is a template for a FUSEE desktop project</Description>
+		<ProjectType>CSharp</ProjectType>
+		<ProjectSubType></ProjectSubType>
+		<SortOrder>1000</SortOrder>
+		<CreateNewFolder>true</CreateNewFolder>
+		<DefaultName>Desktop</DefaultName>
+		<ProvideDefaultName>true</ProvideDefaultName>
+		<LocationField>Enabled</LocationField>
+		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+		<CreateInPlace>true</CreateInPlace>
+		<Icon>__TemplateIcon.ico</Icon>
+		<PreviewImage>__PreviewImage.png</PreviewImage>
+	</TemplateData>
+	<TemplateContent>
+		<Project TargetFileName="Desktop.csproj" File="Desktop.csproj" ReplaceParameters="true">
+			<ProjectItem ReplaceParameters="false" TargetFileName="FuseeLogo.ico">FuseeLogo.ico</ProjectItem>
+			<ProjectItem ReplaceParameters="true" TargetFileName="Main.cs">Main.cs</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="NuGet.config">NuGet.config</ProjectItem>
+		</Project>
+	</TemplateContent>
+</VSTemplate>
