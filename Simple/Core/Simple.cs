@@ -23,11 +23,20 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         //my var
+        private float2 cornerbox;
+        private float2 wallZbox;
+        private float2 wallXbox;
+        private float2 groundbox;
+        private float2[,] translation = new float2[31, 31];
+        private float2 ballbmp;
+
+        private float4x4 mtxCam;
+        private float deg;
         private TransformComponent _ball;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private bool keykeymoveX = false, keymoveZ = false;
-        private TransformComponent mazeTransform =new TransformComponent();
+        private TransformComponent mazeTransform = new TransformComponent();
         private const float _speed = 7;
         private TransformComponent[,] wallsTransform;
         private int[,] bmp = new int[,] {{1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1},
@@ -102,14 +111,14 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(0, -0.5f, 0)
+                                        Translation = new float3(0 , -0.5f, 0)
                                     },
                                     ground.GetComponent<ShaderEffectComponent>(),
                                     ground.GetComponent<Mesh>()
                                 },
                 Name = "Ground"
             }
-                        );
+);
             for (int countY = 0; countY < bmp.GetLength(1); countY++)
             {
                 for (int countX = 0; countX < bmp.GetLength(0); countX++)
@@ -122,7 +131,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2.5f, 2, countY * 2.5f)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     cornerstone.GetComponent<ShaderEffectComponent>(),
                                     cornerstone.GetComponent<Mesh>()
@@ -131,7 +140,7 @@ namespace Fusee.Examples.Simple.Core
                         }
                         );
                     }
-                    else if (countX % 2 == 0 && countY % 2 == 1 && bmp[countX, countY]== 1)
+                    if (countX % 2 == 0 && countY % 2 == 1 && bmp[countX, countY] == 1)
                     {
                         maze.Children.Add(new SceneNodeContainer
                         {
@@ -139,7 +148,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     wallZ.GetComponent<ShaderEffectComponent>(),
                                     wallZ.GetComponent<Mesh>()
@@ -149,7 +158,7 @@ namespace Fusee.Examples.Simple.Core
                         }
                         );
                     }
-                    else if (countX % 2 == 1 && countY % 2 == 0 && bmp[countX, countY] == 1)
+                    if (countX % 2 == 1 && countY % 2 == 0 && bmp[countX, countY] == 1)
                     {
                         maze.Children.Add(new SceneNodeContainer
                         {
@@ -157,7 +166,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     wallX.GetComponent<ShaderEffectComponent>(),
                                     wallX.GetComponent<Mesh>()
@@ -166,7 +175,7 @@ namespace Fusee.Examples.Simple.Core
                         }
                         );
                     }
-                    else if (countX % 2 == 1 && countY % 2 == 1 && bmp[countX, countY] == -1)
+                    if (countX % 2 == 1 && countY % 2 == 1 && bmp[countX, countY] == -1)
                     {
                         maze.Children.Add(new SceneNodeContainer
                         {
@@ -174,7 +183,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * 2.5f , 2, countY * 2.5f)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     ball.GetComponent<ShaderEffectComponent>(),
                                     ball.GetComponent<Mesh>()
@@ -185,7 +194,8 @@ namespace Fusee.Examples.Simple.Core
                     }
                 }
             }
-            return new SceneContainer{
+            return new SceneContainer
+            {
                 Children = new List<SceneNodeContainer>
                 {
                     mazeScene.Children.First(),
@@ -193,12 +203,14 @@ namespace Fusee.Examples.Simple.Core
                 }
             };
         }
-                    
 
- 
+
+
         // Init is called on startup. 
         public override void Init()
         {
+            //create BoundingBox
+            makebox();
 
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
@@ -214,6 +226,11 @@ namespace Fusee.Examples.Simple.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            //my Init
+            _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
+            CreateTranslation();
+
         }
 
 
@@ -241,42 +258,7 @@ namespace Fusee.Examples.Simple.Core
 
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
-
-
-            var mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
-            RC.View = mtxCam;
-
-            //move the ball
-            var deg = 0.0f;
-            if(_angleVert % (0.5f * M.Pi) <= 0.25f * M.Pi)
-            {
-                deg =-(_angleVert % (0.5f * M.Pi));
-            }
-            else
-            {
-                deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
-            }
-
-            if (Keyboard.ADAxis != 0)
-            {
-                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
-                _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
-                _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
-
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert + deg), 0, -_moveX * M.Sin(_angleVert + deg)));
-
-
-            }
-            else if (Keyboard.WSAxis != 0)
-            {
-                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
-                _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
-                _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
-
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
-            }
+            ballmovement();
 
 
             //Set the view matrix for the interaction handler.
@@ -387,6 +369,102 @@ namespace Fusee.Examples.Simple.Core
         public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
+        }
+
+        //my methods
+        public void ballmovement()
+        {
+            mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            RC.View = mtxCam;
+
+            //move the ball
+            deg = 0.0f;
+            if (_angleVert % (0.5f * M.Pi) <= 0.25f * M.Pi)
+            {
+                deg = -(_angleVert % (0.5f * M.Pi));
+            }
+            else
+            {
+                deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
+            }
+
+            if (Keyboard.ADAxis != 0 && _moveZ <= 0.1f && _moveZ >= -0.1f)
+            {
+                _moveX = _speed * Keyboard.ADAxis * DeltaTime;
+                _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
+                _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg);
+
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(_angleVert + deg), 0, -_moveX * M.Sin(_angleVert + deg)));
+
+
+            }
+            if (Keyboard.WSAxis != 0 && _moveX <= 0.1f && _moveX >= -0.1f)
+            {
+                _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
+                _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
+                _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
+
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
+            }
+
+        }
+        public bool collision()
+        {
+
+
+
+            return true;
+        }
+        public void makebox()
+        {
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
+            var cornerstone = mazeScene.Children.FindNodes(node => node.Name == "Cornerstone")?.FirstOrDefault()?.GetMesh();
+            cornerbox = cornerstone.BoundingBox.Size.xz;
+            var wallZ = mazeScene.Children.FindNodes(node => node.Name == "WallZ")?.FirstOrDefault()?.GetMesh();
+            wallZbox = wallZ.BoundingBox.Size.xz;
+            var wallX = mazeScene.Children.FindNodes(node => node.Name == "WallX")?.FirstOrDefault()?.GetMesh();
+            wallXbox = wallX.BoundingBox.Size.xz;
+
+            groundbox = new float2(wallXbox.x, wallZbox.y);
+        }
+
+        public void CreateTranslation()
+        {
+            for (int countY = 0; countY < bmp.GetLength(1); countY++)
+            {
+                for (int countX = 0; countX < bmp.GetLength(0); countX++)
+                {
+                    if (countX % 2 == 0 && countY % 2 == 0)
+                    {
+                        translation[countX, countY] = new float2(countX * (wallXbox.x + cornerbox.x) / 2, countY * (wallZbox.y + cornerbox.y) / 2);
+                    }
+                    if (countX % 2 == 0 && countY % 2 == 1)
+                    {
+                        translation[countX, countY] = new float2(countX * (wallXbox.x + cornerbox.x) / 2, countY * (wallZbox.y + cornerbox.y) / 2);
+                    }
+                    if (countX % 2 == 1 && countY % 2 == 0)
+                    {
+                        translation[countX, countY] = new float2(countX * (wallXbox.x + cornerbox.x) / 2, countY * (wallZbox.y + cornerbox.y) / 2);
+                    }
+                    if (countX % 2 == 1 && countY % 2 == 1)
+                    {
+                        translation[countX, countY] = new float2(countX * (wallXbox.x + cornerbox.x) / 2, countY * (wallZbox.y + cornerbox.y) / 2);
+                    }
+                }
+            }
+        }
+        public void findball()
+        {
+            for (int countY = 0; countY < bmp.GetLength(1); countY++)
+            {
+                for (int countX = 0; countX < bmp.GetLength(0); countX++)
+                {
+                    if (bmp[countX, countY] == -1)
+                    {
+                        ballbmp = new float2(countX, countY);
+                    }
+                }
+            }
         }
     }
 }
