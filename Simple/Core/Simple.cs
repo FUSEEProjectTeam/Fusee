@@ -209,6 +209,7 @@ namespace Fusee.Examples.Simple.Core
         // Init is called on startup. 
         public override void Init()
         {
+            findball();
             //create BoundingBox
             makebox();
             translation = new float2[bmp.GetLength(0), bmp.GetLength(1)];
@@ -260,7 +261,6 @@ namespace Fusee.Examples.Simple.Core
 
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
-            findball();
             collision();
             ballmovement();
 
@@ -418,9 +418,15 @@ namespace Fusee.Examples.Simple.Core
         }
         public bool collision()
         {
-
             if (!(_ball.Translation.x <= translation[ballbmp[0], ballbmp[1]].x + wallZbox.x / 2))
             {
+                if (bmp[ballbmp[0], ballbmp[1]] != 1)
+                {
+                    bmp[ballbmp[0], ballbmp[1]] = 0;
+                    bmp[ballbmp[0] -1, ballbmp[1]] = -1;
+                    ballbmp[0] = ballbmp[0] - 1;
+                    return false;
+                }
                 return false;
             }
                 return true;
