@@ -418,6 +418,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ABCompare.Core", "Examples\Complete\ABCompare\Core\Fusee.Examples.ABCompare.Core.csproj", "{A7D7179E-F24C-4A65-B327-BA3324267609}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ABCompare.Desktop", "Examples\Complete\ABCompare\Desktop\Fusee.Examples.ABCompare.Desktop.csproj", "{B8A9A3D6-DC58-47C6-9173-EAE64B580012}"
+EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FusViewer", "src\Tools\FusViewer\FusViewer.csproj", "{69912481-B885-42EF-9F3A-E1691D2D8FCE}"
 EndProject
 Global
@@ -3111,6 +3112,11 @@ Global
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -3129,6 +3135,12 @@ Global
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Debug-WebAsm|x86.Build.0 = Debug|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release|x64.ActiveCfg = Release|Any CPU
@@ -3147,6 +3159,12 @@ Global
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug|x64.ActiveCfg = Debug|Any CPU
@@ -3165,6 +3183,12 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x86.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release|Any CPU.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release|x64.ActiveCfg = Release|Any CPU
@@ -3183,11 +3207,12 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.Build.0 = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x64.Build.0 = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
-		{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}.Release-WebAsm|x86.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69912481-B885-42EF-9F3A-E1691D2D8FCE}.Debug|x64.ActiveCfg = Debug|Any CPU

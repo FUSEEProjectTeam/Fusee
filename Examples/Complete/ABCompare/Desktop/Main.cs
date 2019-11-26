@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
+using System;
 
 namespace Fusee.Examples.ABCompare.Desktop
 {
@@ -43,6 +44,8 @@ namespace Fusee.Examples.ABCompare.Desktop
                 });
 
             AssetStorage.RegisterProvider(fap);
+
+            Console.ReadKey();
 
             var app = new Core.ABCompare();
             

@@ -6,9 +6,9 @@ using Fusee.Serialization;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 
-namespace Fusee.Examples.ABCompare.Web
+namespace Fusee.Examples.Simple.Web
 {
-    public class ABCompare
+    public class Simple
     {
         public static void Main()
         {

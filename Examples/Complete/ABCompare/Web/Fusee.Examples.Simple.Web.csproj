@@ -1,7 +1,7 @@
 ﻿<Project>
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.ABCompare.Web</RootNamespace>
-    <PackageId>Fusee.Examples.ABCompare.Web</PackageId>
+    <RootNamespace>Fusee.Examples.Simple.Web</RootNamespace>
+    <PackageId>Fusee.Examples.Simple.Web</PackageId>
     <TargetFramework>net462</TargetFramework>
     <OutputType>WinExe</OutputType>
     <DefineConstants>PLATFORM_WEB</DefineConstants>
@@ -12,8 +12,14 @@
   <PropertyGroup>
     <!-- WARNING - NOT STANDARD-FUSEE OUTPUT PATH -->
     <OutputPath>$(FuseeBuildRoot)\tmp\Obj\$(RootNamespace)\bin\$(Configuration)\</OutputPath>
-    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\ABCompare\Web\</FuseeWebOutputPath>
+    <FuseeWebOutputPath>$(FuseeBuildRoot)\bin\$(Configuration)\Examples\Simple\Web\</FuseeWebOutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Core\Fusee.Examples.Simple.Core.csproj">
+      <Name>Fusee.Examples.Simple.Core</Name>
+    </ProjectReference>
+  </ItemGroup>
   
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">
@@ -44,10 +50,6 @@
       <HintPath>$(FuseeRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
-  </ItemGroup>
-  
-  <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.ABCompare.Core.csproj" />
   </ItemGroup>
   
   <ItemGroup>

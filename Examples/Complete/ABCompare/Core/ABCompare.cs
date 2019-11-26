@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
@@ -11,7 +11,6 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
-
 
 namespace Fusee.Examples.ABCompare.Core
 {
@@ -28,11 +27,10 @@ namespace Fusee.Examples.ABCompare.Core
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
-
         private SceneContainer _scene1;
         private SceneContainer _scene2;
-        private SceneRenderer _sceneRenderer1;
-        private SceneRenderer _sceneRenderer2;
+        private SceneRendererForward _sceneRenderer1;
+        private SceneRendererForward _sceneRenderer2;
         private float4x4 _sceneCenter;
         private float4x4 _sceneScale;
         private bool _twoTouchRepeated;
@@ -44,7 +42,7 @@ namespace Fusee.Examples.ABCompare.Core
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -69,6 +67,49 @@ namespace Fusee.Examples.ABCompare.Core
         // Init is called on startup. 
         public override void Init()
         {
+
+
+            //Initialize objects we need for the multipass blur effect
+            _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+
+            _blurPassEffect = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("screenFilledQuad.vert"),
+                    PS = AssetStorage.Get<string>("simpleBlur.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = "InputTex", Value = _renderTex},
+            });
+
+            _quadScene = new SceneContainer()
+            {
+                Children = new List<SceneNodeContainer>()
+                {
+                    new SceneNodeContainer()
+                    {
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 0.1f, 1, M.DegreesToRadians(45f)),
+
+                            new ShaderEffectComponent()
+                            {
+                                Effect = _blurPassEffect
+                            },
+                            new Plane()
+                        }
+                    }
+                }
+            };
+
             _initWindowWidth = Width;
             _initWindowHeight = Height;
 
@@ -93,12 +134,19 @@ namespace Fusee.Examples.ABCompare.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
+            //==> Models for multiple Viewports
+            
             _scene1 = AssetStorage.Get<SceneContainer>(ModelFile);
-            _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
 
-            // New Shader for used Models
-            _scene1.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
-            _scene2.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
+            /*
+            _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
+            */
+
+
+            // New Shader for used Models ===> not usable right now
+
+           _scene1.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
+           //_scene2.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
             //_scene2.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(1, 0, 0, 1), 0.5f, 0.5f);
 
             _gui = CreateGui();
@@ -140,19 +188,16 @@ namespace Fusee.Examples.ABCompare.Core
                     _sceneScale = float4x4.Identity;
             }
 
-            //Add resize delegate
-            var projComp = _scene1.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-            _scene1.Children[0].Components.Remove(projComp);
-
-            var projComp2 = _scene2.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp2.Resize(Width, Height); });
-            _scene2.Children[0].Components.Remove(projComp2);
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer1 = new SceneRenderer(_scene1);
-            _sceneRenderer2 = new SceneRenderer(_scene2);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRendererBlur = new SceneRendererForward(_quadScene);
+
+
+            //==> rendering with multiple viewports
+             _sceneRenderer1 = new SceneRendererForward(_scene1);
+           /*
+            _sceneRenderer2 = new SceneRendererForward(_scene2);
+            */
+            _guiRenderer = new SceneRendererForward(_gui);
 
         }
 
@@ -227,7 +272,7 @@ namespace Fusee.Examples.ABCompare.Core
                 {
                     _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                     _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                    _viewtranslate = Keyboard.ADAxis * 0.5f; 
+                    _viewtranslate = Keyboard.ADAxis * 0.5f;
                 }
                 else
                 {
@@ -270,18 +315,30 @@ namespace Fusee.Examples.ABCompare.Core
             }
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer1.Animate();
-            _sceneRenderer2.Animate();
+            
+            //_sceneRenderer2.Animate();
 
 
             // Create two Viewports
-            var aspect = Width/ (float)Height;
+            //==> sceneRenderer for Multipass Example
+            var width = Width;
+            var height = Height;
+            RC.Viewport(0, 0, _texRes, _texRes, false);
+            _sceneRenderer1.Render(RC, _renderTex);   //Pass 1: render the rocket to "_renderTex", using the standard material. 
+
+            RC.Viewport(0, 0, width, height);
+            _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
+           
+            //==> sceneRenderer for multiple Viewports
+            /*
+            var aspect = Width / (float)Height;
             RC.Projection = CreatePerspectiveFieldOfViewOwn(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
             RC.Viewport(0, 0, Width / 2, Height);
             _sceneRenderer1.Render(RC);
             RC.Projection = CreatePerspectiveFieldOfViewOwn2(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
             RC.Viewport(Width / 2, 0, Width / 2, Height);
             _sceneRenderer2.Render(RC);
-
+            */
             _sih.View = RC.View;
 
             _guiRenderer.Render(RC);
@@ -292,6 +349,7 @@ namespace Fusee.Examples.ABCompare.Core
 
 
         //////////////////////////// Viewport Functions ===> need to be reduced to one function!! 
+        
         public static float4x4 CreatePerspectiveFieldOfViewOwn(float fovy, float aspect, float zNear, float zFar)
         {
             float4x4 result;
@@ -310,7 +368,7 @@ namespace Fusee.Examples.ABCompare.Core
             float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
             float yMin = -yMax;
             float xMin = yMin * aspect - _viewtranslate;
-            float xMax = yMax * aspect *- _viewtranslate;
+            float xMax = yMax * aspect * -_viewtranslate;
 
             result = Math.Core.float4x4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
@@ -341,6 +399,7 @@ namespace Fusee.Examples.ABCompare.Core
 
             return result;
         }
+        
 
         ///////////////////////////////
         private InputDevice Creator(IInputDeviceImp device)
@@ -422,7 +481,7 @@ namespace Fusee.Examples.ABCompare.Core
             //Create canvas projection component and add resize delegate
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            // AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
 
             return new SceneContainer
             {
