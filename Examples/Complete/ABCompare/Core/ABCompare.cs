@@ -59,6 +59,11 @@ namespace Fusee.Examples.ABCompare.Core
 
         private GamePadDevice _gamePad;
 
+        private WritableTexture _renderTex;
+        private ShaderEffect _blurPassEffect;
+        private SceneContainer _quadScene;
+        private SceneRendererForward _sceneRendererBlur;
+        private readonly int _texRes = (int)TexRes.HIGH_RES;
 
 
         // Init is called on startup. 
@@ -222,7 +227,7 @@ namespace Fusee.Examples.ABCompare.Core
                 {
                     _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                     _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                    _viewtranslate = Keyboard.ADAxis * 0.5f; //===> Aspect Ratio needs to be included / How to change velocity?
+                    _viewtranslate = Keyboard.ADAxis * 0.5f; 
                 }
                 else
                 {
@@ -269,7 +274,7 @@ namespace Fusee.Examples.ABCompare.Core
 
 
             // Create two Viewports
-            var aspect = (Width) / (float)Height;
+            var aspect = Width/ (float)Height;
             RC.Projection = CreatePerspectiveFieldOfViewOwn(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
             RC.Viewport(0, 0, Width / 2, Height);
             _sceneRenderer1.Render(RC);
@@ -304,10 +309,10 @@ namespace Fusee.Examples.ABCompare.Core
 
             float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
             float yMin = -yMax;
-            float xMin = yMin * aspect;
-            float xMax = yMax * aspect * -_viewtranslate;
+            float xMin = yMin * aspect - _viewtranslate;
+            float xMax = yMax * aspect *- _viewtranslate;
 
-            result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
+            result = Math.Core.float4x4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
         }
@@ -330,37 +335,9 @@ namespace Fusee.Examples.ABCompare.Core
             float yMax = zNear * (float)System.Math.Tan(0.5f * fovy);
             float yMin = -yMax;
             float xMin = yMin * aspect * _viewtranslate;
-            float xMax = yMax * aspect;
+            float xMax = yMax * aspect - _viewtranslate;
 
-            result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
-
-            return result;
-        }
-
-        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                          float zFar)
-        {
-            float4x4 result;
-
-            if (zNear <= 0)
-                throw new ArgumentOutOfRangeException("zNear");
-            if (zFar <= 0)
-                throw new ArgumentOutOfRangeException("zFar");
-            if (zNear >= zFar)
-                throw new ArgumentOutOfRangeException("zNear");
-
-            float x = (2.0f * zNear) / (right - left);
-            float y = (2.0f * zNear) / (top - bottom);
-            // Left Handed
-            float a = (left + right) / (left - right);
-            float b = (top + bottom) / (bottom - top);
-            float c = (zFar + zNear) / (zFar - zNear);
-            float d = -(2.0f * zFar * zNear) / (zFar - zNear);
-
-            result = new float4x4(x, 0, a, 0,
-                                  0, y, b, 0,
-                                  0, 0, c, d,
-                                  0, 0, 1, 0);
+            result = Math.Core.float4x4.CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
         }
