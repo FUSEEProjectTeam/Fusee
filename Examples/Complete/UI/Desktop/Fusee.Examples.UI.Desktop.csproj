@@ -13,13 +13,15 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview4.19164.7" />
+    <PackageReference Include="OpenTK" Version="3.1.0" />
+    <PackageReference Include="OpenTK.GLControl" Version="3.1.0" />
+    <PackageReference Include="SharpFontStandard" Version="4.0.1" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Core\Fusee.Examples.UI.Core.csproj">
-      <Name>Fusee.Examples.UI.Core</Name>
-    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.Examples.UI.Core.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -50,6 +52,5 @@
     <Reference Include="Fusee.Xene">
       <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.Xene.dll</HintPath>
     </Reference>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
   </ItemGroup>
 </Project>

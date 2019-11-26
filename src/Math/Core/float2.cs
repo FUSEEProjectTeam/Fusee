@@ -1,13 +1,9 @@
-#pragma warning disable 1591
-
 using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>
     /// Represents a 2D vector using two single-precision floating-point numbers.
     /// </summary>
@@ -52,6 +48,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x and y, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 1).</param>
+        /// <returns>The x or y component of the float2.</returns>
         public float this[int idx]
         {
             get
@@ -872,8 +873,4 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float2> Parse { get; set; }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

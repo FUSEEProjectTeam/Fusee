@@ -60,13 +60,13 @@ namespace Fusee.Engine.Player.Desktop
                         }
                         catch (Exception e)
                         {
-                            Diagnostics.Log(e.ToString());
+                            Diagnostics.Debug("No entire Fusee App DLL recived. Continuing.", e);
                         }
                     }
                 }
                 else
                 {
-                    Diagnostics.Log($"Cannot open {args[0]}.");
+                    Diagnostics.Error($"Cannot open {args[0]}.");
                 }
             }
 
@@ -80,7 +80,7 @@ namespace Fusee.Engine.Player.Desktop
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(e.ToString());
+                    Diagnostics.Debug("Not in deployment mode", e);
                 }
                 // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
                 if (tApp == null)
@@ -124,7 +124,7 @@ namespace Fusee.Engine.Player.Desktop
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Warn($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {

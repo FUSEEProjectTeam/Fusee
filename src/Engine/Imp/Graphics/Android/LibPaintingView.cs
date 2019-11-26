@@ -34,10 +34,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
             var b = new float3(3, 2, 1);
 
             var c = a + b;
-            Diagnostics.Log(c);
+            //Diagnostics.Log(c);
         }
 
-        // This method is called everytime the context needs
+        // This method is called every time the context needs
         // to be recreated. Use it to set any egl-specific settings
         // prior to context creation
         protected override void CreateFrameBuffer()

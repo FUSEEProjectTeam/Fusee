@@ -4,7 +4,7 @@ namespace Fusee.Serialization
 {
     /// <summary>
     /// Material definition.If contained within a node, the node's (and potentially child node's)
-    /// geometry is rendered with the speicified material.
+    /// geometry is rendered with the specified material.
     /// </summary>
     [ProtoContract]
     // ReSharper disable once InconsistentNaming
@@ -23,7 +23,7 @@ namespace Fusee.Serialization
         public float FresnelReflectance;
 
         /// <summary>
-        /// This float describes the difusse fraction of the material
+        /// This float describes the diffuse fraction of the material
         /// </summary>
         [ProtoMember(3)]
         public float DiffuseFraction;

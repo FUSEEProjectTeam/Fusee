@@ -47,8 +47,6 @@ namespace Fusee.Math.Core
 
         #region Properties
 
-        // ReSharper disable InconsistentNaming
-
         /// <summary>
         ///     Gets and sets an Fusee.Math.double3 with the x, y and z components of this instance.
         /// </summary>
@@ -93,8 +91,6 @@ namespace Fusee.Math.Core
             get { return _w; }
             set { _w = value; }
         }
-
-        // ReSharper restore InconsistentNaming
 
         #endregion
 
@@ -158,6 +154,9 @@ namespace Fusee.Math.Core
             return ToAxisAngle(this);
         }
 
+        /// <summary>
+        /// Converts the quaternion into a rotation matrix.
+        /// </summary>       
         public double4x4 ToRotMat()
         {
             return ToRotMat(this);

@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk" >
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.ThreeDFont.Core</RootNamespace>
     <PackageId>Fusee.Examples.ThreeDFont.Core</PackageId>
@@ -8,6 +8,10 @@
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Examples\ThreeDFont\Core\</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" />
+  </ItemGroup>
 
   <ItemGroup>
     <Reference Include="Fusee.Base.Common">

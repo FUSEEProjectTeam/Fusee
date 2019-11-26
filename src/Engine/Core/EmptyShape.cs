@@ -14,7 +14,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public override float Margin
         {
-
             get
             {
                 var retval = _emtyShapeImp.Margin;

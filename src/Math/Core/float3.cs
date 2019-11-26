@@ -1,13 +1,9 @@
-﻿#pragma warning disable 1591
-
-using System;
+﻿using System;
 using System.Runtime.InteropServices;
 using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
-    // ReSharper disable InconsistentNaming
-
     /// <summary>
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
@@ -103,6 +99,11 @@ namespace Fusee.Math.Core
         #region Public Members
 
         #region this
+        /// <summary>
+        /// Gets or sets the individual components x, y, or z, depending on their index.
+        /// </summary>
+        /// <param name="idx">The index (between 0 and 2).</param>
+        /// <returns>The x or y component of the float3.</returns>
         public float this[int idx]
         {
             get {
@@ -266,8 +267,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Adds a scalar to a instance.
         /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="scalar">The scalar.</param>
+        /// <param name="vec">The first instance.</param>
+        /// <param name="scale">The scalar.</param>
         /// <returns>
         /// The result of the calculation.
         /// </returns>
@@ -298,8 +299,8 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Adds a scalar from a instance.
         /// </summary>
-        /// <param name="left">The first instance.</param>
-        /// <param name="scalar">The scalar.</param>
+        /// <param name="vec">The first instance.</param>
+        /// <param name="scale">The scalar.</param>
         /// <returns>
         /// The result of the calculation.
         /// </returns>
@@ -973,9 +974,7 @@ namespace Fusee.Math.Core
         /// </returns>
         public override int GetHashCode()
         {
-            // ReSharper disable NonReadonlyFieldInGetHashCode
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode();
-            // ReSharper restore NonReadonlyFieldInGetHashCode
         }
 
         #endregion
@@ -1061,8 +1060,4 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float3> Parse { get; set; }
     }
-
-    // ReSharper restore InconsistentNaming
 }
-
-#pragma warning restore 1591

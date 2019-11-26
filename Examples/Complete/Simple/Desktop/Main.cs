@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
 using System.Reflection;
+using System;
 
 namespace Fusee.Examples.Simple.Desktop
 {

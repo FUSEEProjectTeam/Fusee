@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -23,13 +23,13 @@ namespace Fusee.Examples.Simple.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRenderer _sceneRenderer;
+        private SceneRendererForward _sceneRenderer;
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
         private float _fovy = M.PiOver4;
 
-        private SceneRenderer _guiRenderer;
+        private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
@@ -40,23 +40,20 @@ namespace Fusee.Examples.Simple.Core
         public override void Init()
         {
             _gui = CreateGui();
-            Resize(new ResizeEventArgs(Width, Height));
+           
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
-            // Load the rocket model
+            // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
-            //Add resize delegate
-            var projComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-            AddResizeDelegate(delegate { projComp.Resize(Width, Height); });
-
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRenderer(_rocketScene);
-            _guiRenderer = new SceneRenderer(_gui);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            
+            _guiRenderer = new SceneRendererForward(_gui);
         }
 
 
@@ -191,8 +188,7 @@ namespace Fusee.Examples.Simple.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
-            AddResizeDelegate(delegate { canvasProjComp.Resize(Width, Height); });
+            canvas.Components.Insert(0, canvasProjComp);            
 
             return new SceneContainer
             {

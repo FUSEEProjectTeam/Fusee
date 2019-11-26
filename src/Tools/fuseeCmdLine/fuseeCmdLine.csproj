@@ -1,24 +1,53 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>fusee</AssemblyName>
+    <PackageId>Fusee.Tools.CmdLine</PackageId>
     <RootNamespace>Fusee.Tools.fuseeCmdLine</RootNamespace>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>fusee</ToolCommandName>
+    <PackageTags>dotnet;tools;fusee</PackageTags>
   </PropertyGroup>
   <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
-  </ItemGroup>  
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="tools/netcoreapp3.0/any" />
+  </ItemGroup>
   
   <ItemGroup>
-    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.58" />
+    <PackageReference Include="CommandLineParser" Version="2.6.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
+    <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>  
   
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
@@ -28,8 +57,8 @@
   <PropertyGroup>
     <BlenderAddOnProjectName>io_export_fus</BlenderAddOnProjectName>
     <BlenderAddonSourcePath>$(FuseeEngineRoot)\src\Tools\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
-    <BlenderAddonSourcePath>$(MSBuildProjectDirectory)\..\BlenderScripts\addons\$(BlenderAddOnProjectName)</BlenderAddonSourcePath>
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
+    <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
     <!-- Input files part of the Addon -->
@@ -38,23 +67,21 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] $(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto" />
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for Scene.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\Scene.proto;$(BlenderAddonSourcePath)\proto\Scene_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto" />
     <!-- for bcl.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\bcl.proto&quot;" />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\protobuf-net\bcl.proto;$(BlenderAddonSourcePath)\proto\protobuf_net\bcl_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\protobuf_net\" />
     <!-- for protogen.proto -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] &quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
-    <Exec ContinueOnError="true" Timeout="120000" WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto protobuf-net\protogen.proto&quot;" />
+    <Copy SourceFiles="$(BlenderAddonSourcePath)\proto_src\protobuf-net\protogen.proto;$(BlenderAddonSourcePath)\proto\protobuf_net\protogen_pb2.py" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\protobuf_net\" />
     <!-- Copy the python files to the bin output folder -->
-    <Message Importance="High" Text="[FUSEE Blender Add-on] Copying %(BlenderAddonPythonFiles.Filename)%(BlenderAddonPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
-    <Message Importance="High" Text="[FUSEE Blender Add-on Protobuf] Copying %(BlenderAddonProtobufPythonFiles.Filename)%(BlenderAddonProtobufPythonFiles.Extension) to $(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\%(RecursiveDir)" />
     <Copy SourceFiles="@(BlenderAddonProtobufPythonFiles)" DestinationFolder="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\proto\%(RecursiveDir)" />
+    
     <!-- zip it all together CRASHES THE SOLUTION ON MACHINES WITHOUT THE COMMUNITY TASKS INSTALLED. NO WAY TO FIND OUT IF ALREADY INSTALLED. THANK YOU MS BUILD -->
     <!-- uses the Zip task from the MSBuild Community Tasks https://github.com/loresoft/msbuildtasks/blob/master/Documentation/TaskDocs.md#Zip -->
     <!-- install from https://github.com/loresoft/msbuildtasks/releases -->
@@ -63,6 +90,9 @@
     <!-- Message Importance="High" Text="[ERROR Creating FUSEE BlenderAddon] $(BlenderAddOnProjectName).zip. Zip Task not installed. Install MSBuildCommunityTasks from https://github.com/loresoft/msbuildtasks/releases!!" Condition="!Exists($(MSBuildCommunityTargets))"/ -->
     <!-- Zip ZipFileName="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName).zip" WorkingDirectory="$(BlenderAddonSourcePath)\..\" Files="@(BlenderAddonPythonFiles)" /-->
     <!-- Condition="Exists($(MSBuildCommunityTargets))"/ -->
-  </Target>
 
+    <ItemGroup>
+      <Content Include="$(BlenderAddonOutputPath)\$(BlenderAddOnProjectName)\**" PackagePath="tools\netcoreapp3.0\any\BlenderScripts\addons\$(BlenderAddOnProjectName)" />
+    </ItemGroup>
+  </Target>
 </Project>
