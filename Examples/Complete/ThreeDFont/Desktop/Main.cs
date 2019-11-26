@@ -36,7 +36,7 @@ namespace Fusee.Examples.ThreeDFont.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
