@@ -47,8 +47,5 @@
   <ItemGroup>
       <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
-  <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="tools/netcoreapp3.0/any" />
-  </ItemGroup>
       
 </Project>

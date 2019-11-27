@@ -25,6 +25,8 @@ namespace Fusee.Base.Imp.Desktop
         /// <param name="stream">The stream.</param>
         public FontImp(Stream stream)
         {
+            EmbeddedResourcesDllHandler.LoadEmbeddedDlls("freetype6.dll", "Fusee.Base.Imp.Desktop.Natives.freetype6.dll");
+
             if (_sharpFont == null)
                 _sharpFont = new Library();
 
