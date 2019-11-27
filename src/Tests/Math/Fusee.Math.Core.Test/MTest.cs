@@ -1,8 +1,6 @@
-﻿using System;
-using Xunit;
-using static Fusee.Math.Core.Eigen;
+﻿using Xunit;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class MTest
     {

@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class Float4x4Test
     {

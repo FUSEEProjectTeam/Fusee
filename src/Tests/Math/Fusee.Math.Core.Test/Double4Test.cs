@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using Xunit;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class Double4Test
     {
