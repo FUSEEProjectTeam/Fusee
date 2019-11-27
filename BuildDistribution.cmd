@@ -7,7 +7,7 @@ echo Cleaning up build directory.
 git clean -xdf
 
 echo Building distribution.
-dotnet build Fusee.Engine.sln -c Debug-Desktop
+dotnet build Fusee.sln -c Debug-Desktop
 
 set startdir=%CD%
 cd ..

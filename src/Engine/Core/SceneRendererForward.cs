@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -26,7 +27,7 @@ namespace Fusee.Engine.Core
         /// Light results, collected from the scene in the Viserator.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
-        {
+        {            
             get
             {
                 return _lightResults;
@@ -110,8 +111,13 @@ namespace Fusee.Engine.Core
             // if there is no light in scene then add one (legacyMode)
             _lightResults.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, new LightResult(_legacyLight)
             {
-
-                Rotation = float4x4.Identity,
+                Rotation = new float4x4
+                (
+                    new float4(_rc.InvView.Row0.xyz, 0),
+                    new float4(_rc.InvView.Row1.xyz, 0),
+                    new float4(_rc.InvView.Row2.xyz, 0),
+                    float4.UnitW
+                 ),
                 WorldSpacePos = _rc.InvView.Column3.xyz
             }));
         }
@@ -124,7 +130,9 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            //AccumulateLight();
+
+            var buildFrag = new ProtoToFrag(_sc, true);
+            buildFrag.BuildFragmentShaders();
 
             _state = new RendererState();
             InitAnimations(_sc);
@@ -270,6 +278,7 @@ namespace Fusee.Engine.Core
                         Shininess = 22
                     }
                 };
+
                 _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
                 _rc.SetShaderEffect(_defaultEffect);
             }
@@ -281,13 +290,43 @@ namespace Fusee.Engine.Core
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>
-        /// <param name="renderTarget">Optional parameter: set this if you want to render to one or more textures.</param>
+        /// <param name="renderTarget">Optional parameter: set this if you want to render to a g-buffer.</param>
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
             SetContext(rc);
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTarget);
+
+            Traverse(_sc.Children);
+        }
+
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="renderTexture">Optional parameter: set this if you want to render to a texture.</param>
+        public void Render(RenderContext rc, WritableTexture renderTexture = null)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget(renderTexture);
+
+            Traverse(_sc.Children);
+        }
+
+        /// <summary>
+        /// Renders the scene.
+        /// </summary>
+        /// <param name="rc"></param>       
+        public void Render(RenderContext rc)
+        {
+            SetContext(rc);
+            AccumulateLight();
+            UpdateShaderParamsForAllLights();
+            rc.SetRenderTarget();
+
             Traverse(_sc.Children);
         }
 
@@ -667,7 +706,7 @@ namespace Fusee.Engine.Core
             if (strength > 1.0 || strength < 0.0)
             {
                 strength = M.Clamp(light.Strength, 0.0f, 1.0f);
-                Diagnostics.Log("WARNING: strength of the light will be clamped between 0 and 1.");
+                Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
             var lightParamStrings = _lightPararamStringsAllLights[position];

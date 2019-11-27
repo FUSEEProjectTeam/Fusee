@@ -1,0 +1,22 @@
+{
+  "solution": {
+    "path": "Fusee.sln",
+    "projects": [
+      "src\\Base\\Common\\Fusee.Base.Common.csproj",
+      "src\\Base\\Core\\Fusee.Base.Core.csproj",
+      "src\\Base\\Imp\\Android\\Fusee.Base.Imp.Android.csproj",
+      "src\\Engine\\Common\\Fusee.Engine.Common.csproj",
+      "src\\Engine\\Core\\Fusee.Engine.Core.csproj",
+      "src\\Engine\\GUI\\Fusee.Engine.GUI.csproj",
+      "src\\Engine\\Imp\\Graphics\\Android\\Fusee.Engine.Imp.Graphics.Android.csproj",
+      "src\\Engine\\Imp\\Graphics\\Shared\\Fusee.Engine.Imp.Graphics.Shared.shproj",
+      "src\\Engine\\Player\\Android\\Fusee.Engine.Player.Android.csproj",
+      "src\\Engine\\Player\\Core\\Fusee.Engine.Player.Core.csproj",
+      "src\\Jometri\\Fusee.Jometri.csproj",
+      "src\\Math\\Core\\Fusee.Math.Core.csproj",
+      "src\\Serialization\\Fusee.Serialization.csproj",
+      "src\\Xene\\Fusee.Xene.csproj",
+      "src\\Xirkit\\Fusee.Xirkit.csproj"
+    ]
+  }
+}

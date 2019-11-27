@@ -567,8 +567,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             _gameWindow = gameWindow;
             _keymapper = new Keymapper();
-            _gameWindow.Keyboard.KeyDown += OnGameWinKeyDown;
-            _gameWindow.Keyboard.KeyUp += OnGameWinKeyUp;
+            _gameWindow.KeyDown += OnGameWinKeyDown;
+            _gameWindow.KeyUp += OnGameWinKeyUp;
         }
 
         /// <summary>
@@ -736,8 +736,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public MouseDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
-            _gameWindow.Mouse.ButtonDown += OnGameWinMouseDown;
-            _gameWindow.Mouse.ButtonUp += OnGameWinMouseUp;
+            _gameWindow.MouseDown += OnGameWinMouseDown;
+            _gameWindow.MouseUp += OnGameWinMouseUp;
 
             _btnLeftDesc = new ButtonImpDescription
             {
@@ -937,11 +937,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             switch (iAxisId)
             {
                 case (int)MouseAxes.X:
-                    return _gameWindow.Mouse.X;
+                    return OpenTK.Input.Mouse.GetCursorState().X;
                 case (int)MouseAxes.Y:
-                    return _gameWindow.Mouse.Y;
+                    return OpenTK.Input.Mouse.GetCursorState().Y;
                 case (int)MouseAxes.Wheel:
-                    return _gameWindow.Mouse.WheelPrecise;
+                    return OpenTK.Input.Mouse.GetCursorState().WheelPrecise;
                 case (int)MouseAxes.MinX:
                     return 0;
                 case (int)MouseAxes.MaxX:

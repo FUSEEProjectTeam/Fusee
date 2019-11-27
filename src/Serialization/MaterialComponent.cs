@@ -74,8 +74,7 @@ namespace Fusee.Serialization
     /// Material definition. If contained within a node, the node's (and potentially child node's)
     /// geometry is rendered with the speicified material.
     /// </summary>
-    [ProtoContract]
-    [ProtoInclude(200, typeof(MaterialLightComponent))]
+    [ProtoContract]   
     [ProtoInclude(201, typeof(MaterialPBRComponent))]
     public class MaterialComponent : SceneComponentContainer
     {

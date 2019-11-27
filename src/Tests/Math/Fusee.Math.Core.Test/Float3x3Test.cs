@@ -1,13 +1,7 @@
 ﻿using Xunit;
-using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Runtime.Serialization;
-using System.Text;
-using Microsoft.Win32.SafeHandles;
-using Assert = Xunit.Assert;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class Float3x3Test
     {
