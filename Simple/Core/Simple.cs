@@ -29,6 +29,8 @@ namespace Fusee.Examples.Simple.Core
         private float2 groundbox;
         private float2[,] translation = new float2[31, 31];
         private int[] ballbmp;
+        private float length;
+        private float height;
 
         private float4x4 mtxCam;
         private float deg;
@@ -93,32 +95,18 @@ namespace Fusee.Examples.Simple.Core
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
             SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
             SceneNodeContainer ground = mazeScene.Children.FindNodes(n => n.Name == "Ground").First();
+            Cube _ground = new Cube();
             SceneNodeContainer maze = new SceneNodeContainer
             {
                 Components = new List<SceneComponentContainer>
                 {
                     // TRANSFROM COMPONENT
                     mazeTransform,
-
                     // SHADER EFFECT COMPONENT
                     cornerstone.GetComponent<ShaderEffectComponent>(),
                 },
                 Children = new ChildList()
             };
-            maze.Children.Add(new SceneNodeContainer
-            {
-                Components = new List<SceneComponentContainer>
-                                {
-                                    new TransformComponent
-                                    {
-                                        Translation = new float3(0 , -0.5f, 0)
-                                    },
-                                    ground.GetComponent<ShaderEffectComponent>(),
-                                    ground.GetComponent<Mesh>()
-                                },
-                Name = "Ground"
-            }
-);
             for (int countY = 0; countY < bmp.GetLength(1); countY++)
             {
                 for (int countX = 0; countX < bmp.GetLength(0); countX++)
@@ -194,6 +182,21 @@ namespace Fusee.Examples.Simple.Core
                     }
                 }
             }
+            maze.Children.Add(new SceneNodeContainer
+            {
+                Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Scale = new float3(length, 1, height),
+                                        Translation = new float3(length/2 - cornerbox.x/2, -0.5f, height/2 - cornerbox.y/2)
+                                    },
+                                    ground.GetComponent<ShaderEffectComponent>(),
+                                    _ground
+                                },
+                Name = "Ball"
+            }
+            );
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -214,6 +217,9 @@ namespace Fusee.Examples.Simple.Core
             makebox();
             translation = new float2[bmp.GetLength(0), bmp.GetLength(1)];
 
+            CreateTranslation();
+            length = translation[translation.GetLength(0) -1, 0].x - translation[0, 0].x + cornerbox.x;
+            height = translation[0, translation.GetLength(1) -1].y - translation[0, 0].y + cornerbox.y;
 
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
@@ -232,7 +238,6 @@ namespace Fusee.Examples.Simple.Core
 
             //my Init
             _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
-            CreateTranslation();
 
         }
 
@@ -261,7 +266,7 @@ namespace Fusee.Examples.Simple.Core
 
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
 
-            collision();
+            //collision();
             ballmovement();
 
 
@@ -394,7 +399,7 @@ namespace Fusee.Examples.Simple.Core
 
             if(!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
             {
-                if (Keyboard.ADAxis != 0 && collision())
+                if (Keyboard.ADAxis != 0)
                 {
                     _moveX = _speed * Keyboard.ADAxis * DeltaTime;
                     _ball.Translation.x += _moveX * M.Sin(_angleVert + deg);
@@ -418,18 +423,7 @@ namespace Fusee.Examples.Simple.Core
         }
         public bool collision()
         {
-            if (!(_ball.Translation.x <= translation[ballbmp[0], ballbmp[1]].x + wallZbox.x / 2))
-            {
-                if (bmp[ballbmp[0], ballbmp[1]] != 1)
-                {
-                    bmp[ballbmp[0], ballbmp[1]] = 0;
-                    bmp[ballbmp[0] -1, ballbmp[1]] = -1;
-                    ballbmp[0] = ballbmp[0] - 1;
-                    return false;
-                }
-                return false;
-            }
-                return true;
+            return false;
         }
         public void makebox()
         {
