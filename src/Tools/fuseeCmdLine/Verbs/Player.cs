@@ -128,6 +128,16 @@ namespace Fusee.Tools.fuseeCmdLine
                             try
                             {
                                 Assembly asm = Assembly.LoadFrom(filepath);
+
+                                // Comparing our version with the version of the referenced Fusee.Serialization
+                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var ourversion = Assembly.GetEntryAssembly().GetName().Version;
+
+                                if (serversion != ourversion)
+                                {
+                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                }
+
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
                                 TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
                             }
@@ -151,17 +161,20 @@ namespace Fusee.Tools.fuseeCmdLine
             if (tApp == null)
             {
                 // See if we are in "Deployed mode". That is: A Fusee.App.dll is lying next to us.
-                try
+                if (File.Exists(Path.Combine(ExeDir, "Fusee.App.dll")))
                 {
-                    Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
-                    tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                }
-                catch (Exception e)
-                {
-                    Diagnostics.Warn("Not in deployed mode", e);
+                    try
+                    {
+                        Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
+                        tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                    }
+                    catch (Exception e)
+                    {
+                        Diagnostics.Debug("Could not load Fusee.App.dll", e);
+                    }
                 }
                 // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
-                if (tApp == null)
+                else
                 {
                     tApp = typeof(Fusee.Engine.Player.Core.Player);
                 }
@@ -187,11 +200,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
-                        var scene = ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage);
-
-                        var container = scene;
-
-                        return new ConvertSceneGraph().Convert(container);
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
