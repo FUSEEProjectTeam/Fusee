@@ -1,0 +1,22 @@
+apiRules:
+- exclude:
+    uidRegex: ^Fusee\.Engine\.Player
+    Type: Namespace
+- exclude:
+    uidRegex: ^Fusee\.Engine\.Imp
+    Type: Namespace
+- exclude:
+    uidRegex: ^Fusee\.Base\.Imp
+    Type: Namespace
+- exclude:
+    uidRegex: ^Fusee\.Engine\.Core\.ShaderShards
+    Type: Namespace
+- exclude:
+    uidRegex: ^Fusee\.Tools
+    Type: Namespace
+- exclude:
+    uidRegex: ^FusViewer
+    Type: Namespace
+- exclude:
+    uidRegex: ^_3DconnexionDriver
+    Type: Namespace
