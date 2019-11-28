@@ -16,13 +16,10 @@ namespace Fusee.Base.Imp.Desktop
         public static void LoadEmbeddedDlls(string dllName, string resourceName)
         {
             Assembly assem = Assembly.GetExecutingAssembly();
-            Diagnostics.Debug(assem.GetName());
             string[] names = assem.GetManifestResourceNames();
             AssemblyName an = assem.GetName();
 
             var resourceStream = assem.GetManifestResourceStream(resourceName);
-
-            Diagnostics.Debug(resourceStream.Length);
 
             // The temporary folder holds one or more of the temporary DLLs
             // It is made "unique" to avoid different versions of the DLL or architectures.
