@@ -98,12 +98,9 @@ namespace Fusee.Engine.Core
         private readonly WritableTexture _blurRenderTex;
         private readonly WritableTexture _lightedSceneTex; //Do post-pro effects like FXAA on this texture.
 
-        private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light
-
-        private ProjectionComponent _thisScenesProjection;
+        private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light       
 
         private RenderPasses _currentPass;
-
         private bool _canUseGeometryShaders;
 
         /// <summary>
@@ -145,7 +142,7 @@ namespace Fusee.Engine.Core
                     {
                         Components = new List<SceneComponentContainer>()
                         {
-                            new ProjectionComponent(ProjectionMethod.PERSPECTIVE,1,1,1),
+                            new ProjectionComponent(ProjectionMethod.PERSPECTIVE,0.1f,100,1),
 
                             new ShaderEffectComponent()
                             {
@@ -178,7 +175,6 @@ namespace Fusee.Engine.Core
                 _rc.SetShaderEffect(shaderComponent.Effect);
                 _state.Effect = shaderComponent.Effect;
             }
-
         }
 
         /// <summary>
@@ -191,9 +187,7 @@ namespace Fusee.Engine.Core
             base.RenderProjection(pc);
 
             if (_currentPass == RenderPasses.GEOMETRY)
-                _quadScene.Children[0].Components[0] = pc;
-            
-            _thisScenesProjection = pc;
+                _quadScene.Children[0].Components[0] = pc;           
         }
 
         #endregion
@@ -219,18 +213,18 @@ namespace Fusee.Engine.Core
                         var target = lightPos + lightDir;
                         var lightView = float4x4.LookAt(lightPos, target, float3.Normalize(lr.Rotation * float3.UnitY));
                                                 
-                        if (_thisScenesProjection != null)
+                        if (CurrentProjection != null)
                         {
                             float tmpLambda;
                             if (PssmLambda > 1 || PssmLambda < 0)
                             {
                                 tmpLambda = M.Clamp(PssmLambda, 0, 1);
-                                Diagnostics.Log("#WARNING: lambda is > 1 or < 0 and is therefor camped between 0 and 1.");
+                                Diagnostics.Warn("Lambda is > 1 or < 0 and is therefor camped between 0 and 1.");
                             }
                             else                            
                                 tmpLambda = PssmLambda;                            
 
-                            var cascades = ShadowMapping.ParallelSplitCascades(NumberOfCascades, lightView, tmpLambda, _thisScenesProjection.ZNear, _thisScenesProjection.ZFar, _thisScenesProjection.Width, _thisScenesProjection.Height, _thisScenesProjection.Fov, _rc.View).ToList();
+                            var cascades = ShadowMapping.ParallelSplitCascades(NumberOfCascades, lightView, tmpLambda, CurrentProjection.ZNear, CurrentProjection.ZFar, CurrentProjection.Width, CurrentProjection.Height, CurrentProjection.Fov, _rc.View).ToList();
                             
                             if (cascades.Count <= 1)
                             {
@@ -359,7 +353,7 @@ namespace Fusee.Engine.Core
 
             _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CAN_USE_GEOMETRY_SHADERS) == 1U ? true : false;
 
-            if(_rc.ClearColor != _texClearColor)
+            if (_rc.ClearColor != _texClearColor)
                 BackgroundColor = _rc.ClearColor;
 
             _rc.ClearColor = _texClearColor;
@@ -368,8 +362,154 @@ namespace Fusee.Engine.Core
             var screenHeight = _rc.ViewportHeight;
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.           
+            RenderShadowMaps(rc);
+
+            //Pass 1: Geometry pass
+            RenderGeometryPass(rc);
+
+            if (_ssaoOn)
+                RenderSSAO(rc);
+
+            //Pass 4 & 5: FXAA and Lighting
+            _currentPass = RenderPasses.LIGHTING;
+
+            int width = renderTex == null ? screenWidth : renderTex.Width;
+            int height = renderTex == null ? screenHeight : renderTex.Height;
+
+            if (!FxaaOn)
+            {
+                _rc.Viewport(0, 0, width, height);
+                RenderLightPasses(rc, renderTex);
+            }
+            else
+            {
+                _rc.Viewport(0, 0, _lightedSceneTex.Width, _lightedSceneTex.Height);
+                RenderLightPasses(rc, _lightedSceneTex);
+                //Post-Effect: FXAA
+
+                _rc.Viewport(0, 0, width, height);
+                RenderFXAA(rc, renderTex);
+            }
+
+            //Reset viewport to screen width and height, to allow other scenes (e.g. the gui) to render correctly.
+            if (renderTex != null)
+                _rc.Viewport(0, 0, screenWidth, screenHeight);
+        }
+
+        /// <summary>
+        /// Renders one (lighting calculation) pass for each light and blends the results together. 
+        /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implement a dynamic number of lights.
+        /// The iteration here should not prove critical, due to the scene only consisting of a single quad.
+        /// </summary>
+        private void RenderLightPasses(RenderContext rc, WritableTexture renderTex = null)
+        {
+            rc.SetRenderTarget(renderTex);
+
+            var lightPassCnt = 0;
+
+            for (int i = 0; i < LightViseratorResults.Count; i++)
+            {
+                var isCastingShadows = false; //needed because Android and Web doesn't support geometry shaders.
+                var lightVisRes = LightViseratorResults[i];
+
+                if (!lightVisRes.Item2.Light.Active) continue;
+
+                if (lightVisRes.Item2.Light.IsCastingShadows)
+                {
+                    isCastingShadows = true;
+                    var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
+
+                    //Create and/or choose correct shader effect
+                    switch (lightVisRes.Item2.Light.Type)
+                    {
+                        case LightType.Point:
+                            {
+                                if (_canUseGeometryShaders)
+                                {
+                                    if ((_lightingPassEffectPoint == null))
+                                        _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMaps[0]);
+
+                                    _lightingPassEffect = _lightingPassEffectPoint;
+                                }
+                                else //use no shadows material
+                                {
+                                    isCastingShadows = false;
+
+                                    if (_lightingPassEffectNoShadow == null)
+                                        _lightingPassEffectNoShadow = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
+
+                                    _lightingPassEffect = _lightingPassEffectNoShadow;
+                                }
+                                break;
+                            }
+                        case LightType.Legacy:
+                        case LightType.Parallel:
+                            {
+                                if (NumberOfCascades > 1)
+                                {
+                                    if (_lightingPassEffectCascaded == null)
+                                    {
+                                        var shadowMaps = Array.ConvertAll(shadowParams.ShadowMaps, tex => (WritableTexture)tex);
+                                        _lightingPassEffectCascaded = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, shadowMaps, shadowParams.ClipPlanesForLightMat, shadowMaps.Length, _texClearColor);
+                                    }
+
+                                    _lightingPassEffect = _lightingPassEffectCascaded;
+                                }
+                                else
+                                {
+                                    if (_lightingPassEffectOther == null)
+                                        _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
+
+                                    _lightingPassEffect = _lightingPassEffectOther;
+                                }
+                                break;
+                            }
+                        case LightType.Spot:
+                            {
+                                if (_lightingPassEffectOther == null)
+                                    _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
+
+                                _lightingPassEffect = _lightingPassEffectOther;
+                                break;
+                            }
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    if (_lightingPassEffectNoShadow == null)
+                        _lightingPassEffectNoShadow = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
+
+                    _lightingPassEffect = _lightingPassEffectNoShadow;
+                }
+
+                UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
+                _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
+
+                if (_needToSetSSAOTex)
+                {
+                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn ? 1 : 0);
+                    _needToSetSSAOTex = false;
+                }
+
+                //Set background color only in last light pass to NOT blend the color (additive).
+                if (i == LightViseratorResults.Count - 1)
+                    _lightingPassEffect.SetEffectParam("BackgroundColor", BackgroundColor);
+                else
+                    _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
+
+
+                _quadShaderEffectComp.Effect = _lightingPassEffect;
+                Traverse(_quadScene.Children);
+                lightPassCnt++;
+            }
+        }
+
+        private void RenderShadowMaps(RenderContext rc)
+        {
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
-            _currentPass = RenderPasses.SHADOW;            
+            _currentPass = RenderPasses.SHADOW;
 
             foreach (var lightVisRes in LightViseratorResults)
             {
@@ -410,7 +550,7 @@ namespace Fusee.Engine.Core
 
                             break;
                         }
-                    case LightType.Spot:                    
+                    case LightType.Spot:
                         {
                             _shadowEffect.SetEffectParam("LightSpaceMatrix", shadowParams.LightSpaceMatrices[0]);
                             _shadowEffect.SetEffectParam("LightType", (int)lightVisRes.Item2.Light.Type);
@@ -425,186 +565,51 @@ namespace Fusee.Engine.Core
                         break;
                 }
             }
+        }
 
-            //Pass 1: Geometry pass
+        private void RenderGeometryPass(RenderContext rc)
+        {
             _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
             _currentPass = RenderPasses.GEOMETRY;
             rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
-
-            if (_ssaoOn)
-            {
-                //Pass 2: SSAO
-                _currentPass = RenderPasses.SSAO;
-                if (_ssaoTexEffect == null)
-                    _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
-                _quadShaderEffectComp.Effect = _ssaoTexEffect;
-                rc.SetRenderTarget(_ssaoRenderTexture);
-                Traverse(_quadScene.Children);
-
-                //Pass 3: Blur SSAO Texture
-                _currentPass = RenderPasses.SSAO_BLUR;
-                if (_blurEffect == null)
-                    _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
-                _quadShaderEffectComp.Effect = _blurEffect;
-                rc.SetRenderTarget(_blurRenderTex);
-                Traverse(_quadScene.Children);
-
-                //Set blurred SSAO Texture as SSAO Texture in gBuffer
-                _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.G_SSAO);
-            }
-
-            _currentPass = RenderPasses.LIGHTING;
-
-            //Pass 4 & 5: FXAA and Lighting
-            if (!FxaaOn)
-            {
-                if (renderTex == null)
-                {
-                    _rc.Viewport(0, 0, screenWidth, screenHeight);
-                    rc.SetRenderTarget();
-                }
-                else
-                {
-                    _rc.Viewport(0, 0, renderTex.Width, renderTex.Height);
-                    rc.SetRenderTarget(renderTex);
-                }
-                RenderLightPasses();
-            }
-            else
-            {
-                rc.SetRenderTarget(_lightedSceneTex);
-                RenderLightPasses();
-
-                _currentPass = RenderPasses.FXAA;
-
-                int width = renderTex == null ? screenWidth : renderTex.Width;
-                int height = renderTex == null ? screenHeight : renderTex.Height;
-
-                _rc.Viewport(0, 0, width, height);
-                if (_fxaaEffect == null)
-                    _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
-                _quadShaderEffectComp.Effect = _fxaaEffect;
-
-                if(renderTex == null)
-                    rc.SetRenderTarget();
-                else
-                    rc.SetRenderTarget(renderTex);
-
-                Traverse(_quadScene.Children);
-            }
-
-            //Reset viewport to screen width and height, to allow other scenes (e.g. the gui) to render correctly.
-            if(renderTex != null)
-                _rc.Viewport(0, 0, screenWidth, screenHeight);
         }
 
-        /// <summary>
-        /// Renders one (lighting calculation) pass for each light and blends the results together. 
-        /// Alternatively it would be possible to iterate the lights in the shader, but this would create a more complex shader. Additionally it would be more difficult to implement a dynamic number of lights.
-        /// The iteration here should not prove critical, due to the scene only consisting of a single quad.
-        /// </summary>
-        private void RenderLightPasses()
+        private void RenderSSAO(RenderContext rc)
         {
-            var lightPassCnt = 0;
+            //Pass 2: SSAO
+            _currentPass = RenderPasses.SSAO;
+            if (_ssaoTexEffect == null)
+                _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
+            _quadShaderEffectComp.Effect = _ssaoTexEffect;
+            rc.SetRenderTarget(_ssaoRenderTexture);
+            Traverse(_quadScene.Children);
 
-            for (int i = 0; i < LightViseratorResults.Count; i++)
-            {
-                var isCastingShadows = false; //needed because Android and Web doesn't support geometry shaders.
-                var lightVisRes = LightViseratorResults[i];
+            //Pass 3: Blur SSAO Texture
+            _currentPass = RenderPasses.SSAO_BLUR;
+            if (_blurEffect == null)
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
+            _quadShaderEffectComp.Effect = _blurEffect;
+            rc.SetRenderTarget(_blurRenderTex);
+            Traverse(_quadScene.Children);
 
-                if (!lightVisRes.Item2.Light.Active) continue;
-                
-                if (lightVisRes.Item2.Light.IsCastingShadows)
-                {
-                    isCastingShadows = true;
-                    var shadowParams = _shadowparams[new Tuple<SceneNodeContainer, LightComponent>(lightVisRes.Item1, lightVisRes.Item2.Light)];
-                    
-                    //Create and/or choose correct shader effect
-                    switch (lightVisRes.Item2.Light.Type)
-                    {
-                        case LightType.Point:
-                            {
-                                if (_canUseGeometryShaders)
-                                {
-                                    if ((_lightingPassEffectPoint == null))
-                                        _lightingPassEffectPoint = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableCubeMap)shadowParams.ShadowMaps[0]);
-                                    
-                                    _lightingPassEffect = _lightingPassEffectPoint;
-                                }
-                                else //use no shadows material
-                                {
-                                    isCastingShadows = false;
+            //Set blurred SSAO Texture as SSAO Texture in gBuffer
+            _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.G_SSAO);
+        }
 
-                                    if (_lightingPassEffectNoShadow == null)
-                                        _lightingPassEffectNoShadow = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
+        private void RenderFXAA(RenderContext rc, WritableTexture renderTex = null)
+        {
+            _currentPass = RenderPasses.FXAA;
+            if (_fxaaEffect == null)
+                _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
+            _quadShaderEffectComp.Effect = _fxaaEffect;
 
-                                    _lightingPassEffect = _lightingPassEffectNoShadow;
-                                }
-                                break;
-                            }
-                        case LightType.Legacy:
-                        case LightType.Parallel:
-                            {
-                                if (NumberOfCascades > 1)
-                                {
-                                    if (_lightingPassEffectCascaded == null)
-                                    {
-                                        var shadowMaps = Array.ConvertAll(shadowParams.ShadowMaps, tex => (WritableTexture)tex);
-                                        _lightingPassEffectCascaded = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, shadowMaps, shadowParams.ClipPlanesForLightMat, shadowMaps.Length, _texClearColor);
-                                    }
+            if (renderTex == null)
+                rc.SetRenderTarget();
+            else 
+                rc.SetRenderTarget(renderTex);
 
-                                    _lightingPassEffect = _lightingPassEffectCascaded;
-                                }
-                                else
-                                {
-                                    if (_lightingPassEffectOther == null)
-                                        _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
-                                    
-                                    _lightingPassEffect = _lightingPassEffectOther;
-                                }
-                                break;
-                            }
-                        case LightType.Spot:
-                            {
-                                if (_lightingPassEffectOther == null)
-                                    _lightingPassEffectOther = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor, (WritableTexture)shadowParams.ShadowMaps[0]);
-
-                                _lightingPassEffect = _lightingPassEffectOther;
-                                break;
-                            }
-                        default:
-                            break;
-                    }
-                }
-                else
-                {
-                    if (_lightingPassEffectNoShadow == null)
-                        _lightingPassEffectNoShadow = ShaderCodeBuilder.DeferredLightingPassEffect(_gBufferRenderTarget, lightVisRes.Item2.Light, _texClearColor);
-
-                    _lightingPassEffect = _lightingPassEffectNoShadow;
-                }
-               
-                UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
-                _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
-
-                if (_needToSetSSAOTex)
-                {
-                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn ? 1 : 0);
-                    _needToSetSSAOTex = false;
-                }
-
-                //Set background color only in last light pass to NOT blend the color (additive).
-                if (i == LightViseratorResults.Count - 1)
-                    _lightingPassEffect.SetEffectParam("BackgroundColor", BackgroundColor);
-                else
-                    _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
-
-
-                _quadShaderEffectComp.Effect = _lightingPassEffect;
-                Traverse(_quadScene.Children);
-                lightPassCnt++;
-            }
+            Traverse(_quadScene.Children);
         }
 
         private void UpdateLightAndShadowParams(Tuple<SceneNodeContainer, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)

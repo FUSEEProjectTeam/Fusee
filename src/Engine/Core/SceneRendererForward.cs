@@ -18,9 +18,16 @@ namespace Fusee.Engine.Core
     /// </summary>
     public partial class SceneRendererForward : SceneVisitor
     {
+        /// <summary>
+        /// The current projection component, updated in RenderProjection.
+        /// </summary>
+        protected ProjectionComponent CurrentProjection;
+
         private int _numberOfLights;
 
+        /// <summary>
         ///Is set to true if a light was added or removed from the scene.
+        /// /// </summary>
         protected bool HasNumberOfLightsChanged;
 
         /// <summary>
@@ -338,10 +345,11 @@ namespace Fusee.Engine.Core
         /// <param name="pc">The visited ProjectionComponent.</param>
         [VisitMethod]
         public void RenderProjection(ProjectionComponent pc)
-        {
+        {            
             pc.Width = _rc.ViewportWidth;
             pc.Height = _rc.ViewportHeight;
             _rc.Projection = pc.Matrix();
+            CurrentProjection = pc;
         }
 
         /// <summary>
