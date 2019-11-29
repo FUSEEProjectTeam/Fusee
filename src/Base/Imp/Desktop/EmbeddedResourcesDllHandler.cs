@@ -1,5 +1,4 @@
-﻿using Fusee.Base.Core;
-using System;
+﻿using System;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -13,7 +12,7 @@ namespace Fusee.Base.Imp.Desktop
         /// </summary>
         /// <param name="dllName">name of DLL file to create (including dll suffix)</param>
         /// <param name="resourceName">The resource name (fully qualified)</param>
-        public static void LoadEmbeddedDlls(string dllName, string resourceName)
+        public static void LoadEmbeddedDll(string dllName, string resourceName)
         {
             Assembly assem = Assembly.GetExecutingAssembly();
             string[] names = assem.GetManifestResourceNames();
