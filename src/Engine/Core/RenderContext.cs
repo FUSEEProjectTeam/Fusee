@@ -8,7 +8,8 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
-{
+{   
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -18,9 +19,6 @@ namespace Fusee.Engine.Core
     {
         #region Fields
 
-        #region Private Fields        
-
-        private readonly IRenderContextImp _rci;
         /// <summary>
         /// Gets and sets the viewport width.
         /// </summary>
@@ -31,20 +29,47 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportHeight { get; private set; }
 
-        /// <summary>
-        /// The currently bound shader program.
-        /// </summary>
-        public ShaderProgram CurrentShaderProgram { get; private set; }
-
-        private readonly MatrixParamNames _currentShaderParams;
-        private ShaderEffect _currentShaderEffect;
-
         // ReSharper disable once InconsistentNaming
         /// <summary>
         /// All global FX Params
         /// Overwrites values with the same name in current ShaderEffect
         /// </summary>
-        public readonly Dictionary<string, object> _allFXParams = new Dictionary<string, object>();
+        public readonly Dictionary<string, object> AllFXParams = new Dictionary<string, object>();
+
+        /// <summary>
+        /// The currently bound shader program.
+        /// </summary>
+        public ShaderProgram CurrentShaderProgram { get; private set; }
+
+        /// <summary>
+        /// Gets and sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DebugLinesEnabled { get; set; } = true;       
+
+        /// <summary>
+        /// Array of bone matrices.
+        /// </summary>
+        public float4x4[] Bones
+        {
+            get { return _bones; }
+            set
+            {
+                _bones = value;
+                UpdateCurrentShader();
+            }
+        }
+
+        internal RenderContextDefaultState DefaultState { get; private set; }
+
+        #region Private Fields
+
+        private readonly IRenderContextImp _rci;       
+
+        private readonly MatrixParamNames _currentShaderParams;
+        private ShaderEffect _currentShaderEffect;
 
         // Mesh Management
         private readonly MeshManager _meshManager;
@@ -61,59 +86,13 @@ namespace Fusee.Engine.Core
         private readonly ShaderProgram _debugShader;
         private readonly IShaderParam _debugColor;
 
-        /// <summary>
-        /// Gets and sets a value indicating whether [debug lines enabled].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DebugLinesEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Sets global FX Params
-        /// Overwrites values with the same name in current ShaderEffect
-        /// </summary>
-        /// <param name="name">FX Param name</param>
-        /// <param name="value">FX Param value</param>
-        // ReSharper disable once InconsistentNaming
-        public void SetFXParam(string name, object value)
-        {
-            object tmpFXParam;
-
-            if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
-            {
-                if (tmpFXParam.Equals(value)) return; // no new value
-
-                _allFXParams[name] = value;
-
-                // Update ShaderEffect
-                _currentShaderEffect.SetEffectParam(name, value);
-                return;
-            }
-
-            // cache miss
-            _allFXParams.Add(name, value);
-
-            // Update ShaderEffect
-            _currentShaderEffect.SetEffectParam(name, value);
-        }
-
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
-        private float4x4[] _bones;
 
-        public float4x4[] Bones
-        {
-            get { return _bones; }
-            set
-            {
-                _bones = value;
-                UpdateCurrentShader();
-            }
-        }
+        private float4x4[] _bones;
 
         // Derived matrices
         private float4x4 _modelViewProjection;
@@ -155,38 +134,6 @@ namespace Fusee.Engine.Core
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
-
-        #endregion
-
-        #region Internal Fields
-
-        internal sealed class MatrixParamNames
-        {
-            // ReSharper disable InconsistentNaming
-            public IShaderParam FUSEE_M;
-            public IShaderParam FUSEE_V;
-            public IShaderParam FUSEE_MV;
-
-            public IShaderParam FUSEE_P;
-            public IShaderParam FUSEE_MVP;
-
-            public IShaderParam FUSEE_IV;
-            public IShaderParam FUSEE_IMV;
-            public IShaderParam FUSEE_ITV;
-            public IShaderParam FUSEE_IP;
-            public IShaderParam FUSEE_IMVP;
-
-            public IShaderParam FUSEE_TMV;
-            public IShaderParam FUSEE_TP;
-            public IShaderParam FUSEE_TMVP;
-
-            public IShaderParam FUSEE_ITMV;
-            public IShaderParam FUSEE_ITP;
-            public IShaderParam FUSEE_ITMVP;
-
-            public IShaderParam FUSEE_BONES;
-            // ReSharper restore InconsistentNaming
-        };
 
         #endregion
 
@@ -764,6 +711,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// The color value.
         /// </summary>
@@ -776,10 +724,11 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            DefaultState = new RenderContextDefaultState();
 
-            View = float4x4.Identity;
+            View = DefaultState.View;
             Model = float4x4.Identity;
-            Projection = float4x4.Identity;
+            Projection = DefaultState.Projection;
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -804,7 +753,7 @@ namespace Fusee.Engine.Core
 
         #region Members
 
-        #region Private Members
+        #region Private Members               
 
         private void UpdateCurrentShader()
         {
@@ -1071,6 +1020,35 @@ namespace Fusee.Engine.Core
         #region Shader related Members
 
         /// <summary>
+        /// Sets global FX Params
+        /// Overwrites values with the same name in current ShaderEffect
+        /// </summary>
+        /// <param name="name">FX Param name</param>
+        /// <param name="value">FX Param value</param>
+        // ReSharper disable once InconsistentNaming
+        public void SetFXParam(string name, object value)
+        {
+            object tmpFXParam;
+
+            if (AllFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
+            {
+                if (tmpFXParam.Equals(value)) return; // no new value
+
+                AllFXParams[name] = value;
+
+                // Update ShaderEffect
+                _currentShaderEffect.SetEffectParam(name, value);
+                return;
+            }
+
+            // cache miss
+            AllFXParams.Add(name, value);
+
+            // Update ShaderEffect
+            _currentShaderEffect.SetEffectParam(name, value);
+        }
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -1232,7 +1210,7 @@ namespace Fusee.Engine.Core
                             continue;
 
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        if (_allFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
+                        if (AllFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
@@ -1636,7 +1614,7 @@ namespace Fusee.Engine.Core
             if (_currentShaderEffect == null) return;
 
             // GLOBAL OVERRIDE
-            foreach (var fxParam in _allFXParams)
+            foreach (var fxParam in AllFXParams)
             {
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
             }
@@ -1763,6 +1741,17 @@ namespace Fusee.Engine.Core
         #region Other Members
 
         /// <summary>
+        /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
+        /// Must be called after every visitation of the Scene Graph that changed these values.
+        /// </summary>
+        public void ResetToDefaultState()
+        {
+            Viewport(0, 0, ViewportWidth, ViewportHeight);
+            View = DefaultState.View;
+            Projection = DefaultState.Projection;
+        }
+
+        /// <summary>
         /// This method returns the color of one or more pixels from the back-buffer.
         /// </summary>
         /// <param name="x">X-Coordinate</param>
@@ -1847,6 +1836,9 @@ namespace Fusee.Engine.Core
 
             ViewportWidth = width;
             ViewportHeight = height;
+
+            DefaultState.ViewportWidth = ViewportWidth;
+            DefaultState.ViewportHeight = ViewportHeight;
         }
 
         /// <summary>
@@ -1868,6 +1860,34 @@ namespace Fusee.Engine.Core
 
         #endregion
     }
+
+    internal sealed class MatrixParamNames
+    {
+        // ReSharper disable InconsistentNaming
+        public IShaderParam FUSEE_M;
+        public IShaderParam FUSEE_V;
+        public IShaderParam FUSEE_MV;
+
+        public IShaderParam FUSEE_P;
+        public IShaderParam FUSEE_MVP;
+
+        public IShaderParam FUSEE_IV;
+        public IShaderParam FUSEE_IMV;
+        public IShaderParam FUSEE_ITV;
+        public IShaderParam FUSEE_IP;
+        public IShaderParam FUSEE_IMVP;
+
+        public IShaderParam FUSEE_TMV;
+        public IShaderParam FUSEE_TP;
+        public IShaderParam FUSEE_TMVP;
+
+        public IShaderParam FUSEE_ITMV;
+        public IShaderParam FUSEE_ITP;
+        public IShaderParam FUSEE_ITMVP;
+
+        public IShaderParam FUSEE_BONES;
+        // ReSharper restore InconsistentNaming
+    };
 
     internal sealed class EffectParam
     {
@@ -1895,6 +1915,59 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal Dictionary<string, object> Parameters = new Dictionary<string, object>();
 
+    }
+
+    /// <summary>
+    /// After every Render call the values are reset to the ones saved here.
+    /// This ensures that we do not necessarily need a Camera in the Scene Graph.
+    /// The viewport width and height is updated with every resize.
+    /// </summary>
+    internal class RenderContextDefaultState
+    {
+        /// <summary>
+        /// Gets and sets the viewport width.
+        /// </summary>
+        public int ViewportWidth
+        {
+
+            get { return _vpWidth; }
+            set
+            {
+                _vpWidth = value;
+                _aspect = (float)_vpWidth / _vpheight;
+                Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+            }
+        }
+
+        /// <summary>
+        /// Gets and sets the viewport height.
+        /// </summary>
+        public int ViewportHeight
+        {
+            get { return _vpheight; }
+            set
+            {
+                _vpheight = value;
+                _aspect = (float)_vpWidth / _vpheight;
+                Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+            }
+        }
+
+        public readonly float4x4 View = float4x4.Identity;//float4x4.LookAt(0, 10, -10, 0, 0, 0, 0, 1, 0);
+        public float4x4 Projection { get; private set; }
+
+        private int _vpheight = 1;
+        private int _vpWidth = 1;       
+        private float _aspect = 1;
+
+        public readonly float ZNearDefautlt = 0.1f;
+        public readonly float ZFarDefault = 3000;
+        public readonly float FovDefault = M.DegreesToRadians(45);
+
+        public RenderContextDefaultState()
+        {           
+            Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);            
+        }
     }
 
 }

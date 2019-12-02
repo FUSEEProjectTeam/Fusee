@@ -37,15 +37,12 @@ namespace Fusee.Engine.Player.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 3000;
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWindowWidth;
-        private float _initWindowHeight;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -58,16 +55,11 @@ namespace Fusee.Engine.Player.Core
         // Init is called on startup. 
         public override void Init()
         {
-            _initWindowWidth = Width;
-            _initWindowHeight = Height;
-
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
 
             _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
-            _aspectRatio = Width / (float)Height;
+            _canvasWidth = _initCanvasWidth;            
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -223,17 +215,15 @@ namespace Fusee.Engine.Player.Core
             RC.Projection *= mtxOffset;
 
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
-            _sceneRenderer.Render(RC);            
-            
-            _sih.View = RC.View;
+            _sceneRenderer.Render(RC);
 
             _guiRenderer.Render(RC);            
 
@@ -318,8 +308,8 @@ namespace Fusee.Engine.Player.Core
             canvas.Children.Add(text);
 
             //Create canvas projection component and add resize delegate
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            var canvasCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasCamComp);
             
             return new SceneContainer
             {

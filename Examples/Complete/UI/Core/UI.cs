@@ -226,8 +226,8 @@ namespace Fusee.Examples.UI.Core
             };
 
             var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
-            var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
-            canvas.Components.Insert(0,projComp);
+            var camComp = new CameraComponent(projMethod,zNear,zFar,fov);
+            canvas.Components.Insert(0,camComp);
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -427,11 +427,11 @@ namespace Fusee.Examples.UI.Core
 
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.

@@ -103,18 +103,15 @@ namespace Fusee.Examples.Simple.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
-
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
+            RC.View = mtxCam * mtxRot;            
 
             // Constantly check for interactive objects.
             if(!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
                
             // Render the scene loaded in Init()
@@ -187,8 +184,8 @@ namespace Fusee.Examples.Simple.Core
                 }
             };
 
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);            
+            var canvasCameraComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasCameraComp);            
 
             return new SceneContainer
             {

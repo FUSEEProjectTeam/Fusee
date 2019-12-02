@@ -6,19 +6,9 @@ using System.IO;
 using System.Collections.ObjectModel;
 using System.Windows.Input;
 using System.Collections.Generic;
-using System.Windows.Controls;
-using Microsoft.VisualBasic.CompilerServices;
 using Fusee.Xene;
-using Fusee.Math.Core;
-using System.Text.Json.Serialization;
 using System.Text.Json;
 using System.Windows;
-using System.Threading;
-using Fusee.Base.Core;
-using Fusee.Base.Common;
-using Fusee.Engine.Core;
-using System.Windows.Data;
-using System.Globalization;
 
 namespace FusViewer.ViewModel
 {    
@@ -267,12 +257,12 @@ namespace FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvProjComp(ProjectionComponent pc)
+        public void ConvCamComp(CameraComponent camComp)
         {
             _currentNode.Components.Add(new TreeComponentItem
             {
-                Name = "Projection Component",
-                Desc = $"{pc.Name}, Mode: {pc.ProjectionMethod.ToString()}, FOV: {pc.Fov}, Near/Far: {pc.ZNear}/{pc.ZFar}"
+                Name = "Camera Component",
+                Desc = $"{camComp.Name}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 
@@ -456,12 +446,12 @@ namespace FusViewer.ViewModel
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvProjComp(ProjectionComponent pc)
+        public void ConvCameraComp(CameraComponent camComp)
         {
             _currentNode.Components.Add(new JSONComponentItem
             {
-                Name = "Projection Component",
-                Desc = $"{pc.Name}, Mode: {pc.ProjectionMethod.ToString()}, FOV: {pc.Fov}, Near/Far: {pc.ZNear}/{pc.ZFar}"
+                Name = "Camera Component",
+                Desc = $"{camComp.Name}, Mode: {camComp.ProjectionMethod.ToString()}, FOV: {camComp.Fov}, Near/Far: {camComp.ClippingPlanes.x}/{camComp.ClippingPlanes.y}"
             });
         }
 

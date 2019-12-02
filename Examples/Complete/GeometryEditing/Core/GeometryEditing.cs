@@ -73,8 +73,8 @@ namespace Fusee.Examples.GeometryEditing.Core
 
             _scene = new SceneContainer { Children = new List<SceneNodeContainer> { _parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
-            _scene.Children[0].Components.Insert(0, projComp);
+            var camComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
+            _scene.Children[0].Components.Insert(0, camComp);
 
             _renderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
@@ -357,12 +357,10 @@ namespace Fusee.Examples.GeometryEditing.Core
             if (Mouse.RightButton)
             {
                 _pickPos = Mouse.Position;
-                Diagnostics.Log(_pickPos);
+                Diagnostics.Debug(_pickPos);
                 var pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-
-                _scenePicker.View = viewMatrix;
-                _scenePicker.Projection = _projection;
-                var newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                
+                var newPick = _scenePicker.Pick(RC,pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {

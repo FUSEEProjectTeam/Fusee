@@ -17,11 +17,7 @@ namespace Fusee.Engine.Core
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
     public partial class SceneRendererForward : SceneVisitor
-    {
-        /// <summary>
-        /// The current projection component, updated in RenderProjection.
-        /// </summary>
-        protected ProjectionComponent CurrentProjection;
+    {       
 
         private int _numberOfLights;
 
@@ -306,6 +302,8 @@ namespace Fusee.Engine.Core
             rc.SetRenderTarget(renderTarget);
 
             Traverse(_sc.Children);
+
+            _rc.ResetToDefaultState();
         }
 
         /// <summary>
@@ -321,6 +319,8 @@ namespace Fusee.Engine.Core
             rc.SetRenderTarget(renderTexture);
 
             Traverse(_sc.Children);
+
+            _rc.ResetToDefaultState();
         }
 
         /// <summary>
@@ -335,21 +335,48 @@ namespace Fusee.Engine.Core
             rc.SetRenderTarget();
 
             Traverse(_sc.Children);
+            _rc.ResetToDefaultState();
         }
 
-        #region Visitors
+        #region Visitors        
 
         /// <summary>
         /// If a Projection Component is visited, the projection matrix is set.
         /// </summary>
-        /// <param name="pc">The visited ProjectionComponent.</param>
+        /// <param name="cam">The visited <see cref="CameraComponent"/>.</param>
         [VisitMethod]
-        public void RenderProjection(ProjectionComponent pc)
-        {            
-            pc.Width = _rc.ViewportWidth;
-            pc.Height = _rc.ViewportHeight;
-            _rc.Projection = pc.Matrix();
-            CurrentProjection = pc;
+        public void RenderCamera(CameraComponent cam)
+        {
+            if(cam.CustomCameraUpdate != null)
+            {
+                cam.CustomCameraUpdate(out float4x4 proj, out float4 viewport);
+
+                _rc.Projection = proj;
+                _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+                return;
+            }
+
+            var startX = (int)(_rc.ViewportWidth * (cam.Viewport.x / 100));
+            var startY = (int)(_rc.ViewportHeight * (cam.Viewport.y / 100));
+            var width = (int)(_rc.ViewportWidth * (cam.Viewport.z / 100));
+            var height = (int)(_rc.ViewportHeight * (cam.Viewport.w / 100));
+
+            _rc.Viewport(startX, startY, width, height);
+
+            switch (cam.ProjectionMethod)
+            {
+                default:
+                case ProjectionMethod.PERSPECTIVE:
+                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(cam.Fov, (float)width / height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
+                    break;
+                case ProjectionMethod.ORTHOGRAPHIC:
+                    _rc.Projection = float4x4.CreateOrthographic(width, height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
+                    break;                
+            }
+            
+            _rc.View = float4x4.Invert(_state.Model);
+            
         }
 
         /// <summary>

@@ -139,8 +139,8 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
-            sc.Children[0].Components.Insert(0, projComp);
+            var camComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
+            sc.Children[0].Components.Insert(0, camComp);
 
             _renderer = new SceneRendererForward(sc);
 

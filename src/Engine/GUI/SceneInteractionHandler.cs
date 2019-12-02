@@ -14,12 +14,7 @@ namespace Fusee.Engine.GUI
     public class SceneInteractionHandler : SceneVisitor
     {
         //private static List<CodeComponent> _observables;
-        private readonly ScenePicker _scenePicker;
-
-        /// <summary>
-        /// The View matrix for calculating the correct pick position.
-        /// </summary>
-        public float4x4 View;        
+        private readonly ScenePicker _scenePicker;       
 
         private SceneNodeContainer _pickRes;
         private SceneNodeContainer _pickResCache;
@@ -63,13 +58,11 @@ namespace Fusee.Engine.GUI
         /// <param name="mousePos">The current mouse position.</param>
         /// <param name="canvasWidth">Canvas width - needed to determine the mouse position in clip space.</param>
         /// <param name="canvasHeight">Canvas height - needed to determine the mouse position in clip space.</param>
-        public void CheckForInteractiveObjects(float2 mousePos, int canvasWidth, int canvasHeight)
-        {
-            _scenePicker.View = View;
-            
+        public void CheckForInteractiveObjects(RenderContext rc, float2 mousePos, int canvasWidth, int canvasHeight)
+        { 
             var pickPosClip = mousePos * new float2(2.0f / canvasWidth, -2.0f / canvasHeight) + new float2(-1, 1);
 
-            var pickResults = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
+            var pickResults = _scenePicker.Pick(rc, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).ToList();
             var pickResNodes = pickResults.Select(x => x.Node).ToList();
             var firstPickRes = pickResults.FirstOrDefault();
 
@@ -85,6 +78,8 @@ namespace Fusee.Engine.GUI
 
             if (_pickRes != null)
                 Traverse(_pickRes);
+
+            rc.ResetToDefaultState();
         }
 
         /// <summary>

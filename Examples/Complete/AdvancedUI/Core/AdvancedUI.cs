@@ -47,6 +47,10 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private ScenePicker _scenePicker;
 
+        private TransformComponent _camTransform;
+
+        private const float twoPi = M.Pi * 2.0f;
+
         private SceneContainer BuildScene()
         {
             var sphere = new Sphere(32, 24);
@@ -128,11 +132,31 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
+
+            _camTransform = new TransformComponent()
+            {
+                Rotation = new float3(0, 0, 0),
+                Scale = float3.One,
+                Translation = new float3(0, 0, -5)
+
+            };
+
+            var camera = new SceneNodeContainer()
+            {
+                Name = "Camera",
+                Components = new List<SceneComponentContainer>()
+                {
+                    _camTransform,
+                    new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
+                }
+            };
+
+            _scene.Children.Insert(0, camera);
+
+
             var monkey = _scene.Children[1].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
-
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();            
 
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
@@ -226,26 +250,35 @@ namespace Fusee.Examples.AdvancedUI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            // Create the camera matrix and set it as the current View transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 0, -5, 0, 0, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
+            Diagnostics.Debug(_angleVelHorz);
+            Diagnostics.Debug(_angleVelVert);
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-            _scenePicker.View = RC.View;
+            //if(float.IsInfinity(_angleVelVert) || float.IsNegativeInfinity(_angleVelVert) || float.IsInfinity(_angleVelHorz) || float.IsNegativeInfinity(_angleVelHorz))
+            //{
+            //    var t = 1;
+            //}
+            
+            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+                _angleHorz %= twoPi;
+            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+                _angleVert %= twoPi;
 
+            //_scene.Children[1].GetTransform().Rotation = new float3(_angleVert, _angleHorz, 0);
+
+            //Orbit around the monkey
+            _camTransform.RotateAround(_scene.Children[1].GetTransform().Translation, new float3(-_angleVelVert, -_angleVelHorz, 0));
+            
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             #endregion
 
-            //Annotations will be unpdated according to circle positions.
+            //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
             var canvas = _gui.Children[0];
@@ -265,7 +298,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     //the monkey's matrices
                     var monkey = _scene.Children[1];
                     var model = monkey.GetGlobalTransformation();
-                    var projection = _scene.Children[0].GetParentProjection();
+                    var projection = _scene.Children[0].GetParentCamera().GetProjectionMat(Width, Height);
 
                     var mvpMonkey = projection * RC.View * model;
 
@@ -280,19 +313,19 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();                    
+                    var newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
-                        
+
                         circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-                       
+
                         circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
                     }
 
@@ -364,23 +397,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
             }
 
-            ////TODO: set screen space UI projection to orthographic in SceneRenderer
-            //if (_canvasRenderMode == CanvasRenderMode.SCREEN)
-            //{
-            //    // Render the scene loaded in Init()
-            //    _sceneRenderer.Render(RC);
-
-            //    projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-            //    RC.Projection = projection;
-            //    //_sih.Projection = projection;
-
-            //    _guiRenderer.Render(RC);
-            //}
-            //else
-            //{
-               
-            //}
-
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
 
@@ -396,7 +412,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
-            
+
         }
 
         private SceneContainer CreateGui()
@@ -431,7 +447,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             var markModelContainer = new SceneNodeContainer
             {
                 Name = "MarkModelContainer",
-
             };
 
             var canvas = new CanvasNodeContainer(
@@ -442,7 +457,8 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(-_canvasWidth / 2f, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2f, _canvasHeight / 2f)
                 }
-            ) {Children = new ChildList() {fuseeLogo, markModelContainer}};
+            )
+            { Children = new ChildList() { fuseeLogo, markModelContainer } };
 
             for (var i = 0; i < _uiInput.Count; i++)
             {
@@ -458,10 +474,15 @@ namespace Fusee.Examples.AdvancedUI.Core
                    "#" + i + " " + item.SegmentationClass);
                 }
             }
+            var cam = new SceneNodeContainer()
+            {
+                Name = "CanvasCam",
+                Components = new List<SceneComponentContainer>() { new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy) }
+            };
 
-            var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
-            
+            var canvasCameraComp = new CameraComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
+            canvas.Children.Insert(0, cam);
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -595,7 +616,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     intersectedAnnotations.Add(input.Identifier, input.AnnotationCanvasPos); //add pos that is just being checked
 
                 var orderedBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList();
-                
+
                 intersectedAnnotations = new Dictionary<int, float2>();
                 foreach (var keyValue in orderedBy) //JSIL not implemented exception: ToDictionary
                 {

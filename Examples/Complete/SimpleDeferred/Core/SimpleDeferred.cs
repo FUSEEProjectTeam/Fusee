@@ -1,4 +1,4 @@
-﻿using Fusee.Base.Common;
+using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -36,8 +36,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-
-        private float3 _cameraPos;
+        
         private bool _keys;
 
         private const float twoPi = M.Pi * 2.0f;       
@@ -50,10 +49,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private LightComponent _sun;
 
+        private TransformComponent _camTransform;
+
         // Init is called on startup. 
         public override void Init()
-        {
-            _cameraPos = new float3(0, 20, -10);
+        {           
             _gui = CreateGui();
             
             // Create the interaction handler
@@ -68,11 +68,25 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
-            //Add resize delegate
-            var perspectiveProjComp = _rocketScene.Children[0].GetComponent<ProjectionComponent>();
-            perspectiveProjComp.ZFar = ZFar;
-            perspectiveProjComp.ZNear = ZNear;
-            perspectiveProjComp.Fov = _fovy;
+            _camTransform = new TransformComponent()
+            {
+                Rotation = new float3(0, M.DegreesToRadians(0), 0),
+                Scale = float3.One,
+                Translation = new float3(0, 20, -10)
+
+            };
+
+            var camera = new SceneNodeContainer()
+            {
+                Name = "Camera",
+                Components = new List<SceneComponentContainer>()
+                {
+                   _camTransform,
+                    new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
+                }
+            };
+
+            _rocketScene.Children.Insert(0, camera);
 
             //Add lights to the scene
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
@@ -255,16 +269,15 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            CalcAndSetViewMat();
-            _sih.View = RC.View;
+            FpsView();            
 
             // Constantly check for interactive objects.
             if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
             _sceneRenderer.Render(RC);
@@ -274,42 +287,26 @@ namespace Fusee.Examples.SimpleDeferred.Core
             Present();
         }
 
-        private void CalcAndSetViewMat()
+        /// <summary>
+        /// Translates and rotates the camera to achieve a fps cam.
+        /// </summary>
+        private void FpsView()
         {
             if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
                 _angleHorz %= twoPi;
             if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
                 _angleVert %= twoPi;
 
-            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 1000;
-            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 1000;
+            var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
 
-            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
+            _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
+            _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;           
+
+            _camTransform.Rotation.y = _angleHorz;
+            _camTransform.Rotation.x = _angleVert;            
         }
-
-        private float4x4 FPSView(float3 eye, float pitch, float yaw)
-        {
-            // I assume the values are already converted to radians.
-            float cosPitch = M.Cos(pitch);
-            float sinPitch = M.Sin(pitch);
-            float cosYaw = M.Cos(yaw);
-            float sinYaw = M.Sin(yaw);
-
-            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
-            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
-            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
-
-            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-            float4x4 viewMatrix = new float4x4(
-                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
-                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
-                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
-                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
-            );
-
-            viewMatrix = float4x4.Transpose(viewMatrix);
-            return viewMatrix;
-        }
+        
 
         private SceneContainer CreateGui()
         {
@@ -373,8 +370,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 }
             };
 
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            var canvasCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Components.Insert(0, canvasCam);
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

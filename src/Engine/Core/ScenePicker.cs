@@ -5,6 +5,9 @@ using Fusee.Xene;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// This class contains information about the scene of the picked point.
+    /// </summary>
     public class PickResult
     {
         // Data
@@ -12,23 +15,32 @@ namespace Fusee.Engine.Core
         /// The scene code container.
         /// </summary>
         public SceneNodeContainer Node;
+
         /// <summary>
         /// The mesh.
         /// </summary>
         public Mesh Mesh;
+
+        /// <summary>
+        /// The index of the triangle that was picked.
+        /// </summary>
         public int Triangle;
+
         /// <summary>
         /// The u, v coordinates.
         /// </summary>
         public float U, V;
+
         /// <summary>
         /// The model matrix.
         /// </summary>
         public float4x4 Model;
+
         /// <summary>
         /// The view matrix
         /// </summary>
         public float4x4 View;
+
         /// <summary>
         /// The projection matrix.
         /// </summary>
@@ -157,6 +169,7 @@ namespace Fusee.Engine.Core
     public class ScenePicker : Viserator<PickResult, ScenePicker.PickerState>
     {
         private CanvasTransformComponent _ctc;
+        private RenderContext _rc;
 
         #region State
         public class PickerState : VisitorState
@@ -193,7 +206,8 @@ namespace Fusee.Engine.Core
             }
         };
 
-        public float4x4 View, Projection;
+        public float4x4 View { get; private set; }
+        public float4x4 Projection { get; private set; }
         #endregion
 
         public ScenePicker(SceneContainer scene)
@@ -211,38 +225,69 @@ namespace Fusee.Engine.Core
         }
 
 
-        public IEnumerable<PickResult> Pick(float2 pickPos)
+        public IEnumerable<PickResult> Pick(RenderContext rc, float2 pickPos)
         {
+            _rc = rc;
             PickPosClip = pickPos;
-            return Viserate();
+            View = _rc.View;
+            Projection = _rc.Projection;
+            return Viserate();            
         }
 
 
         #region Visitors
 
-
+        /// <summary>
+        /// If a Projection Component is visited, the projection matrix is set.
+        /// </summary>
+        /// <param name="cam">The visited <see cref="CameraComponent"/>.</param>
         [VisitMethod]
-        public void PickProjection(ProjectionComponent pc)
+        public void PickCamera(CameraComponent cam)
         {
-            switch (pc.ProjectionMethod)
+            if (cam.CustomCameraUpdate != null)
             {
+                cam.CustomCameraUpdate(out float4x4 proj, out float4 viewport);
+
+                _rc.Projection = proj;
+                //_rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+                return;
+            }
+
+            var startX = (int)(_rc.ViewportWidth * (cam.Viewport.x / 100));
+            var startY = (int)(_rc.ViewportHeight * (cam.Viewport.y / 100));
+            var width = (int)(_rc.ViewportWidth * (cam.Viewport.z / 100));
+            var height = (int)(_rc.ViewportHeight * (cam.Viewport.w / 100));
+
+            //_rc.Viewport(startX, startY, width, height);
+
+            switch (cam.ProjectionMethod)
+            {
+                default:
                 case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    Projection = float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);                    
+                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(cam.Fov, (float)width / height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
                     break;
                 case ProjectionMethod.ORTHOGRAPHIC:
-                    Projection = float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);                    
+                    _rc.Projection = float4x4.CreateOrthographic(width, height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
                     break;
             }
+
+            _rc.View = float4x4.Invert(State.Model);
         }
 
+        /// <summary>
+        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
+        /// It additionally updates the view matrix of the RenderContext.
+        /// </summary> 
+        /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void PickTransform(TransformComponent transform)
         {
             State.Model *= transform.Matrix();
+            _rc.Model = State.Model;            
         }
-
         private bool isCtcInitialized = false;
+
         [VisitMethod]
         public void PickCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -379,81 +424,3 @@ namespace Fusee.Engine.Core
     }
 }
 
-
-
-//public class ScenePicker : Viserator<PickResult, ScenePicker.PickingState>
-//{
-//    public class PickingState : VisitorState
-//    {
-//        private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
-//        private CollapsingStateStack<float4x4> _view = new CollapsingStateStack<float4x4>();
-//        private CollapsingStateStack<float4x4> _projection = new CollapsingStateStack<float4x4>();
-
-//        public float4x4 Model
-//        {
-//            set { _model.Tos = value; }
-//            get { return _model.Tos; }
-//        }
-//        public float4x4 View
-//        {
-//            set { _view.Tos = value; }
-//            get { return _view.Tos; }
-//        }
-
-//        public float4x4 Projection
-//        {
-//            set { _projection.Tos =  value; }
-//            get { return _projection.Tos; }
-//        }
-
-//        public PickingState()
-//        {
-//            RegisterState(_model);
-//            RegisterState(_view);
-//            RegisterState(_projection);
-//        }
-//    }
-
-
-//    #region Visitors
-//    [VisitMethod]
-//    public void PickTransform(TransformComponent transform)
-//    {
-//        State.Model *= transform.Matrix();
-//    }
-
-//    [VisitMethod]
-//    public void PickMesh(MeshComponent mesh)
-//    {
-//        float4x4 mvp = State.Projection * State.View * State.Model;
-//        for (int i = 0; i < mesh.Triangles.Length; i += 3)
-//        {
-//            // a, b c: current triangle's vertices in clip coordinates
-//            float4 a = new float4(mesh.Vertices[mesh.Triangles[i + 0]], 1).TransformPerspective(mvp);
-//            float4 b = new float4(mesh.Vertices[mesh.Triangles[i + 1]], 1).TransformPerspective(mvp);
-//            float4 c = new float4(mesh.Vertices[mesh.Triangles[i + 2]], 1).TransformPerspective(mvp);
-
-//            float u, v;
-//            // Point-in-Triangle-Test
-//            if (float2.PointInTriangle(a.xy, b.xy, c.xy, PickPosClip, out u, out v))
-//            {
-//                YieldItem(new PickResult
-//                     {
-//                         Mesh = mesh,
-//                         Node = CurrentNode,
-//                         Triangle = i,
-//                         Model = State.Model,
-//                         View = State.View,
-//                         Projection = State.Projection,
-//                         U = u,
-//                         V = v
-//                     });
-//            }
-//        }
-//    }
-
-//    public float2 PickPosClip { get; set; }
-
-//    #endregion
-
-//}

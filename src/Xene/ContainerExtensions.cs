@@ -13,23 +13,6 @@ namespace Fusee.Xene
     public static class ContainerExtensions
     {
         /// <summary>
-        /// Calculates the appropriate projection matrix for the given projection method.
-        /// </summary>
-        /// <param name="pc">The projection component.</param>        
-        public static float4x4 Matrix(this ProjectionComponent pc)
-        {
-            switch (pc.ProjectionMethod)
-            {
-                default:
-                case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    return float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    return float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);
-            }
-        }
-
-        /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>
         /// <param name="tcThis">This transform component.</param>
@@ -114,22 +97,22 @@ namespace Fusee.Xene
         /// <summary>
         /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
         /// </summary>
-        public static float4x4 GetParentProjection(this SceneNodeContainer snc)
+        public static CameraComponent GetParentCamera(this SceneNodeContainer snc)
         {
-            var res = float4x4.Identity;
+            CameraComponent res = null;
 
             if (snc.Parent == null)
-                return snc.GetComponent<ProjectionComponent>().Matrix();
+                return snc.GetComponent<CameraComponent>();
 
             var parent = snc.Parent;
             while (true)
             {
-                if (parent.Parent == null || res != float4x4.Identity)
+                if (parent.Parent == null || res != null)
                 {
                     return res;
                 }
 
-                res = parent.GetComponent<ProjectionComponent>().Matrix();
+                res = parent.GetComponent<CameraComponent>();
                 parent = parent.Parent;
             }
         }

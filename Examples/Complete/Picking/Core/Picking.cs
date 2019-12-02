@@ -25,7 +25,7 @@ namespace Fusee.Examples.Picking.Core
     public class Picking : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = 0, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -142,23 +142,20 @@ namespace Fusee.Examples.Picking.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 10, -600, 0, 150, 0, 0, 1, 0);
+            RC.View = mtxCam * mtxRot;
 
             // Check 
             if (_pick)
             {
-                Diagnostics.Log(_pickPos);
-                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
-
-                _scenePicker.View = mtxCam * mtxRot;
-
-                PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                Diagnostics.Debug(_pickPos);
+                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1); 
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
 #if WEBBUILD
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
-
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
@@ -194,26 +191,21 @@ namespace Fusee.Examples.Picking.Core
 #endif
                 _pick = false;
             }
-
-            RC.View = mtxCam * mtxRot;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
 
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-            _guiRenderer.Render(RC);          
-#endif           
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+                _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }            
+            _guiRenderer.Render(RC);
+#endif
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
@@ -289,8 +281,14 @@ namespace Fusee.Examples.Picking.Core
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
 
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            var cam = new SceneNodeContainer()
+            {
+                Name = "CanvasCam",
+                Components = new List<SceneComponentContainer>() { new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy) }
+            };
+
+            var canvasCameraComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
+            canvas.Children.Add(cam);
             
             return new SceneContainer
             {
