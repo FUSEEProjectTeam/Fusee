@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Reflection;
 using Fusee.Base.Common;
@@ -8,8 +9,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using Path = Fusee.Base.Common.Path;
-
+using Path = System.IO.Path;
 
 namespace Fusee.Engine.Player.Desktop
 {
@@ -41,49 +41,85 @@ namespace Fusee.Engine.Player.Desktop
 
             if (args.Length >= 1)
             {
+                Console.WriteLine("File: " + args[0]);
+
                 if (File.Exists(args[0]))
                 {
-                    TryAddDir(assetDirs, Path.GetDirectoryName(args[0]));
-                    if (Path.GetExtension(args[0]).ToLower().Contains("fus"))
+                    var ext = Path.GetExtension(args[0]).ToLower();
+                    var filepath = args[0];
+
+                    TryAddDir(assetDirs, Path.GetDirectoryName(filepath));
+                    switch (ext)
                     {
-                        // A .fus file - open it.
-                        modelFile = Path.GetFileName(args[0]);
-                    }
-                    else
-                    {
-                        // See if the passed argument is an entire Fusee App DLL
-                        try
-                        {
-                            Assembly asm = Assembly.LoadFrom(args[0]);
-                            tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                            TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(args[0]), "Assets"));
-                        }
-                        catch (Exception e)
-                        {
-                            Diagnostics.Debug("No entire Fusee App DLL recived. Continuing.", e);
-                        }
+                        case ".fus":
+                            modelFile = Path.GetFileName(filepath);
+                            break;
+
+                        case ".fuz":
+                            var appname = Path.GetFileNameWithoutExtension(filepath);
+                            var tmppath = Path.GetTempPath();
+
+                            var apppath = Path.Combine(tmppath, "FuseeApp_" + appname);
+
+                            if (Directory.Exists(apppath))
+                                Directory.Delete(apppath, true);
+
+                            ZipFile.ExtractToDirectory(filepath, apppath);
+
+                            filepath = Path.Combine(apppath, appname + ".dll");
+                            goto default;
+
+                        default:
+                            try
+                            {
+                                Assembly asm = Assembly.LoadFrom(filepath);
+
+                                // Comparing our version with the version of the referenced Fusee.Serialization
+                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var ourversion = Assembly.GetEntryAssembly().GetName().Version;
+
+                                if (serversion != ourversion)
+                                {
+                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                }
+
+                                tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                                TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
+                            }
+                            catch (Exception e)
+                            {
+                                Diagnostics.Error("Error opening assembly", e);
+                            }
+                            break;
                     }
                 }
                 else
                 {
-                    Diagnostics.Error($"Cannot open {args[0]}.");
+                    Diagnostics.Warn($"Cannot open {args[0]}.");
                 }
+            }
+            else
+            {
+                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
             }
 
             if (tApp == null)
             {
                 // See if we are in "Deployed mode". That is: A Fusee.App.dll is lying next to us.
-                try
+                if (File.Exists(Path.Combine(ExeDir, "Fusee.App.dll")))
                 {
-                    Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
-                    tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                }
-                catch (Exception e)
-                {
-                    Diagnostics.Debug("Not in deployment mode", e);
+                    try
+                    {
+                        Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
+                        tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                    }
+                    catch (Exception e)
+                    {
+                        Diagnostics.Debug("Could not load Fusee.App.dll", e);
+                    }
                 }
                 // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
-                if (tApp == null)
+                else
                 {
                     tApp = typeof(Fusee.Engine.Player.Core.Player);
                 }
@@ -109,11 +145,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
-                        var scene = ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream) storage) ;
-
-                        var container = scene;
-
-                        return new ConvertSceneGraph().Convert(container);
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

@@ -1,11 +1,8 @@
 using Xunit;
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json.Bson;
-using Xunit.Sdk;
-using Assert = Xunit.Assert;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class QuaternionTest
     {

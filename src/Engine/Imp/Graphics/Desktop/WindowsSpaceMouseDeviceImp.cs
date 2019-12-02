@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using Fusee.Engine.Common;
 using OpenTK;
-using _3DconnexionDriver;
 using Fusee.Base.Core;
+using Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver;
 
 namespace Fusee.Engine.Imp.Graphics.Desktop
 {
