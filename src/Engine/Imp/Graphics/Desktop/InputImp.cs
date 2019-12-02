@@ -736,6 +736,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public MouseDeviceImp(GameWindow gameWindow)
         {
             _gameWindow = gameWindow;
+
+            _gameWindow.MouseMove += OnMouseMove;
+
             _gameWindow.MouseDown += OnGameWinMouseDown;
             _gameWindow.MouseUp += OnGameWinMouseUp;
 
@@ -792,7 +795,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = (int)MouseAxes.MinX,
                         MaxValueOrAxis = (int)MouseAxes.MaxX
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -806,7 +809,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         MinValueOrAxis = (int)MouseAxes.MinY,
                         MaxValueOrAxis = (int)MouseAxes.MaxY
                     },
-                    PollAxis = true
+                    PollAxis = false
                 };
                 yield return new AxisImpDescription
                 {
@@ -916,16 +919,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         public string Id => GetType().FullName;
 
         /// <summary>
-        /// No event-based axes are exposed by this device. Use <see cref="GetAxis"/> to acquire mouse axis information.
+        /// Mouse movement is event-based. Listen to this event to get information about mouse movement.
         /// </summary>
-#pragma warning disable 0067
         public event EventHandler<AxisValueChangedArgs> AxisValueChanged;
 
         /// <summary>
         /// All three mouse buttons are event-based. Listen to this event to get information about mouse button state changes.
         /// </summary>
         public event EventHandler<ButtonValueChangedArgs> ButtonValueChanged;
-#pragma warning restore 0067
 
         /// <summary>
         /// Retrieves values for the X, Y and Wheel axes. No other axes are supported by this device.
@@ -936,10 +937,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
             switch (iAxisId)
             {
-                case (int)MouseAxes.X:
-                    return OpenTK.Input.Mouse.GetCursorState().X;
-                case (int)MouseAxes.Y:
-                    return OpenTK.Input.Mouse.GetCursorState().Y;
                 case (int)MouseAxes.Wheel:
                     return OpenTK.Input.Mouse.GetCursorState().WheelPrecise;
                 case (int)MouseAxes.MinX:
@@ -952,6 +949,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     return _gameWindow.Height;
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
+        }
+
+        /// <summary>
+        /// Called when the game window's mouse is moved.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="mouseArgs">The <see cref="MouseMoveEventArgs"/> instance containing the event data.</param>
+        protected void OnMouseMove(object sender, MouseMoveEventArgs mouseArgs)
+        {
+            if (AxisValueChanged != null)
+            {
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = AxisImpDesc.First(x => x.AxisDesc.Id == (int)MouseAxes.X).AxisDesc, Value = mouseArgs.X });
+                AxisValueChanged(this, new AxisValueChangedArgs { Axis = AxisImpDesc.First(y => y.AxisDesc.Id == (int)MouseAxes.Y).AxisDesc, Value = mouseArgs.Y });
+            }
         }
 
         /// <summary>
