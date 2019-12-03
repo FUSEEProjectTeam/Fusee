@@ -13,27 +13,40 @@ namespace Fusee.Base.Core
         #region Fields
 
         private static Stopwatch _daWatch;
-        private static bool _useFile = true;
+        private static bool _useFile;
         private static string _fileName = "Fusee.Log.txt";
         private static SeverityLevel _minLogLevelFile = SeverityLevel.NONE;
-        private static SeverityLevel _minLogLevelConsole = SeverityLevel.DEBUG;
-        private static SeverityLevel _minLogLevelDebug = SeverityLevel.DEBUG;
+        private static SeverityLevel _minLogLevelConsole;
+        private static SeverityLevel _minLogLevelDebug;
 
         private static Formater _format = (caller, lineNumber, callerFile, lvl, msg, ex, args) =>
                     {
                         ColorConsoleOutput(lvl);
 
-                        var f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":"+lineNumber : "")}] {msg}";
-                        
+                        string f;
+
+                        if (lvl == SeverityLevel.DEBUG)
+                        {
+                            f = $"[{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
+                        }
+                        else
+                        {
+                            f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(!string.IsNullOrEmpty(callerFile) ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
+                        }
+
                         f += (ex != null ? $",\nException: {ex}" : "");
                         f += (ex?.InnerException != null ? $",\nInner exception: {ex.InnerException}" : "");
-                        
+
                         if (args != null)
                         {
                             f += "\nArguments:\n";
 
                             foreach (var a in args)
-                                f += $"{a}\n";
+                            {
+                                var argMsg = a == null ? "<null>" : a.ToString();
+                                f += $"{argMsg}\n";
+                            }
+                                
                         }
 
                         return f + "\n";
@@ -79,7 +92,8 @@ namespace Fusee.Base.Core
         public enum SeverityLevel
         {
 #pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
-            DEBUG = 0,           
+            DEBUG = 0,
+            INFO,
             WARN,
             ERROR,
             NONE = 42
@@ -92,6 +106,8 @@ namespace Fusee.Base.Core
             {
                 case SeverityLevel.DEBUG:
                     return "Debug";
+                case SeverityLevel.INFO:
+                    return "Info";
                 case SeverityLevel.WARN:
                     return "Warning";
                 case SeverityLevel.ERROR:
@@ -100,7 +116,7 @@ namespace Fusee.Base.Core
                     return "None";
             }
 
-            return "error while parsing severity level";
+            return "Error while parsing severity level";
         }
 
         private static void ColorConsoleOutput(SeverityLevel lvl)
@@ -109,6 +125,9 @@ namespace Fusee.Base.Core
             {
                 case SeverityLevel.DEBUG:
                     Console.ForegroundColor = ConsoleColor.Green;
+                    break;
+                case SeverityLevel.INFO:
+                    Console.ForegroundColor = ConsoleColor.White;
                     break;
                 case SeverityLevel.WARN:
                     Console.ForegroundColor = ConsoleColor.DarkYellow;
@@ -121,22 +140,18 @@ namespace Fusee.Base.Core
 
         #endregion
 
-
-        static Diagnostics()
-        {
-        }
-
         #region Members
 
         /// <summary>
-        ///     Enable / disable text file logging
+        ///     Enable / disable text file logging, default is disabled
         /// </summary>
         /// <param name="logToTxtFile"></param>
         /// <param name="logFileName"></param>
         public static void LogToTextFile(bool logToTxtFile, string logFileName = "")
         {
-            throw new NotImplementedException("File logging is not yet implemented");
-
+#if ANDROID
+            throw new NotImplementedException("File log does not work within Android, yet!");
+#endif
             _useFile = logToTxtFile;
             _fileName = (logFileName == string.Empty ? "Fusee.Log.txt" : logFileName);
             if (_useFile && !File.Exists(_fileName)) File.Create(_fileName).Close();
@@ -148,6 +163,10 @@ namespace Fusee.Base.Core
         /// <param name="lvl"></param>
         public static void SetMinTextFileLoggingSeverityLevel(SeverityLevel lvl)
         {
+#if ANDROID
+            throw new NotImplementedException("File log does not work within Android, yet!");
+#endif
+
             if (!_useFile)
                 Warn("Level set without enabled text file logging. Please enable text file logging fist via LogToTextFile(true)");
 
@@ -226,6 +245,20 @@ namespace Fusee.Base.Core
             Writer(o, SeverityLevel.DEBUG, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
+        /// <summary>
+        ///     Log a info event.
+        ///     Per default visible within the Visual Studio debug console and the console window in debug builds, as well as in release builds.
+        /// </summary>
+        /// <param name="o">The object to write</param>
+        /// <param name="ex">A possible exception, optional</param>
+        /// <param name="args">Possible arguments, optional</param>
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>
+        public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
+        {
+            Writer(o, SeverityLevel.INFO, ex, args, callerName, sourceLineNumber, sourceFilePath);
+        }
 
         /// <summary>
         ///     Log a warning event.
@@ -237,7 +270,6 @@ namespace Fusee.Base.Core
         /// <param name="callerName">The calling method</param>
         /// <param name="sourceLineNumber"></param>
         /// <param name="sourceFilePath"></param>
-        [Conditional("DEBUG")]
         public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
@@ -258,6 +290,6 @@ namespace Fusee.Base.Core
             Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);
         }
 
-        #endregion
+#endregion
     }
 }
