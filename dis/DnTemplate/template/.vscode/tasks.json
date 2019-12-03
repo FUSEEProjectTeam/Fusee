@@ -5,13 +5,11 @@
     "tasks": [
         {
             "label": "build",
-            "command": "dotnet",
             "type": "shell",
+            "command": "dotnet",
             "args": [
                 "build",
-                // Ask dotnet build to generate full paths for file names.
                 "/property:GenerateFullPaths=true",
-                // Do not generate summary otherwise it leads to duplicate errors in Problems panel
                 "/consoleloggerparameters:NoSummary"
             ],
             "group": "build",
@@ -21,15 +19,56 @@
             "problemMatcher": "$msCompile"
         },
         {
-            "dependsOn": ["build"],
-            "label": "Pack Fusee app as fuz file.",
-            "command": "fusee pack bin/Debug/Fusee_App.dll",
+            "label": "clean",
+            "type": "shell",
+            "command": "dotnet",
+            "args": [
+                "clean"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "pack",
+            "detail": "Pack this Fusee app as a fuz file.",
+            "type": "shell",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "pack",
+                "bin/Debug/Fusee_App.dll"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "silent"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "publish",
+            "detail": "Build this Fusee app to a self contained application.",
+            "dependsOn": [
+                "clean",
+                "build"
+            ],
+            "command": "fusee",
+            "args": [
+                "publish",
+                "-i", "bin/Debug/Fusee_App.dll",
+                "-o", "${workspaceFolder}/pub"
+            ],
             "type": "shell",
             "group": "build",
             "presentation": {
                 "reveal": "silent"
             },
             "problemMatcher": []
-        }  
+        }
     ]
 }

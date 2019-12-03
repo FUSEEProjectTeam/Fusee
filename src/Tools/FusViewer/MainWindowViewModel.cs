@@ -10,7 +10,7 @@ using Fusee.Xene;
 using System.Text.Json;
 using System.Windows;
 
-namespace FusViewer.ViewModel
+namespace Fusee.Tools.FusViewer.ViewModel
 {    
     internal class OpenFusFileCmd : ICommand
     {
