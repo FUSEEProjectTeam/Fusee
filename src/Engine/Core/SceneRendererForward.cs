@@ -17,7 +17,9 @@ namespace Fusee.Engine.Core
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
     public partial class SceneRendererForward : SceneVisitor
-    {       
+    {
+
+        private PrePassVisitor _prePassVisitor;
 
         private int _numberOfLights;
 
@@ -133,7 +135,7 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-
+            _prePassVisitor = new PrePassVisitor();
             var buildFrag = new ProtoToFrag(_sc, true);
             buildFrag.BuildFragmentShaders();
 
@@ -297,6 +299,9 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc, RenderTarget renderTarget = null)
         {
             SetContext(rc);
+
+            _prePassVisitor.PrePassTraverse(_sc, _rc);
+
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTarget);
@@ -314,6 +319,9 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc, WritableTexture renderTexture = null)
         {
             SetContext(rc);
+
+            _prePassVisitor.PrePassTraverse(_sc, _rc);
+
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget(renderTexture);
@@ -330,12 +338,27 @@ namespace Fusee.Engine.Core
         public void Render(RenderContext rc)
         {
             SetContext(rc);
+
+            _prePassVisitor.PrePassTraverse(_sc, _rc);
+
             AccumulateLight();
             UpdateShaderParamsForAllLights();
             rc.SetRenderTarget();
 
             Traverse(_sc.Children);
             _rc.ResetToDefaultState();
+        }
+
+        
+        /// <summary>
+        /// Viserates the LightComponent and caches them in a dedicated field.
+        /// </summary>
+        protected void AccumulateLight()
+        {            
+            LightViseratorResults = _prePassVisitor.LightPrepassResuls;
+
+            if (LightViseratorResults.Count == 0)
+                SetDefaultLight();
         }
 
         #region Visitors        
@@ -616,17 +639,6 @@ namespace Fusee.Engine.Core
                 AddWeightComponentToMesh(mesh, wc);
 
             _rc.Render(mesh);
-        }
-
-        /// <summary>
-        /// Viserates the LightComponent and caches them in a dedicated field.
-        /// </summary>
-        protected void AccumulateLight()
-        {
-           LightViseratorResults = _sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();
-            
-            if (LightViseratorResults.Count == 0)
-                SetDefaultLight();
         }
 
         protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)

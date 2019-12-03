@@ -51,8 +51,7 @@ namespace Fusee.Examples.Simple.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
-            
+            _sceneRenderer = new SceneRendererForward(_rocketScene);            
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -103,19 +102,24 @@ namespace Fusee.Examples.Simple.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;            
 
-            // Constantly check for interactive objects.
-            if(!Mouse.Desc.Contains("Android"))
+            // Render the scene loaded in Init()
+            RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);            
+            _sceneRenderer.Render(RC);
+
+            //Constantly check for interactive objects.
+            RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-               
-            // Render the scene loaded in Init()
-            _sceneRenderer.Render(RC);
+
+            RC.View = mtxCam * mtxRot;
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -182,10 +186,7 @@ namespace Fusee.Examples.Simple.Core
                     fuseeLogo,
                     text
                 }
-            };
-
-            var canvasCameraComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasCameraComp);            
+            };            
 
             return new SceneContainer
             {

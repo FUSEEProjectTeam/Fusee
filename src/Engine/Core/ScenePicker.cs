@@ -286,6 +286,7 @@ namespace Fusee.Engine.Core
             State.Model *= transform.Matrix();
             _rc.Model = State.Model;            
         }
+
         private bool isCtcInitialized = false;
 
         [VisitMethod]

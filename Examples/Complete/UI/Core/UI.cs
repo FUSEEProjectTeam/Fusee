@@ -423,7 +423,7 @@ namespace Fusee.Examples.UI.Core
             _sceneRenderer.Render(RC);
 
             //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
+            //_sih.View = RC.View;
 
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))

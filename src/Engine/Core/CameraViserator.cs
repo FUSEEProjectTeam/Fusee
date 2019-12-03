@@ -29,7 +29,7 @@ namespace Fusee.Engine.Core
         }
     }
 
-    internal class CameraViserator : Viserator<CameraComponent, LightViseratorState>
+    internal class CameraViserator : Viserator<CameraComponent, PrepassVisitorState>
     {
         protected override void InitState()
         {
