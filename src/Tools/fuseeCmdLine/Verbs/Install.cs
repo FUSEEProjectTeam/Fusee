@@ -140,7 +140,7 @@ namespace Fusee.Tools.fuseeCmdLine
                             RegistryKey schemeKey4 = Registry.CurrentUser.CreateSubKey(@"Software\Classes\fusee\Shell\Open");
 
                             RegistryKey schemeKey5 = Registry.CurrentUser.CreateSubKey(@"Software\Classes\fusee\Shell\Open\Command");
-                            schemeKey5.SetValue("", pathtofuseeexe + " player %1");
+                            schemeKey5.SetValue("", pathtofuseeexe + " player \"%1\"");
 
                             Console.WriteLine("Set 'fusee://' Uri Scheme handler to use " + pathtofuseeexe);
                         }
