@@ -141,20 +141,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             };
 
-            var camera = new SceneNodeContainer()
-            {
-                Name = "Camera",
-                Components = new List<SceneComponentContainer>()
-                {
-                    _camTransform,
-                    new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
-                }
-            };
-
-            _scene.Children.Insert(0, camera);
-
-
-            var monkey = _scene.Children[1].GetComponent<Mesh>();
+            var monkey = _scene.Children[0].GetComponent<Mesh>();
             var rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
@@ -250,24 +237,17 @@ namespace Fusee.Examples.AdvancedUI.Core
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
 
-            Diagnostics.Debug(_angleVelHorz);
-            Diagnostics.Debug(_angleVelVert);
+            // Create the camera matrix and set it as the current ModelView transformation
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 0, -5, 0, 0, 0, 0, 1, 0);
 
-            //if(float.IsInfinity(_angleVelVert) || float.IsNegativeInfinity(_angleVelVert) || float.IsInfinity(_angleVelHorz) || float.IsNegativeInfinity(_angleVelHorz))
-            //{
-            //    var t = 1;
-            //}
-            
-            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                _angleHorz %= twoPi;
-            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                _angleVert %= twoPi;
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            //_scene.Children[1].GetTransform().Rotation = new float3(_angleVert, _angleHorz, 0);
 
-            //Orbit around the monkey
-            _camTransform.RotateAround(_scene.Children[1].GetTransform().Translation, new float3(-_angleVelVert, -_angleVelHorz, 0));
-            
+            RC.View = view;
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
@@ -296,11 +276,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     var uiInput = _uiInput[k];
 
                     //the monkey's matrices
-                    var monkey = _scene.Children[1];
+                    var monkey = _scene.Children[0];
                     var model = monkey.GetGlobalTransformation();
-                    var projection = _scene.Children[0].GetParentCamera().GetProjectionMat(Width, Height);
+                    var projection = perspective;
 
-                    var mvpMonkey = projection * RC.View * model;
+                    var mvpMonkey = projection * view * model;
 
                     var clipPos = float4x4.TransformPerspective(mvpMonkey, uiInput.Position); //divides by 2
                     var canvasPosCircle = new float2(clipPos.x, clipPos.y) * 0.5f + 0.5f;
@@ -397,7 +377,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                 }
             }
 
+            RC.View = view;
+            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
+
+            RC.View = view;
+            RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             _guiRenderer.Render(RC);
 
             Present();
@@ -473,15 +458,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
-            }
-            var cam = new SceneNodeContainer()
-            {
-                Name = "CanvasCam",
-                Components = new List<SceneComponentContainer>() { new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy) }
-            };
-
-            var canvasCameraComp = new CameraComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
-            canvas.Children.Insert(0, cam);
+            }           
 
             return new SceneContainer
             {

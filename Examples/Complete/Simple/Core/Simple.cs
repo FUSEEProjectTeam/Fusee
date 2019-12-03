@@ -103,14 +103,18 @@ namespace Fusee.Examples.Simple.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
             // Render the scene loaded in Init()
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);            
+            RC.View = view;
+            RC.Projection = perspective;            
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            RC.View = view;
+            RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
@@ -118,8 +122,8 @@ namespace Fusee.Examples.Simple.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            RC.View = mtxCam * mtxRot;
-            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            RC.View = view;
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -169,7 +173,6 @@ namespace Fusee.Examples.Simple.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
-
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
