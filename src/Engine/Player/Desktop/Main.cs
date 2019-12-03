@@ -42,7 +42,7 @@ namespace Fusee.Engine.Player.Desktop
 
             if (args.Length >= 1)
             {
-                Console.WriteLine("File: " + args[0]);
+                Diagnostics.Info("File: " + args[0]);
 
                 if (File.Exists(args[0]))
                 {
@@ -81,7 +81,7 @@ namespace Fusee.Engine.Player.Desktop
 
                                 if (serversion != ourversion)
                                 {
-                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                    Diagnostics.Info("Fusee player and the assembly are on different versions. This can result in unexpected behaviour. Player version: " + ourversion + " Assembly version: " + serversion);
                                 }
 
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
@@ -113,7 +113,7 @@ namespace Fusee.Engine.Player.Desktop
             }
             else
             {
-                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
+                Diagnostics.Info("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
                 tApp = typeof(Fusee.Engine.Player.Core.Player);
             }
 
