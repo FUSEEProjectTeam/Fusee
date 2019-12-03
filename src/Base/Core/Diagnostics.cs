@@ -31,7 +31,7 @@ namespace Fusee.Base.Core
                         }
                         else
                         {
-                            f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(callerFile != string.Empty ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
+                            f = $"{DateTime.Now}, [{SeverityLevelToString(lvl)}] {(!string.IsNullOrEmpty(callerFile) ? "[" + Path.GetFileName(callerFile) + "]" : "")} [{caller}(){(lineNumber != 0 ? ":" + lineNumber : "")}] {msg}";
                         }
 
                         f += (ex != null ? $",\nException: {ex}" : "");
@@ -42,7 +42,11 @@ namespace Fusee.Base.Core
                             f += "\nArguments:\n";
 
                             foreach (var a in args)
-                                f += $"{a}\n";
+                            {
+                                var argMsg = a == null ? "<null>" : a.ToString();
+                                f += $"{argMsg}\n";
+                            }
+                                
                         }
 
                         return f + "\n";
