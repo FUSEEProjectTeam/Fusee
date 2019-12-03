@@ -60,9 +60,13 @@ namespace Fusee.Examples.Picking.Core
         private bool _pick;
         private float2 _pickPos;
 
+        private float4x4 _defaultProjection;
+
         // Init is called on startup. 
         public override void Init()
         {
+            _defaultProjection = RC.Projection;
+
             _initWindowWidth = Width;
             _initWindowHeight = Height;
 
@@ -95,7 +99,7 @@ namespace Fusee.Examples.Picking.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
+            
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -139,15 +143,22 @@ namespace Fusee.Examples.Picking.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-
+           
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 10, -600, 0, 150, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
+
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
+           
 
             // Check 
             if (_pick)
             {
+                RC.View = view;
+                RC.Projection = perspective;
                 Diagnostics.Debug(_pickPos);
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1); 
                 PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
@@ -191,10 +202,15 @@ namespace Fusee.Examples.Picking.Core
 #endif
                 _pick = false;
             }
+
+            RC.View = view;
+            RC.Projection = perspective;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
+            RC.View = view;
+            RC.Projection = orthographic;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
@@ -202,7 +218,10 @@ namespace Fusee.Examples.Picking.Core
             if (Input.Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Input.Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }            
+            }
+
+            RC.View = view;
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);
 #endif
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -232,6 +251,9 @@ namespace Fusee.Examples.Picking.Core
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
 
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
+
             var btnFuseeLogo = new GUIButton
             {
                 Name = "Canvas_Button"
@@ -251,7 +273,7 @@ namespace Fusee.Examples.Picking.Core
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
                 //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -260,36 +282,31 @@ namespace Fusee.Examples.Picking.Core
 
             var text = new TextNodeContainer(
                 "FUSEE Picking Example",
-                "ButtonText",
+                "TitleText",
                 vsTex,
                 psTex,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
-
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                }
-            );
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
-
-            var cam = new SceneNodeContainer()
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
             {
-                Name = "CanvasCam",
-                Components = new List<SceneComponentContainer>() { new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy) }
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
             };
 
-            var canvasCameraComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Children.Add(cam);
-            
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

@@ -209,11 +209,15 @@ namespace Fusee.Engine.Player.Core
 
             // Create the camera matrix and set it as the current View transformation
             var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-            var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
-            RC.Projection *= mtxOffset;
+            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);            
+            var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);            
 
+            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
+            RC.View = view;
+            RC.Projection = orthographic;
             // Constantly check for interactive objects.
             _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
@@ -222,9 +226,13 @@ namespace Fusee.Engine.Player.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             // Tick any animations and Render the scene loaded in Init()
+            RC.View = view;
+            RC.Projection = perspective;
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
+            RC.View = view;
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -305,11 +313,7 @@ namespace Fusee.Engine.Player.Core
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 });
             canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
-
-            //Create canvas projection component and add resize delegate
-            var canvasCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasCamComp);
+            canvas.Children.Add(text);           
             
             return new SceneContainer
             {

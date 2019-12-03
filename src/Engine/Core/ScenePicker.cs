@@ -171,6 +171,9 @@ namespace Fusee.Engine.Core
         private CanvasTransformComponent _ctc;
         private RenderContext _rc;
 
+        private bool isCtcInitialized = false;
+        private MinMaxRect _parentRect;
+
         #region State
         public class PickerState : VisitorState
         {
@@ -276,21 +279,11 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
-        /// It additionally updates the view matrix of the RenderContext.
-        /// </summary> 
-        /// <param name="transform">The TransformComponent.</param>
+        /// Sets the state of the model matrices and UiRects.
+        /// </summary>
+        /// <param name="ctc">The CanvasTransformComponent.</param>
         [VisitMethod]
-        public void PickTransform(TransformComponent transform)
-        {
-            State.Model *= transform.Matrix();
-            _rc.Model = State.Model;            
-        }
-
-        private bool isCtcInitialized = false;
-
-        [VisitMethod]
-        public void PickCanvasTransform(CanvasTransformComponent ctc)
+        public void RenderCanvasTransform(CanvasTransformComponent ctc)
         {
             _ctc = ctc;
 
@@ -302,21 +295,22 @@ namespace Fusee.Engine.Core
                     Max = ctc.Size.Max
                 };
 
-                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
+                State.CanvasXForm *= float4x4.CreateTranslation(newRect.Center.x, newRect.Center.y, 0);
                 State.Model *= State.CanvasXForm;
+
+                _parentRect = newRect;
                 State.UiRect = newRect;
             }
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var projection = Projection;
+                var projection = _rc.Projection;
                 var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
 
                 var fov = 2f * System.Math.Atan(1f / projection.M22);
                 var aspect = projection.M22 / projection.M11;
 
-                var invView = float4x4.Invert(View);
-                var canvasPos = new float3(invView.M14, invView.M24, invView.M34 + zNear);
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
                 var width = height * aspect;
@@ -342,14 +336,20 @@ namespace Fusee.Engine.Core
                     isCtcInitialized = true;
 
                 }
-                State.CanvasXForm *= invView * float4x4.CreateTranslation(0, 0, zNear + 0.00001f) * float4x4.CreateScale(newRect.Size.x, newRect.Size.y, 1);
+                State.CanvasXForm *= _rc.InvView * float4x4.CreateTranslation(0, 0, zNear + (zNear * 0.01f));
                 State.Model *= State.CanvasXForm;
+
+                _parentRect = newRect;
                 State.UiRect = newRect;
             }
         }
 
+        /// <summary>
+        /// If a RectTransformComponent is visited the model matrix and MinMaxRect get updated in the <see cref="RendererState"/>.
+        /// </summary>
+        /// <param name="rtc">The XFormComponent.</param>
         [VisitMethod]
-        public void PickRectTransform(RectTransformComponent rtc)
+        public void RenderRectTransform(RectTransformComponent rtc)
         {
             MinMaxRect newRect;
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
@@ -374,11 +374,62 @@ namespace Fusee.Engine.Core
             var translationDelta = newRect.Center - State.UiRect.Center;
             var translationX = translationDelta.x / State.UiRect.Size.x;
             var translationY = translationDelta.y / State.UiRect.Size.y;
-            var scaleX = newRect.Size.x / State.UiRect.Size.x;
-            var scaleY = newRect.Size.y / State.UiRect.Size.y;
 
+            _parentRect = State.UiRect;
             State.UiRect = newRect;
-            State.Model *= float4x4.CreateTranslation(translationX, translationY, 0) * float4x4.CreateScale(scaleX, scaleY, 1);
+
+            State.Model *= float4x4.CreateTranslation(translationX, translationY, 0);
+        }
+
+        /// <summary>
+        /// If a XFormComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormComponent.</param>
+        [VisitMethod]
+        public void RenderXForm(XFormComponent xfc)
+        {
+            float4x4 scale;
+
+            if (State.UiRect.Size != _parentRect.Size)
+            {
+                var scaleX = State.UiRect.Size.x / _parentRect.Size.x;
+                var scaleY = State.UiRect.Size.y / _parentRect.Size.y;
+                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+            }
+            else if (State.UiRect.Size == _parentRect.Size && xfc.Name.Contains("Canvas"))
+                scale = float4x4.CreateScale(State.UiRect.Size.x, State.UiRect.Size.y, 1);
+            else
+                scale = float4x4.CreateScale(1, 1, 1);
+
+            State.Model *= scale;
+            _rc.Model = State.Model;
+        }
+
+        /// <summary>
+        /// If a XFormTextComponent is visited the model matrix gets updated in the <see cref="RendererState"/> and set in the <see cref="RenderContext"/>.
+        /// </summary>
+        /// <param name="xfc">The XFormTextComponent.</param>
+        [VisitMethod]
+        public void RenderXFormText(XFormTextComponent xfc)
+        {
+            var scaleX = 1 / State.UiRect.Size.x * xfc.TextScaleFactor;
+            var scaleY = 1 / State.UiRect.Size.y * xfc.TextScaleFactor;
+            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
+
+            State.Model *= scale;
+            _rc.Model = State.Model;
+        }
+
+        /// <summary>
+        /// If a TransformComponent is visited the model matrix of the <see cref="RenderContext"/> and <see cref="RendererState"/> is updated.
+        /// It additionally updates the view matrix of the RenderContext.
+        /// </summary> 
+        /// <param name="transform">The TransformComponent.</param>
+        [VisitMethod]
+        public void RenderTransform(TransformComponent transform)
+        {
+            State.Model *= transform.Matrix();
+            _rc.Model = State.Model;
         }
 
         [VisitMethod]

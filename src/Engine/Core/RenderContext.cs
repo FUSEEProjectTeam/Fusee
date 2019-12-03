@@ -62,7 +62,7 @@ namespace Fusee.Engine.Core
             }
         }
 
-        internal RenderContextDefaultState DefaultState { get; private set; }
+        public RenderContextDefaultState DefaultState { get; private set; }
 
         #region Private Fields
 
@@ -1922,7 +1922,7 @@ namespace Fusee.Engine.Core
     /// This ensures that we do not necessarily need a Camera in the Scene Graph.
     /// The viewport width and height is updated with every resize.
     /// </summary>
-    internal class RenderContextDefaultState
+    public class RenderContextDefaultState
     {
         /// <summary>
         /// Gets and sets the viewport width.
@@ -1956,16 +1956,17 @@ namespace Fusee.Engine.Core
         public readonly float4x4 View = float4x4.Identity;//float4x4.LookAt(0, 10, -10, 0, 0, 0, 0, 1, 0);
         public float4x4 Projection { get; private set; }
 
-        private int _vpheight = 1;
-        private int _vpWidth = 1;       
-        private float _aspect = 1;
+        private int _vpheight = 9;
+        private int _vpWidth = 16;       
+        private float _aspect;
 
         public readonly float ZNearDefautlt = 0.1f;
         public readonly float ZFarDefault = 3000;
         public readonly float FovDefault = M.DegreesToRadians(45);
 
         public RenderContextDefaultState()
-        {           
+        {
+            _aspect = (float)_vpWidth / _vpheight;
             Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);            
         }
     }

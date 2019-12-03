@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Core;
@@ -108,8 +108,8 @@ namespace Fusee.Examples.Bone.Core
             //{
             //    bindingMatrices.Add(float4x4.Identity);
             //}
-            var mesh = _scene.Children[2].Children[2].GetComponent<Mesh>();
-            var wm = _scene.Children[2].Children[2].GetComponent<WeightComponent>();
+            var mesh = _scene.Children[1].Children[2].GetComponent<Mesh>();
+            var wm = _scene.Children[1].Children[2].GetComponent<WeightComponent>();
             var WeightMap = new List<VertexWeightList>();
             for (var i = 0; i < mesh.Vertices.Length; i++)
             {
@@ -131,7 +131,7 @@ namespace Fusee.Examples.Bone.Core
                 });
             }
             wm.WeightMap = WeightMap;
-            var weightMapFromScene = _scene.Children[2].Children[2].Components[1];
+            var weightMapFromScene = _scene.Children[1].Children[2].Components[1];
 
             //_scene.Children.Insert(0, new SceneNodeContainer()
             //{
@@ -331,13 +331,13 @@ namespace Fusee.Examples.Bone.Core
 
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
             RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
             var mtxOffset = float4x4.CreateTranslation(2 * _offset.x / Width, -2 * _offset.y / Height, 0);
-            RC.Projection = mtxOffset * _projection;
+            RC.Projection = mtxOffset * RC.Projection;
 
             // move one bone
-            var translation = _scene.Children[2].Children[1].GetComponent<TransformComponent>();
+            var translation = _scene.Children[1].Children[1].GetComponent<TransformComponent>();
             translation.Rotation.x -= Input.Keyboard.ADAxis * 0.05f;
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
@@ -348,7 +348,7 @@ namespace Fusee.Examples.Bone.Core
             _sceneRenderer.Animate();
             _sceneRenderer.Render(RC);
 
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 

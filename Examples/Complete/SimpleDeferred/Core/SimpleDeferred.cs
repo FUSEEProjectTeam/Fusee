@@ -68,25 +68,25 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
             //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
 
-            _camTransform = new TransformComponent()
-            {
-                Rotation = new float3(0, M.DegreesToRadians(0), 0),
-                Scale = float3.One,
-                Translation = new float3(0, 20, -10)
+            //_camTransform = new TransformComponent()
+            //{
+            //    Rotation = new float3(0, M.DegreesToRadians(0), 0),
+            //    Scale = float3.One,
+            //    Translation = new float3(0, 20, -10)
 
-            };
+            //};
 
-            var camera = new SceneNodeContainer()
-            {
-                Name = "Camera",
-                Components = new List<SceneComponentContainer>()
-                {
-                   _camTransform,
-                    new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
-                }
-            };
+            //var camera = new SceneNodeContainer()
+            //{
+            //    Name = "Camera",
+            //    Components = new List<SceneComponentContainer>()
+            //    {
+            //       _camTransform,
+            //        new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
+            //    }
+            //};
 
-            _rocketScene.Children.Insert(0, camera);
+            //_rocketScene.Children.Insert(0, camera);
 
             //Add lights to the scene
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
@@ -269,9 +269,23 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            FpsView();            
+            // Create the camera matrix and set it as the current ModelView transformation
+            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
-            // Constantly check for interactive objects.
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
+            //FpsView();            
+
+            RC.View = view;
+            RC.Projection = perspective;
+            _sceneRenderer.Render(RC);
+
+            // Constantly check for interactive objects.           
+            RC.View = view;
+            RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
@@ -280,7 +294,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
 
-            _sceneRenderer.Render(RC);
+            RC.View = view;
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -369,9 +384,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     text
                 }
             };
-
-            var canvasCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasCam);
+            
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>

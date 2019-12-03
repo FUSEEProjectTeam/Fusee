@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light       
 
         private RenderPasses _currentPass;
-        private bool _canUseGeometryShaders;
+        private bool _canUseGeometryShaders;        
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -380,6 +380,9 @@ namespace Fusee.Engine.Core
         public new void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
+
+            _prePassVisitor.PrePassTraverse(_sc, _rc);
+
             AccumulateLight();
             _rc.EnableDepthClamp();
 
@@ -435,7 +438,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         private void RenderLightPasses(RenderContext rc, WritableTexture renderTex = null)
         {
-            rc.SetRenderTarget(renderTex);
+            if (renderTex != null)
+                rc.SetRenderTarget(renderTex);
+            else
+                rc.SetRenderTarget();
 
             var lightPassCnt = 0;
 

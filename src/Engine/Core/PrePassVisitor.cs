@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core
         }
     }
 
-    internal class PrePassVisitor : SceneVisitor
+    public class PrePassVisitor : SceneVisitor
     {
         private TransformComponent _currentTransform;
         public List<Tuple<SceneNodeContainer, LightResult>> LightPrepassResuls;
@@ -144,8 +144,7 @@ namespace Fusee.Engine.Core
         private bool isCtcInitialized = false;
 
         public PrePassVisitor()
-        {
-            
+        {            
             _state = new RendererState();
             LightPrepassResuls = new List<Tuple<SceneNodeContainer, LightResult>>();
             CameraPrepassResults = new List<Tuple<SceneNodeContainer, CameraResult>>();
@@ -154,6 +153,8 @@ namespace Fusee.Engine.Core
         public void PrePassTraverse(SceneContainer sc, RenderContext rc)
         {
             _rc = rc;
+            LightPrepassResuls.Clear();
+            CameraPrepassResults.Clear();
             Traverse(sc.Children);
         }
 

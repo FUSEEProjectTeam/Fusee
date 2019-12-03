@@ -19,7 +19,7 @@ namespace Fusee.Engine.Core
     public partial class SceneRendererForward : SceneVisitor
     {
 
-        private PrePassVisitor _prePassVisitor;
+        protected PrePassVisitor _prePassVisitor;
 
         private int _numberOfLights;
 

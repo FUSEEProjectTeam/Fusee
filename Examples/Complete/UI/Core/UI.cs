@@ -17,7 +17,7 @@ namespace Fusee.Examples.UI.Core
     public class UI : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -36,7 +36,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.WORLD;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;
@@ -224,10 +224,7 @@ namespace Fusee.Examples.UI.Core
                     Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0,1) },
                 })
             };
-
-            var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
-            var camComp = new CameraComponent(projMethod,zNear,zFar,fov);
-            canvas.Components.Insert(0,camComp);
+            
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -368,6 +365,7 @@ namespace Fusee.Examples.UI.Core
             _sceneRenderer = new SceneRendererForward(_scene);
         }
 
+        private const float twoPi = M.Pi * 2;
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -410,21 +408,19 @@ namespace Fusee.Examples.UI.Core
             }
 
             _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
+            _angleVert += _angleVelVert;           
 
-            var mtxRot = float4x4.Identity;
-            if (_canvasRenderMode == CanvasRenderMode.WORLD)
-                mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-
-            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);
-
-            RC.View = mtxCam * mtxRot;
-
+            var mtxRot = float4x4.CreateRotationY(_angleHorz) * float4x4.CreateRotationX(_angleVert);
+            var mtxCam = float4x4.LookAt(0, 0, -15, 0, 0, 0, 0, 1, 0);            
+            var view = mtxCam * mtxRot;
+            var projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? float4x4.CreateOrthographic(Width, Height, zNear, zFar) : float4x4.CreatePerspectiveFieldOfView(fov, (float)Width / Height, zNear, zFar);
+            
+            RC.Projection = projection;
+            RC.View = view;
             _sceneRenderer.Render(RC);
 
-            //Set the view matrix for the interaction handler.
-            //_sih.View = RC.View;
-
+            RC.Projection = projection;
+            RC.View = view;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
