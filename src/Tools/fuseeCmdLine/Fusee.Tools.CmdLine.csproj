@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -9,9 +9,14 @@
     <ToolCommandName>fusee</ToolCommandName>
     <PackageTags>dotnet;tools;fusee</PackageTags>
   </PropertyGroup>
+  
   <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Tools\CmdLine</OutputPath>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="$(FuseeEngineRoot)\bin\$(Configuration)\Player\Desktop\win-x64\publish\Fusee.Engine.Player.Desktop.exe" Link="NuGet\Player.exe" PackagePath="tools\netcoreapp3.0\any\Player.exe" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj">
@@ -41,10 +46,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="tools/netcoreapp3.0/any" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
@@ -60,6 +61,7 @@
     <BlenderAddonOutputPath>$(OutputPath)\BlenderScripts\addons</BlenderAddonOutputPath>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
+  
   <Target Name="BlenderAddonPostBuildStep" AfterTargets="Build">
     <!-- Input files part of the Addon -->
     <ItemGroup>
@@ -67,7 +69,7 @@
       <BlenderAddonProtobufPythonFiles Include="$(FuseeEngineRoot)\ext\protobuf\Python\**\*" />
     </ItemGroup>
     <!-- Create the protoschema -->
-    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
+    <Exec ContinueOnError="true" Timeout="120000" Command="&quot;$(FuseeEngineRoot)\bin\$(Configuration)\Tools\CmdLine\fusee.exe&quot; protoschema -o $(BlenderAddonSourcePath)\proto_src\Scene.proto&quot;" />
     <!-- call the protobuf code generator to build the python code -->
     <!-- for Scene.proto -->
     <Exec WorkingDirectory="$(BlenderAddonSourcePath)\proto_src" Command="&quot;$(FuseeEngineRoot)\ext\protobuf\protoc-3.9.1-win64\bin\protoc.exe&quot; --python_out=$(BlenderAddonSourcePath)\proto Scene.proto&quot;" />

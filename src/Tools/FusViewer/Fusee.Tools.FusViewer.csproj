@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <OutputPath>$(BaseOutputPath)\Tools\</OutputPath>
-    <StartupObject>FusViewer.App</StartupObject>
+    <OutputPath>$(BaseOutputPath)\Tools\FusViewer\</OutputPath>
+    <StartupObject>Fusee.Tools.FusViewer.App</StartupObject>
     <ApplicationIcon>FuseeLogo.ico</ApplicationIcon>
   </PropertyGroup>
 

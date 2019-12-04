@@ -62,6 +62,8 @@ namespace Fusee.Tools.fuseeCmdLine
             }
             else
             {
+                var ex = File.Exists(input);
+
                 // A dll was explicitely mentioned. See if it exists
                 if (File.Exists(input) && Path.GetExtension(input).ToLower() == ".dll")
                 {
@@ -133,15 +135,11 @@ namespace Fusee.Tools.fuseeCmdLine
             var fuseePaths = Helper.InitFuseeDirectories();
 
             string playerFile = null;
-            string desktopPlayerDir = Path.GetFullPath(Path.Combine(fuseePaths.fuseeBuildRoot, "Player", "Desktop")); // need this in web build as well.
+            string desktopPlayerDir = Path.GetFullPath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)); // need this in web build as well.
             switch (Platform)
             {
                 case Platform.Desktop:
-                    playerFile = Path.GetFullPath(Path.Combine(desktopPlayerDir, "Fusee.Engine.Player.Desktop.exe"));
-                    break;
-                case Platform.Web:
-                    playerFile = Path.GetFullPath(Path.Combine(
-                        fuseePaths.fuseeBuildRoot, "Player", "Web", "Fusee.Engine.Player.Web.html"));
+                    playerFile = Path.GetFullPath(Path.Combine(desktopPlayerDir, "Player.exe"));
                     break;
                 default:
                     Console.Error.WriteLine($"ERROR: Platform {Platform.ToString()} is currently not handled by fusee.");
@@ -155,30 +153,22 @@ namespace Fusee.Tools.fuseeCmdLine
             }
             string playerDir = Path.Combine(Path.GetPathRoot(playerFile), Path.GetDirectoryName(playerFile));
 
-            // Copy the player
-            FileTools.DirectoryCopy(playerDir, outPath, true, true);
-
             // Do platform dependent stuff to integrate the FUSEE app DLL into the player
             switch (Platform)
             {
                 case Platform.Desktop:
                     try
-                    {
+                    { 
+                        Directory.CreateDirectory(outPath);
+
+                        // Copy the player
+                        File.Copy(playerFile, Path.Combine(outPath, appName + ".exe"));
+
                         // Copy the FUSEE App on top of the player.
-                        FileTools.DirectoryCopy(dllDirPath, outPath, true, true);
+                        File.Copy(dllFilePath, Path.Combine(outPath, "Fusee.App.dll"));
 
-                        // Rename Player.exe to App Name
-                        File.Move(Path.Combine(outPath, "Fusee.Engine.Player.Desktop.exe"), Path.Combine(outPath, appName + ".exe"));
-
-                        // Rename App DLL to "Fusee.App.dll"
-                        File.Move(Path.Combine(outPath, appName + ".dll"), Path.Combine(outPath, "Fusee.App.dll"));
-
-                        // Delete all pdb and xml files
-                        var directory = new DirectoryInfo(outPath);
-                        foreach (var file in directory.EnumerateFiles("*.pdb"))
-                            file.Delete();
-                        foreach (var file in directory.EnumerateFiles("*.xml"))
-                            file.Delete();
+                        // Copy Assets
+                        FileTools.DirectoryCopy(Path.Combine(dllDirPath, "Assets"), Path.Combine(outPath, "Assets"), true, true);
                     }
                     catch (Exception ex)
                     {
