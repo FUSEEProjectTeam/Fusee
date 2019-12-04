@@ -1,10 +1,8 @@
 ﻿using Xunit;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Numerics;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class Float2Test
     {

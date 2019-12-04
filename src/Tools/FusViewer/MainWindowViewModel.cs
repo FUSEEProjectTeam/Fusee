@@ -20,7 +20,7 @@ using Fusee.Engine.Core;
 using System.Windows.Data;
 using System.Globalization;
 
-namespace FusViewer.ViewModel
+namespace Fusee.Tools.FusViewer.ViewModel
 {    
     internal class OpenFusFileCmd : ICommand
     {

@@ -1,11 +1,8 @@
 ﻿using System;
 using Xunit;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using Newtonsoft.Json.Bson;
-using Xunit.Sdk;
 
-namespace Fusee.Math.Core
+namespace Fusee.Math.Core.Test
 {
     public class Float3Test
     {

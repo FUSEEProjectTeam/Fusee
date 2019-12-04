@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using _3Dconnexion;
 using System.Threading;
 using System.Runtime.InteropServices;
-using Fusee.Base.Core;
+using Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion;
 
-namespace _3Dconnexion
+namespace Fusee.Engine.Imp.Graphics.Desktop._3Dconnexion
 {
     class SiApp
     {
@@ -356,7 +355,7 @@ namespace _3Dconnexion
     }
 }
 
-namespace _3DconnexionDriver
+namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
 {
     /// <summary>
     /// 3Dconnexion driver.

@@ -13,12 +13,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
+    <EmbeddedResource Include="$(FuseeEngineRoot)\ext\Freetype\bin\freetype\Windows\x64\freetype6.dll" Link="Natives\freetype6.dll" PackagePath="runtimes/win/native" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="SharpFontStandard" Version="4.0.1" />
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
