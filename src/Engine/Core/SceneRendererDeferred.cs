@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
         private bool _needToSetSSAOTex = false;
 
         private float4 _texClearColor = new float4(0, 0, 0, 0);
-        private readonly SceneContainer _quadScene = new SceneContainer();
-        private readonly ShaderEffectComponent _quadShaderEffectComp;
+       
+        private readonly Plane _quad = new Plane();        
 
         private ShaderEffect _ssaoTexEffect;
         private ShaderEffect _lightingPassEffect;
@@ -132,28 +132,7 @@ namespace Fusee.Engine.Core
 
             //Pre-pass to build the geometry pass shader effect from
             var buildFrag = new ProtoToFrag(_sc, false);
-            buildFrag.BuildFragmentShaders();
-
-            _quadScene = new SceneContainer()
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new ShaderEffectComponent()
-                            {
-                                Effect = _lightingPassEffect
-                            },
-                            new Plane()
-
-                        }
-                    }
-                }
-            };
-
-            _quadShaderEffectComp = (ShaderEffectComponent)_quadScene.Children[0].Components[0];
+            buildFrag.BuildFragmentShaders();            
         }
 
         # region Deferred specific visitors
@@ -537,8 +516,8 @@ namespace Fusee.Engine.Core
                 else
                     _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
 
-                _quadShaderEffectComp.Effect = _lightingPassEffect;
-                Traverse(_quadScene.Children);
+                _rc.SetShaderEffect(_lightingPassEffect);
+                _rc.Render(_quad);                
                 lightPassCnt++;
             }
         }
@@ -616,17 +595,17 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.SSAO;
             if (_ssaoTexEffect == null)
                 _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
-            _quadShaderEffectComp.Effect = _ssaoTexEffect;
-            _rc.SetRenderTarget(_ssaoRenderTexture);
-            Traverse(_quadScene.Children);
+            _rc.SetShaderEffect(_ssaoTexEffect);            
+            _rc.SetRenderTarget(_ssaoRenderTexture);           
+            _rc.Render(_quad);
 
             //Pass 3: Blur SSAO Texture
             _currentPass = RenderPasses.SSAO_BLUR;
             if (_blurEffect == null)
-                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
-            _quadShaderEffectComp.Effect = _blurEffect;
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);           
+            _rc.SetShaderEffect(_blurEffect);
             _rc.SetRenderTarget(_blurRenderTex);
-            Traverse(_quadScene.Children);
+            _rc.Render(_quad);
 
             //Set blurred SSAO Texture as SSAO Texture in gBuffer
             _gBufferRenderTarget.SetTexture(_blurRenderTex, RenderTargetTextureTypes.G_SSAO);
@@ -637,14 +616,14 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.FXAA;
             if (_fxaaEffect == null)
                 _fxaaEffect = ShaderCodeBuilder.FXAARenderTargetEffect(_lightedSceneTex, new float2((float)TexRes, (float)TexRes));
-            _quadShaderEffectComp.Effect = _fxaaEffect;
+            _rc.SetShaderEffect(_fxaaEffect);
 
             if (renderTex == null)
                 _rc.SetRenderTarget();
             else
                 _rc.SetRenderTarget(renderTex);
 
-            Traverse(_quadScene.Children);
+            _rc.Render(_quad);
         }
 
         private void UpdateLightAndShadowParams(Tuple<SceneNodeContainer, LightResult> lightVisRes, ShaderEffect effect, bool isCastingShadows)
