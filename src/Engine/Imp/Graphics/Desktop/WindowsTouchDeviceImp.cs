@@ -230,22 +230,46 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         [StructLayout(LayoutKind.Sequential)]
         public struct POINT
         {
+            /// <summary>
+            /// The X coordinate of the touch point.
+            /// </summary>
             public int X;
+
+            /// <summary>
+            /// The Y coordinate of the touch point.
+            /// </summary>
             public int Y;
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="POINT"/> struct.
+            /// </summary>
+            /// <param name="x">The x coordinate.</param>
+            /// <param name="y">The y coordinate.</param>
             public POINT(int x, int y)
             {
                 this.X = x;
                 this.Y = y;
             }
 
+            /// <summary>
+            /// Initializes a new instance of the <see cref="POINT"/> struct from a given <see cref="System.Drawing.Point"/>.
+            /// </summary>
+            /// <param name="pt">The <see cref="System.Drawing.Point"/> to create the instance from.</param>
             public POINT(System.Drawing.Point pt) : this(pt.X, pt.Y) { }
 
+            /// <summary>
+            /// Converts a <see cref="POINT"/> to a <see cref="System.Drawing.Point"/>.
+            /// </summary>
+            /// <param name="p">The <see cref="POINT"/> to convert.</param>
             public static implicit operator System.Drawing.Point(POINT p)
             {
                 return new System.Drawing.Point(p.X, p.Y);
             }
 
+            /// <summary>
+            /// Converts a <see cref="System.Drawing.Point"/> to a <see cref="POINT"/>.
+            /// </summary>
+            /// <param name="p">The <see cref="System.Drawing.Point"/> to convert.</param>
             public static implicit operator POINT(System.Drawing.Point p)
             {
                 return new POINT(p.X, p.Y);

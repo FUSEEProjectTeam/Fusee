@@ -3,5 +3,6 @@
         "bin": true,
         "obj": true,
         "pub": true
-    }
+    },
+    "omnisharp.disableMSBuildDiagnosticWarning": true
 }

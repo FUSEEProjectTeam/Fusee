@@ -1,6 +1,8 @@
 ﻿namespace Fusee.Engine.Common
 {
-    ///Cross-platform abstraction to represent a gpu buffer texture handle.
+    /// <summary>
+    /// Cross-platform abstraction to represent a gpu buffer texture handle.
+    /// </summary>
     public interface ITextureHandle
     {
     }
