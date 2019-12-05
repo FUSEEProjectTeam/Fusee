@@ -361,46 +361,7 @@ namespace Fusee.Engine.Core
                 SetDefaultLight();
         }
 
-        #region Visitors        
-
-        /// <summary>
-        /// If a Projection Component is visited, the projection matrix is set.
-        /// </summary>
-        /// <param name="cam">The visited <see cref="CameraComponent"/>.</param>
-        [VisitMethod]
-        public void RenderCamera(CameraComponent cam)
-        {
-            if(cam.CustomCameraUpdate != null)
-            {
-                cam.CustomCameraUpdate(out float4x4 proj, out float4 viewport);
-
-                _rc.Projection = proj;
-                _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
-
-                return;
-            }
-
-            var startX = (int)(_rc.ViewportWidth * (cam.Viewport.x / 100));
-            var startY = (int)(_rc.ViewportHeight * (cam.Viewport.y / 100));
-            var width = (int)(_rc.ViewportWidth * (cam.Viewport.z / 100));
-            var height = (int)(_rc.ViewportHeight * (cam.Viewport.w / 100));
-
-            _rc.Viewport(startX, startY, width, height);
-
-            switch (cam.ProjectionMethod)
-            {
-                default:
-                case ProjectionMethod.PERSPECTIVE:
-                    _rc.Projection = float4x4.CreatePerspectiveFieldOfView(cam.Fov, (float)width / height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
-                    break;
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    _rc.Projection = float4x4.CreateOrthographic(width, height, cam.ClippingPlanes.x, cam.ClippingPlanes.y);
-                    break;                
-            }
-            
-            _rc.View = float4x4.Invert(_state.Model);
-            
-        }
+        #region Visitors
 
         /// <summary>
         /// Renders the Bone.

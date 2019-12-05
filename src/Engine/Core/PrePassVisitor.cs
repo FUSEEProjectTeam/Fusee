@@ -357,22 +357,25 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void OnCamera(CameraComponent camComp)
         {
-            float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f;
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 2, -10, 0, 2, 0, 0, 1, 0);
-            var test = mtxCam * mtxRot;
-
-
-            var view1 = float4x4.Invert(float4x4.CreateTranslation(_currentTransform.Translation) * float4x4.CreateRotationX(_currentTransform.Rotation.x) * float4x4.CreateRotationY(_currentTransform.Rotation.y));
-
+            var scale = float4x4.GetScale(_state.Model);
             var view = _state.Model;
 
-            var cameraResult = new CameraResult(camComp, view1);
+            view.M11 /=  scale.x;
+            view.M21 /= scale.x;
+            view.M31 /= scale.x;
+
+            view.M12 /= scale.y;
+            view.M22 /= scale.y;
+            view.M32 /= scale.y;
+
+            view.M13 /= scale.z;
+            view.M23 /= scale.z;
+            view.M33 /= scale.z;            
+
+            var cameraResult = new CameraResult(camComp, view);
             
             CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));
-        }
-
-        
+        }        
     }
    
 }

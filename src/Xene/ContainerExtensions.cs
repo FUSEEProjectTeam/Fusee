@@ -92,30 +92,8 @@ namespace Fusee.Xene
         public static float4x4 GetLocalTransformation(this TransformComponent tc)
         {
             return tc == null ? float4x4.Identity : tc.Matrix();
-        }
+        }       
         
-        /// <summary>
-        /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
-        /// </summary>
-        public static CameraComponent GetParentCamera(this SceneNodeContainer snc)
-        {
-            CameraComponent res = null;
-
-            if (snc.Parent == null)
-                return snc.GetComponent<CameraComponent>();
-
-            var parent = snc.Parent;
-            while (true)
-            {
-                if (parent.Parent == null || res != null)
-                {
-                    return res;
-                }
-
-                res = parent.GetComponent<CameraComponent>();
-                parent = parent.Parent;
-            }
-        }
 
         /// <summary>
         /// Removes the components with the specified type and the sub-types in the children of this scene node container.
