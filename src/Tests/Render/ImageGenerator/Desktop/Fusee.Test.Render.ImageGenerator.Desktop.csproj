@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <RootNamespace>Fusee.Test.Render.ImageGenerator.Desktop.Tester</RootNamespace>
-    <PackageId>Fusee.Test.Render.ImageGenerator.Desktop.Tester</PackageId>
+    <RootNamespace>Fusee.Test.Render.ImageGenerator.Desktop</RootNamespace>
+    <PackageId>Fusee.Test.Render.ImageGenerator.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
