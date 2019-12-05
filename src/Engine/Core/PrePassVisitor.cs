@@ -158,10 +158,33 @@ namespace Fusee.Engine.Core
             Traverse(sc.Children);
         }
 
+        /// <summary>
+        /// Sets the initial values in the <see cref="RendererState"/>.
+        /// </summary>
         protected override void InitState()
         {
-            base.InitState();
+            _state.Clear();
             _state.Model = float4x4.Identity;
+            _state.CanvasXForm = float4x4.Identity;
+            _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
+
+        }
+
+        /// <summary>
+        /// Pushes into the RenderState.
+        /// </summary>
+        protected override void PushState()
+        {
+            _state.Push();
+        }
+
+        /// <summary>
+        /// Pops from the RenderState and sets the Model and View matrices in the RenderContext.
+        /// </summary>
+        protected override void PopState()
+        {
+            _state.Pop();
+            _rc.Model = _state.Model;
         }
 
         /// <summary>
@@ -190,32 +213,16 @@ namespace Fusee.Engine.Core
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                float aspect;
-                float fov;
-                float zNear;
-                float width;
-                float height;
-                float3 canvasPos;
+                var projection = _rc.Projection;
+                var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
 
-                var cam = CurrentNode.GetComponent<CameraComponent>();
-                if (cam != null)
-                {
-                    width = (int)(_rc.ViewportWidth * (cam.Viewport.z / 100));
-                    height = (int)(_rc.ViewportHeight * (cam.Viewport.w / 100));
-                    zNear = cam.ClippingPlanes.x;
-                    canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
-                }
-                else
-                {
-                    var projection = _rc.Projection;
-                    zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
-                    fov = 2f * (float)System.Math.Atan(1f / projection.M22);
-                    aspect = projection.M22 / projection.M11;
-                    height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
-                    width = height * aspect;
+                var fov = 2f * System.Math.Atan(1f / projection.M22);
+                var aspect = projection.M22 / projection.M11;
 
-                    canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
-                }
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
+
+                var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
+                var width = height * aspect;
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
@@ -335,8 +342,6 @@ namespace Fusee.Engine.Core
             _rc.Model = _state.Model;
         }
 
-
-
         [VisitMethod]
         public void OnLight(LightComponent lightComponent)
         {
@@ -344,7 +349,7 @@ namespace Fusee.Engine.Core
             {                
                 Rotation = _state.Model.RotationComponent(),
                 WorldSpacePos = new float3(_state.Model.M14, _state.Model.M24, _state.Model.M34)
-            };
+            };        
 
             LightPrepassResuls.Add(new Tuple<SceneNodeContainer, LightResult>(CurrentNode, lightResult));            
         }
@@ -366,6 +371,8 @@ namespace Fusee.Engine.Core
             
             CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));
         }
+
+        
     }
    
 }

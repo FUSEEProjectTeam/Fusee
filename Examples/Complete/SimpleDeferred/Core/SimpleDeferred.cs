@@ -194,6 +194,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
         }
 
         bool rotate = false;
+        private float3 _camPos = new float3(0, 2, -10);
+        private float4x4 view = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
+
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
@@ -270,10 +273,13 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelVert = 0;
 
             // Create the camera matrix and set it as the current ModelView transformation
-            var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
+            //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            //var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
-            var view = mtxCam * mtxRot;
+            //var view = mtxCam * mtxRot;
+            
+            view = CalcViewMat(ref _camPos);
+
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
@@ -321,8 +327,43 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _camTransform.Rotation.y = _angleHorz;
             _camTransform.Rotation.x = _angleVert;            
         }
-        
 
+        private float4x4 CalcViewMat(ref float3 camPos)
+        {
+            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+                _angleHorz %= twoPi;
+            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+                _angleVert %= twoPi;
+
+            camPos += view.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 1000;
+            camPos += view.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 1000;
+
+            return FPSView(camPos, _angleVert, _angleHorz);
+        }
+
+        private float4x4 FPSView(float3 eye, float pitch, float yaw)
+        {
+            // I assume the values are already converted to radians.
+            float cosPitch = M.Cos(pitch);
+            float sinPitch = M.Sin(pitch);
+            float cosYaw = M.Cos(yaw);
+            float sinYaw = M.Sin(yaw);
+
+            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
+            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
+            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
+
+            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
+            float4x4 viewMatrix = new float4x4(
+                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
+                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
+                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
+                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
+            );
+
+            viewMatrix = float4x4.Transpose(viewMatrix);
+            return viewMatrix;
+        }
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
