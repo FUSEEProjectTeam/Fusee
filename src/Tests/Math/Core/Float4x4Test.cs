@@ -1,8 +1,9 @@
 ﻿using Xunit;
 using System;
 using System.Collections.Generic;
+using Fusee.Math.Core;
 
-namespace Fusee.Math.Core.Test
+namespace Fusee.Test.Math.Core
 {
     public class Float4x4Test
     {
