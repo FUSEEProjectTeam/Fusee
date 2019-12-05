@@ -1,9 +1,8 @@
 using Xunit;
 using System.Drawing;
 using Xunit.Abstractions;
-using Fusee.Test.Render.ImageGenerator.Desktop;
 
-namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
+namespace Fusee.Test.Render.Desktop
 {
     public class RenderTests
     {
@@ -18,7 +17,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void AdvancedUITest()
         {
             Program.setExample(new Fusee.Examples.AdvancedUI.Core.AdvancedUI());
-            Program.Main(new string[] { "AdvancedUITest.png" });
+            Program.Main("AdvancedUITest.png");
 
             var referenceIm = new Bitmap(@"References\AdvancedUI.png");
             var testIm = new Bitmap("AdvancedUITest.png");
@@ -33,7 +32,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void BoneAnimationTest()
         {
             Program.setExample(new Fusee.Examples.Bone.Core.Bone());
-            Program.Main(new string[] { "BoneAnimationTest.png" });
+            Program.Main("BoneAnimationTest.png");
 
             var referenceIm = new Bitmap(@"References\BoneAnimation.png");
             var testIm = new Bitmap("BoneAnimationTest.png");
@@ -48,7 +47,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void BumpMappingTest()
         {
             Program.setExample(new Fusee.Examples.Bump.Core.Bump());
-            Program.Main(new string[] { "BumpMappingTest.png" });
+            Program.Main("BumpMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");
             var testIm = new Bitmap("BumpMappingTest.png");
@@ -63,7 +62,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void GeometryEditingTest()
         {
             Program.setExample(new Fusee.Examples.GeometryEditing.Core.GeometryEditing());
-            Program.Main(new string[] { "GeometryEditingTest.png" });
+            Program.Main("GeometryEditingTest.png");
 
             var referenceIm = new Bitmap(@"References\GeometryEditing.png");
             var testIm = new Bitmap("GeometryEditingTest.png");
@@ -78,7 +77,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void MeshingAroundTest()
         {
             Program.setExample(new Fusee.Examples.MeshingAround.Core.MeshingAround());
-            Program.Main(new string[] { "MeshingAroundTest.png" });
+            Program.Main("MeshingAroundTest.png");
 
             var referenceIm = new Bitmap(@"References\MeshingAround.png");
             var testIm = new Bitmap("MeshingAroundTest.png");
@@ -93,7 +92,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void PickingTest()
         {
             Program.setExample(new Fusee.Examples.Picking.Core.Picking());
-            Program.Main(new string[] { "PickingTest.png" });
+            Program.Main("PickingTest.png");
 
             var referenceIm = new Bitmap(@"References\Picking.png");
             var testIm = new Bitmap("PickingTest.png");
@@ -108,7 +107,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void SimpleTest()
         {            
             Program.setExample(new Fusee.Examples.Simple.Core.Simple());
-            Program.Main(new string[] { "SimpleTest.png" });
+            Program.Main("SimpleTest.png");
 
             var referenceIm = new Bitmap(@"References\Simple.png");
             var testIm = new Bitmap("SimpleTest.png");
@@ -123,7 +122,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void SimpleDeferredTest()
         {
             Program.setExample(new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred());
-            Program.Main(new string[] { "SimpleDeferredTest.png" });
+            Program.Main("SimpleDeferredTest.png");
 
             var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
             var testIm = new Bitmap("SimpleDeferredTest.png");
@@ -138,7 +137,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void ThreeDFontTest()
         {
             Program.setExample(new Fusee.Examples.ThreeDFont.Core.ThreeDFont());
-            Program.Main(new string[] { "ThreeDFontTest.png" });
+            Program.Main("ThreeDFontTest.png");
 
             var referenceIm = new Bitmap(@"References\ThreeDFont.png");
             var testIm = new Bitmap("ThreeDFontTest.png");
@@ -153,7 +152,7 @@ namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
         public void UITest()
         {
             Program.setExample(new Fusee.Examples.UI.Core.UI());
-            Program.Main(new string[] { "UITest.png" });
+            Program.Main("UITest.png");
 
             var referenceIm = new Bitmap(@"References\UI.png");
             var testIm = new Bitmap("UITest.png");

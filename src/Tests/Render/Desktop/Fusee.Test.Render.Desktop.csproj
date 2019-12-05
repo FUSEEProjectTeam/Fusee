@@ -1,22 +1,29 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fusee.Test.Render.Desktop</RootNamespace>
+    <PackageId>Fusee.Test.Render.Desktop</PackageId>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
 
   <PropertyGroup>
-    <RootNamespace>Fusee.Test.Render.ImageGenerator.Desktop</RootNamespace>
-    <PackageId>Fusee.Test.Render.ImageGenerator.Desktop</PackageId>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
-  
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Tests\Render\ImageGenerator\</OutputPath>
-    <ApplicationIcon />
-    <StartupObject />
+    <OutputPath>$(BaseOutputPath)\Tests\Render\Desktop\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CommandLineParser" Version="2.4.3" />
+    <Content Include="References\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  
   <ItemGroup>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
