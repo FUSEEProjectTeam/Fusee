@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -8,11 +7,9 @@ using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using static Fusee.Engine.Core.Input;
-using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 
-namespace Fusee.Engine.Examples.ImageGenerator.Desktop
+namespace Fusee.Test.Render.ImageGenerator.Desktop
 {
     public class Generator : RenderCanvas
     {

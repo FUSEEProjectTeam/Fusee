@@ -1,6 +1,7 @@
-﻿using Xunit;
+﻿using Fusee.Math.Core;
+using Xunit;
 
-namespace Fusee.Math.Core.Test
+namespace Fusee.Test.Math.Core
 {
     public class OBBTest
     {

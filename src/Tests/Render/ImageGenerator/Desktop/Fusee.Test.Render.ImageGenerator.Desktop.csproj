@@ -1,8 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
+    <RootNamespace>Fusee.Test.Render.ImageGenerator.Desktop.Tester</RootNamespace>
+    <PackageId>Fusee.Test.Render.ImageGenerator.Desktop.Tester</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   
   <PropertyGroup>
@@ -36,16 +38,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\SimpleDeferred\Core\Fusee.Examples.SimpleDeferred.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\ThreeDFont\Core\Fusee.Examples.ThreeDFont.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\UI\Core\Fusee.Examples.UI.Core.csproj" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="OpenTK">
-      <HintPath>$(FuseeEngineRoot)\ext\OpenTK\OpenTK.dll</HintPath>
-    </Reference>
-    <Reference Include="Fusee.SerializationSerializer">
-      <HintPath>$(FuseeEngineRoot)\bin\$(Configuration)\Libraries\Fusee.SerializationSerializer.dll</HintPath>
-    </Reference>
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
   </ItemGroup>
 </Project>

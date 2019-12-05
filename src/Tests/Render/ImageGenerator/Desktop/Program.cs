@@ -1,17 +1,14 @@
 ﻿using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
 using Path = Fusee.Base.Common.Path;
-using System.Reflection;
 using CommandLine;
 
-namespace Fusee.Engine.Examples.ImageGenerator.Desktop
+namespace Fusee.Test.Render.ImageGenerator.Desktop
 {
     enum ErrorCode : int
     {
@@ -96,7 +93,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 var app = example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
-                var cimp = new Imp.Graphics.Desktop.RenderCanvasImp(opts.Width, opts.Height);
+                var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(opts.Width, opts.Height);
                 cimp.EnableBlending = true;
                 app.CanvasImplementor = cimp;
                 app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(cimp);

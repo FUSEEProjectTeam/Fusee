@@ -1,7 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using Fusee.Math.Core;
+using System.Collections.Generic;
 using Xunit;
 
-namespace Fusee.Math.Core.Test
+namespace Fusee.Test.Math.Core
 {
     public class AABBfTest
     {
