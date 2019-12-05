@@ -414,7 +414,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.CmdLine", "src\
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Render", "Render", "{58433A65-35DC-4C22-A795-2443C72F7428}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Render.ImageGenerator.Desktop.Tester", "src\Tests\Render\Fusee.Engine.Examples.ImageGenerator.Desktop.Test\Fusee.Test.Render.ImageGenerator.Desktop.Tester.csproj", "{B053ED47-3A82-475D-B75D-336C026F953E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Render.ImageGenerator.Desktop.Tester", "src\Tests\Render\ImageGenerator\Desktop.Tester\Fusee.Test.Render.ImageGenerator.Desktop.Tester.csproj", "{B053ED47-3A82-475D-B75D-336C026F953E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Render.ImageGenerator.Desktop", "src\Tests\Render\ImageGenerator\Desktop\Fusee.Test.Render.ImageGenerator.Desktop.csproj", "{81D2BA3C-8297-4944-8A3E-2C60F59D5BC1}"
 	ProjectSection(ProjectDependencies) = postProject
