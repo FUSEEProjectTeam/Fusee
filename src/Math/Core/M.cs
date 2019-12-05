@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Fusee.Math.Core.Eigen;
 
 namespace Fusee.Math.Core
 {
@@ -442,10 +441,10 @@ namespace Fusee.Math.Core
 
         #endregion
 
-        #region Pointcloud
+        #region Point cloud
 
         /// <summary>
-        ///     Calculates the centroid point (mean) from given vertices in single precision
+        ///     Calculates the centroid point (mean) from given vertices in single precision.
         /// </summary>
         /// <param name="vertices"></param>
         /// <returns></returns>
@@ -460,7 +459,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the centroid point (mean) from given vertices in double precision
+        ///     Calculates the centroid point (mean) from given vertices in double precision.
         /// </summary>
         /// <param name="vertices"></param>
         /// <returns></returns>
@@ -479,10 +478,10 @@ namespace Fusee.Math.Core
         #region Covariance
 
         /// <summary>
-        ///     Generates a covariance matrix from given centroid and vertices in single precision
+        ///     Generates a covariance matrix from given centroid and vertices in single precision.
         /// </summary>
-        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
-        /// <param name="vertices">The vertex data</param>
+        /// <param name="centroid">The centroid of the current mesh or point cloud.</param>
+        /// <param name="vertices">The vertex data.</param>
         /// <returns></returns>
         public static float4x4 CreateCovarianceMatrix(float3 centroid, IEnumerable<float3> vertices)
         {
@@ -509,10 +508,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Generates a covariance matrix from given centroid and vertices in double precision
+        ///     Generates a covariance matrix from given centroid and vertices in double precision.
         /// </summary>
-        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
-        /// <param name="vertices">The vertex data</param>
+        /// <param name="centroid">The centroid of the current mesh or point cloud.</param>
+        /// <param name="vertices">The vertex data.</param>
         /// <returns></returns>
         public static double4x4 CreateCovarianceMatrix(double3 centroid, IEnumerable<double3> vertices)
         {
@@ -554,7 +553,7 @@ namespace Fusee.Math.Core
         #region Eigen
 
         /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision.
         /// </summary>
         /// <param name="covarianceMatrix"></param>
         /// <returns></returns>
@@ -564,7 +563,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision.
         /// </summary>
         /// <param name="covarianceMatrix"></param>
         /// <returns></returns>
@@ -574,7 +573,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Diagonalizes a given covariance matrix with single precision
+        ///     Diagonalizes a given covariance matrix with single precision.
         ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method. 
         ///     <para>
         ///         Credits to: https://github.com/melax/sandbox
@@ -583,11 +582,11 @@ namespace Fusee.Math.Core
         ///         returns quaternion q such that its corresponding matrix Q 
         ///         can be used to Diagonalize A
         ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
         ///     </para>
         /// </summary>
-        /// <param name="A">The covariance matrix</param>
+        /// <param name="A">The covariance matrix.</param>
         /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
@@ -643,7 +642,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Diagonalizes a given covariance matrix with double precision
+        ///     Diagonalizes a given covariance matrix with double precision.
         ///     
         ///     <para>
         ///         Credits to: https://github.com/melax/sandbox
@@ -652,8 +651,8 @@ namespace Fusee.Math.Core
         ///         returns quaternion q such that its corresponding matrix Q 
         ///         can be used to Diagonalize A
         ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
         ///     </para>
         /// </summary>
         /// <param name="A">The covariance matrix</param>

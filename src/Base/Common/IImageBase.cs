@@ -2,7 +2,7 @@
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// Collection of members all types of images need to implement, eg. ImageData and Textures.
+    /// Collection of members, all types of images, e. g. ImageData and Textures, need to implement.
     /// </summary>
     public interface IImageBase
     {
@@ -17,7 +17,7 @@ namespace Fusee.Base.Common
         int Height { get; }
 
         /// <summary>
-        ///Offers additional Information about the color format of the texture.
+        /// Offers additional Information about the color format of the texture.
         ///</summary>
         ImagePixelFormat PixelFormat { get; }
 
