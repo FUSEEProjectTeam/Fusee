@@ -36,7 +36,7 @@ namespace Fusee.Examples.UI.Core
         private FontMap _fontMap;
         private FontMap _fontMap1;
 
-        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.WORLD;
+        private CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initWindowWidth;
         private float _initWindowHeight;
         private float _initCanvasWidth;

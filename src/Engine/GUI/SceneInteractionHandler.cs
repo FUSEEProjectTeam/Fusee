@@ -33,7 +33,7 @@ namespace Fusee.Engine.GUI
             if (pickResults.Count == 1)
                 return pickResults[0];
 
-            if (firstPickRes.Children == null)
+            if (firstPickRes.Children == null || firstPickRes.Children.Count == 0)
                 return firstPickRes;
 
             foreach (var child in firstPickRes.Children)
@@ -43,12 +43,12 @@ namespace Fusee.Engine.GUI
                 if (child.Children != null)
                 {
                     var found = FindLeafNodeInPickRes(child, pickResults);
-                    if (found != null)
+                    if (found != null && pickResults.Contains(found))
                         return found;
                 }
             }
 
-            return null; 
+            return null;
         }
 
         /// <summary>
