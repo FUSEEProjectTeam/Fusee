@@ -1,17 +1,18 @@
-using System;
 using Xunit;
 using System.Drawing;
-using System.IO;
-using System.Reflection;
-using System.Diagnostics;
+using Xunit.Abstractions;
+using Fusee.Test.Render.ImageGenerator.Desktop;
 
-namespace Fusee.Engine.Examples.ImageGenerator.Desktop
+namespace Fusee.Test.Examples.ImageGenerator.Desktop.Tester
 {
     public class RenderTests
     {
-        private static string fuseeRoot = Path.GetFullPath(Path.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "..", "..", "..", "..", ".."));
-        private static string referencePath = Path.GetFullPath(Path.Combine(fuseeRoot, @"src\Tests\Render\Fusee.Engine.Examples.ImageGenerator.Desktop.Test\References"));
-        private static string imagePath = Path.GetFullPath(Path.Combine(fuseeRoot, @"bin\Debug\Tests\Render\ImageGenerator.Test"));
+        private readonly ITestOutputHelper output;
+
+        public RenderTests(ITestOutputHelper output)
+        {
+            this.output = output;
+        }
 
         [Fact]
         public void AdvancedUITest()
@@ -19,12 +20,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.AdvancedUI.Core.AdvancedUI());
             Program.Main(new string[] { "AdvancedUITest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "AdvancedUI.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "AdvancedUITest.png"));
+            var referenceIm = new Bitmap(@"References\AdvancedUI.png");
+            var testIm = new Bitmap("AdvancedUITest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.10f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -33,12 +35,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.Bone.Core.Bone());
             Program.Main(new string[] { "BoneAnimationTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "BoneAnimation.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "BoneAnimationTest.png"));
+            var referenceIm = new Bitmap(@"References\BoneAnimation.png");
+            var testIm = new Bitmap("BoneAnimationTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -47,12 +50,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.Bump.Core.Bump());
             Program.Main(new string[] { "BumpMappingTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "BumpMapping.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "BumpMappingTest.png"));
+            var referenceIm = new Bitmap(@"References\BumpMapping.png");
+            var testIm = new Bitmap("BumpMappingTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.98f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -61,12 +65,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.GeometryEditing.Core.GeometryEditing());
             Program.Main(new string[] { "GeometryEditingTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "GeometryEditing.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "GeometryEditingTest.png"));
+            var referenceIm = new Bitmap(@"References\GeometryEditing.png");
+            var testIm = new Bitmap("GeometryEditingTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -75,12 +80,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.MeshingAround.Core.MeshingAround());
             Program.Main(new string[] { "MeshingAroundTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "MeshingAround.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "MeshingAroundTest.png"));
+            var referenceIm = new Bitmap(@"References\MeshingAround.png");
+            var testIm = new Bitmap("MeshingAroundTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -89,12 +95,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.Picking.Core.Picking());
             Program.Main(new string[] { "PickingTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "Picking.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "PickingTest.png"));
+            var referenceIm = new Bitmap(@"References\Picking.png");
+            var testIm = new Bitmap("PickingTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -103,12 +110,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.Simple.Core.Simple());
             Program.Main(new string[] { "SimpleTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "Simple.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "SimpleTest.png"));
+            var referenceIm = new Bitmap(@"References\Simple.png");
+            var testIm = new Bitmap("SimpleTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.98f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -117,12 +125,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred());
             Program.Main(new string[] { "SimpleDeferredTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "SimpleDeferred.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "SimpleDeferredTest.png"));
+            var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
+            var testIm = new Bitmap("SimpleDeferredTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.01f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -131,12 +140,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.ThreeDFont.Core.ThreeDFont());
             Program.Main(new string[] { "ThreeDFontTest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "ThreeDFont.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "ThreeDFontTest.png"));
+            var referenceIm = new Bitmap(@"References\ThreeDFont.png");
+            var testIm = new Bitmap("ThreeDFontTest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
         [Fact]
@@ -145,12 +155,13 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
             Program.setExample(new Fusee.Examples.UI.Core.UI());
             Program.Main(new string[] { "UITest.png" });
 
-            var referenceIm = new Bitmap(Path.Combine(referencePath, "UI.png"));
-            var testIm = new Bitmap(Path.Combine(imagePath, "UITest.png"));
+            var referenceIm = new Bitmap(@"References\UI.png");
+            var testIm = new Bitmap("UITest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.True(percent <= 1);
+            Assert.InRange(percent, 0.99f, 1f);
+            output.WriteLine(percent.ToString());
         }
 
 
@@ -160,7 +171,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
         /// <param name="referenceIm">The reference image to compare to.</param>
         /// <param name="testIm">The image that is to be compared.</param>
         /// <returns>The percentage of pixels not the same in the two images.</returns>
-        private static int compareImage(Bitmap referenceIm, Bitmap testIm)
+        private static float compareImage(Bitmap referenceIm, Bitmap testIm)
         {
             var count = 0;
 
@@ -173,7 +184,7 @@ namespace Fusee.Engine.Examples.ImageGenerator.Desktop
                 }
             }
 
-            return (count * 100) / (referenceIm.Height * referenceIm.Width);
+            return 1 - ((float)count / (referenceIm.Height * referenceIm.Width));
         }
     }
 }
