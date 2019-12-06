@@ -17,7 +17,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleVert = 0.5f * M.Pi, _angleVelVert;
+        private static float _angleVert , _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -29,12 +29,9 @@ namespace Fusee.Examples.Simple.Core
         private float2 groundbox;
         private float4[,] translation;
         private int[] ballbmp;
+        private int[] richtung = new int[] {1, 1, 1, 1};
         private float length;
         private float height;
-        private int rechts = 1;
-        private int links = 1;
-        private int oben = 1;
-        private int unten = 1;
 
         private float4x4 mtxCam;
         private float deg;
@@ -219,11 +216,11 @@ namespace Fusee.Examples.Simple.Core
             findball();
             //create BoundingBox
             makebox();
-            translation = new float4[bmp.GetLength(1), bmp.GetLength(0)];
+            translation = new float4[bmp.GetLength(0), bmp.GetLength(1)];
 
             CreateTranslation();
-            length = translation[translation.GetLength(0) -1, 0].z ;
-            height = translation[0, translation.GetLength(1) -1].w ;
+            length = translation[translation.GetLength(0) -1, 0].w ;
+            height = translation[0, translation.GetLength(1) -1].z ;
 
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
@@ -400,7 +397,6 @@ namespace Fusee.Examples.Simple.Core
             {
                 deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
             }
-
             if(!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
             {
                 if (Keyboard.ADAxis != 0)
@@ -408,13 +404,13 @@ namespace Fusee.Examples.Simple.Core
                     _moveX = _speed * Keyboard.ADAxis * DeltaTime;
                     if(_moveX <= 0)
                     {
-                        _ball.Translation.x += _moveX * M.Sin(_angleVert + deg) * rechts;
-                        _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg) * rechts;
+                        _ball.Translation.x += _moveX * M.Sin(_angleVert + deg) * richtung[0];
+                        _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg) * richtung[3];
                     }
                     else
                     {
-                        _ball.Translation.x += _moveX * M.Sin(_angleVert + deg) * links;
-                        _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg) * links;
+                        _ball.Translation.x += _moveX * M.Sin(_angleVert + deg) * richtung[2];
+                        _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg) * richtung[1];
                     }
 
 
@@ -425,8 +421,19 @@ namespace Fusee.Examples.Simple.Core
                 if (Keyboard.WSAxis != 0)
                 {
                     _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
-                    _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg);
-                    _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg);
+                    if (_moveZ <= 0)
+                    {
+                        _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg) * richtung[0];
+                        _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg) * richtung[3];
+
+                    }
+                    else
+                    {
+                        _ball.Translation.x += _moveZ * M.Cos(_angleVert + deg) * richtung[2];
+                        _ball.Translation.z += _moveZ * M.Sin(_angleVert + deg) * richtung[1];
+
+                    }
+
 
                     _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
                 }
@@ -434,73 +441,105 @@ namespace Fusee.Examples.Simple.Core
             
 
         }
-        public bool collision()
+        public void collision()
         {
 
-            if (translation[ballbmp[0], ballbmp[1]].x <= _ball.Translation.x )
+            if (translation[ballbmp[1], ballbmp[0]].x <= _ball.Translation.x )
             {
-                if (translation[ballbmp[0], ballbmp[1]].z >= _ball.Translation.x)
+                if (translation[ballbmp[1], ballbmp[0]].z >= _ball.Translation.x)
                 {
-                    if (translation[ballbmp[0], ballbmp[1]].y <= _ball.Translation.z)
+                    if (translation[ballbmp[1], ballbmp[0]].y <= _ball.Translation.z)
                     {
-                        if (translation[ballbmp[0], ballbmp[1]].w >= _ball.Translation.z)
+                        if (translation[ballbmp[1], ballbmp[0]].w >= _ball.Translation.z)
                         {
 
                         }
                         else
                         {
-                            //ballbmp[1] = ballbmp[1] + 1;
-                            Diagnostics.Log("hoch");
+                            ballbmp[0] = ballbmp[0] + 1;
+                            
                         }
                     }
                     else
                     {
-                        //ballbmp[1] = ballbmp[1] - 1;
-                        Diagnostics.Log("runter");
+                        ballbmp[0] = ballbmp[0] - 1;
+                        
                     }
                 }
                 else
                 {
-                    //ballbmp[0] = ballbmp[0] + 1;
-                    Diagnostics.Log("links");
+                    ballbmp[1] = ballbmp[1] + 1;
+                    
                 }
             }
             else
             {
-                //ballbmp[0] = ballbmp[0] - 1;
-                Diagnostics.Log("rechts");
+                ballbmp[1] = ballbmp[1] - 1;
+                
             }
-            /*
-            if (bmp[ballbmp[0] -1, ballbmp[1]] == 1)
+
+            //Walls
+
+            if (bmp[ballbmp[0] - 1, ballbmp[1]] == 1 && _moveZ < 0)
             {
-                if(translation[ballbmp[0] - 1, ballbmp[1]].x - _ball.Translation.x <= 0.1f)
+                if (_ball.Translation.z - translation[ballbmp[1], ballbmp[0] - 1].w <= 1.6f)
                 {
-                    Diagnostics.Log(translation[ballbmp[0] - 1, ballbmp[1]].x - _ball.Translation.x);
-                    rechts = 0;
+                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] - 1].w + 1.5f;
+                    richtung[0] = 0;
+                }
+                
+            }
+            else { richtung[0] = 1; }
+
+            if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1 && _moveZ > 0)
+            {
+                if (translation[ballbmp[1], ballbmp[0] + 1].y - _ball.Translation.z <= 1.6f)
+                {
+                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] + 1].y - 1.5f;
+                    richtung[2] = 0;
+                }
+                
+            }
+            else { richtung[2] = 1; }
+
+            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1 &&_moveX > 0)
+            {
+
+                if ( translation[ballbmp[1] + 1, ballbmp[0]].x - _ball.Translation.x <= 1.6f)
+                {
+                    _ball.Translation.x = translation[ballbmp[1] + 1, ballbmp[0]].x - 1.5f;
+                    richtung[3] = 0;
                 }
             }
-            if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1)
+            else { richtung[3] = 1; }
+
+            if (bmp[ballbmp[0], ballbmp[1] - 1] == 1 && _moveX < 0)
             {
-                if (translation[ballbmp[0] + 1, ballbmp[1]].x - _ball.Translation.x <= 0.1f)
+                if (_ball.Translation.x - translation[ballbmp[1] - 1, ballbmp[0]].z <= 1.6f)
                 {
-                    
-                    links = 0;
+                    _ball.Translation.x = translation[ballbmp[1] - 1, ballbmp[0]].z + 1.5f;
+                    richtung[1] = 0;
                 }
             }
-            if (bmp[ballbmp[0], ballbmp[1] - 1] == 1)
-            {
-                if (translation[ballbmp[0], ballbmp[1] - 1].y - _ball.Translation.y <= 0.1f)
-                {
-                }
-            }
-            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1)
-            {
-                if (translation[ballbmp[0], ballbmp[1] + 1].y - _ball.Translation.y <= 0.1f)
-                {
-                }
-            }*/
-            return false;
+            else { richtung[1] = 1; }
+
+            //Corners
+
+
+            //Axis
         }
+
+
+
+
+
+
+
+
+
+
+
+
         public void makebox()
         {
             SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
@@ -516,25 +555,25 @@ namespace Fusee.Examples.Simple.Core
 
         public void CreateTranslation()
         {
-            for (int countY = 0; countY < bmp.GetLength(1); countY++)
+            for (int countY = 0; countY < bmp.GetLength(0); countY++)
             {
-                for (int countX = 0; countX < bmp.GetLength(0); countX++)
+                for (int countX = 0; countX < bmp.GetLength(1); countX++)
                 {
                     if (countX % 2 == 0 && countY % 2 == 0)
                     {
-                        translation[countX, countY] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - cornerbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - cornerbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + cornerbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + cornerbox.y / 2);
+                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - cornerbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - cornerbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + cornerbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + cornerbox.y / 2);
                     }
                     if (countX % 2 == 0 && countY % 2 == 1)
                     {
-                        translation[countX, countY] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - wallZbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - wallZbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + wallZbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + wallZbox.y / 2);
+                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - wallZbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - wallZbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + wallZbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + wallZbox.y / 2);
                     }
                     if (countX % 2 == 1 && countY % 2 == 0)
                     {
-                        translation[countX, countY] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - wallXbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - wallXbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + wallXbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + wallXbox.y / 2);
+                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - wallXbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - wallXbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + wallXbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + wallXbox.y / 2);
                     }
                     if (countX % 2 == 1 && countY % 2 == 1)
                     {
-                        translation[countX, countY] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - groundbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + groundbox.y/ 2);
+                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - groundbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + groundbox.y/ 2);
                     }
                 }
             }
@@ -548,7 +587,7 @@ namespace Fusee.Examples.Simple.Core
                     if (bmp[countX, countY] == -1)
                     {
 
-                        ballbmp = new int[] { countY, countX};
+                        ballbmp = new int[] { countX, countY};
                     }
                 }
             }
