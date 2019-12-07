@@ -48,7 +48,6 @@
   <ItemGroup>
     <Compile Include="InputImp.cs" />
     <Compile Include="Keymapper.cs" />
-    <Compile Include="LibPaintingView.cs" />
     <Compile Include="RenderCanvasImp.cs" />
     <Compile Include="RenderContextImp.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
