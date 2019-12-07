@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Picking.Android</RootNamespace>
@@ -126,12 +126,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
-  <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir;FuseeCollectAndCopyAssets;FuseeResolveAssetDependencies">
+  <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir">
     <ItemGroup>
       <_FuseeAndroidAssets1 Include="$(OutputPath)\Assets\**\*" />
-      <_FuseeAndroidAssets2 Include="$(OutputPath)\$(AssemblyName).Assets\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_FuseeAndroidAssets1)" DestinationFiles="@(_FuseeAndroidAssets1->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
-    <Copy SourceFiles="@(_FuseeAndroidAssets2)" DestinationFiles="@(_FuseeAndroidAssets2->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
   </Target>
 </Project>
