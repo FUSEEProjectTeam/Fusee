@@ -58,8 +58,11 @@ namespace Fusee.Examples.UI.Android
                         ReturnedType = typeof(SceneContainer),
                         Decoder = delegate (string id, object storage)
                         {
-                            if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                            return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                            if (Path.GetExtension(id).ToLower().Contains("fus"))
+                            {
+                                return Serializer.DeserializeSceneContainer((Stream)storage);
+                            }
+                            return null;
                         },
                         Checker = delegate (string id)
                         {
