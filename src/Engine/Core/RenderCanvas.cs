@@ -228,6 +228,7 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to apply window resize code. Typically, an application
         ///     will change the projection matrix of the render context (<see cref="RC" />) to match the new aspect ratio.
         /// </remarks>
+        [Obsolete]
         public virtual void Resize(ResizeEventArgs e)
         {
         }
