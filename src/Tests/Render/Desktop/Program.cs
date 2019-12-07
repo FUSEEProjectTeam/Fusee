@@ -1,18 +1,18 @@
-﻿using System;
-using System.IO;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
+using System;
+using System.IO;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Test.Render.Desktop
 {
     public class Program
     {
-        const int height = 512;
-        const int width = 512;
+        private const int height = 512;
+        private const int width = 512;
 
         private static RenderCanvas example;
 
@@ -21,7 +21,7 @@ namespace Fusee.Test.Render.Desktop
             example = ex;
         }
 
-        public static void Main(string arg)
+        public static void Init(string arg)
         {
             if (!string.IsNullOrEmpty(arg))
             {
