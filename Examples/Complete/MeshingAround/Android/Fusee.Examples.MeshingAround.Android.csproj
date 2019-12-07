@@ -5,11 +5,8 @@
     <AssemblyName>Fusee.Examples.MeshingAround.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <!-- Build into main FUSEE bin directory -->
-    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-    <!-- Build into local bin directory -->
-    <!-- <BaseOutputPath>..\</BaseOutputPath> -->
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
+    <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\MeshingAround\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8E79A538-2A18-4A48-B39D-4BFC5829BDF9}</ProjectGuid>

@@ -5,11 +5,8 @@
     <AssemblyName>Fusee.Examples.Picking.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <!-- Build into main FUSEE bin directory -->
-    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-    <!-- Build into local bin directory -->
-    <!-- <BaseOutputPath>..\</BaseOutputPath> -->
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
+    <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\Picking\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{590B5312-546F-4C51-AEE4-0C4DAE925764}</ProjectGuid>

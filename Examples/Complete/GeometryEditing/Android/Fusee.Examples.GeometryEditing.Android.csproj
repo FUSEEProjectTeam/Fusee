@@ -5,11 +5,8 @@
     <AssemblyName>Fusee.Examples.GeometryEditing.Android</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <!-- Build into main FUSEE bin directory -->
-    <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
-    <!-- Build into local bin directory -->
-    <!-- <BaseOutputPath>..\</BaseOutputPath> -->
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
+    <BaseOutputPath>..\..\..\..\bin\$(Configuration)</BaseOutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\GeometryEditing\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2ED62798-177E-4A95-9910-D418042C52E4}</ProjectGuid>
