@@ -1,39 +1,11 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
   <PropertyGroup>
     <BuildDependsOn>
       <!--FuseeBeforeBuild;-->
-
       $(BuildDependsOn);
-
-      FuseeCollectAndCopyAssets;
-      FuseeResolveAssetDependencies;
     </BuildDependsOn>
   </PropertyGroup>
 
-  <PropertyGroup>
-    <!--LIBRARY-->
-    <AssetDestinationFolder Condition=" '$(OutputType)' == 'Library' ">$(OutputPath)$(AssemblyName).Assets\</AssetDestinationFolder>
-    <!--DESKTOP-->
-    <AssetDestinationFolder Condition="  $(AssemblyName.Contains('Desktop')) And '$(OutputType)' != 'Library'">$(OutputPath)Assets\</AssetDestinationFolder>
-  </PropertyGroup>
-
   <Target Name="FuseeBeforeBuild">
-  </Target>
-
-  <Target Name="FuseeCollectAndCopyAssets" Condition="'$(OutputType)' == 'Library'">
-    <ItemGroup>
-      <_CopyAssetsItems Include="$(ProjectDir)Assets\*.*" />
-    </ItemGroup>
-    <Copy SourceFiles="@(_CopyAssetsItems)" DestinationFolder="$(AssetDestinationFolder)" />
-  </Target>
-
-  <!--ALL Projects: Collect and copy Assets from referenced dlls into the AssetDestinationFolder-->
-  <Target Name="FuseeResolveAssetDependencies">
-    <ItemGroup>
-      <FuseeAssetDependency Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)%(ReferencePath.Filename).Assets\*.*"/>
-    </ItemGroup>
-    <!-- Copy all referenced assets to the "<dll-name>.Scripts" or the Assets.Scripts subfolder of this assembly -->
-    <Copy SourceFiles="%(FuseeAssetDependency.FullPath)" DestinationFolder="$(AssetDestinationFolder)" ContinueOnError="true"/>
   </Target>
 </Project>
