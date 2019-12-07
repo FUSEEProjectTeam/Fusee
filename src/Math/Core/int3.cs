@@ -6,7 +6,7 @@ namespace Fusee.Math.Core
 {
     /// <summary>
     /// Represents a 3D vector or an index (eg. for a grid-like structure) using three integers.
-    /// </summary>    
+    /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct int3 : IEquatable<int3>
@@ -31,9 +31,10 @@ namespace Fusee.Math.Core
         [ProtoMember(3)]
         public int z;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
+
         /// <summary>
         /// Constructs a new int3.
         /// </summary>
@@ -51,7 +52,7 @@ namespace Fusee.Math.Core
         /// Constructs a new int3.
         /// </summary>
         /// <param name="i">The x, y and z component of the int3.</param>
-        
+
         public int3(int i)
         {
             x = i;
@@ -59,7 +60,7 @@ namespace Fusee.Math.Core
             z = i;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -74,7 +75,7 @@ namespace Fusee.Math.Core
             return new[] { x, y, z };
         }
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -110,7 +111,7 @@ namespace Fusee.Math.Core
         // </summary>
         // public static readonly int SizeInBytes = Marshal.SizeOf(new float3());
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -142,7 +143,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Add
 
         #region Subtract
 
@@ -174,7 +175,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Subtract
 
         #region Multiply
 
@@ -206,7 +207,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply
 
         #region Divide
 
@@ -238,7 +239,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Divide
 
         #region ComponentMin
 
@@ -258,7 +259,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion ComponentMin
 
         #region ComponentMax
 
@@ -278,7 +279,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion        
+        #endregion ComponentMax
 
         #region Clamp
 
@@ -299,8 +300,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
-        
+        #endregion Clamp
 
         #region Lerp
 
@@ -321,8 +321,9 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
-        #endregion
+        #endregion Lerp
+
+        #endregion Static
 
         #region Operators
 
@@ -478,7 +479,8 @@ namespace Fusee.Math.Core
         {
             return new int3(i);
         }
-        #endregion
+
+        #endregion Operators
 
         #region Overrides
 
@@ -495,7 +497,7 @@ namespace Fusee.Math.Core
             return String.Format("({0}, {1}, {2})", x, y, z);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -540,7 +542,8 @@ namespace Fusee.Math.Core
                 return x + (31 * y) + (31 * 31 * z);
             }
         }
-        #endregion
+
+        #endregion Overrides
 
         #region Color
 
@@ -571,8 +574,8 @@ namespace Fusee.Math.Core
             set { z = value; }
         }
 
-        #endregion
+        #endregion Color
 
-        #endregion       
+        #endregion Public Members
     }
 }

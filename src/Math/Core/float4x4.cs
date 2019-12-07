@@ -1,6 +1,6 @@
+using ProtoBuf;
 using System;
 using System.Runtime.InteropServices;
-using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
@@ -15,15 +15,15 @@ namespace Fusee.Math.Core
     /// from left to right represent a transformation where the rightmost matrix is applied
     /// first and the leftmost matrix is applied last, for example in (M3 * M2 * M1) * v the vector
     /// v is first transformed by M1, then by M2 and finally by M3. The translation part of a 4x4
-    /// matrix used in homogeneous coordinate calculations can be found in the leftmost column 
+    /// matrix used in homogeneous coordinate calculations can be found in the leftmost column
     /// (M14 - x-translation, M24 - y-translation, M34 - z-translation).
     /// </para>
     /// <para>
     /// Note that although float4x4 objects represent matrices in COLUMN-vector-NOTATION as
     /// found in math books, the objects' contents is physically stored in ROW-major-ORDER, meaning that
-    /// in physical memory, a float4x4's components are stored contiguously in the following order: first row (M11, M12, M13, M14), 
+    /// in physical memory, a float4x4's components are stored contiguously in the following order: first row (M11, M12, M13, M14),
     /// then second row (M21, M22, M21, M24), and so on. When exchanging matrix contents with libraries like
-    /// graphics engines (OpenGL, Direct3D), physics engines, file formats, etc. make sure to convert to and 
+    /// graphics engines (OpenGL, Direct3D), physics engines, file formats, etc. make sure to convert to and
     /// from the given Matrix layout of the API you are exchanging data with.
     /// </para>
     /// <para>
@@ -31,13 +31,13 @@ namespace Fusee.Math.Core
     /// used in Computer Graphics. Most of these application matrices are handedness-agnostic, meaning
     /// that the resulting matrices can be used in both, left-handed and right-handed coordinate systems.
     /// This does not hold for LookAt and Projection matrices where the viewing direction plays a role. In
-    /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have 
+    /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have
     /// bigger positive z-coordinates whereas in right-handed coordinate systems positions further away have smaller
     /// negative z-coordinates. By default, float4x4 will assume a left-handed coordinate system, but contains
     /// convenience construction methods to also create right-handed matrices if necessary. The right-handed versions
     /// of methods are postfixed with "RH".
     /// </para>
-    /// </remarks> 
+    /// </remarks>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
     public struct float4x4 : IEquatable<float4x4>
@@ -78,7 +78,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static float4x4 Zero = new float4x4(float4.Zero, float4.Zero, float4.Zero, float4.Zero);
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -128,7 +128,6 @@ namespace Fusee.Math.Core
             Row3 = new float4(m30, m31, m32, m33);
         }
 
-
         /// <summary>
         /// Constructs a new float4x4 by converting from a double4x4.
         /// </summary>
@@ -153,7 +152,7 @@ namespace Fusee.Math.Core
             Row3 = new float4(0, 0, 0, 1);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -370,11 +369,12 @@ namespace Fusee.Math.Core
             // No setter here - might be too confusing
         }
 
-        #endregion
+        #endregion Properties
 
         #region Instance
 
         #region this
+
         /// <summary>
         ///     Sets/Gets value from given index
         /// </summary>
@@ -385,19 +385,23 @@ namespace Fusee.Math.Core
         {
             get
             {
-                switch(i)
+                switch (i)
                 {
                     case 0:
                         return Row0[j];
+
                     case 1:
                         return Row1[j];
+
                     case 2:
                         return Row2[j];
+
                     case 3:
                         return Row3[j];
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
-                }     
+                }
             }
             set
             {
@@ -406,21 +410,26 @@ namespace Fusee.Math.Core
                     case 0:
                         Row0[j] = value;
                         break;
+
                     case 1:
                         Row1[j] = value;
                         break;
+
                     case 2:
                         Row2[j] = value;
                         break;
+
                     case 3:
                         Row3[j] = value;
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {i},{j} not eligible for a float4x4 type");
                 }
             }
         }
-        #endregion
+
+        #endregion this
 
         #region public Invert()
 
@@ -432,7 +441,7 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        #endregion
+        #endregion public Invert()
 
         #region public Transpose()
 
@@ -452,12 +461,12 @@ namespace Fusee.Math.Core
         /// <returns></returns>
         public float[] ToArray()
         {
-            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };            
+            return new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
         }
 
-        #endregion
+        #endregion float[] ToArray()
 
-        #endregion
+        #endregion public Transpose()
 
         #region public Round()
 
@@ -469,7 +478,7 @@ namespace Fusee.Math.Core
             return Round(this);
         }
 
-        #endregion
+        #endregion public Round()
 
         #region TRS Decomposition
 
@@ -513,9 +522,9 @@ namespace Fusee.Math.Core
             return GetScale(this);
         }
 
-        #endregion
+        #endregion TRS Decomposition
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -525,7 +534,7 @@ namespace Fusee.Math.Core
         /// Build a rotation matrix from the specified axis/angle rotation.
         /// </summary>
         /// <param name="axis">The axis to rotate about.</param>
-        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>       
+        /// <param name="angle">Angle to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         public static float4x4 CreateFromAxisAngle(float3 axis, float angle)
         {
@@ -543,7 +552,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateFromAxisAngle
 
         #region CreateRotation[XYZ]
 
@@ -692,7 +701,7 @@ namespace Fusee.Math.Core
             return CreateRotationY(y) * CreateRotationX(x) * CreateRotationZ(z);
         }
 
-        #endregion
+        #endregion CreateRotation[XYZ]
 
         #region CreateTranslation
 
@@ -730,7 +739,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateTranslation
 
         #region Rotation matrix to euler representation
 
@@ -780,7 +789,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Returns the euler angles from a given rotation matrix.
         /// </summary>
-        /// <param name="rotMat">The roation matrix.</param>        
+        /// <param name="rotMat">The roation matrix.</param>
         public static float3 RotMatToEuler(float4x4 rotMat)
         {
             //Matrix is being handled as a multi-dimensional array to ensure that the rotation order can be changed easily in the future.
@@ -799,7 +808,7 @@ namespace Fusee.Math.Core
             return d1 > d2 ? new float3(eul2[0], eul2[1], eul2[2]) : new float3(eul1[0], eul1[1], eul1[2]);
         }
 
-        #endregion
+        #endregion Rotation matrix to euler representation
 
         #region CreateScale
 
@@ -853,7 +862,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateScale
 
         #region CreateOrthographic
 
@@ -870,7 +879,7 @@ namespace Fusee.Math.Core
             return CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, zNear, zFar);
         }
 
-        #endregion
+        #endregion CreateOrthographic
 
         #region CreateOrthographicOffCenter
 
@@ -903,9 +912,7 @@ namespace Fusee.Math.Core
             result.M44 = 1;
 
             return result;
-
         }
-
 
         /// <summary>
         /// Creates a left handed orthographic projection matrix.
@@ -938,7 +945,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreateOrthographicOffCenter
 
         #region CreatePerspectiveFieldOfView
 
@@ -985,7 +992,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreatePerspectiveFieldOfView
 
         #region CreatePerspectiveOffCenter
 
@@ -1001,10 +1008,10 @@ namespace Fusee.Math.Core
         /// <returns>A right handed projection matrix that transforms camera space to raster space</returns>
         /// <remarks>Generates a matrix mapping a frustum shaped volume (the viewing frustum) to
         /// the unit cube (ranging from -1 to 1 in each dimension, also in z). The sign of the z-value will be
-        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform 
-        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing 
-        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this 
-        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed 
+        /// flipped for vectors multiplied with this matrix. Given that the underlying rendering platform
+        /// interprets z-values returned by the vertex shader to be in left-handed coordinates, where increasing
+        /// z-values indicate locations further away from the view point (as BOTH, Direct3D AND OpenGL do), this
+        /// type of matrix is widely called to be a "right handed" projection matrix as it assumes a right-handed
         /// camera coordinate system.</remarks>
         /// <exception cref="System.ArgumentOutOfRangeException">
         /// Thrown under the following conditions:
@@ -1041,7 +1048,6 @@ namespace Fusee.Math.Core
 
             return result;
         }
-
 
         /// <summary>
         /// Creates an left handed perspective projection matrix.
@@ -1089,7 +1095,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion CreatePerspectiveOffCenter
 
         #region Scale Functions
 
@@ -1130,9 +1136,10 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Scale Functions
 
         #region Camera Helper Functions
+
         /// <summary>
         /// Build a left handed world space to camera space matrix
         /// </summary>
@@ -1185,8 +1192,6 @@ namespace Fusee.Math.Core
                                 0, 0, 0, 1);
         }
 
-
-
         /// <summary>
         /// Build a world space to camera space matrix
         /// </summary>
@@ -1206,7 +1211,7 @@ namespace Fusee.Math.Core
             return LookAt(new float3(eyeX, eyeY, eyeZ), new float3(targetX, targetY, targetZ), new float3(upX, upY, upZ));
         }
 
-        #endregion
+        #endregion Camera Helper Functions
 
         #region Elementary Arithmetic Functions
 
@@ -1238,7 +1243,7 @@ namespace Fusee.Math.Core
                                 left.M41 - right.M41, left.M42 - right.M42, left.M43 - right.M43, left.M44 - right.M44);
         }
 
-        #endregion
+        #endregion Elementary Arithmetic Functions
 
         #region Multiply Functions
 
@@ -1303,7 +1308,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply Functions
 
         #region Invert Functions
 
@@ -1437,7 +1442,7 @@ namespace Fusee.Math.Core
             */
         }
 
-        #endregion
+        #endregion Invert Functions
 
         #region Transpose
 
@@ -1451,7 +1456,7 @@ namespace Fusee.Math.Core
             return new float4x4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
         }
 
-        #endregion
+        #endregion Transpose
 
         #region Transform
 
@@ -1563,7 +1568,7 @@ namespace Fusee.Math.Core
             return tmp /= tmp.w;
         }
 
-        #endregion
+        #endregion Transform
 
         #region TRS Decomposition
 
@@ -1652,7 +1657,7 @@ namespace Fusee.Math.Core
             return scaleMtx;
         }
 
-        #endregion
+        #endregion TRS Decomposition
 
         #region Round
 
@@ -1669,9 +1674,9 @@ namespace Fusee.Math.Core
                                 float4.Round(mat.Row3));
         }
 
-        #endregion
+        #endregion Round
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -1793,7 +1798,8 @@ namespace Fusee.Math.Core
         {
             return new float4x4(d4x4);
         }
-        #endregion
+
+        #endregion Operators
 
         #region Overrides
 
@@ -1808,7 +1814,7 @@ namespace Fusee.Math.Core
             return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -1821,7 +1827,7 @@ namespace Fusee.Math.Core
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode() ^ Row3.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -1838,11 +1844,11 @@ namespace Fusee.Math.Core
             return Equals((float4x4)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<float4x4> Members
 
@@ -1874,7 +1880,7 @@ namespace Fusee.Math.Core
                 Row3 == other.Row3;
         }
 
-        #endregion
+        #endregion IEquatable<float4x4> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a float4x4.

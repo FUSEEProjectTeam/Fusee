@@ -94,7 +94,6 @@ namespace Fusee.Math.Core
         }
     }
 
-
     /// <summary>
     /// Represents a open or closed part of a curve, using a list of CurveSegments and its starting point.
     /// </summary>
@@ -540,7 +539,6 @@ namespace Fusee.Math.Core
     /// </summary>
     public class BezierConicSegment : CurveSegment
     {
-
     }
 
     /// <summary>
@@ -550,7 +548,5 @@ namespace Fusee.Math.Core
     /// </summary>
     public class BezierCubicSegment : CurveSegment
     {
-
     }
-
 }
