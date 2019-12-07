@@ -16,10 +16,7 @@ namespace Fusee.Test.Render.Desktop
 
         private static RenderCanvas example;
 
-        public static void setExample(RenderCanvas ex)
-        {
-            example = ex;
-        }
+        public static RenderCanvas Example { get => example; set => example = value; }
 
         public static void Init(string arg)
         {
@@ -54,7 +51,7 @@ namespace Fusee.Test.Render.Desktop
 
                 AssetStorage.RegisterProvider(fap);
 
-                var app = example;
+                var app = Example;
 
                 // Inject Fusee.Engine InjectMe dependencies (hard coded)
                 var cimp = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(width, height);

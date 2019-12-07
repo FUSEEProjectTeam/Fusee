@@ -41,12 +41,14 @@ namespace Fusee.Examples.AdvancedUI.Core
         private float _canvasWidth;
         private float _canvasHeight;
 
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private List<UIInput> _uiInput;
 
         private ScenePicker _scenePicker;
+
+        //rnd is public so unit tests can inject a seeded random.
+        public Random rnd;
 
         private SceneContainer BuildScene()
         {
@@ -123,12 +125,14 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _initWidth = Width;
             _initHeight = Height;
-            _aspectRatio = Width / (float)Height;
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
             var monkey = _scene.Children[1].GetComponent<Mesh>();
-            var rnd = new Random();
+
+            if (rnd == null)
+                rnd = new Random();
+
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
             var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
@@ -389,8 +393,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            _aspectRatio = Width / (float)Height;
-
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
