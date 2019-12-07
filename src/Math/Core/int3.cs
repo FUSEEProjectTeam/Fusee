@@ -512,6 +512,21 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="obj">The object to compare to.</param>
+        /// <returns>
+        /// True if the instances are equal; false otherwise.
+        /// </returns>
+        public override bool Equals(object obj)
+        {
+            if (!(obj is int3))
+                return false;
+
+            return Equals((int3)obj);
+        }
+
+        /// <summary>
         /// Returns the hashcode for this instance.
         /// </summary>
         /// <returns>
