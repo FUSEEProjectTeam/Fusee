@@ -108,6 +108,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         case ".fus":
                             modelFile = Path.GetFileName(filepath);
+                            tApp = typeof(Fusee.Engine.Player.Core.Player);
                             break;
 
                         case ".fuz":
