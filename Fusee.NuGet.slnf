@@ -15,7 +15,7 @@
       "src\\Math\\Core\\Fusee.Math.Core.csproj",
       "src\\Serialization\\Fusee.Serialization.csproj",
       "src\\Tools\\BlenderScripts\\addons\\io_export_fus\\io_export_fus.pyproj",
-      "src\\Tools\\fuseeCmdLine\\fuseeCmdLine.csproj",
+      "src\\Tools\\fuseeCmdLine\\Fusee.Tools.CmdLine.csproj",
       "src\\Xene\\Fusee.Xene.csproj",
       "src\\Xirkit\\Fusee.Xirkit.csproj"
     ]

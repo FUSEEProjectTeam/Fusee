@@ -629,7 +629,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         //}
 
         #region IDisposable Member
-
+            
+        /// <summary>
+        /// Disposes of the device.
+        /// </summary>
         public void Dispose()
         {
             if (!this.IsDisposed)
@@ -668,33 +671,54 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         }
     }
 
+    /// <summary>
+    /// A class for special 3D exceptions.
+    /// </summary>
     public class _3DxException : Exception
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="_3DxException"/> class.
+        /// </summary>
+        /// <param name="message">The exception message.</param>
         public _3DxException(string message)
             : base(message)
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="_3DxException"/> class and passes an inner exception.
+        /// </summary>
+        /// <param name="message">The exception message.</param>
+        /// <param name="inner">The inner exception to pass.</param>
         public _3DxException(string message, Exception inner)
             : base(message, inner)
         {
         }
     }
 
+    /// <summary>
+    /// Contains event data for a device change event.
+    /// </summary>
     public class DeviceChangeEventArgs : EventArgs
     {
         /// <summary>
         /// Device connection type.
         /// </summary>
         public readonly EDeviceChangeType Type;
+
         /// <summary>
         /// The device ID.
         /// </summary>
         public readonly int DeviceID;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="DeviceChangeEventArgs"/> class.
+        /// </summary>
+        /// <param name="deviceId">The id of the changed device.</param>
+        /// <param name="type">The type of the change, can be 0 (for CONNECTED), 1 (for DISCONNECTED), or any other number (for UNKNOWN).</param>
         public DeviceChangeEventArgs(int deviceId, int type)
         {
-            this.DeviceID = type;
+            this.DeviceID = deviceId;
             switch (type)
             {
                 case 0: Type = EDeviceChangeType.CONNECTED; break;
@@ -703,6 +727,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             }
         }
     }
+
     /// <summary>
     /// Device connection type.
     /// </summary>
@@ -723,7 +748,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
     }
 
 
-
+    /// <summary>
+    /// Contains event data for motion events.
+    /// </summary>
     public class MotionEventArgs : EventArgs
     {
         /// <summary>
@@ -735,6 +762,15 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
         /// </summary>
         public readonly int RX, RY, RZ;
 
+        /// <summary>
+        /// Creates a new instance of the <see cref="MotionEventArgs"/> class.
+        /// </summary>
+        /// <param name="tx">X coordinate of the translation.</param>
+        /// <param name="ty">Y coordinate of the translation.</param>
+        /// <param name="tz">Z coordinate of the translation.</param>
+        /// <param name="rx">X coordinate of the rotation.</param>
+        /// <param name="ry">Y coordinate of the rotation.</param>
+        /// <param name="rz">Z coordinate of the rotation.</param>
         public MotionEventArgs(int tx, int ty, int tz, int rx, int ry, int rz)
         {
             this.TX = tx;
@@ -745,6 +781,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop._3DconnexionDriver
             this.RZ = rz;
         }
 
+        /// <summary>
+        /// Returns a new instance of the <see cref="MotionEventArgs"/> class from a given array of event data.
+        /// </summary>
+        /// <param name="data">The array of event data.</param>
+        /// <returns>The newly created <see cref="MotionEventArgs"/> instance.</returns>
         public static MotionEventArgs FromEventArray(int[] data)
         {
             if (data == null)

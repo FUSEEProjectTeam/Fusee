@@ -34,6 +34,7 @@ namespace Fusee.Engine.Player.Desktop
 
             string ExeDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string Cwd = Directory.GetCurrentDirectory();
+
             if (Cwd != ExeDir)
             {
                 TryAddDir(assetDirs, Path.Combine(ExeDir, "Assets"));
@@ -41,7 +42,7 @@ namespace Fusee.Engine.Player.Desktop
 
             if (args.Length >= 1)
             {
-                Console.WriteLine("File: " + args[0]);
+                Diagnostics.Info("File: " + args[0]);
 
                 if (File.Exists(args[0]))
                 {
@@ -53,6 +54,7 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         case ".fus":
                             modelFile = Path.GetFileName(filepath);
+                            tApp = typeof(Fusee.Engine.Player.Core.Player);
                             break;
 
                         case ".fuz":
@@ -80,7 +82,7 @@ namespace Fusee.Engine.Player.Desktop
 
                                 if (serversion != ourversion)
                                 {
-                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                    Diagnostics.Info("Fusee player and the assembly are on different versions. This can result in unexpected behaviour. Player version: " + ourversion + " Assembly version: " + serversion);
                                 }
 
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
@@ -98,31 +100,22 @@ namespace Fusee.Engine.Player.Desktop
                     Diagnostics.Warn($"Cannot open {args[0]}.");
                 }
             }
+            else if (File.Exists("Fusee.App.dll"))
+            {
+                try
+                {
+                    Assembly asm = Assembly.LoadFrom("Fusee.App.dll");
+                    tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
+                }
+                catch (Exception e)
+                {
+                    Diagnostics.Debug("Could not load Fusee.App.dll", e);
+                }
+            }
             else
             {
-                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
-            }
-
-            if (tApp == null)
-            {
-                // See if we are in "Deployed mode". That is: A Fusee.App.dll is lying next to us.
-                if (File.Exists(Path.Combine(ExeDir, "Fusee.App.dll")))
-                {
-                    try
-                    {
-                        Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
-                        tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
-                    }
-                    catch (Exception e)
-                    {
-                        Diagnostics.Debug("Could not load Fusee.App.dll", e);
-                    }
-                }
-                // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
-                else
-                {
-                    tApp = typeof(Fusee.Engine.Player.Core.Player);
-                }
+                Diagnostics.Info("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
+                tApp = typeof(Fusee.Engine.Player.Core.Player);
             }
 
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
