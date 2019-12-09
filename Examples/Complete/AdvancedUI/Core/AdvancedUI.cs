@@ -45,11 +45,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private List<UIInput> _uiInput;
 
-        private ScenePicker _scenePicker;
-
-        private TransformComponent _camTransform;
-
-        private const float twoPi = M.Pi * 2.0f;
+        private ScenePicker _scenePicker;        
 
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
@@ -131,18 +127,10 @@ namespace Fusee.Examples.AdvancedUI.Core
             _initHeight = Height;
 
             //_scene = BuildScene();
-            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
-
-            _camTransform = new TransformComponent()
-            {
-                Rotation = new float3(0, 0, 0),
-                Scale = float3.One,
-                Translation = new float3(0, 0, -5)
-
-            };
+            _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");            
 
             var monkey = _scene.Children[0].GetComponent<Mesh>();
-            var rnd = new Random();
+            rnd = new Random();
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
             //Create dummy positions on model
