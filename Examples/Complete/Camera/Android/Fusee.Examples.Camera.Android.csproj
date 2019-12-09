@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Examples.Camera.Android</RootNamespace>
@@ -9,7 +9,7 @@
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
     <!-- Build into local bin directory -->
     <!-- <BaseOutputPath>..\</BaseOutputPath> -->
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\Camera\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}</ProjectGuid>

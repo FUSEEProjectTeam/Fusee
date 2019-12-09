@@ -49,8 +49,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private LightComponent _sun;
 
-        private TransformComponent _camTransform;
-
         // Init is called on startup. 
         public override void Init()
         {           
@@ -66,27 +64,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Load the rocket model
             //_rocketScene = AssetStorage.Get<SceneContainer>("sponza.fus");
             _rocketScene = AssetStorage.Get<SceneContainer>("sponza_wo_textures.fus");
-            //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");            
-
-            //_camTransform = new TransformComponent()
-            //{
-            //    Rotation = new float3(0, M.DegreesToRadians(0), 0),
-            //    Scale = float3.One,
-            //    Translation = new float3(0, 20, -10)
-
-            //};
-
-            //var camera = new SceneNodeContainer()
-            //{
-            //    Name = "Camera",
-            //    Components = new List<SceneComponentContainer>()
-            //    {
-            //       _camTransform,
-            //        new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
-            //    }
-            //};
-
-            //_rocketScene.Children.Insert(0, camera);
+            //_rocketScene = AssetStorage.Get<SceneContainer>("shadowTest.fus");
 
             //Add lights to the scene
             _sun = new LightComponent() { Type = LightType.Parallel, Color = new float4(0.99f, 0.9f, 0.8f, 1), Active = true, Strength = 1f, IsCastingShadows = true, Bias = 0.025f };
@@ -271,12 +249,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVert -= _angleVelVert;
             _angleVelHorz = 0;
             _angleVelVert = 0;
-
-            // Create the camera matrix and set it as the current ModelView transformation
-            //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            //var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-
-            //var view = mtxCam * mtxRot;
             
             view = CalcViewMat(ref _camPos);
 
@@ -289,8 +261,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
-            // Constantly check for interactive objects.           
-            RC.View = view;
+            // Constantly check for interactive objects.
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -298,35 +269,32 @@ namespace Fusee.Examples.SimpleDeferred.Core
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
-
-            RC.View = view;
-            RC.Projection = orthographic;
+            }            
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        /// <summary>
-        /// Translates and rotates the camera to achieve a fps cam.
-        /// </summary>
-        private void FpsView()
-        {
-            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                _angleHorz %= twoPi;
-            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                _angleVert %= twoPi;
+        ///// <summary>
+        ///// Translates and rotates the camera to achieve a fps cam.
+        ///// </summary>
+        //private void FpsView()
+        //{
+        //    if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
+        //        _angleHorz %= twoPi;
+        //    if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
+        //        _angleVert %= twoPi;
 
-            var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
-            var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
+        //    var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
+        //    var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
 
-            _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
-            _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;           
+        //    _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
+        //    _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;           
 
-            _camTransform.Rotation.y = _angleHorz;
-            _camTransform.Rotation.x = _angleVert;            
-        }
+        //    _camTransform.Rotation.y = _angleHorz;
+        //    _camTransform.Rotation.x = _angleVert;            
+        //}
 
         private float4x4 CalcViewMat(ref float3 camPos)
         {

@@ -261,6 +261,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
+            RC.View = view;
+            RC.Projection = perspective;
             var canvas = _gui.Children[0];
 
             foreach (var child in canvas.Children)
@@ -293,8 +295,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    RC.View = view;
-                    RC.Projection = perspective;
+                    
                     var newPick = _scenePicker.Pick(RC, new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
@@ -378,12 +379,9 @@ namespace Fusee.Examples.AdvancedUI.Core
                     _uiInput[k] = uiInput;
                 }
             }
-
-            RC.View = view;
-            RC.Projection = perspective;
+            
             _sceneRenderer.Render(RC);
-
-            RC.View = view;
+            
             RC.Projection = _canvasRenderMode == CanvasRenderMode.SCREEN ? orthographic : perspective;
             _guiRenderer.Render(RC);
 

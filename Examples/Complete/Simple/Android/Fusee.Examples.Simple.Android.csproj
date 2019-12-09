@@ -9,7 +9,7 @@
     <BaseOutputPath>$(FuseeEngineRoot)\bin\$(Configuration)</BaseOutputPath>
     <!-- Build into local bin directory -->
     <!-- <BaseOutputPath>..\</BaseOutputPath> -->
-    <OutputPath>$(BaseOutputPath)\Examples\AdvancedUI\Android</OutputPath>
+    <OutputPath>$(BaseOutputPath)\Examples\Simple\Android</OutputPath>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{72B29431-717A-47AD-9BDB-2A60E284D727}</ProjectGuid>

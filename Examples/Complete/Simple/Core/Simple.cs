@@ -113,7 +113,7 @@ namespace Fusee.Examples.Simple.Core
             _sceneRenderer.Render(RC);
 
             //Constantly check for interactive objects.
-            RC.View = view;
+           
             RC.Projection = orthographic;
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
@@ -121,9 +121,7 @@ namespace Fusee.Examples.Simple.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            RC.View = view;
-            RC.Projection = orthographic;
+            
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.

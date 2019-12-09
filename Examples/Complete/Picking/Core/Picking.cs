@@ -25,7 +25,7 @@ namespace Fusee.Examples.Picking.Core
     public class Picking : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = 0, _angleVert, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -37,8 +37,7 @@ namespace Fusee.Examples.Picking.Core
         private bool _keys;
 
         private const float ZNear = 1f;
-        private const float ZFar = 1000;
-        private float _aspectRatio;
+        private const float ZFar = 1000;        
         private float _fovy = M.PiOver4;
 
 #if GUI_SIMPLE
@@ -46,38 +45,17 @@ namespace Fusee.Examples.Picking.Core
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWindowWidth;
-        private float _initWindowHeight;
-        private float _initCanvasWidth;
-        private float _initCanvasHeight;
-        private float _canvasWidth = 16;
-        private float _canvasHeight = 9;
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;       
 
 #endif
         private PickResult _currentPick;
         private float4 _oldColor;
         private bool _pick;
-        private float2 _pickPos;
-
-        private float4x4 _defaultProjection;
+        private float2 _pickPos;        
 
         // Init is called on startup. 
         public override void Init()
         {
-            _defaultProjection = RC.Projection;
-
-            _initWindowWidth = Width;
-            _initWindowHeight = Height;
-
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
-
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
-            _aspectRatio = Width / (float)Height;
-
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
@@ -152,13 +130,12 @@ namespace Fusee.Examples.Picking.Core
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-           
+            RC.View = view;
+            RC.Projection = perspective;
 
             // Check 
             if (_pick)
-            {
-                RC.View = view;
-                RC.Projection = perspective;
+            {                
                 Diagnostics.Debug(_pickPos);
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1); 
                 PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
@@ -202,14 +179,12 @@ namespace Fusee.Examples.Picking.Core
 #endif
                 _pick = false;
             }
-
-            RC.View = view;
-            RC.Projection = perspective;
+            
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 #if GUI_SIMPLE
 
-            RC.View = view;
+            
             RC.Projection = orthographic;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
@@ -219,9 +194,7 @@ namespace Fusee.Examples.Picking.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-
-            RC.View = view;
-            RC.Projection = orthographic;
+            
             _guiRenderer.Render(RC);
 #endif
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.

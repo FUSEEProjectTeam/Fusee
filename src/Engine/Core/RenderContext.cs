@@ -1820,8 +1820,7 @@ namespace Fusee.Engine.Core
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         public void Clear(ClearFlags flags)
-        {            
-            _rci.Scissor(ViewportXStart, ViewportYStart, ViewportWidth, ViewportHeight);
+        {
             _rci.Clear(flags);
         }
 
@@ -1838,6 +1837,7 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
         {
+            _rci.Scissor(x, y, width, height);
             _rci.Viewport(x, y, width, height);            
 
             if (!renderToScreen) return;

@@ -310,7 +310,7 @@ namespace Fusee.Engine.Core
                     if (cam.Item2.Camera.Active)
                     {
                         PerCamRender(cam);
-                        //Reset Viewport
+                        //Reset Viewport                        
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                     }
                 }               
@@ -328,10 +328,8 @@ namespace Fusee.Engine.Core
             else
                 _rc.SetRenderTarget();
 
-            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);           
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
-
-            
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
             _rc.Clear(ClearFlags.Color | ClearFlags.Depth);

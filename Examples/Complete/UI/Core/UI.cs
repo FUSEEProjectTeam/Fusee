@@ -418,9 +418,7 @@ namespace Fusee.Examples.UI.Core
             RC.Projection = projection;
             RC.View = view;
             _sceneRenderer.Render(RC);
-
-            RC.Projection = projection;
-            RC.View = view;
+            
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Input.Mouse.Position, Width, Height);
