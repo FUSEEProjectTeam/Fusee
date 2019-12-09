@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <RootNamespace>Fusee.Engine.Player.Android</RootNamespace>
@@ -55,15 +55,7 @@
   <!-- External References -->
   <ItemGroup>
     <Reference Include="Mono.Android" />
-    <Reference Include="OpenTK-1.0" />
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="protobuf-net">
-      <HintPath>$(FuseeEngineRoot)\ext\protobuf\$(Configuration)\protobuf-net.dll</HintPath>
-    </Reference>
-    <Reference Include="OpenTK-1.0" />
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="protobuf-net" Version="3.0.0-alpha.146.g00620fbe1a" />
   </ItemGroup>
   <!-- Fusee References -->
@@ -95,6 +87,10 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj">
       <Project>{1228EB3F-8BCC-453F-8A2E-D9246495A118}</Project>
       <Name>Fusee.Engine.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj">
+      <Project>{26808b4a-9f15-47f0-b147-e744241b79d2}</Project>
+      <Name>Fusee.Engine.GUI</Name>
     </ProjectReference>
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Android\Fusee.Engine.Imp.Graphics.Android.csproj">
       <Project>{B3CE4F39-FCC4-4388-8130-9D0B9D65D034}</Project>
@@ -133,12 +129,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <!-- This overrides the UpdateAndroidAssets target in Xamarin.Android.Common.targets -->
-  <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir;FuseeCollectAndCopyAssets;FuseeResolveAssetDependencies">
+  <Target Name="UpdateAndroidAssets" DependsOnTargets="$(CoreResolveReferencesDependsOn);_ComputeAndroidAssetsPaths;_GenerateAndroidAssetsDir">
     <ItemGroup>
       <_FuseeAndroidAssets1 Include="$(OutputPath)\Assets\**\*" />
-      <_FuseeAndroidAssets2 Include="$(OutputPath)\$(AssemblyName).Assets\**\*" />
     </ItemGroup>
     <Copy SourceFiles="@(_FuseeAndroidAssets1)" DestinationFiles="@(_FuseeAndroidAssets1->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
-    <Copy SourceFiles="@(_FuseeAndroidAssets2)" DestinationFiles="@(_FuseeAndroidAssets2->'$(IntermediateOutputPath)\assets\%(RecursiveDir)%(Filename)%(Extension)')" ContinueOnError="true" />
   </Target>
 </Project>

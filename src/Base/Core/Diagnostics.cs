@@ -238,7 +238,9 @@ namespace Fusee.Base.Core
         /// <param name="o">The object to write</param>
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
-        /// <param name="callerName">The calling method</param>       
+        /// <param name="callerName">The calling method</param>
+        /// <param name="sourceLineNumber"></param>
+        /// <param name="sourceFilePath"></param>
         [Conditional("DEBUG")]
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
