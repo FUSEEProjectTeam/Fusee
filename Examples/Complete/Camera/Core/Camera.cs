@@ -13,7 +13,7 @@ using Fusee.Engine.GUI;
 
 namespace Fusee.Examples.Camera.Core
 {
-    [FuseeApplication(Name = "FUSEE Simple Example", Description = "A very simple example.")]
+    [FuseeApplication(Name = "FUSEE Camera Example", Description = " ")]
     public class Camera : RenderCanvas
     {
         // angle variables
