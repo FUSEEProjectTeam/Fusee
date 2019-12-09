@@ -379,10 +379,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.FusViewer", "src\Tools\FusViewer\Fusee.Tools.FusViewer.csproj", "{4C4A2368-21EE-42EF-A710-95B7EE1D1437}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Camera", "Camera", "{C69C84C2-4C82-461B-B6AF-807BB341EEB8}"
-	ProjectSection(SolutionItems) = preProject
-		Examples\Complete\Camera\Directory.Build.props = Examples\Complete\Camera\Directory.Build.props
-		Examples\Complete\Camera\Directory.Build.targets = Examples\Complete\Camera\Directory.Build.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Camera.Android", "Examples\Complete\Camera\Android\Fusee.Examples.Camera.Android.csproj", "{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}"
 EndProject
