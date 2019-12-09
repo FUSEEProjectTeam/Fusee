@@ -1512,6 +1512,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
+            gl.Enable(SCISSOR_TEST);
+
             switch (renderState)
             {
                 case RenderState.FillMode:

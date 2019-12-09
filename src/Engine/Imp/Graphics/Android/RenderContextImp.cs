@@ -1411,6 +1411,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
+            GL.Enable(EnableCap.ScissorTest);
+
             switch (renderState)
             {
                 case RenderState.FillMode:
