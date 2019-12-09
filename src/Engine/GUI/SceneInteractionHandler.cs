@@ -78,8 +78,6 @@ namespace Fusee.Engine.GUI
 
             if (_pickRes != null)
                 Traverse(_pickRes);
-
-            rc.ResetToDefaultState();
         }
 
         /// <summary>

@@ -32,6 +32,11 @@ namespace Fusee.Engine.Core
     public class CameraComponent : SceneComponentContainer
     {
         /// <summary>
+        /// The background color for this camera's viewport.
+        /// </summary>
+        public float4 BackgroundColor;
+
+        /// <summary>
         /// You can choose from a set of projection methods. This will automatically calculate the correct projection matrix.
         /// </summary>
         public ProjectionMethod ProjectionMethod;
@@ -89,17 +94,23 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="canvasWidthPx">The width of the render canvas.</param>
         /// <param name="canvasHeightPx">The height of the render canvas.</param>
+        /// <param name="viewport">The viewport that gets rendered with the resulting projection matrix. Given in pixel. This is used in lower levels to set <see cref="RenderContext.Viewport(int, int, int, int, bool)"/></param>
         /// <returns></returns>
-        public float4x4 GetProjectionMat(int canvasWidthPx, int canvasHeightPx)
+        public float4x4 GetProjectionMat(int canvasWidthPx, int canvasHeightPx, out float4 viewport)
         {
             if (CustomCameraUpdate != null)
             {
-                CustomCameraUpdate(out float4 viewport, out float4x4 proj);
+                CustomCameraUpdate(out viewport, out float4x4 proj);                
                 return proj;                
-            }
-          
+            }          
+
+            var startX = (int)(canvasWidthPx * (Viewport.x / 100));
+            var startY = (int)(canvasHeightPx * (Viewport.y / 100));
+
             var width = (int)(canvasWidthPx * (Viewport.z / 100));
             var height = (int)(canvasHeightPx * (Viewport.w / 100));
+
+            viewport = new float4(startX, startY, width, height);
 
             switch (ProjectionMethod)
             {

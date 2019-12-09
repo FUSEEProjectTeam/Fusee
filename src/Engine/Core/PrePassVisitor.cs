@@ -89,16 +89,16 @@ namespace Fusee.Engine.Core
     }
 
 
-    public struct CameraResult
+    internal struct CameraResult
     {
         public CameraComponent Camera { get; private set; }
 
-        public float4x4 View { get; private set; }
+        public float4x4 View { get; private set; }        
 
         public CameraResult(CameraComponent cam, float4x4 view)
         {
             Camera = cam;
-            View = view;
+            View = view;            
         }
     }
 
@@ -127,7 +127,7 @@ namespace Fusee.Engine.Core
         }
     }
 
-    public class PrePassVisitor : SceneVisitor
+    internal class PrePassVisitor : SceneVisitor
     {
         private TransformComponent _currentTransform;
         public List<Tuple<SceneNodeContainer, LightResult>> LightPrepassResuls;
@@ -360,20 +360,30 @@ namespace Fusee.Engine.Core
             var scale = float4x4.GetScale(_state.Model);
             var view = _state.Model;
 
-            view.M11 /=  scale.x;
-            view.M21 /= scale.x;
-            view.M31 /= scale.x;
+            if (scale.x != 1)
+            {
+                view.M11 /= scale.x;
+                view.M21 /= scale.x;
+                view.M31 /= scale.x;
+            }
 
-            view.M12 /= scale.y;
-            view.M22 /= scale.y;
-            view.M32 /= scale.y;
+            if (scale.y != 1)
+            {
+                view.M12 /= scale.y;
+                view.M22 /= scale.y;
+                view.M32 /= scale.y;
+            }
 
-            view.M13 /= scale.z;
-            view.M23 /= scale.z;
-            view.M33 /= scale.z;            
+            if (scale.z != 1)
+            {
+                view.M13 /= scale.z;
+                view.M23 /= scale.z;
+                view.M33 /= scale.z;
+            }          
 
-            var cameraResult = new CameraResult(camComp, view);
-            
+            view = view.Invert();            
+
+            var cameraResult = new CameraResult(camComp, view);            
             CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));
         }        
     }

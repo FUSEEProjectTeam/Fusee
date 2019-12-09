@@ -29,6 +29,17 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportHeight { get; private set; }
 
+        /// <summary>
+        /// Gets and sets the x coordinate of viewport's lower left (starting) point.
+        /// </summary>
+        public int ViewportXStart { get; private set; }
+
+        /// <summary>
+        /// Gets and sets the y coordinate of viewport's lower left (starting) point.
+        /// </summary>
+        public int ViewportYStart { get; private set; }
+
+
         // ReSharper disable once InconsistentNaming
         /// <summary>
         /// All global FX Params
@@ -62,6 +73,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Safes the default state of the render context. This is used to reset the render context to its default state after every render call.
+        /// </summary>
         public RenderContextDefaultState DefaultState { get; private set; }
 
         #region Private Fields
@@ -886,19 +900,12 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a new texture and binds it to the shader.
-        /// </summary>
-        /// <remarks>
-        /// Method should be called after LoadImage method to process
-        /// the BitmapData an make them available for the shader.
-        /// </remarks>
-        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>        
-        /// <returns>
-        /// An <see cref="Texture"/> that can be used for texturing in the shader.
-        /// </returns>
-        public ITextureHandle CreateTexture(Texture imgData)
+        /// Gets or creates a new <see cref="ITextureHandle"/> for the given <see cref="Texture"/> by using the <see cref="TextureManager"/>.
+        /// </summary>      
+        /// <param name="tex">An <see cref="Texture"/>, containing necessary information for the upload to the graphics card.</param>     
+        public ITextureHandle CreateTexture(Texture tex)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(imgData);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
             return textureHandle;
         }
 
@@ -1476,7 +1483,7 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
-        #region Render related Members
+        #region Render related Members       
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1542,7 +1549,7 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null render target is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        internal void SetRenderTarget(RenderTarget renderTarget = null)
+        public void SetRenderTarget(RenderTarget renderTarget = null)
         {
             ITextureHandle[] texHandles = null;
             if (renderTarget != null)
@@ -1564,7 +1571,7 @@ namespace Fusee.Engine.Core
         ///  Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        internal void SetRenderTarget(IWritableTexture tex)
+        public void SetRenderTarget(IWritableTexture tex)
         {
             var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
@@ -1574,7 +1581,7 @@ namespace Fusee.Engine.Core
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        internal void SetRenderTarget(IWritableCubeMap tex)
+        public void SetRenderTarget(IWritableCubeMap tex)
         {
             var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);
             _rci.SetRenderTarget(tex, texHandle);
@@ -1744,9 +1751,9 @@ namespace Fusee.Engine.Core
         /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
         /// Must be called after every visitation of the Scene Graph that changed these values.
         /// </summary>
-        public void ResetToDefaultState()
+        internal void ResetToDefaultState()
         {
-            Viewport(0, 0, ViewportWidth, ViewportHeight);
+            Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
             Projection = DefaultState.Projection;
         }
@@ -1813,7 +1820,8 @@ namespace Fusee.Engine.Core
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         public void Clear(ClearFlags flags)
-        {
+        {            
+            _rci.Scissor(ViewportXStart, ViewportYStart, ViewportWidth, ViewportHeight);
             _rci.Clear(flags);
         }
 
@@ -1830,15 +1838,14 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
         {
-            _rci.Viewport(x, y, width, height);
+            _rci.Viewport(x, y, width, height);            
 
             if (!renderToScreen) return;
 
             ViewportWidth = width;
             ViewportHeight = height;
-
-            DefaultState.ViewportWidth = ViewportWidth;
-            DefaultState.ViewportHeight = ViewportHeight;
+            ViewportXStart = x;
+            ViewportYStart = y;
         }
 
         /// <summary>
@@ -1925,48 +1932,70 @@ namespace Fusee.Engine.Core
     public class RenderContextDefaultState
     {
         /// <summary>
-        /// Gets and sets the viewport width.
+        /// This value should be equal to the window/canvas width and is set at every resize.
+        /// If this value is changed the default Projection matrix is recalculated.
         /// </summary>
-        public int ViewportWidth
+        public int CanvasWidth
         {
-
-            get { return _vpWidth; }
+            get { return _width; }
             set
             {
-                _vpWidth = value;
-                _aspect = (float)_vpWidth / _vpheight;
+                _width = value;
+                _aspect = (float)_width / _height;
                 Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
             }
         }
 
         /// <summary>
-        /// Gets and sets the viewport height.
+        /// This value should be equal to the window/canvas height and is set at every resize.
+        /// If this value is changed the default Projection matrix is recalculated.
         /// </summary>
-        public int ViewportHeight
+        public int CanvasHeight
         {
-            get { return _vpheight; }
+            get { return _height; }
             set
             {
-                _vpheight = value;
-                _aspect = (float)_vpWidth / _vpheight;
+                _height = value;
+                _aspect = (float)_width / _height;
                 Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
             }
         }
 
-        public readonly float4x4 View = float4x4.Identity;//float4x4.LookAt(0, 10, -10, 0, 0, 0, 0, 1, 0);
-        public float4x4 Projection { get; private set; }
+        /// <summary>
+        /// The view matrix.
+        /// </summary>
+        public readonly float4x4 View = float4x4.Identity;
 
-        private int _vpheight = 9;
-        private int _vpWidth = 16;       
-        private float _aspect;
+        /// <summary>
+        /// The projection matrix.
+        /// </summary>
+        public float4x4 Projection { get; private set; }        
 
+        /// <summary>
+        /// The default distance to the near clipping plane.
+        /// </summary>
         public readonly float ZNearDefautlt = 0.1f;
+
+        /// <summary>
+        /// The default distance to the far clipping plane.
+        /// </summary>
         public readonly float ZFarDefault = 3000;
+
+        /// <summary>
+        /// The default distance field of view.
+        /// </summary>
         public readonly float FovDefault = M.DegreesToRadians(45);
 
+        private int _height = 9;
+        private int _width = 16;
+        private float _aspect;
+
+        /// <summary>
+        /// Creates a new instance of type RenderContextDefaultState.
+        /// </summary>
         public RenderContextDefaultState()
         {
-            _aspect = (float)_vpWidth / _vpheight;
+            _aspect = (float)_width / _height;
             Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);            
         }
     }

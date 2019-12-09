@@ -9,6 +9,7 @@ using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
 using Fusee.Engine.Core.ShaderShards;
+using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
 {
@@ -18,18 +19,13 @@ namespace Fusee.Engine.Core
     /// </summary>
     public partial class SceneRendererForward : SceneVisitor
     {
-
-        protected PrePassVisitor _prePassVisitor;
-
-        private int _numberOfLights;
-
         /// <summary>
         ///Is set to true if a light was added or removed from the scene.
         /// /// </summary>
         protected bool HasNumberOfLightsChanged;
 
         /// <summary>
-        /// Light results, collected from the scene in the Viserator.
+        /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
         {            
@@ -50,10 +46,13 @@ namespace Fusee.Engine.Core
             }
         }
 
+        #region Traversal information
+
         private CanvasTransformComponent _ctc;
         private MinMaxRect _parentRect;
+        private int _numberOfLights;
 
-        #region Traversal information
+        internal PrePassVisitor PrePassVisitor { get; private set; }
 
         /// <summary>
         /// Caches SceneNodeContainers and their model matrices. Used when visiting a <see cref="BoneComponent"/>.
@@ -86,7 +85,7 @@ namespace Fusee.Engine.Core
         protected RendererState _state;
 
         /// <summary>
-        /// List of <see cref="LightResult"/>, created by the <see cref="LightViserator"/>.
+        /// List of <see cref="LightResult"/>, created by the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         protected List<Tuple<SceneNodeContainer, LightResult>> _lightResults = new List<Tuple<SceneNodeContainer, LightResult>>();
 
@@ -135,7 +134,7 @@ namespace Fusee.Engine.Core
         public SceneRendererForward(SceneContainer sc)
         {
             _sc = sc;
-            _prePassVisitor = new PrePassVisitor();
+            PrePassVisitor = new PrePassVisitor();
             var buildFrag = new ProtoToFrag(_sc, true);
             buildFrag.BuildFragmentShaders();
 
@@ -289,64 +288,57 @@ namespace Fusee.Engine.Core
             }
         }
         #endregion
-
-
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="rc"></param>
-        /// <param name="renderTarget">Optional parameter: set this if you want to render to a g-buffer.</param>
-        public void Render(RenderContext rc, RenderTarget renderTarget = null)
-        {
-            SetContext(rc);
-
-            _prePassVisitor.PrePassTraverse(_sc, _rc);
-
-            AccumulateLight();
-            UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget(renderTarget);
-
-            Traverse(_sc.Children);
-
-            _rc.ResetToDefaultState();
-        }
-
-        /// <summary>
-        /// Renders the scene.
-        /// </summary>
-        /// <param name="rc"></param>
-        /// <param name="renderTexture">Optional parameter: set this if you want to render to a texture.</param>
-        public void Render(RenderContext rc, WritableTexture renderTexture = null)
-        {
-            SetContext(rc);
-
-            _prePassVisitor.PrePassTraverse(_sc, _rc);
-
-            AccumulateLight();
-            UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget(renderTexture);
-
-            Traverse(_sc.Children);
-
-            _rc.ResetToDefaultState();
-        }
+               
 
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>       
         public void Render(RenderContext rc)
-        {
+        {            
             SetContext(rc);
 
-            _prePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
             UpdateShaderParamsForAllLights();
-            rc.SetRenderTarget();
+
+            if (PrePassVisitor.CameraPrepassResults.Count != 0)
+            {
+                foreach (var cam in PrePassVisitor.CameraPrepassResults)
+                {
+                    if (cam.Item2.Camera.Active)
+                    {
+                        PerCamRender(cam);
+                        //Reset Viewport
+                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                    }
+                }               
+            }
+            else            
+                Traverse(_sc.Children);
+        }
+
+        private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
+        {
+            var tex = cam.Item2.Camera.RenderTexture;
+
+            if(tex!= null)
+                _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
+            else
+                _rc.SetRenderTarget();
+
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
+            _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+            
+
+            _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
+            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            _rc.View = cam.Item2.View;
 
             Traverse(_sc.Children);
-            _rc.ResetToDefaultState();
         }
 
         
@@ -355,7 +347,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         protected void AccumulateLight()
         {            
-            LightViseratorResults = _prePassVisitor.LightPrepassResuls;
+            LightViseratorResults = PrePassVisitor.LightPrepassResuls;
 
             if (LightViseratorResults.Count == 0)
                 SetDefaultLight();

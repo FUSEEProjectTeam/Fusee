@@ -191,8 +191,8 @@ namespace Fusee.Engine.Core
                         var zNear = _rc.DefaultState.ZNearDefautlt;
                         var zFar = _rc.DefaultState.ZFarDefault;
                         var fov = _rc.DefaultState.FovDefault;
-                        var width = _rc.DefaultState.ViewportWidth;
-                        var height = _rc.DefaultState.ViewportHeight;
+                        var width = _rc.DefaultState.CanvasWidth;
+                        var height = _rc.DefaultState.CanvasHeight;
                         var cascades = ShadowMapping.ParallelSplitCascades(NumberOfCascades, lightView, tmpLambda, zNear, zFar, width, height, fov, _rc.View).ToList();
 
                         if (cascades.Count <= 1)
@@ -318,7 +318,7 @@ namespace Fusee.Engine.Core
         {
             SetContext(rc);
 
-            _prePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
             _rc.EnableDepthClamp();
@@ -363,9 +363,7 @@ namespace Fusee.Engine.Core
 
                 _rc.Viewport(0, 0, width, height);
                 RenderFXAA(renderTex);
-            }  
-
-            _rc.ResetToDefaultState();
+            }        
         }
 
         /// <summary>

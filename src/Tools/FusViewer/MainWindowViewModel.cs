@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using Fusee.Xene;
 using System.Text.Json;
 using System.Windows;
+using Fusee.Engine.Core;
 
 namespace Fusee.Tools.FusViewer.ViewModel
 {    

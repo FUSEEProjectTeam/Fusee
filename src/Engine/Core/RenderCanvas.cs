@@ -172,6 +172,9 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
+                //Resets Viewport and View and Projection Matrix to their default state.
+                RC.ResetToDefaultState();
+
                 // post-rendering
                 Input.Instance.PostRender();
             };
@@ -179,6 +182,8 @@ namespace Fusee.Engine.Core
             CanvasImplementor.Resize += delegate 
             {
                 RC.Viewport(0, 0, Width, Height);
+                RC.DefaultState.CanvasWidth = Width;
+                RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height)); 
             };
         }
