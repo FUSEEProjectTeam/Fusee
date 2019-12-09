@@ -1,12 +1,4 @@
-﻿#define GUI_SIMPLE
-
-// dynamic magic works @desktopbuild only! 
-#define WEBBUILD
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -14,13 +6,12 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-#if GUI_SIMPLE
-
-#endif
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Examples.Picking.Core
 {
-
     [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class Picking : RenderCanvas
     {
@@ -40,20 +31,17 @@ namespace Fusee.Examples.Picking.Core
         private const float ZFar = 1000;        
         private float _fovy = M.PiOver4;
 
-#if GUI_SIMPLE
-
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;       
 
-#endif
         private PickResult _currentPick;
         private float4 _oldColor;
         private bool _pick;
         private float2 _pickPos;        
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
@@ -66,12 +54,10 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-#if GUI_SIMPLE
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
-#endif
         }
 
         // RenderAFrame is called once a frame
@@ -149,40 +135,21 @@ namespace Fusee.Examples.Picking.Core
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
                         ef.SetEffectParam("DiffuseColor", _oldColor);
                     }
+
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
                         ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
-#else
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    dynamic shaderEffectComponent; // this needs to be dynamic! & reference Microsoft.CSharp.dll
 
-                    if (_currentPick != null)
-                    {
-                        shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        shaderEffectComponent.DiffuseColor = _oldColor;
-
-                    }
-                    if (newPick != null)
-                    {
-                        shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4) shaderEffectComponent.DiffuseColor;
-                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat4(ColorUint.LawnGreen);
-                    }
-                    _currentPick = newPick;
-                }
-#endif
                 _pick = false;
             }
             
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-#if GUI_SIMPLE
 
             
             RC.Projection = orthographic;
@@ -206,19 +173,11 @@ namespace Fusee.Examples.Picking.Core
             return (T)Convert.ChangeType(value, typeof(T));
         }
 
-
         private InputDevice Creator(IInputDeviceImp device)
         {
             throw new NotImplementedException();
         }
 
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-            
-        }
-
-#if GUI_SIMPLE
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
@@ -304,7 +263,6 @@ namespace Fusee.Examples.Picking.Core
         {
             OpenLink("http://fusee3d.org");
         }
-#endif
 
         private SceneContainer CreateScene()
         {
@@ -410,7 +368,6 @@ namespace Fusee.Examples.Picking.Core
             });
         }
 
-
         public static Mesh CreateCuboid(float3 size)
         {
             return new Mesh
@@ -462,7 +419,6 @@ namespace Fusee.Examples.Picking.Core
 
                     // bottom face
                     20, 22, 21, 20, 23, 22
-
                 },
 
                 Normals = new[]

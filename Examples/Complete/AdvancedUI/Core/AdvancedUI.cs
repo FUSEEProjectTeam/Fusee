@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -17,6 +17,7 @@ namespace Fusee.Examples.AdvancedUI.Core
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
         private bool _keys;
@@ -40,7 +41,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         private float _canvasWidth;
         private float _canvasHeight;
 
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private List<UIInput> _uiInput;
@@ -50,6 +50,9 @@ namespace Fusee.Examples.AdvancedUI.Core
         private TransformComponent _camTransform;
 
         private const float twoPi = M.Pi * 2.0f;
+
+        //rnd is public so unit tests can inject a seeded random.
+        public Random rnd;
 
         private SceneContainer BuildScene()
         {
@@ -75,7 +78,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
-
                             },
                             new ShaderEffectComponent()
                             {
@@ -94,7 +96,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
-
                             },
                             new ShaderEffectComponent()
                             {
@@ -107,7 +108,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
         }
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
@@ -128,7 +129,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _initWidth = Width;
             _initHeight = Height;
-            _aspectRatio = Width / (float)Height;
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
@@ -200,6 +200,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             #region Controls
+
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -256,8 +257,10 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            #endregion
 
+            #endregion Controls
+
+            //Annotations will be unpdated according to circle positions.
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
@@ -304,6 +307,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
                         circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
+                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
                     else
                     {
@@ -319,7 +323,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                         yPosScale = (yPosScale - 0.5f) * 2f;
                         uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UIHelper.AnnotationDim.y / 2) + (2 * UIHelper.AnnotationDim.y * yPosScale);
 
-                        if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT                        
+                        if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT
                             uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
                         else
                             uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;
@@ -391,8 +395,6 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            _aspectRatio = Width / (float)Height;
-
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
@@ -621,29 +623,23 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         if (i == middleIndex - 1)
                             thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
-
                         else if (i == middleIndex)
                             thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
-
                         else if (i > middleIndex)
                             thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
                         else if (i < middleIndex)
                             thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
                     }
                     else //odd
                     {
                         if (i > middleIndex)
                             thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
-
                         else if (i < middleIndex)
                             thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
                     }
 
                     _uiInput[identifier] = thisInput;
                 }
-
             }
 
             //Recursively check all annotations that where involved in this intersection

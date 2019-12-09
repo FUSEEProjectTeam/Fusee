@@ -1,5 +1,5 @@
-﻿using System.Runtime.InteropServices;
-using ProtoBuf;
+﻿using ProtoBuf;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
@@ -108,6 +108,7 @@ namespace Fusee.Math.Core
             ret.max.z = (a.max.z > p.z) ? a.max.z : p.z;
             return ret;
         }
+
         /// <summary>
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
@@ -183,7 +184,7 @@ namespace Fusee.Math.Core
 
             // split the viewing frustrum in 6 planes
             // plane equation = ax + by + cz + d = 0;
-            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3 
+            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3
             var planes = new float4[6];
             // left
             planes[0] = new float4(vF.M41 + vF.M11,
@@ -226,9 +227,8 @@ namespace Fusee.Math.Core
                 if (side < 0) return false;
             }
             return true;
-
         }
-        
+
         private float Classify(AABBf aabb, float4 plane)
         {
             // maximum extent in direction of plane normal (plane.xyz)

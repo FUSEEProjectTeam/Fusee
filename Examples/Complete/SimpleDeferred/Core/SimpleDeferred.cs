@@ -6,7 +6,6 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using static Fusee.Engine.Core.Input;
@@ -30,6 +29,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         //For shadow calculation the distance to the far clipping plane should be as small as possible to ensure the best shadow map resolution when using parallel lights.
         //Can be a custom value when cascaded shadow maps are implemented.
         private const float ZFar = 3000;
+
         private readonly float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
@@ -39,7 +39,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         
         private bool _keys;
 
-        private const float twoPi = M.Pi * 2.0f;       
+        private const float twoPi = M.Pi * 2.0f;
 
         private TransformComponent _sunTransform;
 
@@ -49,11 +49,11 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private LightComponent _sun;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {           
             _gui = CreateGui();
-            
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -98,7 +98,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                     //        }
                     //    }
                     //}
-
                 },
                 new SceneNodeContainer()
                 {
@@ -152,11 +151,9 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 {
                     new TransformComponent(){ Translation = new float3(0, 100, 150)},
                     greenLight,
-
                 }
                 },
             };
-
 
             _rocketScene.Children.Add(new SceneNodeContainer()
             {
@@ -166,7 +163,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the scene.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene);
-           
+
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
         }
@@ -208,7 +205,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 localLerp = (normalizedDeg - 0.5f) / (0.5f);
                 _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
             }
-           
+
             RC.ClearColor = _backgroundColor;
 
             // Mouse and keyboard movement
@@ -358,7 +355,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -375,7 +372,6 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
-
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",

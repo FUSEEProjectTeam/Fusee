@@ -1,22 +1,21 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
 
 namespace Fusee.Examples.Bone.Core
 {
-
     [FuseeApplication(Name = "FUSEE Bone Animation Example", Description = "Quick bone animation example")]
     public class Bone : RenderCanvas
     {
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
                              _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -34,7 +33,7 @@ namespace Fusee.Examples.Bone.Core
 
         private float _maxPinchSpeed;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
@@ -144,7 +143,6 @@ namespace Fusee.Examples.Bone.Core
             //            Scale = new float3(1, 1, 1)
             //        },
 
-
             //    },
             //    Children = new ChildList
             //    {
@@ -162,7 +160,6 @@ namespace Fusee.Examples.Bone.Core
             //            }
             //        },
 
-
             //        new SceneNodeContainer()
             //        {
             //            Name = "BoneContainer2",
@@ -178,10 +175,8 @@ namespace Fusee.Examples.Bone.Core
 
             //            Children = new ChildList
             //            {
-
             //                new SceneNodeContainer
             //                {
-
             //                Components = new List<SceneComponentContainer>()
             //                {
             //                    new TransformComponent()
@@ -204,7 +199,7 @@ namespace Fusee.Examples.Bone.Core
             //{
             //    BindingMatrices = bindingMatrices,
             //    WeightMap = WeightMap
-            //    // Joints are added automatically during scene conversion (ConvertSceneGraph) 
+            //    // Joints are added automatically during scene conversion (ConvertSceneGraph)
             //});
 
             ////_scene = AssetStorage.Get<SceneContainer>("BoneAnim.fus");
@@ -215,9 +210,9 @@ namespace Fusee.Examples.Bone.Core
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
-                // If the model origin is more than one third away from its bounding box, 
+                // If the model origin is more than one third away from its bounding box,
                 // recenter it to the bounding box. Do this check individually per dimension.
-                // This way, small deviations will keep the model's original center, while big deviations 
+                // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
                 float3 bbCenter = bbox.Value.Center;
                 float3 bbSize = bbox.Value.Size;
@@ -328,7 +323,6 @@ namespace Fusee.Examples.Bone.Core
             // Wrap-around to keep _angleRoll between -PI and + PI
             _angleRoll = M.MinAngle(_angleRoll);
 
-
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 0, -_zoom, 0, 0, 0, 0, 1, 0);
@@ -342,7 +336,6 @@ namespace Fusee.Examples.Bone.Core
             translation.Rotation.y += Input.Keyboard.WSAxis * 0.05f;
 
             //Diagnostics.Log(_scene.Children[0].GetComponent<TransformComponent>().Translation);
-
 
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer.Animate();
@@ -360,7 +353,6 @@ namespace Fusee.Examples.Bone.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-
         }
 
         public static Mesh CreateCuboid(float3 size)
@@ -414,7 +406,6 @@ namespace Fusee.Examples.Bone.Core
 
                     // bottom face
                     20, 22, 21, 20, 23, 22
-
                 },
 
                 Normals = new[]
@@ -477,5 +468,3 @@ namespace Fusee.Examples.Bone.Core
         }
     }
 }
-
-

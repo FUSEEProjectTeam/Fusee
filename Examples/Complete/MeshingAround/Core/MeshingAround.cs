@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System;
+using System.Collections.Generic;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
-
 namespace Fusee.Examples.MeshingAround.Core
 {
-
     [FuseeApplication(Name = "FUSEE Meshing Example", Description = "Meshing around...")]
     public class MeshingAround : RenderCanvas
     {
@@ -21,10 +18,9 @@ namespace Fusee.Examples.MeshingAround.Core
 
         private SceneRendererForward _renderer;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
-
             var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
@@ -110,7 +106,6 @@ namespace Fusee.Examples.MeshingAround.Core
 
             var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-
             var meshCOne = new Mesh
             {
                 Vertices = meshOne.Vertices,
@@ -174,13 +169,11 @@ namespace Fusee.Examples.MeshingAround.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
-
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -210,8 +203,6 @@ namespace Fusee.Examples.MeshingAround.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-
         }
-
     }
 }
