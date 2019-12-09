@@ -16,7 +16,7 @@ namespace Fusee.Examples.Picking.Core
     public class Picking : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert;
+        private static float _angleHorz = M.PiOver4, _angleVert, _angleVelHorz, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -28,22 +28,32 @@ namespace Fusee.Examples.Picking.Core
         private bool _keys;
 
         private const float ZNear = 1f;
-        private const float ZFar = 1000;        
+        private const float ZFar = 1000;
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
-        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;       
+        private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
+        private float _initCanvasWidth;
+        private float _initCanvasHeight;
+        private float _canvasWidth = 16;
+        private float _canvasHeight = 9;
 
         private PickResult _currentPick;
         private float4 _oldColor;
         private bool _pick;
-        private float2 _pickPos;        
+        private float2 _pickPos;
 
         // Init is called on startup.
         public override void Init()
         {
+            _initCanvasWidth = Width / 100f;
+            _initCanvasHeight = Height / 100f;
+
+            _canvasHeight = _initCanvasHeight;
+            _canvasWidth = _initCanvasWidth;
+
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
 
@@ -63,7 +73,6 @@ namespace Fusee.Examples.Picking.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -107,26 +116,23 @@ namespace Fusee.Examples.Picking.Core
 
             _angleHorz += _angleVelHorz;
             _angleVert += _angleVelVert;
-           
+
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 10, -600, 0, 150, 0, 0, 1, 0);
+            var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
 
-            var view = mtxCam * mtxRot;
             var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
             var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
-            RC.View = view;
-            RC.Projection = perspective;
-
-            // Check 
+            // Check
             if (_pick)
-            {                
+            {
                 Diagnostics.Debug(_pickPos);
-                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1); 
-                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
+                float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
-#if WEBBUILD
+                RC.View = mtxCam * mtxRot;
+
+                PickResult newPick = _scenePicker.Pick(RC, pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                 if (newPick?.Node != _currentPick?.Node)
                 {
@@ -147,11 +153,12 @@ namespace Fusee.Examples.Picking.Core
 
                 _pick = false;
             }
-            
+
+            RC.View = mtxCam * mtxRot;
+            RC.Projection = perspective;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
 
-            
             RC.Projection = orthographic;
             // Constantly check for interactive objects.
             if (!Input.Mouse.Desc.Contains("Android"))
@@ -161,10 +168,9 @@ namespace Fusee.Examples.Picking.Core
             {
                 _sih.CheckForInteractiveObjects(RC, Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            
             _guiRenderer.Render(RC);
-#endif
-            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
 
@@ -182,9 +188,6 @@ namespace Fusee.Examples.Picking.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
-
-            var canvasWidth = Width / 100f;
-            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -204,8 +207,8 @@ namespace Fusee.Examples.Picking.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
+                //Define Offset and therefor the size of the element.
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
@@ -214,11 +217,11 @@ namespace Fusee.Examples.Picking.Core
 
             var text = new TextNodeContainer(
                 "FUSEE Picking Example",
-                "TitleText",
+                "ButtonText",
                 vsTex,
                 psTex,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
@@ -227,17 +230,12 @@ namespace Fusee.Examples.Picking.Core
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
-                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
-                })
-            {
-                Children = new ChildList()
-                {
-                    //Simple Texture Node, contains the fusee logo.
-                    fuseeLogo,
-                    text
+                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
+                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 }
-            };
+            );
+            canvas.Children.Add(fuseeLogo);
+            canvas.Children.Add(text);
 
             return new SceneContainer
             {

@@ -1942,7 +1942,8 @@ namespace Fusee.Engine.Core
             {
                 _width = value;
                 _aspect = (float)_width / _height;
-                Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+                if(_aspect != 0)
+                    Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
             }
         }
 
@@ -1957,7 +1958,8 @@ namespace Fusee.Engine.Core
             {
                 _height = value;
                 _aspect = (float)_width / _height;
-                Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+                if (_aspect != 0)
+                    Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
             }
         }
 
