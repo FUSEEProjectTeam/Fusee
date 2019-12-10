@@ -1,5 +1,5 @@
-using Xunit;
 using System.Drawing;
+using Xunit;
 using Xunit.Abstractions;
 
 namespace Fusee.Test.Render.Desktop
@@ -16,23 +16,23 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void AdvancedUITest()
         {
-            Program.setExample(new Fusee.Examples.AdvancedUI.Core.AdvancedUI());
-            Program.Main("AdvancedUITest.png");
+            Program.Example = new Fusee.Examples.AdvancedUI.Core.AdvancedUI() { rnd = new System.Random(12345) };
+            Program.Init("AdvancedUITest.png");
 
             var referenceIm = new Bitmap(@"References\AdvancedUI.png");
             var testIm = new Bitmap("AdvancedUITest.png");
 
             var percent = compareImage(referenceIm, testIm);
 
-            Assert.InRange(percent, 0.10f, 1f);
+            Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
         }
 
         [Fact]
         public void BoneAnimationTest()
         {
-            Program.setExample(new Fusee.Examples.Bone.Core.Bone());
-            Program.Main("BoneAnimationTest.png");
+            Program.Example = new Fusee.Examples.Bone.Core.Bone();
+            Program.Init("BoneAnimationTest.png");
 
             var referenceIm = new Bitmap(@"References\BoneAnimation.png");
             var testIm = new Bitmap("BoneAnimationTest.png");
@@ -46,8 +46,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void BumpMappingTest()
         {
-            Program.setExample(new Fusee.Examples.Bump.Core.Bump());
-            Program.Main("BumpMappingTest.png");
+            Program.Example = new Fusee.Examples.Bump.Core.Bump();
+            Program.Init("BumpMappingTest.png");
 
             var referenceIm = new Bitmap(@"References\BumpMapping.png");
             var testIm = new Bitmap("BumpMappingTest.png");
@@ -61,8 +61,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void GeometryEditingTest()
         {
-            Program.setExample(new Fusee.Examples.GeometryEditing.Core.GeometryEditing());
-            Program.Main("GeometryEditingTest.png");
+            Program.Example = new Fusee.Examples.GeometryEditing.Core.GeometryEditing();
+            Program.Init("GeometryEditingTest.png");
 
             var referenceIm = new Bitmap(@"References\GeometryEditing.png");
             var testIm = new Bitmap("GeometryEditingTest.png");
@@ -76,8 +76,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void MeshingAroundTest()
         {
-            Program.setExample(new Fusee.Examples.MeshingAround.Core.MeshingAround());
-            Program.Main("MeshingAroundTest.png");
+            Program.Example = new Fusee.Examples.MeshingAround.Core.MeshingAround();
+            Program.Init("MeshingAroundTest.png");
 
             var referenceIm = new Bitmap(@"References\MeshingAround.png");
             var testIm = new Bitmap("MeshingAroundTest.png");
@@ -91,8 +91,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void PickingTest()
         {
-            Program.setExample(new Fusee.Examples.Picking.Core.Picking());
-            Program.Main("PickingTest.png");
+            Program.Example = new Fusee.Examples.Picking.Core.Picking();
+            Program.Init("PickingTest.png");
 
             var referenceIm = new Bitmap(@"References\Picking.png");
             var testIm = new Bitmap("PickingTest.png");
@@ -105,9 +105,9 @@ namespace Fusee.Test.Render.Desktop
 
         [Fact]
         public void SimpleTest()
-        {            
-            Program.setExample(new Fusee.Examples.Simple.Core.Simple());
-            Program.Main("SimpleTest.png");
+        {
+            Program.Example = new Fusee.Examples.Simple.Core.Simple();
+            Program.Init("SimpleTest.png");
 
             var referenceIm = new Bitmap(@"References\Simple.png");
             var testIm = new Bitmap("SimpleTest.png");
@@ -121,8 +121,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void SimpleDeferredTest()
         {
-            Program.setExample(new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred());
-            Program.Main("SimpleDeferredTest.png");
+            Program.Example = new Fusee.Examples.SimpleDeferred.Core.SimpleDeferred();
+            Program.Init("SimpleDeferredTest.png");
 
             var referenceIm = new Bitmap(@"References\SimpleDeferred.png");
             var testIm = new Bitmap("SimpleDeferredTest.png");
@@ -136,8 +136,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void ThreeDFontTest()
         {
-            Program.setExample(new Fusee.Examples.ThreeDFont.Core.ThreeDFont());
-            Program.Main("ThreeDFontTest.png");
+            Program.Example = new Fusee.Examples.ThreeDFont.Core.ThreeDFont();
+            Program.Init("ThreeDFontTest.png");
 
             var referenceIm = new Bitmap(@"References\ThreeDFont.png");
             var testIm = new Bitmap("ThreeDFontTest.png");
@@ -151,8 +151,8 @@ namespace Fusee.Test.Render.Desktop
         [Fact]
         public void UITest()
         {
-            Program.setExample(new Fusee.Examples.UI.Core.UI());
-            Program.Main("UITest.png");
+            Program.Example = new Fusee.Examples.UI.Core.UI();
+            Program.Init("UITest.png");
 
             var referenceIm = new Bitmap(@"References\UI.png");
             var testIm = new Bitmap("UITest.png");
@@ -162,7 +162,6 @@ namespace Fusee.Test.Render.Desktop
             Assert.InRange(percent, 0.99f, 1f);
             output.WriteLine(percent.ToString());
         }
-
 
         /// <summary>
         /// The function compares two images and returns how many pixels are different from another (in percent),

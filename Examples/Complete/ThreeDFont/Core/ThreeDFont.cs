@@ -1,16 +1,14 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
-using static Fusee.Engine.Core.Input;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System.Collections.Generic;
+using static Fusee.Engine.Core.Input;
 
 namespace Fusee.Examples.ThreeDFont.Core
 {
-
     [FuseeApplication(Name = "FUSEE ThreeDFont Example", Description = "Create meshes from Font-Files.")]
     public class ThreeDFont : RenderCanvas
     {
@@ -26,7 +24,7 @@ namespace Fusee.Examples.ThreeDFont.Core
 
         private ThreeDFontHelper _threeDFontHelper;
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
@@ -42,14 +40,12 @@ namespace Fusee.Examples.ThreeDFont.Core
             geomLato.Triangulate();
             _textMeshLato = new JometriMesh(geomLato);
 
-
             _threeDFontHelper = new ThreeDFontHelper(_text, vladimir);
             var outlinesVlad = _threeDFontHelper.GetTextOutlinesWAngle(7);
             var geomVlad = new Jometri.Geometry(outlinesVlad);
             geomVlad.Extrude2DPolygon(200, false);
             geomVlad.Triangulate();
             _textMeshVlad = new JometriMesh(geomVlad);
-
 
             _threeDFontHelper = new ThreeDFontHelper(_text, gnuSerif);
             var outlinesGnu = _threeDFontHelper.GetTextOutlinesWAngle(40);
@@ -73,7 +69,6 @@ namespace Fusee.Examples.ThreeDFont.Core
             };
 
             parentNode.Components.Add(parentTrans);
-
 
             //Vladimir
             var sceneNodeCVlad = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
@@ -139,7 +134,7 @@ namespace Fusee.Examples.ThreeDFont.Core
 
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
             sc.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRendererForward(sc);
@@ -169,7 +164,6 @@ namespace Fusee.Examples.ThreeDFont.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -193,7 +187,6 @@ namespace Fusee.Examples.ThreeDFont.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            
         }
 
         private static float4x4 ModelXForm(float3 pos, float3 pivot)

@@ -14,7 +14,7 @@ namespace Fusee.Math.Core
         private double3 _xyz;
         private double _w;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -41,7 +41,7 @@ namespace Fusee.Math.Core
         {
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -92,11 +92,12 @@ namespace Fusee.Math.Core
             set { _w = value; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Instance
 
         #region this
+
         /// <summary>
         ///     Sets/Gets value from given idx
         /// </summary>
@@ -110,12 +111,16 @@ namespace Fusee.Math.Core
                 {
                     case 0:
                         return x;
+
                     case 1:
                         return y;
+
                     case 2:
                         return z;
+
                     case 3:
                         return w;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
                 }
@@ -127,21 +132,26 @@ namespace Fusee.Math.Core
                     case 0:
                         x = value;
                         break;
+
                     case 1:
                         y = value;
                         break;
+
                     case 2:
                         z = value;
                         break;
+
                     case 3:
                         w = value;
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a QuaternionD type");
                 }
             }
         }
-        #endregion
+
+        #endregion this
 
         #region ToAxisAngle
 
@@ -156,13 +166,13 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Converts the quaternion into a rotation matrix.
-        /// </summary>       
+        /// </summary>
         public double4x4 ToRotMat()
         {
             return ToRotMat(this);
         }
 
-        #endregion
+        #endregion ToAxisAngle
 
         #region public double Length
 
@@ -172,10 +182,10 @@ namespace Fusee.Math.Core
         /// <seealso cref="LengthSquared" />
         public double Length
         {
-            get { return System.Math.Sqrt(w*w + xyz.LengthSquared); }
+            get { return System.Math.Sqrt(w * w + xyz.LengthSquared); }
         }
 
-        #endregion
+        #endregion public double Length
 
         #region public double LengthSquared
 
@@ -184,10 +194,10 @@ namespace Fusee.Math.Core
         /// </summary>
         public double LengthSquared
         {
-            get { return w*w + xyz.LengthSquared; }
+            get { return w * w + xyz.LengthSquared; }
         }
 
-        #endregion
+        #endregion public double LengthSquared
 
         #region public Normalize()
 
@@ -199,7 +209,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public Conjugate()
 
@@ -211,7 +221,7 @@ namespace Fusee.Math.Core
             return Conjugate(this);
         }
 
-        #endregion
+        #endregion public Conjugate()
 
         #region public Invert()
 
@@ -224,9 +234,9 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        #endregion
+        #endregion public Invert()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -237,7 +247,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static QuaternionD Identity = new QuaternionD(0, 0, 0, 1);
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -254,7 +264,7 @@ namespace Fusee.Math.Core
                 left.w + right.w);
         }
 
-        #endregion
+        #endregion Add
 
         #region Sub
 
@@ -271,7 +281,7 @@ namespace Fusee.Math.Core
                 left.w - right.w);
         }
 
-        #endregion
+        #endregion Sub
 
         #region Mult
 
@@ -300,10 +310,10 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static QuaternionD Multiply(QuaternionD quaternionD, double scale)
         {
-            return new QuaternionD(quaternionD.x*scale, quaternionD.y*scale, quaternionD.z*scale, quaternionD.w*scale);
+            return new QuaternionD(quaternionD.x * scale, quaternionD.y * scale, quaternionD.z * scale, quaternionD.w * scale);
         }
 
-        #endregion
+        #endregion Mult
 
         #region Conjugate
 
@@ -317,7 +327,7 @@ namespace Fusee.Math.Core
             return new QuaternionD(-q.xyz, q.w);
         }
 
-        #endregion
+        #endregion Conjugate
 
         #region Invert
 
@@ -345,7 +355,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Invert
 
         #region Normalize
 
@@ -370,7 +380,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region AxisAngle
 
@@ -384,7 +394,7 @@ namespace Fusee.Math.Core
         {
             if (axis.LengthSquared < M.EpsilonFloat)
                 return Identity;
-                
+
             if (axis.LengthSquared > 1.0)
                 return Identity;
 
@@ -392,7 +402,7 @@ namespace Fusee.Math.Core
 
             angle *= 0.5f;
             axis = axis.Normalize();
-            result.xyz = axis*System.Math.Sin(angle);
+            result.xyz = axis * System.Math.Sin(angle);
             result.w = System.Math.Cos(angle);
 
             return Normalize(result);
@@ -443,7 +453,7 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // This occurs when the angle is zero. 
+                // This occurs when the angle is zero.
                 // Not a problem: just set an arbitrary normalized axis.
                 result.xyz = double3.UnitX;
             }
@@ -451,7 +461,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion AxisAngle
 
         #region Slerp
 
@@ -471,7 +481,7 @@ namespace Fusee.Math.Core
             if ((q2.LengthSquared < M.EpsilonDouble))
                 return q1;
 
-            var cosHalfAngle = q1.w*q2.w + double3.Dot(q1.xyz, q2.xyz);
+            var cosHalfAngle = q1.w * q2.w + double3.Dot(q1.xyz, q2.xyz);
 
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
@@ -492,10 +502,10 @@ namespace Fusee.Math.Core
                 // do proper slerp for big angles
                 var halfAngle = System.Math.Acos(cosHalfAngle);
                 var sinHalfAngle = System.Math.Sin(halfAngle);
-                var oneOverSinHalfAngle = 1.0f/sinHalfAngle;
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
 
-                blendA = System.Math.Sin(halfAngle*(1.0f - blend))*oneOverSinHalfAngle;
-                blendB = System.Math.Sin(halfAngle*blend)*oneOverSinHalfAngle;
+                blendA = System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -504,12 +514,12 @@ namespace Fusee.Math.Core
                 blendB = blend;
             }
 
-            var result = new QuaternionD(blendA*q1.xyz + blendB*q2.xyz, blendA*q1.w + blendB*q2.w);
+            var result = new QuaternionD(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
 
             return result.LengthSquared > M.EpsilonDouble ? Normalize(result) : Identity;
         }
 
-        #endregion
+        #endregion Slerp
 
         #region Transform
 
@@ -535,9 +545,9 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -618,7 +628,7 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
@@ -633,7 +643,7 @@ namespace Fusee.Math.Core
             return String.Format("V: {0}, w: {1}", xyz, w);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override bool Equals (object o)
 
@@ -645,10 +655,10 @@ namespace Fusee.Math.Core
         public override bool Equals(object other)
         {
             if (other is QuaternionD == false) return false;
-            return this == (QuaternionD) other;
+            return this == (QuaternionD)other;
         }
 
-        #endregion
+        #endregion public override bool Equals (object o)
 
         #region public override int GetHashCode ()
 
@@ -661,11 +671,11 @@ namespace Fusee.Math.Core
             return xyz.GetHashCode() ^ w.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode ()
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<QuaternionD> Members
 
@@ -679,6 +689,6 @@ namespace Fusee.Math.Core
             return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonDouble);
         }
 
-        #endregion
+        #endregion IEquatable<QuaternionD> Members
     }
 }

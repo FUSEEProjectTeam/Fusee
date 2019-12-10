@@ -36,7 +36,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static float3x3 Zero = new float3x3(0, 0, 0, 0, 0, 0, 0, 0, 0);
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -86,7 +86,7 @@ namespace Fusee.Math.Core
             Row2 = new float3(mat4.Row2.x, mat4.Row2.y, mat4.Row2.z);
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -100,12 +100,12 @@ namespace Fusee.Math.Core
             get
             {
                 return
-                    Row0.x*Row1.y*Row2.z
-                    + Row0.y*Row1.z*Row2.x
-                    + Row0.z*Row1.x*Row2.y
-                    - Row0.z*Row1.y*Row2.x
-                    - Row0.y*Row1.x*Row2.z
-                    - Row0.x*Row1.z*Row2.y;
+                    Row0.x * Row1.y * Row2.z
+                    + Row0.y * Row1.z * Row2.x
+                    + Row0.z * Row1.x * Row2.y
+                    - Row0.z * Row1.y * Row2.x
+                    - Row0.y * Row1.x * Row2.z
+                    - Row0.x * Row1.z * Row2.y;
             }
         }
 
@@ -214,10 +214,10 @@ namespace Fusee.Math.Core
             set { Row2.z = value; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Instance
-        
+
         /// <summary>
         ///     Returns this matrix as an array
         /// </summary>
@@ -228,7 +228,7 @@ namespace Fusee.Math.Core
                 return new float[]
                 {
                     M11, M12, M13,
-                    M21, M22, M23, 
+                    M21, M22, M23,
                     M31, M32, M33,
                 };
             }
@@ -248,15 +248,15 @@ namespace Fusee.Math.Core
 
         private float[] ToArray()
         {
-            return new[] {M11, M12, M13, M21, M22, M23, M31, M32, M33};
+            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
             // return new float[] { M11, M21, M31, M12, M22, M32, M13, M23, M33 };
         }
 
-        #endregion
+        #endregion float[] ToArray()
 
-        #endregion
+        #endregion public Transpose()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -288,7 +288,7 @@ namespace Fusee.Math.Core
                 left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
         }
 
-        #endregion
+        #endregion Elementary Arithmetic Functions
 
         #region Multiply Functions
 
@@ -318,7 +318,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply Functions
 
         #region Transpose
 
@@ -332,7 +332,7 @@ namespace Fusee.Math.Core
             return new float3x3(mat.Column0, mat.Column1, mat.Column2);
         }
 
-        #endregion
+        #endregion Transpose
 
         #region Transform
 
@@ -402,9 +402,9 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -507,7 +507,7 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
@@ -522,7 +522,7 @@ namespace Fusee.Math.Core
             return String.Format("{0}\n{1}\n{2}", Row0, Row1, Row2);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -535,7 +535,7 @@ namespace Fusee.Math.Core
             return Row0.GetHashCode() ^ Row1.GetHashCode() ^ Row2.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -549,14 +549,14 @@ namespace Fusee.Math.Core
             if (!(obj is float3x3))
                 return false;
 
-            return Equals((float3x3) obj);
+            return Equals((float3x3)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<Matri3x3> Members
 
@@ -580,6 +580,6 @@ namespace Fusee.Math.Core
                 Row2 == other.Row2;
         }
 
-        #endregion
+        #endregion IEquatable<Matri3x3> Members
     }
 }

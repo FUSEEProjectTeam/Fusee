@@ -230,7 +230,7 @@ namespace Fusee.Math.Core
 
             // split the viewing frustrum in 6 planes
             // plane equation = ax + by + cz + d = 0;
-            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3 
+            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3
             var planes = new double4[6];
             // left
             planes[0] = new double4(vF.M41 + vF.M11,
@@ -273,7 +273,6 @@ namespace Fusee.Math.Core
                 if (side < 0) return false;
             }
             return true;
-
         }
 
         private double Classify(AABBd aabb, double4 plane)
@@ -294,7 +293,6 @@ namespace Fusee.Math.Core
                 return d + r;
             return d - r;
         }
-
 
         /// <summary>
         ///     Check if two AABBs intersect each other
@@ -317,6 +315,5 @@ namespace Fusee.Math.Core
         {
             return aabb.Intersects(point);
         }
-
     }
 }

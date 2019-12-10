@@ -1,38 +1,38 @@
-using System.IO;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Fusee.Base.Core;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.ThreeDFont.Android
 {
-	[Activity (Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
+    [Activity(Label = "@string/app_name", MainLauncher = true, Icon = "@drawable/icon",
 #if __ANDROID_11__
-		HardwareAccelerated=false,
+        HardwareAccelerated = false,
 #endif
-		ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
-	public class MainActivity : Activity
-	{
-		protected override void OnCreate (Bundle savedInstanceState)
-		{
-			base.OnCreate (savedInstanceState);
+        ConfigurationChanges = ConfigChanges.KeyboardHidden, LaunchMode = LaunchMode.SingleTask)]
+    public class MainActivity : Activity
+    {
+        protected override void OnCreate(Bundle savedInstanceState)
+        {
+            base.OnCreate(savedInstanceState);
             RequestWindowFeature(WindowFeatures.NoTitle);
-		    if (SupportedOpenGLVersion() >= 3)
-		    {
-		        // SetContentView(new LibPaintingView(ApplicationContext, null));
+            if (SupportedOpenGLVersion() >= 3)
+            {
+                // SetContentView(new LibPaintingView(ApplicationContext, null));
 
-		        // Inject Fusee.Engine.Base InjectMe dependencies
-		        IO.IOImp = new IOImp(ApplicationContext);
+                // Inject Fusee.Engine.Base InjectMe dependencies
+                IO.IOImp = new IOImp(ApplicationContext);
 
                 var fap = new Fusee.Base.Imp.Android.ApkAssetProvider(ApplicationContext);
                 fap.RegisterTypeHandler(
@@ -48,7 +48,8 @@ namespace Fusee.Examples.ThreeDFont.Android
                                 };
                             return null;
                         },
-                        Checker = delegate (string id) {
+                        Checker = delegate (string id)
+                        {
                             return Path.GetExtension(id).ToLower().Contains("ttf");
                         }
                     });
@@ -60,7 +61,7 @@ namespace Fusee.Examples.ThreeDFont.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                                return Serializer.DeserializeSceneContainer((Stream)storage);
                             }
                             return null;
                         },
@@ -73,25 +74,24 @@ namespace Fusee.Examples.ThreeDFont.Android
 
                 var app = new Core.ThreeDFont();
 
-		        // Inject Fusee.Engine InjectMe dependencies (hard coded)
-		        RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
-		        app.CanvasImplementor = rci;
-		        app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
+                // Inject Fusee.Engine InjectMe dependencies (hard coded)
+                RenderCanvasImp rci = new RenderCanvasImp(ApplicationContext, null, delegate { app.Run(); });
+                app.CanvasImplementor = rci;
+                app.ContextImplementor = new RenderContextImp(rci, ApplicationContext);
 
-		        SetContentView(rci.View);
+                SetContentView(rci.View);
 
-		        Engine.Core.Input.AddDriverImp(
-		            new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
-		        // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvaThreeDFontmentor));
-		        // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
-		    }
-		    else
-		    {
+                Engine.Core.Input.AddDriverImp(
+                    new Fusee.Engine.Imp.Graphics.Android.RenderCanvasInputDriverImp(app.CanvasImplementor));
+                // Engine.Core.Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Android.WindowsTouchInputDriverImp(app.CanvaThreeDFontmentor));
+                // Deleayed into rendercanvas imp....app.Run() - SEE DELEGATE ABOVE;
+            }
+            else
+            {
                 Toast.MakeText(ApplicationContext, "Hardware does not support OpenGL ES 3.0 - Aborting...", ToastLength.Long);
                 Log.Info("@string/app_name", "Hardware does not support OpenGL ES 3.0 - Aborting...");
             }
         }
-
 
         /// <summary>
         /// Gets the supported OpenGL ES version of device.
@@ -125,6 +125,5 @@ namespace Fusee.Examples.ThreeDFont.Android
             Log.Info("GLVersion", "OpenGL ES major version: " + cleaned);
             return cleaned;
         }
-
     }
 }

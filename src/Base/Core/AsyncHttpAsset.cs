@@ -159,7 +159,7 @@ namespace Fusee.Base.Core
                     //onDownloaded
                     ProcessAsset(bytes);
                 }
-                catch (HttpRequestException e)
+                catch
                 {
                     FailCallback();
                 }

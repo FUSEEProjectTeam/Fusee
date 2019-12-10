@@ -3,6 +3,8 @@
     <RootNamespace>Fusee.Test.Render.Desktop</RootNamespace>
     <PackageId>Fusee.Test.Render.Desktop</PackageId>
     <TargetFramework>netcoreapp3.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -28,13 +30,16 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Core\Fusee.Base.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\GUI\Fusee.Engine.GUI.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Player\Core\Fusee.Engine.Player.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Jometri\Fusee.Jometri.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xene\Fusee.Xene.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\AdvancedUI\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BoneAnimation\Core\Fusee.Examples.Bone.Core.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\Examples\Complete\BumpMapping\Core\Fusee.Examples.Bump.Core.csproj" />
