@@ -264,7 +264,6 @@ namespace Fusee.Examples.Simple.Core
             }
 
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
-
             collision();
             ballmovement();
 
@@ -387,14 +386,31 @@ namespace Fusee.Examples.Simple.Core
 
             //move the ball
             deg = 0.0f;
-            if (_angleVert % (0.5f * M.Pi) <= 0.25f * M.Pi)
+            if(_angleVert > 0)
             {
-                deg = -(_angleVert % (0.5f * M.Pi));
+                if (_angleVert % (0.5f * M.Pi) <= 0.25f * M.Pi)
+                {
+                    deg = -(_angleVert % (0.5f * M.Pi));
+                }
+                else
+                {
+                    deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
+                }
             }
             else
             {
-                deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
+                if ((_angleVert % (0.5f * M.Pi) >= -0.25f * M.Pi))
+                {
+                    Diagnostics.Debug("yes");
+                    deg = (_angleVert % (0.5f * M.Pi));
+                }
+                else
+                {
+                    deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
+                }
+
             }
+
             if (!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
             {
                 if (Keyboard.ADAxis != 0)
@@ -442,13 +458,13 @@ namespace Fusee.Examples.Simple.Core
         public void collision()
         {
 
-            if (translation[ballbmp[1], ballbmp[0]].x <= _ball.Translation.x)
+            if (translation[ballbmp[0], ballbmp[1]].x <= _ball.Translation.x)
             {
-                if (translation[ballbmp[1], ballbmp[0]].z >= _ball.Translation.x)
+                if (translation[ballbmp[0], ballbmp[1]].z >= _ball.Translation.x)
                 {
-                    if (translation[ballbmp[1], ballbmp[0]].y <= _ball.Translation.z)
+                    if (translation[ballbmp[0], ballbmp[1]].y <= _ball.Translation.z)
                     {
-                        if (translation[ballbmp[1], ballbmp[0]].w >= _ball.Translation.z)
+                        if (translation[ballbmp[0], ballbmp[1]].w >= _ball.Translation.z)
                         {
 
                         }
@@ -478,48 +494,47 @@ namespace Fusee.Examples.Simple.Core
 
             //Walls
 
-            if (bmp[ballbmp[0] - 1, ballbmp[1]] == 1 && _moveZ < 0)
+            if (bmp[ballbmp[0] - (int) M.Cos(_angleVert - _angleVert %90), ballbmp[1] -(int) M.Sin(_angleVert - _angleVert % 90)] == 1)
             {
-                if (_ball.Translation.z - translation[ballbmp[1], ballbmp[0] - 1].w <= 1.6f)
+                if (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w <= 1.6f)
                 {
-                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] - 1].w + 1.5f;
-                    richtung[0] = 0;
+                    _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + 1.5f;
+                    richtung[1] = 0;
                 }
 
             }
-            else { richtung[0] = 1; }
+            else { richtung[1] = 1; }
 
-            if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1 && _moveZ > 0)
+            if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1)
             {
-                if (translation[ballbmp[1], ballbmp[0] + 1].y - _ball.Translation.z <= 1.6f)
+                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z <= 1.6f)
                 {
-                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] + 1].y - 1.5f;
-                    richtung[2] = 0;
-                }
-
-            }
-            else { richtung[2] = 1; }
-
-            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1 && _moveX > 0)
-            {
-
-                if (translation[ballbmp[1] + 1, ballbmp[0]].x - _ball.Translation.x <= 1.6f)
-                {
-                    _ball.Translation.x = translation[ballbmp[1] + 1, ballbmp[0]].x - 1.5f;
+                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - 1.5f;
                     richtung[3] = 0;
                 }
+
             }
             else { richtung[3] = 1; }
 
-            if (bmp[ballbmp[0], ballbmp[1] - 1] == 1 && _moveX < 0)
+            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1)
             {
-                if (_ball.Translation.x - translation[ballbmp[1] - 1, ballbmp[0]].z <= 1.6f)
+                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x <= 1.6f)
                 {
-                    _ball.Translation.x = translation[ballbmp[1] - 1, ballbmp[0]].z + 1.5f;
-                    richtung[1] = 0;
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - 1.5f;
+                    richtung[2] = 0;
                 }
             }
-            else { richtung[1] = 1; }
+            else { richtung[2] = 1; }
+
+            if (bmp[ballbmp[0], ballbmp[1] - 1] == 1)
+            {
+                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z <= 1.6f)
+                {
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + 1.5f;
+                    richtung[0] = 0;
+                }
+            }
+            else { richtung[0] = 1; }
 
             //Corners
 
