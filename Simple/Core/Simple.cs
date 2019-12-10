@@ -442,13 +442,13 @@ namespace Fusee.Examples.Simple.Core
         public void collision()
         {
 
-            if (translation[ballbmp[1], ballbmp[0]].x <= _ball.Translation.x)
+            if (translation[ballbmp[0], ballbmp[1]].x <= _ball.Translation.x)
             {
-                if (translation[ballbmp[1], ballbmp[0]].z >= _ball.Translation.x)
+                if (translation[ballbmp[0], ballbmp[1]].z >= _ball.Translation.x)
                 {
-                    if (translation[ballbmp[1], ballbmp[0]].y <= _ball.Translation.z)
+                    if (translation[ballbmp[0], ballbmp[1]].y <= _ball.Translation.z)
                     {
-                        if (translation[ballbmp[1], ballbmp[0]].w >= _ball.Translation.z)
+                        if (translation[ballbmp[0], ballbmp[1]].w >= _ball.Translation.z)
                         {
 
                         }
@@ -480,9 +480,10 @@ namespace Fusee.Examples.Simple.Core
 
             if (bmp[ballbmp[0] - 1, ballbmp[1]] == 1 && _moveZ < 0)
             {
-                if (_ball.Translation.z - translation[ballbmp[1], ballbmp[0] - 1].w <= 1.6f)
+                if (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w <= 1.6f)
                 {
-                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] - 1].w + 1.5f;
+                    Diagnostics.Debug("jes");
+                    _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + 1.5f;
                     richtung[0] = 0;
                 }
 
@@ -491,9 +492,9 @@ namespace Fusee.Examples.Simple.Core
 
             if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1 && _moveZ > 0)
             {
-                if (translation[ballbmp[1], ballbmp[0] + 1].y - _ball.Translation.z <= 1.6f)
+                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z <= 1.6f)
                 {
-                    _ball.Translation.z = translation[ballbmp[1], ballbmp[0] + 1].y - 1.5f;
+                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - 1.5f;
                     richtung[2] = 0;
                 }
 
@@ -503,9 +504,9 @@ namespace Fusee.Examples.Simple.Core
             if (bmp[ballbmp[0], ballbmp[1] + 1] == 1 && _moveX > 0)
             {
 
-                if (translation[ballbmp[1] + 1, ballbmp[0]].x - _ball.Translation.x <= 1.6f)
+                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x <= 1.6f)
                 {
-                    _ball.Translation.x = translation[ballbmp[1] + 1, ballbmp[0]].x - 1.5f;
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - 1.5f;
                     richtung[3] = 0;
                 }
             }
@@ -513,9 +514,9 @@ namespace Fusee.Examples.Simple.Core
 
             if (bmp[ballbmp[0], ballbmp[1] - 1] == 1 && _moveX < 0)
             {
-                if (_ball.Translation.x - translation[ballbmp[1] - 1, ballbmp[0]].z <= 1.6f)
+                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z <= 1.6f)
                 {
-                    _ball.Translation.x = translation[ballbmp[1] - 1, ballbmp[0]].z + 1.5f;
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + 1.5f;
                     richtung[1] = 0;
                 }
             }
