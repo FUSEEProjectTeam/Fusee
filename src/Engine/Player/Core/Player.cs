@@ -11,6 +11,7 @@ using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 using Fusee.Xene;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -56,7 +57,7 @@ namespace Fusee.Engine.Player.Core
         private GamePadDevice _gamePad;
 
         // Init is called on startup. 
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _initWindowWidth = Width;
             _initWindowHeight = Height;
@@ -121,7 +122,8 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
-            
+
+            return true;
         }
 
         

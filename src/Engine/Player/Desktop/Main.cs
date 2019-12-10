@@ -123,7 +123,7 @@ namespace Fusee.Engine.Player.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(Font),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
                         return new Font { _fontImp = new FontImp((Stream)storage) };
@@ -134,7 +134,7 @@ namespace Fusee.Engine.Player.Desktop
                 new AssetHandler
                 {
                     ReturnedType = typeof(SceneContainer),
-                    Decoder = delegate (string id, object storage)
+                    Decoder = (string id, object storage) =>
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
