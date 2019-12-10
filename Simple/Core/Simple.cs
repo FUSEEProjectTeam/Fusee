@@ -17,7 +17,7 @@ namespace Fusee.Examples.Simple.Core
     public class Simple : RenderCanvas
     {
         // angle variables
-        private static float _angleVert , _angleVelVert;
+        private static float _angleVert, _angleVelVert;
 
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
@@ -29,7 +29,7 @@ namespace Fusee.Examples.Simple.Core
         private float2 groundbox;
         private float4[,] translation;
         private int[] ballbmp;
-        private int[] richtung = new int[] {1, 1, 1, 1};
+        private int[] richtung = new int[] { 1, 1, 1, 1 };
         private float length;
         private float height;
 
@@ -73,8 +73,6 @@ namespace Fusee.Examples.Simple.Core
                                         {1,0,1,1,1,0,1,1,1,1,1,1,1,0,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1},
                                         {1,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,1},
                                         {1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1}};
-
-
 
         //other var
         private SceneRendererForward _sceneRenderer;
@@ -120,30 +118,12 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countY * (wallZbox.y + cornerbox.y)/2, 2, countX * (wallXbox.x + cornerbox.x)/2)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     cornerstone.GetComponent<ShaderEffectComponent>(),
                                     cornerstone.GetComponent<Mesh>()
                                 },
                             Name = "Cornerstone"
-                        }
-                        );
-                    }
-                    if (countX % 2 == 0 && countY % 2 == 1 && bmp[countY, countX] == 1)
-                    {
-                        maze.Children.Add(new SceneNodeContainer
-                        {
-                            Components = new List<SceneComponentContainer>
-                                {
-                                    new TransformComponent
-                                    {
-                                        Translation = new float3(countY * (wallZbox.y + cornerbox.y)/2, 2, countX * (wallXbox.x + cornerbox.x)/2)
-                                    },
-                                    wallX.GetComponent<ShaderEffectComponent>(),
-                                    wallX.GetComponent<Mesh>()
-                                },
-                            Name = "WallX"
-
                         }
                         );
                     }
@@ -155,7 +135,25 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countY * (wallZbox.y + cornerbox.y)/2, 2, countX * (wallXbox.x + cornerbox.x)/2)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
+                                    },
+                                    wallX.GetComponent<ShaderEffectComponent>(),
+                                    wallX.GetComponent<Mesh>()
+                                },
+                            Name = "WallX"
+
+                        }
+                        );
+                    }
+                    if (countX % 2 == 0 && countY % 2 == 1 && bmp[countY, countX] == 1)
+                    {
+                        maze.Children.Add(new SceneNodeContainer
+                        {
+                            Components = new List<SceneComponentContainer>
+                                {
+                                    new TransformComponent
+                                    {
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     wallZ.GetComponent<ShaderEffectComponent>(),
                                     wallZ.GetComponent<Mesh>()
@@ -172,7 +170,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countY * (wallZbox.y + cornerbox.y)/2, 2, countX * (wallXbox.x + cornerbox.x)/2)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
                                     ball.GetComponent<ShaderEffectComponent>(),
                                     ball.GetComponent<Mesh>()
@@ -219,8 +217,8 @@ namespace Fusee.Examples.Simple.Core
             translation = new float4[bmp.GetLength(0), bmp.GetLength(1)];
 
             CreateTranslation();
-            length = translation[translation.GetLength(0) -1, 0].w ;
-            height = translation[0, translation.GetLength(1) -1].z ;
+            length = translation[translation.GetLength(0) - 1, 0].w + cornerbox.y/2;
+            height = translation[0, translation.GetLength(1) - 1].z + cornerbox.x/2;
 
             _gui = CreateGui();
             Resize(new ResizeEventArgs(Width, Height));
@@ -397,12 +395,12 @@ namespace Fusee.Examples.Simple.Core
             {
                 deg = (0.5f * M.Pi) - (_angleVert % (0.5f * M.Pi));
             }
-            if(!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
+            if (!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
             {
                 if (Keyboard.ADAxis != 0)
                 {
                     _moveX = _speed * Keyboard.ADAxis * DeltaTime;
-                    if(_moveX <= 0)
+                    if (_moveX <= 0)
                     {
                         _ball.Translation.x += _moveX * M.Sin(_angleVert + deg) * richtung[0];
                         _ball.Translation.z -= _moveX * M.Cos(_angleVert + deg) * richtung[3];
@@ -438,13 +436,13 @@ namespace Fusee.Examples.Simple.Core
                     _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(_angleVert + deg), 0, -_moveZ * M.Cos(_angleVert + deg)));
                 }
             }
-            
+
 
         }
         public void collision()
         {
 
-            if (translation[ballbmp[1], ballbmp[0]].x <= _ball.Translation.x )
+            if (translation[ballbmp[1], ballbmp[0]].x <= _ball.Translation.x)
             {
                 if (translation[ballbmp[1], ballbmp[0]].z >= _ball.Translation.x)
                 {
@@ -457,25 +455,25 @@ namespace Fusee.Examples.Simple.Core
                         else
                         {
                             ballbmp[0] = ballbmp[0] + 1;
-                            
+
                         }
                     }
                     else
                     {
                         ballbmp[0] = ballbmp[0] - 1;
-                        
+
                     }
                 }
                 else
                 {
                     ballbmp[1] = ballbmp[1] + 1;
-                    
+
                 }
             }
             else
             {
                 ballbmp[1] = ballbmp[1] - 1;
-                
+
             }
 
             //Walls
@@ -487,7 +485,7 @@ namespace Fusee.Examples.Simple.Core
                     _ball.Translation.z = translation[ballbmp[1], ballbmp[0] - 1].w + 1.5f;
                     richtung[0] = 0;
                 }
-                
+
             }
             else { richtung[0] = 1; }
 
@@ -498,14 +496,14 @@ namespace Fusee.Examples.Simple.Core
                     _ball.Translation.z = translation[ballbmp[1], ballbmp[0] + 1].y - 1.5f;
                     richtung[2] = 0;
                 }
-                
+
             }
             else { richtung[2] = 1; }
 
-            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1 &&_moveX > 0)
+            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1 && _moveX > 0)
             {
 
-                if ( translation[ballbmp[1] + 1, ballbmp[0]].x - _ball.Translation.x <= 1.6f)
+                if (translation[ballbmp[1] + 1, ballbmp[0]].x - _ball.Translation.x <= 1.6f)
                 {
                     _ball.Translation.x = translation[ballbmp[1] + 1, ballbmp[0]].x - 1.5f;
                     richtung[3] = 0;
@@ -573,7 +571,7 @@ namespace Fusee.Examples.Simple.Core
                     }
                     if (countX % 2 == 1 && countY % 2 == 1)
                     {
-                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - groundbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + groundbox.y/ 2);
+                        translation[countY, countX] = new float4((countX * (wallXbox.x + cornerbox.x) / 2) - groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) - groundbox.y / 2, (countX * (wallXbox.x + cornerbox.x) / 2) + groundbox.x / 2, (countY * (wallZbox.y + cornerbox.y) / 2) + groundbox.y / 2);
                     }
                 }
             }
@@ -587,7 +585,7 @@ namespace Fusee.Examples.Simple.Core
                     if (bmp[countX, countY] == -1)
                     {
 
-                        ballbmp = new int[] { countX, countY};
+                        ballbmp = new int[] { countX, countY };
                     }
                 }
             }
