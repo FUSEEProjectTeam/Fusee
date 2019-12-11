@@ -124,7 +124,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
     public class KeyboardDeviceImp : IInputDeviceImp
     {
         private Dictionary<int, ButtonDescription> _keyDescriptions;
-        private JSObject _canvas;
+        private readonly JSObject _canvas;
 
         #region JS Connectors
 
@@ -312,16 +312,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             //    callbackClosure.OnCanvasMouseWheel.call(callbackClosure, event.wheelDelta);
             //};
         }
-
-        // [JSExternal]
+        
         private float GetWindowWidth()
         {
-            return (float)(int)_canvas.GetObjectProperty("width");
+            using (var w = (JSObject)Runtime.GetGlobalObject("window"))
+                return (float)(int)w.GetObjectProperty("innerWidth");
         }
-        // [JSExternal]
+
         private float GetWindowHeight()
         {
-            return (float)(int)_canvas.GetObjectProperty("height");
+            using (var w = (JSObject)Runtime.GetGlobalObject("window"))
+                return (float)(int)w.GetObjectProperty("innerHeight");
         }
         #endregion
 
@@ -397,7 +398,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         }
         #endregion
 
-        private JSObject _canvas;
+        private readonly JSObject _canvas;
         private ButtonImpDescription _btnLeftDesc, _btnRightDesc, _btnMiddleDesc;
         private AxisImpDescription _mouseXDesc, _mouseYDesc;
 
@@ -408,6 +409,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public MouseDeviceImp(JSObject canvas)
         {
             _currentMouseWheel = 0;
+
             _canvas = canvas;
             ConnectCanvasEvents();
 
@@ -619,7 +621,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     return GetWindowWidth();
                 case (int)MouseAxes.MinY:
                     return 0;
-                case (int)MouseAxes.MaxY:
+                case (int)MouseAxes.MaxY:  
+                    //return 9999;
                     return GetWindowHeight();
             }
             throw new InvalidOperationException($"Unknown axis {iAxisId}. Cannot get value for unknown axis.");
@@ -667,7 +670,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
 
         #region JSExternals
-        // [JSExternal]
         private void ConnectCanvasEvents()
         {
             _canvas.Invoke("addEventListener", new object[] { "touchstart", new Action<JSObject>(
@@ -743,15 +745,17 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             )});
         }
 
-        // [JSExternal]
+       
         private float GetWindowWidth()
         {
-            return (float)(int)_canvas.GetObjectProperty("width");
+            using (var w = (JSObject)Runtime.GetGlobalObject("window"))
+                return (float)(int)w.GetObjectProperty("innerWidth");
         }
-        // [JSExternal]
+
         private float GetWindowHeight()
         {
-            return (float)(int)_canvas.GetObjectProperty("height");
+            using (var w = (JSObject)Runtime.GetGlobalObject("window"))
+                return (float)(int)w.GetObjectProperty("innerHeight");
         }
         #endregion
 

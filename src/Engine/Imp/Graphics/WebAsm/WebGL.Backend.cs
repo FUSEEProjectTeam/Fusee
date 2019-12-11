@@ -2,7 +2,6 @@
 using System.Text;
 using WebAssembly;
 using WebAssembly.Core;
-using Array = System.Array;
 
 namespace Fusee.Engine.Imp.Graphics.WebAsm
 {
@@ -42,6 +41,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
     public partial class WebGLContextAttributes : JSHandler
     {
+        public WebGLContextAttributes()
+        {
+            Handle = new JSObject();
+        }
     }
 
     public partial class WebGLObject : JSHandler
@@ -55,7 +58,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
         }
 
-        public WebGLRenderingContext(JSObject canvas, JSObject contextAttributes) 
+        public WebGLRenderingContext(JSObject canvas, WebGLContextAttributes contextAttributes) 
             : base(canvas, "webgl", contextAttributes)
         {
         }
@@ -78,7 +81,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         protected WebGLRenderingContextBase(
             JSObject canvas, 
             string contextType, 
-            JSObject contextAttributes, 
+            WebGLContextAttributes contextAttributes, 
             string windowPropertyName = WindowPropertyName)
         {
             if (!CheckWindowPropertyExists(windowPropertyName))
@@ -87,17 +90,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     $"The context '{contextType}' is not supported in this browser");
             }
 
-            gl = (JSObject)canvas.Invoke("getContext", contextType, contextAttributes);
+            gl = (JSObject)canvas.Invoke("getContext", contextType, contextAttributes?.Handle);
         }
 
         public static bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
 
-        public static bool IsVerbosityEnabled { get; set; } =
-#if DEBUG
-            false; //(mr): disabled 
-#else
-            false;
-#endif
+        public static bool IsVerbosityEnabled { get; set; } = false;
 
         public ITypedArray CastNativeArray(object managedArray)
         {
@@ -303,7 +301,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         { 
         }
 
-        public WebGL2RenderingContext(JSObject canvas, JSObject contextAttributes) 
+        public WebGL2RenderingContext(JSObject canvas, WebGLContextAttributes contextAttributes) 
             : base(canvas, "webgl2", contextAttributes)
         {
         }
@@ -324,78 +322,103 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         protected WebGL2RenderingContextBase(
             JSObject canvas, 
             string contextType, 
-            JSObject contextAttributes, 
+            WebGLContextAttributes contextAttributes, 
             string windowPropertyName = WindowPropertyName) 
             : base(canvas, contextType, contextAttributes, windowPropertyName)
         {
         }
 
         public new static bool IsSupported => CheckWindowPropertyExists(WindowPropertyName);
-    }
 
-    public static class GLExtensions
-    {
-        public static WebGLBuffer CreateArrayBufferWithUsage(this WebGLRenderingContextBase gl, Array items, uint usage)
+        public void TexImage2D(
+            uint target, 
+            int level, 
+            int internalformat, 
+            int width, 
+            int height, 
+            int border, 
+            uint format, 
+            uint type, 
+            ReadOnlySpan<byte> source)
         {
-            var arrayBuffer = gl.CreateBuffer();
-            gl.BindBuffer(WebGLRenderingContextBase.ARRAY_BUFFER, arrayBuffer);
-            gl.BufferData(WebGLRenderingContextBase.ARRAY_BUFFER, items, usage);
-
-            return arrayBuffer;
-        }
-
-        public static WebGLBuffer CreateArrayBuffer(this WebGLRenderingContextBase gl, Array items)
-        {
-            var arrayBuffer = gl.CreateBuffer();
-            gl.BindBuffer(WebGLRenderingContextBase.ARRAY_BUFFER, arrayBuffer);
-            gl.BufferData(WebGLRenderingContextBase.ARRAY_BUFFER, items, WebGLRenderingContextBase.STATIC_DRAW);
-            gl.BindBuffer(WebGLRenderingContextBase.ARRAY_BUFFER, null);
-
-            return arrayBuffer;
-        }
-
-        public static WebGLBuffer CreateElementArrayBuffer(this WebGLRenderingContextBase gl, Array items)
-        {
-            var elementArrayBuffer = gl.CreateBuffer();
-            gl.BindBuffer(WebGLRenderingContextBase.ELEMENT_ARRAY_BUFFER, elementArrayBuffer);
-            gl.BufferData(WebGLRenderingContextBase.ELEMENT_ARRAY_BUFFER, items, WebGLRenderingContextBase.STATIC_DRAW);
-            gl.BindBuffer(WebGLRenderingContextBase.ELEMENT_ARRAY_BUFFER, null);
-
-            return elementArrayBuffer;
-        }
-
-        public static WebGLProgram InitializeShaders(this WebGLRenderingContextBase gl, string vertexShaderCode, string fragmentShaderCode)
-        {
-            var shaderProgram = gl.CreateProgram();
-
-            var vertexShader = GetShader(gl, vertexShaderCode, WebGLRenderingContextBase.VERTEX_SHADER);
-            var fragmentShader = GetShader(gl, fragmentShaderCode, WebGLRenderingContextBase.FRAGMENT_SHADER);
-
-            gl.AttachShader(shaderProgram, vertexShader);
-            gl.AttachShader(shaderProgram, fragmentShader);
-
-            gl.LinkProgram(shaderProgram);
-
-            gl.UseProgram(shaderProgram);
-
-            return shaderProgram;
-        }
-
-        public static WebGLShader GetShader(this WebGLRenderingContextBase gl, string shaderSource, uint type)
-        {
-            var shader = gl.CreateShader(type);
-            gl.ShaderSource(shader, shaderSource);
-            gl.CompileShader(shader);
-
-            var message = gl.GetShaderInfoLog(shader);
-            if (message.Length > 0)
+            using (var nativeArray = Uint8Array.From(source))
             {
-                var msg = $"Shader Error: {message}";
-                throw new Exception(msg);
+                TexImage2D(target, level, internalformat, width, height, border, format, type, nativeArray);
             }
+        }
 
-            return shader;
+        public void TexImage3D(
+            uint target,
+            int level,
+            int internalformat,
+            int width,
+            int height,
+            int depth,
+            int border,
+            uint format,
+            uint type,
+            ReadOnlySpan<byte> source)
+        {
+            using (var nativeArray = Uint8Array.From(source))
+            {
+                TexImage3D(target, level, internalformat, width, height, depth, border, format, type, nativeArray);
+            }
+        }
+
+        public void TexSubImage3D(
+            uint target,
+            int level,
+            int xoffset,
+            int yoffset,
+            int zoffset,
+            int width,
+            int height,
+            int depth,
+            uint format,
+            uint type,
+            ReadOnlySpan<byte> source)
+        {
+            using (var nativeArray = Uint8Array.From(source))
+            {
+                TexSubImage3D(
+                    target, 
+                    level, 
+                    xoffset, 
+                    yoffset, 
+                    zoffset, 
+                    width, 
+                    height, 
+                    depth, 
+                    format, 
+                    type, 
+                    nativeArray);
+            }
+        }
+
+        public void TexSubImage2D(
+            uint target, 
+            int level, 
+            int xoffset, 
+            int yoffset, 
+            int width, 
+            int height, 
+            uint format, 
+            uint type, 
+            ReadOnlySpan<byte> source)
+        {
+            using (var nativeArray = Uint8Array.From(source))
+            {
+                TexSubImage2D(
+                    target,
+                    level,
+                    xoffset,
+                    yoffset,
+                    width,
+                    height,
+                    format,
+                    type,
+                    nativeArray);
+            }
         }
     }
-
 }

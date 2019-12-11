@@ -1,0 +1,8 @@
+C:\Users\roetner\_DEV\Fusee\bin\Debug\Debug\SharpFontManaged.deps.json
+C:\Users\roetner\_DEV\Fusee\bin\Debug\Debug\SharpFontManaged.dll
+C:\Users\roetner\_DEV\Fusee\bin\Debug\Debug\SharpFontManaged.pdb
+C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Debug\SharpFontManaged.csprojAssemblyReference.cache
+C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Debug\SharpFontManaged.AssemblyInfoInputs.cache
+C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Debug\SharpFontManaged.AssemblyInfo.cs
+C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Debug\SharpFontManaged.dll
+C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Debug\SharpFontManaged.pdb
