@@ -32,6 +32,16 @@ namespace Fusee.Engine.Core
     public class CameraComponent : SceneComponentContainer
     {
         /// <summary>
+        /// If set to false, the color bit won't be cleared before this camera is rendered.
+        /// </summary>
+        public bool ClearColor = true;
+
+        /// <summary>
+        /// If set to false, the depth bit won't be cleared before this camera is rendered.
+        /// </summary>
+        public bool ClearDepth = true;
+
+        /// <summary>
         /// The background color for this camera's viewport.
         /// </summary>
         public float4 BackgroundColor;

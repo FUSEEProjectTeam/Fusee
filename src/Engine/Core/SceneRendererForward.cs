@@ -332,7 +332,12 @@ namespace Fusee.Engine.Core
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
-            _rc.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            if(cam.Item2.Camera.ClearColor)
+                _rc.Clear(ClearFlags.Color);
+
+            if (cam.Item2.Camera.ClearDepth)
+                _rc.Clear(ClearFlags.Depth);
 
             _rc.View = cam.Item2.View;
 

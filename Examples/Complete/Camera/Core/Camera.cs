@@ -45,8 +45,9 @@ namespace Fusee.Examples.Camera.Core
         public override void Init()
         {
             _mainCam.Viewport = new float4(0, 0, 100, 100);
-            _mainCam.BackgroundColor = new float4(1, 1, 1, 1);            
-            _guiCam.BackgroundColor = new float4(1, 0, 0, 0);
+            _mainCam.BackgroundColor = new float4(1, 1, 1, 1);
+            _guiCam.ClearColor = false;
+            _guiCam.ClearDepth = false;
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
             // RC.ClearColor = new float4(1, 1, 1, 1);
@@ -111,8 +112,7 @@ namespace Fusee.Examples.Camera.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             _rocketScene.Children.Add(cam);
-            _rocketScene.Children.Add(cam1);
-           
+            _rocketScene.Children.Add(cam1);           
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -182,7 +182,7 @@ namespace Fusee.Examples.Camera.Core
             //Constantly check for interactive objects.            
             //RC.Projection = orthographic;
 
-            //_guiRenderer.Render(RC);
+            _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
