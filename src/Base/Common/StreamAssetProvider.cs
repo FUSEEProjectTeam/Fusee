@@ -103,13 +103,12 @@ namespace Fusee.Base.Common
                     return null;
                 }
 
-                AssetHandler handler;
-                if (_assetHandlers.TryGetValue(type, out handler))
-                {
-                        // Return in using will dispose the used object, which is what we want...
-                        return await handler.DecoderAsync(id, stream);
-                }
-            
+            if (_assetHandlers.TryGetValue(type, out var handler))
+            {
+                // Return in using will dispose the used object, which is what we want...
+                return await handler.DecoderAsync(id, stream).ConfigureAwait(false);
+            }
+
             return null;
         }
 
