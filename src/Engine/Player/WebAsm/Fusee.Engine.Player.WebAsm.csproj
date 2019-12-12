@@ -48,15 +48,7 @@
   </ItemGroup>
   
   <ItemGroup>
-    <None Remove="Assets\FuseeAnim.gif" />
-    <None Remove="Assets\FuseeSpinning.gif" />
-    <None Remove="Assets\LoremIpsum.txt" />
-    <None Remove="canvaskit.js" />
-    <None Remove="index.html" />
-    <None Remove="Scripts\mono_support.js" />
-    <None Remove="Scripts\SkiaSharp.js" />
-
-    <None Remove="canvaskit.wasm" />
+   
 
     <Content Include="Assets\FuseeAnim.gif">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -153,7 +153,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The scene component to be controlled by this animation track.
         /// </summary>
-        [ProtoMember(1, AsReference = true)]
+        [ProtoMember(1)]
         public SceneComponentContainer SceneComponent;
 
         /// <summary>
@@ -177,7 +177,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The list of key frames ordered by time.
         /// </summary>
-        [ProtoMember(4, AsReference = true)]
+        [ProtoMember(4)]
         public List<AnimationKeyContainerBase> KeyFrames = new List<AnimationKeyContainerBase>();
     }
 }

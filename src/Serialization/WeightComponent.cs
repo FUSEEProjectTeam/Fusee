@@ -20,7 +20,7 @@ namespace Fusee.Serialization
         /// <summary>
         /// The joint objects controlling the geometry.
         /// </summary>
-        [ProtoMember(2, AsReference = true)]
+        [ProtoMember(2)]
         public List<SceneNodeContainer> Joints = new List<SceneNodeContainer>();
 
         /// <summary>

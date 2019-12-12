@@ -42,13 +42,13 @@ namespace Fusee.Serialization
         /// <summary>
         /// The components this node is made of.
         /// </summary>
-        [ProtoMember(2, AsReference = true)]
+        [ProtoMember(2)]
         public List<SceneComponentContainer> Components;
 
         /// <summary>
         /// Possible children. 
         /// </summary>
-        [ProtoMember(3, AsReference = true)]
+        [ProtoMember(3)]
         public ChildList Children {
             get => _children;
             set

@@ -13,7 +13,7 @@ namespace Fusee.Serialization
         /// The animation tracks making up this animation data. 
         /// Each animation track controls a single value.
         /// </summary>
-        [ProtoMember(3, AsReference = true)]
+        [ProtoMember(3)]
         public List<AnimationTrackContainer> AnimationTracks = new List<AnimationTrackContainer>();
 
     }
