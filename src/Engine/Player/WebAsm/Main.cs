@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
 
 
-namespace Fusee.Engine.Player.WebAsm
+namespace Fusee.Engine.Player.Main
 {
     internal static class Program
     {
