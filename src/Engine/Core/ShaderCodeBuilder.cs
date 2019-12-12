@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
@@ -338,7 +339,7 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static async Task<ShaderEffect> MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -353,7 +354,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatComp(temp);
+            return await MakeShaderEffectFromMatComp(temp);
         }
 
         /// <summary>
@@ -364,7 +365,7 @@ namespace Fusee.Engine.Core
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -379,7 +380,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatCompProto(temp);
+            return await MakeShaderEffectFromMatCompProto(temp);
         }
 
         /// <summary>
@@ -392,7 +393,7 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static async Task<ShaderEffect> MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -409,7 +410,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatComp(temp);
+            return await MakeShaderEffectFromMatComp(temp);
         }
 
         /// <summary>
@@ -422,7 +423,7 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -440,7 +441,7 @@ namespace Fusee.Engine.Core
                 }
             };
 
-            return MakeShaderEffectFromMatCompProto(temp);
+            return await MakeShaderEffectFromMatCompProto(temp);
         }
 
         /// <summary> 
@@ -450,12 +451,12 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        public static async Task<ShaderEffect> MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             var vs = CreateVertexShader(wc, effectProps);
             var ps = CreatePixelShader(effectProps);
-            var effectParameters = AssembleEffectParamers(mc);
+            var effectParameters = await AssembleEffectParamers(mc);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -488,12 +489,12 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
+        public static async Task<ShaderEffectProtoPixel> MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             string vs = CreateVertexShader(wc, effectProps);
             string ps = CreateProtoPixelShader(effectProps);
-            var effectParameters = AssembleEffectParamers(mc);
+            var effectParameters = await AssembleEffectParamers(mc);
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
@@ -617,7 +618,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
+        private static async Task<IEnumerable<EffectParameterDeclaration>> AssembleEffectParamers(MaterialComponent mc)
         {
             var effectParameters = new List<EffectParameterDeclaration>();
 
@@ -638,7 +639,7 @@ namespace Fusee.Engine.Core
                     effectParameters.Add(new EffectParameterDeclaration
                     {
                         Name = UniformNameDeclarations.DiffuseTexture,
-                        Value = LoadTexture(mc.Diffuse.Texture)
+                        Value = await LoadTexture(mc.Diffuse.Texture)
                     });
                 }
             }
@@ -854,13 +855,13 @@ namespace Fusee.Engine.Core
             return effectParameters;
         }
 
-        private static Texture LoadTexture(string path)
+        private static async Task<Texture> LoadTexture(string path)
         {
-            var image = AssetStorage.Get<ImageData>(path);
+            var image = await AssetStorage.GetAsync<ImageData>(path);
             if (image != null)
                 return new Texture(image);
 
-            image = AssetStorage.Get<ImageData>("DefaultTexture.png");
+            image = await AssetStorage.GetAsync<ImageData>("DefaultTexture.png");
             if (image != null)
                 return new Texture(image);
 

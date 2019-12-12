@@ -6,6 +6,7 @@ using Fusee.Math.Core;
 using System.Linq;
 using System;
 using Fusee.Engine.Core.ShaderShards;
+using System.Threading.Tasks;
 
 namespace Fusee.Engine.Core
 {
@@ -128,9 +129,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialComponent matComp)
+        public async void ConvMaterial(MaterialComponent matComp)
         {
-            var effect = LookupMaterial(matComp);
+            var effect = await LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
         }
 
@@ -139,9 +140,9 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="matComp"></param>
         [VisitMethod]
-        public void ConvMaterial(MaterialPBRComponent matComp)
+        public async void ConvMaterial(MaterialPBRComponent matComp)
         {
-            var effect = LookupMaterial(matComp);
+            var effect = await LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }        
 
@@ -225,18 +226,18 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect
 
-        private ShaderEffect LookupMaterial(MaterialComponent mc)
+        private async Task<ShaderEffect> LookupMaterial(MaterialComponent mc)
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
+            mat = await ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
             return mat;
         }
 
-        private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
+        private async Task<ShaderEffect> LookupMaterial(MaterialPBRComponent mc)
         {
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
+            mat = await ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
             _pbrComponent.Add(mc, mat);
             return mat;
         }

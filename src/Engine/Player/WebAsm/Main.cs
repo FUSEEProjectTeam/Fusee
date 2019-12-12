@@ -7,6 +7,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using SkiaSharp;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
@@ -49,7 +50,7 @@ namespace Fusee.Engine.Player.Main
                             {
                                 _fontImp = await Task.Factory.StartNew(() => new FontImp((Stream)storage)).ConfigureAwait(false)
                             };
-                            
+
                             return font;
                         }
 
@@ -60,7 +61,7 @@ namespace Fusee.Engine.Player.Main
                         return Path.GetExtension(id).IndexOf("ttf", System.StringComparison.OrdinalIgnoreCase) >= 0;
                     }
                 });
-            
+
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -70,10 +71,23 @@ namespace Fusee.Engine.Player.Main
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
                             var storageStream = (Stream)storage;
-                            return null;
-                            //return await Task.Factory.StartNew(() => new ConvertSceneGraph().Convert(ser.Deserialize(storageStream, null, typeof(SceneContainer)) as SceneContainer)).ConfigureAwait(false);
+                            //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage)).ConfigureAwait(false);
                         }
-                        return null;
+                        // always return something
+                        return new SceneContainer
+                        {
+                            Children = new List<SceneNodeContainer>
+                            {
+                                new SceneNodeContainer
+                                {
+                                    Components = new List<SceneComponentContainer>
+                                    {
+                                        new TransformComponent(),
+                                        new Cube()
+                                    }
+                                }
+                            }
+                        };
                     },
                     Checker = (string id) =>
                     {
@@ -91,16 +105,16 @@ namespace Fusee.Engine.Player.Main
                     switch (ext)
                     {
                         //case ".jpg": // not possible YET!
-                       // case ".jpeg":
+                        // case ".jpeg":
                         case ".png":
                         case ".bmp":
                             // handle file
                             Console.WriteLine("Found image, processing");
 
-                            using (var bitmap = await Task<SKBitmap>.Factory.StartNew(() => SKBitmap.Decode((Stream)storage)).ConfigureAwait(false))
+                            using (var bitmap = await Task<SKBitmap>.Factory.StartNew(() => SKBitmap.Decode((Stream)storage)))
                             {
-                               var rotated = new SKBitmap(bitmap.Width, bitmap.Height, true);
-                              
+                                var rotated = new SKBitmap(bitmap.Width, bitmap.Height, true);
+
                                 using (var surface = new SKCanvas(rotated))
                                 {
                                     surface.Clear();
@@ -122,8 +136,8 @@ namespace Fusee.Engine.Player.Main
                     var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
-                       // case ".jpg":
-                       // case ".jpeg":
+                        // case ".jpg":
+                        // case ".jpeg":
                         case ".png":
                         case ".bmp":
                             return true;
@@ -145,7 +159,7 @@ namespace Fusee.Engine.Player.Main
             // Start the app
             _app.Run();
         }
-        
+
         public override void Update(double elapsedMilliseconds)
         {
             if (_canvasImp != null)

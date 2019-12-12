@@ -1,93 +1,99 @@
 ﻿<Project Sdk="Mono.WebAssembly.Sdk">
-  <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <NoWarn>NU1701;NU1604</NoWarn>
-      <MonoWasmLinkMode>Full</MonoWasmLinkMode>
-      <DefineConstants>PLATFORM_WASM</DefineConstants>
-      <StartupObject />
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <NoWarn>NU1701;NU1604</NoWarn>
+        <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+        <DefineConstants>PLATFORM_WASM</DefineConstants>
+        <IsPackable>false</IsPackable>
+        <PublishSingleFile>true</PublishSingleFile>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
 
-  <PropertyGroup>
-    <OutputPath>$(BaseOutputPath)\Examples\Picking\WebAsm\</OutputPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputPath>$(BaseOutputPath)\Player\WebAsm\</OutputPath>
+    </PropertyGroup>
 
-  <ItemGroup>  
-    <Reference Include="Uno.SkiaSharp">
-      <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
-    </Reference>
+    <ItemGroup>
+        <Reference Include="Uno.SkiaSharp">
+            <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
+        </Reference>
 
-    <ProjectReference Include="$(FuseeEngineRoot)src\Base\Common\Fusee.Base.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)src\Base\Core\Fusee.Base.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)src\Math\Core\Fusee.Math.Core.csproj" />    
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
-    <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj" />
-  </ItemGroup>
-  
-  <ItemGroup>
-   
-    <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />   
-    <PackageReference Include="System.Memory" Version="4.5.3" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Base\Common\Fusee.Base.Common.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Base\Core\Fusee.Base.Core.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Common\Fusee.Engine.Common.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Core\Fusee.Engine.Core.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)src\Math\Core\Fusee.Math.Core.csproj" />
+        <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj" />
+        <ProjectReference Include="..\Core\Fusee.Engine.Player.Core.csproj">
+            <PrivateAssets>analyzers</PrivateAssets>
+        </ProjectReference>
+    </ItemGroup>
 
-    <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
-        <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
-    </Reference>
-      
-    <PackageReference Include="WebAssembly.Bindings" Version="0.2.0" />
-    <PackageReference Include="WebAssembly.Net.Http" Version="0.2.0" />
-    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.0" />
-      
-      <PackageReference Include="System.Private.ServiceModel" Version="4.6.0.0" />      
-      <PackageReference Include="System.Collections.Immutable" Version="*" />
+    <ItemGroup>
 
-  </ItemGroup>
-  
-  <ItemGroup>
-   
+        <PackageReference Include="System.Drawing.Common" Version="4.6.0-preview8.19405.3" />
+        <PackageReference Include="System.Memory" Version="4.5.3" />
 
-    <Content Include="Assets\FuseeAnim.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+        <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
+            <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+        </Reference>
 
-    <Content Include="Assets\FuseeSpinning.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="canvaskit.wasm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+        <PackageReference Include="WebAssembly.Bindings" Version="0.2.0" />
+        <PackageReference Include="WebAssembly.Net.Http" Version="0.2.0" />
+        <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.0" />
 
-    <!-- TODO move into Content for best practice -->
-  </ItemGroup>
+        <PackageReference Include="System.Private.ServiceModel" Version="4.6.0.0" />
+        <PackageReference Include="System.Collections.Immutable" Version="*" />
 
-  <ItemGroup>
-    <None Remove="server.py" />
-    <_WasmItem Remove="Assets\Styles\browser.css" />
-    <_WasmItem Remove="Scripts\loading.js" />
-    <Content Include="server.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="Assets\knight.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Scripts\mono_support.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Update="Scripts\SkiaSharp.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-  </ItemGroup>
+    <ItemGroup>
+        <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Assets\Styles\browser.css">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="canvaskit.wasm" />
+        <None Remove="server.py" />
+        <_WasmItem Remove="Assets\Styles\browser.css" />
+        <_WasmItem Remove="Scripts\loading.js" />
+        <Content Include="server.py">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Include="canvaskit.wasm">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Update="Assets\knight.png">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Assets\Styles\browser.css">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="canvaskit.js">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="index.html">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Scripts\mono_support.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+        <Content Update="Scripts\SkiaSharp.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Assets\Styles\browser.css">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 </Project>
