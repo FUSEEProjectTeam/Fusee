@@ -128,8 +128,7 @@ namespace Fusee.Engine.Core
     }
 
     internal class PrePassVisitor : SceneVisitor
-    {
-        private TransformComponent _currentTransform;
+    {        
         public List<Tuple<SceneNodeContainer, LightResult>> LightPrepassResuls;
         public List<Tuple<SceneNodeContainer, CameraResult>> CameraPrepassResults;
 
@@ -336,8 +335,7 @@ namespace Fusee.Engine.Core
         /// <param name="transform">The TransformComponent.</param>
         [VisitMethod]
         public void RenderTransform(TransformComponent transform)
-        {
-            _currentTransform = transform;
+        {            
             _state.Model *= transform.Matrix();
             _rc.Model = _state.Model;
         }

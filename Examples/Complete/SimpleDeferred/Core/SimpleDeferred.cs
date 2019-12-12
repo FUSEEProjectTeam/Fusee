@@ -49,16 +49,25 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
         private LightComponent _sun;
 
+        private TransformComponent _camTransform;
+        private CameraComponent _campComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
+       
         // Init is called on startup.
         public override void Init()
-        {           
+        {
+            _camTransform = new TransformComponent()
+            {
+                Scale = float3.One,
+                Translation = float3.Zero                
+            };
+
             _gui = CreateGui();
 
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
+            _campComp.BackgroundColor = _backgroundColorDay = _backgroundColor = new float4(0.8f, 0.9f, 1, 1);
             _backgroundColorNight = new float4(0, 0, 0.05f, 1);
 
             // Load the rocket model
@@ -161,16 +170,24 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 Children = aLotOfLights
             });
 
+            _rocketScene.Children.Add(
+                new SceneNodeContainer()
+                {
+                    Name = "Cam",
+                    Components = new List<SceneComponentContainer>()
+                    {
+                        _camTransform,
+                        _campComp
+                    }
+                }               
+            );
+
             // Wrap a SceneRenderer around the scene.
             _sceneRenderer = new SceneRendererDeferred(_rocketScene);
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
         }
-
-        bool rotate = false;
-        private float3 _camPos = new float3(0, 2, -10);
-        private float4x4 view = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -206,7 +223,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 _backgroundColor.xyz = float3.Lerp(_backgroundColorNight.xyz, _backgroundColorDay.xyz, localLerp);
             }
 
-            RC.ClearColor = _backgroundColor;
+            _campComp.BackgroundColor = _backgroundColor;
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -246,89 +263,44 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVert -= _angleVelVert;
             _angleVelHorz = 0;
             _angleVelVert = 0;
-            
-            view = CalcViewMat(ref _camPos);
 
-            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+            FpsView();
 
-            //FpsView();            
-
-            RC.View = view;
-            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
 
             // Constantly check for interactive objects.
-            RC.Projection = orthographic;
+            _guiRenderer.Render(RC);
+
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
                 _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }            
-            _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
         }
 
-        ///// <summary>
-        ///// Translates and rotates the camera to achieve a fps cam.
-        ///// </summary>
-        //private void FpsView()
-        //{
-        //    if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-        //        _angleHorz %= twoPi;
-        //    if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-        //        _angleVert %= twoPi;
-
-        //    var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
-        //    var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
-
-        //    _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
-        //    _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;           
-
-        //    _camTransform.Rotation.y = _angleHorz;
-        //    _camTransform.Rotation.x = _angleVert;            
-        //}
-
-        private float4x4 CalcViewMat(ref float3 camPos)
+        /// <summary>
+        /// Translates and rotates the camera to achieve a fps cam.
+        /// </summary>
+        private void FpsView()
         {
             if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
                 _angleHorz %= twoPi;
             if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
                 _angleVert %= twoPi;
 
-            camPos += view.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 1000;
-            camPos += view.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 1000;
+            var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
 
-            return FPSView(camPos, _angleVert, _angleHorz);
+            _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
+            _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;
+
+            _camTransform.Rotation.y = _angleHorz;
+            _camTransform.Rotation.x = _angleVert;
         }
 
-        private float4x4 FPSView(float3 eye, float pitch, float yaw)
-        {
-            // I assume the values are already converted to radians.
-            float cosPitch = M.Cos(pitch);
-            float sinPitch = M.Sin(pitch);
-            float cosYaw = M.Cos(yaw);
-            float sinYaw = M.Sin(yaw);
-
-            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
-            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
-            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
-
-            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-            float4x4 viewMatrix = new float4x4(
-                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
-                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
-                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
-                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
-            );
-
-            viewMatrix = float4x4.Transpose(viewMatrix);
-            return viewMatrix;
-        }
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
@@ -373,6 +345,21 @@ namespace Fusee.Examples.SimpleDeferred.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
+
+            var guiCamComp = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 3000, M.PiOver4)
+            {
+                ClearColor = false
+            };
+
+            var cam = new SceneNodeContainer()
+            {
+                Name = "GUICam",
+                Components = new List<SceneComponentContainer>()
+                {                    
+                    guiCamComp
+                }
+            };
+
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
@@ -394,6 +381,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             {
                 Children = new List<SceneNodeContainer>
                 {
+                    cam,
                     //Add canvas.
                     canvas
                 }

@@ -8,7 +8,6 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
-using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Common;
 
 namespace Fusee.Engine.Core
@@ -298,14 +297,15 @@ namespace Fusee.Engine.Core
         {            
             SetContext(rc);
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);
+            PrePassVisitor.PrePassTraverse(_sc, _rc);            
 
             AccumulateLight();
             UpdateShaderParamsForAllLights();
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
-                foreach (var cam in PrePassVisitor.CameraPrepassResults)
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                foreach (var cam in cams)
                 {
                     if (cam.Item2.Camera.Active)
                     {

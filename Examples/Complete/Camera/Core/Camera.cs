@@ -23,7 +23,7 @@ namespace Fusee.Examples.Camera.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;       
+        private SceneRendererForward _sceneRenderer;       
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -36,12 +36,19 @@ namespace Fusee.Examples.Camera.Core
         private TransformComponent _guiCamTransform;
         private CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
         private CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
+        private CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
         // Init is called on startup. 
         public override void Init()
         {
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _mainCam.BackgroundColor = new float4(1, 1, 1, 1);
+            _mainCam.Layer = -1;
+
+            _sndCam.Viewport = new float4(60, 60, 40, 40);
+            _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
+            _sndCam.Layer = 10;            
+
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
 
@@ -87,7 +94,7 @@ namespace Fusee.Examples.Camera.Core
 
             var cam1 = new SceneNodeContainer()
             {
-                Name = "Cam1",
+                Name = "SecondCam",
                 Components = new List<SceneComponentContainer>()
                 {
                     new TransformComponent()
@@ -96,11 +103,7 @@ namespace Fusee.Examples.Camera.Core
                         Translation = new float3(0, 2, -20),
                         Scale = float3.One
                     },
-                    new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4)
-                    {
-                        Viewport = new float4(60, 60, 40, 40),
-                        BackgroundColor = new float4(0.5f,0.5f, 0.5f, 1),                        
-                    },                   
+                    _sndCam,                   
                 }
             };            
 
@@ -111,7 +114,7 @@ namespace Fusee.Examples.Camera.Core
             _rocketScene.Children.Add(cam1);           
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
+            _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -233,9 +236,7 @@ namespace Fusee.Examples.Camera.Core
                     fuseeLogo,
                     text
                 }
-            };
-
-             
+            };             
 
             var cam = new SceneNodeContainer()
             {

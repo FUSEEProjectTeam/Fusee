@@ -28,6 +28,7 @@ namespace Fusee.Engine.Core
 
     /// <summary>
     /// Use this in a <see cref="SceneNodeContainer"/> to create a Camera Node.
+    /// A the Projection and View matrices, generated from a CameraComponent will overwrite calls you made directly on the RenderContext.
     /// </summary>
     public class CameraComponent : SceneComponentContainer
     {
@@ -40,6 +41,11 @@ namespace Fusee.Engine.Core
         /// If set to false, the depth bit won't be cleared before this camera is rendered.
         /// </summary>
         public bool ClearDepth = true;
+
+        /// <summary>
+        /// If there is more than one CameraComponent in one scene, the rendered output of the camera with a higher layer will be drawn above the output of a camera with a lower layer.        
+        /// </summary>
+        public int Layer;
 
         /// <summary>
         /// The background color for this camera's viewport.

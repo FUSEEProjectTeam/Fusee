@@ -319,7 +319,6 @@ namespace Fusee.Engine.Core
             SetContext(rc);
 
             PrePassVisitor.PrePassTraverse(_sc, _rc);
-
             AccumulateLight();
 
             _rc.EnableDepthClamp();
@@ -328,7 +327,8 @@ namespace Fusee.Engine.Core
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
-                foreach (var cam in PrePassVisitor.CameraPrepassResults)
+                var cams = PrePassVisitor.CameraPrepassResults.OrderBy(cam => cam.Item2.Camera.Layer);
+                foreach (var cam in cams)
                 {
                     if (cam.Item2.Camera.Active)
                     {
