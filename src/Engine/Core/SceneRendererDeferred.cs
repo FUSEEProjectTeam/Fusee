@@ -314,24 +314,65 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc">The <see cref="RenderContext"/>.</param>
         /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>        
-        public new void Render(RenderContext rc, WritableTexture renderTex = null)
+        public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
             SetContext(rc);
 
             PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
+
             _rc.EnableDepthClamp();
 
             _canUseGeometryShaders = _rc.GetHardwareCapabilities(HardwareCapability.CAN_USE_GEOMETRY_SHADERS) == 1U ? true : false;
 
+            if (PrePassVisitor.CameraPrepassResults.Count != 0)
+            {
+                foreach (var cam in PrePassVisitor.CameraPrepassResults)
+                {
+                    if (cam.Item2.Camera.Active)
+                    {
+                        PerCamRender(cam, renderTex);
+                        //Reset Viewport                        
+                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                    }
+                }
+            }
+            else
+                RenderAllPasses(new float4(0,0,_rc.ViewportWidth, _rc.ViewportHeight), renderTex);
+        }
+
+        private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam, WritableTexture renderTex = null)
+        {
+            var tex = cam.Item2.Camera.RenderTexture;
+
+            if (tex != null)
+                _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
+            else
+                _rc.SetRenderTarget();
+
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
+            _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
+
+            _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
+
+            if (cam.Item2.Camera.ClearColor)
+                _rc.Clear(ClearFlags.Color);
+
+            if (cam.Item2.Camera.ClearDepth)
+                _rc.Clear(ClearFlags.Depth);
+
+            _rc.View = cam.Item2.View;            
+
+            RenderAllPasses(viewport, renderTex);
+        }
+
+        private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
+        {
             if (_rc.ClearColor != _texClearColor)
                 BackgroundColor = _rc.ClearColor;
 
-            _rc.ClearColor = _texClearColor;
-
-            var screenWidth = _rc.ViewportWidth;
-            var screenHeight = _rc.ViewportHeight;
+            _rc.ClearColor = _texClearColor;            
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
@@ -346,13 +387,13 @@ namespace Fusee.Engine.Core
 
             //Pass 4 & 5: FXAA and Lighting
             _currentPass = RenderPasses.LIGHTING;
-
-            int width = renderTex == null ? screenWidth : renderTex.Width;
-            int height = renderTex == null ? screenHeight : renderTex.Height;
+            
+            int width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
+            int height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
 
             if (!FxaaOn)
             {
-                _rc.Viewport(0, 0, width, height);
+                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderLightPasses(renderTex);
             }
             else
@@ -361,10 +402,10 @@ namespace Fusee.Engine.Core
                 RenderLightPasses(_lightedSceneTex);
                 //Post-Effect: FXAA
 
-                _rc.Viewport(0, 0, width, height);
+                _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderFXAA(renderTex);
-            }        
-        }
+            }
+        }       
 
         /// <summary>
         /// Renders one (lighting calculation) pass for each light and blends the results together. 
@@ -586,6 +627,17 @@ namespace Fusee.Engine.Core
         {
             var lightRes = lightVisRes.Item2;
             var light = lightRes.Light;
+
+            if(light.Type == LightType.Legacy)
+            {
+                lightRes.Rotation = new float4x4
+                (
+                    new float4(_rc.InvView.Row0.xyz, 0),
+                    new float4(_rc.InvView.Row1.xyz, 0),
+                    new float4(_rc.InvView.Row2.xyz, 0),
+                    float4.UnitW
+                 );
+            }
 
             var dirWorldSpace = float3.Normalize((lightRes.Rotation * float4.UnitZ).xyz);
             var dirViewSpace = float3.Normalize((_rc.View * new float4(dirWorldSpace)).xyz);

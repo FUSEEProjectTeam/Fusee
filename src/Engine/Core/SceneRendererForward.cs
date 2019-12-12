@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
     /// Use a Scene Renderer to traverse a scene hierarchy (made out of scene nodes and components) in order
     /// to have each visited element contribute to the result rendered against a given render context.
     /// </summary>
-    public partial class SceneRendererForward : SceneVisitor
+    public class SceneRendererForward : SceneVisitor
     {
         /// <summary>
         ///Is set to true if a light was added or removed from the scene.

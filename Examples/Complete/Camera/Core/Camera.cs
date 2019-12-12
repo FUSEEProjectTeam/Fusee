@@ -23,11 +23,7 @@ namespace Fusee.Examples.Camera.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;
-
-        //private const float ZNear = 1f;
-        //private const float ZFar = 1000;
-        //private float _fovy = M.PiOver4;
+        private SceneRendererDeferred _sceneRenderer;       
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -56,7 +52,7 @@ namespace Fusee.Examples.Camera.Core
             {
                 Rotation = float3.Zero,
                 Translation = new float3(0, 2, -10),
-                Scale = float3.One
+                Scale = new float3(0.33f, 0.33f, 0.5f)
             };
 
             _gui = CreateGui();
@@ -80,8 +76,8 @@ namespace Fusee.Examples.Camera.Core
                         {
                             new TransformComponent()
                             {
-                                Scale = new float3(0.33f, 0.33f, 0.5f),
-                                Translation = new float3(0,0,0.75f)
+                                Scale = new float3(3.03f, 3.03f, 2f),
+                                Translation = new float3(0,0,-1.4f)
                             },
                             new Cube()
                         }
@@ -115,7 +111,7 @@ namespace Fusee.Examples.Camera.Core
             _rocketScene.Children.Add(cam1);           
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
+            _sceneRenderer = new SceneRendererDeferred(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
         }
 
@@ -166,30 +162,13 @@ namespace Fusee.Examples.Camera.Core
             //_mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
             _mainCamTransform.RotateAround(new float3(0,0,0), new float3(M.PiOver4 * 0.01f, M.PiOver4 * 0.01f, 0));            
 
-            // Create the camera matrix and set it as the current ModelView transformation
-            //var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            //var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-
-            //var view = mtxCam * mtxRot;
-            //var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
-            //var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
-
-            //RC.View = view;
-            //RC.Projection = perspective;
-
-            _sceneRenderer.Render(RC);
-
-            //Constantly check for interactive objects.            
-            //RC.Projection = orthographic;
-
+            _sceneRenderer.Render(RC); 
             _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
