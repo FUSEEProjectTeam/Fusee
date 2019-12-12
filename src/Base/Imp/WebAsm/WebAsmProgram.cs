@@ -77,6 +77,7 @@ namespace Fusee.Base.Imp.WebAsm
                         canvasObject.SetObjectProperty("height", windowHeight);
 
                         Console.WriteLine($"{cobj}.Resize({windowWidth}, {windowHeight});");
+                        
 
                         // call fusee resize
                         mainExecutable.Resize(windowWidth, windowHeight);

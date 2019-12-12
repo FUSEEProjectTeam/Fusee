@@ -10,9 +10,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
     {
         internal WebGL2RenderingContextBase _gl;
         internal JSObject _canvas;
-        private int _width;
-        private int _height;
-
 
         public RenderCanvasImp(JSObject canvas, /* TODO: remove rest of parameters */ WebGL2RenderingContextBase gl, int width, int height)
         {
@@ -20,12 +17,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             // TODO: Extract a convenient Gl Context (version 2) ourselves from the given canvas. Then retrieve width and height
             _gl = gl;
-            _width = width;
-            _height = height;
+            Width = width;
+            Height = height;
         }
 
-        public int Width { get => _width; set => throw new NotImplementedException(); }
-        public int Height { get => _height; set => throw new NotImplementedException(); }
+        public int Width { get; set; }
+        public int Height { get; set; }
         public string Caption { get => ""; set { } }
 
         public float DeltaTime { get; set; }
@@ -56,7 +53,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public void Run()        
         {
             DoInit();
-            DoResize(_width, _height);
+            DoResize(Width, Height);
         }
 
         public void SetCursor(CursorType cursorType)
@@ -66,10 +63,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         public void SetWindowSize(int width, int height, int posx = -1, int posy = -1, bool borderHidden = false)
         {
-            _canvas.SetObjectProperty("width", _width);
-            _canvas.SetObjectProperty("height", _height);
-            _width = width;
-            _height = height;
+            _canvas.SetObjectProperty("width", Width);
+            _canvas.SetObjectProperty("height", Height);
+            Width = width;
+            Height = height;
             Resize?.Invoke(this, new ResizeEventArgs(width, height));
             
         }
@@ -86,8 +83,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
         public void DoResize(int w, int h)
         {
-            _width = w;
-            _height = h;
+            Width = w;
+            Height = h;
+
             Resize?.Invoke(this, new ResizeEventArgs(w, h));
         }
     }

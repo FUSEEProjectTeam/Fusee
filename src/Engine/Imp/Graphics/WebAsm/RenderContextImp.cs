@@ -35,12 +35,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _textureCount = 0;
             _shaderParam2TexUnit = new Dictionary<WebGLUniformLocation, int>();
 
-            Diagnostics.Log($"Set GL2");
-
-            //gl = ((RenderCanvasImp)renderCanvasImp)._gl;
             gl2 = ((RenderCanvasImp)renderCanvasImp)._gl;
-
-            Diagnostics.Log($"Done2");
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
@@ -172,7 +167,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         private ITypedArray GetEmptyArray(ITextureBase tex)
         {
 
-            Diagnostics.Log($"GetEmptyArray - {tex.PixelFormat.ColorFormat}");
+            Diagnostics.Warn("GetEmptyArray", null, new object[] {tex});
 
             switch (tex.PixelFormat.ColorFormat)
             {
@@ -399,7 +394,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
         {
             if (gs != null)
-                Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
+                Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
 
             bool statusCode;
             string info;
@@ -532,13 +527,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             {
                 WebGLActiveInfo activeInfo = gl2.GetActiveUniform(sProg.Program, i);
 
-                var paramInfo = new ShaderParamInfo();
-                paramInfo.Name = activeInfo.Name;
-                paramInfo.Size = activeInfo.Size;
+                var paramInfo = new ShaderParamInfo
+                {
+                    Name = activeInfo.Name,
+                    Size = activeInfo.Size
+                };
                 uint uType = activeInfo.Type;//activeInfo.GlType;
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
-                //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
 
                 switch (uType)
                 {
@@ -698,8 +694,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
         {
-            Diagnostics.Log($"SetShaderParamTexture");
-
             var hParam = ((ShaderParam)param).handle;
             int texUnit;
             if (!_shaderParam2TexUnit.TryGetValue(hParam, out texUnit))
@@ -719,8 +713,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
         public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
         {
-            Diagnostics.Log($"SetShaderParamCubeTexture");
-
             var hParam = ((ShaderParam)param).handle;
             int texUnit;
             if (!_shaderParam2TexUnit.TryGetValue(hParam, out texUnit))

@@ -251,7 +251,7 @@ namespace Fusee.Engine.Player.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            
+   
         }
 
         private async Task<SceneContainer> CreateGui()

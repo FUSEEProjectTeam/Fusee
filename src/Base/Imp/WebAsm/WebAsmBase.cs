@@ -25,9 +25,7 @@ namespace Fusee.Base.Imp.WebAsm
             canvasWidth = (int)canvas.GetObjectProperty("width");
             canvasHeight = (int)canvas.GetObjectProperty("height");
 
-            //var webglContextAttrib = new JSObject();
-            //webglContextAttrib.SetObjectProperty("alpha", false);
-            gl = new Fusee.Engine.Imp.Graphics.WebAsm.WebGL2RenderingContext(canvas, new WebGLContextAttributes {  Alpha = true, Antialias = true });
+            gl = new WebGL2RenderingContext(canvas, new WebGLContextAttributes {  Alpha = true, Antialias = true });
         }
 
         public virtual void Run()
@@ -43,6 +41,7 @@ namespace Fusee.Base.Imp.WebAsm
             gl.Enable(WebGLRenderingContextBase.DEPTH_TEST);
 
             gl.Viewport(0, 0, canvasWidth, canvasHeight);
+            Resize(canvasWidth, canvasHeight);
 
             gl.ClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
             gl.Clear(WebGLRenderingContextBase.COLOR_BUFFER_BIT);
@@ -50,6 +49,7 @@ namespace Fusee.Base.Imp.WebAsm
 
         public virtual void Resize(int width, int height)
         {
+            gl.Viewport(0, 0, width, height);
             canvasWidth = width;
             canvasHeight = height;
         }

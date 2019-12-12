@@ -8,6 +8,7 @@ using SharpFontManaged;
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Threading.Tasks;
 
 namespace Fusee.Base.Imp.WebAsm
 {
@@ -52,7 +53,7 @@ namespace Fusee.Base.Imp.WebAsm
             }
         }
 
-        
+
         public Curve GetGlyphCurve(uint c)
         {
 
@@ -64,7 +65,7 @@ namespace Fusee.Base.Imp.WebAsm
             var orgPointCoords = glyph.Points.Select(pt => new PointF(new Vector2((int)pt.X, (int)pt.Y), pt.Type)).ToArray();
             var ptTypeAsList = orgPointCoords.Select(pt => pt.Type).ToList();
             var ptTypeAsByteArray = new List<byte>();
-                   
+
             foreach (var pt in ptTypeAsList)
             {
                 switch (pt)
@@ -149,7 +150,7 @@ namespace Fusee.Base.Imp.WebAsm
         public float GetUnscaledAdvance(uint c)
         {
             var unscaledGlyph = _face.GetGlyphUnscaled(new CodePoint((char)c));
-            
+
             var unscaledAdv = unscaledGlyph.Advance;
             return unscaledAdv;
         }

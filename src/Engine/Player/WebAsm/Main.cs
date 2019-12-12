@@ -3,6 +3,7 @@ using Fusee.Base.Core;
 using Fusee.Base.Imp.WebAsm;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.WebAsm;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
 using SkiaSharp;
@@ -74,7 +75,7 @@ namespace Fusee.Engine.Player.Main
                             //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage)).ConfigureAwait(false);
                         }
                         // always return something
-                        return new SceneContainer
+                        return new ConvertSceneGraph().Convert(new SceneContainer
                         {
                             Children = new List<SceneNodeContainer>
                             {
@@ -83,11 +84,18 @@ namespace Fusee.Engine.Player.Main
                                     Components = new List<SceneComponentContainer>
                                     {
                                         new TransformComponent(),
+                                        new MaterialComponent()
+                                        {
+                                            Diffuse = new MatChannelContainer
+                                            {
+                                                Color = new float4(0.5f, 0.3f, 0.8f, 1)
+                                            }
+                                        },
                                         new Cube()
                                     }
                                 }
                             }
-                        };
+                        });
                     },
                     Checker = (string id) =>
                     {
