@@ -10,6 +10,7 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Camera.Core
 {
@@ -39,7 +40,7 @@ namespace Fusee.Examples.Camera.Core
         private CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
         // Init is called on startup. 
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _mainCam.BackgroundColor = new float4(1, 1, 1, 1);
@@ -116,6 +117,8 @@ namespace Fusee.Examples.Camera.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
 

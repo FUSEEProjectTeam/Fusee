@@ -190,17 +190,7 @@ namespace Fusee.Engine.Core
                 RC.DefaultState.CanvasHeight = Height;
                 Resize(new ResizeEventArgs(Width, Height)); 
             };
-        }
-
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
-        }
+        }        
 
         /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
