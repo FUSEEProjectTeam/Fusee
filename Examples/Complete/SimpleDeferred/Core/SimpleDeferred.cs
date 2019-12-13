@@ -198,6 +198,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             //if (!rotate)
             //{
             //    _sunTransform.RotateAround(new float3(0, 0, 0), new float3(M.DegreesToRadians(20), 0, 0));

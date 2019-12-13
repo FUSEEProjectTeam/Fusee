@@ -190,6 +190,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             #region Controls
 
             // Mouse and keyboard movement
