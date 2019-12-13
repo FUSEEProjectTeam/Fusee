@@ -11,6 +11,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -85,7 +86,7 @@ namespace Fusee.Examples.PcRendering.Core
         private WritableTexture _depthTex;
 
         // Init is called on startup. 
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), Width, Height, false);
 
@@ -133,6 +134,8 @@ namespace Fusee.Examples.PcRendering.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;
+
+            return true;
         }       
 
         // RenderAFrame is called once a frame
@@ -337,11 +340,6 @@ namespace Fusee.Examples.PcRendering.Core
 
             _scene.Children.Add(root);
 
-            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
-            else
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
-
             OocLoader.RootNode = root;
             OocLoader.FileFolderPath = PtRenderingParams.PathToOocFile;
 
@@ -358,6 +356,11 @@ namespace Fusee.Examples.PcRendering.Core
 
             _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
             _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);
+
+            if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
+                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
+            else
+                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
 
             IsSceneLoaded = true;
         }

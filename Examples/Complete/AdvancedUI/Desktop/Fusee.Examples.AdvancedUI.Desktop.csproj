@@ -20,5 +20,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
     <ProjectReference Include="..\Core\Fusee.Examples.AdvancedUI.Core.csproj" />
   </ItemGroup>  
-  </ItemGroup>
+  
 </Project>
