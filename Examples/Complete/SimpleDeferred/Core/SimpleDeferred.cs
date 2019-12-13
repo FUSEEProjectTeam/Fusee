@@ -8,6 +8,7 @@ using Fusee.Serialization;
 using Fusee.Xene;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 
@@ -53,7 +54,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private CameraComponent _campComp = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 3000, M.PiOver4);
        
         // Init is called on startup.
-        public override void Init()
+        public override async Task<bool> Init()
         {
             _camTransform = new TransformComponent()
             {
@@ -187,6 +188,8 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Wrap a SceneRenderer around the GUI.
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame

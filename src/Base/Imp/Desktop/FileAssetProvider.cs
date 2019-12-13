@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using FileMode = System.IO.FileMode;
@@ -54,9 +55,9 @@ namespace Fusee.Base.Imp.Desktop
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(ImageData),
-                Decoder = delegate (string id, object storage)
+                Decoder = (string id, object storage) =>
                 {
-                    string ext = Path.GetExtension(id).ToLower();
+                    var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
                         case ".jpg":
@@ -67,9 +68,22 @@ namespace Fusee.Base.Imp.Desktop
                     }
                     return null;
                 },
-                Checker = delegate (string id)
+                DecoderAsync = async (string id, object storage) =>
                 {
-                    string ext = Path.GetExtension(id).ToLower();
+                    var ext = Path.GetExtension(id).ToLower();
+                    switch (ext)
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                        case ".png":
+                        case ".bmp":
+                            return await FileDecoder.LoadImageAsync((Stream)storage).ConfigureAwait(false);
+                    }
+                    return null;
+                },
+                Checker = (string id) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
                         case ".jpg":
@@ -86,7 +100,7 @@ namespace Fusee.Base.Imp.Desktop
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
-                Decoder = delegate (string id, object storage)
+                Decoder = (string id, object storage) =>
                 {
                     string ret;
                     using (var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true))
@@ -95,7 +109,16 @@ namespace Fusee.Base.Imp.Desktop
                     }
                     return ret;
                 },
-                Checker = id => true // If it's there, we can handle it...
+                DecoderAsync = async (string _, object storage) =>
+                {
+                    string ret;
+                    using (var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true))
+                    {
+                        ret = await sr.ReadToEndAsync().ConfigureAwait(false);
+                    }
+                    return ret;
+                },
+                Checker = _ => true // If it's there, we can handle it...
             });
         }
 
@@ -156,6 +179,54 @@ namespace Fusee.Base.Imp.Desktop
                     return true;
             }
             return false;
+        }
+
+        protected override async Task<Stream> GetStreamAsync(string id)
+        {
+            return await Task<Stream>.Factory.StartNew(() => { 
+                if (id == null) throw new ArgumentNullException(nameof(id));
+
+                // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) open it directly
+                if (Path.IsPathRooted(id))
+                    return new FileStream(id, FileMode.Open);
+
+                // Path seems relative. First see if the file exists at the current working directory
+                if (File.Exists(id))
+                    return new FileStream(id, FileMode.Open);
+
+                // At last, look at the specifie base directories
+                foreach (var baseDir in _baseDirs)
+                {
+                    string path = Path.Combine(baseDir, id);
+                    if (File.Exists(path))
+                        return new FileStream(path, FileMode.Open);
+                }
+                return null;
+            });
+        }
+
+        protected override async Task<bool> CheckExistsAsync(string id)
+        {
+            return await Task.Factory.StartNew(() =>
+            {
+                if (id == null) throw new ArgumentNullException(nameof(id));
+
+                // If it is an absolute path (e.g. C:\SomeDir\AnAssetFile.ext) directly check its presence
+                if (Path.IsPathRooted(id))
+                    return File.Exists(id);
+
+                // Path seems relative. First see if the file exists at the current working directory
+                if (File.Exists(id))
+                    return true;
+
+                foreach (var baseDir in _baseDirs)
+                {
+                    string path = Path.Combine(baseDir, id);
+                    if (File.Exists(path))
+                        return true;
+                }
+                return false;
+            });
         }
     }
 }
