@@ -87,7 +87,10 @@ namespace Fusee.Engine.Player.Main
                                 {
                                     Components = new List<SceneComponentContainer>
                                     {
-                                        new TransformComponent(),
+                                        new TransformComponent
+                                        {
+                                            Scale = float3.One * 50
+                                        },
                                         new MaterialComponent() // TODO: MaterialComponent is broken, shader is missing, figure out why!
                                         {
                                             Diffuse = new MatChannelContainer

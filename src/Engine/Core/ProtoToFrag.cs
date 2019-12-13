@@ -5,7 +5,7 @@ using System;
 
 namespace Fusee.Engine.Core
 {
-    internal class ProtoToFrag : SceneVisitor
+    public class ProtoToFrag : SceneVisitor
     {
         /// <summary>
         /// The SceneContainer, containing the scene that gets rendered.
@@ -14,17 +14,15 @@ namespace Fusee.Engine.Core
 
         private readonly bool _renderForward;
 
-        public ProtoToFrag(SceneContainer sc, bool renderForward)
+        internal ProtoToFrag(SceneContainer sc, bool renderForward)
         {
             _sc = sc;
             _renderForward = renderForward;
         }
 
-        public void BuildFragmentShaders()
+        internal void BuildFragmentShaders()
         {
-            Diagnostics.Error("BuildFragmentShadersCalled");
             Traverse(_sc.Children);
-            Diagnostics.Error("Traversal done");
         }
 
         /// <summary>
@@ -32,34 +30,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="shaderComponent">The ShaderEffectComponent</param>
         [VisitMethod]
-        public void BuildFragmentShaderFor(Fusee.Engine.Core.ShaderEffectComponent shaderComponent)
+        public void BuildFragmentShaderFor(ShaderEffectComponent shaderComponent)
         {
-            Diagnostics.Error("ShaderEffectComponent called!", null, new object[] { shaderComponent });
-
             if (shaderComponent.Effect.GetType() != typeof(ShaderEffectProtoPixel)) return;
 
             var effect = (ShaderEffectProtoPixel)shaderComponent.Effect;
             effect.CreateFragmentShader(_renderForward);
-        }
-
-        /// <summary>
-        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="shaderComponent">The ShaderEffectComponent</param>
-        [VisitMethod]
-        public void M(Fusee.Serialization.Mesh mesh)
-        {
-            Diagnostics.Error("MESH called!", null, new object[] { mesh });
-        }
-
-        /// <summary>
-        /// If a ShaderEffectComponent is visited the ShaderEffect of the <see cref="RendererState"/> is updated and the effect is set in the <see cref="RenderContext"/>.
-        /// </summary>
-        /// <param name="shaderComponent">The ShaderEffectComponent</param>
-        [VisitMethod]
-        public void T(Fusee.Serialization.TransformComponent t)
-        {
-            Diagnostics.Error("TransformComp called!", null, new object[] { t });
         }
     }
 }
