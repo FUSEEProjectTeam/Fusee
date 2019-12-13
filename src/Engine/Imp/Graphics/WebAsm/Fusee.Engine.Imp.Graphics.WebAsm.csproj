@@ -3,7 +3,7 @@
       <RootNamespace>Fusee.Engine.Imp.Graphics.WebAsm</RootNamespace>
       <PackageId>Fusee.Engine.Imp.Graphics.WebAsm</PackageId>
       <TargetFramework>netstandard2.0</TargetFramework>
-        <DefineConstants>$(DefineConstants);PLATFORM_WebAsm</DefineConstants>
+        <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
   </PropertyGroup>  
   
   <PropertyGroup>

@@ -4,7 +4,7 @@
     <RootNamespace>Fusee.Base.Imp.WebAsm</RootNamespace>
     <PackageId>Fusee.Base.Imp.WebAsm</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <DefineConstants>PLATFORM_WEBASM</DefineConstants>
+    <DefineConstants>$(DefineConstants);PLATFORM_DESKTOP</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
