@@ -6,6 +6,7 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -57,11 +58,24 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
-        internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
+        internal static ShaderEffect GreenEffect;
+        internal static ShaderEffect YellowEffect;
+        internal static ShaderEffect GrayEffect;
 
-        internal static readonly ShaderEffect OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+        internal static ShaderEffect OccludedDummyEffect;
+
+        static UIHelper()
+        {
+            CreateAsyncs();
+        }
+
+        private static async void CreateAsyncs()
+        {
+            GreenEffect = await ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
+            YellowEffect = await ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
+            GrayEffect = await ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
+            OccludedDummyEffect = await ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+        }
 
         private static float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -90,7 +104,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             CONFIRMED
         }
 
-        internal static void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
+        internal static async void CreateAndAddCircleAnnotationAndLine(SceneNodeContainer parentUiElement, AnnotationKind annotationKind, float2 circleDim, float2 annotationPos, float textSize, float borderScaleFactor, string text)
         {
             //ToDo: implement fixed fontsize - we need a RectTransform that gets its size from the font mesh and does not scale with its parent -> overflow
             var textLength = text.Length;
@@ -105,27 +119,27 @@ namespace Fusee.Examples.AdvancedUI.Core
             switch (annotationKind)
             {
                 case AnnotationKind.TO_CHECK:
-                    container.Children.Add(CreateCircle(circleDim, MatColor.YELLOW));
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.YELLOW));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textSizeModifier));
-                    container.Children.Add(CreateLine(MatColor.YELLOW));
+                    container.Children.Add(await CreateLine(MatColor.YELLOW));
                     break;
 
                 case AnnotationKind.DISCARDED:
-                    container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.GRAY));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textSizeModifier));
-                    container.Children.Add(CreateLine(MatColor.GRAY));
+                    container.Children.Add(await CreateLine(MatColor.GRAY));
                     break;
 
                 case AnnotationKind.RECOGNIZED_ML:
-                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textSizeModifier));
-                    container.Children.Add(CreateLine(MatColor.GREEN));
+                    container.Children.Add(await CreateLine(MatColor.GREEN));
                     break;
 
                 case AnnotationKind.CONFIRMED:
-                    container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
+                    container.Children.Add(await CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textSizeModifier));
-                    container.Children.Add(CreateLine(MatColor.GREEN));
+                    container.Children.Add(await CreateLine(MatColor.GREEN));
                     break;
             }
             parentUiElement.Children.Add(container);
@@ -185,7 +199,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             return annotation;
         }
 
-        private static SceneNodeContainer CreateCircle(float2 circleDim, MatColor color)
+        private static async Task<SceneNodeContainer> CreateCircle(float2 circleDim, MatColor color)
         {
             float4 col;
 
@@ -236,14 +250,14 @@ namespace Fusee.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0)
+                        Effect = await ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0)
                     },
                     new Circle(false, 30,100,_circleThickness)
                 }
             };
         }
 
-        private static SceneNodeContainer CreateLine(MatColor color)
+        private static async Task<SceneNodeContainer> CreateLine(MatColor color)
         {
             float4 col;
 
@@ -288,7 +302,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
+                        Effect = await ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
                     }
                 }
             };

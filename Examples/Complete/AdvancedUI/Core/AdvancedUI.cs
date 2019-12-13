@@ -51,7 +51,7 @@ namespace Fusee.Examples.AdvancedUI.Core
         //rnd is public so unit tests can inject a seeded random.
         public Random rnd;
 
-        private SceneContainer BuildScene()
+        private async Task<SceneContainer> BuildScene()
         {
             var sphere = new Sphere(32, 24);
 
@@ -78,7 +78,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
+                                Effect = await ShaderCodeBuilder.MakeShaderEffect(new float4(0.90980f, 0.35686f, 0.35686f,1), new float4(1,1,1,1), 20,"crumpled-paper-free.jpg",0.5f)
                             },
                             //sphere
                         }
@@ -96,7 +96,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                             },
                             new ShaderEffectComponent()
                             {
-                                Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20)
+                                Effect = await ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1,1), new float4(1,1,1,1), 20)
                             },
                             line
                         }

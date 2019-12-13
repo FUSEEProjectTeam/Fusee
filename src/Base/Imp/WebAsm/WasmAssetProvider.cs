@@ -115,14 +115,13 @@ namespace Fusee.Base.Imp.WebAsm
         }
 
         /// <summary>
-        /// Checks the existence of the identified asset using <see cref="File.Exists"/>
+        /// Checks the existence of the identified asset
         /// </summary>
         /// <param name="id">The asset identifier.</param>
         /// <returns>
         /// true if a stream can be created.
         /// </returns>
         /// <exception cref="System.ArgumentNullException"></exception>
-        [Obsolete("Use CheckExistsAsync() instead")]
         protected override bool CheckExists(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
@@ -134,6 +133,14 @@ namespace Fusee.Base.Imp.WebAsm
             return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
         }
 
+        /// <summary>
+        /// Checks the existence of the identified asset in an async manner
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>
+        /// true if a stream can be created.
+        /// </returns>
+        /// <exception cref="System.ArgumentNullException"></exception>
         protected override async Task<bool> CheckExistsAsync(string id)
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
