@@ -34,7 +34,7 @@
     <PackageReference Include="WebAssembly.Net.Http" Version="0.2.0" />
     <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.0" />
       <Reference Include="SharpFontManaged">
-          <HintPath>$(FuseeEngineRoot)\ext\SharpFontManaged\bin\$(Configuration)\SharpFontManaged.dll</HintPath>
+          <HintPath>$(FuseeEngineRoot)\ext\SharpFontManaged\$(Configuration)\SharpFontManaged.dll</HintPath>
       </Reference>
   </ItemGroup>
 </Project>

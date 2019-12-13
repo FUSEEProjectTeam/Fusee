@@ -1,7 +1,0 @@
-C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Release\SharpFontManaged.AssemblyInfoInputs.cache
-C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Release\SharpFontManaged.AssemblyInfo.cs
-C:\Users\roetner\_DEV\Fusee\bin\Release\Release\SharpFontManaged.deps.json
-C:\Users\roetner\_DEV\Fusee\bin\Release\Release\SharpFontManaged.dll
-C:\Users\roetner\_DEV\Fusee\bin\Release\Release\SharpFontManaged.pdb
-C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Release\SharpFontManaged.dll
-C:\Users\roetner\_DEV\Fusee\ext\SharpFontManaged\obj\Release\SharpFontManaged.pdb
