@@ -49,6 +49,13 @@
     <PackageReference Include="CommandLineParser" Version="2.6.0" />
     <PackageReference Include="Google.Protobuf.Tools" Version="3.9.1" />
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
+
+      <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
+          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+      </Reference>
+      <Reference Include="protobuf-net.Core" Version="3.0.0-alpha.125">
+          <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.Core.dll</HintPath>
+      </Reference>
   </ItemGroup>  
   
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
