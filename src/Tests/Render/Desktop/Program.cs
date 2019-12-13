@@ -5,6 +5,7 @@ using Fusee.Engine.Core;
 using Fusee.Serialization;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Test.Render.Desktop
@@ -30,10 +31,15 @@ namespace Fusee.Test.Render.Desktop
                     new AssetHandler
                     {
                         ReturnedType = typeof(Font),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
                             return new Font { _fontImp = new FontImp((Stream)storage) };
+                        },
+                        DecoderAsync = async (string id, object storage) =>
+                        {
+                            if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
+                            return await Task.Factory.StartNew(() =>  new Font { _fontImp = new FontImp((Stream)storage) } ).ConfigureAwait(false);
                         },
                         Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                     });
@@ -41,10 +47,15 @@ namespace Fusee.Test.Render.Desktop
                     new AssetHandler
                     {
                         ReturnedType = typeof(SceneContainer),
-                        Decoder = delegate (string id, object storage)
+                        Decoder = (string id, object storage) =>
                         {
                             if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
                             return Serializer.DeserializeSceneContainer((Stream)storage);
+                        },
+                        DecoderAsync = async (string id, object storage) =>
+                        {
+                            if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
+                            return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage));
                         },
                         Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                     });
@@ -62,7 +73,7 @@ namespace Fusee.Test.Render.Desktop
                 Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(cimp));
 
                 // Initialize canvas/app and canvas implementor
-                app.DoInit();
+                app.Init();
 
                 // Render a single frame and save it
                 var bmp = cimp.ShootCurrentFrame(width, height);
