@@ -184,16 +184,6 @@ namespace Fusee.Engine.Core
             CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
         }
 
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
-        }
-
         /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
         /// </summary>
