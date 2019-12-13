@@ -328,7 +328,7 @@ namespace Fusee.Engine.Core
             rc.SetRenderTarget();
 
             Traverse(_sc.Children);
-        }        
+        }
 
         #region Visitors
 
