@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace FusViewer
+namespace Fusee.Tools.FusViewer
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml

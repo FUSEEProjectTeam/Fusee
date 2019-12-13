@@ -357,3 +357,4 @@ Resource.Designer.cs
 !ext/**/*
 ext/protobuf/Debug/protobuf-net.dll.mdb
 ext/protobuf/Release/protobuf-net.dll.mdb
+*~.slnf

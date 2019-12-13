@@ -88,7 +88,7 @@ namespace Fusee.Math.Core
 
                 var pt = currentPointTranslatedAndRotated;
 
-                // check min and max points                
+                // check min and max points
                 Min = new float3(
                     Min.x > pt.x ? pt.x : Min.x,
                     Min.y > pt.y ? pt.y : Min.y,
@@ -101,7 +101,7 @@ namespace Fusee.Math.Core
             }
 
             // Get size of box before translating back
-            Size = Max - Min; 
+            Size = Max - Min;
 
             Max = (Rotation * Max) + Translation;
             Min = (Rotation * Min) + Translation;

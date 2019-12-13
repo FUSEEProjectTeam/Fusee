@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Core;
+using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using System.Collections.Generic;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -101,7 +102,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                 Name = "Container"
             };
 
-
             switch (annotationKind)
             {
                 case AnnotationKind.TO_CHECK:
@@ -109,16 +109,19 @@ namespace Fusee.Examples.AdvancedUI.Core
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconToCheck, _frameToCheck, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.YELLOW));
                     break;
+
                 case AnnotationKind.DISCARDED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GRAY));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconDiscarded, _frameDiscarded, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.GRAY));
                     break;
+
                 case AnnotationKind.RECOGNIZED_ML:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconRecognizedML, _frameRecognizedMLOrConfirmed, textSizeModifier));
                     container.Children.Add(CreateLine(MatColor.GREEN));
                     break;
+
                 case AnnotationKind.CONFIRMED:
                     container.Children.Add(CreateCircle(circleDim, MatColor.GREEN));
                     container.Children.Add(CreateAnnotation(annotationPos, textSize, borderScaleFactor, text, _iconConfirmed, _frameRecognizedMLOrConfirmed, textSizeModifier));
@@ -195,14 +198,17 @@ namespace Fusee.Examples.AdvancedUI.Core
                     col = White;
                     nameSuffix = "white";
                     break;
+
                 case MatColor.GREEN:
                     col = Green;
                     nameSuffix = "green";
                     break;
+
                 case MatColor.YELLOW:
                     col = Yellow;
                     nameSuffix = "yellow";
                     break;
+
                 case MatColor.GRAY:
                     col = Gray;
                     nameSuffix = "gray";
@@ -247,17 +253,19 @@ namespace Fusee.Examples.AdvancedUI.Core
                 case MatColor.WHITE:
                     col = White;
                     break;
+
                 case MatColor.GREEN:
                     col = Green;
                     break;
+
                 case MatColor.YELLOW:
                     col = Yellow;
                     break;
+
                 case MatColor.GRAY:
                     col = Gray;
                     break;
             }
-
 
             return new SceneNodeContainer()
             {
@@ -307,9 +315,9 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         internal static void SetDiffuseAlphaInShaderEffect(this ShaderEffect effect, float alpha)
         {
-            var color = (float4) effect.GetEffectParam(ShaderCodeBuilder.DiffuseColorName);
+            var color = (float4)effect.GetEffectParam(UniformNameDeclarations.DiffuseColor);
             color.w = alpha;
-            effect.SetEffectParam(ShaderCodeBuilder.DiffuseColorName, color);              
+            effect.SetEffectParam(UniformNameDeclarations.DiffuseColor, color);
         }
 
         internal static bool DoesAnnotationIntersectWithAnnotation(float2 firstAnnotation, float2 secondAnnotation, float2 intersectionBuffer)

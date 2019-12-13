@@ -56,7 +56,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        private static int _size = 20;
+        private static int _size = 10;
         public static int Size
         {
             get { return _size; }

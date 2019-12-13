@@ -75,10 +75,25 @@ namespace Fusee.Engine.Common
         void DeleteFrameBuffer(IBufferHandle bh);
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// Free all allocated gpu memory belonging to a renderbuffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteRenderBuffer(IBufferHandle bh);
+
+        /// <summary>
+        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
+        void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type);
+
+        /// <summary>
+        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="texHandle">The gpu handle of the texture.</param>
+        void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle);
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
@@ -135,6 +150,18 @@ namespace Fusee.Engine.Common
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>
         void SetShaderParam(IShaderParam param, float2 val);
+
+        /// <summary>
+        /// Sets the shader parameter to a float2 array.
+        /// </summary>
+        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
+        /// <param name="val">The float2 array that should be assigned to the shader array parameter.</param>
+        /// <remarks>
+        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
+        /// a given uniform parameter name used in a shader program.
+        /// </remarks>
+        /// <seealso cref="GetShaderParamList"/>        
+        void SetShaderParam(IShaderParam param, float2[] val);       
 
         /// <summary>
         /// Sets the shader parameter to a float3 value.
@@ -228,6 +255,13 @@ namespace Fusee.Engine.Common
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
         void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
+        void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds);
 
         /// <summary>
         /// Sets a Shader Parameter to a created texture.
@@ -572,13 +606,14 @@ namespace Fusee.Engine.Common
     public enum HardwareCapability
     {
         /// <summary>
-        /// Checks if deferred rendering with EXT_FRAMEBUFFER is possible
+        /// Checks if deferred rendering with frame buffer objects is possible
         /// </summary>
-        DefferedPossible,
+        CAN_RENDER_DEFFERED,
+
         /// <summary>
-        /// Returns the buffersize of the hardware
+        /// Checks if geometry shaders can be used.
         /// </summary>
-        Buffersize
+        CAN_USE_GEOMETRY_SHADERS
     }
 
     /// <summary>

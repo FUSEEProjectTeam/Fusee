@@ -5,6 +5,7 @@ using Fusee.Xene;
 using Fusee.Math.Core;
 using System.Linq;
 using System;
+using Fusee.Engine.Core.ShaderShards;
 
 namespace Fusee.Engine.Core
 {
@@ -19,12 +20,10 @@ namespace Fusee.Engine.Core
         private SceneNodeContainer _currentNode;
 
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
-        private Dictionary<MaterialLightComponent, ShaderEffect> _lightMatMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
-        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
-        private int _numberOfLights; 
+        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;        
 
         //private IEnumerable<System.Type> _codeComponentSubClasses;
 
@@ -49,8 +48,7 @@ namespace Fusee.Engine.Core
         public SceneContainer Convert(SceneContainer sc)
         {
             // check if the scene contains at least on light
-            _lightViseratorResults = sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();
-            _numberOfLights = _lightViseratorResults.Count == 0 ? 1 : _lightViseratorResults.Count(); //Needed because the ShaderEffect is built here (when visiting a MaterialComponent).
+            _lightViseratorResults = sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();            
 
             //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
             var projectionComponents = sc.Children.Viserate<ProjectionViserator, ProjectionComponent>().ToList();
@@ -63,15 +61,15 @@ namespace Fusee.Engine.Core
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
                         
-            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
-            _lightMatMap = new Dictionary<MaterialLightComponent, ShaderEffect>();
+            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();            
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
             _boneContainers = new Stack<SceneNodeContainer>();
 
             Traverse(sc.Children);            
             
             return _convertedScene;
-        }        
+        } 
+        
         #region Visitors
         /// <summary>
         /// Converts the scene node container.
@@ -132,19 +130,8 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMaterial(MaterialComponent matComp)
         {
-            var effect = LookupMaterial(matComp, _numberOfLights);
+            var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
-        }
-
-        /// <summary>
-        /// Converts the materials light component.
-        /// </summary>
-        /// <param name="matComp"></param>
-        [VisitMethod]
-        public void ConvMaterial(MaterialLightComponent matComp)
-        {
-            var effect = LookupMaterial(matComp, _numberOfLights);
-            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         /// <summary>
@@ -154,7 +141,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void ConvMaterial(MaterialPBRComponent matComp)
         {
-            var effect = LookupMaterial(matComp, _numberOfLights);
+            var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }        
 
@@ -179,7 +166,7 @@ namespace Fusee.Engine.Core
 
             var currentNodeEffect = _currentNode.GetComponent<ShaderEffectComponent>();
 
-            if (currentNodeEffect?.Effect.GetEffectParam(ShaderCodeBuilder.BumpTextureName) != null)
+            if (currentNodeEffect?.Effect.GetEffectParam(UniformNameDeclarations.BumpTextureName) != null)
             {
                 mesh.Tangents = mesh.CalculateTangents();
                 mesh.BiTangents = mesh.CalculateBiTangents();
@@ -238,28 +225,18 @@ namespace Fusee.Engine.Core
 
         #region Make ShaderEffect
 
-        private ShaderEffect LookupMaterial(MaterialComponent mc, int numberOfLights)
+        private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
-
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights(), numberOfLights); // <- broken
+            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
             return mat;
         }
-        private ShaderEffect LookupMaterial(MaterialLightComponent mc, int numberOfLights)
-        {
-            if (_lightMatMap.TryGetValue(mc, out var mat)) return mat;
 
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights(), numberOfLights);
-            _lightMatMap.Add(mc, mat);
-            return mat;
-        }
-
-        private ShaderEffect LookupMaterial(MaterialPBRComponent mc, int numberOfLights)
+        private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
         {
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatComp(mc, _currentNode.GetWeights(), numberOfLights);
+            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
             _pbrComponent.Add(mc, mat);
             return mat;
         }

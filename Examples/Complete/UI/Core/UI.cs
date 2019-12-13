@@ -1,14 +1,14 @@
-﻿using Fusee.Base.Core;
+﻿using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using Fusee.Base.Common;
-using Fusee.Xene;
 using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Examples.UI.Core
@@ -221,13 +221,13 @@ namespace Fusee.Examples.UI.Core
             {
                 Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
                 {
-                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0,1) },
+                    Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
                 })
             };
 
             var projMethod = _canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE;
-            var projComp = new ProjectionComponent(projMethod,zNear,zFar,fov);
-            canvas.Components.Insert(0,projComp);
+            var projComp = new ProjectionComponent(projMethod, zNear, zFar, fov);
+            canvas.Components.Insert(0, projComp);
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -259,7 +259,7 @@ namespace Fusee.Examples.UI.Core
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f,1) },
+                Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -270,7 +270,7 @@ namespace Fusee.Examples.UI.Core
             Debug.WriteLine("Canvas: Exit Btn!");
             var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
             {
-                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0,1) },
+                Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
             });
             _scene.Children.FindNodes(node => node.Name == "Canvas").First().GetComponent<ShaderEffectComponent>()
                 .Effect = color;
@@ -306,9 +306,9 @@ namespace Fusee.Examples.UI.Core
             //Debug.WriteLine("Canvas: Mouse over!");
         }
 
-        #endregion
+        #endregion Interactions
 
-        // Init is called on startup. 
+        // Init is called on startup.
         public override void Init()
         {
             _initWindowWidth = Width;
@@ -360,14 +360,13 @@ namespace Fusee.Examples.UI.Core
 
             // Set the scene by creating a scene graph
             _scene = CreateNineSliceScene();
-                        
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_scene);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
         }
-
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -436,6 +435,6 @@ namespace Fusee.Examples.UI.Core
 
             // Swap buffers: Show the contents of the back buffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }        
+        }
     }
 }

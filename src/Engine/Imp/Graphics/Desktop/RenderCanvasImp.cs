@@ -1,6 +1,8 @@
 using System;
 using System.Diagnostics;
 using System.Drawing;
+using SDPixelFormat = System.Drawing.Imaging.PixelFormat;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -482,7 +484,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         {
         }
 
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
         /// </summary>
@@ -507,6 +508,28 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             _gameWindow.Y = (DisplayDevice.Default.Bounds.Height - height) / 2;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RenderCanvasImp"/> class.
+        /// </summary>
+        /// <param name="width">The width of the render window.</param>
+        /// <param name="height">The height of the render window.</param>
+        /// <remarks>The window created by this constructor is not visible. Should only be used for internal testing.</remarks>
+        public RenderCanvasImp(int width, int height)
+        {
+            try
+            {
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, true);
+            }
+            catch
+            {
+                _gameWindow = new RenderCanvasGameWindow(this, width, height, false);
+            }
+            _gameWindow.Visible = false;
+            _gameWindow.MakeCurrent();
+
+            _gameWindow.X = 0;
+            _gameWindow.Y = 0;
+        }
 
         /// <summary>
         /// Implementation of the Dispose pattern. Disposes of the OpenTK game window.
@@ -638,6 +661,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 _gameWindow.Run(30.0, 0.0);
         }
 
+        /// <summary>
+        /// Creates a bitmap image from the current frame of the application.
+        /// </summary>
+        /// <param name="width">The width of the window, and therefore image to render.</param>
+        /// <param name="height">The height of the window, and therefore image to render.</param>
+        /// <returns></returns>
+        public Bitmap ShootCurrentFrame(int width, int height)
+        {
+            this.DoInit();
+            this.DoRender();
+            this.DoResize(width, height);
+
+            var bmp = new Bitmap(this.Width, this.Height, SDPixelFormat.Format32bppArgb);
+            var mem = bmp.LockBits(new System.Drawing.Rectangle(0, 0, Width, Height), System.Drawing.Imaging.ImageLockMode.WriteOnly, SDPixelFormat.Format32bppArgb);
+            GL.PixelStore(PixelStoreParameter.PackRowLength, mem.Stride / 4);
+            GL.ReadPixels(0, 0, Width, Height, PixelFormat.Bgra, PixelType.UnsignedByte, mem.Scan0);
+            bmp.UnlockBits(mem);
+            bmp.RotateFlip(RotateFlipType.RotateNoneFlipY);
+            return bmp;
+        }
+
         #endregion
     }
 
@@ -762,7 +806,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 if (value)
                 {
                     GL.Enable(EnableCap.Blend);
-                    GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
+                    GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                 }
                 else
                 {
@@ -848,7 +892,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //if (Keyboard[OpenTK.Input.Key.Escape])
             //this.Exit();
 
-            if (Keyboard[OpenTK.Input.Key.F11])
+            if (OpenTK.Input.Keyboard.GetState()[OpenTK.Input.Key.F11])
                 WindowState = (WindowState != WindowState.Fullscreen) ? WindowState.Fullscreen : WindowState.Normal;
         }
 

@@ -1,16 +1,16 @@
-using System.IO;
 using Android.App;
 using Android.Content.PM;
 using Android.OS;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
-using Fusee.Base.Core;
 using Fusee.Base.Common;
+using Fusee.Base.Core;
 using Fusee.Base.Imp.Android;
 using Fusee.Engine.Core;
 using Fusee.Engine.Imp.Graphics.Android;
 using Fusee.Serialization;
+using System.IO;
 using Font = Fusee.Base.Core.Font;
 using Path = Fusee.Base.Common.Path;
 
@@ -48,7 +48,8 @@ namespace Fusee.Examples.AdvancedUI.Android
                                 };
                             return null;
                         },
-                        Checker = delegate (string id) {
+                        Checker = delegate (string id)
+                        {
                             return Path.GetExtension(id).ToLower().Contains("ttf");
                         }
                     });
@@ -60,7 +61,7 @@ namespace Fusee.Examples.AdvancedUI.Android
                         {
                             if (Path.GetExtension(id).ToLower().Contains("fus"))
                             {
-                                return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                                return Serializer.DeserializeSceneContainer((Stream)storage);
                             }
                             return null;
                         },
@@ -91,7 +92,6 @@ namespace Fusee.Examples.AdvancedUI.Android
                 Log.Info("@string/app_name", "Hardware does not support OpenGL ES 3.0 - Aborting...");
             }
         }
-
 
         /// <summary>
         /// Gets the supported OpenGL ES version of device.
@@ -125,6 +125,5 @@ namespace Fusee.Examples.AdvancedUI.Android
             Log.Info("GLVersion", "OpenGL ES major version: " + cleaned);
             return cleaned;
         }
-
     }
 }

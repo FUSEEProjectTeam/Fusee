@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using static Fusee.Math.Core.Eigen;
 
 namespace Fusee.Math.Core
 {
@@ -20,6 +19,7 @@ namespace Fusee.Math.Core
     public static class M
     {
         #region Min and Max
+
         /// <summary>
         /// Calculates the minimum of a and b.
         /// </summary>
@@ -152,7 +152,7 @@ namespace Fusee.Math.Core
             return (a > b) ? a : b;
         }
 
-        #endregion
+        #endregion Min and Max
 
         #region Fields
 
@@ -216,7 +216,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public const float Log2E = 1.442695041f;
 
-        #endregion
+        #endregion Fields
 
         #region Public Members
 
@@ -242,7 +242,7 @@ namespace Fusee.Math.Core
             return (float)System.Math.Cos(val);
         }
 
-        #endregion
+        #endregion Trigonometry
 
         #region NextPowerOfTwo
 
@@ -300,7 +300,7 @@ namespace Fusee.Math.Core
             return (val & (val - 1)) == 0;
         }
 
-        #endregion
+        #endregion NextPowerOfTwo
 
         #region Factorial
 
@@ -318,7 +318,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Factorial
 
         #region BinomialCoefficient
 
@@ -333,7 +333,7 @@ namespace Fusee.Math.Core
             return Factorial(n) / (Factorial(k) * Factorial(n - k));
         }
 
-        #endregion
+        #endregion BinomialCoefficient
 
         #region InverseSqrtFast
 
@@ -392,7 +392,7 @@ namespace Fusee.Math.Core
 #endif
         }
 
-        #endregion
+        #endregion InverseSqrtFast
 
         #region DegreesToRadians
 
@@ -440,12 +440,12 @@ namespace Fusee.Math.Core
             return radians * radToDeg;
         }
 
-        #endregion
+        #endregion DegreesToRadians
 
-        #region Pointcloud
+        #region Point cloud
 
         /// <summary>
-        ///     Calculates the centroid point (mean) from given vertices in single precision
+        ///     Calculates the centroid point (mean) from given vertices in single precision.
         /// </summary>
         /// <param name="vertices"></param>
         /// <returns></returns>
@@ -460,7 +460,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the centroid point (mean) from given vertices in double precision
+        ///     Calculates the centroid point (mean) from given vertices in double precision.
         /// </summary>
         /// <param name="vertices"></param>
         /// <returns></returns>
@@ -474,15 +474,15 @@ namespace Fusee.Math.Core
             return centroid / vertices.Count();
         }
 
-        #endregion
+        #endregion Point cloud
 
         #region Covariance
 
         /// <summary>
-        ///     Generates a covariance matrix from given centroid and vertices in single precision
+        ///     Generates a covariance matrix from given centroid and vertices in single precision.
         /// </summary>
-        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
-        /// <param name="vertices">The vertex data</param>
+        /// <param name="centroid">The centroid of the current mesh or point cloud.</param>
+        /// <param name="vertices">The vertex data.</param>
         /// <returns></returns>
         public static float4x4 CreateCovarianceMatrix(float3 centroid, IEnumerable<float3> vertices)
         {
@@ -509,10 +509,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Generates a covariance matrix from given centroid and vertices in double precision
+        ///     Generates a covariance matrix from given centroid and vertices in double precision.
         /// </summary>
-        /// <param name="centroid">The centroid of the current mesh or pointcloud</param>
-        /// <param name="vertices">The vertex data</param>
+        /// <param name="centroid">The centroid of the current mesh or point cloud.</param>
+        /// <param name="vertices">The vertex data.</param>
         /// <returns></returns>
         public static double4x4 CreateCovarianceMatrix(double3 centroid, IEnumerable<double3> vertices)
         {
@@ -548,13 +548,12 @@ namespace Fusee.Math.Core
             return (item1 - centroid1) * (item2 - centroid2) / numberOfPoints;
         }
 
-
-        #endregion
+        #endregion Covariance
 
         #region Eigen
 
         /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in single precision.
         /// </summary>
         /// <param name="covarianceMatrix"></param>
         /// <returns></returns>
@@ -564,7 +563,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision
+        ///     Generates an Eigen structure (values and vectors) from a given covariance matrix in double precision.
         /// </summary>
         /// <param name="covarianceMatrix"></param>
         /// <returns></returns>
@@ -574,20 +573,20 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Diagonalizes a given covariance matrix with single precision
-        ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method. 
+        ///     Diagonalizes a given covariance matrix with single precision.
+        ///     Currently only for 3x3 matrices, therefore three values but for the sake of convenience you can (and have to) feed a 4x4 matrix into this method.
         ///     <para>
         ///         Credits to: https://github.com/melax/sandbox
         ///         http://melax.github.io/diag.html
         ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q 
+        ///         returns quaternion q such that its corresponding matrix Q
         ///         can be used to Diagonalize A
         ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
         ///     </para>
         /// </summary>
-        /// <param name="A">The covariance matrix</param>
+        /// <param name="A">The covariance matrix.</param>
         /// <returns>EigenF with 3 Eigen vectors and 3 eigen values.</returns>
         public static EigenF Diagonalizer(float4x4 A)
         {
@@ -613,18 +612,18 @@ namespace Fusee.Math.Core
                 var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
                 theta *= sgn; // make it positive
                 var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
-                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c 
+                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c
 
                 if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
 
                 var jr = new Quaternion(0, 0, 0, 0) // jacobi rotation for this iteration.
                 {
                     [k] = (float)(sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
-                }; 
+                };
 
-                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
+                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
                 jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
-                jr.w = (float) System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
+                jr.w = (float)System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
                 if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
                 q *= jr;
                 q.Normalize();
@@ -643,17 +642,17 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Diagonalizes a given covariance matrix with double precision
-        ///     
+        ///     Diagonalizes a given covariance matrix with double precision.
+        ///
         ///     <para>
         ///         Credits to: https://github.com/melax/sandbox
         ///         http://melax.github.io/diag.html
         ///         A must be a symmetric matrix.
-        ///         returns quaternion q such that its corresponding matrix Q 
+        ///         returns quaternion q such that its corresponding matrix Q
         ///         can be used to Diagonalize A
         ///         Diagonal matrix D = transpose(Q) * A * (Q); thus A == Q * D * QT
-        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues
-        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q)
+        ///         The directions of Q (cols of Q) are the eigenvectors D's diagonal is the eigenvalues.
+        ///         As per 'col' convention if float3x3 Q = qgetmatrix(q); then Q*v = q*v*conj(q).
         ///     </para>
         /// </summary>
         /// <param name="A">The covariance matrix</param>
@@ -682,7 +681,7 @@ namespace Fusee.Math.Core
                 var sgn = (theta > 0.0f) ? 1.0f : -1.0f;
                 theta *= sgn; // make it positive
                 var t = sgn / (theta + ((theta < 1.0e+6f) ? System.Math.Sqrt(theta * theta + 1.0f) : theta)); // sign(T)/(|T|+sqrt(T^2+1))
-                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c 
+                var c = 1.0f / System.Math.Sqrt(t * t + 1.0f); //  c= 1/(t^2+1) , t=s/c
 
                 if (c.Equals(1.0f)) break;  // no room for improvement - reached machine precision.
 
@@ -691,7 +690,7 @@ namespace Fusee.Math.Core
                     [k] = (sgn * System.Math.Sqrt((1.0f - c) / 2.0f))
                 };
 
-                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)  
+                // using 1/2 angle identity sin(a/2) = sqrt((1-cos(a))/2)
                 jr[k] *= -1.0f; // note we want a final result semantic that takes D to A, not A to D
                 jr.w = System.Math.Sqrt(1.0f - (jr[k] * jr[k]));
                 if (jr.w.Equals(1.0f)) break; // reached limits of floating point precision
@@ -711,9 +710,10 @@ namespace Fusee.Math.Core
             };
         }
 
-        #endregion
+        #endregion Eigen
 
         #region MinAngle
+
         /// <summary>
         /// Wrap-around to keep angle in the interval of (-PI , +PI]
         /// </summary>
@@ -742,7 +742,7 @@ namespace Fusee.Math.Core
             return angle;
         }
 
-        #endregion
+        #endregion MinAngle
 
         #region Conversion
 
@@ -761,7 +761,7 @@ namespace Fusee.Math.Core
             return (a << 24) + (b << 16) + (g << 8) + r;
         }
 
-        #endregion
+        #endregion Conversion
 
         #region Swap
 
@@ -789,7 +789,7 @@ namespace Fusee.Math.Core
             b = temp;
         }
 
-        #endregion
+        #endregion Swap
 
         #region Clamp
 
@@ -821,7 +821,7 @@ namespace Fusee.Math.Core
             return val < min ? min : val > max ? max : val;
         }
 
-        #endregion
+        #endregion Clamp
 
         #region Interpolate / Lerp
 
@@ -873,7 +873,7 @@ namespace Fusee.Math.Core
             return (a * (1f - blend)) + (b * blend);
         }
 
-        #endregion
+        #endregion Interpolate / Lerp
 
         #region Equals
 
@@ -899,8 +899,8 @@ namespace Fusee.Math.Core
             return (System.Math.Abs(a - b) < EpsilonFloat);
         }
 
-        #endregion
+        #endregion Equals
 
-        #endregion
+        #endregion Public Members
     }
 }

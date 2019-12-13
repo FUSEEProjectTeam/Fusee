@@ -17,9 +17,7 @@ namespace Fusee.Examples.PcRendering.Desktop
     public class PcRendering
     {
         public static void Main()
-        {
-            Console.ReadKey();
-
+        {            
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
 

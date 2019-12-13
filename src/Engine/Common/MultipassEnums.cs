@@ -9,22 +9,31 @@
         /// Position texture.
         /// </summary>
         G_POSITION,
+
         /// <summary>
         /// Albedo texture (specular reflection in alpha channel).
         /// </summary>
-        G_ALBEDO_SPECULAR,
+        G_ALBEDO,
+
         /// <summary>
         /// Normal texture.
         /// </summary>
         G_NORMAL,
+
         /// <summary>
         /// Depth texture.
         /// </summary>
         G_DEPTH,
+
         /// <summary>
         /// SSAO texture (stores occlusion).
         /// </summary>
         G_SSAO,
+
+        /// <summary>
+        /// Specular texture.
+        /// </summary>
+        G_SPECULAR
     }
 
     /// <summary>

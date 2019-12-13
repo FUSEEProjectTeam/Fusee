@@ -265,6 +265,17 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        ///     Initializes this instance.
+        /// </summary>
+        /// <remarks>
+        ///     This does not run the application, merely initialize the RenderCanvas in preparation.
+        /// </remarks>
+        public void DoInit()
+        {
+            InitCanvas();
+        }
+
+        /// <summary>
         ///     Presents the contents of the back-buffer on the visible part of this render canvas.
         /// </summary>
         /// <remarks>
