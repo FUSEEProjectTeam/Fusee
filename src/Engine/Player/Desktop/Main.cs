@@ -9,6 +9,7 @@ using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
+using Fusee.Math.Core;
 using Fusee.Serialization;
 using Path = System.IO.Path;
 
@@ -150,7 +151,28 @@ namespace Fusee.Engine.Player.Desktop
                     {
                         if (!Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)) return null;
 
-                        return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage));
+                        //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage));
+                        return new ConvertSceneGraph().Convert(new SceneContainer
+                        {
+                            Children = new List<SceneNodeContainer>
+                            {
+                                new SceneNodeContainer
+                                {
+                                    Components = new List<SceneComponentContainer>
+                                    {
+                                        new TransformComponent(),
+                                        new MaterialComponent() // TODO: MaterialComponent is broken, shader is missing, figure out why!
+                                        {
+                                            Diffuse = new MatChannelContainer
+                                            {
+                                                Color = new float4(0.5f, 0.3f, 0.8f, 1)
+                                            }
+                                        },
+                                        new Cube()
+                                    }
+                                }
+                            }
+                        });
                     },
                     Checker = id => Path.GetExtension(id).Contains("fus", StringComparison.OrdinalIgnoreCase)
                 });

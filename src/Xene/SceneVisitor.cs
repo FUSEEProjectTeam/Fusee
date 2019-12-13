@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Fusee.Base.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Xene
@@ -499,7 +500,7 @@ namespace Fusee.Xene
             if (node.Children != null)
             {
                 foreach (var child in node.Children)
-                {
+                {                    
                     DoTraverse(child);
                 }
             }
@@ -527,7 +528,7 @@ namespace Fusee.Xene
             var compType = component.GetType();
 
             if (_visitors.Components.TryGetValue(compType, out visitComponent))
-            {
+            {                
                 // Fast lane: we found a directly matching Visitor. Call it and leave.
                 visitComponent(this, component);
             }

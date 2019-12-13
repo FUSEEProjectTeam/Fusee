@@ -498,13 +498,14 @@ namespace Fusee.Engine.Core
 
             if (string.IsNullOrEmpty(vs) || string.IsNullOrEmpty(ps)) throw new Exception("Material could not be evaluated or be built!");
 
+
             var ret = new ShaderEffectProtoPixel(new[]
                 {
                     new EffectPassDeclarationProto
                     {
                         VS = vs, 
                         //VS = VsBones, 
-                        ProtoPS = ps,
+                        ProtoPS = ps,                        
                         StateSet = new RenderStateSet
                         {
                             ZEnable = true,

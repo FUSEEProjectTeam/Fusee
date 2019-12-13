@@ -34,6 +34,10 @@ namespace Fusee.Engine.Player.Main
         {
             base.Run();
 
+            // disable the debug output as the console output and debug output are the same for web
+            // this prevents that every message is printed twice!
+            Diagnostics.SetMinDebugOutputLoggingSeverityLevel(Diagnostics.SeverityLevel.NONE);
+
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new Fusee.Base.Imp.WebAsm.IOImp();
 
@@ -71,7 +75,7 @@ namespace Fusee.Engine.Player.Main
                     {
                         if (Path.GetExtension(id).IndexOf("fus", System.StringComparison.OrdinalIgnoreCase) >= 0)
                         {
-                            var storageStream = (Stream)storage;
+                            //var storageStream = (Stream)storage;
                             //return await Task.Factory.StartNew(() => Serializer.DeserializeSceneContainer((Stream)storage)).ConfigureAwait(false);
                         }
                         // always return something
@@ -84,7 +88,7 @@ namespace Fusee.Engine.Player.Main
                                     Components = new List<SceneComponentContainer>
                                     {
                                         new TransformComponent(),
-                                        new MaterialComponent()
+                                        new MaterialComponent() // TODO: MaterialComponent is broken, shader is missing, figure out why!
                                         {
                                             Diffuse = new MatChannelContainer
                                             {
@@ -116,9 +120,6 @@ namespace Fusee.Engine.Player.Main
                         // case ".jpeg":
                         case ".png":
                         case ".bmp":
-                            // handle file
-                            Console.WriteLine("Found image, processing");
-
                             using (var bitmap = await Task<SKBitmap>.Factory.StartNew(() => SKBitmap.Decode((Stream)storage)))
                             {
                                 var rotated = new SKBitmap(bitmap.Width, bitmap.Height, true);
@@ -129,7 +130,6 @@ namespace Fusee.Engine.Player.Main
                                     surface.Scale(1, -1, 0, bitmap.Height / 2.0f); // this mirrors the image within its' x-axis
                                     surface.DrawBitmap(bitmap, 0, 0);
                                 }
-                                Console.WriteLine($"Found image, {rotated.Width}, {rotated.Height}");
 
                                 return new Base.Core.ImageData(rotated.Width, rotated.Height)
                                 {
@@ -144,8 +144,6 @@ namespace Fusee.Engine.Player.Main
                     var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
-                        // case ".jpg":
-                        // case ".jpeg":
                         case ".png":
                         case ".bmp":
                             return true;

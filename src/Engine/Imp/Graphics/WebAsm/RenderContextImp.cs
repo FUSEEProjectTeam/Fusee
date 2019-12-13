@@ -396,6 +396,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (gs != null)
                 Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
 
+            if (vs == null || ps == null)
+            {
+                Diagnostics.Error("Pixel or vertex shader empty");
+                throw new ArgumentException("Pixel or vertex shader empty");
+            }
+
             bool statusCode;
             string info;
 

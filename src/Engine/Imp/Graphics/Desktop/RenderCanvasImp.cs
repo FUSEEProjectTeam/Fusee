@@ -875,7 +875,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
                 _renderCanvasImp.BaseWidth = Width;
                 _renderCanvasImp.BaseHeight = Height;
-                GL.Viewport(0, 0, Width, Height);
                 _renderCanvasImp.DoResize(Width, Height);
             }
 

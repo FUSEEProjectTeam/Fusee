@@ -424,8 +424,8 @@ namespace Fusee.Engine.Core
                         LightingShard.AssembleLightingMethods(EffectProps),
                         FragMainShard.ForwardLighting(EffectProps)
                     };
-
-                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
+                   
+                    PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);                 
                 }
             }
             else

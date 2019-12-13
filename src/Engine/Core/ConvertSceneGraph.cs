@@ -7,6 +7,7 @@ using System.Linq;
 using System;
 using Fusee.Engine.Core.ShaderShards;
 using System.Threading.Tasks;
+using Fusee.Base.Core;
 
 namespace Fusee.Engine.Core
 {
@@ -131,6 +132,7 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public async void ConvMaterial(MaterialComponent matComp)
         {
+
             var effect = await LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
         }
@@ -229,7 +231,7 @@ namespace Fusee.Engine.Core
         private async Task<ShaderEffect> LookupMaterial(MaterialComponent mc)
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
-            mat = await ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
+            mat = await ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
             _matMap.Add(mc, mat);
             return mat;
         }
