@@ -181,7 +181,10 @@ namespace Fusee.Engine.Core
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
+            CanvasImplementor.Resize += delegate {
+                RC.Viewport(0, 0, Width, Height);
+                Resize(new ResizeEventArgs(Width, Height));
+            };
         }
 
         protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
