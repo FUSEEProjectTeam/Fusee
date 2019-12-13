@@ -101,6 +101,8 @@ namespace Fusee.Examples.GeometryEditing.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             HandleCameraAndPicking();
             InteractionHandler();
             _renderer.Render(RC);
