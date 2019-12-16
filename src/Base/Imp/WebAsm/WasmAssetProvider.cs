@@ -37,7 +37,7 @@ namespace Fusee.Base.Imp.WebAsm
     /// </summary>
     public class AssetProvider : StreamAssetProvider
     {
-        private string _baseDir;
+        private readonly string _baseDir;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileAssetProvider"/> class.
@@ -60,13 +60,13 @@ namespace Fusee.Base.Imp.WebAsm
                     var storageStream = (Stream)storage;
                     using (var streamReader = new StreamReader(storageStream, Encoding.ASCII))
                     {
-                        return await streamReader.ReadToEndAsync();
-                    }                 
+                        return await streamReader.ReadToEndAsync().ConfigureAwait(false);
+                    }
                 },
                 Checker = id => true // If it's there, we can handle it...
             });
 
-          
+
         }
 
         /// <summary>
@@ -79,10 +79,12 @@ namespace Fusee.Base.Imp.WebAsm
         /// <exception cref="System.ArgumentNullException"></exception>
         protected override Stream GetStream(string id)
         {
-            var baseAddress = WasmResourceLoader.GetLocalAddress();
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-            var response = httpClient.GetAsync(id);
-            return response.Result.Content.ReadAsStreamAsync().Result;
+            var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
+            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
+            {
+                var response = httpClient.GetAsync(id);
+                return response.Result.Content.ReadAsStreamAsync().Result;
+            }
         }
 
         /// <summary>
@@ -96,21 +98,23 @@ namespace Fusee.Base.Imp.WebAsm
         protected override async Task<Stream> GetStreamAsync(string id)
         {
             var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
+            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
+            {
 
 #if DEBUG
-            Console.WriteLine($"Requesting '{id}' at '{baseAddress}'...");
+                Console.WriteLine($"Requesting '{id}' at '{baseAddress}'...");
 #endif
-            try
-            {
-                var response = await httpClient.GetAsync(id);
-                response.EnsureSuccessStatusCode();
-                return await response.Content.ReadAsStreamAsync();
-            }
-            catch (Exception exception)
-            {
-                Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(GetStreamAsync)}(): {exception}");
-                return null;
+                try
+                {
+                    var response = await httpClient.GetAsync(id).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    return await response.Content.ReadAsStreamAsync().ConfigureAwait(false);
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine($"[Error] {nameof(WasmResourceLoader)}.{nameof(GetStreamAsync)}(): {exception}");
+                    return null;
+                }
             }
         }
 
@@ -126,11 +130,12 @@ namespace Fusee.Base.Imp.WebAsm
         {
             if (id == null) throw new ArgumentNullException(nameof(id));
 
-            var baseAddress = WasmResourceLoader.GetLocalAddress();
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-
-            var response = httpClient.GetAsync(id);
-            return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
+            var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
+            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
+            {
+                var response = httpClient.GetAsync(id);
+                return response.Result.StatusCode == System.Net.HttpStatusCode.OK;
+            }
         }
 
         /// <summary>
@@ -146,10 +151,11 @@ namespace Fusee.Base.Imp.WebAsm
             if (id == null) throw new ArgumentNullException(nameof(id));
 
             var baseAddress = WasmResourceLoader.GetLocalAddress() + "Assets/";
-            var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) };
-
-            var response = await httpClient.GetAsync(id);
-            return response.StatusCode == System.Net.HttpStatusCode.OK;
+            using (var httpClient = new HttpClient { BaseAddress = new Uri(baseAddress) })
+            {
+                var response = await httpClient.GetAsync(id).ConfigureAwait(false);
+                return response.StatusCode == System.Net.HttpStatusCode.OK;
+            }
         }
     }
 }
