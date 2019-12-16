@@ -1,0 +1,38 @@
+<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Project">
+	<TemplateData>
+		<Name>FUSEE WebAsm Project</Name>
+		<Description>This is a template for a FUSEE WebAssembly project</Description>
+		<ProjectType>CSharp</ProjectType>
+		<CreateNewFolder>true</CreateNewFolder>
+		<DefaultName>Core</DefaultName>
+		<ProvideDefaultName>true</ProvideDefaultName>
+		<LocationField>Enabled</LocationField>
+		<EnableLocationBrowseButton>true</EnableLocationBrowseButton>
+		<CreateInPlace>true</CreateInPlace>
+		<Icon>__TemplateIcon.ico</Icon>
+		<PreviewImage>__PreviewImage.png</PreviewImage>
+	</TemplateData>
+	<TemplateContent>
+		<Project TargetFileName="WebAsm.csproj" File="WebAsm.csproj" ReplaceParameters="true">
+			<Folder Name="Assets" TargetFolderName="Assets">
+				<Folder Name="Styles" TargetFolderName="Styles">
+					<ProjectItem ReplaceParameters="false" TargetFileName="browser.css">browser.css</ProjectItem>
+				</Folder>
+				<ProjectItem ReplaceParameters="false" TargetFileName="FuseeAnim.gif">FuseeAnim.gif</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="FuseeSpinning.gif">FuseeSpinning.gif</ProjectItem>
+			</Folder>
+			<Folder Name="Scripts" TargetFolderName="Scripts">
+				<ProjectItem ReplaceParameters="false" TargetFileName="loading.js">loading.js</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="mono_support.js">mono_support.js</ProjectItem>
+				<ProjectItem ReplaceParameters="false" TargetFileName="SkiaSharp.js">SkiaSharp.js</ProjectItem>
+			</Folder>
+			<ProjectItem ReplaceParameters="false" TargetFileName="canvaskit.js">canvaskit.js</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="canvaskit.wasm">canvaskit.wasm</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="FuseeLogo.ico">FuseeLogo.ico</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="index.html">index.html</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="NuGet.config">NuGet.config</ProjectItem>
+			<ProjectItem ReplaceParameters="false" TargetFileName="server.py">server.py</ProjectItem>
+			<ProjectItem ReplaceParameters="true" TargetFileName="WebAsm.cs">WebAsm.cs</ProjectItem>
+		</Project>
+	</TemplateContent>
+</VSTemplate>

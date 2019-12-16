@@ -10,12 +10,10 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Assets\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <PacketReference Include="Fusee.Core" Version="0.7.4" />
+    <PackageReference Include="Fusee.Core" Version="0.7.6" />
   </ItemGroup>
 </Project>

@@ -10,17 +10,14 @@
 
   <PropertyGroup>
     <OutputPath>..\bin\Desktop</OutputPath>
-    <StartupObject>$ext_safeprojectname$.Desktop</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Assets\**\*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Fusee.Desktop" Version="0.7.4" />
+    <PackageReference Include="Fusee.Desktop" Version="0.7.6" />
   </ItemGroup>
   
   <ItemGroup>

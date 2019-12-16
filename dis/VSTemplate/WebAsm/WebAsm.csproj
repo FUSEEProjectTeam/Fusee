@@ -1,0 +1,33 @@
+﻿<Project Sdk="Mono.WebAssembly.Sdk">
+  <PropertyGroup>
+    <RootNamespace>$ext_safeprojectname$.Desktop</RootNamespace>
+    <PackageId>$ext_safeprojectname$.Desktop</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <DefineConstants>PLATFORM_WebAsm</DefineConstants>
+    <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>..\bin\WebAsm</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="Scripts\**\*" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="server.py" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Fusee.WebAsm" Version="0.7.4" />
+  </ItemGroup>
+
+  <Target Name="FuseeWasmCopyInheritedAssets" BeforeTargets="MonoWasmCopyOutput">
+    <ItemGroup>
+      <InheritedAssets Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)\Assets\*.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="%(InheritedAssets.FullPath)" DestinationFolder="$(OutputPath)\Assets" ContinueOnError="true"/>
+  </Target>
+</Project>
