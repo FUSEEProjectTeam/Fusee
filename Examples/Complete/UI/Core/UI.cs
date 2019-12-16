@@ -9,7 +9,6 @@ using Fusee.Xene;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Threading.Tasks;
 using FontMap = Fusee.Engine.Core.FontMap;
 
 namespace Fusee.Examples.UI.Core
@@ -310,7 +309,7 @@ namespace Fusee.Examples.UI.Core
         #endregion Interactions
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _initWindowWidth = Width;
             _initWindowHeight = Height;
@@ -367,8 +366,6 @@ namespace Fusee.Examples.UI.Core
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

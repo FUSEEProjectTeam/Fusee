@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 
@@ -7,7 +6,7 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A render canvas object references the physical output screen space real estate (e.g. the rendering window).
-    ///     A typical Game application will inherit from this class and overrite methods to implement your user code to
+    ///     A typical Game application will inherit from this class and overwrite methods to implement your user code to
     ///     to be performed on events like initialization, resize, and display refresh.
     ///     In the future, it will be likely that this class' functionality will be divided at two different places with
     ///     one containing the more view oriented aspects and the other containing the more application oriented aspects.
@@ -93,11 +92,11 @@ namespace Fusee.Engine.Core
         protected string GetAppName()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof(FuseeApplicationAttribute), true);
+                typeof (FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute)attributes[0];
+                var fae = (FuseeApplicationAttribute) attributes[0];
                 return fae.Name;
             }
             return GetType().Name;
@@ -110,11 +109,11 @@ namespace Fusee.Engine.Core
         protected int GetWindowWidth()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof(FuseeApplicationAttribute), true);
+                typeof (FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute)attributes[0];
+                var fae = (FuseeApplicationAttribute) attributes[0];
                 return fae.Width;
             }
 
@@ -139,8 +138,6 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
-        protected bool _appInitialized;
-
         /// <summary>
         /// Initializes the canvas for the rendering loop.
         /// </summary>
@@ -156,19 +153,17 @@ namespace Fusee.Engine.Core
                 SetWindowSize(windowWidth, windowHeight);
 
             RC = new RenderContext(ContextImplementor);
-            RC.Viewport(0, 0, Width, Height);
+            RC.Viewport(0, 0, Width, Height);            
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += async delegate { await Init(); _appInitialized = true; };
+            CanvasImplementor.Init += delegate { Init(); };
             CanvasImplementor.UnLoad += delegate { DeInit(); };
 
             CanvasImplementor.Render += delegate
             {
-                if (!_appInitialized) return; // let init() finish!
-
                 // pre-rendering
                 Network.Instance.OnUpdateFrame();
                 Input.Instance.PreRender();
@@ -181,20 +176,11 @@ namespace Fusee.Engine.Core
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate {
+            CanvasImplementor.Resize += delegate 
+            {
                 RC.Viewport(0, 0, Width, Height);
-                Resize(new ResizeEventArgs(Width, Height));
+                Resize(new ResizeEventArgs(Width, Height)); 
             };
-        }
-
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
         }
 
         /// <summary>
@@ -216,9 +202,8 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to apply initialization code. Typically, an application
         ///     will call one-time initialization code on the render context (<see cref="RC" />) to set render states.
         /// </remarks>
-        public virtual async Task<bool> Init()
+        public virtual void Init()
         {
-            return false;
         }
 
         /// <summary>
@@ -226,7 +211,7 @@ namespace Fusee.Engine.Core
         ///     All audio and network resources get reset.
         /// </summary>
         public virtual void DeInit()
-        {
+        {            
             Audio.Instance.CloseDevice();
             Network.Instance.CloseDevice();
 
@@ -277,6 +262,17 @@ namespace Fusee.Engine.Core
         {
             InitCanvas();
             CanvasImplementor.Run();
+        }
+
+        /// <summary>
+        ///     Initializes this instance.
+        /// </summary>
+        /// <remarks>
+        ///     This does not run the application, merely initialize the RenderCanvas in preparation.
+        /// </remarks>
+        public void DoInit()
+        {
+            InitCanvas();
         }
 
         /// <summary>

@@ -2,10 +2,7 @@
     "files.exclude": {
         "bin": true,
         "obj": true,
-        "pub": true,
-        "Properties": true,
-        ".vs": true,
-        "*.sln": true
+        "pub": true
     },
     "omnisharp.disableMSBuildDiagnosticWarning": true
 }
