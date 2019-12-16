@@ -51,6 +51,58 @@
     <PackageReference Include="Microsoft.Win32.Registry" Version="4.6.0" />
   </ItemGroup>  
   
+    <!-- FILES FOR WebAsm KEYWORD -->
+
+    <ItemGroup>
+        <Compile Remove="Verbs\WebAsm\_Assets\Main.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Assets\FuseeAnim.gif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Assets\FuseeSpinning.gif">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Assets\Styles\browser.css">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\canvaskit.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\canvaskit.wasm">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Fusee.__NAMESPACE__.__PROJECTNAME__.WebAsm._csproj">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\index.html">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Main.cs">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Properties\launchSettings.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Scripts\loading.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Scripts\mono_support.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\Scripts\SkiaSharp.js">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+        <EmbeddedResource Include="Verbs\WebAsm\_Assets\server.py">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </EmbeddedResource>
+    </ItemGroup>
+
+
+
+    <!-- ENDOF FILES FOR WebASM -->
+    
   <!-- BUILD THE BLENDER ADDON (Re-Generate Python .fus Serialization code and build zip file)
 	 This code should be part of the respective .pyproj project file. Unforntunately .pyprojects
 	 don't do anything during "Build". Thus Post-Build steps are non functional. -->

@@ -1,0 +1,55 @@
+﻿<Project Sdk="Mono.WebAssembly.Sdk">
+  <PropertyGroup>
+    <RootNamespace>Fusee.__NAMESPACE__.__PROJECTNAME__.Desktop</RootNamespace>
+    <PackageId>Fusee.__NAMESPACE__.__PROJECTNAME__.Desktop</PackageId>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <MonoWasmLinkMode>Full</MonoWasmLinkMode>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <OutputPath>$(BaseOutputPath)\Player\WebAsm\</OutputPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Assets\**\*" PackagePath="contentFiles\Assets\" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="server.py" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="canvaskit.wasm" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="canvaskit.js" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="index.html" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)src\Engine\Imp\Graphics\WebAsm\Fusee.Engine.Imp.Graphics.WebAsm.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\WebAsm\Fusee.Base.Imp.WebAsm.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Fusee.__NAMESPACE__.__PROJECTNAME__.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+
+    <Reference Include="protobuf-net" Version="3.0.0-alpha.125">
+      <HintPath>$(FuseeEngineRoot)\ext\protobuf\protobuf-net.dll</HintPath>
+    </Reference>
+    <Reference Include="Uno.SkiaSharp">
+      <HintPath>$(FuseeEngineRoot)\ext\Uno.SkiaSharp\SkiaSharp.Wasm.dll</HintPath>
+    </Reference>
+
+    <PackageReference Include="WebAssembly.Bindings" Version="0.2.0" />
+    <PackageReference Include="WebAssembly.Net.Http" Version="0.2.0" />
+    <PackageReference Include="WebAssembly.Net.WebSockets" Version="0.2.0" />
+    <PackageReference Include="System.Private.ServiceModel" Version="4.6.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="*" />
+    <PackageReference Include="System.Drawing.Common" Version="4.6.1" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
+  </ItemGroup>
+
+  <Target Name="FuseeWasmCopyInheritedAssets" BeforeTargets="MonoWasmCopyOutput">
+    <ItemGroup>
+      <InheritedAssets Include="%(ReferencePath.RootDir)%(ReferencePath.Directory)\Assets\*.*"/>
+    </ItemGroup>
+    <Copy SourceFiles="%(InheritedAssets.FullPath)" DestinationFolder="$(OutputPath)\Assets" ContinueOnError="true"/>
+  </Target>
+</Project>

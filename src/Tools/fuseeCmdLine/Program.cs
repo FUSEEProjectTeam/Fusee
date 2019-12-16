@@ -1,5 +1,6 @@
 ﻿using System;
 using CommandLine;
+using Fusee.Tools.fuseeCmdLine.Verbs.WebAsm;
 
 namespace Fusee.Tools.fuseeCmdLine
 {
@@ -8,7 +9,7 @@ namespace Fusee.Tools.fuseeCmdLine
         [STAThread]
         static void Main(string[] args)
         {
-            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, ProtoSchema>(args)
+            var result = Parser.Default.ParseArguments<Install, Pack, Player, Publish, Server, ProtoSchema, WebAsm>(args)
                 .WithParsed<Install>(install =>
                 {
                     install.Run();
@@ -32,6 +33,10 @@ namespace Fusee.Tools.fuseeCmdLine
                 .WithParsed<Server>(server =>
                 {
                     server.Run();
+                })
+                .WithParsed<WebAsm>(wasm =>
+                {
+                    wasm.Run();
                 })
                 .WithNotParsed(errs =>
                 {
