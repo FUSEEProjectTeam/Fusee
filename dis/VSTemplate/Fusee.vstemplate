@@ -1,0 +1,22 @@
+<VSTemplate Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="ProjectGroup">
+	<TemplateData>
+		<Name>FUSEE</Name>
+		<Description>A Fusee template.</Description>
+		<Icon>__TemplateIcon.ico</Icon>
+		<PreviewImage>__PreviewImage.png</PreviewImage>
+		<ProjectType>CSharp</ProjectType>
+	</TemplateData>
+	<TemplateContent>
+		<ProjectCollection>
+			<ProjectTemplateLink ProjectName="Desktop" CopyParameters="true">
+				Desktop\Desktop.vstemplate
+			</ProjectTemplateLink>
+			<ProjectTemplateLink ProjectName="Core" CopyParameters="true">
+				Core\Core.vstemplate
+			</ProjectTemplateLink>
+			<ProjectTemplateLink ProjectName="WebAsm" CopyParameters="true">
+				WebAsm\WebAsm.vstemplate
+			</ProjectTemplateLink>
+		</ProjectCollection>
+	</TemplateContent>
+</VSTemplate>
