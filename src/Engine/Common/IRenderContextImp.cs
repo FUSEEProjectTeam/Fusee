@@ -75,13 +75,24 @@ namespace Fusee.Engine.Common
         void DeleteFrameBuffer(IBufferHandle bh);
 
         /// <summary>
-        /// Free all allocated gpu memory that belong to a renderbuffer object.
+        /// Free all allocated gpu memory belonging to a renderbuffer object.
         /// </summary>
         /// <param name="bh">The platform dependent abstraction of the gpu buffer handle.</param>
         void DeleteRenderBuffer(IBufferHandle bh);
 
+        /// <summary>
+        /// Detaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The texture to detach.</param>
         void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type);
 
+        /// <summary>
+        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// </summary>
+        /// <param name="renderTarget">The render target.</param>
+        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="texHandle">The gpu handle of the texture.</param>
         void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle);
 
         /// <summary>

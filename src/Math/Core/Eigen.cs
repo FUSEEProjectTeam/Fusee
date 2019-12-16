@@ -1,39 +1,34 @@
 ﻿namespace Fusee.Math.Core
 {
     /// <summary>
-    ///     This class holds eigen structures
+    /// Eigen data structure with values and vectors in single precision.
     /// </summary>
-    public class Eigen
+    public struct EigenF
     {
         /// <summary>
-        ///     Eigen data structure with values and vectors in single precision
+        /// Eigen values.
         /// </summary>
-        public struct EigenF
-        {
-            /// <summary>
-            /// eigen values
-            /// </summary>
-            public float[] Values;
-            /// <summary>
-            /// eigen vectors
-            /// </summary>
-            public float4x4 Vectors;
-        }
+        public float[] Values;
 
         /// <summary>
-        ///     Eigen data structure with values and vectors in double precision
+        /// Eigen vectors.
         /// </summary>
-        public struct EigenD
-        {
-            /// <summary>
-            /// eigen values
-            /// </summary>
-            public double[] Values;
-            /// <summary>
-            /// eigen vectors
-            /// </summary>
-            public double4x4 Vectors;
-        }
+        public float4x4 Vectors;
+    }
 
+    /// <summary>
+    /// Eigen data structure with values and vectors in double precision.
+    /// </summary>
+    public struct EigenD
+    {
+        /// <summary>
+        /// Eigen values.
+        /// </summary>
+        public double[] Values;
+
+        /// <summary>
+        /// Eigen vectors.
+        /// </summary>
+        public double4x4 Vectors;
     }
 }

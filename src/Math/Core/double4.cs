@@ -69,7 +69,7 @@ namespace Fusee.Math.Core
         // </summary>
         // public static readonly int SizeInBytes = Marshal.SizeOf(new double4());
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -137,11 +137,12 @@ namespace Fusee.Math.Core
             w = v.w;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
         #region this
+
         /// <summary>
         /// Gets or sets the individual components x, y, z, or w depending on their index.
         /// </summary>
@@ -155,12 +156,16 @@ namespace Fusee.Math.Core
                 {
                     case 0:
                         return x;
+
                     case 1:
                         return y;
+
                     case 2:
                         return z;
+
                     case 3:
                         return w;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double4 type");
                 }
@@ -172,21 +177,26 @@ namespace Fusee.Math.Core
                     case 0:
                         x = value;
                         break;
+
                     case 1:
                         y = value;
                         break;
+
                     case 2:
                         z = value;
                         break;
+
                     case 3:
                         w = value;
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a double4 type");
                 }
             }
         }
-        #endregion
+
+        #endregion this
 
         #region Instance
 
@@ -197,7 +207,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <value>
         /// The length.
-        /// </value>        
+        /// </value>
         /// <seealso cref="LengthSquared" />
         public double Length
         {
@@ -207,7 +217,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double Length
 
         #region public double LengthSquared
 
@@ -217,7 +227,7 @@ namespace Fusee.Math.Core
         /// <value>
         /// The length squared.
         /// </value>
-        /// <see cref="Length" />        
+        /// <see cref="Length" />
         /// <remarks>
         /// This property avoids the costly square root operation required by the Length property. This makes it more suitable
         /// for comparisons.
@@ -230,7 +240,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public double LengthSquared
 
         #region public Normalize()
 
@@ -242,7 +252,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public NormalizeFast()
 
@@ -254,7 +264,7 @@ namespace Fusee.Math.Core
             return NormalizeFast(this);
         }
 
-        #endregion
+        #endregion public NormalizeFast()
 
         /// <summary>
         /// Returns an array of doubles with the four components of the vector.
@@ -265,8 +275,7 @@ namespace Fusee.Math.Core
             return new double[] { x, y, z, w };
         }
 
-
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -285,7 +294,7 @@ namespace Fusee.Math.Core
             return new double4(a.x + b.x, a.y + b.y, a.z + b.z, a.w + b.w);
         }
 
-        #endregion
+        #endregion Add
 
         #region Subtract
 
@@ -302,7 +311,7 @@ namespace Fusee.Math.Core
             return new double4(a.x - b.x, a.y - b.y, a.z - b.z, a.w - b.w);
         }
 
-        #endregion
+        #endregion Subtract
 
         #region Multiply
 
@@ -332,7 +341,7 @@ namespace Fusee.Math.Core
             return new double4(vector.x * scale.x, vector.y * scale.y, vector.z * scale.z, vector.w * scale.w);
         }
 
-        #endregion
+        #endregion Multiply
 
         #region Divide
 
@@ -362,7 +371,7 @@ namespace Fusee.Math.Core
             return new double4(vector.x / scale.x, vector.y / scale.y, vector.z / scale.z, vector.w / scale.w);
         }
 
-        #endregion
+        #endregion Divide
 
         #region Min
 
@@ -383,7 +392,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Min
 
         #region Max
 
@@ -404,7 +413,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Max
 
         #region Clamp
 
@@ -426,7 +435,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Clamp
 
         #region Normalize
 
@@ -447,7 +456,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region NormalizeFast
 
@@ -468,7 +477,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion NormalizeFast
 
         #region Dot
 
@@ -485,7 +494,7 @@ namespace Fusee.Math.Core
             return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w;
         }
 
-        #endregion
+        #endregion Dot
 
         #region Lerp
 
@@ -507,7 +516,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Lerp
 
         #region Barycentric
 
@@ -524,12 +533,12 @@ namespace Fusee.Math.Core
         /// </returns>
         public static double4 BaryCentric(double4 a, double4 b, double4 c, double u, double v)
         {
-            return u*a + v*b + (1.0-u-v)*c;
+            return u * a + v * b + (1.0 - u - v) * c;
         }
 
-        #endregion
+        #endregion Barycentric
 
-        #endregion
+        #endregion Static
 
         #region Swizzle
 
@@ -549,7 +558,7 @@ namespace Fusee.Math.Core
         /// </value>
         public double3 xyz { get { return new double3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
 
-        #endregion
+        #endregion Swizzle
 
         #region Operators
 
@@ -698,7 +707,8 @@ namespace Fusee.Math.Core
             }
         }
         */
-        #endregion
+
+        #endregion Operators
 
         #region Overrides
 
@@ -715,7 +725,7 @@ namespace Fusee.Math.Core
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -730,7 +740,7 @@ namespace Fusee.Math.Core
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -749,9 +759,9 @@ namespace Fusee.Math.Core
             return this.Equals((double4)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
         #region Color
 
@@ -800,9 +810,9 @@ namespace Fusee.Math.Core
             set { w = value; }
         }
 
-        #endregion
+        #endregion Color
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<double4> Members
 
@@ -822,7 +832,7 @@ namespace Fusee.Math.Core
                 w == other.w;
         }
 
-        #endregion
+        #endregion IEquatable<double4> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a double4.

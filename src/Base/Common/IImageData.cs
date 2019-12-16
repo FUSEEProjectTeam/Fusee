@@ -3,7 +3,7 @@
 namespace Fusee.Base.Common
 {
     /// <summary>
-    /// Interface describing operations are possible on arbitrary image data types.
+    /// Interface describing operations that are possible on arbitrary image data types.
     /// </summary>
     public interface IImageData: IImageBase
     {

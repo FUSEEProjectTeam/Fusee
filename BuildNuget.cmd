@@ -8,6 +8,8 @@ echo Cleaning up build directory.
 git clean -xdf
 
 echo Building distribution.
+dotnet publish src\Engine\Player\Desktop\Fusee.Engine.Player.Desktop.csproj -c Release
+
 dotnet pack Fusee.sln -c Release-NuGet -o bin\Release\nuget --include-symbols --include-source
 dotnet pack dis\NuGet\Core\Core.csproj -c Release -o bin\Release\nuget
 dotnet pack dis\NuGet\Desktop\Desktop.csproj -c Release -o bin\Release\nuget

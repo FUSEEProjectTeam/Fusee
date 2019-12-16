@@ -1,18 +1,16 @@
-﻿using System.Runtime.InteropServices;
-using ProtoBuf;
+﻿using ProtoBuf;
+using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
 {
-
     /// <summary>
-    /// Class containing an axis aligned (two-dimensional) rectangle specified by its minimum (lower-left) and maximum (upper-right) 
+    /// Class containing an axis aligned (two-dimensional) rectangle specified by its minimum (lower-left) and maximum (upper-right)
     /// points in 2d space.
     /// </summary>
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
     public struct MinMaxRect
     {
-
         /// <summary>
         /// Returns the minimum (lower-left corner) as a float2 vector.
         /// </summary>

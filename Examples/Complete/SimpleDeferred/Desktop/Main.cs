@@ -1,14 +1,11 @@
-﻿using System.IO;
-using System.Runtime.InteropServices;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Base.Imp.Desktop;
 using Fusee.Engine.Core;
 using Fusee.Serialization;
-using FileMode = Fusee.Base.Common.FileMode;
-using Path = Fusee.Base.Common.Path;
+using System.IO;
 using System.Reflection;
-using System;
+using Path = Fusee.Base.Common.Path;
 
 namespace Fusee.Examples.SimpleDeferred.Desktop
 {
@@ -27,7 +24,7 @@ namespace Fusee.Examples.SimpleDeferred.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                 });
@@ -38,7 +35,7 @@ namespace Fusee.Examples.SimpleDeferred.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
@@ -46,10 +43,10 @@ namespace Fusee.Examples.SimpleDeferred.Desktop
             AssetStorage.RegisterProvider(fap);
 
             var app = new Core.SimpleDeferred();
-            
+
             // Inject Fusee.Engine InjectMe dependencies (hard coded)
             System.Drawing.Icon appIcon = System.Drawing.Icon.ExtractAssociatedIcon(Assembly.GetExecutingAssembly().Location);
-			app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);            
+            app.CanvasImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasImp(appIcon);
             app.ContextImplementor = new Fusee.Engine.Imp.Graphics.Desktop.RenderContextImp(app.CanvasImplementor);
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.RenderCanvasInputDriverImp(app.CanvasImplementor));
             Input.AddDriverImp(new Fusee.Engine.Imp.Graphics.Desktop.WindowsTouchInputDriverImp(app.CanvasImplementor));

@@ -1,6 +1,6 @@
+using ProtoBuf;
 using System;
 using System.Runtime.InteropServices;
-using ProtoBuf;
 
 namespace Fusee.Math.Core
 {
@@ -10,27 +10,26 @@ namespace Fusee.Math.Core
     /// </remarks>
     [StructLayout(LayoutKind.Sequential)]
     [ProtoContract]
-
-    public struct float4  : IEquatable<float4>
+    public struct float4 : IEquatable<float4>
     {
         #region Fields
 
         /// <summary>
         /// The x component of the float4.
         /// </summary>
-        [ProtoMember(1)] 
+        [ProtoMember(1)]
         public float x;
 
         /// <summary>
         /// The y component of the float4.
         /// </summary>
-        [ProtoMember(2)] 
+        [ProtoMember(2)]
         public float y;
 
         /// <summary>
         /// The z component of the float4.
         /// </summary>
-        [ProtoMember(3)] 
+        [ProtoMember(3)]
         public float z;
 
         /// <summary>
@@ -74,11 +73,9 @@ namespace Fusee.Math.Core
         // </summary>
         // public static readonly int SizeInBytes = Marshal.SizeOf(new float4());
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
-
-
 
         /// <summary>
         /// Constructs a new float4.
@@ -144,24 +141,24 @@ namespace Fusee.Math.Core
             w = v.w;
         }
 
-
         /// <summary>
         /// Constructs a new float4 by converting from a double4.
         /// </summary>
         /// <param name="d4">The double4 to copy components from.</param>
         public float4(double4 d4)
         {
-            x = (float) d4.x;
-            y = (float) d4.y;
-            z = (float) d4.z;
-            w = (float) d4.w;
+            x = (float)d4.x;
+            y = (float)d4.y;
+            z = (float)d4.z;
+            w = (float)d4.w;
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
         #region this
+
         /// <summary>
         /// Gets or sets the individual components x, y, z, or w, depending on their index.
         /// </summary>
@@ -175,12 +172,16 @@ namespace Fusee.Math.Core
                 {
                     case 0:
                         return x;
+
                     case 1:
                         return y;
+
                     case 2:
                         return z;
+
                     case 3:
                         return w;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type");
                 }
@@ -192,21 +193,26 @@ namespace Fusee.Math.Core
                     case 0:
                         x = value;
                         break;
+
                     case 1:
                         y = value;
                         break;
+
                     case 2:
                         z = value;
                         break;
+
                     case 3:
                         w = value;
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a float4 type");
                 }
             }
         }
-        #endregion
+
+        #endregion this
 
         #region Instance
 
@@ -221,7 +227,7 @@ namespace Fusee.Math.Core
             get { return (float)System.Math.Sqrt(LengthSquared); }
         }
 
-        #endregion
+        #endregion public float Length
 
         #region public float Length1
 
@@ -230,11 +236,11 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <see cref="LengthSquared"/>
         public float Length1
-        {        
-            get { return (float) System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
+        {
+            get { return (float)System.Math.Abs(x) + System.Math.Abs(y) + System.Math.Abs(z) + System.Math.Abs(w); }
         }
 
-        #endregion
+        #endregion public float Length1
 
         #region public float LengthSquared
 
@@ -254,7 +260,7 @@ namespace Fusee.Math.Core
             }
         }
 
-        #endregion
+        #endregion public float LengthSquared
 
         #region public Normalize()
 
@@ -266,7 +272,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public Normalize1()
 
@@ -278,7 +284,7 @@ namespace Fusee.Math.Core
             return Normalize1(this);
         }
 
-        #endregion
+        #endregion public Normalize1()
 
         #region public NormalizeFast()
 
@@ -290,7 +296,7 @@ namespace Fusee.Math.Core
             return NormalizeFast(this);
         }
 
-        #endregion
+        #endregion public NormalizeFast()
 
         #region public float[] ToArray()
 
@@ -303,7 +309,7 @@ namespace Fusee.Math.Core
             return new float[] { x, y, z, w };
         }
 
-        #endregion
+        #endregion public float[] ToArray()
 
         #region public Round()
 
@@ -315,9 +321,9 @@ namespace Fusee.Math.Core
             return Round(this);
         }
 
-        #endregion
+        #endregion public Round()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -335,7 +341,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Add
 
         #region Subtract
 
@@ -351,7 +357,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Subtract
 
         #region Multiply
 
@@ -379,7 +385,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Multiply
 
         #region Divide
 
@@ -407,7 +413,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Divide
 
         #region Min
 
@@ -426,7 +432,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Min
 
         #region Max
 
@@ -445,7 +451,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Max
 
         #region Clamp
 
@@ -465,7 +471,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Clamp
 
         #region Normalize
 
@@ -484,7 +490,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region Normalize1
 
@@ -503,7 +509,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion Normalize1
 
         #region NormalizeFast
 
@@ -522,7 +528,7 @@ namespace Fusee.Math.Core
             return vec;
         }
 
-        #endregion
+        #endregion NormalizeFast
 
         #region Dot
 
@@ -537,7 +543,7 @@ namespace Fusee.Math.Core
             return left.x * right.x + left.y * right.y + left.z * right.z + left.w * right.w;
         }
 
-        #endregion
+        #endregion Dot
 
         #region Lerp
 
@@ -557,7 +563,7 @@ namespace Fusee.Math.Core
             return a;
         }
 
-        #endregion
+        #endregion Lerp
 
         #region Barycentric
 
@@ -572,10 +578,10 @@ namespace Fusee.Math.Core
         /// <returns>a when u=1, v=0, b when v=1,u=0, c when u=v=0, and a linear combination of a,b,c otherwise</returns>
         public static float4 BaryCentric(float4 a, float4 b, float4 c, float u, float v)
         {
-            return u*a + v*b + (1.0f-u-v)*c;
+            return u * a + v * b + (1.0f - u - v) * c;
         }
 
-        #endregion
+        #endregion Barycentric
 
         #region Round
 
@@ -586,15 +592,15 @@ namespace Fusee.Math.Core
         /// <returns>The rounded vector.</returns>
         public static float4 Round(float4 vec)
         {
-            return new float4((float) System.Math.Round(vec.x, 6),
-                              (float) System.Math.Round(vec.y, 6),
-                              (float) System.Math.Round(vec.z, 6),
-                              (float) System.Math.Round(vec.w, 6));
+            return new float4((float)System.Math.Round(vec.x, 6),
+                              (float)System.Math.Round(vec.y, 6),
+                              (float)System.Math.Round(vec.z, 6),
+                              (float)System.Math.Round(vec.w, 6));
         }
 
-        #endregion
+        #endregion Round
 
-        #endregion
+        #endregion Static
 
         #region Swizzle
 
@@ -608,7 +614,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public float3 xyz { get { return new float3(x, y, z); } set { x = value.x; y = value.y; z = value.z; } }
 
-        #endregion
+        #endregion Swizzle
 
         #region Operators
 
@@ -723,6 +729,7 @@ namespace Fusee.Math.Core
         {
             return new float4(d4);
         }
+
         /*
         /// <summary>
         /// Returns a pointer to the first element of the specified instance.
@@ -748,7 +755,8 @@ namespace Fusee.Math.Core
             }
         }
         */
-        #endregion
+
+        #endregion Operators
 
         #region Overrides
 
@@ -763,7 +771,7 @@ namespace Fusee.Math.Core
             return String.Format("({0}, {1}, {2}, {3})", x, y, z, w);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override int GetHashCode()
 
@@ -776,7 +784,7 @@ namespace Fusee.Math.Core
             return x.GetHashCode() ^ y.GetHashCode() ^ z.GetHashCode() ^ w.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode()
 
         #region public override bool Equals(object obj)
 
@@ -793,9 +801,9 @@ namespace Fusee.Math.Core
             return this.Equals((float4)obj);
         }
 
-        #endregion
+        #endregion public override bool Equals(object obj)
 
-        #endregion
+        #endregion Overrides
 
         #region Color
 
@@ -853,9 +861,9 @@ namespace Fusee.Math.Core
             set { w = value; }
         }
 
-        #endregion
+        #endregion Color
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<float4> Members
 
@@ -871,7 +879,7 @@ namespace Fusee.Math.Core
                 System.Math.Abs(w - other.w) < M.EpsilonFloat;
         }
 
-        #endregion
+        #endregion IEquatable<float4> Members
 
         /// <summary>
         /// Gets and sets the Converter object. Has the ability to convert a string to a float4.
