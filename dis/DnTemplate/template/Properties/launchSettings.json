@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "Fusee_App": {
-      "commandName": "Executable",
-      "executablePath": "fusee",
-      "commandLineArgs": "player $(TargetPath)"
-    }
-  }
-}

@@ -11,7 +11,6 @@ using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
 using Fusee.Xene;
-using System.Threading.Tasks;
 
 namespace Fusee.Engine.Player.Core
 {
@@ -57,7 +56,7 @@ namespace Fusee.Engine.Player.Core
         private GamePadDevice _gamePad;
 
         // Init is called on startup. 
-        public override async Task<bool> Init()
+        public override void Init()
         {
             _initWindowWidth = Width;
             _initWindowHeight = Height;
@@ -83,9 +82,9 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            _scene = AssetStorage.Get<SceneContainer>(ModelFile);
             
-            _gui = await CreateGui();
+            _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
            
@@ -122,8 +121,7 @@ namespace Fusee.Engine.Player.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
-
-            return true;
+            
         }
 
         
@@ -254,10 +252,10 @@ namespace Fusee.Engine.Player.Core
             
         }
 
-        private async Task<SceneContainer> CreateGui()
+        private SceneContainer CreateGui()
         {
-            var vsTex = await AssetStorage.GetAsync<string>("texture.vert");
-            var psTex = await AssetStorage.GetAsync<string>("texture.frag");
+            var vsTex = AssetStorage.Get<string>("texture.vert");
+            var psTex = AssetStorage.Get<string>("texture.frag");
 
             var btnFuseeLogo = new GUIButton
             {
@@ -267,7 +265,7 @@ namespace Fusee.Engine.Player.Core
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
 
-            var guiFuseeLogo = new Texture(await AssetStorage.GetAsync<ImageData>("FuseeText.png"));
+            var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNodeContainer(
                 "fuseeLogo",
                 vsTex,
@@ -294,7 +292,7 @@ namespace Fusee.Engine.Player.Core
                     textToDisplay += " on " + _scene.Header.CreationDate;
             }
 
-            var fontLato = await AssetStorage.GetAsync<Font>("Lato-Black.ttf");
+            var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNodeContainer(

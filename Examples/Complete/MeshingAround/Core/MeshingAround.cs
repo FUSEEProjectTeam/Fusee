@@ -5,7 +5,6 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
@@ -20,7 +19,7 @@ namespace Fusee.Examples.MeshingAround.Core
         private SceneRendererForward _renderer;
 
         // Init is called on startup.
-        public override async Task<bool> Init()
+        public override void Init()
         {
             var outlineOne = new PolyBoundary //CCW!!
             {
@@ -173,8 +172,6 @@ namespace Fusee.Examples.MeshingAround.Core
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
-
-            return true;
         }
 
         // RenderAFrame is called once a frame

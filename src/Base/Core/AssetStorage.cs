@@ -1,11 +1,9 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Serialization;
 
@@ -17,14 +15,14 @@ namespace Fusee.Base.Core
     /// AssetStorage is a staticton (a singleton with an additional static interface).
     /// </summary>
     /// <remarks>
-    /// The existence of this class is a tribute to the Web-world where a lot of asset types (e.g. images) are JavaScript built-in
+    /// The existance of this class is a tribute to the Web-world where a lot of asset types (e.g. images) are JavaScript built-in
     /// functionality with no possibility to separate the many aspects of asset-access (like loading, deserialization, codec,
     /// asynchronicity). Decent programming environments allow to separate these aspects using streams. A decoder is implemented
-    /// against a stream. Anything capable of providing streams, synchronously or asynchronously thus can act as an asset store.
+    /// against a stream. Anything capable of providing streams, synchronously or asynchronousliy thus can act as an asset store.
     /// If FUSEE had been designed without JavaScript X-compilation in mind, this class would probably not
     /// exist.
     /// </remarks>
-    public sealed class AssetStorage
+    public class AssetStorage
     {
         private readonly List<IAssetProvider> _providers;
         private static AssetStorage _instance;
@@ -51,22 +49,14 @@ namespace Fusee.Base.Core
         public static T Get<T>(string id) => Instance.GetAsset<T>(id);
 
         /// <summary>
-        /// Staticton implementation of <see cref="GetAsset{T}"/>.
-        /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="id">The identifier.</param>
-        /// <returns></returns>
-        public static async Task<T> GetAsync<T>(string id) => await Instance.GetAssetAsync<T>(id).ConfigureAwait(false);
-
-        /// <summary>
         /// Retrieves the asset identified by id.
         /// </summary>
         /// <typeparam name="T">The expected type of the asset to retrieve.</typeparam>
         /// <param name="id">The identifier.</param>
         /// <returns>The asset, if found. Otherwise null.</returns>
-        /// <remarks>Internally, this method queries all of the registered asset providers (<see cref="RegisterAssetProvider"/>.
-        /// The first asset provider capable of retrieving the asset "wins". It's up to any application to guarantee
-        /// uniqueness of asset identifiers among all assets and asset providers.
+        /// <remarks>Internally, this method queries all of the registerd asset providers (<see cref="RegisterAssetProvider"/>.
+        /// The first asset provider capable of retrieving the asset "wins". It's up to any appliacation to guarantee
+        /// uniquenesss of asset identifiers among all assets and asset providers.
         /// </remarks>
         public T GetAsset<T>(string id)
         {
@@ -80,29 +70,6 @@ namespace Fusee.Base.Core
             return default(T);
         }
 
-        /// <summary>
-        /// Retrieves the asset identified by id.
-        /// </summary>
-        /// <typeparam name="T">The expected type of the asset to retrieve.</typeparam>
-        /// <param name="id">The identifier.</param>
-        /// <returns>The asset, if found. Otherwise null.</returns>
-        /// <remarks>Internally, this method queries all of the registered asset providers (<see cref="RegisterAssetProvider"/>.
-        /// The first asset provider capable of retrieving the asset "wins". It's up to any application to guarantee
-        /// uniqueness of asset identifiers among all assets and asset providers.
-        /// </remarks>
-        public async Task<T> GetAssetAsync<T>(string id)
-        {
-            foreach (var assetProvider in _providers)
-            {
-                if (await assetProvider.CanGetAsync(id, typeof(T)).ConfigureAwait(false))
-                {
-                    return (T)await assetProvider.GetAssetAsync(id, typeof(T)).ConfigureAwait(false);
-                }
-            }
-
-            return default;
-        }
-    
         /// <summary>
         /// Staticton implementation of <see cref="RegisterAssetProvider"/>.
         /// </summary>
@@ -127,7 +94,7 @@ namespace Fusee.Base.Core
         /// <see cref="ProtoBuf.ProtoContractAttribute"/> defined on their class.
         /// </summary>
         /// <typeparam name="T">
-        ///   Type of the source and object and the returned clone. Implicitly defined by the source parameter.
+        ///   Type of the source and object and the returnded clone. Implicitely defined by the source parameter.
         /// </typeparam>
         /// <param name="source">The source object to clone.</param>
         /// <returns>A deep copy of the source object. All objects referenced directly and indirectly from the source
