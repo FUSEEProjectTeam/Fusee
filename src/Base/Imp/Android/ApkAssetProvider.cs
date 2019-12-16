@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Android.Content;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -24,9 +25,9 @@ namespace Fusee.Base.Imp.Android
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(ImageData),
-                Decoder = delegate (string id, object storage)
+                Decoder = (string id, object storage) =>
                 {
-                    string ext = Path.GetExtension(id).ToLower();
+                    var ext = Path.GetExtension(id).ToLower();
                     switch (ext)
                     {
                         case ".jpg":
@@ -37,7 +38,20 @@ namespace Fusee.Base.Imp.Android
                     }
                     return null;
                 },
-                Checker = delegate (string id)
+                DecoderAsync = async (string id, object storage) =>
+                {
+                    var ext = Path.GetExtension(id).ToLower();
+                    switch (ext)
+                    {
+                        case ".jpg":
+                        case ".jpeg":
+                        case ".png":
+                        case ".bmp":
+                            return await FileDecoder.LoadImageAsync((Stream)storage);
+                    }
+                    return null;
+                },
+                Checker = (string id) =>
                 {
                     string ext = Path.GetExtension(id).ToLower();
                     switch (ext)
@@ -56,12 +70,17 @@ namespace Fusee.Base.Imp.Android
             RegisterTypeHandler(new AssetHandler
             {
                 ReturnedType = typeof(string),
-                Decoder = delegate (string id, object storage)
+                Decoder = (string _, object storage) =>
                 {
                     var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true);
                     return sr.ReadToEnd();
                 },
-                Checker = id => true // If it's there, we can handle it...
+                DecoderAsync = async (string _, object storage) =>
+                {
+                    var sr = new StreamReader((Stream)storage, System.Text.Encoding.Default, true);
+                    return await sr.ReadToEndAsync().ConfigureAwait(false);
+                },
+                Checker = _ => true // If it's there, we can handle it...
             });
         }
 
@@ -96,6 +115,26 @@ namespace Fusee.Base.Imp.Android
             string file = Path.GetFileName(id);
 
             return _androidContext.Assets.List(dir).Contains(file);
+        }
+
+        protected override Task<Stream> GetStreamAsync(string id)
+        {
+            if (id == null) throw new ArgumentNullException(nameof(id));
+
+            return Task.Factory.StartNew(() => _androidContext.Assets.Open(id));
+        }
+
+        protected override Task<bool> CheckExistsAsync(string id)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                if (id == null) throw new ArgumentNullException(nameof(id));
+
+                string dir = Path.GetDirectoryName(id);
+                string file = Path.GetFileName(id);
+
+                return _androidContext.Assets.List(dir).Contains(file);
+            });
         }
     }
 }
