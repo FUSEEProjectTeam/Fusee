@@ -39,7 +39,7 @@ namespace Fusee.Tools.fuseeCmdLine.Verbs.WebAsm
             }
             catch (NotSupportedException e)
             {
-                Console.WriteLine($"PathTooLongException: {e.Message}");
+                Console.WriteLine($"NotSupportedException: {e.Message}");
                 return 1;
             }           
                 if (fi is null)
