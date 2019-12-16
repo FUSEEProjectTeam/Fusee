@@ -138,16 +138,17 @@ namespace Fusee.Examples.ABCompare.Core
             
             _scene1 = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            /*
-            _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
-            */
+            
+           // _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
+            
 
+           // _scene1.Children.RemoveAt(0);
+           // _scene2.Children.RemoveAt(0);
 
             // New Shader for used Models ===> not usable right now
-
-           _scene1.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
-           //_scene2.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
-            //_scene2.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(1, 0, 0, 1), 0.5f, 0.5f);
+           //_scene1.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
+           //_scene1.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
+            //_scene2.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(1, 0, 0, 1), 0.5f, 0.5f);
 
             _gui = CreateGui();
             // Create the interaction handler
@@ -194,9 +195,9 @@ namespace Fusee.Examples.ABCompare.Core
 
             //==> rendering with multiple viewports
              _sceneRenderer1 = new SceneRendererForward(_scene1);
-           /*
-            _sceneRenderer2 = new SceneRendererForward(_scene2);
-            */
+           
+            //_sceneRenderer2 = new SceneRendererForward(_scene2);
+            
             _guiRenderer = new SceneRendererForward(_gui);
 
         }
@@ -317,7 +318,7 @@ namespace Fusee.Examples.ABCompare.Core
             _sceneRenderer1.Animate();
             
             //_sceneRenderer2.Animate();
-
+            
 
             // Create two Viewports
             //==> sceneRenderer for Multipass Example
@@ -329,6 +330,7 @@ namespace Fusee.Examples.ABCompare.Core
             RC.Viewport(0, 0, width, height);
             _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
            
+
             //==> sceneRenderer for multiple Viewports
             /*
             var aspect = Width / (float)Height;

@@ -20,7 +20,7 @@ void main()
 		}
 	}
             
-	float kernelSize = float(KERNEL_SIZE_HALF) * 2.0;
+	float kernelSize = float(KERNEL_SIZE_HALF) * 4.0;
 	result = result / (kernelSize * kernelSize);
             
 	oBlurred = vec4(result, 1.0);

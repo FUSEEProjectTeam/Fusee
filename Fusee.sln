@@ -3435,6 +3435,12 @@ Global
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x64.Build.0 = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
+		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
@@ -3483,6 +3489,12 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x64.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x64.Build.0 = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
+		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
