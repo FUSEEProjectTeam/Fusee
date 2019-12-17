@@ -56,6 +56,13 @@ namespace Fusee.Engine.Player.Core
 
         private GamePadDevice _gamePad;
 
+        private WritableTexture _renderTex;
+        private ShaderEffect _blurPassEffect;
+        private SceneContainer _quadScene;
+        private SceneRendererForward _sceneRendererBlur;
+        private readonly int _texRes = (int)TexRes.HIGH_RES;
+
+
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
@@ -91,6 +98,51 @@ namespace Fusee.Engine.Player.Core
            
             // Register the input devices that are not already given.
             _gamePad = GetDevice<GamePadDevice>(0);
+
+            //Initialize objects we need for the multipass blur effect
+            _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+
+            _blurPassEffect = new ShaderEffect(new[]
+            {
+                new EffectPassDeclaration
+                {
+                    VS = AssetStorage.Get<string>("screenFilledQuad_1.vert"),
+                    PS = AssetStorage.Get<string>("simpleBlur_1.frag"),
+                    StateSet = new RenderStateSet
+                    {
+                        AlphaBlendEnable = false,
+                        ZEnable = true,
+                    }
+                }
+            },
+            new[]
+            {
+                new EffectParameterDeclaration { Name = "InputTex", Value = _renderTex},
+
+            });
+
+            _quadScene = new SceneContainer()
+            {
+                Children = new List<SceneNodeContainer>()
+                {
+                    new SceneNodeContainer()
+                    {
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 0.1f, 1, M.DegreesToRadians(45f)),
+
+                            new ShaderEffectComponent()
+                            {
+                                Effect = _blurPassEffect
+                            },
+                            new Plane()
+                        }
+                    }
+                }
+            };
+
+            _sceneRendererBlur = new SceneRendererForward(_quadScene);
+
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -232,9 +284,16 @@ namespace Fusee.Engine.Player.Core
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             // Tick any animations and Render the scene loaded in Init()
+            var width = Width;
+            var height = Height;
+            RC.Viewport(0, 0, _texRes, _texRes, false);
+            _sceneRenderer.Render(RC, _renderTex);   //Pass 1: render the rocket to "_renderTex", using the standard material.
+
             _sceneRenderer.Animate();
-            _sceneRenderer.Render(RC);            
-            
+            // _sceneRenderer.Render(RC);            
+            RC.Viewport(0, 0, width, height);
+            _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
+
             _sih.View = RC.View;
 
             _guiRenderer.Render(RC);            
