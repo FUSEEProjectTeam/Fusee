@@ -101,6 +101,8 @@ namespace Fusee.Engine.Player.Core
 
             //Initialize objects we need for the multipass blur effect
             _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+            
+           // _renderTex.WrapMode = TextureWrapMode.CLAMP_TO_EDGE;
 
             _blurPassEffect = new ShaderEffect(new[]
             {

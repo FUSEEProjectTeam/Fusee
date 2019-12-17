@@ -5,6 +5,8 @@ precision highp float;
 in vec2 vUV;
 uniform sampler2D InputTex;
 
+
+
 layout (location = 0) out vec4 oBlurred;
 
 void main() 
@@ -21,9 +23,9 @@ void main()
 		}
 	}
             
-	float kernelSize = float(KERNEL_SIZE_HALF) * 4.0;
+	float kernelSize = float(KERNEL_SIZE_HALF) * 2.0;
 	result = result / (kernelSize * kernelSize);
 	
-		oBlurred = vec4(result, 1.0);
+	oBlurred = vec4(result, 1.0);
 	//oBlurred = vec4(texture( InputTex, vUV + 0.005*vec2( sin(1024.0*vUV.x),cos(768.0*vUV.y)) ).xyz, 1.0);
 }
