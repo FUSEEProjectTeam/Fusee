@@ -383,6 +383,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ABCompare.Desktop", "Examples\Complete\ABCompare\Desktop\Fusee.Examples.ABCompare.Desktop.csproj", "{B8A9A3D6-DC58-47C6-9173-EAE64B580012}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FusViewer", "src\Tools\FusViewer\FusViewer.csproj", "{69912481-B885-42EF-9F3A-E1691D2D8FCE}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Render", "Render", "{58433A65-35DC-4C22-A795-2443C72F7428}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Test.Render.Desktop", "src\Tests\Render\Desktop\Fusee.Test.Render.Desktop.csproj", "{B053ED47-3A82-475D-B75D-336C026F953E}"
