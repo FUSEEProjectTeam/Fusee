@@ -24,5 +24,6 @@ void main()
 	float kernelSize = float(KERNEL_SIZE_HALF) * 4.0;
 	result = result / (kernelSize * kernelSize);
 	
-	oBlurred = vec4(texture( InputTex, vUV + 0.005*vec2( sin(1024.0*vUV.x),cos(768.0*vUV.y)) ).xyz, 1.0);
+		oBlurred = vec4(result, 1.0);
+	//oBlurred = vec4(texture( InputTex, vUV + 0.005*vec2( sin(1024.0*vUV.x),cos(768.0*vUV.y)) ).xyz, 1.0);
 }
