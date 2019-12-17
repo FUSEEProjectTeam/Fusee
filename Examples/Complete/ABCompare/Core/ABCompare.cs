@@ -11,6 +11,7 @@ using Fusee.Xene;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
 using Fusee.Engine.GUI;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.ABCompare.Core
 {
@@ -65,10 +66,8 @@ namespace Fusee.Examples.ABCompare.Core
 
 
         // Init is called on startup. 
-        public override void Init()
+        public override async Task<bool> Init()
         {
-
-
             //Initialize objects we need for the multipass blur effect
             _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
 
@@ -200,6 +199,7 @@ namespace Fusee.Examples.ABCompare.Core
             
             _guiRenderer = new SceneRendererForward(_gui);
 
+            return true;
         }
 
 

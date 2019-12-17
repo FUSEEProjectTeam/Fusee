@@ -373,10 +373,6 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.CmdLine", "src\Tools\fuseeCmdLine\Fusee.Tools.CmdLine.csproj", "{1C5149B2-DC38-49C8-998C-49FC1D9CCCE5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ABCompare", "ABCompare", "{B963EA33-ADD7-4BCE-8AFD-06A6BAA82BCB}"
-	ProjectSection(SolutionItems) = preProject
-		Examples\Complete\ABCompare\Directory.Build.props = Examples\Complete\ABCompare\Directory.Build.props
-		Examples\Complete\ABCompare\Directory.Build.targets = Examples\Complete\ABCompare\Directory.Build.targets
-	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Examples.ABCompare.Core", "Examples\Complete\ABCompare\Core\Fusee.Examples.ABCompare.Core.csproj", "{A7D7179E-F24C-4A65-B327-BA3324267609}"
 EndProject
@@ -3437,7 +3433,6 @@ Global
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{A7D7179E-F24C-4A65-B327-BA3324267609}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
@@ -3455,7 +3450,6 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug|x86.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Android|x64.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
@@ -3467,7 +3461,6 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
-		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
@@ -3479,7 +3472,6 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release|x86.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release|x86.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
-		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Android|Any CPU.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Android|x64.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Android|x64.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Android|x86.ActiveCfg = Release|Any CPU
@@ -3491,13 +3483,11 @@ Global
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-NuGet|x86.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
-		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{B8A9A3D6-DC58-47C6-9173-EAE64B580012}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
