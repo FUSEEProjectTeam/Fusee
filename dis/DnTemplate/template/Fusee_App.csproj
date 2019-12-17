@@ -9,6 +9,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Fusee.Desktop" Version="0.7.5" />
+    <PackageReference Include="Fusee.Desktop" Version="0.7.6" />
   </ItemGroup>
 </Project>
