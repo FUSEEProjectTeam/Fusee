@@ -269,7 +269,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _angleVelHorz = 0;
             _angleVelVert = 0;
 
-            FpsView();
+            _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
             _sceneRenderer.Render(RC);
 
@@ -284,27 +284,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
-        }
-
-        /// <summary>
-        /// Translates and rotates the camera to achieve a fps cam.
-        /// </summary>
-        private void FpsView()
-        {
-            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                _angleHorz %= twoPi;
-            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                _angleVert %= twoPi;
-
-            var camForward = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitZ;
-            var camRight = float4x4.CreateRotationYX(new float2(_angleVert, _angleHorz)) * float3.UnitX;
-
-            _camTransform.Translation += camForward * Keyboard.WSAxis * DeltaTime * 1000;
-            _camTransform.Translation += camRight * Keyboard.ADAxis * DeltaTime * 1000;
-
-            _camTransform.Rotation.y = _angleHorz;
-            _camTransform.Rotation.x = _angleVert;
-        }
+        }        
 
         private SceneContainer CreateGui()
         {
