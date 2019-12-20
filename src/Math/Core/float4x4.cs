@@ -1313,107 +1313,38 @@ namespace Fusee.Math.Core
         #region Invert Functions
 
         /// <summary>
-        /// Calculate the inverse of the given matrix.
+        /// Checks if this matrix is invertable.
         /// </summary>
-        /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular.</returns>
-        public static float4x4 Invert(float4x4 mat)
+        /// <param name="mat">The matrix.</param>       
+        public static bool IsInvertable(float4x4 mat)
         {
-            if (mat == Identity || mat == Zero) return mat;
-            // InvertAffine is broken (probably since column order notation
-            // if (mat.IsAffine) return InvertAffine(mat);
-
-            mat = mat.Transpose();
-
-            var tmp0 = mat.M33 * mat.M44;
-            var tmp1 = mat.M34 * mat.M43;
-            var tmp2 = mat.M32 * mat.M44;
-            var tmp3 = mat.M34 * mat.M42;
-            var tmp4 = mat.M32 * mat.M43;
-            var tmp5 = mat.M33 * mat.M42;
-            var tmp6 = mat.M31 * mat.M44;
-            var tmp7 = mat.M34 * mat.M41;
-            var tmp8 = mat.M31 * mat.M43;
-            var tmp9 = mat.M33 * mat.M41;
-            var tmp10 = mat.M31 * mat.M42;
-            var tmp11 = mat.M32 * mat.M41;
-
-            // calculate first 8 elements (cofactors)
-            var m11 = tmp0 * mat.M22 + tmp3 * mat.M23 + tmp4 * mat.M24;
-            m11 -= tmp1 * mat.M22 + tmp2 * mat.M23 + tmp5 * mat.M24;
-            var m12 = tmp1 * mat.M21 + tmp6 * mat.M23 + tmp9 * mat.M24;
-            m12 -= tmp0 * mat.M21 + tmp7 * mat.M23 + tmp8 * mat.M24;
-            var m13 = tmp2 * mat.M21 + tmp7 * mat.M22 + tmp10 * mat.M24;
-            m13 -= tmp3 * mat.M21 + tmp6 * mat.M22 + tmp11 * mat.M24;
-            var m14 = tmp5 * mat.M21 + tmp8 * mat.M22 + tmp11 * mat.M23;
-            m14 -= tmp4 * mat.M21 + tmp9 * mat.M22 + tmp10 * mat.M23;
-            var m21 = tmp1 * mat.M12 + tmp2 * mat.M13 + tmp5 * mat.M14;
-            m21 -= tmp0 * mat.M12 + tmp3 * mat.M13 + tmp4 * mat.M14;
-            var m22 = tmp0 * mat.M11 + tmp7 * mat.M13 + tmp8 * mat.M14;
-            m22 -= tmp1 * mat.M11 + tmp6 * mat.M13 + tmp9 * mat.M14;
-            var m23 = tmp3 * mat.M11 + tmp6 * mat.M12 + tmp11 * mat.M14;
-            m23 -= tmp2 * mat.M11 + tmp7 * mat.M12 + tmp10 * mat.M14;
-            var m24 = tmp4 * mat.M11 + tmp9 * mat.M12 + tmp10 * mat.M13;
-            m24 -= tmp5 * mat.M11 + tmp8 * mat.M12 + tmp11 * mat.M13;
-
-            // calculate pairs for second 8 elements (cofactors)
-            tmp0 = mat.M13 * mat.M24;
-            tmp1 = mat.M14 * mat.M23;
-            tmp2 = mat.M12 * mat.M24;
-            tmp3 = mat.M14 * mat.M22;
-            tmp4 = mat.M12 * mat.M23;
-            tmp5 = mat.M13 * mat.M22;
-            tmp6 = mat.M11 * mat.M24;
-            tmp7 = mat.M14 * mat.M21;
-            tmp8 = mat.M11 * mat.M23;
-            tmp9 = mat.M13 * mat.M21;
-            tmp10 = mat.M11 * mat.M22;
-            tmp11 = mat.M12 * mat.M21;
-
-            // calculate second 8 elements (cofactors)
-            var m31 = tmp0 * mat.M42 + tmp3 * mat.M43 + tmp4 * mat.M44;
-            m31 -= tmp1 * mat.M42 + tmp2 * mat.M43 + tmp5 * mat.M44;
-            var m32 = tmp1 * mat.M41 + tmp6 * mat.M43 + tmp9 * mat.M44;
-            m32 -= tmp0 * mat.M41 + tmp7 * mat.M43 + tmp8 * mat.M44;
-            var m33 = tmp2 * mat.M41 + tmp7 * mat.M42 + tmp10 * mat.M44;
-            m33 -= tmp3 * mat.M41 + tmp6 * mat.M42 + tmp11 * mat.M44;
-            var m34 = tmp5 * mat.M41 + tmp8 * mat.M42 + tmp11 * mat.M43;
-            m34 -= tmp4 * mat.M41 + tmp9 * mat.M42 + tmp10 * mat.M43;
-            var m41 = tmp2 * mat.M33 + tmp5 * mat.M34 + tmp1 * mat.M32;
-            m41 -= tmp4 * mat.M34 + tmp0 * mat.M32 + tmp3 * mat.M33;
-            var m42 = tmp8 * mat.M34 + tmp0 * mat.M31 + tmp7 * mat.M33;
-            m42 -= tmp6 * mat.M33 + tmp9 * mat.M34 + tmp1 * mat.M31;
-            var m43 = tmp6 * mat.M32 + tmp11 * mat.M34 + tmp3 * mat.M31;
-            m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
-            var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
-            m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-
-            // calculate determinant
-            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
-
-            if (det > M.EpsilonFloat || det < -M.EpsilonFloat)
-            {
-                det = 1 / det;
-
-                mat = new float4x4(det * m11, det * m12, det * m13, det * m14,
-                                   det * m21, det * m22, det * m23, det * m24,
-                                   det * m31, det * m32, det * m33, det * m34,
-                                   det * m41, det * m42, det * m43, det * m44);
-            }
-            else
-                mat = mat.Transpose();
-
-            return mat;
+            return mat.Determinant != 0f;
         }
 
         /// <summary>
-        /// Calculate the inverse of the given matrix. Note: In contrast to "Invert" this method does no check against the size of the determinant.
-        /// Therfor only use this if you are sure the matrix to invert isn't singular.
+        /// Checks if this matrix is invertable.
         /// </summary>
-        /// <param name="mat">The matrix to invert.</param>        
-        public static float4x4 InvertOrthographic(float4x4 mat)
+        /// <param name="mat">The matrix.</param>
+        /// <param name="det">The determinant of the matrix.</param>       
+        public static bool IsInvertable(float4x4 mat, out float det)
+        {
+            det = mat.Determinant;
+            return det != 0f;
+        }
+
+        /// <summary>
+        /// Calculate the inverse of the given matrix.
+        /// If you are unsure whether the matrix is invertable, check it with IsInvertable() first.
+        /// </summary>
+        /// <param name="mat">The matrix to invert.</param>
+        /// <returns>The inverse of the given matrix.</returns>
+        public static float4x4 Invert(float4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
+
+            if (!IsInvertable(mat, out float det))
+                throw new ArgumentException("Matrix isn't invertable.");
+
             // InvertAffine is broken (probably since column order notation
             // if (mat.IsAffine) return InvertAffine(mat);
 
@@ -1481,21 +1412,15 @@ namespace Fusee.Math.Core
             m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
             var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
             m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-
-            // calculate determinant
-            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
-
-            
-                det = 1 / det;
-
-                mat = new float4x4(det * m11, det * m12, det * m13, det * m14,
-                                   det * m21, det * m22, det * m23, det * m24,
-                                   det * m31, det * m32, det * m33, det * m34,
-                                   det * m41, det * m42, det * m43, det * m44);
-            
+           
+            var invDet = 1 / det;
+            mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
+                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
+                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
+                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
 
             return mat;
-        }
+        }        
 
         /// <summary>
         /// Calculate the inverse of a given matrix which represents an affine transformation.
@@ -1504,6 +1429,8 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
+            throw new Exception("InvertAffine is broken (probably since column order notation)");
+
             // Row order notation
             //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
             //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
@@ -1514,8 +1441,6 @@ namespace Fusee.Math.Core
             //                 new float4(mat.M12, mat.M22, mat.M32, 0),
             //                 new float4(mat.M13, mat.M23, mat.M33, 0),
             //                 new float4(val1, val2, val3, 1));
-
-            throw new Exception("InvertAffine is broken (probably since column order notation)");
 
             // TODO: fix this!
             //  Column order notation ???

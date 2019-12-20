@@ -212,7 +212,7 @@ namespace Fusee.Engine.Core
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var invProj = float4x4.InvertOrthographic(_rc.Projection);
+                var invProj = float4x4.Invert(_rc.Projection);
 
                 var frustumCorners = new float4[4];
 
