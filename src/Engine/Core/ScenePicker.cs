@@ -266,16 +266,27 @@ namespace Fusee.Engine.Core
 
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                var projection = _rc.Projection;
-                var zNear = System.Math.Abs(projection.M34 / (projection.M33 + 1));
+                var invProj = float4x4.InvertOrthographic(_rc.Projection);
 
-                var fov = 2f * System.Math.Atan(1f / projection.M22);
-                var aspect = projection.M22 / projection.M11;
+                var frustumCorners = new float4[4];
 
+                frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
+                frustumCorners[1] = invProj * new float4(1, -1, -1, 1); //nbr 
+                frustumCorners[2] = invProj * new float4(-1, 1, -1, 1); //ntl  
+                frustumCorners[3] = invProj * new float4(1, 1, -1, 1); //ntr                
+
+                for (int i = 0; i < frustumCorners.Length; i++)
+                {
+                    var corner = frustumCorners[i];
+                    corner /= corner.w; //world space frustum corners               
+                    frustumCorners[i] = corner;
+                }
+
+                var width = (frustumCorners[0] - frustumCorners[1]).Length;
+                var height = (frustumCorners[0] - frustumCorners[2]).Length;
+
+                var zNear = frustumCorners[0].z;
                 var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
-
-                var height = (float)(2f * System.Math.Tan(fov / 2f) * zNear);
-                var width = height * aspect;
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {
