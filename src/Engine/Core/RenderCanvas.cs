@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
@@ -177,8 +177,9 @@ namespace Fusee.Engine.Core
                 // rendering
                 RenderAFrame();
 
-                //Resets Viewport and View and Projection Matrix to their default state.
+                //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
                 RC.ResetToDefaultState();
+                RC.SetRenderState(RenderStateSet.Default);
 
                 // post-rendering
                 Input.Instance.PostRender();

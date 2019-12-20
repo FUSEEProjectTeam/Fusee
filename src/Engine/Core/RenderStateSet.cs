@@ -11,6 +11,9 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class RenderStateSet
     { 
+        /// <summary>
+        /// OpenGL defaults for the render states.
+        /// </summary>
         public static RenderStateSet Default
         {
             get

@@ -309,6 +309,8 @@ namespace Fusee.Engine.Core
 
         #region Rendering
 
+        private RenderStateSet userRenderStateSet;
+
         /// <summary>
         /// Renders the scene.
         /// </summary>
@@ -316,7 +318,7 @@ namespace Fusee.Engine.Core
         /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>        
         public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
-            SetContext(rc);
+            SetContext(rc);            
 
             PrePassVisitor.PrePassTraverse(_sc, _rc);
             AccumulateLight();
@@ -332,14 +334,16 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        userRenderStateSet = _rc.GetRenderStateSet();
                         PerCamRender(cam, renderTex);
                         //Reset Viewport                        
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                        _rc.SetRenderState(userRenderStateSet);
                     }
                 }
             }
             else
-                RenderAllPasses(new float4(0,0,_rc.ViewportWidth, _rc.ViewportHeight), renderTex);
+                RenderAllPasses(new float4(0,0,_rc.ViewportWidth, _rc.ViewportHeight), renderTex);            
         }
 
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam, WritableTexture renderTex = null)
@@ -378,12 +382,17 @@ namespace Fusee.Engine.Core
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
             RenderShadowMaps();
 
+            _rc.SetRenderState(RenderState.CullMode, (uint)Cull.Counterclockwise);
+            _rc.SetRenderState(RenderState.ZFunc, (uint)Compare.Less);
+
             //Pass 1: Geometry pass
             _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
             RenderGeometryPass();
 
+            _rc.SetRenderState(RenderStateSet.Default);
+
             if (_ssaoOn)
-                RenderSSAO();
+                RenderSSAO();            
 
             //Pass 4 & 5: FXAA and Lighting
             _currentPass = RenderPasses.LIGHTING;
@@ -392,7 +401,7 @@ namespace Fusee.Engine.Core
             int height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
 
             if (!FxaaOn)
-            {
+            {                
                 _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderLightPasses(renderTex);
             }
@@ -400,11 +409,11 @@ namespace Fusee.Engine.Core
             {
                 _rc.Viewport(0, 0, _lightedSceneTex.Width, _lightedSceneTex.Height);
                 RenderLightPasses(_lightedSceneTex);
-                //Post-Effect: FXAA
-
+                
+                //Post-Effect: FXAA                
                 _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderFXAA(renderTex);
-            }
+            }            
         }       
 
         /// <summary>
@@ -418,6 +427,8 @@ namespace Fusee.Engine.Core
                 _rc.SetRenderTarget(renderTex);
             else
                 _rc.SetRenderTarget();
+
+            _rc.Clear(ClearFlags.Depth | ClearFlags.Color);
 
             var lightPassCnt = 0;
 

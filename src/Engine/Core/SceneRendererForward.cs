@@ -294,10 +294,10 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="rc"></param>       
         public void Render(RenderContext rc)
-        {
-            //var stateSet = _rc.GetRenderStateSet(); //all states            
-
+        { 
             SetContext(rc);
+
+            var stateSet = _rc.GetRenderStateSet(); 
 
             PrePassVisitor.PrePassTraverse(_sc, _rc);            
 
@@ -313,14 +313,14 @@ namespace Fusee.Engine.Core
                     {
                         PerCamRender(cam);
                         //Reset Viewport                        
-                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight); //TODO: why do we need this?
+                        _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                     }
                 }               
             }
             else            
                 Traverse(_sc.Children);
 
-            //_rc.SetRenderState(stateSet);
+            _rc.SetRenderState(stateSet);
         }
 
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)

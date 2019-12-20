@@ -1113,8 +1113,6 @@ namespace Fusee.Engine.Core
         /// the gpu.</remarks>
         public void SetShaderEffect(ShaderEffect ef)
         {
-            SetRenderState(RenderStateSet.Default);
-
             if (_rci == null)
                 throw new ArgumentNullException("rc", "must pass a valid render context.");
 
@@ -1535,6 +1533,33 @@ namespace Fusee.Engine.Core
                 _rci.SetRenderState(theKey, theValue);
             }
         }
+
+        /// <summary>
+        /// Returns the current render state set.
+        /// </summary>        
+        /// <returns></returns>
+        public RenderStateSet GetRenderStateSet()
+        {
+            return new RenderStateSet()
+            {
+                AlphaBlendEnable = _rci.GetRenderState(RenderState.AlphaBlendEnable) != 0,
+                BlendFactor = (float4)(ColorUint)_rci.GetRenderState(RenderState.BlendFactor),
+                BlendOperation = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperation),
+                BlendOperationAlpha = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperationAlpha),
+                DestinationBlend = (Blend)_rci.GetRenderState(RenderState.DestinationBlend),
+                DestinationBlendAlpha = (Blend)_rci.GetRenderState(RenderState.DestinationBlendAlpha),
+                SourceBlend = (Blend)_rci.GetRenderState(RenderState.SourceBlend),
+                SourceBlendAlpha = (Blend)_rci.GetRenderState(RenderState.SourceBlendAlpha),
+
+                CullMode = (Cull)_rci.GetRenderState(RenderState.CullMode),
+                Clipping = _rci.GetRenderState(RenderState.Clipping) != 0,
+                FillMode = (FillMode)_rci.GetRenderState(RenderState.FillMode),
+                ZEnable = _rci.GetRenderState(RenderState.ZEnable) != 0,
+                ZFunc = (Compare)_rci.GetRenderState(RenderState.ZEnable),
+                ZWriteEnable = _rci.GetRenderState(RenderState.ZWriteEnable) != 0
+            };            
+        }
+
         /// <summary>
         /// Returns the current render state.
         /// </summary>
