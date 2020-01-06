@@ -594,6 +594,11 @@ namespace Fusee.Engine.Core
                 SetDefaultLight();
         }
 
+        /// <summary>
+        /// Adds a WeightComponent to a Mesh.
+        /// </summary>
+        /// <param name="mesh">The Mesh to ad a WieghtComponent to.</param>
+        /// <param name="wc">The Weight Component in question.</param>
         protected void AddWeightComponentToMesh(Mesh mesh, WeightComponent wc)
         {
             float4[] boneWeights = new float4[wc.WeightMap.Count];

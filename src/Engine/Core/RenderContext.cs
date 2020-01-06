@@ -105,6 +105,9 @@ namespace Fusee.Engine.Core
         private float4x4 _model;
         private float4x4[] _bones;
 
+        /// <summary>
+        /// Gets and Sets the bone matrix used by the rendering pipeline.
+        /// </summary>
         public float4x4[] Bones
         {
             get { return _bones; }

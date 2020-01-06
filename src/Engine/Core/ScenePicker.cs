@@ -16,6 +16,9 @@ namespace Fusee.Engine.Core
         /// The mesh.
         /// </summary>
         public Mesh Mesh;
+        /// <summary>
+        /// The triangle.
+        /// </summary>
         public int Triangle;
         /// <summary>
         /// The u, v coordinates.
