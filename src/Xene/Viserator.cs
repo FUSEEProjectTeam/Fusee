@@ -71,6 +71,10 @@ namespace Fusee.Xene
         }
 
         // Step2: initialize the instance
+        /// <summary>
+        /// Step 2 of initializing a new instance of the <see cref="ViseratorBase{TItem}"/> class.
+        /// </summary>
+        /// <param name="rootList">The root list that should be set in the instance.</param>
         protected internal virtual void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             _rootList = rootList;
@@ -189,6 +193,10 @@ namespace Fusee.Xene
         {
         }
 
+        /// <summary>
+        /// Step 2 of initializing a new instance of the <see cref="ViseratorBase{TItem}"/> class.
+        /// </summary>
+        /// <param name="rootList">The root list that should be set in the instance.</param>
         protected internal override void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             State = new TState();
