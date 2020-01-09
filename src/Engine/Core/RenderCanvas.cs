@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 
@@ -92,11 +93,11 @@ namespace Fusee.Engine.Core
         protected string GetAppName()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof (FuseeApplicationAttribute), true);
+                typeof(FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute) attributes[0];
+                var fae = (FuseeApplicationAttribute)attributes[0];
                 return fae.Name;
             }
             return GetType().Name;
@@ -109,11 +110,11 @@ namespace Fusee.Engine.Core
         protected int GetWindowWidth()
         {
             Object[] attributes = GetType().GetCustomAttributes(
-                typeof (FuseeApplicationAttribute), true);
+                typeof(FuseeApplicationAttribute), true);
 
             if (attributes.Length > 0)
             {
-                var fae = (FuseeApplicationAttribute) attributes[0];
+                var fae = (FuseeApplicationAttribute)attributes[0];
                 return fae.Width;
             }
 
@@ -138,6 +139,8 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
+        protected bool _appInitialized;
+
         /// <summary>
         /// Initializes the canvas for the rendering loop.
         /// </summary>
@@ -153,17 +156,19 @@ namespace Fusee.Engine.Core
                 SetWindowSize(windowWidth, windowHeight);
 
             RC = new RenderContext(ContextImplementor);
-            RC.Viewport(0, 0, Width, Height);            
+            RC.Viewport(0, 0, Width, Height);
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
             VideoManager.Instance.VideoManagerImp = VideoManagerImplementor;
 
-            CanvasImplementor.Init += delegate { Init(); };
+            CanvasImplementor.Init += async delegate { await Init(); _appInitialized = true; };
             CanvasImplementor.UnLoad += delegate { DeInit(); };
 
             CanvasImplementor.Render += delegate
             {
+                if (!_appInitialized) return; // let init() finish!
+
                 // pre-rendering
                 Network.Instance.OnUpdateFrame();
                 Input.Instance.PreRender();
@@ -176,11 +181,7 @@ namespace Fusee.Engine.Core
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate 
-            {
-                RC.Viewport(0, 0, Width, Height);
-                Resize(new ResizeEventArgs(Width, Height)); 
-            };
+            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
         }
 
         /// <summary>
@@ -202,8 +203,9 @@ namespace Fusee.Engine.Core
         ///     Override this method in inherited classes of RenderCanvas to apply initialization code. Typically, an application
         ///     will call one-time initialization code on the render context (<see cref="RC" />) to set render states.
         /// </remarks>
-        public virtual void Init()
+        public virtual async Task<bool> Init()
         {
+            return false;
         }
 
         /// <summary>
@@ -211,7 +213,7 @@ namespace Fusee.Engine.Core
         ///     All audio and network resources get reset.
         /// </summary>
         public virtual void DeInit()
-        {            
+        {
             Audio.Instance.CloseDevice();
             Network.Instance.CloseDevice();
 

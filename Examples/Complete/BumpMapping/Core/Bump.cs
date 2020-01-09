@@ -1,14 +1,13 @@
-﻿using System;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Bump.Core
 {
-
     [FuseeApplication(Name = "FUSEE Bump Mapping Example", Description = "Quick bump example")]
     public class Bump : RenderCanvas
     {
@@ -17,6 +16,7 @@ namespace Fusee.Examples.Bump.Core
         // angle variables
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f,
                              _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom;
+
         private static float2 _offset;
         private static float2 _offsetInit;
 
@@ -33,8 +33,8 @@ namespace Fusee.Examples.Bump.Core
         private bool _keys;
         private float _maxPinchSpeed;
 
-        // Init is called on startup. 
-        public override void Init()
+        // Init is called on startup.
+        public override async Task<bool> Init()
         {
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -51,7 +51,6 @@ namespace Fusee.Examples.Bump.Core
             // Load the standard model
             _scene = AssetStorage.Get<SceneContainer>(ModelFile);
 
-
             //TODO: export the correct material - with bump channel - from blender exporter
             //Problem: because of the initial scene convert in main.cs we do not have a material component but a shader effect here
 
@@ -65,15 +64,15 @@ namespace Fusee.Examples.Bump.Core
             //{
             //    Intensity = 1.0f,
             //    Texture = "bump.png"
-            //};           
+            //};
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
             if (bbox != null)
             {
-                // If the model origin is more than one third away from its bounding box, 
+                // If the model origin is more than one third away from its bounding box,
                 // recenter it to the bounding box. Do this check individually per dimension.
-                // This way, small deviations will keep the model's original center, while big deviations 
+                // This way, small deviations will keep the model's original center, while big deviations
                 // will make the model rotate around its geometric center.
                 float3 bbCenter = bbox.Value.Center;
                 float3 bbSize = bbox.Value.Size;
@@ -97,6 +96,7 @@ namespace Fusee.Examples.Bump.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
 
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -105,6 +105,8 @@ namespace Fusee.Examples.Bump.Core
             // _guiSubText.Text = $"dt: {DeltaTime} ms, W: {Width}, H: {Height}, PS: {_maxPinchSpeed}";
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
@@ -185,7 +187,6 @@ namespace Fusee.Examples.Bump.Core
             // Wrap-around to keep _angleRoll between -PI and + PI
             _angleRoll = M.MinAngle(_angleRoll);
 
-
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationZ(_angleRoll) * float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
@@ -209,7 +210,6 @@ namespace Fusee.Examples.Bump.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            
         }
     }
 }

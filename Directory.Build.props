@@ -9,10 +9,10 @@
     <Authors>FuseeProjectTeam</Authors>
     <Company>Furtwangen University</Company>
     <Product>FUSEE</Product>
-    <Version>0.7.5.0</Version>
-    <AssemblyVersion>0.7.5.0</AssemblyVersion>
-    <FileVersion>0.7.5.0</FileVersion>
-    <PackageVersion>0.7.5.0</PackageVersion>
+    <Version>0.7.6.0</Version>
+    <AssemblyVersion>0.7.6.0</AssemblyVersion>
+    <FileVersion>0.7.6.0</FileVersion>
+    <PackageVersion>0.7.6.0</PackageVersion>
     <Copyright>Copyright © 2013-today</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://fusee3d.org/</PackageProjectUrl>
@@ -20,6 +20,13 @@
     <RepositoryUrl>https://github.com/FUSEEProjectTeam/Fusee.git</RepositoryUrl>
     <PackageIcon>images\icon.png</PackageIcon>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+    <!--
+    Suppress warnings
+    1701 and 1702 is standard.
+    NU1701: Package restore of OpenTK 3.1 with net462 - remove after update to OpenTK 4
+    -->
+    <NoWarn>1701;1702;NU1701</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

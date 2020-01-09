@@ -14,7 +14,7 @@ namespace Fusee.Math.Core
         private float3 _xyz;
         private float _w;
 
-        #endregion
+        #endregion Fields
 
         #region Constructors
 
@@ -41,7 +41,7 @@ namespace Fusee.Math.Core
         {
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Public Members
 
@@ -92,11 +92,12 @@ namespace Fusee.Math.Core
             set { _w = value; }
         }
 
-        #endregion
+        #endregion Properties
 
         #region Instance
 
         #region this
+
         /// <summary>
         ///     Sets/Gets value from given idx
         /// </summary>
@@ -110,12 +111,16 @@ namespace Fusee.Math.Core
                 {
                     case 0:
                         return x;
+
                     case 1:
                         return y;
+
                     case 2:
                         return z;
+
                     case 3:
                         return w;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a Quaternion type");
                 }
@@ -127,21 +132,26 @@ namespace Fusee.Math.Core
                     case 0:
                         x = value;
                         break;
+
                     case 1:
                         y = value;
                         break;
+
                     case 2:
                         z = value;
                         break;
+
                     case 3:
                         w = value;
                         break;
+
                     default:
                         throw new ArgumentOutOfRangeException($"Index {idx} not eligible for a Quaternion type");
                 }
             }
         }
-        #endregion
+
+        #endregion this
 
         #region ToAxisAngle
 
@@ -156,13 +166,13 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Converts the quaternion into a rotation matrix.
-        /// </summary>        
+        /// </summary>
         public float4x4 ToRotMat()
         {
             return ToRotMat(this);
         }
 
-        #endregion
+        #endregion ToAxisAngle
 
         #region public float Length
 
@@ -172,10 +182,10 @@ namespace Fusee.Math.Core
         /// <seealso cref="LengthSquared" />
         public float Length
         {
-            get { return (float) System.Math.Sqrt(w*w + xyz.LengthSquared); }
+            get { return (float)System.Math.Sqrt(w * w + xyz.LengthSquared); }
         }
 
-        #endregion
+        #endregion public float Length
 
         #region public float LengthSquared
 
@@ -184,10 +194,10 @@ namespace Fusee.Math.Core
         /// </summary>
         public float LengthSquared
         {
-            get { return w*w + xyz.LengthSquared; }
+            get { return w * w + xyz.LengthSquared; }
         }
 
-        #endregion
+        #endregion public float LengthSquared
 
         #region public Normalize()
 
@@ -199,7 +209,7 @@ namespace Fusee.Math.Core
             return Normalize(this);
         }
 
-        #endregion
+        #endregion public Normalize()
 
         #region public Conjugate()
 
@@ -211,7 +221,7 @@ namespace Fusee.Math.Core
             return Conjugate(this);
         }
 
-        #endregion
+        #endregion public Conjugate()
 
         #region public Invert()
 
@@ -223,9 +233,9 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
-        #endregion
+        #endregion public Invert()
 
-        #endregion
+        #endregion Instance
 
         #region Static
 
@@ -236,7 +246,7 @@ namespace Fusee.Math.Core
         /// </summary>
         public static Quaternion Identity = new Quaternion(0, 0, 0, 1);
 
-        #endregion
+        #endregion Fields
 
         #region Add
 
@@ -253,7 +263,7 @@ namespace Fusee.Math.Core
                 left.w + right.w);
         }
 
-        #endregion
+        #endregion Add
 
         #region Sub
 
@@ -270,7 +280,7 @@ namespace Fusee.Math.Core
                 left.w - right.w);
         }
 
-        #endregion
+        #endregion Sub
 
         #region Mult
 
@@ -299,10 +309,10 @@ namespace Fusee.Math.Core
         /// <returns>A new instance containing the result of the calculation.</returns>
         public static Quaternion Multiply(Quaternion quaternion, float scale)
         {
-            return new Quaternion(quaternion.x*scale, quaternion.y*scale, quaternion.z*scale, quaternion.w*scale);
+            return new Quaternion(quaternion.x * scale, quaternion.y * scale, quaternion.z * scale, quaternion.w * scale);
         }
 
-        #endregion
+        #endregion Mult
 
         #region Conjugate
 
@@ -316,7 +326,7 @@ namespace Fusee.Math.Core
             return new Quaternion(-q.xyz, q.w);
         }
 
-        #endregion
+        #endregion Conjugate
 
         #region Invert
 
@@ -344,7 +354,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Invert
 
         #region Normalize
 
@@ -369,7 +379,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion Normalize
 
         #region AxisAngle
 
@@ -383,7 +393,7 @@ namespace Fusee.Math.Core
         {
             if (axis.LengthSquared < M.EpsilonFloat)
                 return Identity;
-                
+
             if (axis.LengthSquared > 1f)
                 return Identity;
 
@@ -391,8 +401,8 @@ namespace Fusee.Math.Core
 
             angle *= 0.5f;
             axis = axis.Normalize();
-            result.xyz = axis*(float) System.Math.Sin(angle);
-            result.w = (float) System.Math.Cos(angle);
+            result.xyz = axis * (float)System.Math.Sin(angle);
+            result.w = (float)System.Math.Cos(angle);
 
             return Normalize(result);
         }
@@ -408,14 +418,14 @@ namespace Fusee.Math.Core
         {
             var m1 = new float4x4(
             quat.w, quat.z, -quat.y, quat.x,
-            -quat.z, quat.w, quat.x, quat.y, 
-            quat.y, -quat.x, quat.w, quat.z, 
+            -quat.z, quat.w, quat.x, quat.y,
+            quat.y, -quat.x, quat.w, quat.z,
             -quat.x, -quat.y, -quat.z, quat.w).Transpose();
 
             var m2 = new float4x4(
-            quat.w, quat.z, -quat.y, -quat.x, 
-            -quat.z, quat.w, quat.x, -quat.y, 
-            quat.y, -quat.x, quat.w, -quat.z, 
+            quat.w, quat.z, -quat.y, -quat.x,
+            -quat.z, quat.w, quat.x, -quat.y,
+            quat.y, -quat.x, quat.w, -quat.z,
             quat.x, quat.y, quat.z, quat.w).Transpose();
 
             return m1 * m2;
@@ -444,7 +454,7 @@ namespace Fusee.Math.Core
             }
             else
             {
-                // This occurs when the angle is zero. 
+                // This occurs when the angle is zero.
                 // Not a problem: just set an arbitrary normalized axis.
                 result.xyz = float3.UnitX;
             }
@@ -452,7 +462,7 @@ namespace Fusee.Math.Core
             return result;
         }
 
-        #endregion
+        #endregion AxisAngle
 
         #region Slerp
 
@@ -483,7 +493,7 @@ namespace Fusee.Math.Core
                 return q1;
             }
 
-            var cosHalfAngle = q1.w*q2.w + float3.Dot(q1.xyz, q2.xyz);
+            var cosHalfAngle = q1.w * q2.w + float3.Dot(q1.xyz, q2.xyz);
 
             // if angle = 0.0f, just return one input.
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
@@ -511,12 +521,12 @@ namespace Fusee.Math.Core
             {
                 // Console.WriteLine("Proper Slerp for big angle: " + MathHelper.RadiansToDegrees((float)System.Math.Acos(cosHalfAngle))+ "°");
                 // do proper slerp for big angles
-                var halfAngle = (float) System.Math.Acos(cosHalfAngle);
-                var sinHalfAngle = (float) System.Math.Sin(halfAngle);
-                var oneOverSinHalfAngle = 1.0f/sinHalfAngle;
+                var halfAngle = (float)System.Math.Acos(cosHalfAngle);
+                var sinHalfAngle = (float)System.Math.Sin(halfAngle);
+                var oneOverSinHalfAngle = 1.0f / sinHalfAngle;
 
-                blendA = (float) System.Math.Sin(halfAngle*(1.0f - blend))*oneOverSinHalfAngle;
-                blendB = (float) System.Math.Sin(halfAngle*blend)*oneOverSinHalfAngle;
+                blendA = (float)System.Math.Sin(halfAngle * (1.0f - blend)) * oneOverSinHalfAngle;
+                blendB = (float)System.Math.Sin(halfAngle * blend) * oneOverSinHalfAngle;
             }
             else
             {
@@ -526,12 +536,12 @@ namespace Fusee.Math.Core
                 blendB = blend;
             }
 
-            var result = new Quaternion(blendA*q1.xyz + blendB*q2.xyz, blendA*q1.w + blendB*q2.w);
+            var result = new Quaternion(blendA * q1.xyz + blendB * q2.xyz, blendA * q1.w + blendB * q2.w);
 
             return result.LengthSquared > M.EpsilonFloat ? Normalize(result) : Identity;
         }
 
-        #endregion
+        #endregion Slerp
 
         #region Conversion
 
@@ -541,10 +551,10 @@ namespace Fusee.Math.Core
         /// <param name="e">Euler angle to convert.</param>
         /// <param name="inDegrees">Whether the angles are in degrees or radians.</param>
         /// <returns>A Quaternion representing the euler angle passed to this method.</returns>
-        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
-        /// 
+        ///
         /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclideanspace website</a>.
         /// </remarks>
         public static Quaternion EulerToQuaternion(float3 e, bool inDegrees = false)
@@ -561,16 +571,16 @@ namespace Fusee.Math.Core
 
             // Calculating the Sine and Cosine for each half angle.
             // YAW/HEADING
-            var s1 = (float) System.Math.Sin(e.y*0.5f);
-            var c1 = (float) System.Math.Cos(e.y*0.5f);
+            var s1 = (float)System.Math.Sin(e.y * 0.5f);
+            var c1 = (float)System.Math.Cos(e.y * 0.5f);
 
             // PITCH/ATTITUDE
-            var s2 = (float) System.Math.Sin(e.x*0.5f);
-            var c2 = (float) System.Math.Cos(e.x*0.5f);
+            var s2 = (float)System.Math.Sin(e.x * 0.5f);
+            var c2 = (float)System.Math.Cos(e.x * 0.5f);
 
             // ROLL/BANK
-            var s3 = (float) System.Math.Sin(e.z*0.5f);
-            var c3 = (float) System.Math.Cos(e.z*0.5f);
+            var s3 = (float)System.Math.Sin(e.z * 0.5f);
+            var c3 = (float)System.Math.Cos(e.z * 0.5f);
 
             // Formula to construct a new Quaternion based on Euler Angles.
             var x = c1 * s2 * c3 - s1 * c2 * s3;
@@ -599,15 +609,15 @@ namespace Fusee.Math.Core
 
             if (test > 0.4995f * unit)
             { // singularity at north pole
-                v.y = M.RadiansToDegrees((float) (2f * System.Math.Atan2(quat.y, quat.x)));
-                v.x = M.RadiansToDegrees((float) (System.Math.PI / 2f));
+                v.y = M.RadiansToDegrees((float)(2f * System.Math.Atan2(quat.y, quat.x)));
+                v.x = M.RadiansToDegrees((float)(System.Math.PI / 2f));
                 v.z = 0;
                 return NormalizeAngles(v);
             }
             if (test < -0.4995f * unit)
             { // singularity at south pole
-                v.y = M.RadiansToDegrees((float) (-2f * System.Math.Atan2(quat.y, quat.x)));
-                v.x = M.RadiansToDegrees((float) (-System.Math.PI / 2));
+                v.y = M.RadiansToDegrees((float)(-2f * System.Math.Atan2(quat.y, quat.x)));
+                v.x = M.RadiansToDegrees((float)(-System.Math.PI / 2));
                 v.z = 0;
                 return NormalizeAngles(v);
             }
@@ -618,7 +628,7 @@ namespace Fusee.Math.Core
             return NormalizeAngles(v);
         }
 
-        static float3 NormalizeAngles(float3 angles)
+        private static float3 NormalizeAngles(float3 angles)
         {
             angles.x = NormalizeAngle(angles.x);
             angles.y = NormalizeAngle(angles.y);
@@ -626,7 +636,7 @@ namespace Fusee.Math.Core
             return angles;
         }
 
-        static float NormalizeAngle(float angle)
+        private static float NormalizeAngle(float angle)
         {
             while (angle > 360)
                 angle -= 360;
@@ -635,23 +645,22 @@ namespace Fusee.Math.Core
             return angle;
         }
 
-
         /// <summary>
         ///     Convert Quaternion rotation to Euler Angles.
         /// </summary>
         /// <param name="q">Quaternion rotation to convert.</param>
         /// <param name="inDegrees">Whether the angles shall be in degrees or radians.</param>
-        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude, 
+        /// <remarks>The euler angle is assumed to be in common aviation order where the y axis is up. Thus x is pitch/attitude,
         /// y is yaw/heading, and z is roll/bank. In practice x is never out of [-PI/2, PI/2] while y and z may well be in
         /// the range of [-PI, PI].
-        /// 
+        ///
         /// See also <a href="http://www.euclideanspace.com/maths/geometry/rotations/conversions/eulerToQuaternion/index.htm">the euclidean space website</a>.
         /// </remarks>
         public static float3 QuaternionToEuler(Quaternion q, bool inDegrees = false)
         {
             q = q.Normalize();
 
-            float test = 2.0f*(q.x*q.y + q.z*q.w);
+            float test = 2.0f * (q.x * q.y + q.z * q.w);
 
             float x;
             float y;
@@ -659,26 +668,26 @@ namespace Fusee.Math.Core
 
             if (M.Equals(test, 1.0f))
             {
-                y = 2.0f*(float) System.Math.Atan2(q.x, q.w);
+                y = 2.0f * (float)System.Math.Atan2(q.x, q.w);
                 x = 0;
-                z = M.Pi/2;
+                z = M.Pi / 2;
             }
             else if (M.Equals(test, -1.0f))
             {
-                y = -2.0f*(float) System.Math.Atan2(q.x, q.w);
+                y = -2.0f * (float)System.Math.Atan2(q.x, q.w);
                 x = 0;
-                z = M.Pi/-2;
+                z = M.Pi / -2;
             }
             else
             {
-                var sqX = q.x*q.x;
-                var sqY = q.y*q.y;
-                var sqZ = q.z*q.z;
-                var sqW = q.w*q.w;
+                var sqX = q.x * q.x;
+                var sqY = q.y * q.y;
+                var sqZ = q.z * q.z;
+                var sqW = q.w * q.w;
 
-                y = (float) System.Math.Atan2(2*(q.y*q.w - q.x*q.z), 1 - 2*sqY - 2*sqZ);
-                z = (float) System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
-                x = (float) System.Math.Atan2(2*(q.x*q.w - q.y*q.z), 1 - 2*sqX - 2*sqZ);
+                y = (float)System.Math.Atan2(2 * (q.y * q.w - q.x * q.z), 1 - 2 * sqY - 2 * sqZ);
+                z = (float)System.Math.Asin(M.Clamp(test, -1.0f, 1.0f));
+                x = (float)System.Math.Atan2(2 * (q.x * q.w - q.y * q.z), 1 - 2 * sqX - 2 * sqZ);
             }
 
             // Clamp angles to ranges arond 0 (e.g. [-PI, PI] for yaw)
@@ -711,11 +720,11 @@ namespace Fusee.Math.Core
 
             float3 right = float3.Cross(upDirection, lookAt);
 
-            float w = (float) System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z)*0.5f;
-            float w4Recip = 1.0f/(4.0f*w);
-            float x = (upDirection.z - lookAt.y)*w4Recip;
-            float y = (lookAt.x - right.z)*w4Recip;
-            float z = (right.y - upDirection.x)*w4Recip;
+            float w = (float)System.Math.Sqrt(1.0f + right.x + upDirection.y + lookAt.z) * 0.5f;
+            float w4Recip = 1.0f / (4.0f * w);
+            float x = (upDirection.z - lookAt.y) * w4Recip;
+            float y = (lookAt.x - right.z) * w4Recip;
+            float z = (right.y - upDirection.x) * w4Recip;
             var ret = new Quaternion(x, y, z, w);
             return ret;
         }
@@ -762,10 +771,10 @@ namespace Fusee.Math.Core
         /// <returns>Returns a with the algebraic sign of b.</returns>
         public static float CopySign(float a, float b)
         {
-            return System.Math.Abs(a)*System.Math.Sign(b);
+            return System.Math.Abs(a) * System.Math.Sign(b);
         }
 
-        #endregion
+        #endregion Conversion
 
         #region FromToRotation
 
@@ -789,7 +798,7 @@ namespace Fusee.Math.Core
             return q;
         }
 
-        #endregion
+        #endregion FromToRotation
 
         #region Transform
 
@@ -803,15 +812,15 @@ namespace Fusee.Math.Core
         {
             Quaternion v = new Quaternion(vec.x, vec.y, vec.z, vec.w), i, t;
             i = Invert(quat);
-            t = Multiply(v,quat);
-            v = Multiply(i,t);
+            t = Multiply(v, quat);
+            v = Multiply(i, t);
 
             return new float4(v.x, v.y, v.z, v.w);
         }
 
-        #endregion
+        #endregion Transform
 
-        #endregion
+        #endregion Static
 
         #region Operators
 
@@ -892,7 +901,7 @@ namespace Fusee.Math.Core
             return !left.Equals(right);
         }
 
-        #endregion
+        #endregion Operators
 
         #region Overrides
 
@@ -907,7 +916,7 @@ namespace Fusee.Math.Core
             return String.Format("V: {0}, w: {1}", xyz, w);
         }
 
-        #endregion
+        #endregion public override string ToString()
 
         #region public override bool Equals (object o)
 
@@ -919,10 +928,10 @@ namespace Fusee.Math.Core
         public override bool Equals(object other)
         {
             if (other is Quaternion == false) return false;
-            return this == (Quaternion) other;
+            return this == (Quaternion)other;
         }
 
-        #endregion
+        #endregion public override bool Equals (object o)
 
         #region public override int GetHashCode ()
 
@@ -935,11 +944,11 @@ namespace Fusee.Math.Core
             return xyz.GetHashCode() ^ w.GetHashCode();
         }
 
-        #endregion
+        #endregion public override int GetHashCode ()
 
-        #endregion
+        #endregion Overrides
 
-        #endregion
+        #endregion Public Members
 
         #region IEquatable<Quaternion> Members
 
@@ -953,6 +962,6 @@ namespace Fusee.Math.Core
             return xyz == other.xyz && (System.Math.Abs(w - other.w) < M.EpsilonFloat);
         }
 
-        #endregion
+        #endregion IEquatable<Quaternion> Members
     }
 }

@@ -88,7 +88,7 @@ namespace Fusee.Math.Core
 
                 var pt = currentPointTranslatedAndRotated;
 
-                // check min and max points                
+                // check min and max points
                 Min = new double3(
                     Min.x > pt.x ? pt.x : Min.x,
                     Min.y > pt.y ? pt.y : Min.y,

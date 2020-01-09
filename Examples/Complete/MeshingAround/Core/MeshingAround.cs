@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using Fusee.Engine.Common;
+﻿using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Jometri;
 using Fusee.Math.Core;
 using Fusee.Serialization;
-using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using Geometry = Fusee.Jometri.Geometry;
 
-
 namespace Fusee.Examples.MeshingAround.Core
 {
-
     [FuseeApplication(Name = "FUSEE Meshing Example", Description = "Meshing around...")]
     public class MeshingAround : RenderCanvas
     {
@@ -21,10 +19,9 @@ namespace Fusee.Examples.MeshingAround.Core
 
         private SceneRendererForward _renderer;
 
-        // Init is called on startup. 
-        public override void Init()
+        // Init is called on startup.
+        public override async Task<bool> Init()
         {
-
             var outlineOne = new PolyBoundary //CCW!!
             {
                 Points = new List<float3>
@@ -110,7 +107,6 @@ namespace Fusee.Examples.MeshingAround.Core
 
             var sceneNodeCOne = new SceneNodeContainer { Components = new List<SceneComponentContainer>() };
 
-
             var meshCOne = new Mesh
             {
                 Vertices = meshOne.Vertices,
@@ -170,7 +166,7 @@ namespace Fusee.Examples.MeshingAround.Core
             parentNode.Children.Add(sceneNodeCCube);
             var sc = new SceneContainer { Children = new List<SceneNodeContainer> { parentNode } };
 
-            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);            
+            var projComp = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
             sc.Children[0].Components.Insert(0, projComp);
 
             _renderer = new SceneRendererForward(sc);
@@ -178,14 +174,16 @@ namespace Fusee.Examples.MeshingAround.Core
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(0, 1, 1, 1);
 
+            return true;
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the back buffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             var speed = Mouse.Velocity + Touch.GetVelocity(TouchPoints.Touchpoint_0);
             if (Mouse.LeftButton || Touch.GetTouchActive(TouchPoints.Touchpoint_0))
@@ -213,8 +211,6 @@ namespace Fusee.Examples.MeshingAround.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-
         }
-
     }
 }

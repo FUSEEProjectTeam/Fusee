@@ -1,14 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using Fusee.Base.Core;
+﻿using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.AdvancedUI.Core
 {
@@ -17,6 +18,7 @@ namespace Fusee.Examples.AdvancedUI.Core
     {
         // angle variables
         private static float _angleHorz, _angleVert, _angleVelHorz, _angleVelVert;
+
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
         private bool _keys;
@@ -40,12 +42,14 @@ namespace Fusee.Examples.AdvancedUI.Core
         private float _canvasWidth;
         private float _canvasHeight;
 
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private List<UIInput> _uiInput;
 
         private ScenePicker _scenePicker;
+
+        //rnd is public so unit tests can inject a seeded random.
+        public Random rnd;
 
         private SceneContainer BuildScene()
         {
@@ -71,7 +75,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
-
                             },
                             new ShaderEffectComponent()
                             {
@@ -90,7 +93,6 @@ namespace Fusee.Examples.AdvancedUI.Core
                                 Rotation = new float3(0,0,0),
                                 Translation = new float3(0,0,0),
                                 Scale = new float3(1, 1, 1)
-
                             },
                             new ShaderEffectComponent()
                             {
@@ -103,8 +105,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             };
         }
 
-        // Init is called on startup. 
-        public override void Init()
+        // Init is called on startup.
+        public override async Task<bool> Init()
         {
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
@@ -124,15 +126,17 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             _initWidth = Width;
             _initHeight = Height;
-            _aspectRatio = Width / (float)Height;
 
             //_scene = BuildScene();
             _scene = AssetStorage.Get<SceneContainer>("Monkey.fus");
             var monkey = _scene.Children[1].GetComponent<Mesh>();
-            var rnd = new Random();
+
+            if (rnd == null)
+                rnd = new Random();
+
             var numberOfTriangles = monkey.Triangles.Length / 3;
 
-            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();            
+            var projComp = _scene.Children[0].GetComponent<ProjectionComponent>();
 
             //Create dummy positions on model
             for (var i = 0; i < NumberOfAnnotations; i++)
@@ -180,6 +184,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
             _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
@@ -188,7 +194,10 @@ namespace Fusee.Examples.AdvancedUI.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             #region Controls
+
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)
             {
@@ -243,7 +252,8 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            #endregion
+
+            #endregion Controls
 
             //Annotations will be unpdated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
@@ -280,19 +290,18 @@ namespace Fusee.Examples.AdvancedUI.Core
                     circle.GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.MIDDLE, pos, _canvasHeight, _canvasWidth, uiInput.Size);
 
                     //1.1   Check if circle is visible
-                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();                    
+                    var newPick = _scenePicker.Pick(new float2(clipPos.x, clipPos.y)).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
                     if (newPick != null && uiInput.AffectedTriangles[0] == newPick.Triangle) //VISIBLE
                     {
                         uiInput.IsVisible = true;
-                        
-                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
 
+                        circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaVis);
                     }
                     else
                     {
                         uiInput.IsVisible = false;
-                       
+
                         circle.GetComponent<ShaderEffectComponent>().Effect.SetDiffuseAlphaInShaderEffect(UIHelper.alphaInv);
                     }
 
@@ -303,7 +312,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                         yPosScale = (yPosScale - 0.5f) * 2f;
                         uiInput.AnnotationCanvasPos.y = uiInput.CircleCanvasPos.y - (UIHelper.AnnotationDim.y / 2) + (2 * UIHelper.AnnotationDim.y * yPosScale);
 
-                        if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT                        
+                        if (uiInput.CircleCanvasPos.x > _canvasWidth / 2) //RIGHT
                             uiInput.AnnotationCanvasPos.x = UIHelper.CanvasWidthInit - UIHelper.AnnotationDim.x - UIHelper.AnnotationDistToLeftOrRightEdge;
                         else
                             uiInput.AnnotationCanvasPos.x = UIHelper.AnnotationDistToLeftOrRightEdge;
@@ -378,7 +387,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             //}
             //else
             //{
-               
             //}
 
             _sceneRenderer.Render(RC);
@@ -390,13 +398,10 @@ namespace Fusee.Examples.AdvancedUI.Core
         // Is called when the window was resized
         public override void Resize(ResizeEventArgs e)
         {
-            _aspectRatio = Width / (float)Height;
-
             _resizeScaleFactor = new float2((100 / _initWidth * Width) / 100, (100 / _initHeight * Height) / 100);
 
             _canvasHeight = UIHelper.CanvasHeightInit * _resizeScaleFactor.y;
             _canvasWidth = UIHelper.CanvasWidthInit * _resizeScaleFactor.x;
-            
         }
 
         private SceneContainer CreateGui()
@@ -431,7 +436,6 @@ namespace Fusee.Examples.AdvancedUI.Core
             var markModelContainer = new SceneNodeContainer
             {
                 Name = "MarkModelContainer",
-
             };
 
             var canvas = new CanvasNodeContainer(
@@ -442,7 +446,8 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(-_canvasWidth / 2f, -_canvasHeight / 2f),
                     Max = new float2(_canvasWidth / 2f, _canvasHeight / 2f)
                 }
-            ) {Children = new ChildList() {fuseeLogo, markModelContainer}};
+            )
+            { Children = new ChildList() { fuseeLogo, markModelContainer } };
 
             for (var i = 0; i < _uiInput.Count; i++)
             {
@@ -461,7 +466,7 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             var canvasProjComp = new ProjectionComponent(_canvasRenderMode == CanvasRenderMode.SCREEN ? ProjectionMethod.ORTHOGRAPHIC : ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -595,7 +600,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     intersectedAnnotations.Add(input.Identifier, input.AnnotationCanvasPos); //add pos that is just being checked
 
                 var orderedBy = intersectedAnnotations.OrderBy(item => item.Value.y).ToList();
-                
+
                 intersectedAnnotations = new Dictionary<int, float2>();
                 foreach (var keyValue in orderedBy) //JSIL not implemented exception: ToDictionary
                 {
@@ -623,29 +628,23 @@ namespace Fusee.Examples.AdvancedUI.Core
                     {
                         if (i == middleIndex - 1)
                             thisInput.AnnotationCanvasPos.y -= 0.75f * UIHelper.AnnotationDim.y;
-
                         else if (i == middleIndex)
                             thisInput.AnnotationCanvasPos.y += 0.75f * UIHelper.AnnotationDim.y;
-
                         else if (i > middleIndex)
                             thisInput.AnnotationCanvasPos.y += (0.75f * UIHelper.AnnotationDim.y) + (multiplier * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
                         else if (i < middleIndex)
                             thisInput.AnnotationCanvasPos.y -= (0.75f * UIHelper.AnnotationDim.y) + ((multiplier - 1) * (UIHelper.AnnotationDim.y + UIHelper.AnnotationDim.y / 2));
-
                     }
                     else //odd
                     {
                         if (i > middleIndex)
                             thisInput.AnnotationCanvasPos.y += 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
-
                         else if (i < middleIndex)
                             thisInput.AnnotationCanvasPos.y -= 0.5f * multiplier * UIHelper.AnnotationDim.y + (UIHelper.AnnotationDim.y * multiplier);
                     }
 
                     _uiInput[identifier] = thisInput;
                 }
-
             }
 
             //Recursively check all annotations that where involved in this intersection
