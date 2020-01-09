@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Physics.Core
 {
     /// <summary>
     /// The RigidBody class ...

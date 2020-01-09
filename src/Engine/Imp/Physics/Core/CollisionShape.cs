@@ -1,7 +1,7 @@
 ﻿using Fusee.Engine.Common;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Physics.Core
 {
     /// <summary>
     /// Base class for various collision shape types.

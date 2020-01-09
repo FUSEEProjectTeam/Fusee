@@ -5,7 +5,7 @@ using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Physics.Core
 {
     public class DynamicWorld
     {

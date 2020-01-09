@@ -1,6 +1,6 @@
 ﻿using Fusee.Engine.Common;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Physics.Core
 {
     /// <summary>
     /// Implements an empty shape as collision shape.
