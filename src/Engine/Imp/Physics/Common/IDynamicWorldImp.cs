@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a dynamic worl. The dynamic world is the root object of 

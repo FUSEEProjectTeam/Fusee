@@ -1,7 +1,7 @@
 using System;
 using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// Flags describing hinge detail.

@@ -1,5 +1,5 @@
 ﻿using BulletSharp;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Physics.Common;
 
 namespace Fusee.Engine.Imp.Physics.Desktop
 {

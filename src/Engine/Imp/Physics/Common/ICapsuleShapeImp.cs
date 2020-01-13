@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// IMplementation agnostic representation for a capsule-shaped collision object.

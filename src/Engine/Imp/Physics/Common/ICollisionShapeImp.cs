@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// Implementation agnostic representation of a collision shape.

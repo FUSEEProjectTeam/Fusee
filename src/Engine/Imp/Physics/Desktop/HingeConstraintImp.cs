@@ -1,5 +1,5 @@
 ﻿using BulletSharp;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Physics.Common;
 using Fusee.Math.Core;
 using Quaternion = Fusee.Math.Core.Quaternion;
 

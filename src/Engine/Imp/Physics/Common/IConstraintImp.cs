@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// Implementation agnostic Base representation of a constraint.

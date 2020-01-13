@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using Fusee.Base.Common;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Physics.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 

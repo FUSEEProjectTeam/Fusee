@@ -1,6 +1,6 @@
 ﻿using Fusee.Math.Core;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Imp.Physics.Common
 {
     /// <summary>
     /// Flags specifing point-to-point constraint details.

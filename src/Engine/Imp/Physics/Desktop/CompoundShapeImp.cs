@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using BulletSharp;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Physics.Common;
 using Fusee.Math.Core;
 
 namespace Fusee.Engine.Imp.Physics.Desktop
