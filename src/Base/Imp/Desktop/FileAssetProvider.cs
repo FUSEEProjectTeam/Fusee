@@ -181,6 +181,11 @@ namespace Fusee.Base.Imp.Desktop
             return false;
         }
 
+        /// <summary>
+        /// Create an async stream for the asset identified by id.
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>Implementors should return null if the asset cannot be retrieved. Otherwise returns a filestream to the asset.</returns>
         protected override async Task<Stream> GetStreamAsync(string id)
         {
             return await Task<Stream>.Factory.StartNew(() => { 
@@ -205,6 +210,11 @@ namespace Fusee.Base.Imp.Desktop
             });
         }
 
+        /// <summary>
+        /// Checks the existence of the identified asset as an async method.
+        /// </summary>
+        /// <param name="id">The asset identifier.</param>
+        /// <returns>Implementors should return true if a stream can be created.</returns>
         protected override async Task<bool> CheckExistsAsync(string id)
         {
             return await Task.Factory.StartNew(() =>
