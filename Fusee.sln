@@ -3523,7 +3523,6 @@ Global
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-Desktop|x86.Build.0 = Release|Any CPU
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
-		{239008A7-1483-4673-A424-4314BF7886AB}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-NuGet|x64.Build.0 = Release|Any CPU
 		{239008A7-1483-4673-A424-4314BF7886AB}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
