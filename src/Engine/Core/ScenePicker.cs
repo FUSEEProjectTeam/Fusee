@@ -5,6 +5,9 @@ using Fusee.Xene;
 
 namespace Fusee.Engine.Core
 {
+    /// <summary>
+    /// Implements the pick result and relevant information about it.
+    /// </summary>
     public class PickResult
     {
         // Data
@@ -162,32 +165,45 @@ namespace Fusee.Engine.Core
         private CanvasTransformComponent _ctc;
 
         #region State
+        /// <summary>
+        /// The picker state upon scene traversal.
+        /// </summary>
         public class PickerState : VisitorState
         {
             private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
 
+            /// <summary>
+            /// The registered model.
+            /// </summary>
             public float4x4 Model
             {
                 set { _model.Tos = value; }
                 get { return _model.Tos; }
             }
 
-
+            /// <summary>
+            /// The registered ui rectangle.
+            /// </summary>
             public MinMaxRect UiRect
             {
                 set { _uiRect.Tos = value; }
                 get { return _uiRect.Tos; }
             }
 
+            /// <summary>
+            /// The registered canvas transform.
+            /// </summary>
             public float4x4 CanvasXForm
             {
                 get => _canvasXForm.Tos;
                 set => _canvasXForm.Tos = value;
             }
 
-
+            /// <summary>
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, ui rectangle, and canvas transform.
+            /// </summary>
             public PickerState()
             {
                 RegisterState(_model);
@@ -196,9 +212,16 @@ namespace Fusee.Engine.Core
             }
         };
 
+        /// <summary>
+        /// The view and projection matrices.
+        /// </summary>
         public float4x4 View, Projection;
         #endregion
 
+        /// <summary>
+        /// The constructor to initialize a new ScenePicker.
+        /// </summary>
+        /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
         public ScenePicker(SceneContainer scene)
             : base(scene.Children.GetEnumerator())
         {
@@ -206,6 +229,9 @@ namespace Fusee.Engine.Core
             Projection = float4x4.Identity;
         }
 
+        /// <summary>
+        /// This method is called when traversal starts to initialize the traversal state.
+        /// </summary>
         protected override void InitState()
         {
             base.InitState();
@@ -213,7 +239,11 @@ namespace Fusee.Engine.Core
             State.CanvasXForm = float4x4.Identity;
         }
 
-
+        /// <summary>
+        /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
+        /// </summary>
+        /// <param name="pickPos">The pick position.</param>
+        /// <returns></returns>
         public IEnumerable<PickResult> Pick(float2 pickPos)
         {
             PickPosClip = pickPos;
@@ -223,7 +253,10 @@ namespace Fusee.Engine.Core
 
         #region Visitors
 
-
+        /// <summary>
+        /// Sets the Projection matrix according to the projection method of a given ProjectionComponent. (Can be perspective or orthographic).
+        /// </summary>
+        /// <param name="pc">The given ProjectionComponent.</param>
         [VisitMethod]
         public void PickProjection(ProjectionComponent pc)
         {
@@ -239,6 +272,10 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Transforms the Model matrix of the PickerState by multiplying it with the matrix of the given TransformComponent.
+        /// </summary>
+        /// <param name="transform"> The given TransformComponent.</param>
         [VisitMethod]
         public void PickTransform(TransformComponent transform)
         {
@@ -246,6 +283,10 @@ namespace Fusee.Engine.Core
         }
 
         private bool isCtcInitialized = false;
+        /// <summary>
+        /// Transforms the CanvasXForm, Model, and UiRect matrices according to the canvas render mode of a given CanvasTransformComponent. (Can be "WORLD" or "SCREEN").
+        /// </summary>
+        /// <param name="ctc">The given CanvasTransformComponent.</param>
         [VisitMethod]
         public void PickCanvasTransform(CanvasTransformComponent ctc)
         {
@@ -305,6 +346,10 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Sets the UiRect accordingly to the canvas render mode and a given RectTransformComponent's anchors and offsets.
+        /// </summary>
+        /// <param name="rtc">The given RectTransformComponent.</param>
         [VisitMethod]
         public void PickRectTransform(RectTransformComponent rtc)
         {
@@ -338,6 +383,10 @@ namespace Fusee.Engine.Core
             State.Model *= float4x4.CreateTranslation(translationX, translationY, 0) * float4x4.CreateScale(scaleX, scaleY, 1);
         }
 
+        /// <summary>
+        /// Creates pick results from a given mesh if it is within the pick position.
+        /// </summary>
+        /// <param name="mesh">The given Mesh.</param>
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
@@ -375,6 +424,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// The pick position on the screen.
+        /// </summary>
         public float2 PickPosClip { get; set; }
 
         #endregion

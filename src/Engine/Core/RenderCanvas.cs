@@ -139,6 +139,9 @@ namespace Fusee.Engine.Core
             return -1;
         }
 
+        /// <summary>
+        /// Whether or not the app is initialized.
+        /// </summary>
         protected bool _appInitialized;
 
         /// <summary>
