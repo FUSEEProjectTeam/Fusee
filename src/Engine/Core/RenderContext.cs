@@ -1748,6 +1748,7 @@ namespace Fusee.Engine.Core
             }
 
         }
+
         /// <summary>
         /// Returns the hardware capabilities.
         /// </summary>
@@ -1756,6 +1757,15 @@ namespace Fusee.Engine.Core
         public uint GetHardwareCapabilities(HardwareCapability capability)
         {
             return _rci.GetHardwareCapabilities(capability);
+        }
+
+        /// <summary>
+        /// Returns a human readable description of the underlying graphics hardware
+        /// </summary>
+        /// <returns></returns>
+        public string GetHardwareDescription()
+        {
+            return _rci.GetHardwareDescription();
         }
 
         #endregion

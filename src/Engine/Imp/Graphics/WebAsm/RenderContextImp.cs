@@ -2051,6 +2051,15 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
         }
 
+        /// <summary> 
+        /// Returns a human readable description of the underlying graphics hardware. This implementation reports GL_VENDOR, GL_RENDERER, GL_VERSION and GL_EXTENSIONS.
+        /// </summary> 
+        /// <returns></returns> 
+        public string GetHardwareDescription()
+        {
+            return "";
+        }
+
         /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
