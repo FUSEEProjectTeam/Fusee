@@ -380,6 +380,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Tools.FusViewer", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Sound.Common", "src\Engine\Imp\Sound\Common\Fusee.Engine.Imp.Sound.Common.csproj", "{2A6BB527-8745-4895-AF0F-81B38FDC032B}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Network.Common", "src\Engine\Imp\Network\Common\Fusee.Engine.Imp.Network.Common.csproj", "{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		src\Engine\Imp\Graphics\Shared\Fusee.Engine.Imp.Graphics.Shared.projitems*{253263c9-9c67-44a5-94d3-51c586bbdaec}*SharedItemsImports = 13
@@ -3534,6 +3536,60 @@ Global
 		{2A6BB527-8745-4895-AF0F-81B38FDC032B}.Release-WebAsm|x64.Build.0 = Release|Any CPU
 		{2A6BB527-8745-4895-AF0F-81B38FDC032B}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
 		{2A6BB527-8745-4895-AF0F-81B38FDC032B}.Release-WebAsm|x86.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|x64.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug|x86.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|Any CPU.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|x64.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|x64.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|x86.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Android|x86.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|Any CPU.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|x64.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|x64.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|x86.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-Desktop|x86.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|Any CPU.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|x64.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|x64.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|x86.ActiveCfg = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Debug-WebAsm|x86.Build.0 = Debug|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|x64.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|x64.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|x86.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release|x86.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|Any CPU.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|x64.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|x64.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|x86.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Android|x86.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|Any CPU.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|x64.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|x64.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|x86.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-Desktop|x86.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|Any CPU.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|x64.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|x64.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|x86.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-NuGet|x86.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|Any CPU.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|Any CPU.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|x64.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|x64.Build.0 = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|x86.ActiveCfg = Release|Any CPU
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}.Release-WebAsm|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3614,6 +3670,7 @@ Global
 		{B053ED47-3A82-475D-B75D-336C026F953E} = {58433A65-35DC-4C22-A795-2443C72F7428}
 		{4C4A2368-21EE-42EF-A710-95B7EE1D1437} = {0C344D5F-BE70-4828-B95A-1D313B894BC3}
 		{2A6BB527-8745-4895-AF0F-81B38FDC032B} = {DEF4479A-380F-46D8-83A9-7D0AC1FB0154}
+		{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E} = {2E71E14D-7BB8-4112-A223-E7038B4E50E7}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CC1775C2-579F-4897-8770-592966D00E3D}

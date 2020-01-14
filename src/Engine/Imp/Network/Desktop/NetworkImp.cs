@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Network.Common;
 using Lidgren.Network;
 
 using Timer = System.Timers.Timer;

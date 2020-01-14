@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Net;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Network.Common;
 using Lidgren.Network;
 
 namespace Fusee.Engine.Imp.Network.Desktop

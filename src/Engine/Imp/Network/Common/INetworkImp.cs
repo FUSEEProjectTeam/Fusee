@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Fusee.Engine.Common
+namespace Fusee.Engine.Imp.Network.Common
 {
     /// <summary>
     /// Network configuration object.

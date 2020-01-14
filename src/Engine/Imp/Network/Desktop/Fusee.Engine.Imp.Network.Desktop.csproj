@@ -1,23 +1,15 @@
-<Project Sdk="Microsoft.NET.Sdk" >
+﻿<Project Sdk="Microsoft.NET.Sdk" >
   <PropertyGroup>
-    <RootNamespace>Fusee.Engine.Imp.Network.Desktop</RootNamespace>
-    <PackageId>Fusee.Engine.Imp.Network.Desktop</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <IsPackable>false</IsPackable>
-  </PropertyGroup>
-
-  <PropertyGroup>
     <OutputPath>$(BaseOutputPath)\Libraries</OutputPath>
     <DocumentationFile>$(OutputPath)\$(RootNamespace).xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Network\Common\Fusee.Engine.Imp.Network.Common.csproj" />
     <Reference Include="Lidgren.Network">
       <HintPath>$(FuseeEngineRoot)\ext\Lidgren.Network.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Common\Fusee.Engine.Common.csproj" />
-  </ItemGroup>
-
 </Project>

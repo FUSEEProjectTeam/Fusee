@@ -1,4 +1,4 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Engine.Imp.Network.Common;
 
 namespace Fusee.Engine.Imp.Network.Desktop
 {
