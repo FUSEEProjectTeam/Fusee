@@ -23,24 +23,14 @@ namespace Fusee.Examples.SimpleDeferred.Core
         private const float RotationSpeed = 7;
 
         private SceneContainer _rocketScene;
-        private SceneRendererDeferred _sceneRenderer;
-
-        private const float ZNear = 0.1f;
-
-        //For shadow calculation the distance to the far clipping plane should be as small as possible to ensure the best shadow map resolution when using parallel lights.
-        //Can be a custom value when cascaded shadow maps are implemented.
-        private const float ZFar = 3000;
-
-        private readonly float _fovy = M.PiOver4;
+        private SceneRendererDeferred _sceneRenderer;       
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         
-        private bool _keys;
-
-        private const float twoPi = M.Pi * 2.0f;
+        private bool _keys;       
 
         private TransformComponent _sunTransform;
 
@@ -271,9 +261,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
 
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
-            _sceneRenderer.Render(RC);
-
-            // Constantly check for interactive objects.
+            _sceneRenderer.Render(RC);            
             _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))

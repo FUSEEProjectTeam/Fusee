@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core
             PrePassVisitor.PrePassTraverse(_sc, _rc);            
 
             AccumulateLight();
-            UpdateShaderParamsForAllLights();
+            
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -344,6 +344,8 @@ namespace Fusee.Engine.Core
                 _rc.Clear(ClearFlags.Depth);
 
             _rc.View = cam.Item2.View;
+
+            UpdateShaderParamsForAllLights();
 
             Traverse(_sc.Children);
         }
