@@ -1,4 +1,4 @@
-﻿namespace Fusee.Engine.Common
+﻿namespace Fusee.Engine.Imp.Sound.Common
 {
     /// <summary>
     ///     Loaded files with
