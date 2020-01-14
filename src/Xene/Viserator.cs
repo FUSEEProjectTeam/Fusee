@@ -136,7 +136,7 @@ namespace Fusee.Xene
 
 
         /***/
-        public class ViseratorInstanceEnumerable : IEnumerable<TItem>
+        internal class ViseratorInstanceEnumerable : IEnumerable<TItem>
         {
             internal ViseratorBase<TItem> _this;
 
@@ -148,6 +148,10 @@ namespace Fusee.Xene
             IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
         }
 
+        /// <summary>
+        /// Starts traversal of the given scene graph.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<TItem> Viserate() 
         {
             return new ViseratorInstanceEnumerable { _this = this };
