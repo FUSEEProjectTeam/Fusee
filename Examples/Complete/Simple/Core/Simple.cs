@@ -65,6 +65,8 @@ namespace Fusee.Examples.Simple.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
+
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
             {

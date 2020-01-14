@@ -7,7 +7,7 @@ namespace Fusee.Engine.Core
 {
     /// <summary>
     ///     A render canvas object references the physical output screen space real estate (e.g. the rendering window).
-    ///     A typical Game application will inherit from this class and overrite methods to implement your user code to
+    ///     A typical Game application will inherit from this class and overwrite methods to implement your user code to
     ///     to be performed on events like initialization, resize, and display refresh.
     ///     In the future, it will be likely that this class' functionality will be divided at two different places with
     ///     one containing the more view oriented aspects and the other containing the more application oriented aspects.
@@ -181,20 +181,7 @@ namespace Fusee.Engine.Core
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate {
-                RC.Viewport(0, 0, Width, Height);
-                Resize(new ResizeEventArgs(Width, Height));
-            };
-        }
-
-        protected void AddResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize += action;
-        }
-
-        protected void RemoveResizeDelegate(EventHandler<ResizeEventArgs> action)
-        {
-            CanvasImplementor.Resize -= action;
+            CanvasImplementor.Resize += delegate { Resize(new ResizeEventArgs(Width, Height)); };
         }
 
         /// <summary>
