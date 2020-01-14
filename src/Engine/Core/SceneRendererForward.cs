@@ -302,7 +302,7 @@ namespace Fusee.Engine.Core
             PrePassVisitor.PrePassTraverse(_sc, _rc);            
 
             AccumulateLight();
-            
+
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -315,10 +315,13 @@ namespace Fusee.Engine.Core
                         //Reset Viewport                        
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                     }
-                }               
+                }
             }
-            else            
+            else
+            {
+                UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
+            }
 
             _rc.SetRenderState(stateSet);
         }
