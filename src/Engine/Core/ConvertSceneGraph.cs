@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
-        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;        
+        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
 
         //private IEnumerable<System.Type> _codeComponentSubClasses;
 
@@ -35,6 +35,9 @@ namespace Fusee.Engine.Core
         //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
         //}
 
+        /// <summary>
+        /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
+        /// </summary>
         protected override void PopState()
         {
             _predecessors.Pop();
