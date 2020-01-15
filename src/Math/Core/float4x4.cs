@@ -1313,13 +1313,38 @@ namespace Fusee.Math.Core
         #region Invert Functions
 
         /// <summary>
+        /// Checks if this matrix is invertable.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>       
+        public static bool IsInvertable(float4x4 mat)
+        {
+            return mat.Determinant != 0f;
+        }
+
+        /// <summary>
+        /// Checks if this matrix is invertable.
+        /// </summary>
+        /// <param name="mat">The matrix.</param>
+        /// <param name="det">The determinant of the matrix.</param>       
+        public static bool IsInvertable(float4x4 mat, out float det)
+        {
+            det = mat.Determinant;
+            return det != 0f;
+        }
+
+        /// <summary>
         /// Calculate the inverse of the given matrix.
+        /// If you are unsure whether the matrix is invertable, check it with IsInvertable() first.
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
-        /// <returns>The inverse of the given matrix if it has one, or the input if it is singular.</returns>
+        /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 Invert(float4x4 mat)
         {
             if (mat == Identity || mat == Zero) return mat;
+
+            if (!IsInvertable(mat, out float det))
+                throw new ArgumentException("Matrix isn't invertable.");
+
             // InvertAffine is broken (probably since column order notation
             // if (mat.IsAffine) return InvertAffine(mat);
 
@@ -1387,24 +1412,15 @@ namespace Fusee.Math.Core
             m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
             var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
             m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-
-            // calculate determinant
-            var det = mat.M11 * m11 + mat.M12 * m12 + mat.M13 * m13 + mat.M14 * m14;
-
-            if (det > M.EpsilonFloat || det < -M.EpsilonFloat)
-            {
-                det = 1 / det;
-
-                mat = new float4x4(det * m11, det * m12, det * m13, det * m14,
-                                   det * m21, det * m22, det * m23, det * m24,
-                                   det * m31, det * m32, det * m33, det * m34,
-                                   det * m41, det * m42, det * m43, det * m44);
-            }
-            else
-                mat = mat.Transpose();
+           
+            var invDet = 1 / det;
+            mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
+                                invDet * m21, invDet * m22, invDet * m23, invDet * m24,
+                                invDet * m31, invDet * m32, invDet * m33, invDet * m34,
+                                invDet * m41, invDet * m42, invDet * m43, invDet * m44);
 
             return mat;
-        }
+        }        
 
         /// <summary>
         /// Calculate the inverse of a given matrix which represents an affine transformation.
@@ -1413,6 +1429,8 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
+            throw new Exception("InvertAffine is broken (probably since column order notation)");
+
             // Row order notation
             //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
             //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
@@ -1423,8 +1441,6 @@ namespace Fusee.Math.Core
             //                 new float4(mat.M12, mat.M22, mat.M32, 0),
             //                 new float4(mat.M13, mat.M23, mat.M33, 0),
             //                 new float4(val1, val2, val3, 1));
-
-            throw new Exception("InvertAffine is broken (probably since column order notation)");
 
             // TODO: fix this!
             //  Column order notation ???

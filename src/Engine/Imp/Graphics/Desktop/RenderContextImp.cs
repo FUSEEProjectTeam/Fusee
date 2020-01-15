@@ -1,6 +1,7 @@
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Math.Core;
 using OpenTK;
@@ -784,7 +785,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
         #endregion
 
-        #region Rendering related Members
+        #region Rendering related Members       
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1465,6 +1466,8 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </exception>
         public void SetRenderState(RenderState renderState, uint value)
         {
+            GL.Enable(EnableCap.ScissorTest);
+
             switch (renderState)
             {
                 case RenderState.FillMode:
@@ -1988,6 +1991,20 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (!isCurrentFbo)
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFbo);
+        }
+
+
+        /// <summary>
+        /// Only pixels that lie within the scissor box can be modified by drawing commands.
+        /// Note that the Scissor test must be enabled for this to work.
+        /// </summary>
+        /// <param name="x">X Coordinate of the lower left point of the scissor box.</param>
+        /// <param name="y">Y Coordinate of the lower left point of the scissor box.</param>
+        /// <param name="width">Width of the scissor box.</param>
+        /// <param name="height">Height of the scissor box.</param>
+        public void Scissor(int x, int y, int width, int height)
+        {
+            GL.Scissor(x, y, width, height);
         }
 
         /// <summary>
