@@ -41,6 +41,10 @@ namespace Fusee.Engine.Core
 
         private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
 
+        /// <summary>
+        /// Sets the RenderStates in the Set.
+        /// </summary>
+        /// <param name="renderStateContainer"></param>
         public void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
         {
             foreach (var renderState in renderStateContainer)

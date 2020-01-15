@@ -175,32 +175,45 @@ namespace Fusee.Engine.Core
         private MinMaxRect _parentRect;
 
         #region State
+        /// <summary>
+        /// The picker state upon scene traversal.
+        /// </summary>
         public class PickerState : VisitorState
         {
             private CollapsingStateStack<float4x4> _canvasXForm = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<float4x4> _model = new CollapsingStateStack<float4x4>();
             private CollapsingStateStack<MinMaxRect> _uiRect = new CollapsingStateStack<MinMaxRect>();
 
+            /// <summary>
+            /// The registered model.
+            /// </summary>
             public float4x4 Model
             {
                 set { _model.Tos = value; }
                 get { return _model.Tos; }
             }
 
-
+            /// <summary>
+            /// The registered ui rectangle.
+            /// </summary>
             public MinMaxRect UiRect
             {
                 set { _uiRect.Tos = value; }
                 get { return _uiRect.Tos; }
             }
 
+            /// <summary>
+            /// The registered canvas transform.
+            /// </summary>
             public float4x4 CanvasXForm
             {
                 get => _canvasXForm.Tos;
                 set => _canvasXForm.Tos = value;
             }
 
-
+            /// <summary>
+            /// The default constructor for the <see cref="PickerState"/> class, which registers state stacks for mode, ui rectangle, and canvas transform.
+            /// </summary>
             public PickerState()
             {
                 RegisterState(_model);
@@ -209,10 +222,22 @@ namespace Fusee.Engine.Core
             }
         };
 
+        /// <summary>
+        /// The current view matrix.
+        /// </summary>
         public float4x4 View { get; private set; }
+
+        /// <summary>
+        /// The current projection matrix.
+        /// </summary>
         public float4x4 Projection { get; private set; }
+
         #endregion
 
+        /// <summary>
+        /// The constructor to initialize a new ScenePicker.
+        /// </summary>
+        /// <param name="scene">The <see cref="SceneContainer"/> to pick from.</param>
         public ScenePicker(SceneContainer scene)
             : base(scene.Children.GetEnumerator())
         {
@@ -220,6 +245,9 @@ namespace Fusee.Engine.Core
             Projection = float4x4.Identity;
         }
 
+        /// <summary>
+        /// This method is called when traversal starts to initialize the traversal state.
+        /// </summary>
         protected override void InitState()
         {
             base.InitState();
@@ -227,7 +255,12 @@ namespace Fusee.Engine.Core
             State.CanvasXForm = float4x4.Identity;
         }
 
-
+        /// <summary>
+        /// Returns a collection of objects that fall in the area of the pick position and that can be iterated over.
+        /// </summary>
+        /// <param name="rc"></param>
+        /// <param name="pickPos">The pick position.</param>
+        /// <returns></returns>
         public IEnumerable<PickResult> Pick(RenderContext rc, float2 pickPos)
         {
             _rc = rc;
@@ -405,6 +438,10 @@ namespace Fusee.Engine.Core
             _rc.Model = State.Model;
         }
 
+        /// <summary>
+        /// Creates pick results from a given mesh if it is within the pick position.
+        /// </summary>
+        /// <param name="mesh">The given Mesh.</param>
         [VisitMethod]
         public void PickMesh(Mesh mesh)
         {
@@ -442,6 +479,9 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// The pick position on the screen.
+        /// </summary>
         public float2 PickPosClip { get; set; }
 
         #endregion
