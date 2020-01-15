@@ -4,12 +4,15 @@ using Fusee.Math.Core;
 namespace Fusee.Engine.Imp.Physics.Core
 {
     /// <summary>
-    /// Implements a cylindric collision shape
+    /// Implements a cylinder shape.
     /// </summary>
     public class CylinderShape : CollisionShape
     {
         internal ICylinderShapeImp _cylinderShapeImp;
 
+        /// <summary>
+        /// Retrieves or sets the margin.
+        /// </summary>
         public override float Margin
         {
             get
@@ -40,6 +43,9 @@ namespace Fusee.Engine.Imp.Physics.Core
             }
         }
 
+        /// <summary>
+        /// Gets the half extents of the cylinder shape.
+        /// </summary>
         public float3 HalfExtents
         {
             get

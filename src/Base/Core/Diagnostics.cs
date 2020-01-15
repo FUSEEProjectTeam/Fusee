@@ -222,8 +222,8 @@ namespace Fusee.Base.Core
         /// <param name="o">The object to log. Will be converted to a string.</param>
         /// <param name="logLevel">The level to log, see <see cref="SeverityLevel"></see> for a list</param>
         /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
         [Obsolete("Please use the new logging methods (Debug, Warn, Error) instead")]
         [Conditional("DEBUG")]
         public static void Log(object o, SeverityLevel logLevel = SeverityLevel.DEBUG, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
@@ -239,8 +239,8 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
         [Conditional("DEBUG")]
         public static void Debug(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
@@ -255,8 +255,8 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Info(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.INFO, ex, args, callerName, sourceLineNumber, sourceFilePath);
@@ -270,8 +270,8 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Warn(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.WARN, ex, args, callerName, sourceLineNumber, sourceFilePath);
@@ -285,8 +285,8 @@ namespace Fusee.Base.Core
         /// <param name="ex">A possible exception, optional</param>
         /// <param name="args">Possible arguments, optional</param>
         /// <param name="callerName">The calling method</param>
-        /// <param name="sourceLineNumber"></param>
-        /// <param name="sourceFilePath"></param>       
+        /// <param name="sourceLineNumber">The line number, optional.</param>
+        /// <param name="sourceFilePath">The file path, optional.</param>
         public static void Error(object o, Exception ex = null, object[] args = null, [CallerMemberName] string callerName = "", [CallerLineNumber] int sourceLineNumber = 0, [CallerFilePath] string sourceFilePath = "")
         {
             Writer(o, SeverityLevel.ERROR, ex, args, callerName, sourceLineNumber, sourceFilePath);

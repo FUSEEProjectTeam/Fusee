@@ -87,6 +87,10 @@ namespace Fusee.Engine.Core
             _tpMidPointVelY = RegisterVelocityAxis(_tpMidPointY, (int)TouchPoints.Touchpoint_1).Id;
         }
 
+        /// <summary>
+        /// Registers a new (Two-) touch point angle and returns the id.
+        /// </summary>
+        /// <returns>The id of the newly registered angle axis.</returns>
         protected int RegisterTtpAngleAxis()
         {
             AxisValueCalculator calculator;
@@ -119,6 +123,10 @@ namespace Fusee.Engine.Core
             return calculatedAxisDesc.Id;
         }
 
+        /// <summary>
+        /// Registers a new (Two-) touch point distance and returns its id.
+        /// </summary>
+        /// <returns>The id of the newly registered distance.</returns>
         protected int RegisterTtpDistanceAxis()
         {
             AxisValueCalculator calculator;
@@ -149,6 +157,16 @@ namespace Fusee.Engine.Core
             return calculatedAxisDesc.Id;
         }
 
+        /// <summary>
+        /// Registers a new (Two-) touch point midpoint and returns its id.
+        /// </summary>
+        /// <param name="axId0">The first point.</param>
+        /// <param name="axId1">The second point.</param>
+        /// <param name="axIdMin">The minimum value of the chosen axis.</param>
+        /// <param name="axIdMax">The maximum value of the chosen axis.</param>
+        /// <param name="dir">The direction of the axis.</param>
+        /// <param name="name">The name of the axis.</param>
+        /// <returns>The id of the registered midpoint.</returns>
         protected int RegisterTtpMidpointAxis(int axId0, int axId1, int axIdMin, int axIdMax, AxisDirection dir, string name)
         {
             AxisValueCalculator calculator;

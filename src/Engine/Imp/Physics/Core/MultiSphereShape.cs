@@ -10,6 +10,9 @@ namespace Fusee.Engine.Imp.Physics.Core
     {
         internal IMultiSphereShapeImp _multiSphereShapeImp;
 
+        /// <summary>
+        /// Gets or sets the margin of the multi sphere collision shape.
+        /// </summary>
         public override float Margin
         {
             get

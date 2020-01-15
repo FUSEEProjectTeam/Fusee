@@ -6,6 +6,7 @@ namespace Fusee.Engine.Core
     /// </summary>
     public enum RenderPasses
     {
+#pragma warning disable 1591
         SHADER_EFFECT_PRE,
         GEOMETRY,
         SSAO,
@@ -14,5 +15,6 @@ namespace Fusee.Engine.Core
         FXAA,
         LIGHTING,
         SINGLE
+#pragma warning restore 1591
     }
 }
