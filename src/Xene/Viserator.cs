@@ -71,6 +71,10 @@ namespace Fusee.Xene
         }
 
         // Step2: initialize the instance
+        /// <summary>
+        /// Step 2 of initializing a new instance of the <see cref="ViseratorBase{TItem}"/> class.
+        /// </summary>
+        /// <param name="rootList">The root list that should be set in the instance.</param>
         protected internal virtual void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             _rootList = rootList;
@@ -132,7 +136,7 @@ namespace Fusee.Xene
 
 
         /***/
-        public class ViseratorInstanceEnumerable : IEnumerable<TItem>
+        internal class ViseratorInstanceEnumerable : IEnumerable<TItem>
         {
             internal ViseratorBase<TItem> _this;
 
@@ -144,6 +148,10 @@ namespace Fusee.Xene
             IEnumerator IEnumerable.GetEnumerator() { return GetEnumerator(); }
         }
 
+        /// <summary>
+        /// Starts traversal of the given scene graph.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<TItem> Viserate() 
         {
             return new ViseratorInstanceEnumerable { _this = this };
@@ -189,6 +197,10 @@ namespace Fusee.Xene
         {
         }
 
+        /// <summary>
+        /// Step 2 of initializing a new instance of the <see cref="ViseratorBase{TItem}"/> class.
+        /// </summary>
+        /// <param name="rootList">The root list that should be set in the instance.</param>
         protected internal override void Init(IEnumerator<SceneNodeContainer> rootList)
         {
             State = new TState();

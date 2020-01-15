@@ -8,7 +8,8 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
-{
+{   
+
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -18,9 +19,6 @@ namespace Fusee.Engine.Core
     {
         #region Fields
 
-        #region Private Fields        
-
-        private readonly IRenderContextImp _rci;
         /// <summary>
         /// Gets and sets the viewport width.
         /// </summary>
@@ -32,19 +30,60 @@ namespace Fusee.Engine.Core
         public int ViewportHeight { get; private set; }
 
         /// <summary>
-        /// The currently bound shader program.
+        /// Gets and sets the x coordinate of viewport's lower left (starting) point.
         /// </summary>
-        public ShaderProgram CurrentShaderProgram { get; private set; }
+        public int ViewportXStart { get; private set; }
 
-        private readonly MatrixParamNames _currentShaderParams;
-        private ShaderEffect _currentShaderEffect;
+        /// <summary>
+        /// Gets and sets the y coordinate of viewport's lower left (starting) point.
+        /// </summary>
+        public int ViewportYStart { get; private set; }
+
 
         // ReSharper disable once InconsistentNaming
         /// <summary>
         /// All global FX Params
         /// Overwrites values with the same name in current ShaderEffect
         /// </summary>
-        public readonly Dictionary<string, object> _allFXParams = new Dictionary<string, object>();
+        public readonly Dictionary<string, object> AllFXParams = new Dictionary<string, object>();
+
+        /// <summary>
+        /// The currently bound shader program.
+        /// </summary>
+        public ShaderProgram CurrentShaderProgram { get; private set; }
+
+        /// <summary>
+        /// Gets and sets a value indicating whether [debug lines enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
+        /// </value>
+        public bool DebugLinesEnabled { get; set; } = true;       
+
+        /// <summary>
+        /// Array of bone matrices.
+        /// </summary>
+        public float4x4[] Bones
+        {
+            get { return _bones; }
+            set
+            {
+                _bones = value;
+                UpdateCurrentShader();
+            }
+        }
+
+        /// <summary>
+        /// Safes the default state of the render context. This is used to reset the render context to its default state after every render call.
+        /// </summary>
+        public RenderContextDefaultState DefaultState { get; private set; }
+
+        #region Private Fields
+
+        private readonly IRenderContextImp _rci;       
+
+        private readonly MatrixParamNames _currentShaderParams;
+        private ShaderEffect _currentShaderEffect;
 
         // Mesh Management
         private readonly MeshManager _meshManager;
@@ -61,59 +100,13 @@ namespace Fusee.Engine.Core
         private readonly ShaderProgram _debugShader;
         private readonly IShaderParam _debugColor;
 
-        /// <summary>
-        /// Gets and sets a value indicating whether [debug lines enabled].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DebugLinesEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Sets global FX Params
-        /// Overwrites values with the same name in current ShaderEffect
-        /// </summary>
-        /// <param name="name">FX Param name</param>
-        /// <param name="value">FX Param value</param>
-        // ReSharper disable once InconsistentNaming
-        public void SetFXParam(string name, object value)
-        {
-            object tmpFXParam;
-
-            if (_allFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
-            {
-                if (tmpFXParam.Equals(value)) return; // no new value
-
-                _allFXParams[name] = value;
-
-                // Update ShaderEffect
-                _currentShaderEffect.SetEffectParam(name, value);
-                return;
-            }
-
-            // cache miss
-            _allFXParams.Add(name, value);
-
-            // Update ShaderEffect
-            _currentShaderEffect.SetEffectParam(name, value);
-        }
-
         // Settable matrices
         private float4x4 _modelView;
         private float4x4 _projection;
         private float4x4 _view;
         private float4x4 _model;
-        private float4x4[] _bones;
 
-        public float4x4[] Bones
-        {
-            get { return _bones; }
-            set
-            {
-                _bones = value;
-                UpdateCurrentShader();
-            }
-        }
+        private float4x4[] _bones;
 
         // Derived matrices
         private float4x4 _modelViewProjection;
@@ -155,38 +148,6 @@ namespace Fusee.Engine.Core
         private bool _transModelViewOk;
         private bool _transProjectionOk;
         private bool _transModelViewProjectionOk;
-
-        #endregion
-
-        #region Internal Fields
-
-        internal sealed class MatrixParamNames
-        {
-            // ReSharper disable InconsistentNaming
-            public IShaderParam FUSEE_M;
-            public IShaderParam FUSEE_V;
-            public IShaderParam FUSEE_MV;
-
-            public IShaderParam FUSEE_P;
-            public IShaderParam FUSEE_MVP;
-
-            public IShaderParam FUSEE_IV;
-            public IShaderParam FUSEE_IMV;
-            public IShaderParam FUSEE_ITV;
-            public IShaderParam FUSEE_IP;
-            public IShaderParam FUSEE_IMVP;
-
-            public IShaderParam FUSEE_TMV;
-            public IShaderParam FUSEE_TP;
-            public IShaderParam FUSEE_TMVP;
-
-            public IShaderParam FUSEE_ITMV;
-            public IShaderParam FUSEE_ITP;
-            public IShaderParam FUSEE_ITMVP;
-
-            public IShaderParam FUSEE_BONES;
-            // ReSharper restore InconsistentNaming
-        };
 
         #endregion
 
@@ -764,6 +725,7 @@ namespace Fusee.Engine.Core
         #endregion
 
         #region Constructors
+
         /// <summary>
         /// The color value.
         /// </summary>
@@ -776,10 +738,11 @@ namespace Fusee.Engine.Core
         public RenderContext(IRenderContextImp rci)
         {
             _rci = rci;
+            DefaultState = new RenderContextDefaultState();
 
-            View = float4x4.Identity;
+            View = DefaultState.View;
             Model = float4x4.Identity;
-            Projection = float4x4.Identity;
+            Projection = DefaultState.Projection;
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -804,7 +767,7 @@ namespace Fusee.Engine.Core
 
         #region Members
 
-        #region Private Members
+        #region Private Members               
 
         private void UpdateCurrentShader()
         {
@@ -937,19 +900,12 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Creates a new texture and binds it to the shader.
-        /// </summary>
-        /// <remarks>
-        /// Method should be called after LoadImage method to process
-        /// the BitmapData an make them available for the shader.
-        /// </remarks>
-        /// <param name="imgData">An ImageData struct, containing necessary information for the upload to the graphics card.</param>        
-        /// <returns>
-        /// An <see cref="Texture"/> that can be used for texturing in the shader.
-        /// </returns>
-        public ITextureHandle CreateTexture(Texture imgData)
+        /// Gets or creates a new <see cref="ITextureHandle"/> for the given <see cref="Texture"/> by using the <see cref="TextureManager"/>.
+        /// </summary>      
+        /// <param name="tex">An <see cref="Texture"/>, containing necessary information for the upload to the graphics card.</param>     
+        public ITextureHandle CreateTexture(Texture tex)
         {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(imgData);
+            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
             return textureHandle;
         }
 
@@ -1071,6 +1027,35 @@ namespace Fusee.Engine.Core
         #region Shader related Members
 
         /// <summary>
+        /// Sets global FX Params
+        /// Overwrites values with the same name in current ShaderEffect
+        /// </summary>
+        /// <param name="name">FX Param name</param>
+        /// <param name="value">FX Param value</param>
+        // ReSharper disable once InconsistentNaming
+        public void SetFXParam(string name, object value)
+        {
+            object tmpFXParam;
+
+            if (AllFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
+            {
+                if (tmpFXParam.Equals(value)) return; // no new value
+
+                AllFXParams[name] = value;
+
+                // Update ShaderEffect
+                _currentShaderEffect.SetEffectParam(name, value);
+                return;
+            }
+
+            // cache miss
+            AllFXParams.Add(name, value);
+
+            // Update ShaderEffect
+            _currentShaderEffect.SetEffectParam(name, value);
+        }
+
+        /// <summary>
         /// Creates a shader object from vertex shader source code and pixel shader source code.
         /// </summary>
         /// <param name="vs">A string containing the vertex shader source.</param>
@@ -1128,8 +1113,6 @@ namespace Fusee.Engine.Core
         /// the gpu.</remarks>
         public void SetShaderEffect(ShaderEffect ef)
         {
-            SetRenderState(RenderStateSet.Default);
-
             if (_rci == null)
                 throw new ArgumentNullException("rc", "must pass a valid render context.");
 
@@ -1232,7 +1215,7 @@ namespace Fusee.Engine.Core
                             continue;
 
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        if (_allFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
+                        if (AllFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
@@ -1498,7 +1481,7 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
-        #region Render related Members
+        #region Render related Members       
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1550,6 +1533,33 @@ namespace Fusee.Engine.Core
                 _rci.SetRenderState(theKey, theValue);
             }
         }
+
+        /// <summary>
+        /// Returns the current render state set.
+        /// </summary>        
+        /// <returns></returns>
+        public RenderStateSet GetRenderStateSet()
+        {
+            return new RenderStateSet()
+            {
+                AlphaBlendEnable = _rci.GetRenderState(RenderState.AlphaBlendEnable) != 0,
+                BlendFactor = (float4)(ColorUint)_rci.GetRenderState(RenderState.BlendFactor),
+                BlendOperation = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperation),
+                BlendOperationAlpha = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperationAlpha),
+                DestinationBlend = (Blend)_rci.GetRenderState(RenderState.DestinationBlend),
+                DestinationBlendAlpha = (Blend)_rci.GetRenderState(RenderState.DestinationBlendAlpha),
+                SourceBlend = (Blend)_rci.GetRenderState(RenderState.SourceBlend),
+                SourceBlendAlpha = (Blend)_rci.GetRenderState(RenderState.SourceBlendAlpha),
+
+                CullMode = (Cull)_rci.GetRenderState(RenderState.CullMode),
+                Clipping = _rci.GetRenderState(RenderState.Clipping) != 0,
+                FillMode = (FillMode)_rci.GetRenderState(RenderState.FillMode),
+                ZEnable = _rci.GetRenderState(RenderState.ZEnable) != 0,
+                ZFunc = (Compare)_rci.GetRenderState(RenderState.ZEnable),
+                ZWriteEnable = _rci.GetRenderState(RenderState.ZWriteEnable) != 0
+            };            
+        }
+
         /// <summary>
         /// Returns the current render state.
         /// </summary>
@@ -1564,7 +1574,7 @@ namespace Fusee.Engine.Core
         /// Sets the RenderTarget, if texture is null render target is the main screen, otherwise the picture will be rendered onto given texture
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        internal void SetRenderTarget(RenderTarget renderTarget = null)
+        public void SetRenderTarget(RenderTarget renderTarget = null)
         {
             ITextureHandle[] texHandles = null;
             if (renderTarget != null)
@@ -1586,7 +1596,7 @@ namespace Fusee.Engine.Core
         ///  Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        internal void SetRenderTarget(IWritableTexture tex)
+        public void SetRenderTarget(IWritableTexture tex)
         {
             var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)tex);
             _rci.SetRenderTarget(tex, texHandle);
@@ -1596,7 +1606,7 @@ namespace Fusee.Engine.Core
         /// Renders into the given texture.
         /// </summary>
         /// <param name="tex">The render texture.</param>
-        internal void SetRenderTarget(IWritableCubeMap tex)
+        public void SetRenderTarget(IWritableCubeMap tex)
         {
             var texHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)tex);
             _rci.SetRenderTarget(tex, texHandle);
@@ -1636,7 +1646,7 @@ namespace Fusee.Engine.Core
             if (_currentShaderEffect == null) return;
 
             // GLOBAL OVERRIDE
-            foreach (var fxParam in _allFXParams)
+            foreach (var fxParam in AllFXParams)
             {
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
             }
@@ -1773,6 +1783,17 @@ namespace Fusee.Engine.Core
         #region Other Members
 
         /// <summary>
+        /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
+        /// Must be called after every visitation of the Scene Graph that changed these values.
+        /// </summary>
+        internal void ResetToDefaultState()
+        {
+            Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
+            View = DefaultState.View;
+            Projection = DefaultState.Projection;
+        }
+
+        /// <summary>
         /// This method returns the color of one or more pixels from the back-buffer.
         /// </summary>
         /// <param name="x">X-Coordinate</param>
@@ -1851,12 +1872,15 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
         {
-            _rci.Viewport(x, y, width, height);
+            _rci.Scissor(x, y, width, height);
+            _rci.Viewport(x, y, width, height);            
 
             if (!renderToScreen) return;
 
             ViewportWidth = width;
             ViewportHeight = height;
+            ViewportXStart = x;
+            ViewportYStart = y;
         }
 
         /// <summary>
@@ -1878,6 +1902,34 @@ namespace Fusee.Engine.Core
 
         #endregion
     }
+
+    internal sealed class MatrixParamNames
+    {
+        // ReSharper disable InconsistentNaming
+        public IShaderParam FUSEE_M;
+        public IShaderParam FUSEE_V;
+        public IShaderParam FUSEE_MV;
+
+        public IShaderParam FUSEE_P;
+        public IShaderParam FUSEE_MVP;
+
+        public IShaderParam FUSEE_IV;
+        public IShaderParam FUSEE_IMV;
+        public IShaderParam FUSEE_ITV;
+        public IShaderParam FUSEE_IP;
+        public IShaderParam FUSEE_IMVP;
+
+        public IShaderParam FUSEE_TMV;
+        public IShaderParam FUSEE_TP;
+        public IShaderParam FUSEE_TMVP;
+
+        public IShaderParam FUSEE_ITMV;
+        public IShaderParam FUSEE_ITP;
+        public IShaderParam FUSEE_ITMVP;
+
+        public IShaderParam FUSEE_BONES;
+        // ReSharper restore InconsistentNaming
+    };
 
     internal sealed class EffectParam
     {
@@ -1905,6 +1957,84 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal Dictionary<string, object> Parameters = new Dictionary<string, object>();
 
+    }
+
+    /// <summary>
+    /// After every Render call the values are reset to the ones saved here.
+    /// This ensures that we do not necessarily need a Camera in the Scene Graph.
+    /// The viewport width and height is updated with every resize.
+    /// </summary>
+    public class RenderContextDefaultState
+    {
+        /// <summary>
+        /// This value should be equal to the window/canvas width and is set at every resize.
+        /// If this value is changed the default Projection matrix is recalculated.
+        /// </summary>
+        public int CanvasWidth
+        {
+            get { return _width; }
+            set
+            {
+                _width = value;
+                _aspect = (float)_width / _height;
+                if(_aspect != 0)
+                    Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+            }
+        }
+
+        /// <summary>
+        /// This value should be equal to the window/canvas height and is set at every resize.
+        /// If this value is changed the default Projection matrix is recalculated.
+        /// </summary>
+        public int CanvasHeight
+        {
+            get { return _height; }
+            set
+            {
+                _height = value;
+                _aspect = (float)_width / _height;
+                if (_aspect != 0)
+                    Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
+            }
+        }
+
+        /// <summary>
+        /// The view matrix.
+        /// </summary>
+        public readonly float4x4 View = float4x4.Identity;
+
+        /// <summary>
+        /// The projection matrix.
+        /// </summary>
+        public float4x4 Projection { get; private set; }        
+
+        /// <summary>
+        /// The default distance to the near clipping plane.
+        /// </summary>
+        public readonly float ZNearDefautlt = 0.1f;
+
+        /// <summary>
+        /// The default distance to the far clipping plane.
+        /// </summary>
+        public readonly float ZFarDefault = 3000;
+
+        /// <summary>
+        /// The default distance field of view.
+        /// </summary>
+        public readonly float FovDefault = M.DegreesToRadians(45);
+
+        private int _height = 9;
+        private int _width = 16;
+        private float _aspect;
+
+        /// <summary>
+        /// Creates a new instance of type RenderContextDefaultState.
+        /// </summary>
+        public RenderContextDefaultState()
+        {
+            _aspect = (float)_width / _height;
+            Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);            
+        }
     }
 
 }

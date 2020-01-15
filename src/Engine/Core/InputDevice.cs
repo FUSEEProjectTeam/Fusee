@@ -446,7 +446,13 @@ namespace Fusee.Engine.Core
 
         // Any state the calculation depends upon should be queried from the device or 
         // "statically" stored in the closure.
+        /// <summary>
+        /// A delegate for functions that calculate the value of an axis.
+        /// </summary>
+        /// <param name="time">The time at which to calculate the value of the axis.</param>
+        /// <returns></returns>
         public delegate float AxisValueCalculator(float time);
+
         private class CalculatedAxisDescription
         {
             public AxisDescription AxisDesc;
