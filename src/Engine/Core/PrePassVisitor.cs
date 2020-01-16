@@ -390,7 +390,7 @@ namespace Fusee.Engine.Core
                 view.M33 /= scale.z;
             }          
 
-            view = view.Invert();            
+            view = view.InvertAffine();            
 
             var cameraResult = new CameraResult(camComp, view);            
             CameraPrepassResults.Add(new Tuple<SceneNodeContainer, CameraResult>(CurrentNode, cameraResult));

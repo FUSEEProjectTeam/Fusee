@@ -460,7 +460,7 @@ namespace Fusee.Xene
             // rotate object to keep looking at the center:
             var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
             var euler = float4x4.RotMatToEuler(currentRotationMtx);
-            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitZ, euler.z));
         }
 
         /// <summary>
@@ -482,7 +482,7 @@ namespace Fusee.Xene
             {
                 var euler = float4x4.RotMatToEuler(currentRotationMtx);
 
-                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+                tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.InvertAffine(currentRotationMtx) * float3.UnitZ, euler.z));
             }
         }
 
