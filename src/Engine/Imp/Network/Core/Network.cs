@@ -1,11 +1,11 @@
-﻿using System;
+﻿using Fusee.Base.Core;
+using Fusee.Engine.Imp.Network.Common;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Fusee.Base.Core;
-using Fusee.Engine.Common;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Network.Core
 {
     /// <summary>
     /// Core network object. Handles all connections by accessing underlying interface implementations.

@@ -8,25 +8,30 @@ namespace Fusee.Engine.Imp.Network.Common
     public class NetConfigValues
     {
         /// <summary>
-        /// The system type. (Client, Server, Peer) 
+        /// The system type. (Client, Server, Peer)
         /// </summary>
         public SysType SysType;
+
         /// <summary>
         /// The default port (default: 14242)
         /// </summary>
         public int DefaultPort;
+
         /// <summary>
         /// The automatic discovery in net (default: false)
         /// </summary>
         public bool Discovery;
+
         /// <summary>
         /// The automatic connect on discovery. (default: false)
         /// </summary>
         public bool ConnectOnDiscovery;
+
         /// <summary>
         /// The discovery timeout. (default: 5000 ms)
         /// </summary>
         public int DiscoveryTimeout;
+
         /// <summary>
         /// The redirect packets. Currently this is not used. (default: false)
         /// </summary>
@@ -45,6 +50,7 @@ namespace Fusee.Engine.Imp.Network.Common
         ///   <c>true</c> if [connected]; otherwise, <c>false</c>.
         /// </value>
         public bool Connected { get; set; }
+
         /// <summary>
         /// Gets and sets a value indicating whether [connecting].
         /// </summary>
@@ -68,14 +74,17 @@ namespace Fusee.Engine.Imp.Network.Common
         /// None = 0.
         /// </summary>
         None,
+
         /// <summary>
         /// Peer = 1.
         /// </summary>
         Peer,
+
         /// <summary>
         /// Client = 2.
         /// </summary>
         Client,
+
         /// <summary>
         /// Server = 3.
         /// </summary>
@@ -93,7 +102,7 @@ namespace Fusee.Engine.Imp.Network.Common
     /// The core network connection and sending object interface.
     /// </summary>
     /// <remarks>
-    /// Implementation Tasks: This object has to handle everything that is required for network communication. 
+    /// Implementation Tasks: This object has to handle everything that is required for network communication.
     /// Possible topics are Configuration, Status of connection and system as well as connection and message handling.
     /// </remarks>
     public interface INetworkImp
@@ -105,6 +114,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// The configuration.
         /// </value>
         NetConfigValues Config { get; set; }
+
         /// <summary>
         /// Gets and sets the status.
         /// </summary>
@@ -145,6 +155,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// Occurs when [connection update] is triggered. <see cref="ConnectionUpdateEvent"/>
         /// </summary>
         event ConnectionUpdateEvent ConnectionUpdate;
+
         /// <summary>
         /// Establish connection to port and host.
         /// </summary>
@@ -153,6 +164,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// <param name="port">The port.</param>
         /// <returns>True if could open connection succesfully.</returns>
         bool OpenConnection(SysType type, string host, int port);
+
         /// <summary>
         /// Closes the connection.
         /// </summary>

@@ -2,9 +2,9 @@
 // OpenAL is used under the terms of the LGPL, version x.
 
 using Fusee.Base.Core;
-using Fusee.Engine.Common;
+using Fusee.Engine.Imp.Sound.Common;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Sound.Core
 {
     /// <summary>
     /// The Audio class provides all audio functionality. It is accessible from everywhere.                          
@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
 
         private IAudioImp _audioImp;
 
-        internal IAudioImp AudioImp
+        public IAudioImp AudioImp
         {
             set
             {
@@ -49,7 +49,7 @@ namespace Fusee.Engine.Core
 
         #region Members
 
-        internal void CloseDevice()
+        public void CloseDevice()
         {
             _audioImp.CloseDevice();
         }
@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
             _audioImp.SetPanning(val);
         }
 
-        internal void Dispose()
+        public void Dispose()
         {
             _instance = null;
         }

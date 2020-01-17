@@ -1,6 +1,6 @@
-﻿using Fusee.Engine.Common;
+﻿using Fusee.Engine.Imp.Sound.Common;
 
-namespace Fusee.Engine.Core
+namespace Fusee.Engine.Imp.Sound.Core
 {
     class AudioStream
     {
