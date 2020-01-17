@@ -135,19 +135,19 @@ namespace Fusee.Test.Math.Core
         }
 
         [Fact]
-        public void HasProjection_HasProjection()
+        public void IsAffine_IsAffine()
         {
             var matrix = double4x4.Identity;
 
-            Assert.True(matrix.HasProjection);
+            Assert.True(matrix.IsAffine);
         }
 
         [Fact]
-        public void HasProjection_HasNoProjection()
+        public void IsAffine_IsNotAffine()
         {
             var matrix = new double4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            Assert.False(matrix.HasProjection);
+            Assert.False(matrix.IsAffine);
         }
 
         [Fact]
@@ -657,11 +657,11 @@ namespace Fusee.Test.Math.Core
         [Fact]
         public void InvertAffine_Static()
         {
-            var mat = new float4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
+            var mat = new double4x4(1, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1);
 
             var actual = mat.InvertAffine();
 
-            Assert.Equal(new float4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
+            Assert.Equal(new double4x4(1, 0, 0, -1, 0, 1, 0, -1, 0, 0, 1, -1, 0, 0, 0, 1), actual);
         }
 
         #endregion

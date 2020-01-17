@@ -377,7 +377,7 @@ namespace Fusee.Engine.Core
             {
                 if (!_invModelOk)
                 {
-                    _invModel = float4x4.InvertAffine(Model);
+                    _invModel = float4x4.Invert(Model);
                     _invModelOk = true;
                 }
                 return _invModel;

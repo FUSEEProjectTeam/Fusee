@@ -143,19 +143,19 @@ namespace Fusee.Test.Math.Core
         }
 
         [Fact]
-        public void HasProjection_HasProjection()
+        public void IsAffine_IsAffine()
         {
             var matrix = float4x4.Identity;
 
-            Assert.True(matrix.HasProjection);
+            Assert.True(matrix.IsAffine);
         }
 
         [Fact]
-        public void HasProjection_HasNoProjection()
+        public void IsAffine_IsNotAffine()
         {
             var matrix = new float4x4(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
 
-            Assert.False(matrix.HasProjection);
+            Assert.False(matrix.IsAffine);
         }
 
         [Fact]

@@ -465,6 +465,14 @@ namespace Fusee.Math.Core
             return Invert(this);
         }
 
+        /// <summary>
+        /// Converts this instance into its inverse.
+        /// </summary>
+        public double4x4 InvertAffine()
+        {
+            return InvertAffine(this);
+        }
+
         #endregion public Invert()
 
         #region public Transpose()
@@ -1093,7 +1101,7 @@ namespace Fusee.Math.Core
 
             double4x4 result;
 
-            if (left.HasProjection && right.HasProjection)
+            if (left.IsAffine && right.IsAffine)
                 result = new double4x4(
                     left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
                     left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32,
@@ -1146,7 +1154,7 @@ namespace Fusee.Math.Core
         /// <param name="mat">The matrix.</param>       
         public static bool IsInvertable(double4x4 mat)
         {
-            return mat.Determinant != 0f;
+            return mat.Determinant != 0d;
         }
 
         /// <summary>
@@ -1157,7 +1165,7 @@ namespace Fusee.Math.Core
         public static bool IsInvertable(double4x4 mat, out double det)
         {
             det = mat.Determinant;
-            return det != 0f;
+            return det != 0d;
         }
 
         /// <summary>
@@ -1173,8 +1181,8 @@ namespace Fusee.Math.Core
             if (!IsInvertable(mat, out double det))
                 throw new ArgumentException("Matrix isn't invertible.");
 
-            // InvertAffine is broken (probably since column order notation
-            // if (mat.IsAffine) return InvertAffine(mat);
+            if (mat.IsAffine)
+                return InvertAffine(mat);
 
             mat = mat.Transpose();
 
@@ -1257,24 +1265,38 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static double4x4 InvertAffine(double4x4 mat)
         {
+            //1. Save translation and scale
             var translVec = mat.Translation();
+            var invScaleX = 1 / mat.Column0.xyz.Length;
+            var invScaleY = 1 / mat.Column1.xyz.Length;
+            var invScaleZ = 1 / mat.Column2.xyz.Length;
 
-            double4x4 res = mat;
-            res.Column3 = double4.UnitW;
+            //2. Get rotation only 
 
-            //inverse of rotation and scale
-            res.Column0 /= res.Column0.Length;
-            res.Column1 /= res.Column1.Length;
-            res.Column2 /= res.Column2.Length;
-            res = Transpose(res);
+            //2.1 Eliminate translation
+            mat.Column3 = double4.UnitW;
 
-            var invTranslation = res * (-1 * translVec);
+            //2.2 Eliminate scale
+            mat.Column0 /= mat.Column0.Length;
+            mat.Column1 /= mat.Column1.Length;
+            mat.Column2 /= mat.Column2.Length;
 
-            res.M14 = invTranslation.x;
-            res.M24 = invTranslation.y;
-            res.M34 = invTranslation.z;
+            //3. Invert rotation part
+            mat = mat.Transpose();
 
-            return res;
+            //4. Invert scale
+            mat.Column0 *= invScaleX;
+            mat.Column1 *= invScaleY;
+            mat.Column2 *= invScaleZ;
+
+            //5. Invert translation
+            var invTranslation = mat * (-1 * translVec);
+
+            mat.M14 = invTranslation.x;
+            mat.M24 = invTranslation.y;
+            mat.M34 = invTranslation.z;
+
+            return mat;
         }
 
         #endregion Invert Functions
@@ -1644,9 +1666,9 @@ namespace Fusee.Math.Core
         #region IEquatable<Matrix4> Members       
 
          /// <summary>
-         /// Checks whether row three of the matrix is equal to (0, 0, 0, 1). If this is the case its highly possible that the matrix is affine.
+         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
          /// </summary>       
-        public bool HasProjection
+        public bool IsAffine
         {
             get
             {

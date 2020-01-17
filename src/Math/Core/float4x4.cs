@@ -1273,7 +1273,7 @@ namespace Fusee.Math.Core
 
             float4x4 result;
 
-            if (left.HasProjection && right.HasProjection)
+            if (left.IsAffine && right.IsAffine)
             {
                 result = new float4x4(
                     left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31,
@@ -1355,7 +1355,10 @@ namespace Fusee.Math.Core
             if (mat == Identity || mat == Zero) return mat;
 
             if (!IsInvertable(mat, out float det))
-                throw new ArgumentException("Matrix isn't invertible.");            
+                throw new ArgumentException("Matrix isn't invertible.");
+
+            if (mat.IsAffine)
+                return InvertAffine(mat);
 
             mat = mat.Transpose();
 
@@ -1421,7 +1424,7 @@ namespace Fusee.Math.Core
             m43 -= tmp10 * mat.M34 + tmp2 * mat.M31 + tmp7 * mat.M32;
             var m44 = tmp10 * mat.M33 + tmp4 * mat.M31 + tmp9 * mat.M32;
             m44 -= tmp8 * mat.M32 + tmp11 * mat.M33 + tmp5 * mat.M31;
-           
+
             var invDet = 1 / det;
             mat = new float4x4(invDet * m11, invDet * m12, invDet * m13, invDet * m14,
                                 invDet * m21, invDet * m22, invDet * m23, invDet * m24,
@@ -1429,7 +1432,7 @@ namespace Fusee.Math.Core
                                 invDet * m41, invDet * m42, invDet * m43, invDet * m44);
 
             return mat;
-        }        
+        }
 
         /// <summary>
         /// Calculate the inverse of a given matrix which represents an affine transformation.
@@ -1438,24 +1441,38 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static float4x4 InvertAffine(float4x4 mat)
         {
+            //1. Save translation and scale
             var translVec = mat.Translation();
+            var invScaleX = 1 / mat.Column0.xyz.Length;
+            var invScaleY = 1 / mat.Column1.xyz.Length;
+            var invScaleZ = 1 / mat.Column2.xyz.Length;
 
-            float4x4 res = mat;
-            res.Column3 = float4.UnitW;
+            //2. Get rotation only 
 
-            //inverse of rotation and scale
-            res.Column0 /= res.Column0.Length;
-            res.Column1 /= res.Column1.Length;
-            res.Column2 /= res.Column2.Length; 
-            res = Transpose(res);            
+                //2.1 Eliminate translation
+            mat.Column3 = float4.UnitW;
 
-            var invTranslation = res * (-1 * translVec);
+                //2.2 Eliminate scale
+            mat.Column0 /= mat.Column0.Length;
+            mat.Column1 /= mat.Column1.Length;
+            mat.Column2 /= mat.Column2.Length;
 
-            res.M14 = invTranslation.x;
-            res.M24 = invTranslation.y;
-            res.M34 = invTranslation.z;             
+            //3. Invert rotation part
+            mat = mat.Transpose();
 
-            return res;            
+            //4. Invert scale
+            mat.Column0 *= invScaleX;
+            mat.Column1 *= invScaleY;
+            mat.Column2 *= invScaleZ;            
+
+            //5. Invert translation
+            var invTranslation = mat * (-1 * translVec);
+
+            mat.M14 = invTranslation.x;
+            mat.M24 = invTranslation.y;
+            mat.M34 = invTranslation.z;
+
+            return mat;
         }
 
         #endregion Invert Functions
@@ -1869,12 +1886,12 @@ namespace Fusee.Math.Core
         #region IEquatable<float4x4> Members
 
         /// <summary>
-        /// Checks whether row three of the matrix is equal to (0, 0, 0, 1). If this is the case its highly possible that the matrix is affine.
+        /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
         /// </summary>       
-        public bool HasProjection
+        public bool IsAffine
         {
             get
-            {                
+            {
                 // Column order notation
                 return (Row3 == float4.UnitW);
             }
