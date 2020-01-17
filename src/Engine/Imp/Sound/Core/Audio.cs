@@ -7,23 +7,24 @@ using Fusee.Engine.Imp.Sound.Common;
 namespace Fusee.Engine.Imp.Sound.Core
 {
     /// <summary>
-    /// The Audio class provides all audio functionality. It is accessible from everywhere.                          
+    /// The Audio class provides all audio functionality. It is accessible from everywhere.
     /// </summary>
     /// <remarks>
     /// Supported file formats are: mp3, ogg, wav, flac, aiff, au, raw, paf, svx, nist, voc,
     /// ircam, w64, mat4, mat5 pvf, htk, sds, avr, sd2, caf, wve, mpc2k, rf64
-    /// 
+    ///
     /// Audio can be either buffered completely or be played as a stream.
-    /// 
+    ///
     /// E.g. : IAudioStreamImp myAudio1;
     ///
-    ///        myAudio1 = Audio.Instance.LoadFile("AssetStorage/Music.ogg"). 
-    /// 
-    ///        myAudio1.play();  
+    ///        myAudio1 = Audio.Instance.LoadFile("AssetStorage/Music.ogg").
+    ///
+    ///        myAudio1.play();
     /// </remarks>
     public class Audio
     {
         #region Fields
+
         private static Audio _instance;
 
         private IAudioImp _audioImp;
@@ -45,7 +46,7 @@ namespace Fusee.Engine.Imp.Sound.Core
             }
         }
 
-        #endregion
+        #endregion Fields
 
         #region Members
 
@@ -116,7 +117,7 @@ namespace Fusee.Engine.Imp.Sound.Core
             get { return _instance ?? (_instance = new Audio()); }
         }
 
-        #endregion
+        #endregion Members
     }
 
     /// <summary>
@@ -194,6 +195,7 @@ namespace Fusee.Engine.Imp.Sound.Core
         /// The volume.
         /// </value>
         public float Volume { get; set; }
+
         /// <summary>
         /// Gets and sets a value indicating whether this <see cref="DummyAudioStreamImp"/> is loop.
         /// </summary>
@@ -201,6 +203,7 @@ namespace Fusee.Engine.Imp.Sound.Core
         ///   <c>true</c> if loop; otherwise, <c>false</c>.
         /// </value>
         public bool Loop { get; set; }
+
         /// <summary>
         /// Gets and sets the panning.
         /// </summary>
@@ -208,6 +211,7 @@ namespace Fusee.Engine.Imp.Sound.Core
         /// The panning.
         /// </value>
         public float Panning { get; set; }
+
         /// <summary>
         /// Plays this stream.
         /// </summary>

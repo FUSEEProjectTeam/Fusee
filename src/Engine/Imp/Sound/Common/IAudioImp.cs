@@ -6,7 +6,6 @@
     /// </summary>
     public interface IAudioImp
     {
-
         /// <summary>
         /// Implementation Tasks: Opens the device. All <see cref="IAudioStreamImp" /> derivate instances have to be wiped and the globalvolume of a Listener(if 3D Sound is intended) can be set to maximum.
         /// </summary>
@@ -31,7 +30,7 @@
         void Stop();
 
         /// <summary>
-        /// Implemenation Tasks: Sets the global volume of the application. In 3D Sound usually a Listener is used to accomplish this task. 
+        /// Implemenation Tasks: Sets the global volume of the application. In 3D Sound usually a Listener is used to accomplish this task.
         /// In 2D Sound a simple iteration through all <see cref="IAudioStreamImp" /> derivates that this instance is responsible for is sufficient.
         /// </summary>
         /// <param name="val">The val.</param>

@@ -1,10 +1,10 @@
-﻿using System;
+﻿using Fusee.Engine.Imp.Sound.Common;
+using SFML.Audio;
+using SFML.System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Fusee.Engine.Imp.Sound.Common;
-using SFML.Audio;
-using SFML.System;
 
 namespace Fusee.Engine.Imp.Sound.Desktop
 {
@@ -14,10 +14,13 @@ namespace Fusee.Engine.Imp.Sound.Desktop
     public class AudioImp : IAudioImp
     {
         #region Fields
+
         private readonly List<AudioStreamImp> _allStreams;
-        #endregion
+
+        #endregion Fields
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioImp"/> class.
         /// </summary>
@@ -28,9 +31,11 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             Listener.Direction = new Vector3f(0, 0, -0.1f);
             Listener.Position = new Vector3f(0, 0, 0.1f);
         }
-        #endregion
+
+        #endregion Constructors
 
         #region Members
+
         /// <summary>
         /// Opens the device. All <see cref="AudioStreamImp" /> are reset. The GlobalVolume is set to 100(maximum).
         /// </summary>
@@ -46,8 +51,9 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         public void CloseDevice()
         {
             foreach (var audioStream in _allStreams)
-               audioStream.Dispose();
+                audioStream.Dispose();
         }
+
         /// <summary>
         /// Loads an audio file.
         /// </summary>
@@ -118,7 +124,6 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             return tmpAudioStreamImp;
         }
 
-
         /// <summary>
         /// Stops the playback of all <see cref="AudioStreamImp" /> instances.
         /// </summary>
@@ -146,7 +151,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
         /// <returns>The volume as float with 2 digit precision.</returns>
         public float GetVolume()
         {
-            return (float) System.Math.Round(Listener.GlobalVolume, 2);
+            return (float)System.Math.Round(Listener.GlobalVolume, 2);
         }
 
         /// <summary>
@@ -161,6 +166,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             foreach (var audioStream in _allStreams)
                 audioStream.Panning = maxVal;
         }
-        #endregion
+
+        #endregion Members
     }
 }

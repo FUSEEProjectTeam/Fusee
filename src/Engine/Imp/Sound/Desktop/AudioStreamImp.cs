@@ -5,11 +5,12 @@ using SFML.System;
 namespace Fusee.Engine.Imp.Sound.Desktop
 {
     /// <summary>
-    /// This class is the implementation for Audio playback. It uses the SFML library to handle the sound playback. 
+    /// This class is the implementation for Audio playback. It uses the SFML library to handle the sound playback.
     /// </summary>
-    class AudioStreamImp : IAudioStreamImp
+    internal class AudioStreamImp : IAudioStreamImp
     {
         #region Fields
+
         internal SoundBuffer OutputBuffer { get; set; }
         internal string FileName { get; set; }
 
@@ -59,9 +60,11 @@ namespace Fusee.Engine.Imp.Sound.Desktop
                     _outputSound.Loop = value;
             }
         }
-        #endregion
+
+        #endregion Fields
 
         #region Constructors
+
         /// <summary>
         /// Initializes a new instance of the <see cref="AudioStreamImp"/> class.
         /// </summary>
@@ -92,9 +95,11 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
             Init(fileName, streaming);
         }
-        #endregion
+
+        #endregion Constructors
 
         #region Members
+
         private void Init(string fileName, bool streaming)
         {
             IsStream = streaming;
@@ -154,7 +159,6 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             {
                 _outputSound.Loop = loop;
                 _outputSound.Play();
-
             }
         }
 
@@ -168,7 +172,8 @@ namespace Fusee.Engine.Imp.Sound.Desktop
             else
                 _outputSound.Pause();
         }
-        #endregion
+
+        #endregion Members
 
         #region Internal Members
 
@@ -196,7 +201,7 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
         internal float GetVolume()
         {
-            return (float) System.Math.Round(IsStream ? _outputStream.Volume : _outputSound.Volume, 2);
+            return (float)System.Math.Round(IsStream ? _outputStream.Volume : _outputSound.Volume, 2);
         }
 
         internal void SetPanning(float val)
@@ -214,8 +219,9 @@ namespace Fusee.Engine.Imp.Sound.Desktop
 
         internal float GetPanning()
         {
-            return (float) System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
+            return (float)System.Math.Round(IsStream ? _outputStream.Position.X : _outputSound.Position.X, 2);
         }
-        #endregion
+
+        #endregion Internal Members
     }
 }

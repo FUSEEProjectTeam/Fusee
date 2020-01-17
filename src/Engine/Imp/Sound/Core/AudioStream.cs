@@ -2,7 +2,7 @@
 
 namespace Fusee.Engine.Imp.Sound.Core
 {
-    class AudioStream
+    internal class AudioStream
     {
         /// <summary>
         /// For internal purposes. Do not use in application code.
@@ -36,13 +36,14 @@ namespace Fusee.Engine.Imp.Sound.Core
         /// <summary>
         ///     Plays this <see cref="IAudioStreamImp" />.
         /// </summary>
-        public void Play() { _asImp.Play();}
+        public void Play() { _asImp.Play(); }
 
         /// <summary>
         ///     Plays this <see cref="IAudioStreamImp" />.
         /// </summary>
         /// <param name="loop"><c>true</c> if this <see cref="IAudioStreamImp" /> shall be looped; otherwise, <c>false</c>.</param>
-        void Play(bool loop) { _asImp.Play(loop); }
+        private void Play(bool loop)
+        { _asImp.Play(loop); }
 
         /// <summary>
         ///     Pauses this <see cref="IAudioStreamImp" />.
