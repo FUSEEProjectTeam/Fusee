@@ -147,6 +147,8 @@ namespace Fusee.Engine.Core
         /// </summary>
         internal readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
 
+        internal ShaderEffectEventArgs EffectEventArgs;
+
         /// <summary>
         /// The default (nullary) constructor to create a shader effect.
         /// </summary>
@@ -194,6 +196,8 @@ namespace Fusee.Engine.Core
                     ParamDecl.Add(param.Name, param.Value);
                 }
             }
+
+            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNCHANGED);
         }
 
         /// <summary>
@@ -211,6 +215,8 @@ namespace Fusee.Engine.Core
         {
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
+
+        
 
         /// <summary>
         /// Set effect parameter
@@ -231,13 +237,23 @@ namespace Fusee.Engine.Core
                     }
 
                     ParamDecl[name] = value;
-                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED, name, value));
+
+                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED;
+                    EffectEventArgs.ChangedEffectVarName = name;
+                    EffectEventArgs.ChangedEffectVarValue = value;
+
+                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
                 }
                 else
                 {
                     // not in Parameters yet, add it and call uniform_var_changed!
                     ParamDecl.Add(name, value);
-                    ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNIFORM_VAR_ADDED));
+
+                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_ADDED;
+                    EffectEventArgs.ChangedEffectVarName = null;
+                    EffectEventArgs.ChangedEffectVarValue = null;
+
+                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
                 }
             }
         }
@@ -332,10 +348,10 @@ namespace Fusee.Engine.Core
         internal class ShaderEffectEventArgs : EventArgs
         {
             internal ShaderEffect Effect { get; }
-            internal ShaderEffectChangedEnum Changed { get; }
+            internal ShaderEffectChangedEnum Changed { get; set; }
             internal EffectParam EffectParameter { get; }
-            internal string ChangedEffectName { get; }
-            internal object ChangedEffectValue { get; }
+            internal string ChangedEffectVarName { get; set; }
+            internal object ChangedEffectVarValue { get; set; }
 
             internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
             {
@@ -344,16 +360,17 @@ namespace Fusee.Engine.Core
 
                 if (changedName == null || changedValue == null) return;
 
-                ChangedEffectName = changedName;
-                ChangedEffectValue = changedValue;
+                ChangedEffectVarName = changedName;
+                ChangedEffectVarValue = changedValue;
             }
         }
 
         internal enum ShaderEffectChangedEnum
         {            
             DISPOSE = 0,
-            UNIFORM_VAR_UPDATED,
-            UNIFORM_VAR_ADDED            
+            UNIFORM_VAR_UPDATED = 1,
+            UNIFORM_VAR_ADDED = 2,
+            UNCHANGED = 3
         }
     }
 
@@ -408,6 +425,8 @@ namespace Fusee.Engine.Core
                 GeometryShaderSrc[i] = effectPasses[i].GS;
                 //PixelShaderSrc is not set here because it gets built in a pre-pass, depending on whether we render deferred or forward.
             }
+
+            EffectEventArgs = new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.UNCHANGED);
         }
 
         /// <summary>
