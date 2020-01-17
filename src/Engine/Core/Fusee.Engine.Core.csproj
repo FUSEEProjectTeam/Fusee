@@ -41,5 +41,14 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Math\Core\Fusee.Math.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Network\Common\Fusee.Engine.Imp.Network.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Sound\Common\Fusee.Engine.Imp.Sound.Common.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Sound\Core\Fusee.Engine.Imp.Sound.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 </Project>
