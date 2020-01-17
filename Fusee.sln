@@ -381,6 +381,7 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Sound.Common", "src\Engine\Imp\Sound\Common\Fusee.Engine.Imp.Sound.Common.csproj", "{2A6BB527-8745-4895-AF0F-81B38FDC032B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fusee.Engine.Imp.Network.Common", "src\Engine\Imp\Network\Common\Fusee.Engine.Imp.Network.Common.csproj", "{9EA1A0E0-C9B6-4BBE-A789-F6B2C863769E}"
+EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Camera", "Camera", "{C69C84C2-4C82-461B-B6AF-807BB341EEB8}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fusee.Examples.Camera.Android", "Examples\Complete\Camera\Android\Fusee.Examples.Camera.Android.csproj", "{9D8EE545-4AFA-4164-8235-7FF7F4CA6E5B}"
