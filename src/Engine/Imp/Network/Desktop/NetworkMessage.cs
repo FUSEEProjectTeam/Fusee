@@ -16,6 +16,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// The <see cref="MessageType"/>.
         /// </value>
         public MessageType Type { get; internal set; }
+
         /// <summary>
         /// Gets the status of the connection.
         /// </summary>
@@ -23,6 +24,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// The <see cref="ConnectionStatus"/>.
         /// </value>
         public ConnectionStatus Status { get; internal set; }
+
         /// <summary>
         /// Gets the sender of the message.
         /// </summary>
@@ -39,6 +41,6 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// </value>
         public NetworkMsgType Message { get; internal set; }
 
-        #endregion
+        #endregion Fields
     }
 }

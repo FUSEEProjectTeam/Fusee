@@ -1,7 +1,7 @@
-﻿using System;
-using System.Net;
-using Fusee.Engine.Imp.Network.Common;
+﻿using Fusee.Engine.Imp.Network.Common;
 using Lidgren.Network;
+using System;
+using System.Net;
 
 namespace Fusee.Engine.Imp.Network.Desktop
 {
@@ -39,7 +39,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         {
             get
             {
-                return new IPEndpointData { Address = IPToLong(_remoteEndPoint.Address.ToString()), Port = _remoteEndPoint.Port};
+                return new IPEndpointData { Address = IPToLong(_remoteEndPoint.Address.ToString()), Port = _remoteEndPoint.Port };
             }
         }
 
@@ -71,9 +71,6 @@ namespace Fusee.Engine.Imp.Network.Desktop
             else return String.Empty;
         }
 
-
-
-
         /// <summary>
         /// Gets the roundtrip time of a packet. This is the time in milliseconds that a packet requires to be send to the remote end point and back.
         /// </summary>
@@ -82,9 +79,10 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// </value>
         public float RoundtripTime
         {
-            get { return Connection.AverageRoundtripTime;}
+            get { return Connection.AverageRoundtripTime; }
         }
-        #endregion
+
+        #endregion Fields
 
         #region Members
 
@@ -127,6 +125,6 @@ namespace Fusee.Engine.Imp.Network.Desktop
             return NetworkImp.SendMessage(packet, Connection, msgDelivery, msgChannel);
         }
 
-        #endregion
+        #endregion Members
     }
 }

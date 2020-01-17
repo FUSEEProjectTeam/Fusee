@@ -2,7 +2,6 @@
 
 namespace Fusee.Engine.Imp.Network.Desktop
 {
-
     /// <summary>
     /// This class is instantiated dynamically (by reflection)
     /// </summary>

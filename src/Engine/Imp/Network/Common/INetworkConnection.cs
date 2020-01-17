@@ -1,5 +1,4 @@
-﻿
-namespace Fusee.Engine.Imp.Network.Common
+﻿namespace Fusee.Engine.Imp.Network.Common
 {
     /// <summary>
     /// Struct holding all data necessary to describe an IP connection.
@@ -10,6 +9,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// The IP address as a long value.
         /// </summary>
         public long Address;
+
         /// <summary>
         /// The port of the IP connection.
         /// </summary>
@@ -25,7 +25,7 @@ namespace Fusee.Engine.Imp.Network.Common
     public interface INetworkConnection
     {
         /// <summary>
-        /// Gets the remote end point. 
+        /// Gets the remote end point.
         /// </summary>
         /// <value>
         /// The remote end point.
@@ -44,6 +44,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// Disconnects this instance from the remote end point.
         /// </summary>
         void Disconnect();
+
         /// <summary>
         /// Disconnects this instance with specified bye message for the remote end point.
         /// </summary>
@@ -56,6 +57,7 @@ namespace Fusee.Engine.Imp.Network.Common
         /// <param name="packet">The packet in byte[].</param>
         /// <returns>True if the message arrived.</returns>
         bool SendMessage(byte[] packet);
+
         /// <summary>
         /// Sends the message with options.
         /// </summary>

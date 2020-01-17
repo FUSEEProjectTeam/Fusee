@@ -1,18 +1,17 @@
-﻿using System;
+﻿using Fusee.Engine.Imp.Network.Common;
+using Lidgren.Network;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
-using Fusee.Engine.Imp.Network.Common;
-using Lidgren.Network;
-
 using Timer = System.Timers.Timer;
 
 namespace Fusee.Engine.Imp.Network.Desktop
 {
     /// <summary>
-    /// Lidgren implementation of <see cref="INetworkImp"/>. 
+    /// Lidgren implementation of <see cref="INetworkImp"/>.
     /// </summary>
     public class NetworkImp : INetworkImp
     {
@@ -71,6 +70,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// The status.
         /// </value>
         public NetStatusValues Status { get; set; }
+
         /// <summary>
         /// Gets all the incoming Messages that are not yet viewed.
         /// </summary>
@@ -79,8 +79,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// </value>
         public List<INetworkMsg> IncomingMsg { get; private set; }
 
-
-        #endregion
+        #endregion Fields
 
         #region Events
 
@@ -89,7 +88,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
         /// </summary>
         public event ConnectionUpdateEvent ConnectionUpdate;
 
-        #endregion
+        #endregion Events
 
         #region Constructors
 
@@ -103,14 +102,14 @@ namespace Fusee.Engine.Imp.Network.Desktop
             IncomingMsg = new List<INetworkMsg>();
 
             _config = new NetConfigValues
-                          {
-                              SysType = SysType.None,
-                              DefaultPort = 14242,
-                              Discovery = false,
-                              ConnectOnDiscovery = false,
-                              DiscoveryTimeout = 5000,
-                              RedirectPackets = false,
-                          };
+            {
+                SysType = SysType.None,
+                DefaultPort = 14242,
+                Discovery = false,
+                ConnectOnDiscovery = false,
+                DiscoveryTimeout = 5000,
+                RedirectPackets = false,
+            };
 
             // _netConfig.RedirectedPacketsList.CollectionChanged += PackageCapture;
             Connections = new List<INetworkConnection>();
@@ -122,7 +121,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
             };
         }
 
-        #endregion
+        #endregion Constructors
 
         #region Members
 
@@ -142,7 +141,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
             // peerID
             var random = new Random();
             _peerID = random.Next(0, 100);
-            
+
             switch (_config.SysType)
             {
                 case SysType.Peer:
@@ -245,13 +244,13 @@ namespace Fusee.Engine.Imp.Network.Desktop
 
                     Connections.AddRange(
                         _netServer.Connections.Select(
-                            connection => new NetworkConnection {Connection = connection, NetworkImp = this}));
+                            connection => new NetworkConnection { Connection = connection, NetworkImp = this }));
 
                     break;
             }
 
             // event OnConnectionUpdate
-            var newConnection = new NetworkConnection {Connection = senderConnection, NetworkImp = this};
+            var newConnection = new NetworkConnection { Connection = senderConnection, NetworkImp = this };
 
             if (ConnectionUpdate != null)
                 ConnectionUpdate(lastStatus, newConnection);
@@ -326,13 +325,13 @@ namespace Fusee.Engine.Imp.Network.Desktop
                 case SysType.Peer:
                     foreach (var con in _netPeer.Connections)
                         con.Disconnect("Disconnecting");
-                        
+
                     break;
 
                 case SysType.Client:
                     foreach (var con in _netClient.Connections)
                         con.Disconnect("Disconnecting");
-                    
+
                     break;
 
                 case SysType.Server:
@@ -394,7 +393,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
                     var sendMsgClient = _netClient.CreateMessage();
                     sendMsgClient.Write(msg);
 
-                    sendResult = _netClient.SendMessage(sendMsgClient, (NetDeliveryMethod) msgDelivery, msgChannel);
+                    sendResult = _netClient.SendMessage(sendMsgClient, (NetDeliveryMethod)msgDelivery, msgChannel);
                     return (sendResult == NetSendResult.Sent);
 
                 case SysType.Server:
@@ -529,7 +528,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
             switch (msg.MessageType)
             {
                 case NetIncomingMessageType.StatusChanged:
-                    Status.LastStatus = (ConnectionStatus) msg.ReadByte();
+                    Status.LastStatus = (ConnectionStatus)msg.ReadByte();
 
                     switch (Status.LastStatus)
                     {
@@ -541,6 +540,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
                             Status.Connected = true;
 
                             break;
+
                         case ConnectionStatus.Disconnected:
                             OnConnectionUpdate(Status.LastStatus, msg.SenderConnection);
 
@@ -549,6 +549,7 @@ namespace Fusee.Engine.Imp.Network.Desktop
                             Status.Connected = false;
 
                             break;
+
                         case ConnectionStatus.InitiatedConnect:
                             // TODO: This is not correct if server
                             Status.Connected = false;
@@ -558,20 +559,20 @@ namespace Fusee.Engine.Imp.Network.Desktop
                     }
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Status = Status.LastStatus,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Status = Status.LastStatus,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection }
+                    };
 
                 case NetIncomingMessageType.DiscoveryRequest:
-                        SendDiscoveryResponse(msg.SenderEndPoint);
+                    SendDiscoveryResponse(msg.SenderEndPoint);
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection }
+                    };
 
                 case NetIncomingMessageType.DiscoveryResponse:
                     var discoveryID = msg.ReadString();
@@ -586,36 +587,36 @@ namespace Fusee.Engine.Imp.Network.Desktop
                         _discoveryTimeout.Dispose();
 
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {_remoteEndPoint = msg.SenderEndPoint},
-                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = discoveryID}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { _remoteEndPoint = msg.SenderEndPoint },
+                        Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = discoveryID }
+                    };
 
                 case NetIncomingMessageType.Data:
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection {Connection = msg.SenderConnection},
-                            Message =
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection { Connection = msg.SenderConnection },
+                        Message =
                                 new NetworkMsgType
-                                    {
-                                        MsgType = MsgDataTypes.Bytes,
-                                        ReadBytes = msg.ReadBytes(msg.LengthBytes),
-                                        MsgChannel = msg.SequenceChannel
-                                    }
-                        };
+                                {
+                                    MsgType = MsgDataTypes.Bytes,
+                                    ReadBytes = msg.ReadBytes(msg.LengthBytes),
+                                    MsgChannel = msg.SequenceChannel
+                                }
+                    };
 
                 case NetIncomingMessageType.DebugMessage:
                 case NetIncomingMessageType.VerboseDebugMessage:
                 case NetIncomingMessageType.WarningMessage:
                 case NetIncomingMessageType.ErrorMessage:
                     return new NetworkMessage
-                        {
-                            Type = (MessageType) msg.MessageType,
-                            Sender = new NetworkConnection(),
-                            Message = new NetworkMsgType {MsgType = MsgDataTypes.String, ReadString = msg.ReadString()}
-                        };
+                    {
+                        Type = (MessageType)msg.MessageType,
+                        Sender = new NetworkConnection(),
+                        Message = new NetworkMsgType { MsgType = MsgDataTypes.String, ReadString = msg.ReadString() }
+                    };
             }
 
             return null;
@@ -656,6 +657,6 @@ namespace Fusee.Engine.Imp.Network.Desktop
             }
         }
 
-        #endregion
+        #endregion Members
     }
 }

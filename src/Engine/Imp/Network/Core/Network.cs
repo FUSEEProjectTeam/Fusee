@@ -17,6 +17,7 @@ namespace Fusee.Engine.Imp.Network.Core
         private static Network _instance;
 
         private INetworkImp _networkImp;
+
         internal INetworkImp NetworkImp
         {
             set
@@ -109,9 +110,10 @@ namespace Fusee.Engine.Imp.Network.Core
             }
         }
 
-        #endregion
+        #endregion Fields
 
         #region Events
+
         /// <summary>
         /// Occurs when [on connection update] occurs and passes the event over to the network interface implementation.
         /// </summary>
@@ -121,7 +123,7 @@ namespace Fusee.Engine.Imp.Network.Core
             remove { _networkImp.ConnectionUpdate -= value; }
         }
 
-        #endregion
+        #endregion Events
 
         #region Members
 
@@ -200,7 +202,6 @@ namespace Fusee.Engine.Imp.Network.Core
             return _networkImp.SendMessage(msg, msgDelivery, channelID);
         }
 
-
         /// <summary>
         /// Sends the discovery message on default port 14242.
         /// </summary>
@@ -259,7 +260,7 @@ namespace Fusee.Engine.Imp.Network.Core
             return _networkImp.IncomingMsg.DefaultIfEmpty(null).First();
         }
 
-        #endregion
+        #endregion Members
     }
 
     /// <summary>
@@ -274,6 +275,7 @@ namespace Fusee.Engine.Imp.Network.Core
         /// The configuration.
         /// </value>
         public NetConfigValues Config { get; set; }
+
         /// <summary>
         /// Gets and sets the status.
         /// </summary>
@@ -281,7 +283,9 @@ namespace Fusee.Engine.Imp.Network.Core
         /// The status.
         /// </value>
         public NetStatusValues Status { get; set; }
+
         public List<INetworkConnection> Connections { get; }
+
         /// <summary>
         /// Gets the local ip.
         /// </summary>
@@ -299,6 +303,7 @@ namespace Fusee.Engine.Imp.Network.Core
         /// The incoming MSG.
         /// </value>
         public List<INetworkMsg> IncomingMsg { get; }
+
         /// <summary>
         /// Starts the peer.
         /// </summary>
@@ -312,6 +317,7 @@ namespace Fusee.Engine.Imp.Network.Core
         /// Occurs when [connection update].
         /// </summary>
         public event ConnectionUpdateEvent ConnectionUpdate;
+
         public bool OpenConnection(SysType type, string host, int port)
         {
             return false;
