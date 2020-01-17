@@ -18,7 +18,7 @@ namespace Fusee.Engine.Imp.Network.Core
 
         private INetworkImp _networkImp;
 
-        internal INetworkImp NetworkImp
+        public INetworkImp NetworkImp
         {
             set
             {
@@ -219,7 +219,7 @@ namespace Fusee.Engine.Imp.Network.Core
             _networkImp.SendDiscoveryMessage(port);
         }
 
-        internal void OnUpdateFrame()
+        public void OnUpdateFrame()
         {
             _networkImp?.OnUpdateFrame();
         }
@@ -246,7 +246,7 @@ namespace Fusee.Engine.Imp.Network.Core
         /// <summary>
         /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
-        internal void Dispose()
+        public void Dispose()
         {
             _instance = null;
         }

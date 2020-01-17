@@ -50,5 +50,8 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Sound\Core\Fusee.Engine.Imp.Sound.Core.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Network\Core\Fusee.Engine.Imp.Network.Core.csproj">
+      <PrivateAssets>analyzers</PrivateAssets>
+    </ProjectReference>
   </ItemGroup>
 </Project>
