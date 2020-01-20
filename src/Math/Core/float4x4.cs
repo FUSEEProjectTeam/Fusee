@@ -1233,7 +1233,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
-        public static float4x4 Add(float4x4 left, float4x4 right)
+        public static float4x4 Add(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M14 + right.M14,
                                 left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M24 + right.M24,
@@ -1247,7 +1247,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the subtraction.</param>
         /// <param name="right">The right operand of the subtraction.</param>
         /// <returns>A new instance that is the result of the subtraction.</returns>
-        public static float4x4 Subtract(float4x4 left, float4x4 right)
+        public static float4x4 Subtract(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
                                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
@@ -1265,7 +1265,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication</returns>
-        public static float4x4 Mult(float4x4 left, float4x4 right)
+        public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
             if (left == Identity) return right;
             if (right == Identity) return left;
