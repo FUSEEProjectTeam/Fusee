@@ -15,7 +15,7 @@ namespace Fusee.Math.Core
     /// from left to right represent a transformation where the rightmost matrix is applied
     /// first and the leftmost matrix is applied last, for example in (M3 * M2 * M1) * v the vector
     /// v is first transformed by M1, then by M2 and finally by M3. The translation part of a 4x4
-    /// matrix used in homogeneus coordinate calculations can be found in the the leftmost column
+    /// matrix used in homogeneous coordinate calculations can be found in the leftmost column
     /// (M14 - x-translation, M24 - y-translation, M34 - z-translation).
     /// </para>
     /// <para>
@@ -32,7 +32,7 @@ namespace Fusee.Math.Core
     /// that the resulting matrices can be used in both, left-handed and right-handed coordinate systems.
     /// This does not hold for LookAt and Projection matrices where the viewing direction plays a role. In
     /// left-handed coordinate systems the viewing direction is positive, meaning positions further away have
-    /// bigger positive z-coordinates wheras in right-handed coordinate systems positions further away have smaller
+    /// bigger positive z-coordinates whereas in right-handed coordinate systems positions further away have smaller
     /// negative z-coordinates. By default, double4x4 will assume a left-handed coordinate system, but contains
     /// convenience construction methods to also create right-handed matrices if necessary. The right-handed versions
     /// of methods are postfixed with "RH".
@@ -163,6 +163,7 @@ namespace Fusee.Math.Core
         public double4 Column0
         {
             get { return new double4(Row0.x, Row1.x, Row2.x, Row3.x); }
+            set { Row0.x = value.x; Row1.x = value.y; Row2.x = value.z; Row3.x = value.w; }
         }
 
         /// <summary>
@@ -171,6 +172,7 @@ namespace Fusee.Math.Core
         public double4 Column1
         {
             get { return new double4(Row0.y, Row1.y, Row2.y, Row3.y); }
+            set { Row0.y = value.x; Row1.y = value.y; Row2.y = value.z; Row3.y = value.w; }
         }
 
         /// <summary>
@@ -179,6 +181,7 @@ namespace Fusee.Math.Core
         public double4 Column2
         {
             get { return new double4(Row0.z, Row1.z, Row2.z, Row3.z); }
+            set { Row0.z = value.x; Row1.z = value.y; Row2.z = value.z; Row3.z = value.w; }
         }
 
         /// <summary>
@@ -187,6 +190,7 @@ namespace Fusee.Math.Core
         public double4 Column3
         {
             get { return new double4(Row0.w, Row1.w, Row2.w, Row3.w); }
+            set { Row0.w = value.x; Row1.w = value.y; Row2.w = value.z; Row3.w = value.w; }
         }
 
         /// <summary>
@@ -407,6 +411,50 @@ namespace Fusee.Math.Core
 
         #endregion this
 
+        #region TRS Decomposition
+
+        /// <summary>
+        /// The translation component of this matrix.
+        /// </summary>
+        public double4x4 TranslationComponent()
+        {
+            return TranslationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The translation of this matrix.
+        /// </summary>
+        public double3 Translation()
+        {
+            return GetTranslation(this);
+        }
+
+        /// <summary>
+        /// The rotation component of this matrix.
+        /// </summary>
+        public double4x4 RotationComponent()
+        {
+            return RotationDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale component of this matrix.
+        /// </summary>
+        public double4x4 ScaleComponent()
+        {
+            return ScaleDecomposition(this);
+        }
+
+        /// <summary>
+        /// The scale factors of this matrix.
+        /// </summary>
+        public double3 Scale()
+        {
+            return GetScale(this);
+        }
+
+        #endregion TRS Decomposition
+
         #region public Invert()
 
         /// <summary>
@@ -415,6 +463,14 @@ namespace Fusee.Math.Core
         public double4x4 Invert()
         {
             return Invert(this);
+        }
+
+        /// <summary>
+        /// Converts this instance into its inverse.
+        /// </summary>
+        public double4x4 InvertAffine()
+        {
+            return InvertAffine(this);
         }
 
         #endregion public Invert()
@@ -1014,12 +1070,12 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Substracts the right instance from the left instance.
+        /// Subtracts the right instance from the left instance.
         /// </summary>
-        /// <param name="left">The left operand of the substraction.</param>
-        /// <param name="right">The right operand of the substraction.</param>
-        /// <returns>A new instance that is the result of the substraction.</returns>
-        public static double4x4 Substract(double4x4 left, double4x4 right)
+        /// <param name="left">The left operand of the subtraction.</param>
+        /// <param name="right">The right operand of the subtraction.</param>
+        /// <returns>A new instance that is the result of the subtraction.</returns>
+        public static double4x4 Subtract(double4x4 left, double4x4 right)
         {
             return new double4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
                                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
@@ -1093,28 +1149,28 @@ namespace Fusee.Math.Core
         #region Invert Functions
 
         /// <summary>
-        /// Checks if this matrix is invertable.
+        /// Checks if this matrix is invertible.
         /// </summary>
         /// <param name="mat">The matrix.</param>       
         public static bool IsInvertable(double4x4 mat)
         {
-            return mat.Determinant != 0f;
+            return mat.Determinant != 0d;
         }
 
         /// <summary>
-        /// Checks if this matrix is invertable.
+        /// Checks if this matrix is invertible.
         /// </summary>
         /// <param name="mat">The matrix.</param>
         /// <param name="det">The determinant of the matrix.</param>       
         public static bool IsInvertable(double4x4 mat, out double det)
         {
             det = mat.Determinant;
-            return det != 0f;
+            return det != 0d;
         }
 
         /// <summary>
         /// Calculate the inverse of the given matrix.
-        /// If you are unsure whether the matrix is invertable, check it with IsInvertable() first.
+        /// If you are unsure whether the matrix is invertible, check it with IsInvertable() first.
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
@@ -1123,10 +1179,10 @@ namespace Fusee.Math.Core
             if (mat == Identity || mat == Zero) return mat;
 
             if (!IsInvertable(mat, out double det))
-                throw new ArgumentException("Matrix isn't invertable.");
+                throw new ArgumentException("Matrix isn't invertible.");
 
-            // InvertAffine is broken (probably since column order notation
-            // if (mat.IsAffine) return InvertAffine(mat);
+            if (mat.IsAffine)
+                return InvertAffine(mat);
 
             mat = mat.Transpose();
 
@@ -1209,29 +1265,38 @@ namespace Fusee.Math.Core
         /// <returns>The inverse of the given matrix.</returns>
         public static double4x4 InvertAffine(double4x4 mat)
         {
-            throw new Exception("InvertAffine is broken (probably since column order notation)");
+            //1. Save translation and scale
+            var translVec = mat.Translation();
+            var invScaleX = 1 / mat.Column0.xyz.Length;
+            var invScaleY = 1 / mat.Column1.xyz.Length;
+            var invScaleZ = 1 / mat.Column2.xyz.Length;
 
-            // Row order notation
-            //var val1 = -(mat.M11*mat.M41 + mat.M12*mat.M42 + mat.M13*mat.M43);
-            //var val2 = -(mat.M21*mat.M41 + mat.M22*mat.M42 + mat.M23*mat.M43);
-            //var val3 = -(mat.M31*mat.M41 + mat.M32*mat.M42 + mat.M33*mat.M43);
+            //2. Get rotation only 
 
-            //return
-            //    new double4x4(new double4(mat.M11, mat.M21, mat.M31, 0),
-            //                 new double4(mat.M12, mat.M22, mat.M32, 0),
-            //                 new double4(mat.M13, mat.M23, mat.M33, 0),
-            //                 new double4(val1, val2, val3, 1));
+            //2.1 Eliminate translation
+            mat.Column3 = double4.UnitW;
 
-            // Column order notation ???
-            /*var val1 = -(mat.M11 * mat.M14 + mat.M21 * mat.M24 + mat.M31 * mat.M34);
-            var val2 = -(mat.M12 * mat.M14 + mat.M22 * mat.M24 + mat.M32 * mat.M34);
-            var val3 = -(mat.M13 * mat.M14 + mat.M23 * mat.M24 + mat.M33 * mat.M34);
+            //2.2 Eliminate scale
+            mat.Column0 /= mat.Column0.Length;
+            mat.Column1 /= mat.Column1.Length;
+            mat.Column2 /= mat.Column2.Length;
 
-            return
-                new double4x4(new double4(mat.M11, mat.M21, mat.M31, val1),
-                             new double4(mat.M12, mat.M22, mat.M32, val2),
-                             new double4(mat.M13, mat.M23, mat.M33, val3),
-                             new double4(0, 0, 0, 1));*/
+            //3. Invert rotation part
+            mat = mat.Transpose();
+
+            //4. Invert scale
+            mat.Column0 *= invScaleX;
+            mat.Column1 *= invScaleY;
+            mat.Column2 *= invScaleZ;
+
+            //5. Invert translation
+            var invTranslation = mat * (-1 * translVec);
+
+            mat.M14 = invTranslation.x;
+            mat.M24 = invTranslation.y;
+            mat.M34 = invTranslation.z;
+
+            return mat;
         }
 
         #endregion Invert Functions
@@ -1253,7 +1318,7 @@ namespace Fusee.Math.Core
         #region Transform
 
         /// <summary>
-        /// Transforms a given vector by a matrix via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given vector by a matrix via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
@@ -1268,7 +1333,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given vector by a matrix via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given vector by a matrix via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <param name="matrix">A <see cref="double4x4"/> instance.</param>
         /// <param name="vector">A <see cref="double4"/> instance.</param>
@@ -1283,7 +1348,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given 3D vector by a matrix using perspective division via matrix*vector (Postmultiplication of the vector).
+        /// Transforms a given 3D vector by a matrix using perspective division via matrix*vector (post-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1303,7 +1368,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Transforms a given 3D vector by a matrix using perspective division via vector*matrix (Premultiplication of the vector).
+        /// Transforms a given 3D vector by a matrix using perspective division via vector*matrix (pre-multiplication of the vector).
         /// </summary>
         /// <remarks>
         /// Before the matrix multiplication the 3D vector is extended to 4D by setting its W component to 1.
@@ -1345,6 +1410,95 @@ namespace Fusee.Math.Core
 
         #endregion Transform
 
+        #region TRS Decomposition
+
+        /// <summary>
+        /// Calculates translation of the given double4x4 matrix and returns it as a double3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double3 GetTranslation(double4x4 mat)
+        {
+            return new double3(mat.M14, mat.M24, mat.M34);
+        }
+
+        /// <summary>
+        /// Calculates and returns only the translation component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 TranslationDecomposition(double4x4 mat)
+        {
+            var translationVec = GetTranslation(mat);
+            var translationMtx = double4x4.Identity;
+
+            translationMtx.M14 = translationVec.x;
+            translationMtx.M24 = translationVec.y;
+            translationMtx.M34 = translationVec.z;
+
+            return translationMtx;
+        }
+
+        /// <summary>
+        /// Calculates and returns the rotation component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 RotationDecomposition(double4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var rotationMtx = double4x4.Identity;
+
+            rotationMtx.M11 = mat.M11 / scalevector.x;
+            rotationMtx.M21 = mat.M21 / scalevector.x;
+            rotationMtx.M31 = mat.M31 / scalevector.x;
+
+            rotationMtx.M12 = mat.M12 / scalevector.y;
+            rotationMtx.M22 = mat.M22 / scalevector.y;
+            rotationMtx.M32 = mat.M32 / scalevector.y;
+
+            rotationMtx.M13 = mat.M13 / scalevector.z;
+            rotationMtx.M23 = mat.M23 / scalevector.z;
+            rotationMtx.M33 = mat.M33 / scalevector.z;
+
+            return rotationMtx;
+        }
+
+        /// <summary>
+        /// Calculates the scale factor of the given double4x4 and returns it as a double3 vector.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double3 GetScale(double4x4 mat)
+        {
+            var scale = double3.One;
+
+            scale.x = mat.Column0.Length;
+            scale.y = mat.Column1.Length;
+            scale.z = mat.Column2.Length;
+
+            return scale;
+        }
+
+        /// <summary>
+        /// Calculates and returns the scale component of the given double4x4 matrix.
+        /// </summary>
+        /// <param name="mat"></param>
+        /// <returns></returns>
+        public static double4x4 ScaleDecomposition(double4x4 mat)
+        {
+            var scalevector = GetScale(mat);
+            var scaleMtx = double4x4.Identity;
+
+            scaleMtx.M11 = scalevector.x;
+            scaleMtx.M22 = scalevector.y;
+            scaleMtx.M33 = scalevector.z;
+
+            return scaleMtx;
+        }
+
+        #endregion TRS Decomposition
+
         #endregion Static
 
         #region Operators
@@ -1361,14 +1515,14 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Matrix substraction
+        /// Matrix subtraction
         /// </summary>
         /// <param name="left">left-hand operand</param>
         /// <param name="right">right-hand operand</param>
         /// <returns>A new double2x2 which holds the result of the multiplication</returns>
         public static double4x4 operator -(double4x4 left, double4x4 right)
         {
-            return Substract(left, right);
+            return Subtract(left, right);
         }
 
         /// <summary>
@@ -1493,7 +1647,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
-        /// <param name="obj">The object to compare tresult.</param>
+        /// <param name="obj">The object to compare this instance to.</param>
         /// <returns>True if the instances are equal; false otherwise.</returns>
         public override bool Equals(object obj)
         {
@@ -1509,19 +1663,15 @@ namespace Fusee.Math.Core
 
         #endregion Public Members
 
-        #region IEquatable<Matrix4> Members
+        #region IEquatable<Matrix4> Members       
 
-        /// <summary>
-        /// Indicates whether the current matrix represents an affine transformation.
-        /// </summary>
-        /// <returns>true if the current matrix represents an affine transformation; otherwise, false.</returns>
+         /// <summary>
+         /// Checks whether row three (the projection part) of the matrix is equal to (0, 0, 0, 1). If this is the case the matrix is affine.
+         /// </summary>       
         public bool IsAffine
         {
             get
             {
-                // Row order notation
-                // return (Column3 == double4.UnitW);
-
                 // Column order notation
                 return (Row3 == double4.UnitW);
             }
