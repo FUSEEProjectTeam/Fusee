@@ -225,15 +225,13 @@ namespace Fusee.Engine.Core
         /// <param name="value">Value of the uniform variable</param>
         public void SetEffectParam(string name, object value)
         {
-            object param;
-
             if (ParamDecl != null)
             {
-                if (ParamDecl.TryGetValue(name, out param))
-                {
-                    if (param != null)
+                if (ParamDecl.ContainsKey(name))
+                {                    
+                    if (ParamDecl[name] != null)
                     {// do nothing if new value = old value
-                        if (param.Equals(value)) return; // TODO: Write a better compare method! 
+                        if (ParamDecl[name].Equals(value)) return; // TODO: Write a better compare method! 
                     }
 
                     ParamDecl[name] = value;
@@ -243,7 +241,7 @@ namespace Fusee.Engine.Core
                     EffectEventArgs.ChangedEffectVarValue = value;
 
                     ShaderEffectChanged?.Invoke(this, EffectEventArgs);
-                }
+                }                
                 else
                 {
                     // not in Parameters yet, add it and call uniform_var_changed!

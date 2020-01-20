@@ -871,9 +871,7 @@ namespace Fusee.Engine.Core
 
             // Bones
             _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
-
-            //
-
+          
             _updatedShaderParams = true;
             UpdateCurrentShader();
         }
@@ -1035,18 +1033,16 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         public void SetFXParam(string name, object value)
         {
-            object tmpFXParam;
-
-            if (AllFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
+            if (AllFXParams.ContainsKey(name))
             {
-                if (tmpFXParam.Equals(value)) return; // no new value
+                if (AllFXParams[name].Equals(value)) return; // no new value
 
                 AllFXParams[name] = value;
 
                 // Update ShaderEffect
                 _currentShaderEffect.SetEffectParam(name, value);
                 return;
-            }
+            }           
 
             // cache miss
             AllFXParams.Add(name, value);
