@@ -6,6 +6,9 @@ using System.Runtime.InteropServices;
 
 namespace Fusee.Base.Imp.Desktop
 {
+    /// <summary>
+    /// A class to handle with extracting and loading embedded resources.
+    /// </summary>
     public static class EmbeddedResourcesDllHandler
     {
         private static List<string> loadedDlls = new List<string>();

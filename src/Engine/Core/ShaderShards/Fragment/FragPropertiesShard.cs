@@ -173,7 +173,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <param name="lc">The light component, needed to decide if we have a Shadow Cube Map or a standard shadow map.</param>
         /// <param name="isCascaded">If cascaded shadow mapping is used, this should be set to true.</param>
-        /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.<param>        
+        /// <param name="numberOfCascades">If cascaded shadow mapping is used this is the number of cascades.</param>        
         public static string DeferredLightAndShadowUniforms(LightComponent lc, bool isCascaded, int numberOfCascades)
         {
             var uniforms = new List<string>

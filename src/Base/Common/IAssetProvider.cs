@@ -43,9 +43,7 @@ namespace Fusee.Base.Common
     /// Type used in <see cref="IAssetProvider.RegisterTypeHandler"/>.
     /// </summary>
     /// <param name="id">The identifier.</param>
-    /// <param name="storage">An opaque object containing the data. The actual type of the storage depends on the AssetProvider.
-    /// <param name="isLoaded">Sets to true if asset is available and loaded
-    /// Many providers use a stream.</param>
+    /// <param name="storage">An opaque object containing the data. The actual type of the storage depends on the AssetProvider.</param>
     /// <returns>The asset cast to <see cref="Task"/></returns>
     public delegate Task<object> AssetDecoderAsync(string id, object storage);
 

@@ -23,7 +23,7 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
-        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;        
+        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
 
         //private IEnumerable<System.Type> _codeComponentSubClasses;
 
@@ -35,6 +35,9 @@ namespace Fusee.Engine.Core
         //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
         //}
 
+        /// <summary>
+        /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
+        /// </summary>
         protected override void PopState()
         {
             _predecessors.Pop();
@@ -46,18 +49,7 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
         public SceneContainer Convert(SceneContainer sc)
-        {
-            // check if the scene contains at least on light
-            _lightViseratorResults = sc.Children.Viserate<LightViserator, Tuple<SceneNodeContainer, LightResult>>().ToList();            
-
-            //TODO: if Projection Component has evolved to Camera Component - remove _projection and change the blender addon to translate a blender camera to a fusee camera if there is one in the blender scene.
-            var projectionComponents = sc.Children.Viserate<ProjectionViserator, ProjectionComponent>().ToList();
-            if (projectionComponents.Count == 0)
-            {
-                var pc = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 1, 5000, M.PiOver4);
-                sc.Children.Insert(0, new SceneNodeContainer() { Name = "Projection Component", Components = new List<SceneComponentContainer>() { pc } });
-            }
-
+        { 
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
                         
@@ -149,9 +141,9 @@ namespace Fusee.Engine.Core
         /// Converts the shader.
         /// </summary>
         [VisitMethod]
-        public void ConvProjComp(ProjectionComponent pc)
+        public void ConvCamComp(CameraComponent cc)
         {
-            _currentNode.Components.Add(pc);
+            _currentNode.Components.Add(cc);
         }
 
         /// <summary>

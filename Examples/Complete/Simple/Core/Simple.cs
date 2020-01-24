@@ -52,8 +52,7 @@ namespace Fusee.Examples.Simple.Core
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_rocketScene);
-
+            _sceneRenderer = new SceneRendererForward(_rocketScene);            
             _guiRenderer = new SceneRendererForward(_gui);
 
             return true;
@@ -64,6 +63,8 @@ namespace Fusee.Examples.Simple.Core
         {
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -105,22 +106,26 @@ namespace Fusee.Examples.Simple.Core
             // Create the camera matrix and set it as the current ModelView transformation
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, +2, -10, 0, +2, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot;
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-
-            // Constantly check for interactive objects.
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
+            var view = mtxCam * mtxRot;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
             // Render the scene loaded in Init()
+            RC.View = view;
+            RC.Projection = perspective;            
             _sceneRenderer.Render(RC);
+
+            //Constantly check for interactive objects.
+           
+            RC.Projection = orthographic;
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+            
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -186,10 +191,7 @@ namespace Fusee.Examples.Simple.Core
                     fuseeLogo,
                     text
                 }
-            };
-
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            };            
 
             return new SceneContainer
             {

@@ -150,6 +150,11 @@ namespace Fusee.Engine.Core
         protected ShaderEffect() { }
 
         /// <summary>
+        /// The default (nullary) constructor to create a shader effect.
+        /// </summary>
+        protected ShaderEffect() { }
+
+        /// <summary>
         /// The constructor to create a shader effect.
         /// </summary>
         /// <param name="effectPasses">The ordered array of <see cref="EffectPassDeclaration"/> items. The first item

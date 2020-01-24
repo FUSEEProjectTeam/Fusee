@@ -13,23 +13,6 @@ namespace Fusee.Xene
     public static class ContainerExtensions
     {
         /// <summary>
-        /// Calculates the appropriate projection matrix for the given projection method.
-        /// </summary>
-        /// <param name="pc">The projection component.</param>        
-        public static float4x4 Matrix(this ProjectionComponent pc)
-        {
-            switch (pc.ProjectionMethod)
-            {
-                default:
-                case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    return float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    return float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);
-            }
-        }
-
-        /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>
         /// <param name="tcThis">This transform component.</param>
@@ -109,30 +92,8 @@ namespace Fusee.Xene
         public static float4x4 GetLocalTransformation(this TransformComponent tc)
         {
             return tc == null ? float4x4.Identity : tc.Matrix();
-        }
+        }       
         
-        /// <summary>
-        /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
-        /// </summary>
-        public static float4x4 GetParentProjection(this SceneNodeContainer snc)
-        {
-            var res = float4x4.Identity;
-
-            if (snc.Parent == null)
-                return snc.GetComponent<ProjectionComponent>().Matrix();
-
-            var parent = snc.Parent;
-            while (true)
-            {
-                if (parent.Parent == null || res != float4x4.Identity)
-                {
-                    return res;
-                }
-
-                res = parent.GetComponent<ProjectionComponent>().Matrix();
-                parent = parent.Parent;
-            }
-        }
 
         /// <summary>
         /// Removes the components with the specified type and the sub-types in the children of this scene node container.
@@ -432,6 +393,32 @@ namespace Fusee.Xene
         public static void Translate(this TransformComponent tc, float4x4 translationMtx)
         {
             tc.Translation += translationMtx.Translation();
+        }
+
+        /// <summary>
+        /// Use this if the TransformComponent is part of a camera and you want to achieve a first person behavior.
+        /// </summary>
+        /// <param name="tc">This TransformComponent</param>
+        /// <param name="angleHorz">The horizontal rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="angleVert">The vertical rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="inputWSAxis">The value we want to translate the camera when pressing the W or S key.</param>
+        /// <param name="inputADAxis">The value we want to translate the camera when pressing the A or D key.</param>
+        /// <param name="speed">Changes the speed of the camera movement.</param>
+        public static void FpsView(this TransformComponent tc, float angleHorz, float angleVert, float inputWSAxis, float inputADAxis, float speed)
+        {
+            if ((angleHorz >= M.TwoPi && angleHorz > 0f) || angleHorz <= -M.TwoPi)
+                angleHorz %= M.TwoPi;
+            if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
+                angleVert %= M.TwoPi;
+
+            var camForward = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationYX(new float2 (angleVert, angleHorz)) * float3.UnitX;
+
+            tc.Translation += camForward * inputWSAxis * speed;
+            tc.Translation += camRight * inputADAxis * speed;
+
+            tc.Rotation.y = angleHorz;
+            tc.Rotation.x = angleVert;
         }
 
         /// <summary>
