@@ -268,7 +268,7 @@ namespace Fusee.Xirkit
             AddConverter<string, double4>(double4.Parse);
             AddConverter<string, double4x4>(double4x4.Parse);
             AddConverter<string, float2>(float2.Parse);
-            AddConverter<string, float3>(float3.Parse);
+            AddConverter<string, float3>(float3.ParseConverter);
             AddConverter<string, float4>(float4.Parse);
             AddConverter<string, float4x4>(float4x4.Parse);
 
