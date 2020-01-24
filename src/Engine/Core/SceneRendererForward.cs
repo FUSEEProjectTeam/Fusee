@@ -27,7 +27,7 @@ namespace Fusee.Engine.Core
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
-        {            
+        {
             get
             {
                 return _lightResults;
@@ -92,12 +92,12 @@ namespace Fusee.Engine.Core
 
         #region Initialization Construction Startup      
 
-        
+
         private LightComponent _legacyLight;
 
         private void SetDefaultLight()
         {
-            if(_legacyLight == null)
+            if (_legacyLight == null)
             {
                 _legacyLight = new LightComponent()
                 {
@@ -134,9 +134,6 @@ namespace Fusee.Engine.Core
         {
             _sc = sc;
             PrePassVisitor = new PrePassVisitor();
-            var buildFrag = new ProtoToFrag(_sc, true);
-            buildFrag.BuildFragmentShaders();
-
             var buildFrag = new ProtoToFrag(_sc, true);
             buildFrag.BuildFragmentShaders();
 
@@ -290,22 +287,21 @@ namespace Fusee.Engine.Core
             }
         }
         #endregion
-               
+
 
         /// <summary>
         /// Renders the scene.
         /// </summary>
         /// <param name="rc"></param>       
         public void Render(RenderContext rc)
-        { 
+        {
             SetContext(rc);
 
-            var stateSet = _rc.GetRenderStateSet(); 
+            var stateSet = _rc.GetRenderStateSet();
 
-            PrePassVisitor.PrePassTraverse(_sc, _rc);            
+            PrePassVisitor.PrePassTraverse(_sc, _rc);
 
             AccumulateLight();
-
 
             if (PrePassVisitor.CameraPrepassResults.Count != 0)
             {
@@ -333,17 +329,17 @@ namespace Fusee.Engine.Core
         {
             var tex = cam.Item2.Camera.RenderTexture;
 
-            if(tex!= null)
+            if (tex != null)
                 _rc.SetRenderTarget(cam.Item2.Camera.RenderTexture);
             else
                 _rc.SetRenderTarget();
 
-            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);           
+            _rc.Projection = cam.Item2.Camera.GetProjectionMat(_rc.ViewportWidth, _rc.ViewportHeight, out float4 viewport);
             _rc.Viewport((int)viewport.x, (int)viewport.y, (int)viewport.z, (int)viewport.w);
 
             _rc.ClearColor = cam.Item2.Camera.BackgroundColor;
 
-            if(cam.Item2.Camera.ClearColor)
+            if (cam.Item2.Camera.ClearColor)
                 _rc.Clear(ClearFlags.Color);
 
             if (cam.Item2.Camera.ClearDepth)
@@ -356,12 +352,12 @@ namespace Fusee.Engine.Core
             Traverse(_sc.Children);
         }
 
-        
+
         /// <summary>
         /// Viserates the LightComponent and caches them in a dedicated field.
         /// </summary>
         protected void AccumulateLight()
-        {            
+        {
             LightViseratorResults = PrePassVisitor.LightPrepassResuls;
 
             if (LightViseratorResults.Count == 0)
@@ -436,7 +432,7 @@ namespace Fusee.Engine.Core
             if (ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
                 var invProj = float4x4.Invert(_rc.Projection);
-               
+
                 var frustumCorners = new float4[4];
 
                 frustumCorners[0] = invProj * new float4(-1, -1, -1, 1); //nbl
@@ -455,7 +451,7 @@ namespace Fusee.Engine.Core
                 var height = (frustumCorners[0] - frustumCorners[2]).Length;
 
                 var zNear = frustumCorners[0].z;
-                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);                
+                var canvasPos = new float3(_rc.InvView.M14, _rc.InvView.M24, _rc.InvView.M34 + zNear);
 
                 ctc.ScreenSpaceSize = new MinMaxRect
                 {

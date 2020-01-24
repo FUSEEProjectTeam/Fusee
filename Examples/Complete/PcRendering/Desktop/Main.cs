@@ -21,7 +21,7 @@ namespace Fusee.Examples.PcRendering.Desktop
             // Inject Fusee.Engine.Base InjectMe dependencies
             IO.IOImp = new IOImp();
 
-            var fap = new FileAssetProvider("Assets");
+            var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
             fap.RegisterTypeHandler(
                 new AssetHandler
                 {
@@ -29,7 +29,7 @@ namespace Fusee.Examples.PcRendering.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("ttf")) return null;
-                        return new Font{ _fontImp = new FontImp((Stream)storage) };
+                        return new Font { _fontImp = new FontImp((Stream)storage) };
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("ttf")
                 });
@@ -40,7 +40,7 @@ namespace Fusee.Examples.PcRendering.Desktop
                     Decoder = delegate (string id, object storage)
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                        return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });

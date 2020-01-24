@@ -30,9 +30,7 @@ namespace Fusee.Examples.PcRendering.Core
         public bool DoShowOctants { get; set; }
         public bool IsSceneLoaded { get; private set; }
         public bool ReadyToLoadNewFile { get; private set; }
-
         public bool IsInitialized { get; private set; } = false;
-
         public bool IsAlive { get; private set; }
 
         // angle variables
@@ -44,7 +42,6 @@ namespace Fusee.Examples.PcRendering.Core
 
         private SceneContainer _scene;
         private SceneRendererForward _sceneRenderer;
-        private ScenePicker _scenePicker;
 
         private bool _twoTouchRepeated;
         private bool _keys;
@@ -58,32 +55,25 @@ namespace Fusee.Examples.PcRendering.Core
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initCanvasWidth;
-        private float _initCanvasHeight;
-        private float _canvasWidth = 16;
-        private float _canvasHeight = 9;
 
         private float _maxPinchSpeed;
 
-        private float3 _cameraPos;
-
         private float3 _initCamPos;
-        public float3 InitCameraPos { get { return _initCamPos; } private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } } /*= new float3(10, 0, -30);*/
+        public float3 InitCameraPos { get { return _initCamPos; } private set { _initCamPos = value; OocLoader.InitCamPos = _initCamPos; } }
 
         internal static ShaderEffect _depthPassEf;
         internal static ShaderEffect _colorPassEf;
 
         private bool _isTexInitialized = false;
 
-        private ProjectionComponent projectionComponent;
-
         private Texture _octreeTex;
         private double3 _octreeRootCenter;
         private double _octreeRootLength;
 
-        private const float twoPi = M.Pi * 2f;
-
         private WritableTexture _depthTex;
+
+        private TransformComponent _camTransform;
+        private CameraComponent _cam;
 
         // Init is called on startup. 
         public override async Task<bool> Init()
@@ -99,16 +89,30 @@ namespace Fusee.Examples.PcRendering.Core
                 Children = new List<SceneNodeContainer>()
             };
 
-            projectionComponent = new ProjectionComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy);
+            _camTransform = new TransformComponent()
+            {
+                Name = "MainCamTransform",
+                Scale = float3.One,
+                Translation = InitCameraPos,
+                Rotation = float3.Zero
+            };
 
-            _scene.Children.Insert(0, new SceneNodeContainer() { Name = "ProjNode", Components = new List<SceneComponentContainer>() { projectionComponent } });
-            _scene.Children[0].Components[0] = projectionComponent;
+            _cam = new CameraComponent(ProjectionMethod.PERSPECTIVE, ZNear, ZFar, _fovy)
+            {
+                BackgroundColor = float4.One
+            };
 
-            _initCanvasWidth = Width / 100f;
-            _initCanvasHeight = Height / 100f;
+            var mainCam = new SceneNodeContainer()
+            {
+                Name = "MainCam",
+                Components = new List<SceneComponentContainer>()
+                {
+                    _camTransform,
+                    _cam
+                }
+            };            
 
-            _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
+            _scene.Children.Insert(0, mainCam);
 
             _angleRoll = 0;
             _angleRollInit = 0;
@@ -116,8 +120,7 @@ namespace Fusee.Examples.PcRendering.Core
             _offset = float2.Zero;
             _offsetInit = float2.Zero;
 
-            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).            
 
             if (!UseWPF)
             {
@@ -129,8 +132,7 @@ namespace Fusee.Examples.PcRendering.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Wrap a SceneRenderer around the model.
-            _sceneRenderer = new SceneRendererForward(_scene);
-            _scenePicker = new ScenePicker(_scene);
+            _sceneRenderer = new SceneRendererForward(_scene); 
             _guiRenderer = new SceneRendererForward(_gui);
 
             IsInitialized = true;
@@ -205,37 +207,34 @@ namespace Fusee.Examples.PcRendering.Core
                     }
                 }
 
-
                 _angleHorz += _angleVelHorz;
                 _angleVert += _angleVelVert;
                 _angleVelHorz = 0;
                 _angleVelVert = 0;
 
-                if (HasUserMoved() || _cameraPos == InitCameraPos) //User has moved, RC.View must be recalculated.
+                if (HasUserMoved() || _camTransform.Translation == InitCameraPos)
                 {
-                    CalcAndSetViewMat();
+                    _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 20);                    
                 }
-
-                // Constantly check for interactive objects.
-                _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
-
-                if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-                {
-                    _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-                }
+                
                 //----------------------------  
 
                 if (PtRenderingParams.CalcSSAO || PtRenderingParams.Lighting != Lighting.UNLIT)
                 {
                     //Render Depth-only pass
                     _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _depthPassEf;
-                    _sceneRenderer.Render(RC, _depthTex);
+                    _cam.RenderTexture = _depthTex;
+                    _sceneRenderer.Render(RC);
+                    _cam.RenderTexture = null;
                 }
 
                 //Render color pass
                 //Change shader effect in complete scene
-                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;
+                _scene.Children[1].GetComponent<ShaderEffectComponent>().Effect = _colorPassEf;               
 
+                _sceneRenderer.Render(RC);
+
+                //UpdateScene after Render / Traverse because there we calculate the view matrix (when using a camera) we need for the update.
                 OocLoader.RC = RC;
                 OocLoader.UpdateScene(PtRenderingParams.PtMode, _depthPassEf, _colorPassEf);
 
@@ -247,12 +246,19 @@ namespace Fusee.Examples.PcRendering.Core
 
                 if (DoShowOctants)
                     OocLoader.ShowOctants(_scene);
-
-                _sceneRenderer.Render(RC);
             }
 
             //Render GUI
-            _sih.View = RC.View;
+            RC.Projection = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
+            // Constantly check for interactive objects.
+            _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -336,7 +342,7 @@ namespace Fusee.Examples.PcRendering.Core
             var root = OocFileReader.GetScene(_depthPassEf);
 
             var ptOctantComp = root.GetComponent<PtOctantComponent>();
-            InitCameraPos = _cameraPos = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
+            InitCameraPos = _camTransform.Translation = new float3((float)ptOctantComp.Center.x, (float)ptOctantComp.Center.y, (float)(ptOctantComp.Center.z - (ptOctantComp.Size * 2f)));
 
             _scene.Children.Add(root);
 
@@ -381,23 +387,9 @@ namespace Fusee.Examples.PcRendering.Core
 
         public void ResetCamera()
         {
-            _cameraPos = InitCameraPos;
+            _camTransform .Translation = InitCameraPos;
             _angleHorz = _angleVert = 0;
-        }
-
-        private void CalcAndSetViewMat()
-        {
-            if ((_angleHorz >= twoPi && _angleHorz > 0f) || _angleHorz <= -twoPi)
-                _angleHorz %= twoPi;
-            if ((_angleVert >= twoPi && _angleVert > 0f) || _angleVert <= -twoPi)
-                _angleVert %= twoPi;
-
-            _cameraPos += RC.View.Row2.xyz * Keyboard.WSAxis * Time.DeltaTime * 20;
-            _cameraPos += RC.View.Row0.xyz * Keyboard.ADAxis * Time.DeltaTime * 20;
-
-            RC.View = FPSView(_cameraPos, _angleVert, _angleHorz);
-            _scenePicker.View = RC.View;
-        }
+        }        
 
         public void DeleteOctants()
         {
@@ -420,33 +412,7 @@ namespace Fusee.Examples.PcRendering.Core
                 RC.SetFXParam(param.Key, param.Value);
             }
             PtRenderingParams.ShaderParamsToUpdate.Clear();
-        }
-
-        private float4x4 FPSView(float3 eye, float pitch, float yaw)
-        {
-            // I assume the values are already converted to radians.
-            float cosPitch = M.Cos(pitch);
-            float sinPitch = M.Sin(pitch);
-            float cosYaw = M.Cos(yaw);
-            float sinYaw = M.Sin(yaw);
-
-            float3 xaxis = float3.Normalize(new float3(cosYaw, 0, -sinYaw));
-            float3 yaxis = float3.Normalize(new float3(sinYaw * sinPitch, cosPitch, cosYaw * sinPitch));
-            float3 zaxis = float3.Normalize(new float3(sinYaw * cosPitch, -sinPitch, cosPitch * cosYaw));
-
-            // Create a 4x4 view matrix from the right, up, forward and eye position vectors
-            float4x4 viewMatrix = new float4x4(
-                new float4(xaxis.x, yaxis.x, zaxis.x, 0),
-                new float4(xaxis.y, yaxis.y, zaxis.y, 0),
-                new float4(xaxis.z, yaxis.z, zaxis.z, 0),
-                new float4(-float3.Dot(xaxis, eye), -float3.Dot(yaxis, eye), -float3.Dot(zaxis, eye), 1)
-            );
-
-            viewMatrix = float4x4.Transpose(viewMatrix);
-
-            return viewMatrix;
-
-        }
+        }        
 
         #region UI
 
@@ -454,6 +420,9 @@ namespace Fusee.Examples.PcRendering.Core
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
             var psTex = AssetStorage.Get<string>("texture.frag");
+
+            var canvasWidth = Width / 100f;
+            var canvasHeight = Height / 100f;
 
             var btnFuseeLogo = new GUIButton
             {
@@ -473,51 +442,40 @@ namespace Fusee.Examples.PcRendering.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
+                //Define Offset and therefor the size of the element.
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
-
-            // Initialize the information text line.
-            var textToDisplay = "FUSEE Point Cloud Viewer";
-            if (_scene.Header.CreatedBy != null || _scene.Header.CreationDate != null)
-            {
-                textToDisplay += " created";
-                if (_scene.Header.CreatedBy != null)
-                    textToDisplay += " by " + _scene.Header.CreatedBy;
-
-                if (_scene.Header.CreationDate != null)
-                    textToDisplay += " on " + _scene.Header.CreationDate;
-            }
 
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
             var guiLatoBlack = new FontMap(fontLato, 18);
 
             var text = new TextNodeContainer(
-                textToDisplay,
-                "SceneDescriptionText",
+                "FUSEE Simple Example",
+                "ButtonText",
                 vsTex,
                 psTex,
                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_HORIZONTAL),
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
-                ColorUint.Tofloat4(ColorUint.Greenery), 200f);
-
+                ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
                 new MinMaxRect
                 {
-                    Min = new float2(-_canvasWidth / 2, -_canvasHeight / 2f),
-                    Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
-                });
-            canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
-
-            //Create canvas projection component and add resize delegate
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+                    Min = new float2(-canvasWidth / 2, -canvasHeight / 2f),
+                    Max = new float2(canvasWidth / 2, canvasHeight / 2f)
+                })
+            {
+                Children = new ChildList()
+                {
+                    //Simple Texture Node, contains the fusee logo.
+                    fuseeLogo,
+                    text
+                }
+            };
 
             return new SceneContainer
             {

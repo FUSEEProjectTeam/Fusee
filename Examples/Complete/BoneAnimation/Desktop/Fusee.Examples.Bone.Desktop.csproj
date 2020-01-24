@@ -12,11 +12,7 @@
     <OutputPath>$(BaseOutputPath)\Examples\Bone\Desktop\</OutputPath>
   </PropertyGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Imp\Desktop\Fusee.Base.Imp.Desktop.csproj" />
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Engine\Imp\Graphics\Desktop\Fusee.Engine.Imp.Graphics.Desktop.csproj" />
-    <ProjectReference Include="..\Core\Fusee.Examples.Bone.Core.csproj" />
-  </ItemGroup>
+  <ItemGroup>   
     <PackageReference Include="System.Drawing.Common" Version="4.7.0" />
   </ItemGroup>
 

@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Pixel- or fragment shader as string
         /// </summary>
-        public string PS { get; set; }        
+        public string PS { get; set; }
     }
 
     /// <summary>
@@ -146,8 +146,6 @@ namespace Fusee.Engine.Core
         /// SessionUniqueIdentifier is used to verify a Mesh's uniqueness in the current session.
         /// </summary>
         internal readonly Suid SessionUniqueIdentifier = Suid.GenerateSuid();
-
-        protected ShaderEffect() { }
 
         /// <summary>
         /// The default (nullary) constructor to create a shader effect.
@@ -352,10 +350,10 @@ namespace Fusee.Engine.Core
         }
 
         internal enum ShaderEffectChangedEnum
-        {            
+        {
             DISPOSE = 0,
             UNIFORM_VAR_UPDATED,
-            UNIFORM_VAR_ADDED            
+            UNIFORM_VAR_ADDED
         }
     }
 
@@ -439,16 +437,16 @@ namespace Fusee.Engine.Core
                 {
                     var pxBody = new List<string>()
                     {
-                        FragPropertiesShard.GBufferOut(),                        
+                        FragPropertiesShard.GBufferOut(),
                         FragMainShard.RenderToGBuffer(EffectProps)
                     };
                     PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
-                    
+
                     States[i] = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
                         ZEnable = true,
-                    };                    
+                    };
                 }
             }
         }

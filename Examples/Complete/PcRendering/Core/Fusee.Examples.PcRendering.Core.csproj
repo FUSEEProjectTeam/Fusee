@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <RootNamespace>Fusee.Examples.MeshingAround.Core</RootNamespace>
-    <PackageId>Fusee.Examples.MeshingAround.Core</PackageId>
+    <RootNamespace>Fusee.Examples.PcRendering.Core</RootNamespace>
+    <PackageId>Fusee.Examples.PcRendering.Core</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
@@ -26,5 +26,8 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Xirkit\Fusee.Xirkit.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\Common\Fusee.Pointcloud.Common.csproj" />
     <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\PointAccessorCollection\Fusee.Pointcloud.PointAccessorCollections.csproj" />
+    <ProjectReference Include="$(FuseeEngineRoot)\src\Pointcloud\OoCFileGen\Fusee.Pointcloud.OoCFileReaderWriter.csproj" />
   </ItemGroup>
 </Project>
+
+

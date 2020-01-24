@@ -315,26 +315,27 @@ namespace Fusee.Examples.PcRendering.WPF
         {
             string fullPath;
             string path;
-            var ofd = new OpenFileDialog
+            var ofd = new System.Windows.Forms.OpenFileDialog
             {
                 Filter = "Meta json (*.json)|*.json"
             };
 
-            var sd = ofd.ShowDialog();
-            if (sd == null) return;
+            var dialogResult = ofd.ShowDialog();
 
-            if ((bool)sd)
+            Console.WriteLine(dialogResult);
+
+            if (dialogResult == System.Windows.Forms.DialogResult.OK)
             {
                 if (!ofd.SafeFileName.Contains("meta.json"))
                 {
                     MessageBox.Show("Invalid file selected", "Alert", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
-                }
+                }               
 
                 fullPath = ofd.FileName;
                 path = fullPath.Replace(ofd.SafeFileName, "");
 
-                await OpenFusThread(path);
+                await OpenFusThread(path);                
 
                 MinProjSize.Value = app.GetOocLoaderMinProjSizeMod();
                 MinProjSizeVal.Content = MinProjSize.Value.ToString("0.00");
@@ -343,10 +344,7 @@ namespace Fusee.Examples.PcRendering.WPF
                 {
                     app.DeletePointCloud();
 
-                    while (!app.ReadyToLoadNewFile || !app.GetOocLoaderWasSceneUpdated() || !_isAppInizialized)
-                    {                        
-                        continue;
-                    }
+                    SpinWait.SpinUntil(() => app.ReadyToLoadNewFile && app.GetOocLoaderWasSceneUpdated() && _isAppInizialized);                    
                 }
 
                 PtRenderingParams.PathToOocFile = path;
@@ -472,9 +470,9 @@ namespace Fusee.Examples.PcRendering.WPF
                 _fusThread = new Thread(() =>
                 {
                     // Inject Fusee.Engine.Base InjectMe dependencies
-                    IO.IOImp = new IOImp();
+                    IO.IOImp = new Fusee.Base.Imp.Desktop.IOImp();
 
-                    var fap = new FileAssetProvider("Assets");
+                    var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider("Assets");
                     fap.RegisterTypeHandler(
                         new AssetHandler
                         {
@@ -493,7 +491,7 @@ namespace Fusee.Examples.PcRendering.WPF
                             Decoder = delegate (string id, object storage)
                             {
                                 if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
-                                return new ConvertSceneGraph().Convert(ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage));
+                                return Serializer.DeserializeSceneContainer((Stream)storage);
                             },
                             Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                         });
@@ -531,7 +529,8 @@ namespace Fusee.Examples.PcRendering.WPF
 
                 _fusThread.Start();
 
-                while (app == null || app.IsInitialized == false) continue;
+                SpinWait.SpinUntil(() => app != null && app.IsInitialized);
+                
                 Closed += (s, e) => app?.CloseGameWindow();
 
             }); 

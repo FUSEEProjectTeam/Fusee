@@ -870,9 +870,7 @@ namespace Fusee.Engine.Core
             _currentShaderParams.FUSEE_ITMVP = CurrentShaderProgram.GetShaderParam("FUSEE_ITMVP");
 
             // Bones
-            _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
-
-            //
+            _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");            
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
