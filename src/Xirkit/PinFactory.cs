@@ -266,7 +266,7 @@ namespace Fusee.Xirkit
             AddConverter<string, double2>(double2.ParseConverter);  // Pass the Parse method directly (it already has the Converter signature)
             AddConverter<string, double3>(double3.ParseConverter);
             AddConverter<string, double4>(double4.ParseConverter);
-            AddConverter<string, double4x4>(double4x4.Parse);
+            AddConverter<string, double4x4>(double4x4.ParseConverter);
             AddConverter<string, float2>(float2.ParseConverter);
             AddConverter<string, float3>(float3.ParseConverter);
             AddConverter<string, float4>(float4.ParseConverter);
