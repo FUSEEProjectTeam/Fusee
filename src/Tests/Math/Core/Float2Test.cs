@@ -357,11 +357,9 @@ namespace Fusee.Test.Math.Core
 
         [Theory]
         [MemberData(nameof(GetBarycentric))]
-        public void PointIntriangle(float2 a, float2 b, float2 c, float uExpected, float vExpected, float2 point)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "xUnit1026:Theory methods should use all of their parameters", Justification = "<Pending>")]
+        public void PointIntriangle(float2 a, float2 b, float2 c, float u, float v, float2 point)
         {
-            float u;
-            float v;
-
             Assert.True(float2.PointInTriangle(a, b, c, point, out u, out v));
         }
 

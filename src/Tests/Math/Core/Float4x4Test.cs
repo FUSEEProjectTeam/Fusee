@@ -328,7 +328,7 @@ namespace Fusee.Test.Math.Core
         [MemberData(nameof(GetAxisAngle))]
         public void CreateFromAxisAngle_MainAxes(float3 axis, float angle, float4x4 expected)
         {
-            var actual = float4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(90));
+            var actual = float4x4.CreateFromAxisAngle(axis, M.DegreesToRadians(angle));
 
             Assert.Equal(expected, actual);
         }
@@ -640,6 +640,8 @@ namespace Fusee.Test.Math.Core
         public void Mult_Static(float4x4 left, float4x4 right, float4x4 expected)
         {
             var actual = float4x4.Mult(left, right);
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion

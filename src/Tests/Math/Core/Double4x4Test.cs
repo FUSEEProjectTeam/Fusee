@@ -639,6 +639,8 @@ namespace Fusee.Test.Math.Core
         public void Mult_Static(double4x4 left, double4x4 right, double4x4 expected)
         {
             var actual = double4x4.Mult(left, right);
+
+            Assert.Equal(expected, actual);
         }
 
         #endregion
