@@ -972,6 +972,13 @@ namespace Fusee.Math.Core
             return ConvertToString(null);
         }
 
+        /// <summary>
+        /// Returns a System.String that represents the current float3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
         public string ToString(IFormatProvider provider)
         {
             return ConvertToString(provider);
@@ -1085,6 +1092,12 @@ namespace Fusee.Math.Core
         /// </value>
         public static Converter<string, float3> ParseConverter { get; set; } = (x => Parse(x));
 
+        /// <summary>
+        /// Parses a string into a float3.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
         public static float3 Parse(string source, IFormatProvider? provider = null)
         {
             if (provider == null)
