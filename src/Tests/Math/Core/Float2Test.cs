@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using Fusee.Math.Core;
+using System.Globalization;
 
 namespace Fusee.Test.Math.Core
 {
@@ -522,16 +523,6 @@ namespace Fusee.Test.Math.Core
 
         #region Overrides
 
-        [Fact]
-        public void ToString_IsString()
-        {
-            var vec = new float2(1, 0);
-
-            var actual = vec.ToString();
-
-            Assert.Equal("(1, 0)", actual);
-        }
-
         //TODO: GetHashCode
         //TODO: Equals(obj)
 
@@ -682,5 +673,83 @@ namespace Fusee.Test.Math.Core
         }
 
         #endregion
+
+        #region ToString/Parse
+
+        [Fact]
+        public void ToString_NoCulture()
+        {
+            Assert.NotNull(new float2().ToString());
+        }
+
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "(1.5, 1.5)";
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(s, f.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "(1,5; 1,5)";
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(s, f.ToString(new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_InvariantCulture()
+        {
+            string s = "(1.5, 1.5)";
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(f, float2.Parse(s, CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_CultureDE()
+        {
+            string s = "(1,5; 1,5)";
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(f, float2.Parse(s, new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_ToString_NoCulture()
+        {
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(f, float2.Parse(f.ToString()));
+        }
+
+        [Fact]
+        public void Parse_ToString_InvariantCulture()
+        {
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(f, float2.Parse(f.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void Parse_ToString_CultureDE()
+        {
+            float2 f = float2.One * 1.5f;
+
+            Assert.Equal(f, float2.Parse(f.ToString(new CultureInfo("de-DE")), new CultureInfo("de-DE")));
+        }
+
+        [Fact]
+        public void Parse_Exception()
+        {
+            string s = "Fusee";
+
+            Assert.Throws<FormatException>(() => float2.Parse(s));
+        }
+
+        #endregion ToString/Parse
     }
 }
