@@ -458,12 +458,9 @@ namespace Fusee.Engine.Core
                         FragMainShard.RenderToGBuffer(EffectProps)
                     };
                     PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
-                    
-                    States[i] = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    };                    
+
+                    States[i].AlphaBlendEnable = false;
+                    States[i].ZEnable = true;
                 }
             }
         }

@@ -75,8 +75,8 @@ namespace Fusee.Engine.Core
         private bool _needToSetSSAOTex = false;
 
         private float4 _texClearColor = new float4(0, 0, 0, 0);
-       
-        private readonly Plane _quad = new Plane();        
+
+        private readonly Plane _quad = new Plane();
 
         private ShaderEffect _ssaoTexEffect;
         private ShaderEffect _lightingPassEffect;
@@ -101,7 +101,7 @@ namespace Fusee.Engine.Core
         private readonly Dictionary<Tuple<SceneNodeContainer, LightComponent>, ShadowParams> _shadowparams; //One per Light       
 
         private RenderPasses _currentPass;
-        private bool _canUseGeometryShaders;        
+        private bool _canUseGeometryShaders;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -130,9 +130,9 @@ namespace Fusee.Engine.Core
 
             _shadowEffect = ShaderCodeBuilder.ShadowMapEffect();
 
-            //Pre-pass to build the geometry pass shader effect from
+            //Pre-pass to build the geometry pass shader effects
             var buildFrag = new ProtoToFrag(_sc, false);
-            buildFrag.BuildFragmentShaders();            
+            buildFrag.BuildFragmentShaders();
         }
 
         # region Deferred specific visitors
@@ -152,8 +152,26 @@ namespace Fusee.Engine.Core
                 _rc.SetShaderEffect(shaderComponent.Effect);
                 _state.Effect = shaderComponent.Effect;
             }
-        }       
+        }
 
+        #endregion
+
+        #region HierarchyLevel
+
+        /// <summary>
+        /// Pops from the RenderState and sets the Model and View matrices in the RenderContext.
+        /// </summary>
+        protected override void PopState()
+        {
+            _rc.SetRenderStateSet(_state.RenderUndoStates);
+            _state.Pop();
+            _rc.Model = _state.Model;
+
+            //If we render the shadow pass: ignore ShaderEffects of the SceneNodes and use the ones that are needed to render the shadow maps.
+            if (_currentPass != RenderPasses.SHADOW)
+                _rc.SetShaderEffect(_state.Effect);
+
+        }
         #endregion
 
         #region Shadow mapping
@@ -307,9 +325,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Rendering
-
-        private RenderStateSet userRenderStateSet;
+        #region Rendering        
 
         /// <summary>
         /// Renders the scene.
@@ -318,7 +334,7 @@ namespace Fusee.Engine.Core
         /// <param name="renderTex">If the render texture isn't null, the last pass of the deferred pipeline will render into it, else it will render to the screen.</param>        
         public void Render(RenderContext rc, WritableTexture renderTex = null)
         {
-            SetContext(rc);            
+            SetContext(rc);
 
             PrePassVisitor.PrePassTraverse(_sc, _rc);
             AccumulateLight();
@@ -334,16 +350,14 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
-                        userRenderStateSet = _rc.GetRenderStateSet();
                         PerCamRender(cam, renderTex);
                         //Reset Viewport                        
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                        _rc.SetRenderState(userRenderStateSet);
                     }
                 }
             }
             else
-                RenderAllPasses(new float4(0,0,_rc.ViewportWidth, _rc.ViewportHeight), renderTex);            
+                RenderAllPasses(new float4(0, 0, _rc.ViewportWidth, _rc.ViewportHeight), renderTex);
         }
 
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam, WritableTexture renderTex = null)
@@ -366,42 +380,44 @@ namespace Fusee.Engine.Core
             if (cam.Item2.Camera.ClearDepth)
                 _rc.Clear(ClearFlags.Depth);
 
-            _rc.View = cam.Item2.View;            
+            _rc.View = cam.Item2.View;
 
             RenderAllPasses(viewport, renderTex);
         }
 
         private void RenderAllPasses(float4 lightingPassViewport, WritableTexture renderTex = null)
         {
+            var preRenderStateSet = _rc.CurrentRenderState.Copy(); //"Snapshot" of the current render states as they came from the user code.
+            var preRenderLockedStates = new Dictionary<RenderState, KeyValuePair<bool, uint>>(_rc.LockedStates);
+
             if (_rc.ClearColor != _texClearColor)
                 BackgroundColor = _rc.ClearColor;
 
-            _rc.ClearColor = _texClearColor;            
+            _rc.ClearColor = _texClearColor;
+
+            //Pass 1: Geometry pass - render with current render states.
+            _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
+            RenderGeometryPass();
 
             //Shadow Map Passes: Renders the scene for each light that is casting shadows and creates the shadow map for it.
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes, false);
             RenderShadowMaps();
 
-            _rc.SetRenderState(RenderState.CullMode, (uint)Cull.Counterclockwise);
-            _rc.SetRenderState(RenderState.ZFunc, (uint)Compare.Less);
-
-            //Pass 1: Geometry pass
-            _rc.Viewport(0, 0, (int)_gBufferRenderTarget.TextureResolution, (int)_gBufferRenderTarget.TextureResolution, false);
-            RenderGeometryPass();
-
-            _rc.SetRenderState(RenderStateSet.Default);
+            //Undo all user-made and shadow pass related render state changes to be able to work on a "white sheet" from here on.
+            _rc.UnlockAllRenderStates();
+            _rc.SetRenderStateSet(new RenderStateSet());
 
             if (_ssaoOn)
-                RenderSSAO();            
+                RenderSSAO();
 
             //Pass 4 & 5: FXAA and Lighting
             _currentPass = RenderPasses.LIGHTING;
-            
+
             int width = renderTex == null ? (int)lightingPassViewport.z : renderTex.Width;
             int height = renderTex == null ? (int)lightingPassViewport.w : renderTex.Height;
 
             if (!FxaaOn)
-            {                
+            {
                 _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderLightPasses(renderTex);
             }
@@ -409,12 +425,21 @@ namespace Fusee.Engine.Core
             {
                 _rc.Viewport(0, 0, _lightedSceneTex.Width, _lightedSceneTex.Height);
                 RenderLightPasses(_lightedSceneTex);
-                
-                //Post-Effect: FXAA                
+
+                //Post-Effect: FXAA
                 _rc.Viewport((int)lightingPassViewport.x, (int)lightingPassViewport.y, width, height);
                 RenderFXAA(renderTex);
-            }            
-        }       
+            }
+
+            //Reset states and locks to the values they had before rendering the deferred passes (after shadow and geometry pass).
+            foreach (var state in preRenderStateSet.States)
+            {
+                if (preRenderLockedStates.TryGetValue(state.Key, out var lockState))
+                    _rc.SetRenderState(state.Key, state.Value, lockState.Key);
+                else
+                    _rc.SetRenderState(state.Key, state.Value);
+            }
+        }
 
         /// <summary>
         /// Renders one (lighting calculation) pass for each light and blends the results together. 
@@ -525,13 +550,13 @@ namespace Fusee.Engine.Core
                     _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
 
                 _rc.SetShaderEffect(_lightingPassEffect);
-                _rc.Render(_quad);                
+                _rc.Render(_quad);
                 lightPassCnt++;
             }
         }
 
         private void RenderShadowMaps()
-        {                        
+        {
             _currentPass = RenderPasses.SHADOW;
 
             foreach (var lightVisRes in LightViseratorResults)
@@ -591,7 +616,7 @@ namespace Fusee.Engine.Core
         }
 
         private void RenderGeometryPass()
-        {            
+        {
             _currentPass = RenderPasses.GEOMETRY;
             _rc.SetRenderTarget(_gBufferRenderTarget);
             Traverse(_sc.Children);
@@ -603,14 +628,14 @@ namespace Fusee.Engine.Core
             _currentPass = RenderPasses.SSAO;
             if (_ssaoTexEffect == null)
                 _ssaoTexEffect = ShaderCodeBuilder.SSAORenderTargetTextureEffect(_gBufferRenderTarget, 64, new float2((float)TexRes, (float)TexRes));
-            _rc.SetShaderEffect(_ssaoTexEffect);            
-            _rc.SetRenderTarget(_ssaoRenderTexture);           
+            _rc.SetShaderEffect(_ssaoTexEffect);
+            _rc.SetRenderTarget(_ssaoRenderTexture);
             _rc.Render(_quad);
 
             //Pass 3: Blur SSAO Texture
             _currentPass = RenderPasses.SSAO_BLUR;
             if (_blurEffect == null)
-                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);           
+                _blurEffect = ShaderCodeBuilder.SSAORenderTargetBlurEffect(_ssaoRenderTexture);
             _rc.SetShaderEffect(_blurEffect);
             _rc.SetRenderTarget(_blurRenderTex);
             _rc.Render(_quad);
@@ -639,7 +664,7 @@ namespace Fusee.Engine.Core
             var lightRes = lightVisRes.Item2;
             var light = lightRes.Light;
 
-            if(light.Type == LightType.Legacy)
+            if (light.Type == LightType.Legacy)
             {
                 lightRes.Rotation = new float4x4
                 (

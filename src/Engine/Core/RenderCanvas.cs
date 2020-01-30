@@ -160,6 +160,7 @@ namespace Fusee.Engine.Core
 
             RC = new RenderContext(ContextImplementor);
             RC.Viewport(0, 0, Width, Height);
+            RC.SetRenderStateSet(RenderStateSet.Default);
 
             Audio.Instance.AudioImp = AudioImplementor;
             Network.Instance.NetworkImp = NetworkImplementor;
@@ -182,19 +183,18 @@ namespace Fusee.Engine.Core
 
                 //Resets the RenderStateSet and Viewport, View and Projection Matrix to their default state.
                 RC.ResetToDefaultState();
-                RC.SetRenderState(RenderStateSet.Default);
 
                 // post-rendering
                 Input.Instance.PostRender();
             };
 
-            CanvasImplementor.Resize += delegate 
-            {                
+            CanvasImplementor.Resize += delegate
+            {
                 RC.DefaultState.CanvasWidth = Width;
                 RC.DefaultState.CanvasHeight = Height;
-                Resize(new ResizeEventArgs(Width, Height)); 
+                Resize(new ResizeEventArgs(Width, Height));
             };
-        }        
+        }
 
         /// <summary>
         ///     Callback method to invoke user code for rendering a frame.
