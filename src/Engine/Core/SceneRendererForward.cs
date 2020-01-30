@@ -9,6 +9,7 @@ using Fusee.Xene;
 using Fusee.Xirkit;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
+using Fusee.Engine.Core.ShaderShards.Fragment;
 
 namespace Fusee.Engine.Core
 {
@@ -38,7 +39,7 @@ namespace Fusee.Engine.Core
 
                 if (_numberOfLights != _lightResults.Count)
                 {
-                    _lightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+                    LightingShard.LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
                     HasNumberOfLightsChanged = true;
                     _numberOfLights = _lightResults.Count;
                 }
@@ -705,15 +706,15 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        private Dictionary<int, LightParamStrings> _lightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
+        
 
         private void UpdateShaderParamsForAllLights()
         {
             for (var i = 0; i < _lightResults.Count; i++)
             {
-                if (!_lightPararamStringsAllLights.ContainsKey(i))
+                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
                 {
-                    _lightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
                 }
 
                 UpdateShaderParamForLight(i, _lightResults[i].Item2);
@@ -734,7 +735,7 @@ namespace Fusee.Engine.Core
                 Diagnostics.Warn("Strength of the light will be clamped between 0 and 1.");
             }
 
-            var lightParamStrings = _lightPararamStringsAllLights[position];
+            var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
             _rc.SetFXParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
@@ -804,40 +805,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-    }
-
-    internal struct LightParamStrings
-    {
-        public string PositionViewSpace;
-        public string PositionWorldSpace;
-        public string Intensities;
-        public string MaxDistance;
-        public string Strength;
-        public string OuterAngle;
-        public string InnerAngle;
-        public string Direction;
-        public string DirectionWorldSpace;
-        public string LightType;
-        public string IsActive;
-        public string IsCastingShadows;
-        public string Bias;
-
-        public LightParamStrings(int arrayPos)
-        {
-            PositionViewSpace = $"allLights[{arrayPos}].position";
-            PositionWorldSpace = $"allLights[{arrayPos}].positionWorldSpace";
-            Intensities = $"allLights[{arrayPos}].intensities";
-            MaxDistance = $"allLights[{arrayPos}].maxDistance";
-            Strength = $"allLights[{arrayPos}].strength";
-            OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
-            InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
-            Direction = $"allLights[{arrayPos}].direction";
-            DirectionWorldSpace = $"allLights[{arrayPos}].directionWorldSpace";
-            LightType = $"allLights[{arrayPos}].lightType";
-            IsActive = $"allLights[{arrayPos}].isActive";
-            IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
-            Bias = $"allLights[{arrayPos}].bias";
-        }
-
-    }
+    }    
 }

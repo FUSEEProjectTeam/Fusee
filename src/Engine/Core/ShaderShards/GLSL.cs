@@ -5,7 +5,7 @@ using System.Linq;
 namespace Fusee.Engine.Core.ShaderShards
 {
     // ReSharper disable once InconsistentNaming
-    internal class GLSL
+    internal static class GLSL
     {
         internal enum Type
         {

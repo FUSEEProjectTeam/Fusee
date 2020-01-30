@@ -535,19 +535,19 @@ namespace Fusee.Engine.Core
                 }
 
                 UpdateLightAndShadowParams(lightVisRes, _lightingPassEffect, isCastingShadows);
-                _lightingPassEffect.SetEffectParam("PassNo", lightPassCnt);
+                _lightingPassEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.RenderPassNo, lightPassCnt);
 
                 if (_needToSetSSAOTex)
                 {
-                    _lightingPassEffect.SetEffectParam("SsaoOn", _ssaoOn ? 1 : 0);
+                    _lightingPassEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.SsaoOn, _ssaoOn ? 1 : 0);
                     _needToSetSSAOTex = false;
                 }
 
                 //Set background color only in last light pass to NOT blend the color (additive).
                 if (i == LightViseratorResults.Count - 1)
-                    _lightingPassEffect.SetEffectParam("BackgroundColor", BackgroundColor);
+                    _lightingPassEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.BackgroundColor, BackgroundColor);
                 else
-                    _lightingPassEffect.SetEffectParam("BackgroundColor", _texClearColor);
+                    _lightingPassEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.BackgroundColor, _texClearColor);
 
                 _rc.SetShaderEffect(_lightingPassEffect);
                 _rc.Render(_quad);

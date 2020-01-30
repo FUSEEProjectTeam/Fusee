@@ -438,8 +438,8 @@ namespace Fusee.Engine.Core
                 {
                     var pxBody = new List<string>()
                     {
-                        LightingShard.LightStructDeclaration(),
-                        FragPropertiesShard.FixedNumberLightArray(),
+                        LightingShard.LightStructDeclaration,
+                        FragPropertiesShard.FixedNumberLightArray,
                         FragPropertiesShard.ColorOut(),
                         LightingShard.AssembleLightingMethods(EffectProps),
                         FragMainShard.ForwardLighting(EffectProps)
