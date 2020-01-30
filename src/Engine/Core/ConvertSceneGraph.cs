@@ -23,18 +23,6 @@ namespace Fusee.Engine.Core
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
 
-        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
-
-        //private IEnumerable<System.Type> _codeComponentSubClasses;
-
-        //public ConvertSceneGraph()
-        //{
-        //  _codeComponentSubClasses = 
-        //    Assembly.GetExecutingAssembly()
-        //    .GetTypes()
-        //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
-        //}
-
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
         /// </summary>
@@ -63,6 +51,7 @@ namespace Fusee.Engine.Core
         }
 
         #region Visitors
+
         /// <summary>
         /// Converts the scene node container.
         /// </summary>
@@ -90,17 +79,6 @@ namespace Fusee.Engine.Core
                 else
                     _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
-
-            ////WIP!
-            ////If the SceneNodeContainers' name contains the name of some CodeComponent subclass,
-            ////create CodeComponent of this type and add it to the currentNode
-            //foreach (var type in _codeComponentSubClasses)
-            //{
-            //    if (!snc.Name.Contains(type.ToString())) continue;
-
-            //    var codeComp = Activator.CreateInstance(type);
-            //    //_currentNode.AddComponent(codeComp);
-            //}
         }
 
         ///<summary>
