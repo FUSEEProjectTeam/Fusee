@@ -1,5 +1,6 @@
 ﻿using ProtoBuf;
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -968,7 +969,29 @@ namespace Fusee.Math.Core
         /// </returns>
         public override string ToString()
         {
-            return String.Format("({0}, {1}, {2})", x, y, z);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current float3.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            return String.Format(provider, "({1}{0} {2}{0} {3})", separator, x, y, z);
         }
 
         #endregion public override string ToString()
@@ -1067,6 +1090,42 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, float3> Parse { get; set; }
+        public static Converter<string, float3> ParseConverter { get; set; } = (x => Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float3.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float3 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 3)
+                throw new FormatException("String parse for float3 did not result in exactly 3 items.");
+            
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float3(floats[0], floats[1], floats[2]);
+        }
+
     }
 }
