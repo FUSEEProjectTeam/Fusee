@@ -704,9 +704,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        #endregion
-
-        
+        #endregion        
 
         private void UpdateShaderParamsForAllLights()
         {
@@ -805,5 +803,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-    }    
+    }
 }

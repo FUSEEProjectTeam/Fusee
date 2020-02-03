@@ -21,6 +21,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private int _textureCount;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
+        private BlendEquationMode _blendEquationAlpha;
+        private BlendEquationMode _blendEquationRgb;
+        private int _blendDstRgb;
+        private int _blendSrcRgb;
+        private int _blendSrcAlpha;
+        private int _blendDstAlpha;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -33,8 +40,21 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-
             GL.CullFace(CullFaceMode.Back);
+
+            GL.GetInteger(GetPName.BlendSrcAlpha, out int blendSrcAlpha);
+            GL.GetInteger(GetPName.BlendDstAlpha, out int blendDstAlpha);
+            GL.GetInteger(GetPName.BlendDstRgb, out int blendDstRgb);
+            GL.GetInteger(GetPName.BlendSrcRgb, out int blendSrcRgb);
+            GL.GetInteger(GetPName.BlendEquationAlpha, out int blendEqA);
+            GL.GetInteger(GetPName.BlendEquationRgb, out int blendEqRgb);
+
+            _blendEquationAlpha = BlendOperationToOgl((BlendOperation)blendEqA);
+            _blendEquationRgb = BlendOperationToOgl((BlendOperation)blendEqRgb);
+            _blendDstRgb = BlendToOgl((Blend)blendDstRgb);
+            _blendSrcRgb = BlendToOgl((Blend)blendSrcRgb);
+            _blendSrcAlpha = BlendToOgl((Blend)blendSrcAlpha);
+            _blendDstAlpha = BlendToOgl((Blend)blendDstAlpha);
 
             Diagnostics.Debug(GetHardwareDescription());
         }
@@ -701,7 +721,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
         public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
         {
-            int iParam = ((ShaderParam)param).handle;           
+            int iParam = ((ShaderParam)param).handle;
             int[] texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
@@ -1373,7 +1393,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             }
         }
 
-        internal static int BlendToOgl(Blend blend, bool isForAlpha = false)
+        internal static int BlendToOgl(Blend blend, bool isForBlendFactorAlpha = false)
         {
             switch (blend)
             {
@@ -1398,9 +1418,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 case Blend.InverseDestinationColor:
                     return (int)BlendingFactorSrc.OneMinusDstColor;
                 case Blend.BlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor);
+                    return (int)((isForBlendFactorAlpha) ? BlendingFactorSrc.ConstantAlpha : BlendingFactorSrc.ConstantColor);
                 case Blend.InverseBlendFactor:
-                    return (int)((isForAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor);
+                    return (int)((isForBlendFactorAlpha) ? BlendingFactorSrc.OneMinusConstantAlpha : BlendingFactorSrc.OneMinusConstantColor);
                 // Ignored...
                 // case Blend.SourceAlphaSaturated:
                 //     break;
@@ -1567,54 +1587,45 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                         GL.Enable(EnableCap.Blend);
                     break;
                 case RenderState.BlendOperation:
-                    int alphaMode;
-                    GL.GetInteger(GetPName.BlendEquationAlpha, out alphaMode);
-                    GL.BlendEquationSeparate(BlendOperationToOgl((BlendOperation)value), (BlendEquationMode)alphaMode);
+                    {
+                        _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
+                        GL.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    }
                     break;
+
                 case RenderState.BlendOperationAlpha:
-                    int rgbMode;
-                    GL.GetInteger(GetPName.BlendEquationRgb, out rgbMode);
-                    GL.BlendEquationSeparate((BlendEquationMode)rgbMode, BlendOperationToOgl((BlendOperation)value));
+                    {
+                        _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
+                        GL.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
+                    }
                     break;
                 case RenderState.SourceBlend:
                     {
-                        int rgbDst, alphaSrc, alphaDst;
-                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
-                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
-                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)BlendToOgl((Blend)value), (BlendingFactorDest)rgbDst, (BlendingFactorSrc)alphaSrc, (BlendingFactorDest)alphaDst);
+                        _blendSrcRgb = BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlend:
                     {
-                        int rgbSrc, alphaSrc, alphaDst;
-                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
-                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
-                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc, (BlendingFactorDest)BlendToOgl((Blend)value), (BlendingFactorSrc)alphaSrc, (BlendingFactorDest)alphaDst);
+                        _blendDstRgb = BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
                     }
                     break;
                 case RenderState.SourceBlendAlpha:
                     {
-                        int rgbSrc, rgbDst, alphaDst;
-                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
-                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
-                        GL.GetInteger(GetPName.BlendDstAlpha, out alphaDst);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc, (BlendingFactorDest)rgbDst, (BlendingFactorSrc)BlendToOgl((Blend)value, true), (BlendingFactorDest)alphaDst);
+                        _blendSrcAlpha = BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlendAlpha:
                     {
-                        int rgbSrc, rgbDst, alphaSrc;
-                        GL.GetInteger(GetPName.BlendSrcRgb, out rgbSrc);
-                        GL.GetInteger(GetPName.BlendDstRgb, out rgbDst);
-                        GL.GetInteger(GetPName.BlendSrcAlpha, out alphaSrc);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)rgbSrc, (BlendingFactorDest)rgbDst, (BlendingFactorSrc)alphaSrc, (BlendingFactorDest)BlendToOgl((Blend)value, true));
+                        _blendDstAlpha = BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
                     }
                     break;
                 case RenderState.BlendFactor:
                     GL.BlendColor(Color.FromArgb((int)value));
-                    break;               
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
             }
@@ -1716,8 +1727,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     }
                 case RenderState.AlphaBlendEnable:
                     {
-                        int blendEnable;
-                        GL.GetInteger(GetPName.Blend, out blendEnable);
+                        GL.GetInteger(GetPName.Blend, out int blendEnable);
                         return (uint)(blendEnable);
                     }
                 case RenderState.BlendOperation:
@@ -1904,12 +1914,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, gBuffer);
 
             int depthCnt = 0;
-           
+
             var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
 
             if (!renderTarget.IsDepthOnly)
             {
-                var attachments = new List<DrawBuffersEnum>();               
+                var attachments = new List<DrawBuffersEnum>();
 
                 //Textures
                 for (int i = 0; i < texHandles.Length; i++)

@@ -32,6 +32,13 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         private int _textureCount;
         private readonly Dictionary<WebGLUniformLocation, int> _shaderParam2TexUnit;
 
+        private uint _blendEquationAlpha;
+        private uint _blendEquationRgb;
+        private uint _blendDstRgb;
+        private uint _blendSrcRgb;
+        private uint _blendSrcAlpha;
+        private uint _blendDstAlpha;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -46,8 +53,14 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
             // the meaning of what's Front and Back of a face simply flips.
             // TODO - implement this in render states!!!
-
             gl.CullFace(BACK);
+
+            _blendSrcAlpha = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_SRC_ALPHA));
+            _blendDstAlpha = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_DST_ALPHA));
+            _blendDstRgb = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_DST_RGB));
+            _blendSrcRgb = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_SRC_RGB));
+            _blendEquationAlpha = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_ALPHA));
+            _blendEquationRgb = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_RGB));
         }
 
 
@@ -286,7 +299,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             uint pixelFormat = GetTexturePixelInfo(img).Format;
 
-            // copy the bytes from img to GPU texture
+            // copy the bytes from image to GPU texture
             int bytesTotal = width * height * img.PixelFormat.BytesPerPixel;
             var scanlines = img.ScanLines(startX, startY, width, height);
             byte[] bytes = new byte[bytesTotal];
@@ -688,7 +701,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[hParam] = texUnit;
             }
             gl.Uniform1i(hParam, texUnit);
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));            
+            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
             gl.BindTexture(TEXTURE_2D, ((TextureHandle)texId).TexHandle);
         }
 
@@ -701,7 +714,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         {
             var hParam = ((ShaderParam)param).handle;
             var firstTexUnit = 0;
-            
+
             for (int i = 0; i < texIds.Length; i++)
             {
                 if (!_shaderParam2TexUnit.TryGetValue(hParam, out var texUnit))
@@ -733,7 +746,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 _shaderParam2TexUnit[hParam] = texUnit;
             }
             gl.Uniform1i(hParam, texUnit);
-            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));          
+            gl.ActiveTexture((uint)(TEXTURE0 + texUnit));
             gl.BindTexture(TEXTURE_CUBE_MAP, ((TextureHandle)texId).TexHandle);
         }
 
@@ -1604,55 +1617,41 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         gl.Enable(BLEND);
                     break;
                 case RenderState.BlendOperation:
-                    uint alphaMode;
-                    alphaMode = (uint)gl.GetParameter(BLEND_EQUATION_ALPHA);
-                    gl.BlendEquationSeparate(BlendOperationToOgl((BlendOperation)value), alphaMode);
+                    _blendEquationRgb = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_ALPHA));
+                    gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.BlendOperationAlpha:
-                    uint rgbMode;
-                    rgbMode = (uint)gl.GetParameter(BLEND_EQUATION_RGB);
-                    gl.BlendEquationSeparate(rgbMode, BlendOperationToOgl((BlendOperation)value));
+                    _blendEquationAlpha = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_RGB));
+                    gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.SourceBlend:
                     {
-                        uint rgbDst, alphaSrc, alphaDst;
-                        rgbDst = (uint)gl.GetParameter(BLEND_DST_RGB);
-                        alphaSrc = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
-                        alphaDst = (uint)gl.GetParameter(BLEND_DST_ALPHA);
-                        gl.BlendFuncSeparate(BlendToOgl((Blend)value), rgbDst, alphaSrc, alphaDst);
+                        _blendSrcRgb = BlendToOgl((Blend)value);
+                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlend:
                     {
-                        uint rgbSrc, alphaSrc, alphaDst;
-                        rgbSrc = (uint)gl.GetParameter(BLEND_SRC_RGB);
-                        alphaSrc = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
-                        alphaDst = (uint)gl.GetParameter(BLEND_DST_ALPHA);
-                        gl.BlendFuncSeparate(rgbSrc, BlendToOgl((Blend)value), alphaSrc, alphaDst);
+                        _blendDstRgb = BlendToOgl((Blend)value);
+                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.SourceBlendAlpha:
                     {
-                        uint rgbSrc, rgbDst, alphaDst;
-                        rgbSrc = (uint)gl.GetParameter(BLEND_SRC_RGB);
-                        rgbDst = (uint)gl.GetParameter(BLEND_DST_RGB);
-                        alphaDst = (uint)gl.GetParameter(BLEND_DST_ALPHA);
-                        gl.BlendFuncSeparate(rgbSrc, rgbDst, BlendToOgl((Blend)value, true), alphaDst);
+                        _blendSrcAlpha = BlendToOgl((Blend)value);
+                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlendAlpha:
                     {
-                        uint rgbSrc, rgbDst, alphaSrc;
-                        rgbSrc = (uint)gl.GetParameter(BLEND_SRC_RGB);
-                        rgbDst = (uint)gl.GetParameter(BLEND_DST_RGB);
-                        alphaSrc = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
-                        gl.BlendFuncSeparate(rgbSrc, rgbDst, alphaSrc, BlendToOgl((Blend)value, true));
+                        _blendDstAlpha = BlendToOgl((Blend)value);
+                        gl.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.BlendFactor:
                     var blendcolor = ColorUint.Tofloat4((ColorUint)value);
                     gl.BlendColor(blendcolor.r, blendcolor.g, blendcolor.b, blendcolor.a);
-                    break;               
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException("renderState");
             }
@@ -1987,7 +1986,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="type">The texture to detach.</param>
         public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
         {
-            ChangeFramebufferTexture2D(renderTarget, type, null); //TODO: ckeck if "null" is the equivalent to the zero texture (handle = 0) in OpenGL Core
+            ChangeFramebufferTexture2D(renderTarget, type, null); //TODO: check if "null" is the equivalent to the zero texture (handle = 0) in OpenGL Core
         }
 
         /// <summary>
