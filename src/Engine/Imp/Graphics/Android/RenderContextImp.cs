@@ -861,7 +861,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
         }
 
         public void SetTangents(IMeshImp mr, float4[] tangents)
@@ -883,7 +883,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
         }
 
         public void SetBiTangents(IMeshImp mr, float3[] bitangents)
@@ -905,7 +905,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.",
                     vertsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+
         }
 
         /// <summary>
@@ -933,7 +933,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.",
                     normsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -961,7 +960,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.",
                     indicesBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -989,7 +987,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.",
                     weightsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -1017,7 +1014,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.",
                     uvsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -1046,7 +1042,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.",
                     colsBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -1077,7 +1072,6 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 throw new ApplicationException(String.Format(
                     "Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.",
                     trisBytes, vboBytes));
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
         /// <summary>
@@ -1633,7 +1627,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         GL.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
-                case RenderState.BlendFactor:                    
+                case RenderState.BlendFactor:
                     float4 col = ColorUint.FromRgba(value).Tofloat4();
                     GL.BlendColor(col.r, col.g, col.b, col.a);
                     break;
@@ -1941,26 +1935,29 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Detaches a texture from the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="FramebufferAttachment.DepthAttachment"/> will be detached.</param>       
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, type, 0);
+            ChangeFramebufferTexture2D(renderTarget, attachment, 0, isDepthTex);
         }
+
 
         /// <summary>
-        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// Attaches a texture to the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to <see cref="FramebufferAttachment.ColorAttachment1"/>.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="FramebufferAttachment.DepthAttachment"/>.</param>        
         /// <param name="texHandle">The gpu handle of the texture.</param>
-        public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
+        public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, type, ((TextureHandle)texHandle).TexHandle);
+            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexHandle, isDepthTex);
         }
 
-        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, RenderTargetTextureTypes type, int handle)
+        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, int attachment, int handle, bool isDepth)
         {
-            GL.GetInteger(GetPName.FramebufferBinding, out var boundFbo);
+            GL.GetInteger(GetPName.FramebufferBinding, out int boundFbo);
             var rtFbo = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
 
             var isCurrentFbo = true;
@@ -1971,13 +1968,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, rtFbo);
             }
 
-            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
-            var thisTexPos = (int)type;
-
-            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null || depthTexPos < thisTexPos)
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (int)type, TextureTarget.Texture2D, handle, 0);
-            else if (depthTexPos > thisTexPos)
-                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + (thisTexPos - 1), TextureTarget.Texture2D, handle, 0);
+            if (!isDepth)
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.ColorAttachment0 + attachment, TextureTarget.Texture2D, handle, 0);
+            else
+                GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferSlot.DepthAttachment, TextureTarget.Texture2D, handle, 0);
 
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
                 throw new Exception($"Error creating RenderTarget: {GL.GetErrorCode()}, {GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer)}");

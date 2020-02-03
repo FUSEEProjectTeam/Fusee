@@ -39,6 +39,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Determines if the scene gets rendered with Screen Space Ambient Occlusion.
+        /// If possible set this in the "Init" method to avoid the creation of an SSAO texture if you don't need one.
         /// </summary>
         public bool SsaoOn
         {
@@ -48,10 +49,6 @@ namespace Fusee.Engine.Core
             }
             set
             {
-                if (value == false)
-                    _rc.DetachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);
-                else
-                    _rc.ReattachTextureFromFbo(_gBufferRenderTarget, RenderTargetTextureTypes.G_SSAO);
                 _ssaoOn = value;
                 _needToSetSSAOTex = true;
             }

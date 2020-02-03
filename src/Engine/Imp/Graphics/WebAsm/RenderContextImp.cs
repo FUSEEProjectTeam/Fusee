@@ -890,7 +890,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <exception cref="ApplicationException"></exception>
         public void SetVertices(IMeshImp mr, float3[] vertices)
         {
-            Diagnostics.Log("[SetVertices]");
+            Diagnostics.Debug("[SetVertices]");
             if (vertices == null || vertices.Length == 0)
             {
                 throw new ArgumentException("Vertices must not be null or empty");
@@ -902,7 +902,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 ((MeshImp)mr).VertexBufferObject = gl.CreateBuffer();
 
             gl.BindBuffer(ARRAY_BUFFER, ((MeshImp)mr).VertexBufferObject);
-            Diagnostics.Log("[Before gl.BufferData]");
+            Diagnostics.Debug("[Before gl.BufferData]");
 
             var verticesFlat = new float[vertices.Length * 3];
             unsafe
@@ -914,11 +914,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
             gl.BufferData(ARRAY_BUFFER, verticesFlat, STATIC_DRAW);
 
-            Diagnostics.Log("[After gl.BufferData]");
+            Diagnostics.Debug("[After gl.BufferData]");
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != vertsBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (vertices). Tried to upload {0} bytes, uploaded {1}.", vertsBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+
         }
 
         /// <summary>
@@ -955,7 +955,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != tangentBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (tangents). Tried to upload {0} bytes, uploaded {1}.", tangentBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+
         }
 
         /// <summary>
@@ -992,7 +992,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != bitangentBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (bitangents). Tried to upload {0} bytes, uploaded {1}.", bitangentBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
         }
 
         /// <summary>
@@ -1030,7 +1029,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != normsBytes)
                 throw new ApplicationException(String.Format("Problem uploading normal buffer to VBO (normals). Tried to upload {0} bytes, uploaded {1}.", normsBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
         }
 
         /// <summary>
@@ -1067,7 +1065,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != indicesBytes)
                 throw new ApplicationException(String.Format("Problem uploading bone indices buffer to VBO (bone indices). Tried to upload {0} bytes, uploaded {1}.", indicesBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
         }
 
         /// <summary>
@@ -1104,7 +1101,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != weightsBytes)
                 throw new ApplicationException(String.Format("Problem uploading bone weights buffer to VBO (bone weights). Tried to upload {0} bytes, uploaded {1}.", weightsBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+
         }
 
         /// <summary>
@@ -1141,7 +1138,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != uvsBytes)
                 throw new ApplicationException(String.Format("Problem uploading uv buffer to VBO (uvs). Tried to upload {0} bytes, uploaded {1}.", uvsBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+
         }
 
         /// <summary>
@@ -1168,7 +1165,6 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != colsBytes)
                 throw new ApplicationException(String.Format("Problem uploading color buffer to VBO (colors). Tried to upload {0} bytes, uploaded {1}.", colsBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
         }
 
         /// <summary>
@@ -1196,7 +1192,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             vboBytes = (int)gl.GetBufferParameter(ELEMENT_ARRAY_BUFFER, BUFFER_SIZE);
             if (vboBytes != trisBytes)
                 throw new ApplicationException(String.Format("Problem uploading vertex buffer to VBO (offsets). Tried to upload {0} bytes, uploaded {1}.", trisBytes, vboBytes));
-            gl.BindBuffer(ARRAY_BUFFER, null);
+
         }
 
         /// <summary>
@@ -1983,24 +1979,27 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Detaches a texture from the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with <see cref="COLOR_ATTACHMENT1"/>.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with <see cref="DEPTH_ATTACHMENT"/> will be detached.</param>       
+        public void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, type, null); //TODO: check if "null" is the equivalent to the zero texture (handle = 0) in OpenGL Core
+            ChangeFramebufferTexture2D(renderTarget, attachment, null, isDepthTex); //TODO: check if "null" is the equivalent to the zero texture (handle = 0) in OpenGL Core
         }
+
 
         /// <summary>
-        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// Attaches a texture to the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to <see cref="COLOR_ATTACHMENT1"/>.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to <see cref="DEPTH_ATTACHMENT"/>.</param>        
         /// <param name="texHandle">The gpu handle of the texture.</param>
-        public void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle)
+        public void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0)
         {
-            ChangeFramebufferTexture2D(renderTarget, type, ((TextureHandle)texHandle).TexHandle);
+            ChangeFramebufferTexture2D(renderTarget, attachment, ((TextureHandle)texHandle).TexHandle, isDepthTex);
         }
 
-        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, RenderTargetTextureTypes type, WebGLTexture handle)
+        private void ChangeFramebufferTexture2D(IRenderTarget renderTarget, int attachment, WebGLTexture handle, bool isDepth)
         {
             var boundFbo = (WebGLFramebuffer)gl2.GetParameter(FRAMEBUFFER_BINDING);
             var rtFbo = ((FrameBufferHandle)renderTarget.GBufferHandle).Handle;
@@ -2013,13 +2012,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl2.BindFramebuffer(FRAMEBUFFER, rtFbo);
             }
 
-            var depthTexPos = (int)RenderTargetTextureTypes.G_DEPTH;
-            var thisTexPos = (int)type;
-
-            if (renderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] == null || depthTexPos < thisTexPos)
-                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)type, TEXTURE_2D, handle, 0);
-            else if (depthTexPos > thisTexPos)
-                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)(thisTexPos - 1), TEXTURE_2D, handle, 0);
+            if (!isDepth)
+                gl2.FramebufferTexture2D(FRAMEBUFFER, COLOR_ATTACHMENT0 + (uint)attachment, TEXTURE_2D, handle, 0);
+            else
+                gl2.FramebufferTexture2D(FRAMEBUFFER, DEPTH_ATTACHMENT, TEXTURE_2D, handle, 0);
 
             if (gl2.CheckFramebufferStatus(FRAMEBUFFER) != FRAMEBUFFER_COMPLETE)
                 throw new Exception($"Error creating RenderTarget: {gl2.GetError()}, {gl2.CheckFramebufferStatus(FRAMEBUFFER)}");

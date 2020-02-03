@@ -1662,27 +1662,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Detaches a texture from the frame buffer object, associated with the given render target.
-        /// </summary>
-        /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
-        {
-            _rci.DetachTextureFromFbo(renderTarget, type);
-        }
-
-        /// <summary>
-        /// Reattaches a texture from the frame buffer object, associated with the given render target.
-        /// </summary>
-        /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        public void ReattachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type)
-        {
-            var texHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)renderTarget.RenderTextures[(int)type]);
-            _rci.ReatatchTextureFromFbo(renderTarget, type, texHandle);
-        }
-
-        /// <summary>
         /// Renders the specified mesh.
         /// </summary>
         /// <param name="m">The mesh that should be rendered.</param>

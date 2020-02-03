@@ -20,22 +20,22 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         /// <returns></returns>
         public static string LightStructDeclaration = @"
-            struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };";
+        struct Light 
+        {
+            vec3 position;
+            vec3 positionWorldSpace;
+            vec4 intensities;
+            vec3 direction;
+            vec3 directionWorldSpace;
+            float maxDistance;
+            float strength;
+            float outerConeAngle;
+            float innerConeAngle;
+            int lightType;
+            int isActive;
+            int isCastingShadows;
+            float bias;
+        };";
 
         /// <summary>
         /// Caches "allLight[i]." names (used as uniform parameters).
