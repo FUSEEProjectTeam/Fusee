@@ -9,7 +9,7 @@ namespace Fusee.Math.Core
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
     /// <remarks>
-    /// The float3 structure is suitable for interoperation with unmanaged code requiring three consecutive floats.
+    /// The float3 structure is suitable for inter-operation with unmanaged code requiring three consecutive floats.
     /// </remarks>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]
@@ -896,7 +896,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        /// Multiplies two instances (componentwise).
+        /// Multiplies two instances (component-wise).
         /// </summary>
         /// <param name="vec1">The first instance.</param>
         /// <param name="vec2">The second instance.</param>
@@ -938,7 +938,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>
-        /// True, if left does not equa lright; false otherwise.
+        /// True, if left does not equal right; false otherwise.
         /// </returns>
         public static bool operator !=(float3 left, float3 right)
         {

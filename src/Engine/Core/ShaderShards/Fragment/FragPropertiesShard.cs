@@ -186,11 +186,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 if (lc.IsCastingShadows)
                 {
                     if (lc.Type != LightType.Point)
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, "ShadowMap"));                        
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.Sampler2D, UniformNameDeclarations.ShadowMap));                        
                     else
-                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, "ShadowCubeMap"));                    
+                        uniforms.Add(GLSL.CreateUniform(GLSL.Type.SamplerCube, UniformNameDeclarations.ShadowCubeMap));                    
                 }
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "LightSpaceMatrix"));                
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.LightSpaceMatrix));                
             }
             else
             {
@@ -200,10 +200,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                 uniforms.Add($"uniform {GLSL.DecodeType(GLSL.Type.Mat4)}[{numberOfCascades}] LightSpaceMatrices;\n");
             }
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "PassNo"));
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, "SsaoOn"));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.RenderPassNo));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Int, UniformNameDeclarations.SsaoOn));
 
-            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, "BackgroundColor"));
+            uniforms.Add(GLSL.CreateUniform(GLSL.Type.Vec4, UniformNameDeclarations.BackgroundColor));
             return string.Join("\n", uniforms);
         }
 
@@ -211,9 +211,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// Creates the "allLights" uniform array, as it is used in forward rendering.
         /// </summary>
         /// <returns></returns>
-        public static string FixedNumberLightArray()
-        {
-            return $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
-        }        
+        public static string FixedNumberLightArray = $"uniform Light allLights[{LightingShard.NumberOfLightsForward}];";
+               
     }
 }

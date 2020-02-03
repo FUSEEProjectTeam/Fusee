@@ -31,7 +31,7 @@ namespace Fusee.Engine.Core
                     break;
                 case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
                     // ReSharper disable once InconsistentNaming
-                    _rc.HandleAndUpdateChangedButExisistingEffectVariable(senderSF, args.ChangedEffectName, args.ChangedEffectValue);
+                    _rc.HandleAndUpdateChangedButExisistingEffectVariable(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
                 case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
                     // We need to recreate everything

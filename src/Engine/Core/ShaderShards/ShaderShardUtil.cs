@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core.ShaderShards
     /// Collection of bools, describing the mesh properties.
     /// </summary>
     public struct MeshProps
-    {        
+    {
         /// <summary>
         /// Does this mesh have normals?
         /// </summary>
@@ -98,7 +98,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// Does this material have a bump map?
         /// </summary>
-        public bool HasBump;        
+        public bool HasBump;
     }
 
     /// <summary>
@@ -109,13 +109,13 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The Standard material.
         /// </summary>
-        Standard,   
-        
+        Standard,
+
         /// <summary>
         /// A material for physically based lighting.
         /// </summary>
         MaterialPbr
-    }    
+    }
 
     /// <summary>
     /// Provides utility methods to write and use Shader Shards.
@@ -141,14 +141,14 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="wc">The weights.</param>
         /// <returns></returns>
         public static ShaderEffectProps CollectEffectProps(Mesh mesh, MaterialComponent mc, WeightComponent wc = null)
-        {           
+        {
             return new ShaderEffectProps()
             {
                 MatType = AnalyzeMaterialType(mc),
                 MatProbs = AnalzyeMaterialParams(mc),
                 MeshProbs = AnalyzeMesh(mesh, wc),
-                
-            };            
+
+            };
         }
 
         private static MaterialProps AnalzyeMaterialParams(MaterialComponent mc)
@@ -161,7 +161,7 @@ namespace Fusee.Engine.Core.ShaderShards
                 HasSpecularTexture = mc.HasSpecular && mc.Specular.Texture != null,
                 HasEmissive = mc.HasEmissive,
                 HasEmissiveTexture = mc.HasEmissive && mc.Emissive.Texture != null,
-                HasBump = mc.HasBump                
+                HasBump = mc.HasBump
             };
         }
 
@@ -177,7 +177,7 @@ namespace Fusee.Engine.Core.ShaderShards
         private static MeshProps AnalyzeMesh(Mesh mesh, WeightComponent wc = null)
         {
             return new MeshProps
-            {                
+            {
                 HasNormals = mesh == null || mesh.Normals != null && mesh.Normals.Length > 0,
                 HasUVs = mesh == null || mesh.UVs != null && mesh.UVs.Length > 0,
                 HasColors = false,

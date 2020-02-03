@@ -8,7 +8,7 @@ using Fusee.Math.Core;
 using Fusee.Serialization;
 
 namespace Fusee.Engine.Core
-{   
+{
 
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
@@ -18,6 +18,20 @@ namespace Fusee.Engine.Core
     public class RenderContext
     {
         #region Fields
+
+        #region RenderState management
+
+        /// <summary>
+        /// Saves the current RenderState.
+        /// </summary>
+        public RenderStateSet CurrentRenderState { get; private set; } = new RenderStateSet();
+
+        /// <summary>
+        /// If a state is forced it will remain the value currently set in <see cref="CurrentRenderState"/>.
+        /// </summary>
+        public Dictionary<RenderState, KeyValuePair<bool, uint>> LockedStates { get; private set; } = new Dictionary<RenderState, KeyValuePair<bool, uint>>();
+
+        #endregion
 
         /// <summary>
         /// Gets and sets the viewport width.
@@ -58,7 +72,7 @@ namespace Fusee.Engine.Core
         /// <value>
         ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
         /// </value>
-        public bool DebugLinesEnabled { get; set; } = true;       
+        public bool DebugLinesEnabled { get; set; } = true;
 
         /// <summary>
         /// Array of bone matrices.
@@ -80,7 +94,7 @@ namespace Fusee.Engine.Core
 
         #region Private Fields
 
-        private readonly IRenderContextImp _rci;       
+        private readonly IRenderContextImp _rci;
 
         private readonly MatrixParamNames _currentShaderParams;
         private ShaderEffect _currentShaderEffect;
@@ -872,8 +886,6 @@ namespace Fusee.Engine.Core
             // Bones
             _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
 
-            //
-
             _updatedShaderParams = true;
             UpdateCurrentShader();
         }
@@ -1035,11 +1047,9 @@ namespace Fusee.Engine.Core
         // ReSharper disable once InconsistentNaming
         public void SetFXParam(string name, object value)
         {
-            object tmpFXParam;
-
-            if (AllFXParams.TryGetValue(name, out tmpFXParam)) // already in cache?
+            if (AllFXParams.ContainsKey(name))
             {
-                if (tmpFXParam.Equals(value)) return; // no new value
+                if (AllFXParams[name].Equals(value)) return; // no new value
 
                 AllFXParams[name] = value;
 
@@ -1502,6 +1512,36 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Unlocks the given <see cref="RenderState"/>. And sets it to the value it had before it was locked.
+        /// After this call the state can be set to a new value again.
+        /// </summary>
+        /// <param name="state">The state to unlock.</param>
+        /// <param name="resetValue">True by default. Defines if the state gets reset to its pre-locked value.</param>
+        public void UnlockRenderState(RenderState state, bool resetValue = true)
+        {
+            if (LockedStates.ContainsKey(state))
+            {
+                var resetToVal = LockedStates[state].Value;
+                LockedStates[state] = new KeyValuePair<bool, uint>(false, resetToVal);
+
+                if (resetValue)
+                    SetRenderState(state, resetToVal);
+            }
+        }
+
+        /// <summary>
+        /// Unlocks all previously locked <see cref="RenderState"/>s.
+        /// <param name="resetValue">True by default. Defines if the states get reset to their pre-locked value.</param>
+        /// </summary>
+        public void UnlockAllRenderStates(bool resetValue = true)
+        {
+            if (LockedStates.Count == 0) return;
+
+            for (int i = 0; i < LockedStates.Count; i++)
+                UnlockRenderState(LockedStates.ElementAt(i).Key, resetValue);
+        }
+
+        /// <summary>
         /// Apply a single render state to the render context. All subsequent rendering will be
         /// performed using the currently set state unless it is changed to a different value.
         /// </summary>
@@ -1509,13 +1549,44 @@ namespace Fusee.Engine.Core
         /// <param name="value">An unsigned integer value representing the value the state should be set to.
         ///  Depending on the renderState, this value can be interpreted as an integer value, a float value, a
         /// boolean value, or even a color.  </param>
+        /// <param name="doLockState">Forces this state to have the given value and locks the state. Unlock it by calling <see cref="UnlockRenderState(RenderState, bool)"/></param>
         /// <remarks>This method is close to the underlying implementation layer and might be awkward to use
         /// due to the ambiguity of the value parameter type. If you want type-safe state values and also 
         /// want to set a couple of states at the same time, try the more 
-        /// elaborate <see cref="SetRenderState(RenderStateSet)"/> method.</remarks>
-        public void SetRenderState(RenderState renderState, uint value)
+        /// elaborate <see cref="SetRenderStateSet(RenderStateSet, bool)"/> method.</remarks>
+        public void SetRenderState(RenderState renderState, uint value, bool doLockState = false)
         {
-            _rci.SetRenderState(renderState, value);
+            if (LockedStates.TryGetValue(renderState, out var lockedState))
+            {
+                if (lockedState.Key)
+                {
+                    if (doLockState)
+                    {
+                        CurrentRenderState.SetRenderState(renderState, value);
+                        _rci.SetRenderState(renderState, value);
+                        Diagnostics.Warn("PREVIOUSLY LOCKED STATE WAS OVERWRITTEN: Render state " + renderState + " was locked and will remain its old value.\n Call UnlockRenderState(renderState) to undo it.");
+                    }
+                    else
+                        Diagnostics.Warn("Render state " + renderState + " was locked and will remain its old value.\n Call UndoLockRenderState(renderState) to undo it.");
+
+                    return;
+                }
+            }
+
+            var currentVal = CurrentRenderState.GetRenderState(renderState);
+            if (currentVal != value)
+            {
+                if (doLockState)
+                {
+                    if (currentVal != null)
+                        LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)currentVal);
+                    else
+                        LockedStates[renderState] = new KeyValuePair<bool, uint>(true, (uint)RenderStateSet.Default.GetRenderState(renderState));
+                }
+
+                CurrentRenderState.SetRenderState(renderState, value);
+                _rci.SetRenderState(renderState, value);
+            }
         }
 
         /// <summary>
@@ -1524,40 +1595,13 @@ namespace Fusee.Engine.Core
         /// method to change more than one render state at once. 
         /// </summary>
         /// <param name="renderStateSet">A set of render states with their respective values to be set.</param>
-        public void SetRenderState(RenderStateSet renderStateSet)
+        /// <param name="doLockState">Forces all states that are set in this <see cref="RenderStateSet"/> to have the given value and locks them. Unlock them by calling <see cref="UnlockRenderState(RenderState, bool)"/></param>
+        public void SetRenderStateSet(RenderStateSet renderStateSet, bool doLockState = false)
         {
             foreach (var state in renderStateSet.States)
             {
-                var theKey = state.Key;
-                var theValue = state.Value;
-                _rci.SetRenderState(theKey, theValue);
+                SetRenderState(state.Key, state.Value, doLockState);
             }
-        }
-
-        /// <summary>
-        /// Returns the current render state set.
-        /// </summary>        
-        /// <returns></returns>
-        public RenderStateSet GetRenderStateSet()
-        {
-            return new RenderStateSet()
-            {
-                AlphaBlendEnable = _rci.GetRenderState(RenderState.AlphaBlendEnable) != 0,
-                BlendFactor = (float4)(ColorUint)_rci.GetRenderState(RenderState.BlendFactor),
-                BlendOperation = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperation),
-                BlendOperationAlpha = (BlendOperation)_rci.GetRenderState(RenderState.BlendOperationAlpha),
-                DestinationBlend = (Blend)_rci.GetRenderState(RenderState.DestinationBlend),
-                DestinationBlendAlpha = (Blend)_rci.GetRenderState(RenderState.DestinationBlendAlpha),
-                SourceBlend = (Blend)_rci.GetRenderState(RenderState.SourceBlend),
-                SourceBlendAlpha = (Blend)_rci.GetRenderState(RenderState.SourceBlendAlpha),
-
-                CullMode = (Cull)_rci.GetRenderState(RenderState.CullMode),
-                Clipping = _rci.GetRenderState(RenderState.Clipping) != 0,
-                FillMode = (FillMode)_rci.GetRenderState(RenderState.FillMode),
-                ZEnable = _rci.GetRenderState(RenderState.ZEnable) != 0,
-                ZFunc = (Compare)_rci.GetRenderState(RenderState.ZEnable),
-                ZWriteEnable = _rci.GetRenderState(RenderState.ZWriteEnable) != 0
-            };            
         }
 
         /// <summary>
@@ -1567,7 +1611,12 @@ namespace Fusee.Engine.Core
         /// <returns></returns>
         public uint GetRenderState(RenderState renderState)
         {
-            return _rci.GetRenderState(renderState);
+            var currentState = CurrentRenderState.GetRenderState(renderState);
+
+            if (currentState != null)
+                return (uint)currentState;
+            else
+                return (uint)RenderStateSet.Default.GetRenderState(renderState);
         }
 
         /// <summary>
@@ -1666,7 +1715,7 @@ namespace Fusee.Engine.Core
                         SetShaderParamT(param);
                     }
 
-                    SetRenderState(_currentShaderEffect.States[i]);
+                    SetRenderStateSet(_currentShaderEffect.States[i]);
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
@@ -1749,8 +1798,8 @@ namespace Fusee.Engine.Core
                 SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
             }
             else if (param.Value is IWritableTexture)
-            {                
-                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));                
+            {
+                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
             }
             else if (param.Value is ITexture)
             {
@@ -1873,7 +1922,7 @@ namespace Fusee.Engine.Core
         public void Viewport(int x, int y, int width, int height, bool renderToScreen = true)
         {
             _rci.Scissor(x, y, width, height);
-            _rci.Viewport(x, y, width, height);            
+            _rci.Viewport(x, y, width, height);
 
             if (!renderToScreen) return;
 
@@ -1977,7 +2026,7 @@ namespace Fusee.Engine.Core
             {
                 _width = value;
                 _aspect = (float)_width / _height;
-                if(_aspect != 0)
+                if (_aspect != 0)
                     Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
             }
         }
@@ -2006,7 +2055,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The projection matrix.
         /// </summary>
-        public float4x4 Projection { get; private set; }        
+        public float4x4 Projection { get; private set; }
 
         /// <summary>
         /// The default distance to the near clipping plane.
@@ -2033,7 +2082,7 @@ namespace Fusee.Engine.Core
         public RenderContextDefaultState()
         {
             _aspect = (float)_width / _height;
-            Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);            
+            Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
         }
     }
 
