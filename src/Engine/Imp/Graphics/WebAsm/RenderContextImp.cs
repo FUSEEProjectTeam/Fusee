@@ -55,12 +55,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             // TODO - implement this in render states!!!
             gl.CullFace(BACK);
 
-            _blendSrcAlpha = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_SRC_ALPHA));
-            _blendDstAlpha = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_DST_ALPHA));
-            _blendDstRgb = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_DST_RGB));
-            _blendSrcRgb = BlendToOgl((Blend)(uint)gl.GetParameter(BLEND_SRC_RGB));
-            _blendEquationAlpha = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_ALPHA));
-            _blendEquationRgb = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_RGB));
+            _blendSrcAlpha = (uint)gl.GetParameter(BLEND_SRC_ALPHA);
+            _blendDstAlpha = (uint)gl.GetParameter(BLEND_DST_ALPHA);
+            _blendDstRgb = (uint)gl.GetParameter(BLEND_DST_RGB);
+            _blendSrcRgb = (uint)gl.GetParameter(BLEND_SRC_RGB);
+            _blendEquationAlpha = (uint)gl.GetParameter(BLEND_EQUATION_ALPHA);
+            _blendEquationRgb = (uint)gl.GetParameter(BLEND_EQUATION_RGB);
         }
 
 
@@ -1617,11 +1617,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         gl.Enable(BLEND);
                     break;
                 case RenderState.BlendOperation:
-                    _blendEquationRgb = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_ALPHA));
+                    _blendEquationRgb = BlendOperationToOgl((BlendOperation)value);
                     gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.BlendOperationAlpha:
-                    _blendEquationAlpha = BlendOperationToOgl((BlendOperation)(uint)gl.GetParameter(BLEND_EQUATION_RGB));
+                    _blendEquationAlpha = BlendOperationToOgl((BlendOperation)value);
                     gl.BlendEquationSeparate(_blendEquationRgb, _blendEquationAlpha);
                     break;
                 case RenderState.SourceBlend:

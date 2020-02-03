@@ -22,11 +22,11 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
         private BlendEquationMode _blendEquationAlpha;
-        private BlendEquationMode _blendEquationRgb;
-        private int _blendDstRgb;
-        private int _blendSrcRgb;
-        private int _blendSrcAlpha;
-        private int _blendDstAlpha;
+        private BlendEquationMode _blendEquationRgb;        
+        private BlendingFactorSrc _blendSrcRgb;
+        private BlendingFactorDest _blendDstRgb;
+        private BlendingFactorSrc _blendSrcAlpha;
+        private BlendingFactorDest _blendDstAlpha;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
@@ -49,12 +49,13 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.GetInteger(GetPName.BlendEquationAlpha, out int blendEqA);
             GL.GetInteger(GetPName.BlendEquationRgb, out int blendEqRgb);
 
-            _blendEquationAlpha = BlendOperationToOgl((BlendOperation)blendEqA);
-            _blendEquationRgb = BlendOperationToOgl((BlendOperation)blendEqRgb);
-            _blendDstRgb = BlendToOgl((Blend)blendDstRgb);
-            _blendSrcRgb = BlendToOgl((Blend)blendSrcRgb);
-            _blendSrcAlpha = BlendToOgl((Blend)blendSrcAlpha);
-            _blendDstAlpha = BlendToOgl((Blend)blendDstAlpha);
+            
+            _blendDstRgb = (BlendingFactorDest)blendDstRgb;
+            _blendSrcRgb = (BlendingFactorSrc)blendSrcRgb;
+            _blendSrcAlpha = (BlendingFactorSrc)blendSrcAlpha;
+            _blendDstAlpha = (BlendingFactorDest)blendDstAlpha;
+            _blendEquationAlpha = (BlendEquationMode)blendEqA;
+            _blendEquationRgb = (BlendEquationMode)blendEqRgb;
 
             Diagnostics.Debug(GetHardwareDescription());
         }
@@ -1601,26 +1602,26 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                     break;
                 case RenderState.SourceBlend:
                     {
-                        _blendSrcRgb = BlendToOgl((Blend)value);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
+                        _blendSrcRgb = (BlendingFactorSrc)BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlend:
                     {
-                        _blendDstRgb = BlendToOgl((Blend)value);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
+                        _blendDstRgb = (BlendingFactorDest)BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.SourceBlendAlpha:
                     {
-                        _blendSrcAlpha = BlendToOgl((Blend)value);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
+                        _blendSrcAlpha = (BlendingFactorSrc)BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.DestinationBlendAlpha:
                     {
-                        _blendDstAlpha = BlendToOgl((Blend)value);
-                        GL.BlendFuncSeparate((BlendingFactorSrc)_blendSrcRgb, (BlendingFactorDest)_blendDstRgb, (BlendingFactorSrc)_blendSrcAlpha, (BlendingFactorDest)_blendDstAlpha);
+                        _blendDstAlpha = (BlendingFactorDest)BlendToOgl((Blend)value);
+                        GL.BlendFuncSeparate(_blendSrcRgb, _blendDstRgb, _blendSrcAlpha, _blendDstAlpha);
                     }
                     break;
                 case RenderState.BlendFactor:
