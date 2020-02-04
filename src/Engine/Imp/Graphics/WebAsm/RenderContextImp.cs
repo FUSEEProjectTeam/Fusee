@@ -147,7 +147,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     format = ALPHA;
                     pxType = UNSIGNED_BYTE;
                     break;
-                case ColorFormat.Depth:
+                case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
                     format = DEPTH_COMPONENT;
                     pxType = FLOAT;

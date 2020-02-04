@@ -93,7 +93,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
         /// </summary>
-        public TextureCompareFunc CompareFunc
+        public Compare CompareFunc
         {
             get;
             private set;
@@ -112,7 +112,7 @@ namespace Fusee.Engine.Core
         /// <param name="compareMode">Defines the compare mode <see cref="TextureCompareMode"/>´.</param>
         /// /// <param name="compareFunc">Defines the compare function <see cref="TextureCompareFunc"/>.</param>
         /// <param name="textureType">The type of the texture.</param>        
-        public WritableCubeMap(RenderTargetTextureTypes textureType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, TextureCompareFunc compareFunc = TextureCompareFunc.GL_LESS)
+        public WritableCubeMap(RenderTargetTextureTypes textureType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
             PixelFormat = colorFormat;

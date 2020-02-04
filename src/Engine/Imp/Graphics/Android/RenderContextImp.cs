@@ -159,7 +159,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     pxType = PixelType.UnsignedByte;
                     break;
 
-                case ColorFormat.Depth:
+                case ColorFormat.Depth24:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;

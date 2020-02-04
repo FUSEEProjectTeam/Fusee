@@ -620,9 +620,6 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        
-
-
         private static IEnumerable<EffectParameterDeclaration> AssembleEffectParamers(MaterialComponent mc)
         {
             var effectParameters = new List<EffectParameterDeclaration>();

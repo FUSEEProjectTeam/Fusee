@@ -24,7 +24,7 @@ namespace Fusee.Examples.Camera.Core
         private const float Damping = 0.8f;
 
         private SceneContainer _rocketScene;
-        private SceneRendererForward _sceneRenderer;       
+        private SceneRendererForward _sceneRenderer;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
@@ -48,7 +48,7 @@ namespace Fusee.Examples.Camera.Core
 
             _sndCam.Viewport = new float4(60, 60, 40, 40);
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
-            _sndCam.Layer = 10;            
+            _sndCam.Layer = 10;
 
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
@@ -104,15 +104,15 @@ namespace Fusee.Examples.Camera.Core
                         Translation = new float3(0, 2, -20),
                         Scale = float3.One
                     },
-                    _sndCam,                   
+                    _sndCam,
                 }
-            };            
+            };
 
             // Load the rocket model            
             _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             _rocketScene.Children.Add(cam);
-            _rocketScene.Children.Add(cam1);           
+            _rocketScene.Children.Add(cam1);
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
@@ -166,15 +166,15 @@ namespace Fusee.Examples.Camera.Core
             _angleVert += _angleVelVert;
 
             //_mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
-            _mainCamTransform.RotateAround(new float3(0,0,0), new float3(M.PiOver4 * 0.01f, M.PiOver4 * 0.01f, 0));            
+            _mainCamTransform.RotateAround(new float3(0, 0, 0), new float3(M.PiOver4 * DeltaTime * 5, M.PiOver4 * DeltaTime * 5, 0));
 
-            _sceneRenderer.Render(RC); 
+            _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)            
-                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);            
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
@@ -239,7 +239,7 @@ namespace Fusee.Examples.Camera.Core
                     fuseeLogo,
                     text
                 }
-            };             
+            };
 
             var cam = new SceneNodeContainer()
             {
