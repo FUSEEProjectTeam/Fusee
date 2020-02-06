@@ -18,10 +18,9 @@ namespace Fusee.Examples.Camera.Core
     public class Camera : RenderCanvas
     {
         // angle variables
-        private static float _angleHorz = 0, _angleVert = 0, _angleVelHorz, _angleVelVert;
-
-        private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
+        private readonly float _rotAngle = M.PiOver4;
+        private float3 _rotAxis;
+        private float3 _rotPivot;
 
         private SceneContainer _rocketScene;
         private SceneRendererForward _sceneRenderer;
@@ -31,17 +30,19 @@ namespace Fusee.Examples.Camera.Core
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
 
-        private bool _keys;
-
         private TransformComponent _mainCamTransform;
         private TransformComponent _guiCamTransform;
-        private CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
-        private CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
-        private CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
+        private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+
+
 
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
+            VSync = false;
+
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _mainCam.BackgroundColor = new float4(1, 1, 1, 1);
             _mainCam.Layer = -1;
@@ -118,6 +119,9 @@ namespace Fusee.Examples.Camera.Core
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
 
+            _rotAxis = float3.UnitY * float4x4.CreateRotationYZ(new float2(M.PiOver4, M.PiOver4));
+            _rotPivot = _rocketScene.Children[1].GetComponent<TransformComponent>().Translation;
+
             return true;
         }
 
@@ -125,48 +129,7 @@ namespace Fusee.Examples.Camera.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            // Clear the backbuffer
-            //RC.Clear(ClearFlags.Color | ClearFlags.Depth);
-
-            // Mouse and keyboard movement
-            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-            {
-                _keys = true;
-            }
-
-            if (Mouse.LeftButton)
-            {
-                _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                _keys = false;
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
-            else
-            {
-                if (_keys)
-                {
-                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-                }
-                else
-                {
-                    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-                    _angleVelHorz *= curDamp;
-                    _angleVelVert *= curDamp;
-                }
-            }
-
-            _angleHorz += _angleVelHorz;
-            _angleVert += _angleVelVert;
-
-            //_mainCamTransform.Rotation = new float3(_angleVert, _angleHorz, 0);
-            _mainCamTransform.RotateAround(new float3(0, 0, 0), new float3(M.PiOver4 * DeltaTime * 5, M.PiOver4 * DeltaTime * 5, 0));
+            _mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
