@@ -264,10 +264,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.TextureCubeMap, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            var error = GL.GetError();
-            if (error.ToString() != "NoError")
-                Diagnostics.Error("create cube map:" + error);
-
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
@@ -302,10 +298,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)glWrapMode);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapR, (int)glWrapMode);
 
-            var error = GL.GetError();
-            if (error.ToString() != "NoError")
-                Diagnostics.Error("create normal tex:" + error);
-
             ITextureHandle texID = new TextureHandle { TexHandle = id };
 
             return texID;
@@ -330,9 +322,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (img.DoGenerateMipMaps)
                 GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
 
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
-            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));            
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);

@@ -28,6 +28,8 @@ namespace Fusee.Engine.Imp.Graphics.Android
         private BlendingFactorSrc _blendSrcAlpha;
         private BlendingFactorDest _blendDstAlpha;
 
+        private bool _isCullEnabled;        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -63,6 +65,20 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
         #region Image data related Members
 
+        private TextureCompareMode GetTexComapreMode(Common.TextureCompareMode compareMode)
+        {
+            switch (compareMode)
+            {
+                case TextureCompareMode.NONE:
+                    return TextureCompareMode.NONE;
+
+                case Common.TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE:
+                    return TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE;
+
+                default:
+                    throw new ArgumentException("Invalid compare mode.");
+            }
+        }
         private Tuple<TextureMinFilter, TextureMagFilter> GetMinMagFilter(TextureFilterMode filterMode)
         {
             TextureMinFilter minFilter;
@@ -127,6 +143,39 @@ namespace Fusee.Engine.Imp.Graphics.Android
             }
         }
 
+        private DepthFunction GetDepthCompareFunc(Compare compareFunc)
+        {
+            switch (compareFunc)
+            {
+                case Compare.Never:
+                    return DepthFunction.Never;
+
+                case Compare.Less:
+                    return DepthFunction.Less;
+
+                case Compare.Equal:
+                    return DepthFunction.Equal;
+
+                case Compare.LessEqual:
+                    return DepthFunction.Lequal;
+
+                case Compare.Greater:
+                    return DepthFunction.Greater;
+
+                case Compare.NotEqual:
+                    return DepthFunction.Notequal;
+
+                case Compare.GreaterEqual:
+                    return DepthFunction.Gequal;
+
+                case Compare.Always:
+                    return DepthFunction.Always;
+
+                default:
+                    throw new ArgumentOutOfRangeException("value");
+            }
+        }
+
         /*TODO: OpenTK 30ES does not seem to support other PixelInternalFormats other than Rgba, Rgb, Alpha, Luminance,
         even though OpenGL 30es seems to do so (https://www.khronos.org/registry/OpenGL-Refpages/es3.0/html/glTexImage2D.xhtml).
         After some research it seems the OpenTK 30es branch suffers due to the development of OpenTK 40es....
@@ -160,6 +209,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                     break;
 
                 case ColorFormat.Depth24:
+                case ColorFormat.Depth16:
                     internalFormat = PixelInternalFormat.Rgb;
                     format = PixelFormat.Rgb;
                     pxType = PixelType.UnsignedByte;
@@ -261,7 +311,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, img.PixelData);
-
+           
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)glWrapMode);
@@ -297,6 +347,9 @@ namespace Fusee.Engine.Imp.Graphics.Android
                 GL.GenerateMipmap(TextureTarget.Texture2D);
 
             GL.TexImage2D(TextureTarget.Texture2D, 0, pxInfo.InternalFormat, img.Width, img.Height, 0, pxInfo.Format, pxInfo.PxType, IntPtr.Zero);
+
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareMode, (int)GetTexComapreMode(img.CompareMode));
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureCompareFunc, (int)GetDepthCompareFunc(img.CompareFunc));
 
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)minFilter);
             GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)magFilter);
@@ -1504,22 +1557,31 @@ namespace Fusee.Engine.Imp.Graphics.Android
                         switch ((Cull)value)
                         {
                             case Cull.None:
-                                GL.Disable(EnableCap.CullFace);
+                                if (_isCullEnabled)
+                                {
+                                    _isCullEnabled = false;
+                                    GL.Disable(EnableCap.CullFace);
+                                }
                                 GL.FrontFace(FrontFaceDirection.Ccw);
                                 break;
-
                             case Cull.Clockwise:
-                                GL.Enable(EnableCap.CullFace);
+                                if (!_isCullEnabled)
+                                {
+                                    _isCullEnabled = true;
+                                    GL.Enable(EnableCap.CullFace);
+                                }
                                 GL.FrontFace(FrontFaceDirection.Cw);
                                 break;
-
                             case Cull.Counterclockwise:
-                                GL.Enable(EnableCap.CullFace);
+                                if (!_isCullEnabled)
+                                {
+                                    _isCullEnabled = true;
+                                    GL.Enable(EnableCap.CullFace);
+                                }
                                 GL.FrontFace(FrontFaceDirection.Ccw);
                                 break;
-
                             default:
-                                throw new ArgumentOutOfRangeException(nameof(value));
+                                throw new ArgumentOutOfRangeException("value");
                         }
                     }
                     break;
@@ -1530,44 +1592,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 
                 case RenderState.ZFunc:
                     {
-                        DepthFunction df;
-                        switch ((Compare)value)
-                        {
-                            case Compare.Never:
-                                df = DepthFunction.Never;
-                                break;
-
-                            case Compare.Less:
-                                df = DepthFunction.Less;
-                                break;
-
-                            case Compare.Equal:
-                                df = DepthFunction.Equal;
-                                break;
-
-                            case Compare.LessEqual:
-                                df = DepthFunction.Lequal;
-                                break;
-
-                            case Compare.Greater:
-                                df = DepthFunction.Greater;
-                                break;
-
-                            case Compare.NotEqual:
-                                df = DepthFunction.Notequal;
-                                break;
-
-                            case Compare.GreaterEqual:
-                                df = DepthFunction.Gequal;
-                                break;
-
-                            case Compare.Always:
-                                df = DepthFunction.Always;
-                                break;
-
-                            default:
-                                throw new ArgumentOutOfRangeException(nameof(value));
-                        }
+                        DepthFunction df = GetDepthCompareFunc((Compare)value);
                         GL.DepthFunc(df);
                     }
                     break;

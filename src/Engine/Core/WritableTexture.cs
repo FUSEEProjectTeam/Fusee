@@ -91,7 +91,7 @@ namespace Fusee.Engine.Core
 
 
         /// <summary>
-        /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
+        /// Specifies the texture's comparison function, see <see cref="Compare"/>.
         /// </summary>
         public Compare CompareFunc
         {
@@ -110,7 +110,7 @@ namespace Fusee.Engine.Core
         /// <param name="filterMode">Defines the filter mode <see cref="TextureFilterMode"/>.</param>
         /// <param name="wrapMode">Defines the wrapping mode <see cref="TextureWrapMode"/>.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
-        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="TextureCompareFunc"/>)</param>
+        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         public WritableTexture(RenderTargetTextureTypes texType, ImagePixelFormat colorFormat, int width, int height, bool generateMipMaps = true, TextureFilterMode filterMode = TextureFilterMode.LINEAR, TextureWrapMode wrapMode = TextureWrapMode.REPEAT, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {
             SessionUniqueIdentifier = Suid.GenerateSuid();
@@ -175,7 +175,7 @@ namespace Fusee.Engine.Core
         /// <param name="width">Width in px.</param>
         /// <param name="height">Height in px.</param>
         /// <param name="compareMode">The textures compare mode. If uncertain, leaf on NONE, this is only important for depth (shadow) textures (<see cref="TextureCompareMode"/>).</param>
-        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="TextureCompareFunc"/>)</param>
+        /// <param name="compareFunc">The textures compare function. If uncertain, leaf on LEESS, this is only important for depth (shadow) textures and if the CompareMode isn't NONE (<see cref="Compare"/>)</param>
         /// <returns></returns>
         public static WritableTexture CreateDepthTex(int width, int height, TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {

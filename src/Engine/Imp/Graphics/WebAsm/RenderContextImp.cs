@@ -39,6 +39,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         private uint _blendSrcAlpha;
         private uint _blendDstAlpha;
 
+        private bool _isCullEnabled;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContextImp"/> class.
         /// </summary>
@@ -63,14 +65,27 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             _blendEquationRgb = (uint)gl.GetParameter(BLEND_EQUATION_RGB);
         }
 
-
         #region Image data related Members
+
+        private uint GetTexComapreMode(TextureCompareMode compareMode)
+        {
+            switch (compareMode)
+            {
+                case TextureCompareMode.NONE:
+                    return (int)NONE;
+
+                case TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE:
+                    return (int)COMPARE_REF_TO_TEXTURE;
+
+                default:
+                    throw new ArgumentException("Invalid compare mode.");
+            }
+        }
 
         private Tuple<int, int> GetMinMagFilter(TextureFilterMode filterMode)
         {
             int minFilter;
             int magFilter;
-
 
             switch (filterMode)
             {
@@ -123,6 +138,39 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             }
         }
 
+        private uint GetDepthCompareFunc(Compare compareFunc)
+        {
+            switch (compareFunc)
+            {
+                case Compare.Never:
+                    return NEVER;
+
+                case Compare.Less:
+                    return LESS;
+
+                case Compare.Equal:
+                    return EQUAL;
+
+                case Compare.LessEqual:
+                    return LEQUAL;
+
+                case Compare.Greater:
+                    return GREATER;
+
+                case Compare.NotEqual:
+                    return NOTEQUAL;
+
+                case Compare.GreaterEqual:
+                    return GEQUAL;
+
+                case Compare.Always:
+                    return ALWAYS;
+
+                default:
+                    throw new ArgumentOutOfRangeException("value");
+            }
+        }
+
         private TexturePixelInfo GetTexturePixelInfo(ITextureBase tex)
         {
             uint internalFormat;
@@ -149,6 +197,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     break;
                 case ColorFormat.Depth24:
                     internalFormat = DEPTH_COMPONENT24;
+                    format = DEPTH_COMPONENT;
+                    pxType = FLOAT;
+                    break;
+                case ColorFormat.Depth16:
+                    internalFormat = DEPTH_COMPONENT16;
                     format = DEPTH_COMPONENT;
                     pxType = FLOAT;
                     break;
@@ -273,6 +326,8 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
             if (img.DoGenerateMipMaps)
                 gl.GenerateMipmap(TEXTURE_2D);
 
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_MODE, (int)GetTexComapreMode(img.CompareMode));
+            gl2.TexParameteri(TEXTURE_2D, TEXTURE_COMPARE_FUNC, (int)GetDepthCompareFunc(img.CompareFunc));
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MAG_FILTER, (int)magFilter);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_MIN_FILTER, (int)minFilter);
             gl2.TexParameteri(TEXTURE_2D, TEXTURE_WRAP_S, (int)glWrapMode);
@@ -1345,6 +1400,44 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                 gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
                 //gl.DrawArrays(gl.Enums.BeginMode.POINTS, 0, shape.Vertices.Length);
             }
+            if (((MeshImp)mr).ElementBufferObject != null)
+            {
+                gl.BindBuffer(ELEMENT_ARRAY_BUFFER, ((MeshImp)mr).ElementBufferObject);
+
+                switch (((MeshImp)mr).MeshType)
+                {
+                    case OpenGLPrimitiveType.TRIANGLES:
+                    default:
+                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.POINT:                        
+                        gl.DrawElements(POINTS, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.LINES:                       
+                        gl.DrawElements(LINES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.LINE_LOOP:                        
+                        gl.DrawElements(LINE_LOOP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.LINE_STRIP:                        
+                        gl.DrawElements(LINE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.PATCHES:
+                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of PATCHES");
+                        break;
+                    case OpenGLPrimitiveType.QUAD_STRIP:
+                        gl.DrawElements(TRIANGLES, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        Diagnostics.Warn("Mesh type set to triangles due to unavailability of QUAD_STRIP");
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_FAN:
+                        gl.DrawElements(TRIANGLE_FAN, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                    case OpenGLPrimitiveType.TRIANGLE_STRIP:
+                        gl.DrawElements(TRIANGLE_STRIP, ((MeshImp)mr).NElements, UNSIGNED_SHORT, 0);
+                        break;
+                }
+            }
 
 
             if (((MeshImp)mr).VertexBufferObject != null)
@@ -1543,15 +1636,27 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                         switch ((Cull)value)
                         {
                             case Cull.None:
-                                gl.Disable(CULL_FACE);
+                                if (_isCullEnabled)
+                                {
+                                    _isCullEnabled = false;
+                                    gl.Disable(CULL_FACE);
+                                }
                                 gl.FrontFace(NONE);
                                 break;
                             case Cull.Clockwise:
-                                gl.Enable(CULL_FACE);
+                                if (!_isCullEnabled)
+                                {
+                                    _isCullEnabled = true;
+                                    gl.Enable(CULL_FACE);
+                                }
                                 gl.FrontFace(CW);
                                 break;
                             case Cull.Counterclockwise:
-                                gl.Enable(CULL_FACE);
+                                if (!_isCullEnabled)
+                                {
+                                    _isCullEnabled = true;
+                                    gl.Enable(CULL_FACE);
+                                }
                                 gl.FrontFace(CCW);
                                 break;
                             default:
@@ -1564,36 +1669,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
                     break;
                 case RenderState.ZFunc:
                     {
-                        uint df;
-                        switch ((Compare)value)
-                        {
-                            case Compare.Never:
-                                df = NEVER;
-                                break;
-                            case Compare.Less:
-                                df = LESS;
-                                break;
-                            case Compare.Equal:
-                                df = EQUAL;
-                                break;
-                            case Compare.LessEqual:
-                                df = LEQUAL;
-                                break;
-                            case Compare.Greater:
-                                df = GREATER;
-                                break;
-                            case Compare.NotEqual:
-                                df = NOTEQUAL;
-                                break;
-                            case Compare.GreaterEqual:
-                                df = GEQUAL;
-                                break;
-                            case Compare.Always:
-                                df = ALWAYS;
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException("value");
-                        }
+                        uint df = GetDepthCompareFunc((Compare)value);
                         gl.DepthFunc(df);
                     }
                     break;
