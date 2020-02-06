@@ -41,8 +41,8 @@ namespace Fusee.Engine.Player.Core
         private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
-        //private SceneRendererForward _guiRenderer;
-        //private SceneContainer _gui;
+        private SceneRendererForward _guiRenderer;
+        private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
         private float _initWindowWidth;
@@ -83,12 +83,13 @@ namespace Fusee.Engine.Player.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the standard model
-            _scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            //_scene = await AssetStorage.GetAsync<SceneContainer>(ModelFile);
+            _scene = await Rocket.Build();
 
-           // _gui = await CreateGui();
+            _gui = await CreateGui();
             // Create the interaction handler
-            //_sih = new SceneInteractionHandler(_gui);
-           
+            _sih = new SceneInteractionHandler(_gui);
+
             // Register the input devices that are not already given.
             _gamePad = GetDevice<GamePadDevice>(0);
 
@@ -124,8 +125,8 @@ namespace Fusee.Engine.Player.Core
             
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_scene);
-            //_guiRenderer = new SceneRendererForward(_gui);
-       
+            _guiRenderer = new SceneRendererForward(_gui);
+
             return true;
         }
 
@@ -133,118 +134,119 @@ namespace Fusee.Engine.Player.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-        //    //if (_gamePad != null)
-        //    //    Diagnostics.Log(_gamePad.LSX);
+            //if (_gamePad != null)
+            //    Diagnostics.Log(_gamePad.LSX);
 
-        //    // Clear the backbuffer
-        //    RC.Clear(ClearFlags.Color | ClearFlags.Depth);
+            // Clear the backbuffer
+            RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
 
-        //    // Mouse and keyboard movement
-        //    if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
-        //    {
-        //        _keys = true;
-        //    }
-            
-        //    var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
-        //    // Zoom & Roll
-        //    if (Touch.TwoPoint)
-        //    {
-        //        if (!_twoTouchRepeated)
-        //        {
-        //            _twoTouchRepeated = true;
-        //            _angleRollInit = Touch.TwoPointAngle - _angleRoll;
-        //            _offsetInit = Touch.TwoPointMidPoint - _offset;
-        //            _maxPinchSpeed = 0;
-        //        }
-        //        _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
-        //        _angleRoll = Touch.TwoPointAngle - _angleRollInit;
-        //        _offset = Touch.TwoPointMidPoint - _offsetInit;
-        //        float pinchSpeed = Touch.TwoPointDistanceVel;
-        //        if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
-        //    }
-        //    else
-        //    {
-        //        _twoTouchRepeated = false;
-        //        _zoomVel = Mouse.WheelVel * -0.5f;
-        //        _angleRoll *= curDamp * 0.8f;
-        //        _offset *= curDamp * 0.8f;
-        //    }
+            // Mouse and keyboard movement
+            if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
+            {
+                _keys = true;
+            }
 
-            
-        //    // UpDown / LeftRight rotation
-        //    if (Mouse.LeftButton) {
+            var curDamp = (float)System.Math.Exp(-Damping * DeltaTime);
+            // Zoom & Roll
+            if (Touch.TwoPoint)
+            {
+                if (!_twoTouchRepeated)
+                {
+                    _twoTouchRepeated = true;
+                    _angleRollInit = Touch.TwoPointAngle - _angleRoll;
+                    _offsetInit = Touch.TwoPointMidPoint - _offset;
+                    _maxPinchSpeed = 0;
+                }
+                _zoomVel = Touch.TwoPointDistanceVel * -0.01f;
+                _angleRoll = Touch.TwoPointAngle - _angleRollInit;
+                _offset = Touch.TwoPointMidPoint - _offsetInit;
+                float pinchSpeed = Touch.TwoPointDistanceVel;
+                if (pinchSpeed > _maxPinchSpeed) _maxPinchSpeed = pinchSpeed; // _maxPinchSpeed is used for debugging only.
+            }
+            else
+            {
+                _twoTouchRepeated = false;
+                _zoomVel = Mouse.WheelVel * -0.5f;
+                _angleRoll *= curDamp * 0.8f;
+                _offset *= curDamp * 0.8f;
+            }
 
-        //        _keys = false;
-        //        _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-        //        _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
-        //    }
 
-        //    else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-        //    {
-        //        _keys = false;
-        //        float2 touchVel;
-        //        touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-        //        _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-        //        _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-        //    }
-        //    else
-        //    {
-        //        if (_keys)
-        //        {
-        //            _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
-        //            _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
-        //        }
-        //        else
-        //        {
-        //            _angleVelHorz *= curDamp;
-        //            _angleVelVert *= curDamp;
-        //        }
-        //    }
+            // UpDown / LeftRight rotation
+            if (Mouse.LeftButton)
+            {
 
-        //    _zoom += _zoomVel;
-        //    // Limit zoom
-        //    if (_zoom < 80)
-        //        _zoom = 80;
-        //    if (_zoom > 2000)
-        //        _zoom = 2000;
+                _keys = false;
+                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+            }
 
-        //    _angleHorz += _angleVelHorz;
-        //    // Wrap-around to keep _angleHorz between -PI and + PI
-        //    _angleHorz = M.MinAngle(_angleHorz);
+            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _keys = false;
+                float2 touchVel;
+                touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
+                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
+                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
+            }
+            else
+            {
+                if (_keys)
+                {
+                    _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
+                    _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
+                }
+                else
+                {
+                    _angleVelHorz *= curDamp;
+                    _angleVelVert *= curDamp;
+                }
+            }
 
-        //    _angleVert += _angleVelVert;
-        //    // Limit pitch to the range between [-PI/2, + PI/2]
-        //    _angleVert = M.Clamp(_angleVert, -M.PiOver2, M.PiOver2);
+            _zoom += _zoomVel;
+            // Limit zoom
+            if (_zoom < 80)
+                _zoom = 80;
+            if (_zoom > 2000)
+                _zoom = 2000;
 
-        //    // Wrap-around to keep _angleRoll between -PI and + PI
-        //    _angleRoll = M.MinAngle(_angleRoll);
+            _angleHorz += _angleVelHorz;
+            // Wrap-around to keep _angleHorz between -PI and + PI
+            _angleHorz = M.MinAngle(_angleHorz);
 
-        //    // Create the camera matrix and set it as the current View transformation
-        //    var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-        //    var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-        //    RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-        //    var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
-        //    RC.Projection *= mtxOffset;
+            _angleVert += _angleVelVert;
+            // Limit pitch to the range between [-PI/2, + PI/2]
+            _angleVert = M.Clamp(_angleVert, -M.PiOver2, M.PiOver2);
 
-        //    // Constantly check for interactive objects.
-        // //   _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            // Wrap-around to keep _angleRoll between -PI and + PI
+            _angleRoll = M.MinAngle(_angleRoll);
 
-        //    if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-        //    {
-        //        _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-        //    }
-        //    // Tick any animations and Render the scene loaded in Init()
-        //    _sceneRenderer.Animate();
-        //    _sceneRenderer.Render(RC);            
-            
-        ////    _sih.View = RC.View;
+            // Create the camera matrix and set it as the current View transformation
+            var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
+            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
+            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
+            var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
+            RC.Projection *= mtxOffset;
 
-        //   // _guiRenderer.Render(RC);            
+            // Constantly check for interactive objects.
+            //   _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
 
-        //    // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
-        //    Present();
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+            // Tick any animations and Render the scene loaded in Init()
+            _sceneRenderer.Animate();
+            _sceneRenderer.Render(RC);
+
+            _sih.View = RC.View;
+
+            _guiRenderer.Render(RC);
+
+            // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
+            Present();
         }
 
         private InputDevice Creator(IInputDeviceImp device)
