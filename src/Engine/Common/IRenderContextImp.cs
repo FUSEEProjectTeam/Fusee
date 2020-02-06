@@ -33,7 +33,7 @@ namespace Fusee.Engine.Common
         /// <remarks>
         /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
         /// </remarks>
-        float ClearDepth { set; get; }        
+        float ClearDepth { set; get; }
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -84,16 +84,19 @@ namespace Fusee.Engine.Common
         /// Detaches a texture from the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The texture to detach.</param>
-        void DetachTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type);
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will detach the texture currently associated with the ColorAttachment1.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture currently associated with the DepthAttachment will be detached.</param>       
+        void DetachTextureFromFbo(IRenderTarget renderTarget, bool isDepthTex, int attachment = 0);
+
 
         /// <summary>
-        /// Reattaches a texture from the frame buffer object, associated with the given render target.
+        /// Attaches a texture to the frame buffer object, associated with the given render target.
         /// </summary>
         /// <param name="renderTarget">The render target.</param>
-        /// <param name="type">The type of the texture that gets detached - can be used to access the texture object in the render targets' texture array.</param>
+        /// <param name="attachment">Number of the fbo attachment. For example: attachment = 1 will attach the texture to the ColorAttachment1.</param>
+        /// <param name="isDepthTex">Determines if the texture is a depth texture. In this case the texture is attached to the DepthAttachment.</param>        
         /// <param name="texHandle">The gpu handle of the texture.</param>
-        void ReatatchTextureFromFbo(IRenderTarget renderTarget, RenderTargetTextureTypes type, ITextureHandle texHandle);
+        void AttacheTextureToFbo(IRenderTarget renderTarget, bool isDepthTex, ITextureHandle texHandle, int attachment = 0);
 
         /// <summary>
         /// Get a list of (uniform) shader parameters accessed by the given shader.
@@ -108,7 +111,7 @@ namespace Fusee.Engine.Common
         IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
 
         /// <summary>
-        /// Returns an identifiyer for the named (uniform) parameter used in the specified shader program.
+        /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
         /// </summary>
         /// <param name="shaderProgram">The shader program using the parameter.</param>
         /// <param name="paramName">Name of the shader parameter.</param>
@@ -161,7 +164,7 @@ namespace Fusee.Engine.Common
         /// a given uniform parameter name used in a shader program.
         /// </remarks>
         /// <seealso cref="GetShaderParamList"/>        
-        void SetShaderParam(IShaderParam param, float2[] val);       
+        void SetShaderParam(IShaderParam param, float2[] val);
 
         /// <summary>
         /// Sets the shader parameter to a float3 value.
@@ -318,7 +321,7 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="width"></param>
         void SetLineWidth(float width);
-        
+
         /// <summary>
         /// Erases the contents of the speciefied rendering buffers.
         /// </summary>
@@ -607,7 +610,7 @@ namespace Fusee.Engine.Common
         /// <param name="capability">The capability to check against</param> 
         /// <returns>uint</returns> 
         uint GetHardwareCapabilities(HardwareCapability capability);
-        
+
         /// <summary> 
         /// Returns a human readable description of the underlying graphics hardware 
         /// </summary> 

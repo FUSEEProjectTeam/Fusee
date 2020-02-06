@@ -310,7 +310,7 @@ namespace Fusee.Engine.Core
                     if (cam.Item2.Camera.Active)
                     {
                         PerCamRender(cam);
-                        //Reset Viewport                        
+                        //Reset Viewport in case we have another scene, rendered without a camera 
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                     }
                 }
@@ -704,9 +704,7 @@ namespace Fusee.Engine.Core
 
         }
 
-        #endregion
-
-        
+        #endregion        
 
         private void UpdateShaderParamsForAllLights()
         {
@@ -805,5 +803,5 @@ namespace Fusee.Engine.Core
         }
 
         #endregion
-    }    
+    }
 }

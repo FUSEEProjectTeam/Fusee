@@ -32,7 +32,7 @@ namespace Fusee.Base.Common
                     ? 4
                     : ColorFormat == ColorFormat.RGB 
                         ? 3
-                        : ColorFormat == ColorFormat.Depth
+                        : ColorFormat == ColorFormat.Depth24 || ColorFormat == ColorFormat.Depth16
                             ? 3
                             : ColorFormat == ColorFormat.Intensity
                                 ? 1
