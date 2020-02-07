@@ -8,7 +8,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
 {
     /// <summary>
     /// Implementation of the <see cref="IShaderParam" /> interface.
-    /// This object is passed to shaderprograms that are running on the graphics card to modify shader values.
+    /// This object is passed to shader programs that are running on the graphics card to modify shader values.
     /// </summary>
     public class ShaderParam : IShaderParam
     {

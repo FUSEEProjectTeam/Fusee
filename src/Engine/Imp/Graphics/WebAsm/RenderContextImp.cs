@@ -433,10 +433,10 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="gs">The vertex shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
-        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
+        /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShader(string vs, string ps, string gs = null)
         {
             if (gs != null)
                 Diagnostics.Log("WARNING: Geometry Shaders are unsupported");
@@ -482,7 +482,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
 
             gl.LinkProgram(program);
 
-            return new ShaderProgramImp { Program = program };
+            return new ShaderHandleImp { Handle = program };
         }
 
         /// <inheritdoc />
@@ -490,11 +490,11 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Removes shader from the GPU
         /// </summary>
         /// <param name="sp"></param>
-        public void RemoveShader(IShaderProgramImp sp)
+        public void RemoveShader(IShaderHandle sp)
         {
             if (sp == null) return;
 
-            var program = ((ShaderProgramImp)sp).Program;
+            var program = ((ShaderHandleImp)sp).Handle;
 
             // wait for all threads to be finished
             gl.Finish();
@@ -509,12 +509,12 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// Sets the shader program onto the GL render context.
         /// </summary>
         /// <param name="program">The shader program.</param>
-        public void SetShader(IShaderProgramImp program)
+        public void SetShader(IShaderHandle program)
         {
             _textureCount = 0;
             _shaderParam2TexUnit.Clear();
 
-            gl.UseProgram(((ShaderProgramImp)program).Program);
+            gl.UseProgram(((ShaderHandleImp)program).Handle);
         }
 
         /// <summary>
@@ -534,9 +534,9 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
-            WebGLUniformLocation h = gl.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            WebGLUniformLocation h = gl.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
             return (h == null) ? null : new ShaderParam { handle = h };
         }
 
@@ -547,30 +547,30 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <param name="program">The shader program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>The current parameter's value.</returns>
-        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IShaderParam param)
         {
-            float f = (float)gl.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle);
+            float f = (float)gl.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle);
             return f;
         }
 
 
         /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
+        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />. 
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
 
             int nParams;
-            nParams = (int)gl.GetProgramParameter(sProg.Program, ACTIVE_UNIFORMS);
+            nParams = (int)gl.GetProgramParameter(sProg.Handle, ACTIVE_UNIFORMS);
 
             for (uint i = 0; i < nParams; i++)
             {
-                WebGLActiveInfo activeInfo = gl.GetActiveUniform(sProg.Program, i);
+                WebGLActiveInfo activeInfo = gl.GetActiveUniform(sProg.Handle, i);
 
                 var paramInfo = new ShaderParamInfo();
                 paramInfo.Name = activeInfo.Name;

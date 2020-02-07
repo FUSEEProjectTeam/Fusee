@@ -736,19 +736,19 @@ namespace Fusee.Engine.Core
             var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            _rc.SetFXParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetFXParam(lightParamStrings.PositionWorldSpace, lightRes.WorldSpacePos);
-            _rc.SetFXParam(lightParamStrings.Intensities, light.Color);
-            _rc.SetFXParam(lightParamStrings.MaxDistance, light.MaxDistance);
-            _rc.SetFXParam(lightParamStrings.Strength, strength);
-            _rc.SetFXParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetFXParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetFXParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetFXParam(lightParamStrings.DirectionWorldSpace, dirWorldSpace);
-            _rc.SetFXParam(lightParamStrings.LightType, (int)light.Type);
-            _rc.SetFXParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
-            _rc.SetFXParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
-            _rc.SetFXParam(lightParamStrings.Bias, light.Bias);
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionWorldSpace, lightRes.WorldSpacePos);
+            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
+            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
+            _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
+            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.DirectionWorldSpace, dirWorldSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
         }
 
         #region RenderContext/Asset Setup

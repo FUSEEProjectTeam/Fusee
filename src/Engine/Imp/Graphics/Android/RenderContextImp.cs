@@ -433,10 +433,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// </summary>
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
-        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
+        /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShader(string vs, string ps, string gs = null)
         {
             if (gs != null)
                 Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");
@@ -484,7 +484,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
             GL.BindAttribLocation(program, AttributeLocations.BitangentAttribLocation, UniformNameDeclarations.BitangentAttribName);
 
             GL.LinkProgram(program);
-            return new ShaderProgramImp { Program = program };
+            return new ShaderHandleImp { Handle = program };
         }
 
         /// <inheritdoc />
@@ -492,11 +492,11 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Removes shader from the GPU
         /// </summary>
         /// <param name="sp"></param>
-        public void RemoveShader(IShaderProgramImp sp)
+        public void RemoveShader(IShaderHandle sp)
         {
             if (_androidContext == null) return; // if no RenderContext is available return - otherwise memory read error
 
-            var program = ((ShaderProgramImp)sp).Program;
+            var program = ((ShaderHandleImp)sp).Handle;
 
             // wait for all threads to be finished
             GL.Finish();
@@ -511,12 +511,12 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// Sets the shader program onto the GL render context.
         /// </summary>
         /// <param name="program">The shader program.</param>
-        public void SetShader(IShaderProgramImp program)
+        public void SetShader(IShaderHandle program)
         {
             _textureCount = 0;
             _shaderParam2TexUnit.Clear();
 
-            GL.UseProgram(((ShaderProgramImp)program).Program);
+            GL.UseProgram(((ShaderHandleImp)program).Handle);
         }
 
         public void SetLineWidth(float width)
@@ -532,10 +532,10 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
             StringBuilder sbParamName = new StringBuilder(paramName);
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, sbParamName);
+            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, sbParamName);
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 
@@ -546,30 +546,30 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <param name="program">The program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IShaderParam param)
         {
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out float f);
+            GL.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle, out float f);
             return f;
         }
 
         /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />.
+        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />.
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
 
-            GL.GetProgram(sProg.Program, ProgramParameter.ActiveUniforms, out int nParams);
+            GL.GetProgram(sProg.Handle, ProgramParameter.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
                 var paramInfo = new ShaderParamInfo();
                 StringBuilder sbName = new StringBuilder(512);
-                GL.GetActiveUniform(sProg.Program, i, 511, out int lenWritten, out paramInfo.Size, out ActiveUniformType uType, sbName);
+                GL.GetActiveUniform(sProg.Handle, i, 511, out int lenWritten, out paramInfo.Size, out ActiveUniformType uType, sbName);
                 paramInfo.Name = sbName.ToString();
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 

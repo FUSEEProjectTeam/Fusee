@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Pixel- or fragment shader as string
         /// </summary>
-        public string PS { get; set; }        
+        public string PS { get; set; }
     }
 
     /// <summary>
@@ -99,6 +99,7 @@ namespace Fusee.Engine.Core
         /// Name
         /// </summary>
         public string Name;
+
         /// <summary>
         /// Value
         /// </summary>
@@ -112,7 +113,7 @@ namespace Fusee.Engine.Core
     public class ShaderEffect : DynamicObject, IDisposable
     {
         /// <summary>
-        /// The uniform parameter and value of a <see cref="ShaderEffect"/>
+        /// The ShaderEffect'S uniform parameters and their values.
         /// </summary>
         public Dictionary<string, object> ParamDecl { get; protected set; }
 
@@ -216,8 +217,6 @@ namespace Fusee.Engine.Core
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
 
-        
-
         /// <summary>
         /// Set effect parameter
         /// </summary>
@@ -228,7 +227,7 @@ namespace Fusee.Engine.Core
             if (ParamDecl != null)
             {
                 if (ParamDecl.ContainsKey(name))
-                {                    
+                {
                     if (ParamDecl[name] != null)
                     {// do nothing if new value = old value
                         if (ParamDecl[name].Equals(value)) return; // TODO: Write a better compare method! 
@@ -241,15 +240,15 @@ namespace Fusee.Engine.Core
                     EffectEventArgs.ChangedEffectVarValue = value;
 
                     ShaderEffectChanged?.Invoke(this, EffectEventArgs);
-                }                
+                }
                 else
                 {
                     // not in Parameters yet, add it and call uniform_var_changed!
                     ParamDecl.Add(name, value);
 
                     EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_ADDED;
-                    EffectEventArgs.ChangedEffectVarName = null;
-                    EffectEventArgs.ChangedEffectVarValue = null;
+                    EffectEventArgs.ChangedEffectVarName = name;
+                    EffectEventArgs.ChangedEffectVarValue = value;
 
                     ShaderEffectChanged?.Invoke(this, EffectEventArgs);
                 }
@@ -330,46 +329,43 @@ namespace Fusee.Engine.Core
         /// <param name="binder">Name of the uniform variable</param>
         /// <param name="value">Value of the uniform variable as <see cref="EffectParam"/>EffectParam</param>
         /// <returns>Element found and from type EffectParam</returns>
-        public override bool TrySetMember(
-            SetMemberBinder binder, object value)
+        public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-            object result;
-
-            if (!ParamDecl.TryGetValue(binder.Name, out result))
+            if (!ParamDecl.TryGetValue(binder.Name, out object result))
                 return false;
 
             SetEffectParam(binder.Name, value);
 
             return true;
         }
+    }
 
-        internal class ShaderEffectEventArgs : EventArgs
+    internal class ShaderEffectEventArgs : EventArgs
+    {
+        internal ShaderEffect Effect { get; }
+        internal ShaderEffectChangedEnum Changed { get; set; }
+        internal EffectParam EffectParameter { get; }
+        internal string ChangedEffectVarName { get; set; }
+        internal object ChangedEffectVarValue { get; set; }
+
+        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
         {
-            internal ShaderEffect Effect { get; }
-            internal ShaderEffectChangedEnum Changed { get; set; }
-            internal EffectParam EffectParameter { get; }
-            internal string ChangedEffectVarName { get; set; }
-            internal object ChangedEffectVarValue { get; set; }
+            Effect = effect;
+            Changed = changed;
 
-            internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
-            {
-                Effect = effect;
-                Changed = changed;
+            if (changedName == null || changedValue == null) return;
 
-                if (changedName == null || changedValue == null) return;
-
-                ChangedEffectVarName = changedName;
-                ChangedEffectVarValue = changedValue;
-            }
+            ChangedEffectVarName = changedName;
+            ChangedEffectVarValue = changedValue;
         }
+    }
 
-        internal enum ShaderEffectChangedEnum
-        {            
-            DISPOSE = 0,
-            UNIFORM_VAR_UPDATED = 1,
-            UNIFORM_VAR_ADDED = 2,
-            UNCHANGED = 3
-        }
+    internal enum ShaderEffectChangedEnum
+    {
+        DISPOSE = 0,
+        UNIFORM_VAR_UPDATED = 1,
+        UNIFORM_VAR_ADDED = 2,
+        UNCHANGED = 3
     }
 
 
@@ -454,7 +450,7 @@ namespace Fusee.Engine.Core
                 {
                     var pxBody = new List<string>()
                     {
-                        FragPropertiesShard.GBufferOut(),                        
+                        FragPropertiesShard.GBufferOut(),
                         FragMainShard.RenderToGBuffer(EffectProps)
                     };
                     PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);

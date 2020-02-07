@@ -60,13 +60,13 @@ namespace Fusee.Engine.Common
         /// The result is already compiled to code executable on the GPU. <see cref="IRenderContextImp.SetShader"/>
         /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
         /// </remarks>
-        IShaderProgramImp CreateShader(string vs, string ps, string gs = null);
+        IShaderHandle CreateShader(string vs, string ps, string gs = null);
 
         /// <summary>
         /// Removes given shaderprogramm from GPU
         /// </summary>
         /// <param name="sp"></param>
-        void RemoveShader(IShaderProgramImp sp);
+        void RemoveShader(IShaderHandle sp);
 
         /// <summary>
         /// Free all allocated gpu memory that belong to a framebuffer object.
@@ -108,7 +108,7 @@ namespace Fusee.Engine.Common
         /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
         /// the given shader.
         /// </returns>
-        IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram);
+        IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram);
 
         /// <summary>
         /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
@@ -120,7 +120,7 @@ namespace Fusee.Engine.Common
         /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
-        IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName);
+        IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName);
 
         /// <summary>
         /// Gets the value of a shader parameter.
@@ -128,7 +128,7 @@ namespace Fusee.Engine.Common
         /// <param name="shaderProgram">The program.</param>
         /// <param name="param">The handle.</param>
         /// <returns>The float value.</returns>
-        float GetParamValue(IShaderProgramImp shaderProgram, IShaderParam param);
+        float GetParamValue(IShaderHandle shaderProgram, IShaderParam param);
 
         /// <summary>
         /// Sets the specified shader parameter to a float value.
@@ -415,7 +415,7 @@ namespace Fusee.Engine.Common
         /// <param name="shaderProgramImp">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
         /// <seealso cref="IRenderContextImp.CreateShader"/>
         /// <see cref="IRenderContextImp.Render(IMeshImp)"/>
-        void SetShader(IShaderProgramImp shaderProgramImp);
+        void SetShader(IShaderHandle shaderProgramImp);
 
         /// <summary>
         /// Deletes the buffer associated with the mesh implementation.

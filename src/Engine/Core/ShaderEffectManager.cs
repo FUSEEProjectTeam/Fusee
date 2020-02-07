@@ -17,7 +17,7 @@ namespace Fusee.Engine.Core
             _rc.RemoveShader(ef);            
         }
 
-        private void ShaderEffectChanged(object sender, ShaderEffect.ShaderEffectEventArgs args)
+        private void ShaderEffectChanged(object sender, ShaderEffectEventArgs args)
         {
             if (args == null || sender == null) return;
 
@@ -26,16 +26,14 @@ namespace Fusee.Engine.Core
 
             switch (args.Changed)
             {
-                case ShaderEffect.ShaderEffectChangedEnum.DISPOSE:
+                case ShaderEffectChangedEnum.DISPOSE:
                     Remove(senderSF);
                     break;
-                case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
-                    // ReSharper disable once InconsistentNaming
-                    _rc.HandleAndUpdateChangedButExisistingEffectVariable(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
+                case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
+                    _rc.CreateOrUpdateParameter(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
-                case ShaderEffect.ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
-                    // We need to recreate everything
-                    _rc.CreateAllShaderEffectVariables(senderSF);
+                case ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
+                    _rc.CreateOrUpdateParameter(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"ShaderEffectChanged event called with unknown arguments: {args}, calling ShaderEffect: {sender as ShaderEffect}");

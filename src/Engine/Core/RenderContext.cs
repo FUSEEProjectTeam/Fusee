@@ -1,11 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
 using Fusee.Serialization;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Fusee.Engine.Core
 {
@@ -33,6 +33,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
+        #region Viewport
         /// <summary>
         /// Gets and sets the viewport width.
         /// </summary>
@@ -53,17 +54,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         public int ViewportYStart { get; private set; }
 
-        // ReSharper disable once InconsistentNaming
-        /// <summary>
-        /// All global FX Params
-        /// Overwrites values with the same name in current ShaderEffect
-        /// </summary>
-        public readonly Dictionary<string, object> AllFXParams = new Dictionary<string, object>();
-
-        /// <summary>
-        /// The currently bound shader program.
-        /// </summary>
-        public ShaderProgram CurrentShaderProgram { get; private set; }
+        #endregion
 
         /// <summary>
         /// Gets and sets a value indicating whether [debug lines enabled].
@@ -91,11 +82,23 @@ namespace Fusee.Engine.Core
         /// </summary>
         public RenderContextDefaultState DefaultState { get; private set; }
 
+        /// <summary>
+        /// The currently bound shader program. One <see cref="ShaderEffect"/> can result in one to _n_ <see cref="ShaderProgram"/>s, one for each pass.
+        /// </summary>
+        public ShaderProgram CurrentShaderProgram { get; private set; }
+
+        /// <summary>
+        /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.      
+        /// </summary>
+        internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
+
         #region Private Fields
 
         private readonly IRenderContextImp _rci;
 
-        private readonly MatrixParamNames _currentShaderParams;
+        //Caches matrices of the current shader to minimize SetEffectParam calls.
+        private readonly MatrixParams _currentShaderMatrixParams;
+
         private ShaderEffect _currentShaderEffect;
 
         // Mesh Management
@@ -144,6 +147,8 @@ namespace Fusee.Engine.Core
 
         private bool _modelViewProjectionOk;
 
+        private bool _modelViewOK;
+
         private bool _invViewOk;
         private bool _invModelOk;
         private bool _invModelViewOk;
@@ -181,11 +186,7 @@ namespace Fusee.Engine.Core
         {
             get { return _view; }
             set
-            {
-                //value.M13 *= -1; // Correct Operation to make Coordinate System left handed
-                //value.M23 *= -1;
-                //value.M33 *= -1;
-                //value.M43 *= -1;
+            {               
                 _view = value;
 
                 _modelViewProjectionOk = false;
@@ -200,8 +201,8 @@ namespace Fusee.Engine.Core
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _view * _model;
-
+                _modelViewOK = false;
+                
                 UpdateCurrentShader();
             }
         }
@@ -235,56 +236,11 @@ namespace Fusee.Engine.Core
                 _transModelOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelView = _view * _model;
-
-                UpdateCurrentShader();
-            } //TODO: Flags
-        }
-
-        /// <summary>
-        /// The ModelView matrix used by the rendering pipeline.
-        /// </summary>
-        /// <value>
-        /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
-        /// </value>
-        /// <remarks>
-        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Mesh"/>). The rendering pipeline
-        /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
-        /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
-        /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
-        /// </remarks>
-        public float4x4 ModelView
-        {
-            get { return _modelView; }
-            set
-            {
-                // Update matrix
-                _modelView = value;
-                _view = float4x4.Identity;
-                _model = value;
-
-                // Invalidate derived matrices
-                _modelViewProjectionOk = false;
-
-                _invModelOk = false;
-                _invViewOk = false;
-                _invModelViewOk = false;
-                _invModelViewProjectionOk = false;
-
-                _invTransModelOk = false;
-                _invTransViewOk = false;
-                _invTransModelViewOk = false;
-                _invTransModelViewProjectionOk = false;
-
-                _transModelOk = false;
-                _transViewOk = false;
-                _transModelViewOk = false;
-                _transModelViewProjectionOk = false;
+                _modelViewOK = false;
 
                 UpdateCurrentShader();
             }
         }
-
 
         /// <summary>
         /// The projection matrix used by the rendering pipeline
@@ -317,6 +273,28 @@ namespace Fusee.Engine.Core
                 _transProjectionOk = false;
 
                 UpdateCurrentShader();
+            }
+        }
+
+        /// <summary>
+        /// The ModelView matrix used by the rendering pipeline.
+        /// </summary>
+        /// <value>
+        /// The 4x4 ModelView matrix defining the transformation applied to model coordinates yielding view coordinates.
+        /// </value>
+        /// <remarks>
+        /// Model coordinates are the coordinates directly taken from the model (the mesh geometry - <see cref="Mesh"/>). The rendering pipeline
+        /// transforms these coordinates into View coordinates. Further down the pipeline the coordinates will be transformed to screen coordinates to allow the
+        /// geometry to be rendered to pixel positions on the screen. The ModelView matrix defines the transformations performed on the original model coordinates
+        /// to yield view coordinates. In most cases the matrix is a composition of several translations, rotations, and scale operations.
+        /// </remarks>
+        public float4x4 ModelView
+        {
+            get
+            {
+                if (!_modelViewOK)
+                    _modelView = View * Model;
+                return _modelView;
             }
         }
 
@@ -611,9 +589,9 @@ namespace Fusee.Engine.Core
         /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original View matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.View"/>
-        /// <seealso cref="RenderContext.InvView"/>
-        /// <seealso cref="RenderContext.TransView"/>
+        /// <seealso cref="View"/>
+        /// <seealso cref="InvView"/>
+        /// <seealso cref="TransView"/>
         public float4x4 InvTransView
         {
             get
@@ -637,9 +615,9 @@ namespace Fusee.Engine.Core
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original Model matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Model"/>
-        /// <seealso cref="RenderContext.InvModel"/>
-        /// <seealso cref="RenderContext.TransModel"/>
+        /// <seealso cref="Model"/>
+        /// <seealso cref="InvModel"/>
+        /// <seealso cref="TransModel"/>
         public float4x4 InvTransModel
         {
             get
@@ -663,9 +641,9 @@ namespace Fusee.Engine.Core
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original ModelView matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelView"/>
-        /// <seealso cref="RenderContext.InvModelView"/>
-        /// <seealso cref="RenderContext.TransModelView"/>
+        /// <seealso cref="ModelView"/>
+        /// <seealso cref="InvModelView"/>
+        /// <seealso cref="TransModelView"/>
         public float4x4 InvTransModelView
         {
             get
@@ -690,9 +668,9 @@ namespace Fusee.Engine.Core
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original Projection matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Projection"/>
-        /// <seealso cref="RenderContext.InvProjection"/>
-        /// <seealso cref="RenderContext.TransProjection"/>
+        /// <seealso cref="Projection"/>
+        /// <seealso cref="InvProjection"/>
+        /// <seealso cref="TransProjection"/>
         public float4x4 InvTransProjection
         {
             get
@@ -717,9 +695,9 @@ namespace Fusee.Engine.Core
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse transpose matrix
         /// is the same as the original ModelViewProjection matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelViewProjection"/>
-        /// <seealso cref="RenderContext.InvModelViewProjection"/>
-        /// <seealso cref="RenderContext.TransModelViewProjection"/>
+        /// <seealso cref="ModelViewProjection"/>
+        /// <seealso cref="InvModelViewProjection"/>
+        /// <seealso cref="TransModelViewProjection"/>
         public float4x4 InvTransModelViewProjection
         {
             get
@@ -760,7 +738,7 @@ namespace Fusee.Engine.Core
 
             _shaderEffectManager = new ShaderEffectManager(this);
 
-            _currentShaderParams = new MatrixParamNames();
+            _currentShaderMatrixParams = new MatrixParams();
             _updatedShaderParams = false;
 
             //_debugShader = Shaders.GetColorShader(this);
@@ -773,6 +751,11 @@ namespace Fusee.Engine.Core
 
         #region Private Members               
 
+        /// <summary>
+        /// Checks the matrix cache and updates the found parameters in the _currentShaderEffect.
+        /// This method is called whenever a base matrix (model, view or projection is changed).
+        /// The derived matrices are updated due to the use of the Getters of the derived matrices here.
+        /// </summary>
         private void UpdateCurrentShader()
         {
             if (CurrentShaderProgram == null)
@@ -782,63 +765,63 @@ namespace Fusee.Engine.Core
                 UpdateShaderParams();
 
             // Normal versions of MV and P
-            if (_currentShaderParams.FUSEE_M != null)
-                SetFXParam("FUSEE_M", Model);
+            if (_currentShaderMatrixParams.FUSEE_M != null)
+                SetGlobalEffectParam("FUSEE_M", Model);
 
-            if (_currentShaderParams.FUSEE_V != null)
-                SetFXParam("FUSEE_V", View);
+            if (_currentShaderMatrixParams.FUSEE_V != null)
+                SetGlobalEffectParam("FUSEE_V", View);
 
-            if (_currentShaderParams.FUSEE_IV != null)
-                SetFXParam("FUSEE_IV", InvView);
+            if (_currentShaderMatrixParams.FUSEE_IV != null)
+                SetGlobalEffectParam("FUSEE_IV", InvView);
 
-            if (_currentShaderParams.FUSEE_MV != null)
-                SetFXParam("FUSEE_MV", ModelView);
+            if (_currentShaderMatrixParams.FUSEE_MV != null)
+                SetGlobalEffectParam("FUSEE_MV", ModelView);
 
-            if (_currentShaderParams.FUSEE_P != null)
-                SetFXParam("FUSEE_P", Projection);
+            if (_currentShaderMatrixParams.FUSEE_P != null)
+                SetGlobalEffectParam("FUSEE_P", Projection);
 
-            if (_currentShaderParams.FUSEE_MVP != null)
-                SetFXParam("FUSEE_MVP", ModelViewProjection);
+            if (_currentShaderMatrixParams.FUSEE_MVP != null)
+                SetGlobalEffectParam("FUSEE_MVP", ModelViewProjection);
 
             // Inverted versions
             // Todo: Add inverted versions for M and V
-            if (_currentShaderParams.FUSEE_IMV != null)
-                SetFXParam("FUSEE_IMV", InvModelView);
+            if (_currentShaderMatrixParams.FUSEE_IMV != null)
+                SetGlobalEffectParam("FUSEE_IMV", InvModelView);
 
-            if (_currentShaderParams.FUSEE_ITV != null)
-                SetFXParam("FUSEE_ITV", InvTransView);
+            if (_currentShaderMatrixParams.FUSEE_ITV != null)
+                SetGlobalEffectParam("FUSEE_ITV", InvTransView);
 
-            if (_currentShaderParams.FUSEE_IP != null)
-                SetFXParam("FUSEE_IP", InvProjection);
+            if (_currentShaderMatrixParams.FUSEE_IP != null)
+                SetGlobalEffectParam("FUSEE_IP", InvProjection);
 
-            if (_currentShaderParams.FUSEE_IMVP != null)
-                SetFXParam("FUSEE_IMVP", InvModelViewProjection);
+            if (_currentShaderMatrixParams.FUSEE_IMVP != null)
+                SetGlobalEffectParam("FUSEE_IMVP", InvModelViewProjection);
 
             // Transposed versions
             // Todo: Add transposed versions for M and V
-            if (_currentShaderParams.FUSEE_TMV != null)
-                SetFXParam("FUSEE_TMV", TransModelView);
+            if (_currentShaderMatrixParams.FUSEE_TMV != null)
+                SetGlobalEffectParam("FUSEE_TMV", TransModelView);
 
-            if (_currentShaderParams.FUSEE_TP != null)
-                SetFXParam("FUSEE_TP", TransProjection);
+            if (_currentShaderMatrixParams.FUSEE_TP != null)
+                SetGlobalEffectParam("FUSEE_TP", TransProjection);
 
-            if (_currentShaderParams.FUSEE_TMVP != null)
-                SetFXParam("FUSEE_TMVP", TransModelViewProjection);
+            if (_currentShaderMatrixParams.FUSEE_TMVP != null)
+                SetGlobalEffectParam("FUSEE_TMVP", TransModelViewProjection);
 
             // Inverted and transposed versions
             // Todo: Add inverted & transposed versions for M and V
-            if (_currentShaderParams.FUSEE_ITMV != null)
-                SetFXParam("FUSEE_ITMV", InvTransModelView);
+            if (_currentShaderMatrixParams.FUSEE_ITMV != null)
+                SetGlobalEffectParam("FUSEE_ITMV", InvTransModelView);
 
-            if (_currentShaderParams.FUSEE_ITP != null)
-                SetFXParam("FUSEE_ITP", InvTransProjection);
+            if (_currentShaderMatrixParams.FUSEE_ITP != null)
+                SetGlobalEffectParam("FUSEE_ITP", InvTransProjection);
 
-            if (_currentShaderParams.FUSEE_ITMVP != null)
-                SetFXParam("FUSEE_ITMVP", InvTransModelViewProjection);
+            if (_currentShaderMatrixParams.FUSEE_ITMVP != null)
+                SetGlobalEffectParam("FUSEE_ITMVP", InvTransModelViewProjection);
 
             // Bones (if any)
-            if (_currentShaderParams.FUSEE_BONES != null && Bones != null)
-                SetFXParam("FUSEE_BONES[0]", Bones);
+            if (_currentShaderMatrixParams.FUSEE_BONES != null && Bones != null)
+                SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
 
         }
 
@@ -846,35 +829,35 @@ namespace Fusee.Engine.Core
         {
             if (CurrentShaderProgram == null)
             {
-                // TODO: log that no shader was set
+                Diagnostics.Warn("No shader is currently set! Use RenderContext.SetShader first!");
                 return;
             }
 
             // Normal versions of MV and P
-            _currentShaderParams.FUSEE_M = CurrentShaderProgram.GetShaderParam("FUSEE_M");
-            _currentShaderParams.FUSEE_V = CurrentShaderProgram.GetShaderParam("FUSEE_V");
-            _currentShaderParams.FUSEE_MV = CurrentShaderProgram.GetShaderParam("FUSEE_MV");
-            _currentShaderParams.FUSEE_P = CurrentShaderProgram.GetShaderParam("FUSEE_P");
-            _currentShaderParams.FUSEE_MVP = CurrentShaderProgram.GetShaderParam("FUSEE_MVP");
+            _currentShaderMatrixParams.FUSEE_M = CurrentShaderProgram.GetShaderParam("FUSEE_M");
+            _currentShaderMatrixParams.FUSEE_V = CurrentShaderProgram.GetShaderParam("FUSEE_V");
+            _currentShaderMatrixParams.FUSEE_MV = CurrentShaderProgram.GetShaderParam("FUSEE_MV");
+            _currentShaderMatrixParams.FUSEE_P = CurrentShaderProgram.GetShaderParam("FUSEE_P");
+            _currentShaderMatrixParams.FUSEE_MVP = CurrentShaderProgram.GetShaderParam("FUSEE_MVP");
 
             // Inverted versions
-            _currentShaderParams.FUSEE_IMV = CurrentShaderProgram.GetShaderParam("FUSEE_IMV");
-            _currentShaderParams.FUSEE_IP = CurrentShaderProgram.GetShaderParam("FUSEE_IP");
-            _currentShaderParams.FUSEE_IMVP = CurrentShaderProgram.GetShaderParam("FUSEE_IMVP");
-            _currentShaderParams.FUSEE_IV = CurrentShaderProgram.GetShaderParam("FUSEE_IV");
+            _currentShaderMatrixParams.FUSEE_IMV = CurrentShaderProgram.GetShaderParam("FUSEE_IMV");
+            _currentShaderMatrixParams.FUSEE_IP = CurrentShaderProgram.GetShaderParam("FUSEE_IP");
+            _currentShaderMatrixParams.FUSEE_IMVP = CurrentShaderProgram.GetShaderParam("FUSEE_IMVP");
+            _currentShaderMatrixParams.FUSEE_IV = CurrentShaderProgram.GetShaderParam("FUSEE_IV");
 
             // Transposed versions
-            _currentShaderParams.FUSEE_TMV = CurrentShaderProgram.GetShaderParam("FUSEE_TMV");
-            _currentShaderParams.FUSEE_TP = CurrentShaderProgram.GetShaderParam("FUSEE_TP");
-            _currentShaderParams.FUSEE_TMVP = CurrentShaderProgram.GetShaderParam("FUSEE_TMVP");
+            _currentShaderMatrixParams.FUSEE_TMV = CurrentShaderProgram.GetShaderParam("FUSEE_TMV");
+            _currentShaderMatrixParams.FUSEE_TP = CurrentShaderProgram.GetShaderParam("FUSEE_TP");
+            _currentShaderMatrixParams.FUSEE_TMVP = CurrentShaderProgram.GetShaderParam("FUSEE_TMVP");
 
             // Inverted and transposed versions
-            _currentShaderParams.FUSEE_ITMV = CurrentShaderProgram.GetShaderParam("FUSEE_ITMV");
-            _currentShaderParams.FUSEE_ITP = CurrentShaderProgram.GetShaderParam("FUSEE_ITP");
-            _currentShaderParams.FUSEE_ITMVP = CurrentShaderProgram.GetShaderParam("FUSEE_ITMVP");
+            _currentShaderMatrixParams.FUSEE_ITMV = CurrentShaderProgram.GetShaderParam("FUSEE_ITMV");
+            _currentShaderMatrixParams.FUSEE_ITP = CurrentShaderProgram.GetShaderParam("FUSEE_ITP");
+            _currentShaderMatrixParams.FUSEE_ITMVP = CurrentShaderProgram.GetShaderParam("FUSEE_ITMVP");
 
             // Bones
-            _currentShaderParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
+            _currentShaderMatrixParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
 
             _updatedShaderParams = true;
             UpdateCurrentShader();
@@ -1029,27 +1012,21 @@ namespace Fusee.Engine.Core
         #region Shader related Members
 
         /// <summary>
-        /// Sets global FX Params
+        /// Sets global effect parameters.
         /// Overwrites values with the same name in current ShaderEffect
         /// </summary>
-        /// <param name="name">FX Param name</param>
-        /// <param name="value">FX Param value</param>
-        // ReSharper disable once InconsistentNaming
-        public void SetFXParam(string name, object value)
+        /// <param name="name">Effect parameter name.</param>
+        /// <param name="value">Effect parameter value.</param>        
+        public void SetGlobalEffectParam(string name, object value)
         {
-            if (AllFXParams.ContainsKey(name))
+            if (GlobalFXParams.ContainsKey(name))
             {
-                if (AllFXParams[name].Equals(value)) return; // no new value
+                if (GlobalFXParams[name].Equals(value)) return; // no new value
 
-                AllFXParams[name] = value;
-
-                // Update ShaderEffect
-                _currentShaderEffect.SetEffectParam(name, value);
-                return;
+                GlobalFXParams[name] = value;
             }
-
-            // cache miss
-            AllFXParams.Add(name, value);
+            else           
+                GlobalFXParams.Add(name, value);            
 
             // Update ShaderEffect
             _currentShaderEffect.SetEffectParam(name, value);
@@ -1069,7 +1046,10 @@ namespace Fusee.Engine.Core
         /// </remarks>
         private ShaderProgram CreateShader(string vs, string ps, string gs = null)
         {
-            return new ShaderProgram(_rci, _rci.CreateShader(vs, ps, gs));
+            var shaderOnGpu = _rci.CreateShader(vs, ps, gs);
+            var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+
+            return new ShaderProgram(shaderParams, shaderOnGpu);
         }
 
         /// <summary>
@@ -1080,9 +1060,9 @@ namespace Fusee.Engine.Core
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) return;
 
-            foreach (var program in sFxParam.CompiledShaders)
+            foreach (var program in sFxParam.ShaderPrograms)
             {
-                _rci.RemoveShader(program._spi);
+                _rci.RemoveShader(program._gpuHandle);
             }
         }
 
@@ -1099,15 +1079,16 @@ namespace Fusee.Engine.Core
             if (CurrentShaderProgram != program)
             {
                 CurrentShaderProgram = program;
-                _rci.SetShader(program._spi);
+                _rci.SetShader(program._gpuHandle);
             }
             UpdateShaderParams(); // initial set
         }
 
         /// <summary>
         /// Activates the passed shader effect as the current shader for geometry rendering.
+        /// Will compile a shader by calling <see cref="CreateShader(string, string, string)"/> if it hasn't been yet.
         /// </summary>
-        /// <param name="ef">The shader effect to compile and use.</param>
+        /// <param name="ef">The shader effect use.</param>
         /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
@@ -1123,22 +1104,21 @@ namespace Fusee.Engine.Core
             if (_shaderEffectManager.GetShaderEffect(ef) != null)
             {
                 _currentShaderEffect = ef;
-
                 return;
             }
 
             int i = 0, nPasses = ef.VertexShaderSrc.Length;
 
-            var compiledShader = new CompiledShaderEffect
+            var compiledEffect = new CompiledShaderEffect
             {
-                CompiledShaders = new ShaderProgram[nPasses]
+                ShaderPrograms = new ShaderProgram[nPasses]
             };
 
             try // to compile all the shaders
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    compiledShader.CompiledShaders[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
+                    compiledEffect.ShaderPrograms[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
                 }
             }
             catch (Exception ex)
@@ -1147,7 +1127,7 @@ namespace Fusee.Engine.Core
                 throw new Exception("Error while compiling shader for pass " + i, ex);
             }
 
-            _allCompiledShaderEffects.Add(ef, compiledShader);
+            _allCompiledShaderEffects.Add(ef, compiledEffect);
 
             CreateAllShaderEffectVariables(ef);
 
@@ -1158,45 +1138,49 @@ namespace Fusee.Engine.Core
             _currentShaderEffect = ef;
         }
 
-        internal void HandleAndUpdateChangedButExisistingEffectVariable(ShaderEffect ef, string changedName, object changedValue)
+        /// <summary>
+        /// Called on effect param changed event.
+        /// </summary>
+        internal void CreateOrUpdateParameter(ShaderEffect ef, string name, object paramValue)
         {
-            CompiledShaderEffect sFxParam;
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out sFxParam)) return; // if "ef" not built -> return
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
-            foreach (var passParams in sFxParam.ParamsPerPass)
+            for (int i = 0; i < sFxParam.ParamsPerPass.Count; i++)
             {
-                foreach (var param in passParams)
+                var passParams = sFxParam.ParamsPerPass[i];
+                if (passParams.ContainsKey(name))
+                    passParams[name].Value = paramValue;
+                else
                 {
-                    // if not found -> continue
-                    if (!param.Info.Name.Equals(changedName)) continue;
-
-                    // if not changed -> break
-                    if (param.Value.Equals(changedValue))
-                        return;
-
-                    param.Value = changedValue;
+                    var info = sFxParam.ShaderPrograms[i].GetShaderParamInfo(name);
+                    var newParam = new EffectParam()
+                    {
+                        Info = info,
+                        ParamPasses = new List<int>(new int[] { i }),
+                        Value = paramValue
+                    };
+                    passParams.Add(name, newParam);
                 }
             }
         }
 
-        internal void CreateAllShaderEffectVariables(ShaderEffect ef)
+        /// <summary>
+        /// Gets the <see cref="CompiledShaderEffect"/> from the RC's dictionary and creates all effect parameters. 
+        /// </summary>
+        /// <param name="ef"></param>
+        private void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
             int nPasses = ef.VertexShaderSrc.Length;
-
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam))
-            {
-                sFxParam = new CompiledShaderEffect();
-                _allCompiledShaderEffects.Add(ef, sFxParam);
-            }
+            
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out var sFxParam))
+                throw new ArgumentException("ShaderEffect isn't build yet!");
 
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
-            sFxParam.Parameters = new Dictionary<string, object>();
-            sFxParam.ParamsPerPass = new List<List<EffectParam>>();
-
             for (var i = 0; i < nPasses; i++)
             {
-                var shaderParamInfos = GetShaderParamList(sFxParam.CompiledShaders[i]).ToList();
-                sFxParam.ParamsPerPass.Add(new List<EffectParam>());
+                var shaderParamInfos = GetShaderParamList(sFxParam.ShaderPrograms[i]).ToList();
+                if(sFxParam.ParamsPerPass.Count <= i)
+                    sFxParam.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
                 foreach (var paramNew in shaderParamInfos)
                 {
@@ -1206,7 +1190,7 @@ namespace Fusee.Engine.Core
                             continue;
 
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        if (AllFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
+                        if (GlobalFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
@@ -1244,8 +1228,7 @@ namespace Fusee.Engine.Core
 
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
-                        object paramExistingTmp;
-                        if (sFxParam.Parameters.TryGetValue(paramNew.Name, out paramExistingTmp))
+                        if (sFxParam.Parameters.TryGetValue(paramNew.Name, out object paramExistingTmp))
                         {
                             paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
@@ -1255,22 +1238,25 @@ namespace Fusee.Engine.Core
                                 throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
                                                     paramNew.Name +
                                                     " already defined with a different type in effect pass " +
-                                                   paramExisting.ShaderInxs[0]);
+                                                   paramExisting.ParamPasses[0]);
                             }
                             // List the current pass to use this shader parameter
-                            paramExisting.ShaderInxs.Add(i);
+                            paramExisting.ParamPasses.Add(i);                            
                         }
                         else
                         {
                             paramExisting = new EffectParam()
                             {
                                 Info = paramNew,
-                                ShaderInxs = new List<int>(new int[] { i }),
+                                ParamPasses = new List<int>(new int[] { i }),
                                 Value = initValue
                             };
                             sFxParam.Parameters.Add(paramNew.Name, paramExisting);
                         }
-                        sFxParam.ParamsPerPass[i].Add(paramExisting);
+                        //sFxParam.ParamsPerPass[i].Add(paramExisting);
+                        if (!sFxParam.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
+                            sFxParam.ParamsPerPass[i].Add(paramExisting.Info.Name, paramExisting);
+                        
                     }
                     else
                     {
@@ -1291,9 +1277,9 @@ namespace Fusee.Engine.Core
         /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
         /// the given shader.
         /// </returns>
-        public IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
+        internal IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
         {
-            return _rci.GetShaderParamList(program._spi);
+            return _rci.GetShaderParamList(program._gpuHandle);
         }
 
         /// <summary>
@@ -1305,9 +1291,9 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// The returned handle can be used to assign values to a (uniform) shader parameter.
         /// </remarks>
-        public IShaderParam GetShaderParam(ShaderProgram program, string paramName)
+        internal IShaderParam GetShaderParam(ShaderProgram program, string paramName)
         {
-            return _rci.GetShaderParam(program._spi, paramName);
+            return _rci.GetShaderParam(program._gpuHandle, paramName);
         }
 
         /// <summary>
@@ -1316,9 +1302,9 @@ namespace Fusee.Engine.Core
         /// <param name="program">The <see cref="ShaderProgram"/>.</param>
         /// <param name="handle">The <see cref="IShaderParam"/>.</param>
         /// <returns>The float value.</returns>
-        public float GetParamValue(ShaderProgram program, IShaderParam handle)
+        internal float GetParamValue(ShaderProgram program, IShaderParam handle)
         {
-            return _rci.GetParamValue(program._spi, handle);
+            return _rci.GetParamValue(program._gpuHandle, handle);
         }
 
         /// <summary>
@@ -1737,8 +1723,8 @@ namespace Fusee.Engine.Core
         {
             if (_currentShaderEffect == null) return;
 
-            // GLOBAL OVERRIDE
-            foreach (var fxParam in AllFXParams)
+            // Update global shader parameters in current shader (light and matrices)
+            foreach (var fxParam in GlobalFXParams)
             {
                 _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
             }
@@ -1748,15 +1734,13 @@ namespace Fusee.Engine.Core
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    _allCompiledShaderEffects.TryGetValue(_currentShaderEffect, out var compiledShaderEffect);
+                    var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
 
                     // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    SetShader(compiledShaderEffect.CompiledShaders[i]);
+                    SetShader(compiledShaderEffect.ShaderPrograms[i]);
 
-                    foreach (var param in compiledShaderEffect.ParamsPerPass[i])
-                    {
-                        SetShaderParamT(param);
-                    }
+                    foreach (var param in compiledShaderEffect.ParamsPerPass[i])                    
+                        SetShaderParamT(param.Value);                    
 
                     SetRenderStateSet(_currentShaderEffect.States[i]);
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
@@ -1851,7 +1835,7 @@ namespace Fusee.Engine.Core
                 var oldShader = CurrentShaderProgram;
                 SetShader(_debugShader);
 
-                SetShaderParam(_currentShaderParams.FUSEE_MVP, ModelViewProjection);
+                SetShaderParam(_currentShaderMatrixParams.FUSEE_MVP, ModelViewProjection);
                 SetShaderParam(_debugColor, color);
 
                 _rci.DebugLine(start, end, color);
@@ -1922,7 +1906,7 @@ namespace Fusee.Engine.Core
         #endregion
     }
 
-    internal sealed class MatrixParamNames
+    internal sealed class MatrixParams
     {
         // ReSharper disable InconsistentNaming
         public IShaderParam FUSEE_M;
@@ -1953,24 +1937,32 @@ namespace Fusee.Engine.Core
     internal sealed class EffectParam
     {
         public ShaderParamInfo Info;
+
         public object Value;
-        public List<int> ShaderInxs;
+
+        /// <summary>
+        /// Saves the passes in which tis parameter is used.
+        /// </summary>
+        public List<int> ParamPasses;
     }
 
     /// <summary>
-    /// All compiled information of one ShaderEffect
+    /// All compiled information of one ShaderEffect.
+    /// A <see cref="ShaderEffect"/> can have more than one Pass where each pass contains another shader.
+    /// Shaders that where created on the gpu are saved as <see cref="ShaderProgram"/>.
     /// </summary>
     internal class CompiledShaderEffect
     {
         /// <summary>
-        /// The compiled vertex and pixel shaders
+        /// The compiled vertex and pixel shaders for every pass.
         /// </summary>
-        internal ShaderProgram[] CompiledShaders;
+        internal ShaderProgram[] ShaderPrograms;
 
         /// <summary>
         /// All parameter saved per pass with uniform handle, type and info (name, etc.) as lookup table
         /// </summary>
-        internal List<List<EffectParam>> ParamsPerPass = new List<List<EffectParam>>();
+        internal List<Dictionary<string, EffectParam>> ParamsPerPass = new List<Dictionary<string, EffectParam>>();
+
         /// <summary>
         /// All shader parameters of all passes
         /// </summary>

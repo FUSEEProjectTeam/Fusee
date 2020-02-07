@@ -81,9 +81,24 @@ namespace Fusee.Engine.Core.ShaderShards
         public static readonly string IView = "FUSEE_IV";
 
         /// <summary>
+        /// The inverse view matrix.
+        /// </summary>
+        public static readonly string IModel = "FUSEE_IM";
+
+        /// <summary>
+        /// The inverse view matrix.
+        /// </summary>
+        public static readonly string TModel = "FUSEE_TM";
+
+        /// <summary>
         /// The inverse model view matrix.
         /// </summary>
         public static readonly string IModelView = "FUSEE_IMV";
+
+        /// <summary>
+        /// The inverse transposed view matrix.
+        /// </summary>
+        public static readonly string TView = "FUSEE_TV";
 
         /// <summary>
         /// The inverse transposed view matrix.
@@ -129,6 +144,11 @@ namespace Fusee.Engine.Core.ShaderShards
         /// The inversed transposed model view projection matrix.
         /// </summary>
         public static readonly string ITModelViewProjection = "FUSEE_ITMVP";
+
+        /// <summary>
+        /// The inversed transposed model view projection matrix.
+        /// </summary>
+        public static readonly string ITModel = "FUSEE_ITM";
 
         /// <summary>
         /// The bones array.
