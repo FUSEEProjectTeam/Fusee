@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Generates a depth texture and sets it at the correct position in the RenderTextures Array.
         /// </summary>
-        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, TextureCompareFunc compareFunc = TextureCompareFunc.GL_LESS)
+        public void SetDepthTex(TextureCompareMode compareMode = TextureCompareMode.NONE, Compare compareFunc = Compare.Less)
         {
             RenderTextures[(int)RenderTargetTextureTypes.G_DEPTH] = WritableTexture.CreateDepthTex((int)TextureResolution, (int)TextureResolution, compareMode, compareFunc);
         }

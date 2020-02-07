@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.Serialization;
 using System.Text;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -95,7 +94,7 @@ namespace Fusee.Engine.Core
         /// Gets the image containing all characters specified in the <see cref="Alphabet"/>. Use this image
         /// as a texture used by individual rectangles each displaying a single character. Use the information
         /// retrieved from <see cref="GetGlyphOnMap"/> to position the character rectangles and to align 
-        /// their texure coordinates.
+        /// their texture coordinates.
         /// </summary>
         /// <value>
         /// The font image.
@@ -113,12 +112,12 @@ namespace Fusee.Engine.Core
 
                 var averageAdvance = 0f;
                 var charCount = 0f;
-                
+
                 //Calculate averageAdvance in Font? Ratio FontSize/ averageAdvance does not change with fontSize
                 foreach (char c in _alphabet)
                 {
                     GlyphInfo gi = _font.GetGlyphInfo(c);
-                    averageAdvance += gi.AdvanceX+1;
+                    averageAdvance += gi.AdvanceX + 1;
                     charCount++;
                 }
 
@@ -141,10 +140,10 @@ namespace Fusee.Engine.Core
                     var mult = width / widthOld;
                     _font.PixelHeight = (uint)(_pixelHeight * (mult));
                 }
-                
+
                 // Create the font atlas (the texture containing ALL glyphs)
                 _image = new Texture(new byte[width * width], width, width, new ImagePixelFormat(ColorFormat.Intensity), false);
-               
+
                 var offX = 0;
                 var offY = 0;
                 var rowH = 0;
@@ -153,7 +152,7 @@ namespace Fusee.Engine.Core
                 foreach (char c in _alphabet)
                 {
                     int bitmapLeft, bitmapTop;
-                    IImageData glyphImg = _font.RenderGlyph((uint) c, out bitmapLeft, out bitmapTop);
+                    IImageData glyphImg = _font.RenderGlyph((uint)c, out bitmapLeft, out bitmapTop);
                     if (offX + glyphImg.Width + 1 >= width)
                     {
                         offY += rowH;
@@ -173,8 +172,8 @@ namespace Fusee.Engine.Core
                         BitmapH = glyphImg.Height,
                         BitmapL = bitmapLeft,
                         BitmapT = bitmapTop,
-                        TexOffX = offX/(float) width,
-                        TexOffY = offY/(float) width,
+                        TexOffX = offX / (float)width,
+                        TexOffY = offY / (float)width,
                     };
 
                     _glyphOnMapCache[c] = glyphOnMap;
@@ -270,17 +269,17 @@ namespace Fusee.Engine.Core
                         sb.Append((char)i);
                     _alphabet = sb.ToString();
                 }
-                else 
+                else
                     _alphabet = value;
                 Invalidate();
             }
         }
 
         /// <summary>
-        /// Gets a value indicating whether this <see cref="FontMap"/> is uptodate.
+        /// Gets a value indicating whether this <see cref="FontMap"/> is up-to-date.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if uptodate; otherwise, <c>false</c>.
+        ///   <c>true</c> if up-to-date; otherwise, <c>false</c>.
         /// </value>
         public bool Uptodate => _uptodate;
 
@@ -289,7 +288,7 @@ namespace Fusee.Engine.Core
         /// character from the font <see cref="Image"/>.
         /// </summary>
         /// <param name="c">The character to obtain information for.</param>
-        /// <returns>The <see cref="GlyphOnMap"/> record for the given character containting information where on the texture the glyph resides.</returns>
+        /// <returns>The <see cref="GlyphOnMap"/> record for the given character containing information where on the texture the glyph resides.</returns>
         public GlyphOnMap GetGlyphOnMap(uint c)
         {
             return _glyphOnMapCache[c];

@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <param name="rawShaderString">The raw shader string that is to be parsed.</param>
         /// <returns></returns>
         public static string ParseIncludes(string rawShaderString)
-        {           
+        {
             var fields = GetFieldValues(typeof(UniformNameDeclarations));
 
             var refinedShader = new List<string>();

@@ -15,25 +15,13 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class ConvertSceneGraph : SceneVisitor
     {
-        private SceneContainer _convertedScene;        
+        private SceneContainer _convertedScene;
         private Stack<SceneNodeContainer> _predecessors;
         private SceneNodeContainer _currentNode;
 
         private Dictionary<MaterialComponent, ShaderEffect> _matMap;
         private Dictionary<MaterialPBRComponent, ShaderEffect> _pbrComponent;
         private Stack<SceneNodeContainer> _boneContainers;
-
-        private List<Tuple<SceneNodeContainer, LightResult>> _lightViseratorResults;
-
-        //private IEnumerable<System.Type> _codeComponentSubClasses;
-
-        //public ConvertSceneGraph()
-        //{
-        //  _codeComponentSubClasses = 
-        //    Assembly.GetExecutingAssembly()
-        //    .GetTypes()
-        //    .Where(t => t.IsSubclassOf(typeof(CodeComponent)));
-        //}
 
         /// <summary>
         /// Method is called when going up one hierarchy level while traversing. Override this method to perform pop on any self-defined state.
@@ -49,20 +37,21 @@ namespace Fusee.Engine.Core
         /// <param name="sc">The SceneContainer to convert.</param>
         /// <returns></returns>
         public SceneContainer Convert(SceneContainer sc)
-        { 
+        {
             _predecessors = new Stack<SceneNodeContainer>();
             _convertedScene = new SceneContainer();
-                        
-            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();            
+
+            _matMap = new Dictionary<MaterialComponent, ShaderEffect>();
             _pbrComponent = new Dictionary<MaterialPBRComponent, ShaderEffect>();
             _boneContainers = new Stack<SceneNodeContainer>();
 
-            Traverse(sc.Children);            
-            
+            Traverse(sc.Children);
+
             return _convertedScene;
-        } 
-        
+        }
+
         #region Visitors
+
         /// <summary>
         /// Converts the scene node container.
         /// </summary>
@@ -85,28 +74,17 @@ namespace Fusee.Engine.Core
             {
                 _predecessors.Push(new SceneNodeContainer { Name = CurrentNode.Name });
                 _currentNode = _predecessors.Peek();
-                if(_convertedScene.Children != null)
+                if (_convertedScene.Children != null)
                     _convertedScene.Children.Add(_currentNode);
                 else
                     _convertedScene.Children = new List<SceneNodeContainer> { _currentNode };
             }
-
-            ////WIP!
-            ////If the SceneNodeContainers' name contains the name of some CodeComponent subclass,
-            ////create CodeComponent of this type and add it to the currentNode
-            //foreach (var type in _codeComponentSubClasses)
-            //{
-            //    if (!snc.Name.Contains(type.ToString())) continue;
-                
-            //    var codeComp = Activator.CreateInstance(type);
-            //    //_currentNode.AddComponent(codeComp);
-            //}
         }
 
         ///<summary>
         ///Converts the transform component.
         ///</summary>
-        [VisitMethod]        
+        [VisitMethod]
         public void ConvTransform(TransformComponent transform)
         {
             if (_currentNode.Components == null)
@@ -123,7 +101,7 @@ namespace Fusee.Engine.Core
         public void ConvMaterial(MaterialComponent matComp)
         {
             var effect = LookupMaterial(matComp);
-            _currentNode.Components.Add(new ShaderEffectComponent{Effect = effect});
+            _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
         }
 
         /// <summary>
@@ -135,7 +113,7 @@ namespace Fusee.Engine.Core
         {
             var effect = LookupMaterial(matComp);
             _currentNode.Components.Add(new ShaderEffectComponent { Effect = effect });
-        }        
+        }
 
         /// <summary>
         /// Converts the shader.
@@ -202,15 +180,15 @@ namespace Fusee.Engine.Core
         {
             // check if we have bones
             if (_boneContainers.Count >= 1)
-            {                
-                if(weight.Joints == null) // initialize joint container
+            {
+                if (weight.Joints == null) // initialize joint container
                     weight.Joints = new List<SceneNodeContainer>();
 
                 // set all bones found until this WeightComponent
                 while (_boneContainers.Count != 0)
                     weight.Joints.Add(_boneContainers.Pop());
             }
-           
+
             _currentNode.Components.Add(weight);
         }
         #endregion

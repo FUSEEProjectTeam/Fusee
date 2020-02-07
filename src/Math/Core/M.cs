@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 
 namespace Fusee.Math.Core
@@ -902,5 +903,28 @@ namespace Fusee.Math.Core
         #endregion Equals
 
         #endregion Public Members
+
+        #region Internal Members
+
+        static internal char GetNumericListSeparator(IFormatProvider provider)
+        {
+            char numericSeparator = ',';
+
+            // Get the NumberFormatInfo out of the provider, if possible
+            // If the IFormatProvider doesn't not contain a NumberFormatInfo, then
+            // this method returns the current culture's NumberFormatInfo.
+            NumberFormatInfo numberFormat = NumberFormatInfo.GetInstance(provider);
+
+            // Is the decimal separator is the same as the list separator?
+            // If so, we use the ";".
+            if ((numberFormat.NumberDecimalSeparator.Length > 0) && (numericSeparator == numberFormat.NumberDecimalSeparator[0]))
+            {
+                numericSeparator = ';';
+            }
+
+            return numericSeparator;
+        }
+
+        #endregion Internal Members
     }
 }

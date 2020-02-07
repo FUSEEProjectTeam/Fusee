@@ -21,6 +21,6 @@
         /// <summary>
         /// Specifies the texture's comparison function, see <see cref="TextureCompareFunc"/>.
         /// </summary>
-        TextureCompareFunc CompareFunc { get; }
+        Compare CompareFunc { get; }
     }
 }

@@ -1,5 +1,6 @@
 using ProtoBuf;
 using System;
+using System.Globalization;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -1233,7 +1234,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
-        public static float4x4 Add(float4x4 left, float4x4 right)
+        public static float4x4 Add(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M14 + right.M14,
                                 left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M24 + right.M24,
@@ -1247,7 +1248,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the subtraction.</param>
         /// <param name="right">The right operand of the subtraction.</param>
         /// <returns>A new instance that is the result of the subtraction.</returns>
-        public static float4x4 Subtract(float4x4 left, float4x4 right)
+        public static float4x4 Subtract(in float4x4 left, in float4x4 right)
         {
             return new float4x4(left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M14 - right.M14,
                                 left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M24 - right.M24,
@@ -1265,7 +1266,7 @@ namespace Fusee.Math.Core
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication</returns>
-        public static float4x4 Mult(float4x4 left, float4x4 right)
+        public static float4x4 Mult(in float4x4 left, in float4x4 right)
         {
             if (left == Identity) return right;
             if (right == Identity) return left;
@@ -1839,12 +1840,32 @@ namespace Fusee.Math.Core
         #region public override string ToString()
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix44.
+        /// Returns a System.String that represents the current float4x4.
         /// </summary>
         /// <returns>A string.</returns>
         public override string ToString()
         {
-            return String.Format("{0}\n{1}\n{2}\n{3}", Row0, Row1, Row2, Row3);
+            return ConvertToString(null);
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current float4x4.
+        /// </summary>
+        /// <param name="provider">Provides information about a specific culture.</param>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public string ToString(IFormatProvider provider)
+        {
+            return ConvertToString(provider);
+        }
+
+        internal string ConvertToString(IFormatProvider? provider)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            return String.Format(provider, "{0}\n{1}\n{2}\n{3}", Row0.ToString(provider), Row1.ToString(provider), Row2.ToString(provider), Row3.ToString(provider));
         }
 
         #endregion public override string ToString()
@@ -1917,6 +1938,41 @@ namespace Fusee.Math.Core
         /// <value>
         /// The parse property.
         /// </value>
-        public static Converter<string, float4x4> Parse { get; set; }
+        public static Converter<string, float4x4> ParseConverter { get; set; } = (x => float4x4.Parse(x));
+
+        /// <summary>
+        /// Parses a string into a float4x4.
+        /// </summary>
+        /// <param name="source"></param>
+        /// <param name="provider"></param>
+        /// <returns></returns>
+        public static float4x4 Parse(string source, IFormatProvider? provider = null)
+        {
+            if (provider == null)
+                provider = CultureInfo.CurrentCulture;
+
+            char separator = M.GetNumericListSeparator(provider);
+
+            string[] strings = source.Split(new char[] { separator, '(', ')', ' ', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            if (strings.Length != 16)
+                throw new FormatException("String parse for float4x4 did not result in exactly 16 items.");
+
+            float[] floats = new float[strings.Length];
+
+            for (int i = 0; i < strings.Length; i++)
+            {
+                try
+                {
+                    floats[i] = float.Parse(strings[i], provider);
+                }
+                catch
+                {
+                    throw new FormatException();
+                }
+            }
+
+            return new float4x4(floats[0], floats[1], floats[2], floats[3], floats[4], floats[5], floats[6], floats[7], floats[8], floats[9], floats[10], floats[11], floats[12], floats[13], floats[14], floats[15]);
+        }
     }
 }

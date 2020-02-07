@@ -78,7 +78,7 @@ namespace Fusee.Examples.PcRendering.Core
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
-            _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), Width, Height, false);
+            _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
             IsAlive = true;
 
@@ -277,7 +277,7 @@ namespace Fusee.Examples.PcRendering.Core
             //(re)create depth tex and fbo
             if (_isTexInitialized)
             {
-                _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth), Width, Height, false);
+                _depthTex = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), Width, Height, false);
 
                 _depthPassEf = PtRenderingParams.DepthPassEffect(new float2(Width, Height), InitCameraPos.z, _octreeTex, _octreeRootCenter, _octreeRootLength);
                 _colorPassEf = PtRenderingParams.ColorPassEffect(new float2(Width, Height), InitCameraPos.z, new float2(ZNear, ZFar), _depthTex, _octreeTex, _octreeRootCenter, _octreeRootLength);

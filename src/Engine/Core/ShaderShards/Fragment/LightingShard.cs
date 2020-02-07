@@ -13,34 +13,34 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
     public static class LightingShard
     {
         ///The maximal number of lights we can render when using the forward pipeline.
-        public const int NumberOfLightsForward = 8;
+        public const int NumberOfLightsForward = 8;        
 
         /// <summary>
         /// Struct, that describes a Light object in the shader code./>
         /// </summary>
         /// <returns></returns>
-        public static string LightStructDeclaration()
+        public static string LightStructDeclaration = @"
+        struct Light 
         {
-            var lightStruct = @"
-            struct Light 
-            {
-                vec3 position;
-                vec3 positionWorldSpace;
-                vec4 intensities;
-                vec3 direction;
-                vec3 directionWorldSpace;
-                float maxDistance;
-                float strength;
-                float outerConeAngle;
-                float innerConeAngle;
-                int lightType;
-                int isActive;
-                int isCastingShadows;
-                float bias;
-            };           
-            ";
-            return lightStruct;
-        }
+            vec3 position;
+            vec3 positionWorldSpace;
+            vec4 intensities;
+            vec3 direction;
+            vec3 directionWorldSpace;
+            float maxDistance;
+            float strength;
+            float outerConeAngle;
+            float innerConeAngle;
+            int lightType;
+            int isActive;
+            int isCastingShadows;
+            float bias;
+        };";
+
+        /// <summary>
+        /// Caches "allLight[i]." names (used as uniform parameters).
+        /// </summary>
+        internal static Dictionary<int, LightParamStrings> LightPararamStringsAllLights = new Dictionary<int, LightParamStrings>();
 
         /// <summary>
         /// Collects all lighting methods, dependent on what is defined in the given <see cref="ShaderEffectProps"/> and the LightingCalculationMethod.
@@ -368,8 +368,10 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         /// </summary>
         public static string ApplyLightDeferred(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
-            var methodBody = new List<string>();
-            methodBody.Add($"vec3 normal = texture({RenderTargetTextureTypes.G_NORMAL.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            var methodBody = new List<string>
+            {
+                $"vec3 normal = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;"
+            };
 
             //Do not do calculations for the background - is there a smarter way (stencil buffer)?
             //---------------------------------------
@@ -379,14 +381,14 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "if(normal.x == 0.0 && normal.y == 0.0 && normal.z == 0.0)",
             "{"
             });
-            methodBody.Add($"    {FragPropertiesShard.OutColorName} = BackgroundColor;");
+            methodBody.Add($"    {FragPropertiesShard.OutColorName} = {UniformNameDeclarations.BackgroundColor};");
             methodBody.Add(@"    return;");
             methodBody.Add("}");
 
-            methodBody.Add($"vec4 fragPos = texture({RenderTargetTextureTypes.G_POSITION.ToString()}, {VaryingNameDeclarations.TextureCoordinates});");
-            methodBody.Add($"vec4 diffuseColor = texture({RenderTargetTextureTypes.G_ALBEDO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
-            methodBody.Add($"vec3 occlusion = texture({RenderTargetTextureTypes.G_SSAO.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
-            methodBody.Add($"vec3 specularVars = texture({RenderTargetTextureTypes.G_SPECULAR.ToString()}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec4 fragPos = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION]}, {VaryingNameDeclarations.TextureCoordinates});");
+            methodBody.Add($"vec4 diffuseColor = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]}, {VaryingNameDeclarations.TextureCoordinates}).rgba;");
+            methodBody.Add($"vec3 occlusion = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
+            methodBody.Add($"vec3 specularVars = texture({UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]}, {VaryingNameDeclarations.TextureCoordinates}).rgb;");
 
             //Lighting calculation
             //-------------------------            
@@ -396,11 +398,11 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             "// then calculate lighting as usual",
             "vec3 lighting = vec3(0,0,0);",
             "",
-            "if(PassNo == 0)",
+            $"if({UniformNameDeclarations.RenderPassNo} == 0)",
             "{",
             "   vec3 ambient = ambientLighting(0.2, diffuseColor).xyz;",
                 "",
-            "   if(SsaoOn == 1)",
+            $"   if({UniformNameDeclarations.SsaoOn} == 1)",
             "      ambient *= occlusion;",
 
             "   lighting += ambient;",
@@ -730,6 +732,40 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                       
                 ");
             return frag.ToString();
+        }
+    }
+
+    internal struct LightParamStrings
+    {
+        public string PositionViewSpace;
+        public string PositionWorldSpace;
+        public string Intensities;
+        public string MaxDistance;
+        public string Strength;
+        public string OuterAngle;
+        public string InnerAngle;
+        public string Direction;
+        public string DirectionWorldSpace;
+        public string LightType;
+        public string IsActive;
+        public string IsCastingShadows;
+        public string Bias;
+
+        public LightParamStrings(int arrayPos)
+        {
+            PositionViewSpace = $"allLights[{arrayPos}].position";
+            PositionWorldSpace = $"allLights[{arrayPos}].positionWorldSpace";
+            Intensities = $"allLights[{arrayPos}].intensities";
+            MaxDistance = $"allLights[{arrayPos}].maxDistance";
+            Strength = $"allLights[{arrayPos}].strength";
+            OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
+            InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
+            Direction = $"allLights[{arrayPos}].direction";
+            DirectionWorldSpace = $"allLights[{arrayPos}].directionWorldSpace";
+            LightType = $"allLights[{arrayPos}].lightType";
+            IsActive = $"allLights[{arrayPos}].isActive";
+            IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";
+            Bias = $"allLights[{arrayPos}].bias";
         }
     }
 }

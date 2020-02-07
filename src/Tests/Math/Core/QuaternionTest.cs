@@ -2,6 +2,7 @@ using Xunit;
 using System;
 using System.Collections.Generic;
 using Fusee.Math.Core;
+using System.Globalization;
 
 namespace Fusee.Test.Math.Core
 {
@@ -333,7 +334,10 @@ namespace Fusee.Test.Math.Core
         {
             var actual = Quaternion.EulerToQuaternion(euler, true);
 
-            Assert.Equal(expected, actual);
+            Assert.Equal(expected.x, actual.x, 4);
+            Assert.Equal(expected.y, actual.y, 4);
+            Assert.Equal(expected.z, actual.z, 4);
+            Assert.Equal(expected.w, actual.w, 4);
         }
 
         [Theory]
@@ -496,13 +500,27 @@ namespace Fusee.Test.Math.Core
         #region Overrides
 
         [Fact]
-        public void ToString_isString()
+        public void ToString_NoCulture()
         {
-            var quat = new Quaternion(1, 2, 3, 4);
+            Assert.NotNull(new Quaternion().ToString());
+        }
 
-            var actual = quat.ToString();
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "V: (0.1675188, 0.5709415, 0.57094145) w: 0.5656758";
+            Quaternion q = Quaternion.EulerToQuaternion(float3.One);
 
-            Assert.Equal("V: (1, 2, 3), w: 4", actual);
+            Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "V: (0,1675188; 0,5709415; 0,57094145) w: 0,5656758";
+            Quaternion q = Quaternion.EulerToQuaternion(float3.One);
+
+            Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));
         }
 
         //TODO: Equals(obj)

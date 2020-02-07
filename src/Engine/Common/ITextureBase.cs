@@ -44,48 +44,7 @@ namespace Fusee.Engine.Common
         /// Enables the compare mode.
         /// </summary>
         GL_COMPARE_REF_TO_TEXTURE 
-    }
-
-    /// <summary>
-    /// Comparison functions (operators) for use with <see cref="TextureCompareMode"/>.
-    /// The comparison works as follows: ref OPERATOR texture. Where ref is the reference value given to the texture lookup function by GLSL, and texture is the value fetched from the texture.
-    /// see: https://www.khronos.org/opengl/wiki/Sampler_Object
-    /// </summary>
-    public enum TextureCompareFunc
-    {
-        /// <summary>
-        /// Comparison always fails. 
-        /// </summary>
-        GL_NEVER,
-        /// <summary>
-        /// Comparison always succeeds. 
-        /// </summary>
-        GL_ALWAYS,
-        /// <summary>
-        /// Comparison will be true if the reference value is strictly less than the value pulled from the texture.
-        /// </summary>
-        GL_LESS,
-        /// <summary>
-        /// Comparison will be true if the reference value is less or equal than the value pulled from the texture.
-        /// </summary>
-        GL_LEQUAL,
-        /// <summary>
-        /// Comparison will be true if the reference value is strictly equal than the value pulled from the texture.
-        /// </summary>
-        GL_EQUAL,
-        /// <summary>
-        /// Comparison will be true if the reference value is not equal than the value pulled from the texture.
-        /// </summary>
-        GL_NOT_EQUAL,
-        /// <summary>
-        /// Comparison will be true if the reference value is greater or equal than the value pulled from the texture.
-        /// </summary>
-        GL_GEQUAL,
-        /// <summary>
-        /// Comparison will be true if the reference value is strictly greater than the value pulled from the texture.
-        /// </summary>
-        GL_GREATER
-    }
+    }    
 
     /// <summary>
     /// Defines how to map texels to uv coordinates.

@@ -38,6 +38,11 @@
         /// <summary>
         /// Used for creating depth maps.
         /// </summary>
-        Depth,
+        Depth16,
+
+        /// <summary>
+        /// Used for creating depth maps.
+        /// </summary>
+        Depth24,
     }
 }
