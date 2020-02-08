@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
-using System.Threading.Tasks;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -21,7 +21,6 @@ namespace Fusee.Examples.Simple.Core
         private static float _angleVert, _angleVelVert, angle;
 
         private const float RotationSpeed = 7;
-        private const float Damping = 0.8f;
 
         //my var
         private float2 cornerbox;
@@ -30,10 +29,17 @@ namespace Fusee.Examples.Simple.Core
         private float2 groundbox;
         private float4[,] translation;
         private int[] ballbmp;
-        private int[] richtung = new int[] { 1, 1, 1, 1 };
         private float length;
         private float height;
-        private float ballradius = 1.5f;
+        private float ballradius;
+        private float oldX;
+        private float oldY;
+        private float3 cam = new float3(10, 5, 10);
+        private int cases = 0;
+        private float velocityAD = 0;
+        private float velocityWS = 0;
+        private float newtime = 0;
+        private float oldtime = 0;
 
 
         private float4x4 mtxCam;
@@ -41,7 +47,6 @@ namespace Fusee.Examples.Simple.Core
         private TransformComponent _ball;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
-        private bool keykeymoveX = false, keymoveZ = false;
         private TransformComponent mazeTransform = new TransformComponent();
         private const float _speed = 7;
         private TransformComponent[,] wallsTransform;
@@ -95,8 +100,8 @@ namespace Fusee.Examples.Simple.Core
             SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
             SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
-            SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Ball").First();
-            SceneNodeContainer ground = mazeScene.Children.FindNodes(n => n.Name == "Ground").First();
+            SceneNodeContainer ball = mazeScene.Children.FindNodes(n => n.Name == "Body").First();
+            SceneNodeContainer head = mazeScene.Children.FindNodes(n => n.Name == "Head").First();
             Cube _ground = new Cube();
             SceneNodeContainer maze = new SceneNodeContainer
             {
@@ -173,12 +178,28 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, 2, countY * (wallZbox.y + cornerbox.y)/2)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, ballradius, countY * (wallZbox.y + cornerbox.y)/2)
                                     },
-                                    ball.GetComponent<ShaderEffectComponent>(),
-                                    ball.GetComponent<Mesh>()
+                                    head.GetComponent<ShaderEffectComponent>(),
+                                    head.GetComponent<Mesh>()
                                 },
-                            Name = "Ball"
+                            Name = "Head",
+                            Children = new ChildList
+                            {
+                                new SceneNodeContainer
+                                {
+                                    Components = new List<SceneComponentContainer>
+                                    {
+                                    new TransformComponent
+                                        {
+                                            Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, ballradius, countY * (wallZbox.y + cornerbox.y)/2)
+                                        },
+                                        ball.GetComponent<ShaderEffectComponent>(),
+                                        ball.GetComponent<Mesh>()
+                                    },
+                                Name = "Body",
+                                }
+                            },
                         }
                         );
                     }
@@ -191,9 +212,12 @@ namespace Fusee.Examples.Simple.Core
                                     new TransformComponent
                                     {
                                         Scale = new float3(length, 1, height),
-                                        Translation = new float3(length/2 - cornerbox.x/2, -0.5f, height/2 - cornerbox.y/2)
+                                        Translation = new float3(length/2 - cornerbox.x/2, -0.5f, height/2 - cornerbox.y/2)                                    
                                     },
-                                    ground.GetComponent<ShaderEffectComponent>(),
+                                    new ShaderEffectComponent
+                                    {
+                                        Effect = ShaderCodeBuilder.MakeShaderEffectProto(new float4(0.545f, 0.270f, 0.074f, 1), new float4(0, 0, 0, 1), 136.75444f, 0.483772248f)
+                                    },
                                     _ground
                                 },
                 Name = "Ground"
@@ -203,7 +227,6 @@ namespace Fusee.Examples.Simple.Core
             {
                 Children = new List<SceneNodeContainer>
                 {
-                    mazeScene.Children.First(),
                     maze
                 }
             };
@@ -229,7 +252,7 @@ namespace Fusee.Examples.Simple.Core
             _sih = new SceneInteractionHandler(_gui);
 
             // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            RC.ClearColor = new float4(1, 1, 1, 1);
+            RC.ClearColor = new float4(1,1,1,1);
 
             wallsTransform = new TransformComponent[bmp.GetLength(0), bmp.GetLength(1)];
             // Load the rocket model
@@ -239,7 +262,9 @@ namespace Fusee.Examples.Simple.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             //my Init
-            _ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetTransform();
+            _ball = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetTransform();
+            oldX = _ball.Translation.x;
+            oldY = _ball.Translation.z;
             return true;
         }
 
@@ -251,40 +276,59 @@ namespace Fusee.Examples.Simple.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             // Mouse and keyboard movement
-
             if (Mouse.LeftButton)
             {
                 _angleVelVert = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-            }
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0))
-            {
-                var touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelVert = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
             }
             else
             {
                 _angleVelVert = 0;
             }
-
             _angleVert = (_angleVert + _angleVelVert) % (2 * M.Pi);
+
+            if (Mouse.IsButtonDown(2))
+            {
+                switch (cases)
+                {
+                    case 0:
+                        cam = new float3(1, 0, 1);
+                        cases++;
+                        break;
+                    case 1:
+                        cam = new float3(0.1f, 8, 0.1f);
+                        cases++;
+                        break;
+                    case 2:
+                        cam = new float3(10, 5, 10);
+                        cases %= 2;
+                        break;
+
+                }
+
+;
+            }
             ballmovement();
             collision();
 
 
-            //Set the view matrix for the interaction handler.
-            _sih.View = RC.View;
-
-            // Constantly check for interactive objects.
-            if (!Mouse.Desc.Contains("Android"))
-                _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
-
-            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
-            }
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar);
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
 
             // Render the scene loaded in Init()
+            RC.View = mtxCam;
+            RC.Projection = perspective;
             _sceneRenderer.Render(RC);
+
+            //Constantly check for interactive objects.
+
+            RC.Projection = orthographic;
+            if (!Mouse.Desc.Contains("Android"))
+                _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
+            if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+            {
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+            }
+
             _guiRenderer.Render(RC);
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -317,7 +361,7 @@ namespace Fusee.Examples.Simple.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -335,7 +379,6 @@ namespace Fusee.Examples.Simple.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
-
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
@@ -352,9 +395,6 @@ namespace Fusee.Examples.Simple.Core
                     text
                 }
             };
-
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
 
             return new SceneContainer
             {
@@ -384,11 +424,18 @@ namespace Fusee.Examples.Simple.Core
         //my methods
         public void ballmovement()
         {
-            mtxCam = float4x4.LookAt(_ball.Translation.x - 10 * M.Cos(_angleVert), _ball.Translation.y + 10, _ball.Translation.z - 10 * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            if (Keyboard.GetKey(KeyCodes.E))
+            {
+                mtxCam = float4x4.LookAt(length / 2, 100, height / 2, length / 2, 0, height / 2, 1, 0, 0);
+            }
+            else
+            {
+               mtxCam = float4x4.LookAt(_ball.Translation.x - cam.x * M.Cos(_angleVert), _ball.Translation.y + cam.y, _ball.Translation.z - cam.z * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+            }
             RC.View = mtxCam;
-
             //move the ball
-
+            oldX = _ball.Translation.x;
+            oldY = _ball.Translation.z;
             angle = _angleVert;
 
             if (angle >= 45 * (M.Pi / 180) + deg)
@@ -401,53 +448,181 @@ namespace Fusee.Examples.Simple.Core
                 deg -= 90 * M.Pi / 180;
             }
 
-            if (!(Keyboard.ADAxis != 0 && Keyboard.WSAxis != 0))
+
+            oldX = _ball.Translation.x;
+            oldY = _ball.Translation.z;
+
+
+            if(!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S) || velocityWS == 0)
+            if (Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D))
             {
-                if (Keyboard.ADAxis != 0)
-                {
-                    _moveX = _speed * Keyboard.ADAxis * DeltaTime;
-                    if (_moveX <= 0)
-                    {
-                        _ball.Translation.x += _moveX * M.Sin(deg);
-                        _ball.Translation.z -= _moveX * M.Cos(deg);
-                    }
-                    else
-                    {
-                        _ball.Translation.x += _moveX * M.Sin(deg);
-                        _ball.Translation.z -= _moveX * M.Cos(deg);
-                    }
-
-                    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(deg), 0, -_moveX * M.Sin(deg)));
-
+                velocityWS = 0;
+                newtime = TimeSinceStart - oldtime;
+                if (newtime >= 0.05 && velocityAD >= -5f || velocityAD == 0)
+                {                    
+                    velocityAD -= 0.2f;
+                    oldtime = TimeSinceStart;
 
                 }
-                if (Keyboard.WSAxis != 0)
+                if (newtime >= 0.05)
                 {
-                    _moveZ = _speed * Keyboard.WSAxis * DeltaTime;
-                    if (_moveZ <= 0)
+                    if (velocityAD > 0)
                     {
-                        _ball.Translation.x += _moveZ * M.Cos(deg) * richtung[0];
-                        _ball.Translation.z += _moveZ * M.Sin(deg) * richtung[3];
-
-                    }
-                    else
-                    {
-                        _ball.Translation.x += _moveZ * M.Cos(deg) * richtung[2];
-                        _ball.Translation.z += _moveZ * M.Sin(deg) * richtung[1];
-
+                        velocityAD -= 0.5f;
+                        oldtime = TimeSinceStart;
                     }
 
-
-                    _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(deg), 0, -_moveZ * M.Cos(deg)));
                 }
             }
+            else if (Keyboard.GetKey(KeyCodes.D) && !Keyboard.GetKey(KeyCodes.A))
+            {
+                velocityWS = 0;
+                newtime = TimeSinceStart - oldtime;
+                if (newtime >= 0.05 && velocityAD <= 5f || velocityAD == 0)
+                {
+                    velocityAD += 0.2f;
+                    oldtime = TimeSinceStart;
+                }
+                if (newtime >= 0.05)
+                {
+                    if (velocityAD < 0)
+                    {                        
+                        velocityAD += 0.5f;
+                        oldtime = TimeSinceStart;
+                    }
 
+                }
+            }
+            else if(!Keyboard.GetKey(KeyCodes.D) && !Keyboard.GetKey(KeyCodes.A))
+            {
+                newtime = TimeSinceStart - oldtime;
+                if (newtime >= 0.05)
+                {
+                    if (velocityAD > 0)
+                    {
+                        velocityAD -= 0.5f;
+                        if(velocityAD < 0)
+                        {
+                            velocityAD = 0;
+                        }
+                        oldtime = TimeSinceStart;
+                    }
+                    if (velocityAD < 0)
+                    {
+                        velocityAD += 0.5f;
+                        if (velocityAD > 0)
+                        {
+                            velocityAD = 0;
+                        }
+                        oldtime = TimeSinceStart;
+                    }
 
+                }
+            }
+            _moveX = velocityAD * DeltaTime;
+
+            if (_moveX <= 0)
+            {
+                _ball.Translation.x += _moveX * M.Sin(deg);
+                _ball.Translation.z -= _moveX * M.Cos(deg);
+            }
+            else
+            {
+                _ball.Translation.x += _moveX * M.Sin(deg);
+                _ball.Translation.z -= _moveX * M.Cos(deg);
+            }
+            _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(deg), 0, -_moveX * M.Sin(deg)));
+
+            if(!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D) || velocityAD == 0)
+            {
+                if (Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S))
+                {
+                    velocityAD = 0;
+                    newtime = TimeSinceStart - oldtime;
+                    if (newtime >= 0.05 && velocityWS <= 5f || velocityWS == 0)
+                    {                        
+                        velocityWS += 0.2f;
+                        oldtime = TimeSinceStart;
+
+                    }
+                    if (newtime >= 0.05)
+                    {
+                        if (velocityWS < 0)
+                        {
+                            velocityWS += 0.5f;
+                            oldtime = TimeSinceStart;
+                        }
+
+                    }
+
+                }
+                else if (Keyboard.GetKey(KeyCodes.S) && !Keyboard.GetKey(KeyCodes.W))
+                {
+                    velocityAD = 0;
+                    newtime = TimeSinceStart - oldtime;
+                    if (newtime >= 0.05 && velocityWS >= -5 || velocityWS == 0)
+                    {                        
+                        velocityWS -= 0.2f;
+                        oldtime = TimeSinceStart;
+
+                    }
+                    if (newtime >= 0.05)
+                    {
+                        if (velocityWS > 0)
+                        {
+                            velocityWS -= 0.5f;
+                            oldtime = TimeSinceStart;
+                        }
+
+                    }
+                }
+                else if (!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S))
+                {
+                    newtime = TimeSinceStart - oldtime;
+                    if (newtime >= 0.05)
+                    {
+                        if (velocityWS > 0)
+                        {
+                            velocityWS -= 0.5f;
+                            if (velocityWS < 0)
+                            {
+                                velocityWS = 0;
+                            }
+                            oldtime = TimeSinceStart;
+                        }
+                        if (velocityWS < 0)
+                        {
+                            velocityWS += 0.5f;
+                            if (velocityWS > 0)
+                            {
+                                velocityWS = 0;
+                            }
+                            oldtime = TimeSinceStart;
+                        }
+
+                    }
+                }
+                _moveZ = velocityWS * DeltaTime;
+                if (_moveZ <= 0)
+                {
+                    _ball.Translation.x += _moveZ * M.Cos(deg);
+                    _ball.Translation.z += _moveZ * M.Sin(deg);
+
+                }
+                else
+                {
+                    _ball.Translation.x += _moveZ * M.Cos(deg);
+                    _ball.Translation.z += _moveZ * M.Sin(deg);
+
+                }
+                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(deg), 0, -_moveZ * M.Cos(deg)));
+            }
         }
+
+
         public void collision()
         {
-            var ball = _scene.Children.FindNodes(node => node.Name == "Ball")?.FirstOrDefault()?.GetMesh();
-
+                      
 
 
             if (translation[ballbmp[0], ballbmp[1]].x <= _ball.Translation.x)
@@ -485,73 +660,107 @@ namespace Fusee.Examples.Simple.Core
             }
 
             //Walls
-            
             if (bmp[ballbmp[0] - 1, ballbmp[1]] == 1)
             {
-                if (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w <= 1.6f)
+                if (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w < ballradius)
                 {
-                   _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + 1.5f;
+                   _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + ballradius;
+                    velocityAD = 0;
+                    velocityWS = 0;
                 }
             }
             if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1)
             {
-                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z <= 1.6f)
+                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z < ballradius)
                 {
-                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - 1.5f;
+                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - ballradius;
+                    velocityAD = 0;
+                    velocityWS = 0;
                 }
             }
             if (bmp[ballbmp[0], ballbmp[1] - 1] == 1)
             {
-                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z <= 1.6f)
+                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z < ballradius)
                 {
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + 1.5f;
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + ballradius;
+                    velocityAD = 0;
+                    velocityWS = 0;
                 }
             }
             if (bmp[ballbmp[0], ballbmp[1] + 1] == 1)
             {
-
-                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x <= 1.6f)
-                {
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - 1.5f;
+                
+                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x < ballradius)
+                {               
+                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - ballradius - 0.0001f;
+                    velocityAD = 0;
+                    velocityWS = 0;
                 }
             }
             //Corners
             
             if (bmp[ballbmp[0] - 1, ballbmp[1] - 1] == 1)
             {
-                Diagnostics.Debug(M.Sqrt(M.NextPowerOfTwo(_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) + M.NextPowerOfTwo(_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)));
-                if (M.Sqrt(M.NextPowerOfTwo(_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]-1].w) + M.NextPowerOfTwo(_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)) <= 1.6f)
+                
+                if (M.Sqrt((_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]-1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) + (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)) <= ballradius)
                 {
-                    _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] - 1].w + 1.5f;
-                    _ball.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] - 1].z + 1.5f;
+                   if(_ball.Translation.x < oldX)
+                    {
+                        _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] - 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)));
+                    }
+                    if(_ball.Translation.z < oldY)
+                    {
+                        _ball.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w)));
+                    }
                 }
             }
-            /*
-            if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1)
-            {
-                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z <= 1.6f)
-                {
-                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - 1.5f;
-                }
-            }
-            if (bmp[ballbmp[0], ballbmp[1] - 1] == 1)
-            {
-                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z <= 1.6f)
-                {
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + 1.5f;
-                }
-            }
-            if (bmp[ballbmp[0], ballbmp[1] + 1] == 1)
+            if (bmp[ballbmp[0] - 1, ballbmp[1] + 1] == 1)
             {
 
-                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x <= 1.6f)
+                if (M.Sqrt((_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) + (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x)) <= ballradius)
                 {
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - 1.5f;
+                    if (_ball.Translation.x > oldX)
+                    {
+                        _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] + 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x)));
+                    }
+                    if (_ball.Translation.z < oldY)
+                    {
+                        _ball.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w)));
+                    }
                 }
             }
-            */
+            if (bmp[ballbmp[0] + 1, ballbmp[1] - 1] == 1)
+            {
 
-            //Axis
+                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) + (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)) <= ballradius)
+                {
+
+                    if (_ball.Translation.x < oldX)
+                    {
+                        _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] - 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)));
+                    }
+                    if (_ball.Translation.z > oldY)
+                    {
+                    _ball.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z)));
+                    }
+                }
+            }
+            if (bmp[ballbmp[0] + 1, ballbmp[1] + 1] == 1)
+            {
+
+                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) + (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x)) <= ballradius)
+                {
+                    if (_ball.Translation.x > oldX)
+                    {
+                        _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] + 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x)));
+                    }
+                    if (_ball.Translation.z > oldY)
+                    {
+                        _ball.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z)));
+
+                    }
+                }
+            }
         }
 
 
@@ -574,6 +783,8 @@ namespace Fusee.Examples.Simple.Core
             wallZbox = wallZ.BoundingBox.Size.xz;
             var wallX = mazeScene.Children.FindNodes(node => node.Name == "WallX")?.FirstOrDefault()?.GetMesh();
             wallXbox = wallX.BoundingBox.Size.xz;
+            var ball = mazeScene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetMesh();
+            ballradius = ball.BoundingBox.Size.x / 2;
 
             groundbox = new float2(wallXbox.x, wallZbox.y);
         }
