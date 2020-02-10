@@ -436,7 +436,7 @@ namespace Fusee.Engine.Imp.Graphics.Android
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="System.ApplicationException">
         /// </exception>
-        public IShaderHandle CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             if (gs != null)
                 Diagnostics.Warn("WARNING: Geometry Shaders are unsupported");

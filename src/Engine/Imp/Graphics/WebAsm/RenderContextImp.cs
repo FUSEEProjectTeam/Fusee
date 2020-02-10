@@ -436,7 +436,7 @@ namespace Fusee.Engine.Imp.Graphics.WebAsm
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderHandle CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             if (gs != null)
                 Diagnostics.Log("WARNING: Geometry Shaders are unsupported");

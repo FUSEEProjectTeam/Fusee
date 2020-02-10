@@ -431,7 +431,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderHandle CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             int vertexObject = GL.CreateShader(ShaderType.VertexShader);
             int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
@@ -571,7 +571,6 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             for (var i = 0; i < nParams; i++)
             {
-
                 var paramInfo = new ShaderParamInfo();
                 paramInfo.Name = GL.GetActiveUniform(sProg.Handle, i, out paramInfo.Size, out ActiveUniformType uType);
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);

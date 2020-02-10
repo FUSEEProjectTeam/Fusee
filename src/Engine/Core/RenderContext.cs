@@ -119,7 +119,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// The currently bound shader program. One <see cref="ShaderEffect"/> can result in one to _n_ <see cref="ShaderProgram"/>s, one for each pass.
-        /// Is set in <see cref="Render"/> --> <see cref="SetShader(ShaderProgram)"/>.
+        /// Is set in <see cref="Render"/> --> <see cref="SetShaderProgram(ShaderProgram)"/>.
         /// </summary>
         private ShaderProgram _currentShaderProgram;
 
@@ -893,7 +893,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Activates the passed shader effect as the current shader for geometry rendering.
-        /// Will compile a shader by calling <see cref="CreateShader(string, string, string)"/> if it hasn't been yet.
+        /// Will compile a shader by calling <see cref="IRenderContextImp.CreateShaderProgram(string, string, string)"/> if it hasn't been yet.
         /// </summary>
         /// <param name="ef">The shader effect use.</param>
         /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
@@ -925,7 +925,9 @@ namespace Fusee.Engine.Core
             {
                 for (i = 0; i < nPasses; i++)
                 {
-                    compiledEffect.ShaderPrograms[i] = CreateShader(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
+                    var shaderOnGpu = _rci.CreateShaderProgram(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
+                    var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+                    compiledEffect.ShaderPrograms[i] = new ShaderProgram(shaderParams, shaderOnGpu);
                 }
             }
             catch (Exception ex)
@@ -964,7 +966,32 @@ namespace Fusee.Engine.Core
 
             // Update ShaderEffect
             _currentShaderEffect.SetEffectParam(name, value);
-        }        
+        }                
+
+        /// <summary>
+        /// Called on effect param changed event. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
+        /// </summary>
+        internal void CreateOrUpdateParameter(ShaderEffect ef, string name, object paramValue)
+        {
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
+
+            for (int i = 0; i < compiledEffect.ParamsPerPass.Count; i++)
+            {
+                var passParams = compiledEffect.ParamsPerPass[i];
+                if (passParams.ContainsKey(name))
+                    passParams[name].Value = paramValue;
+                else
+                {
+                    var info = compiledEffect.ShaderPrograms[i].GetShaderParamInfo(name);
+                    var newParam = new EffectParam()
+                    {
+                        Info = info,
+                        Value = paramValue
+                    };
+                    passParams.Add(name, newParam);
+                }
+            }
+        }
 
         /// <summary>
         /// Removes given shader program from GPU. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
@@ -981,38 +1008,10 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Called on effect param changed event. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
+        /// Activates the passed shader program as the current shader for rendering.
         /// </summary>
-        internal void CreateOrUpdateParameter(ShaderEffect ef, string name, object paramValue)
-        {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) throw new ArgumentException("ShaderEffect isn't build yet!");
-
-            for (int i = 0; i < sFxParam.ParamsPerPass.Count; i++)
-            {
-                var passParams = sFxParam.ParamsPerPass[i];
-                if (passParams.ContainsKey(name))
-                    passParams[name].Value = paramValue;
-                else
-                {
-                    var info = sFxParam.ShaderPrograms[i].GetShaderParamInfo(name);
-                    var newParam = new EffectParam()
-                    {
-                        Info = info,
-                        ParamPasses = new List<int>(new int[] { i }),
-                        Value = paramValue
-                    };
-                    passParams.Add(name, newParam);
-                }
-            }
-        }
-
-        /// <summary>
-        /// Activates the passed shader program as the current shader for geometry rendering.
-        /// </summary>
-        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="CreateShader"/>
-        /// <seealso cref="Render(Mesh)"/>
-        private void SetShader(ShaderProgram program)
+        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>       
+        private void SetShaderProgram(ShaderProgram program)
         {
             _updatedShaderParams = false;
 
@@ -1021,7 +1020,8 @@ namespace Fusee.Engine.Core
                 _currentShaderProgram = program;
                 _rci.SetShader(program.GpuHandle);
             }
-            UpdateShaderParams(); // initial set
+
+            UpdateShaderParams();
         }
 
         /// <summary>
@@ -1031,34 +1031,33 @@ namespace Fusee.Engine.Core
         private void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
             int nPasses = ef.VertexShaderSrc.Length;
-
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var sFxParam))
+            
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect))
                 throw new ArgumentException("ShaderEffect isn't build yet!");
 
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             for (var i = 0; i < nPasses; i++)
             {
-                var shaderParamInfos = _rci.GetShaderParamList(sFxParam.ShaderPrograms[i].GpuHandle);
-                if (sFxParam.ParamsPerPass.Count <= i)
-                    sFxParam.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
+                if (compiledEffect.ParamsPerPass.Count <= i)
+                    compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
-                foreach (var paramNew in shaderParamInfos)
+                foreach (var paramNew in compiledEffect.ShaderPrograms[i].ParamInfosByName)
                 {
-                    if (ef.ParamDecl.TryGetValue(paramNew.Name, out object initValue))
+                    if (ef.ParamDecl.TryGetValue(paramNew.Key, out object initValue))
                     {
                         if (initValue == null)
                             continue;
 
                         // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        if (GlobalFXParams.TryGetValue(paramNew.Name, out object globalFXValue))
+                        if (GlobalFXParams.TryGetValue(paramNew.Key, out object globalFXValue))
                         {
                             if (!initValue.Equals(globalFXValue))
                             {
-                                // Diagnostics.Log($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
+                                // Diagnostics.Debug($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
 
                                 initValue = globalFXValue;
                                 // update var in ParamDecl
-                                ef.ParamDecl[paramNew.Name] = globalFXValue;
+                                ef.ParamDecl[paramNew.Key] = globalFXValue;
                             }
                         }
 
@@ -1070,58 +1069,54 @@ namespace Fusee.Engine.Core
                         // ReSharper disable OperatorIsCanBeUsed
                         var initValType = initValue.GetType();
 
-                        if (!(((paramNew.Type == typeof(int) || paramNew.Type == typeof(float))
+                        if (!(((paramNew.Value.Type == typeof(int) || paramNew.Value.Type == typeof(float))
                                   &&
                                   (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
                                 )
                                 ||
-                                (paramNew.Type.IsAssignableFrom(initValType))
+                                (paramNew.Value.Type.IsAssignableFrom(initValType))
                              )
-                            && (!paramNew.Name.Contains("BONES") && !paramNew.Name.Contains("[0]"))
+                            && (!paramNew.Key.Contains("BONES") && !paramNew.Key.Contains("[0]"))
                         )
                         {
-                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Type.ToString() + " " + paramNew.Name +
-                                                " was defined as " + initValType.ToString() + " " + paramNew.Name + " during initialization (different types).");
+                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Value.Type.ToString() + " " + paramNew.Key +
+                                                " was defined as " + initValType.ToString() + " " + paramNew.Key + " during initialization (different types).");
                         }
                         // ReSharper restore OperatorIsCanBeUsed
                         // ReSharper restore UseMethodIsInstanceOfType
 
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
-                        if (sFxParam.Parameters.TryGetValue(paramNew.Name, out object paramExistingTmp))
+                        if (compiledEffect.Parameters.TryGetValue(paramNew.Key, out object paramExistingTmp))
                         {
                             paramExisting = (EffectParam)paramExistingTmp;
                             // The parameter is already there from a previous pass.
-                            if (paramExisting.Info.Size != paramNew.Size || paramExisting.Info.Type != paramNew.Type)
+                            if (paramExisting.Info.Size != paramNew.Value.Size || paramExisting.Info.Type != paramNew.Value.Type)
                             {
                                 // This should never happen due to the previous error check. Check it anyway...
                                 throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
-                                                    paramNew.Name +
-                                                    " already defined with a different type in effect pass " +
-                                                   paramExisting.ParamPasses[0]);
-                            }
-                            // List the current pass to use this shader parameter
-                            paramExisting.ParamPasses.Add(i);
+                                                    paramNew.Key +
+                                                    " already defined with a different type in effect pass");
+                            }                            
                         }
                         else
                         {
                             paramExisting = new EffectParam()
                             {
-                                Info = paramNew,
-                                ParamPasses = new List<int>(new int[] { i }),
+                                Info = paramNew.Value,
                                 Value = initValue
                             };
-                            sFxParam.Parameters.Add(paramNew.Name, paramExisting);
+                            compiledEffect.Parameters.Add(paramNew.Key, paramExisting);
                         }
                         //sFxParam.ParamsPerPass[i].Add(paramExisting);
-                        if (!sFxParam.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
-                            sFxParam.ParamsPerPass[i].Add(paramExisting.Info.Name, paramExisting);
+                        if (!compiledEffect.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
+                            compiledEffect.ParamsPerPass[i].Add(paramExisting.Info.Name, paramExisting);
 
                     }
                     else
                     {
                         // This should not happen due to shader compiler optimization
-                        Diagnostics.Warn($"Uniform variable {paramNew.Name} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
+                        Diagnostics.Warn($"Uniform variable {paramNew.Key} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
                     }
                 }
             }
@@ -1199,27 +1194,7 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
 
-        }
-
-        /// <summary>
-        /// Creates a shader object from vertex shader source code and pixel shader source code.
-        /// </summary>
-        /// <param name="vs">A string containing the vertex shader source.</param>
-        /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
-        /// <param name="gs">A string containing the geometry shader source code (optional).</param>
-        /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
-        /// <remarks>
-        /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="SetShader(ShaderProgram)"/>
-        /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
-        /// </remarks>
-        private ShaderProgram CreateShader(string vs, string ps, string gs = null)
-        {
-            var shaderOnGpu = _rci.CreateShader(vs, ps, gs);
-            var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
-
-            return new ShaderProgram(shaderParams, shaderOnGpu);
-        }
+        }       
 
         /// <summary>
         /// Checks the matrix cache and updates the found parameters in the _currentShaderEffect.
@@ -1545,10 +1520,8 @@ namespace Fusee.Engine.Core
             if (_currentShaderEffect == null) return;
 
             // Update global shader parameters in current shader (light and matrices)
-            foreach (var fxParam in GlobalFXParams)
-            {
-                _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);
-            }
+            foreach (var fxParam in GlobalFXParams)            
+                _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);            
 
             int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
             try
@@ -1556,14 +1529,15 @@ namespace Fusee.Engine.Core
                 for (i = 0; i < nPasses; i++)
                 {
                     var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
+                    
+                    SetShaderProgram(compiledShaderEffect.ShaderPrograms[i]);
 
                     // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    SetShader(compiledShaderEffect.ShaderPrograms[i]);
-
                     foreach (var param in compiledShaderEffect.ParamsPerPass[i])
                         SetShaderParamT(param.Value);
 
                     SetRenderStateSet(_currentShaderEffect.States[i]);
+
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
@@ -1627,13 +1601,7 @@ namespace Fusee.Engine.Core
     internal sealed class EffectParam
     {
         public ShaderParamInfo Info;
-
         public object Value;
-
-        /// <summary>
-        /// Saves the passes in which tis parameter is used.
-        /// </summary>
-        public List<int> ParamPasses;
     }
 
     /// <summary>

@@ -749,59 +749,6 @@ namespace Fusee.Engine.Core
             _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
-        }
-
-        #region RenderContext/Asset Setup
-
-        private static EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)
-        {
-            if (effectParameter.Name == null)
-                throw new InvalidDataException("EffectParameterDeclaration: Name is empty!");
-
-            var returnEffectParameterDeclaration = new EffectParameterDeclaration { Name = effectParameter.Name };
-
-            var t = effectParameter.TypeId;
-
-            switch (t)
-            {
-                case TypeId.Int:
-                    if (effectParameter is TypeContainerInt effectParameterInt)
-                        returnEffectParameterDeclaration.Value = effectParameterInt.Value;
-                    break;
-                case TypeId.Double:
-                    if (effectParameter is TypeContainerDouble effectParameterDouble)
-                        returnEffectParameterDeclaration.Value = effectParameterDouble.Value;
-                    break;
-                case TypeId.Float:
-                    if (effectParameter is TypeContainerFloat effectParameterFloat)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat.Value;
-                    break;
-                case TypeId.Float2:
-                    if (effectParameter is TypeContainerFloat2 effectParameterFloat2)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat2.Value;
-                    break;
-                case TypeId.Float3:
-                    if (effectParameter is TypeContainerFloat3 effectParameterFloat3)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat3.Value;
-                    break;
-                case TypeId.Float4:
-                    if (effectParameter is TypeContainerFloat4 effectParameterFloat4)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat4.Value;
-                    break;
-                case TypeId.Bool:
-                    if (effectParameter is TypeContainerBool effectParameterBool)
-                        returnEffectParameterDeclaration.Value = effectParameterBool.Value;
-                    break;
-                default:
-                    throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name} is of unhandled type {t.ToString()}!");
-            }
-
-            if (returnEffectParameterDeclaration.Value == null)
-                throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name}, value is null");
-
-            return returnEffectParameterDeclaration;
-        }
-
-        #endregion
+        }       
     }
 }

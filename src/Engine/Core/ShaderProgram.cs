@@ -7,8 +7,7 @@ namespace Fusee.Engine.Core
     /// A ShaderProgram is a set of shaders (currently vertex, pixel and optionally geometry shaders), all compiled an 
     /// uploaded to the gpu ready to be used. 
     /// </summary>
-    /// <remarks>See <see cref="RenderContext.CreateShader"/> how to create instances and 
-    /// <see cref="RenderContext.SetShader"/> how to use instances as the current shaders.</remarks>
+    /// <remarks>See <see cref="RenderContext.SetShaderProgram"/> how to use instances as the current shaders.</remarks>
     internal class ShaderProgram
     {
         /// <summary>
@@ -19,7 +18,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// All parameters of this ShaderProgramm as a Dictionary of type "string, ShaderParamInfo".
         /// </summary>
-        internal Dictionary<string, ShaderParamInfo> ParamsByName;
+        internal Dictionary<string, ShaderParamInfo> ParamInfosByName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -29,7 +28,7 @@ namespace Fusee.Engine.Core
         internal ShaderProgram(Dictionary<string, ShaderParamInfo> paramsByName, IShaderHandle gpuHandle)
         {
             GpuHandle = gpuHandle;
-            ParamsByName = paramsByName;
+            ParamInfosByName = paramsByName;
         }
 
         /// <summary>
@@ -49,7 +48,7 @@ namespace Fusee.Engine.Core
         /// <returns>A <see cref="ShaderParamInfo"/> object if paramName is declared and used as a uniform parameter within the shader program. Otherwise the Handle field of the returndes struct is null</returns>
         public ShaderParamInfo GetShaderParamInfo(string paramName)
         {
-            ParamsByName.TryGetValue(paramName, out ShaderParamInfo ret);
+            ParamInfosByName.TryGetValue(paramName, out ShaderParamInfo ret);
             return ret;
         }
     }
