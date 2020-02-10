@@ -1,4 +1,3 @@
-using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -9,7 +8,6 @@ using System.Linq;
 
 namespace Fusee.Engine.Core
 {
-
     /// <summary>
     /// The render context contains all functions necessary to manipulate the underlying rendering hardware. Use this class' elements
     /// to render geometry to the RenderCanvas associated with this context. If you have worked with OpenGL or DirectX before you will find
@@ -17,9 +15,54 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class RenderContext
     {
-        #region Fields
+        /// <summary>
+        /// The color to use when clearing the color buffer.
+        /// </summary>
+        /// <value>
+        /// The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
+        /// component values ranging from 0.0f to 1.0f.
+        /// </value>
+        /// <remarks>
+        /// This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
+        /// </remarks>
+        /// <seealso cref="Clear"/>
+        public float4 ClearColor
+        {
+            set { _rci.ClearColor = value; }
+            get { return _rci.ClearColor; }
+        }
 
-        #region RenderState management
+        /// <summary>
+        /// The depth value to use when clearing the color buffer.
+        /// </summary>
+        /// <value>
+        /// Typically set to the highest possible depth value. Typically ranges between 0 and 1.
+        /// </value>
+        /// <remarks>
+        /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
+        /// </remarks>
+        public float ClearDepth
+        {
+            set { _rci.ClearDepth = value; }
+            get { return _rci.ClearDepth; }
+        }
+
+        /// <summary>
+        /// Contains the default state of the render context. can be used to reset this RenderContext to it's DefaultState.
+        /// </summary>
+        public RenderContextDefaultState DefaultState { get; private set; }
+
+        /// <summary>
+        /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
+        /// </summary>
+        internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
+
+        private readonly MeshManager _meshManager;
+        private readonly TextureManager _textureManager;
+
+        private bool _updatedShaderParams;
+
+        #region RenderState management properties
 
         /// <summary>
         /// Saves the current RenderState.
@@ -33,7 +76,8 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Viewport
+        #region Viewport properties
+
         /// <summary>
         /// Gets and sets the viewport width.
         /// </summary>
@@ -56,65 +100,32 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        /// <summary>
-        /// Gets and sets a value indicating whether [debug lines enabled].
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if [debug lines enabled]; otherwise, <c>false</c>.
-        /// </value>
-        public bool DebugLinesEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Array of bone matrices.
-        /// </summary>
-        public float4x4[] Bones
-        {
-            get { return _bones; }
-            set
-            {
-                _bones = value;
-                UpdateCurrentShader();
-            }
-        }
-
-        /// <summary>
-        /// Safes the default state of the render context. This is used to reset the render context to its default state after every render call.
-        /// </summary>
-        public RenderContextDefaultState DefaultState { get; private set; }
-
-        /// <summary>
-        /// The currently bound shader program. One <see cref="ShaderEffect"/> can result in one to _n_ <see cref="ShaderProgram"/>s, one for each pass.
-        /// </summary>
-        public ShaderProgram CurrentShaderProgram { get; private set; }
-
-        /// <summary>
-        /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.      
-        /// </summary>
-        internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
-
-        #region Private Fields
+        #region Shader Management fields
 
         private readonly IRenderContextImp _rci;
 
-        //Caches matrices of the current shader to minimize SetEffectParam calls.
-        private readonly MatrixParams _currentShaderMatrixParams;
-
-        private ShaderEffect _currentShaderEffect;
-
-        // Mesh Management
-        private readonly MeshManager _meshManager;
-
-        // Texture Management
-        private readonly TextureManager _textureManager;
-
-        // ShaderEffect Management
         private readonly ShaderEffectManager _shaderEffectManager;
         private readonly Dictionary<ShaderEffect, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<ShaderEffect, CompiledShaderEffect>();
 
-        private bool _updatedShaderParams;
+        /// <summary>
+        /// Caches matrices of the current shader to minimize <see cref="SetShaderEffect(ShaderEffect)"/> calls.
+        /// </summary>
+        private readonly MatrixParams _currentShaderMatrixParams;
 
-        private readonly ShaderProgram _debugShader;
-        private readonly IShaderParam _debugColor;
+        /// <summary>
+        /// The currently used <see cref="ShaderEffect"/> is set in <see cref="SetShaderEffect(ShaderEffect)"/>.
+        /// </summary>
+        private ShaderEffect _currentShaderEffect;
+
+        /// <summary>
+        /// The currently bound shader program. One <see cref="ShaderEffect"/> can result in one to _n_ <see cref="ShaderProgram"/>s, one for each pass.
+        /// Is set in <see cref="Render"/> --> <see cref="SetShader(ShaderProgram)"/>.
+        /// </summary>
+        private ShaderProgram _currentShaderProgram;
+
+        #endregion
+
+        #region Matrix backing fields and flags
 
         // Settable matrices
         private float4x4 _modelView;
@@ -169,7 +180,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Matrix Fields
+        #region Matrix Properties
 
         /// <summary>
         /// The View matrix used by the rendering pipeline.
@@ -186,7 +197,7 @@ namespace Fusee.Engine.Core
         {
             get { return _view; }
             set
-            {               
+            {
                 _view = value;
 
                 _modelViewProjectionOk = false;
@@ -202,7 +213,7 @@ namespace Fusee.Engine.Core
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
                 _modelViewOK = false;
-                
+
                 UpdateCurrentShader();
             }
         }
@@ -713,9 +724,18 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #endregion
-
-        #region Constructors
+        /// <summary>
+        /// Array of bone matrices.
+        /// </summary>
+        public float4x4[] Bones
+        {
+            get { return _bones; }
+            set
+            {
+                _bones = value;
+                UpdateCurrentShader();
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
@@ -742,129 +762,48 @@ namespace Fusee.Engine.Core
             _updatedShaderParams = false;
         }
 
-        #endregion
-
-        #region Members
-
-        #region Private Members               
+        /// <summary>
+        /// Erases the contents of the specified rendering buffers.
+        /// </summary>
+        /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
+        /// <remarks>
+        /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
+        /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
+        /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
+        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwise
+        /// or-operator (|) to combine several buffers to clear.
+        /// </remarks>
+        public void Clear(ClearFlags flags)
+        {
+            _rci.Clear(flags);
+        }
 
         /// <summary>
-        /// Checks the matrix cache and updates the found parameters in the _currentShaderEffect.
-        /// This method is called whenever a base matrix (model, view or projection is changed).
-        /// The derived matrices are updated due to the use of the Getters of the derived matrices here.
+        /// Sets the rectangular output region within the output buffer(s).
         /// </summary>
-        private void UpdateCurrentShader()
+        /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
+        /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
+        /// <param name="width">horizontal size (in pixels) of the output region.</param>
+        /// <param name="height">vertical size (in pixels) of the output region.</param>       
+        /// <remarks>
+        /// Setting the Viewport limits the rendering output to the specified rectangular region.
+        /// </remarks>
+        public void Viewport(int x, int y, int width, int height)
         {
-            if (CurrentShaderProgram == null)
+            if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
                 return;
 
-            if (!_updatedShaderParams)
-                UpdateShaderParams();
+            _rci.Scissor(x, y, width, height);
+            _rci.Viewport(x, y, width, height);
 
-            // Normal versions of MV and P
-            if (_currentShaderMatrixParams.FUSEE_M != null)
-                SetGlobalEffectParam("FUSEE_M", Model);
-
-            if (_currentShaderMatrixParams.FUSEE_V != null)
-                SetGlobalEffectParam("FUSEE_V", View);
-
-            if (_currentShaderMatrixParams.FUSEE_IV != null)
-                SetGlobalEffectParam("FUSEE_IV", InvView);
-
-            if (_currentShaderMatrixParams.FUSEE_MV != null)
-                SetGlobalEffectParam("FUSEE_MV", ModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_P != null)
-                SetGlobalEffectParam("FUSEE_P", Projection);
-
-            if (_currentShaderMatrixParams.FUSEE_MVP != null)
-                SetGlobalEffectParam("FUSEE_MVP", ModelViewProjection);
-
-            // Inverted versions
-            // Todo: Add inverted versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_IMV != null)
-                SetGlobalEffectParam("FUSEE_IMV", InvModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_ITV != null)
-                SetGlobalEffectParam("FUSEE_ITV", InvTransView);
-
-            if (_currentShaderMatrixParams.FUSEE_IP != null)
-                SetGlobalEffectParam("FUSEE_IP", InvProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_IMVP != null)
-                SetGlobalEffectParam("FUSEE_IMVP", InvModelViewProjection);
-
-            // Transposed versions
-            // Todo: Add transposed versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_TMV != null)
-                SetGlobalEffectParam("FUSEE_TMV", TransModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_TP != null)
-                SetGlobalEffectParam("FUSEE_TP", TransProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_TMVP != null)
-                SetGlobalEffectParam("FUSEE_TMVP", TransModelViewProjection);
-
-            // Inverted and transposed versions
-            // Todo: Add inverted & transposed versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_ITMV != null)
-                SetGlobalEffectParam("FUSEE_ITMV", InvTransModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_ITP != null)
-                SetGlobalEffectParam("FUSEE_ITP", InvTransProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_ITMVP != null)
-                SetGlobalEffectParam("FUSEE_ITMVP", InvTransModelViewProjection);
-
-            // Bones (if any)
-            if (_currentShaderMatrixParams.FUSEE_BONES != null && Bones != null)
-                SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
+            ViewportWidth = width;
+            ViewportHeight = height;
+            ViewportXStart = x;
+            ViewportYStart = y;
 
         }
 
-        private void UpdateShaderParams()
-        {
-            if (CurrentShaderProgram == null)
-            {
-                Diagnostics.Warn("No shader is currently set! Use RenderContext.SetShader first!");
-                return;
-            }
-
-            // Normal versions of MV and P
-            _currentShaderMatrixParams.FUSEE_M = CurrentShaderProgram.GetShaderParam("FUSEE_M");
-            _currentShaderMatrixParams.FUSEE_V = CurrentShaderProgram.GetShaderParam("FUSEE_V");
-            _currentShaderMatrixParams.FUSEE_MV = CurrentShaderProgram.GetShaderParam("FUSEE_MV");
-            _currentShaderMatrixParams.FUSEE_P = CurrentShaderProgram.GetShaderParam("FUSEE_P");
-            _currentShaderMatrixParams.FUSEE_MVP = CurrentShaderProgram.GetShaderParam("FUSEE_MVP");
-
-            // Inverted versions
-            _currentShaderMatrixParams.FUSEE_IMV = CurrentShaderProgram.GetShaderParam("FUSEE_IMV");
-            _currentShaderMatrixParams.FUSEE_IP = CurrentShaderProgram.GetShaderParam("FUSEE_IP");
-            _currentShaderMatrixParams.FUSEE_IMVP = CurrentShaderProgram.GetShaderParam("FUSEE_IMVP");
-            _currentShaderMatrixParams.FUSEE_IV = CurrentShaderProgram.GetShaderParam("FUSEE_IV");
-
-            // Transposed versions
-            _currentShaderMatrixParams.FUSEE_TMV = CurrentShaderProgram.GetShaderParam("FUSEE_TMV");
-            _currentShaderMatrixParams.FUSEE_TP = CurrentShaderProgram.GetShaderParam("FUSEE_TP");
-            _currentShaderMatrixParams.FUSEE_TMVP = CurrentShaderProgram.GetShaderParam("FUSEE_TMVP");
-
-            // Inverted and transposed versions
-            _currentShaderMatrixParams.FUSEE_ITMV = CurrentShaderProgram.GetShaderParam("FUSEE_ITMV");
-            _currentShaderMatrixParams.FUSEE_ITP = CurrentShaderProgram.GetShaderParam("FUSEE_ITP");
-            _currentShaderMatrixParams.FUSEE_ITMVP = CurrentShaderProgram.GetShaderParam("FUSEE_ITMVP");
-
-            // Bones
-            _currentShaderMatrixParams.FUSEE_BONES = CurrentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
-
-            _updatedShaderParams = true;
-            UpdateCurrentShader();
-        }
-
-        #endregion
-
-        #region Public Members
-
-        #region Image Data related Members
+        #region Image Data related methods
 
         /// <summary>
         /// Updates a rectangular region of a given Texture (dstTexture) by copying a rectangular block from another texture (srcTexture).
@@ -950,117 +889,7 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Light related Members
-
-        /// <summary>
-        /// The color to use when clearing the color buffer.
-        /// </summary>
-        /// <value>
-        /// The color value is interpreted as a (Red, Green, Blue, Alpha) quadruple with
-        /// component values ranging from 0.0f to 1.0f.
-        /// </value>
-        /// <remarks>
-        /// This is the color that will be copied to all pixels in the output color buffer when Clear is called on the render context.
-        /// </remarks>
-        /// <seealso cref="Clear"/>
-        public float4 ClearColor
-        {
-            set { _rci.ClearColor = value; }
-            get { return _rci.ClearColor; }
-        }
-
-        /// <summary>
-        /// The depth value to use when clearing the color buffer.
-        /// </summary>
-        /// <value>
-        /// Typically set to the highest possible depth value. Typically ranges between 0 and 1.
-        /// </value>
-        /// <remarks>
-        /// This is the depth (z-) value that will be copied to all pixels in the depth (z-) buffer when Clear is called on the render context.
-        /// </remarks>
-        public float ClearDepth
-        {
-            set { _rci.ClearDepth = value; }
-            get { return _rci.ClearDepth; }
-        }
-
-
-        #endregion
-
-        #region Shader related Members
-
-        /// <summary>
-        /// Sets global effect parameters.
-        /// Overwrites values with the same name in current ShaderEffect
-        /// </summary>
-        /// <param name="name">Effect parameter name.</param>
-        /// <param name="value">Effect parameter value.</param>        
-        public void SetGlobalEffectParam(string name, object value)
-        {
-            if (GlobalFXParams.ContainsKey(name))
-            {
-                if (GlobalFXParams[name].Equals(value)) return; // no new value
-
-                GlobalFXParams[name] = value;
-            }
-            else           
-                GlobalFXParams.Add(name, value);            
-
-            // Update ShaderEffect
-            _currentShaderEffect.SetEffectParam(name, value);
-        }
-
-        /// <summary>
-        /// Creates a shader object from vertex shader source code and pixel shader source code.
-        /// </summary>
-        /// <param name="vs">A string containing the vertex shader source.</param>
-        /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
-        /// <param name="gs">A string containing the geometry shader source code (optional).</param>
-        /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
-        /// <remarks>
-        /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
-        /// The result is already compiled to code executable on the GPU. <see cref="SetShader(ShaderProgram)"/>
-        /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
-        /// </remarks>
-        private ShaderProgram CreateShader(string vs, string ps, string gs = null)
-        {
-            var shaderOnGpu = _rci.CreateShader(vs, ps, gs);
-            var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
-
-            return new ShaderProgram(shaderParams, shaderOnGpu);
-        }
-
-        /// <summary>
-        /// Removes given shader program from GPU
-        /// </summary>
-        /// <param name="ef">The ShaderEffect</param>
-        internal void RemoveShader(ShaderEffect ef)
-        {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) return;
-
-            foreach (var program in sFxParam.ShaderPrograms)
-            {
-                _rci.RemoveShader(program._gpuHandle);
-            }
-        }
-
-        /// <summary>
-        /// Activates the passed shader program as the current shader for geometry rendering.
-        /// </summary>
-        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
-        /// <seealso cref="CreateShader"/>
-        /// <seealso cref="Render(Mesh)"/>
-        private void SetShader(ShaderProgram program)
-        {
-            _updatedShaderParams = false;
-
-            if (CurrentShaderProgram != program)
-            {
-                CurrentShaderProgram = program;
-                _rci.SetShader(program._gpuHandle);
-            }
-            UpdateShaderParams(); // initial set
-        }
+        #region Shader related methods
 
         /// <summary>
         /// Activates the passed shader effect as the current shader for geometry rendering.
@@ -1117,7 +946,42 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Called on effect param changed event.
+        /// Sets global effect parameters.
+        /// Overwrites values with the same name in current ShaderEffect
+        /// </summary>
+        /// <param name="name">Effect parameter name.</param>
+        /// <param name="value">Effect parameter value.</param>        
+        internal void SetGlobalEffectParam(string name, object value)
+        {
+            if (GlobalFXParams.ContainsKey(name))
+            {
+                if (GlobalFXParams[name].Equals(value)) return; // no new value
+
+                GlobalFXParams[name] = value;
+            }
+            else
+                GlobalFXParams.Add(name, value);
+
+            // Update ShaderEffect
+            _currentShaderEffect.SetEffectParam(name, value);
+        }        
+
+        /// <summary>
+        /// Removes given shader program from GPU. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
+        /// </summary>
+        /// <param name="ef">The ShaderEffect.</param>
+        internal void RemoveShader(ShaderEffect ef)
+        {
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect sFxParam)) return;
+
+            foreach (var program in sFxParam.ShaderPrograms)
+            {
+                _rci.RemoveShader(program.GpuHandle);
+            }
+        }
+
+        /// <summary>
+        /// Called on effect param changed event. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
         /// </summary>
         internal void CreateOrUpdateParameter(ShaderEffect ef, string name, object paramValue)
         {
@@ -1143,21 +1007,39 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
+        /// Activates the passed shader program as the current shader for geometry rendering.
+        /// </summary>
+        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
+        /// <seealso cref="CreateShader"/>
+        /// <seealso cref="Render(Mesh)"/>
+        private void SetShader(ShaderProgram program)
+        {
+            _updatedShaderParams = false;
+
+            if (_currentShaderProgram != program)
+            {
+                _currentShaderProgram = program;
+                _rci.SetShader(program.GpuHandle);
+            }
+            UpdateShaderParams(); // initial set
+        }
+
+        /// <summary>
         /// Gets the <see cref="CompiledShaderEffect"/> from the RC's dictionary and creates all effect parameters. 
         /// </summary>
-        /// <param name="ef"></param>
+        /// <param name="ef">The ShaderEffect the parameters are created for.</param>
         private void CreateAllShaderEffectVariables(ShaderEffect ef)
         {
             int nPasses = ef.VertexShaderSrc.Length;
-            
+
             if (!_allCompiledShaderEffects.TryGetValue(ef, out var sFxParam))
                 throw new ArgumentException("ShaderEffect isn't build yet!");
 
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             for (var i = 0; i < nPasses; i++)
             {
-                var shaderParamInfos = _rci.GetShaderParamList(sFxParam.ShaderPrograms[i]._gpuHandle);
-                if(sFxParam.ParamsPerPass.Count <= i)
+                var shaderParamInfos = _rci.GetShaderParamList(sFxParam.ShaderPrograms[i].GpuHandle);
+                if (sFxParam.ParamsPerPass.Count <= i)
                     sFxParam.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
                 foreach (var paramNew in shaderParamInfos)
@@ -1219,7 +1101,7 @@ namespace Fusee.Engine.Core
                                                    paramExisting.ParamPasses[0]);
                             }
                             // List the current pass to use this shader parameter
-                            paramExisting.ParamPasses.Add(i);                            
+                            paramExisting.ParamPasses.Add(i);
                         }
                         else
                         {
@@ -1234,7 +1116,7 @@ namespace Fusee.Engine.Core
                         //sFxParam.ParamsPerPass[i].Add(paramExisting);
                         if (!sFxParam.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
                             sFxParam.ParamsPerPass[i].Add(paramExisting.Info.Name, paramExisting);
-                        
+
                     }
                     else
                     {
@@ -1249,7 +1131,7 @@ namespace Fusee.Engine.Core
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
-        internal void SetShaderParamT(EffectParam param)
+        private void SetShaderParamT(EffectParam param)
         {
             if (param.Info.Type == typeof(int))
             {
@@ -1318,9 +1200,141 @@ namespace Fusee.Engine.Core
             }
 
         }
+
+        /// <summary>
+        /// Creates a shader object from vertex shader source code and pixel shader source code.
+        /// </summary>
+        /// <param name="vs">A string containing the vertex shader source.</param>
+        /// <param name="ps">A string containing the pixel (fragment) shader source code.</param>
+        /// <param name="gs">A string containing the geometry shader source code (optional).</param>
+        /// <returns>A shader program object identifying the combination of the given vertex and pixel shader.</returns>
+        /// <remarks>
+        /// Currently only shaders in GLSL (or rather GLSL/ES) source language(s) are supported.
+        /// The result is already compiled to code executable on the GPU. <see cref="SetShader(ShaderProgram)"/>
+        /// to activate the result as the current shader used for rendering geometry passed to the RenderContext.
+        /// </remarks>
+        private ShaderProgram CreateShader(string vs, string ps, string gs = null)
+        {
+            var shaderOnGpu = _rci.CreateShader(vs, ps, gs);
+            var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+
+            return new ShaderProgram(shaderParams, shaderOnGpu);
+        }
+
+        /// <summary>
+        /// Checks the matrix cache and updates the found parameters in the _currentShaderEffect.
+        /// This method is called whenever a base matrix (model, view or projection is changed).
+        /// The derived matrices are updated due to the use of the Getters of the derived matrices here.
+        /// </summary>
+        private void UpdateCurrentShader()
+        {
+            if (_currentShaderProgram == null)
+                return;
+
+            if (!_updatedShaderParams)
+                UpdateShaderParams();
+
+            // Normal versions of MV and P
+            if (_currentShaderMatrixParams.FUSEE_M != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, Model);
+
+            if (_currentShaderMatrixParams.FUSEE_V != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, View);
+
+            if (_currentShaderMatrixParams.FUSEE_IV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
+
+            if (_currentShaderMatrixParams.FUSEE_MV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
+
+            if (_currentShaderMatrixParams.FUSEE_P != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, Projection);
+
+            if (_currentShaderMatrixParams.FUSEE_MVP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+
+            // Inverted versions
+            // Todo: Add inverted versions for M and V
+            if (_currentShaderMatrixParams.FUSEE_IMV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
+
+            if (_currentShaderMatrixParams.FUSEE_ITV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
+
+            if (_currentShaderMatrixParams.FUSEE_IP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
+
+            if (_currentShaderMatrixParams.FUSEE_IMVP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+
+            // Transposed versions
+            // Todo: Add transposed versions for M and V
+            if (_currentShaderMatrixParams.FUSEE_TMV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
+
+            if (_currentShaderMatrixParams.FUSEE_TP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
+
+            if (_currentShaderMatrixParams.FUSEE_TMVP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, TransModelViewProjection);
+
+            // Inverted and transposed versions
+            // Todo: Add inverted & transposed versions for M and V
+            if (_currentShaderMatrixParams.FUSEE_ITMV != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
+
+            if (_currentShaderMatrixParams.FUSEE_ITP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
+
+            if (_currentShaderMatrixParams.FUSEE_ITMVP != null)
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+
+            // Bones (if any)
+            if (_currentShaderMatrixParams.FUSEE_BONES != null && Bones != null)
+                SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
+
+        }
+
+        private void UpdateShaderParams()
+        {
+            if (_currentShaderProgram == null)
+            {
+                Diagnostics.Warn("No shader is currently set! Use RenderContext.SetShader first!");
+                return;
+            }
+
+            // Normal versions of MV and P
+            _currentShaderMatrixParams.FUSEE_M = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.Model);
+            _currentShaderMatrixParams.FUSEE_V = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.View);
+            _currentShaderMatrixParams.FUSEE_MV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ModelView);
+            _currentShaderMatrixParams.FUSEE_P = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.Projection);
+            _currentShaderMatrixParams.FUSEE_MVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ModelViewProjection);
+
+            // Inverted versions
+            _currentShaderMatrixParams.FUSEE_IMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IModelView);
+            _currentShaderMatrixParams.FUSEE_IP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IProjection);
+            _currentShaderMatrixParams.FUSEE_IMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IModelViewProjection);
+            _currentShaderMatrixParams.FUSEE_IV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IView);
+
+            // Transposed versions
+            _currentShaderMatrixParams.FUSEE_TMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TModelView);
+            _currentShaderMatrixParams.FUSEE_TP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TProjection);
+            _currentShaderMatrixParams.FUSEE_TMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TModelViewProjection);
+
+            // Inverted and transposed versions
+            _currentShaderMatrixParams.FUSEE_ITMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITModelView);
+            _currentShaderMatrixParams.FUSEE_ITP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITProjection);
+            _currentShaderMatrixParams.FUSEE_ITMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection);
+
+            // Bones
+            _currentShaderMatrixParams.FUSEE_BONES = _currentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
+
+            _updatedShaderParams = true;
+            UpdateCurrentShader();
+        }
         #endregion
 
-        #region Render related Members       
+        #region Render related methods
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
@@ -1338,6 +1352,25 @@ namespace Fusee.Engine.Core
         public void DisableDepthClamp()
         {
             _rci.DisableDepthClamp();
+        }
+
+        /// <summary>
+        /// Returns the hardware capabilities.
+        /// </summary>
+        /// <param name="capability"></param>
+        /// <returns></returns>
+        public uint GetHardwareCapabilities(HardwareCapability capability)
+        {
+            return _rci.GetHardwareCapabilities(capability);
+        }
+
+        /// <summary>
+        /// Returns a human readable description of the underlying graphics hardware
+        /// </summary>
+        /// <returns></returns>
+        public string GetHardwareDescription()
+        {
+            return _rci.GetHardwareDescription();
         }
 
         /// <summary>
@@ -1434,7 +1467,7 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Returns the current render state.
+        /// Returns a current render state.
         /// </summary>
         /// <param name="renderState"></param>
         /// <returns></returns>
@@ -1527,8 +1560,8 @@ namespace Fusee.Engine.Core
                     // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
                     SetShader(compiledShaderEffect.ShaderPrograms[i]);
 
-                    foreach (var param in compiledShaderEffect.ParamsPerPass[i])                    
-                        SetShaderParamT(param.Value);                    
+                    foreach (var param in compiledShaderEffect.ParamsPerPass[i])
+                        SetShaderParamT(param.Value);
 
                     SetRenderStateSet(_currentShaderEffect.States[i]);
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
@@ -1547,151 +1580,20 @@ namespace Fusee.Engine.Core
             {
                 throw new Exception("Error while rendering pass " + i, ex);
             }
-        }
+        }      
 
-        /// <summary>
-        /// Returns the hardware capabilities.
-        /// </summary>
-        /// <param name="capability"></param>
-        /// <returns></returns>
-        public uint GetHardwareCapabilities(HardwareCapability capability)
-        {
-            return _rci.GetHardwareCapabilities(capability);
-        }
-
-        /// <summary>
-        /// Returns a human readable description of the underlying graphics hardware
-        /// </summary>
-        /// <returns></returns>
-        public string GetHardwareDescription()
-        {
-            return _rci.GetHardwareDescription();
-        }
-
-        #endregion
-
-        #region Other Members
+        #endregion        
 
         /// <summary>
         /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
         /// Must be called after every visitation of the Scene Graph that changed these values.
         /// </summary>
-        internal void ResetToDefaultState()
+        internal void ResetToDefaultRenderContextState()
         {
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
             Projection = DefaultState.Projection;
         }
-
-        /// <summary>
-        /// This method returns the color of one or more pixels from the back-buffer.
-        /// </summary>
-        /// <param name="x">X-Coordinate</param>
-        /// <param name="y">Y-Coordinate</param>
-        /// <param name="w">Width</param>
-        /// <param name="h">Height</param>
-        /// <returns>The requested rectangular area</returns>
-        public IImageData GetPixelColor(int x, int y, int w, int h)
-        {
-            return _rci.GetPixelColor(x, y, w, h);
-        }
-
-        /// <summary>
-        /// This method returns depth value from the depth-buffer at a given coordinate.
-        /// </summary>
-        /// <param name="x">X-Coordinate</param>
-        /// <param name="y">Y-Coordinate</param>
-        /// <returns></returns>
-        public float GetPixelDepth(int x, int y)
-        {
-            return _rci.GetPixelDepth(x, y);
-        }
-
-        /// <summary>
-        /// Draws a Debug Line in 3D Space by using a start and end point (float3).
-        /// </summary>
-        /// <param name="start">The start point of the DebugLine.</param>
-        /// <param name="end">The endpoint of the DebugLine.</param>
-        /// <param name="color">The color of the DebugLine.</param>
-        public void DebugLine(float3 start, float3 end, float4 color)
-        {
-            if (DebugLinesEnabled)
-            {
-                start /= 2;
-                end /= 2;
-
-                var oldShader = CurrentShaderProgram;
-                SetShader(_debugShader);
-
-                _rci.SetShaderParam(_currentShaderMatrixParams.FUSEE_MVP, ModelViewProjection);
-                _rci.SetShaderParam(_debugColor, color);
-
-                _rci.DebugLine(start, end, color);
-
-                if (oldShader != null)
-                    SetShader(oldShader);
-            }
-        }
-
-        /// <summary>
-        /// Erases the contents of the specified rendering buffers.
-        /// </summary>
-        /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
-        /// <remarks>
-        /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
-        /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
-        /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
-        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwise
-        /// or-operator (|) to combine several buffers to clear.
-        /// </remarks>
-        public void Clear(ClearFlags flags)
-        {
-            _rci.Clear(flags);
-        }
-
-        /// <summary>
-        /// Sets the rectangular output region within the output buffer(s).
-        /// </summary>
-        /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
-        /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
-        /// <param name="width">horizontal size (in pixels) of the output region.</param>
-        /// <param name="height">vertical size (in pixels) of the output region.</param>       
-        /// <remarks>
-        /// Setting the Viewport limits the rendering output to the specified rectangular region.
-        /// </remarks>
-        public void Viewport(int x, int y, int width, int height)
-        {
-            if (ViewportXStart == x && ViewportYStart == y && ViewportWidth == width && ViewportHeight == height)
-                return;
-
-            _rci.Scissor(x, y, width, height);
-            _rci.Viewport(x, y, width, height);
-
-            ViewportWidth = width;
-            ViewportHeight = height;
-            ViewportXStart = x;
-            ViewportYStart = y;
-
-        }
-
-        /// <summary>
-        /// Enable or disable Color channels to be written to the frame buffer (final image).
-        /// Use this function as a color channel filter for the final image.
-        /// </summary>
-        /// <param name="red">if set to <c>true</c> [red].</param>
-        /// <param name="green">if set to <c>true</c> [green].</param>
-        /// <param name="blue">if set to <c>true</c> [blue].</param>
-        /// <param name="alpha">if set to <c>true</c> [alpha].</param>
-        public void ColorMask(bool red, bool green, bool blue, bool alpha)
-        {
-            _rci.ColorMask(red, green, blue, alpha);
-        }
-
-        #endregion
-
-        #endregion
-
-        #endregion
     }
 
     internal sealed class MatrixParams

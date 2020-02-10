@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using Fusee.Engine.Common;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Serialization;
