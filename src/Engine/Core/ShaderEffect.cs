@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using Fusee.Base.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Serialization;
@@ -228,9 +229,7 @@ namespace Fusee.Engine.Core
                 if (ParamDecl.ContainsKey(name))
                 {
                     if (ParamDecl[name] != null)
-                    {// do nothing if new value = old value
-                        if (ParamDecl[name].Equals(value)) return; // TODO: Write a better compare method! 
-                    }
+                        if (ParamDecl[name].Equals(value)) return;
 
                     ParamDecl[name] = value;
 

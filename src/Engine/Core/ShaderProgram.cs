@@ -18,7 +18,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// All parameters of this ShaderProgramm as a Dictionary of type "string, ShaderParamInfo".
         /// </summary>
-        internal Dictionary<string, ShaderParamInfo> ParamInfosByName;
+        internal Dictionary<string, ShaderParamInfo> ParamsByName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderProgram"/> class.
@@ -28,7 +28,7 @@ namespace Fusee.Engine.Core
         internal ShaderProgram(Dictionary<string, ShaderParamInfo> paramsByName, IShaderHandle gpuHandle)
         {
             GpuHandle = gpuHandle;
-            ParamInfosByName = paramsByName;
+            ParamsByName = paramsByName;
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace Fusee.Engine.Core
         /// <returns>A <see cref="ShaderParamInfo"/> object if paramName is declared and used as a uniform parameter within the shader program. Otherwise the Handle field of the returndes struct is null</returns>
         public ShaderParamInfo GetShaderParamInfo(string paramName)
         {
-            ParamInfosByName.TryGetValue(paramName, out ShaderParamInfo ret);
+            ParamsByName.TryGetValue(paramName, out ShaderParamInfo ret);
             return ret;
         }
     }

@@ -30,10 +30,10 @@ namespace Fusee.Engine.Core
                     Remove(senderSF);
                     break;
                 case ShaderEffectChangedEnum.UNIFORM_VAR_UPDATED:
-                    _rc.CreateOrUpdateParameter(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
+                    _rc.UpdateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
                 case ShaderEffectChangedEnum.UNIFORM_VAR_ADDED:
-                    _rc.CreateOrUpdateParameter(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
+                    _rc.CreateParameterInCompiledEffect(senderSF, args.ChangedEffectVarName, args.ChangedEffectVarValue);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException($"ShaderEffectChanged event called with unknown arguments: {args}, calling ShaderEffect: {sender as ShaderEffect}");

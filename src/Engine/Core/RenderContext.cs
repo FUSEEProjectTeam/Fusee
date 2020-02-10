@@ -968,10 +968,7 @@ namespace Fusee.Engine.Core
             _currentShaderEffect.SetEffectParam(name, value);
         }                
 
-        /// <summary>
-        /// Called on effect param changed event. Should ONLY be used by the <see cref="ShaderEffectManager"/>!
-        /// </summary>
-        internal void CreateOrUpdateParameter(ShaderEffect ef, string name, object paramValue)
+        internal void CreateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
@@ -979,7 +976,10 @@ namespace Fusee.Engine.Core
             {
                 var passParams = compiledEffect.ParamsPerPass[i];
                 if (passParams.ContainsKey(name))
-                    passParams[name].Value = paramValue;
+                {
+                    Diagnostics.Warn("Trying to add Parameter that is already part of this effect. Ignoring this parameter!");
+                    continue;
+                }
                 else
                 {
                     var info = compiledEffect.ShaderPrograms[i].GetShaderParamInfo(name);
@@ -990,6 +990,21 @@ namespace Fusee.Engine.Core
                     };
                     passParams.Add(name, newParam);
                 }
+            }
+
+        }
+
+        internal void UpdateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
+        {
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
+
+            for (int i = 0; i < compiledEffect.ParamsPerPass.Count; i++)
+            {
+                var passParams = compiledEffect.ParamsPerPass[i];
+                if (!passParams.TryGetValue(name, out var effectParam))
+                    continue;
+                else                
+                    effectParam.Value = paramValue;
             }
         }
 
@@ -1041,7 +1056,7 @@ namespace Fusee.Engine.Core
                 if (compiledEffect.ParamsPerPass.Count <= i)
                     compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
-                foreach (var paramNew in compiledEffect.ShaderPrograms[i].ParamInfosByName)
+                foreach (var paramNew in compiledEffect.ShaderPrograms[i].ParamsByName)
                 {
                     if (ef.ParamDecl.TryGetValue(paramNew.Key, out object initValue))
                     {
@@ -1605,9 +1620,9 @@ namespace Fusee.Engine.Core
     }
 
     /// <summary>
-    /// All compiled information of one ShaderEffect.
-    /// A <see cref="ShaderEffect"/> can have more than one Pass where each pass contains another shader.
-    /// Shaders that where created on the gpu are saved as <see cref="ShaderProgram"/>.
+    /// All compiled information of one <see cref="ShaderEffect"/>.
+    /// A <see cref="CompiledShaderEffect"/> can have more than one Pass where each pass contains another shader program.
+    /// Those are saved as a <see cref="ShaderProgram"/>s.
     /// </summary>
     internal class CompiledShaderEffect
     {
