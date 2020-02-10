@@ -740,9 +740,6 @@ namespace Fusee.Engine.Core
 
             _currentShaderMatrixParams = new MatrixParams();
             _updatedShaderParams = false;
-
-            //_debugShader = Shaders.GetColorShader(this);
-            //_debugColor = _debugShader.GetShaderParam("color");
         }
 
         #endregion
@@ -878,36 +875,17 @@ namespace Fusee.Engine.Core
         /// <param name="startY">y offset in pixels.</param>
         /// <param name="width">Width in pixels.</param>
         /// <param name="height">Height in pixels.</param>
-        public void UpdateTextureRegion(Texture dstTexture, Texture srcTexture, int startX, int startY, int width, int height)
+        internal void UpdateTextureRegion(Texture dstTexture, Texture srcTexture, int startX, int startY, int width, int height)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(dstTexture);
             _rci.UpdateTextureRegion(textureHandle, srcTexture, startX, startY, width, height);
         }
 
         /// <summary>
-        /// Gets or creates a new <see cref="ITextureHandle"/> for the given <see cref="Texture"/> by using the <see cref="TextureManager"/>.
-        /// </summary>      
-        /// <param name="tex">An <see cref="Texture"/>, containing necessary information for the upload to the graphics card.</param>     
-        public ITextureHandle CreateTexture(Texture tex)
-        {
-            ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(tex);
-            return textureHandle;
-        }
-
-        /// <summary>
-        /// Free all allocated gpu memory that belong to the given <see cref="ITextureHandle"/>.
-        /// </summary>
-        /// <param name="textureHandle">The <see cref="ITextureHandle"/> which gpu allocated memory will be freed.</param>
-        public void RemoveTextureHandle(ITextureHandle textureHandle)
-        {
-            _rci.RemoveTextureHandle(textureHandle);
-        }
-
-        /// <summary>
         /// Free all allocated gpu memory that belongs to a frame-buffer object.
         /// </summary>
         /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
-        public void DeleteFrameBuffer(IBufferHandle bufferHandle)
+        internal void DeleteFrameBuffer(IBufferHandle bufferHandle)
         {
             _rci.DeleteFrameBuffer(bufferHandle);
         }
@@ -916,7 +894,7 @@ namespace Fusee.Engine.Core
         /// Free all allocated gpu memory that belongs to a render-buffer object.
         /// </summary>
         /// <param name="bufferHandle">The platform dependent abstraction of the gpu buffer handle.</param>
-        public void DeleteRenderBuffer(IBufferHandle bufferHandle)
+        internal void DeleteRenderBuffer(IBufferHandle bufferHandle)
         {
             _rci.DeleteRenderBuffer(bufferHandle);
         }
@@ -926,7 +904,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        public void SetShaderParamTexture(IShaderParam param, Texture texture)
+        private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle);
@@ -937,7 +915,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        public void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
+        private void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
             _rci.SetShaderParamTexture(param, textureHandle);
@@ -948,7 +926,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="textures">A texture array.</param>
-        public void SetShaderParamWritableTextureArray(IShaderParam param, WritableTexture[] textures)
+        private void SetShaderParamWritableTextureArray(IShaderParam param, WritableTexture[] textures)
         {
             var texHandles = new List<ITextureHandle>();
             foreach (var tex in textures)
@@ -964,7 +942,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texture">An ITexture.</param>
-        public void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
+        private void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
             ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
             _rci.SetShaderParamCubeTexture(param, textureHandle);
@@ -1178,7 +1156,7 @@ namespace Fusee.Engine.Core
             // Enumerate all shader parameters of all passes and enlist them in lookup tables
             for (var i = 0; i < nPasses; i++)
             {
-                var shaderParamInfos = GetShaderParamList(sFxParam.ShaderPrograms[i]).ToList();
+                var shaderParamInfos = _rci.GetShaderParamList(sFxParam.ShaderPrograms[i]._gpuHandle);
                 if(sFxParam.ParamsPerPass.Count <= i)
                     sFxParam.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
@@ -1268,46 +1246,6 @@ namespace Fusee.Engine.Core
         }
 
         /// <summary>
-        /// Get a list of (uniform) shader parameters accessed by the given shader.
-        /// </summary>
-        /// <param name="program">The shader program to query for parameters.</param>
-        /// <returns>
-        /// A list of shader parameters accessed by the shader code of the given shader program. The parameters listed here
-        /// are the so-called uniform parameters of the shader (in contrast to the varying parameters). The list contains all
-        /// uniform parameters that are accessed by either the vertex shader, the pixel shader, or both shaders compiled into
-        /// the given shader.
-        /// </returns>
-        internal IEnumerable<ShaderParamInfo> GetShaderParamList(ShaderProgram program)
-        {
-            return _rci.GetShaderParamList(program._gpuHandle);
-        }
-
-        /// <summary>
-        /// Returns an identifier for the named (uniform) parameter used in the specified shader program.
-        /// </summary>
-        /// <param name="program">The <see cref="ShaderProgram"/> using the parameter.</param>
-        /// <param name="paramName">Name of the shader parameter.</param>
-        /// <returns>A <see cref="IShaderParam"/> object to identify the given parameter in subsequent calls to SetShaderParam.</returns>
-        /// <remarks>
-        /// The returned handle can be used to assign values to a (uniform) shader parameter.
-        /// </remarks>
-        internal IShaderParam GetShaderParam(ShaderProgram program, string paramName)
-        {
-            return _rci.GetShaderParam(program._gpuHandle, paramName);
-        }
-
-        /// <summary>
-        /// Gets the value of a shader parameter.
-        /// </summary>
-        /// <param name="program">The <see cref="ShaderProgram"/>.</param>
-        /// <param name="handle">The <see cref="IShaderParam"/>.</param>
-        /// <returns>The float value.</returns>
-        internal float GetParamValue(ShaderProgram program, IShaderParam handle)
-        {
-            return _rci.GetParamValue(program._gpuHandle, handle);
-        }
-
-        /// <summary>
         /// Sets the shaderParam, works with every type.
         /// </summary>
         /// <param name="param"></param>
@@ -1315,11 +1253,11 @@ namespace Fusee.Engine.Core
         {
             if (param.Info.Type == typeof(int))
             {
-                SetShaderParam(param.Info.Handle, (int)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
             }
             else if (param.Info.Type == typeof(float))
             {
-                SetShaderParam(param.Info.Handle, (float)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
             }
             else if (param.Info.Type == typeof(float2))
             {
@@ -1327,10 +1265,10 @@ namespace Fusee.Engine.Core
                 {
                     // param is an array
                     var paramArray = (float2[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
+                    _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
                 }
-                SetShaderParam(param.Info.Handle, (float2)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
             }
             else if (param.Info.Type == typeof(float3))
             {
@@ -1338,14 +1276,14 @@ namespace Fusee.Engine.Core
                 {
                     // param is an array
                     var paramArray = (float3[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
+                    _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
                 }
-                SetShaderParam(param.Info.Handle, (float3)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
             }
             else if (param.Info.Type == typeof(float4))
             {
-                SetShaderParam(param.Info.Handle, (float4)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
             }
             else if (param.Info.Type == typeof(float4x4))
             {
@@ -1353,14 +1291,14 @@ namespace Fusee.Engine.Core
                 {
                     // param is an array
                     var paramArray = (float4x4[])param.Value;
-                    SetShaderParam(param.Info.Handle, paramArray);
+                    _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
                 }
-                SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
             }
             else if (param.Info.Type == typeof(float4x4[]))
             {
-                SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
             }
             else if (param.Value is IWritableCubeMap)
             {
@@ -1379,156 +1317,6 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
 
-        }
-
-        /// <summary>
-        /// Sets the specified shader parameter to a float value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float value that should be assigned to the shader parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float2 value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float2 value that should be assigned to the shader parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float2 val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float3 array.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float2 array that should be assigned to the shader array parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>        
-        public void SetShaderParam(IShaderParam param, float2[] val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float3 value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float3 value that should be assigned to the shader parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float3 val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float3 array.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float3 array that should be assigned to the shader array parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>        
-        public void SetShaderParam(IShaderParam param, float3[] val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float4 value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4 value that should be assigned to the shader array parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float4 val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float4 array.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4 array that should be assigned to the shader array parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float4[] val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float4x4 matrix value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4x4 matrix that should be assigned to the shader parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float4x4 val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a float4x4 matrix array.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The float4x4 matrix array that should be assigned to the shader array parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, float4x4[] val)
-        {
-            _rci.SetShaderParam(param, val);
-        }
-
-        /// <summary>
-        /// Sets the shader parameter to a integer value.
-        /// </summary>
-        /// <param name="param">The <see cref="IShaderParam"/> identifier.</param>
-        /// <param name="val">The integer value that should be assigned to the shader parameter.</param>
-        /// <remarks>
-        /// <see cref="GetShaderParam"/> to see how to retrieve an identifier for
-        /// a given uniform parameter name used in a shader program.
-        /// </remarks>
-        /// <seealso cref="GetShaderParamList"/>
-        public void SetShaderParam(IShaderParam param, int val)
-        {
-            _rci.SetShaderParam(param, val);
         }
         #endregion
 
@@ -1835,8 +1623,8 @@ namespace Fusee.Engine.Core
                 var oldShader = CurrentShaderProgram;
                 SetShader(_debugShader);
 
-                SetShaderParam(_currentShaderMatrixParams.FUSEE_MVP, ModelViewProjection);
-                SetShaderParam(_debugColor, color);
+                _rci.SetShaderParam(_currentShaderMatrixParams.FUSEE_MVP, ModelViewProjection);
+                _rci.SetShaderParam(_debugColor, color);
 
                 _rci.DebugLine(start, end, color);
 

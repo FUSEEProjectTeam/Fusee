@@ -122,13 +122,6 @@ namespace Fusee.Engine.Common
         /// <seealso cref="SetShaderParam(IShaderParam,float)"/>
         IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName);
 
-        /// <summary>
-        /// Gets the value of a shader parameter.
-        /// </summary>
-        /// <param name="shaderProgram">The program.</param>
-        /// <param name="param">The handle.</param>
-        /// <returns>The float value.</returns>
-        float GetParamValue(IShaderHandle shaderProgram, IShaderParam param);
 
         /// <summary>
         /// Sets the specified shader parameter to a float value.
