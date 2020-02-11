@@ -1001,10 +1001,12 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < compiledEffect.ParamsPerPass.Count; i++)
             {
                 var passParams = compiledEffect.ParamsPerPass[i];
-                if (!passParams.TryGetValue(name, out var effectParam))
-                    continue;
-                else                
+                if (passParams.TryGetValue(name, out var effectParam))
                     effectParam.Value = paramValue;
+                else
+                {
+                    Diagnostics.Warn($"Parameter {name} is declared in ShaderEffect but currently not used by the shader.");
+                }
             }
         }
 
@@ -1102,9 +1104,9 @@ namespace Fusee.Engine.Core
 
                         // Parameter was declared by user and type is correct in shader - carry on.
                         EffectParam paramExisting;
-                        if (compiledEffect.Parameters.TryGetValue(paramNew.Key, out object paramExistingTmp))
+                        if (compiledEffect.ParamsPerPass[i].TryGetValue(paramNew.Key, out var paramExistingTmp))
                         {
-                            paramExisting = (EffectParam)paramExistingTmp;
+                            paramExisting = paramExistingTmp;
                             // The parameter is already there from a previous pass.
                             if (paramExisting.Info.Size != paramNew.Value.Size || paramExisting.Info.Type != paramNew.Value.Type)
                             {
@@ -1121,7 +1123,7 @@ namespace Fusee.Engine.Core
                                 Info = paramNew.Value,
                                 Value = initValue
                             };
-                            compiledEffect.Parameters.Add(paramNew.Key, paramExisting);
+                            compiledEffect.Parameters.Add(paramExisting);
                         }
                         //sFxParam.ParamsPerPass[i].Add(paramExisting);
                         if (!compiledEffect.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
@@ -1155,7 +1157,7 @@ namespace Fusee.Engine.Core
             {
                 if (param.Info.Size > 1)
                 {
-                    // param is an array
+                    // parameter is an array
                     var paramArray = (float2[])param.Value;
                     _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
@@ -1166,7 +1168,7 @@ namespace Fusee.Engine.Core
             {
                 if (param.Info.Size > 1)
                 {
-                    // param is an array
+                    // parameter is an array
                     var paramArray = (float3[])param.Value;
                     _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
@@ -1181,7 +1183,7 @@ namespace Fusee.Engine.Core
             {
                 if (param.Info.Size > 1)
                 {
-                    // param is an array
+                    // parameter is an array
                     var paramArray = (float4x4[])param.Value;
                     _rci.SetShaderParam(param.Info.Handle, paramArray);
                     return;
@@ -1627,19 +1629,19 @@ namespace Fusee.Engine.Core
     internal class CompiledShaderEffect
     {
         /// <summary>
-        /// The compiled vertex and pixel shaders for every pass.
+        /// The compiled shader programs for every pass.
         /// </summary>
         internal ShaderProgram[] ShaderPrograms;
 
         /// <summary>
-        /// All parameter saved per pass with uniform handle, type and info (name, etc.) as lookup table
+        /// All parameters (as references), saved per pass. See <see cref="EffectParam"/> on the parameter infos that are saved.
         /// </summary>
         internal List<Dictionary<string, EffectParam>> ParamsPerPass = new List<Dictionary<string, EffectParam>>();
 
         /// <summary>
-        /// All shader parameters of all passes
+        /// The shader parameters of all passes. See <see cref="EffectParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal Dictionary<string, object> Parameters = new Dictionary<string, object>();
+        internal List<EffectParam> Parameters = new List<EffectParam>();
 
     }
 

@@ -287,10 +287,8 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightType", Value = 0},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
             });
         }
 
@@ -303,12 +301,9 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.ModelViewProjection, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.ModelView, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
                 new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
                 new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
