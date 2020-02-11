@@ -22,8 +22,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public static string LightStructDeclaration = @"
         struct Light 
         {
-            vec3 position;
-            vec3 positionWorldSpace;
+            vec3 position;            
             vec4 intensities;
             vec3 direction;
             vec3 directionWorldSpace;
@@ -670,7 +669,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                     if (light.isCastingShadows == 1)
                     {
                     ");
-                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, light.positionWorldSpace, light.maxDistance, normal, lightDir, light.bias, 2.0);");
+                    frag.AppendLine($"  shadow = ShadowCalculationCubeMap(ShadowCubeMap, ({UniformNameDeclarations.IView} * fragPos).xyz, ({UniformNameDeclarations.IView} * vec4(light.position,1.0)).xyz, light.maxDistance, normal, lightDir, light.bias, 2.0);");
                     frag.AppendLine("}");
                 }
             }
@@ -737,8 +736,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
 
     internal struct LightParamStrings
     {
-        public string PositionViewSpace;
-        public string PositionWorldSpace;
+        public string PositionViewSpace;        
         public string Intensities;
         public string MaxDistance;
         public string Strength;
@@ -754,7 +752,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public LightParamStrings(int arrayPos)
         {
             PositionViewSpace = $"allLights[{arrayPos}].position";
-            PositionWorldSpace = $"allLights[{arrayPos}].positionWorldSpace";
             Intensities = $"allLights[{arrayPos}].intensities";
             MaxDistance = $"allLights[{arrayPos}].maxDistance";
             Strength = $"allLights[{arrayPos}].strength";

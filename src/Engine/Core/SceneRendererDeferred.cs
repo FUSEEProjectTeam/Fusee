@@ -677,8 +677,7 @@ namespace Fusee.Engine.Core
             }
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            effect.SetEffectParam("light.position", _rc.View * lightRes.WorldSpacePos);
-            effect.SetEffectParam("light.positionWorldSpace", lightRes.WorldSpacePos);
+            effect.SetEffectParam("light.position", _rc.View * lightRes.WorldSpacePos);            
             effect.SetEffectParam("light.intensities", light.Color);
             effect.SetEffectParam("light.maxDistance", light.MaxDistance);
             effect.SetEffectParam("light.strength", strength);
