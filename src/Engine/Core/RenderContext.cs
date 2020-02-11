@@ -1535,45 +1535,59 @@ namespace Fusee.Engine.Core
         internal void Render(Mesh m)
         {
             if (_currentShaderEffect == null) return;
+            
+            var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
 
-            // Update global shader parameters in current shader (light and matrices)
-            foreach (var fxParam in GlobalFXParams)            
-                _currentShaderEffect.SetEffectParam(fxParam.Key, fxParam.Value);            
-
-            int i = 0, nPasses = _currentShaderEffect.VertexShaderSrc.Length;
-            try
+            for (int i = 0; i < compiledShaderEffect.ShaderPrograms.Length; i++)
             {
-                for (i = 0; i < nPasses; i++)
+                try
                 {
-                    var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
-                    
                     SetShaderProgram(compiledShaderEffect.ShaderPrograms[i]);
-
-                    // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                    foreach (var param in compiledShaderEffect.ParamsPerPass[i])
-                        SetShaderParamT(param.Value);
-
                     SetRenderStateSet(_currentShaderEffect.States[i]);
+
+                    foreach (var paramNew in compiledShaderEffect.ShaderPrograms[i].ParamsByName)
+                    {
+                        if (_currentShaderEffect.ParamDecl.TryGetValue(paramNew.Key, out object initValue))
+                        {
+                            if (initValue == null)
+                                continue;
+
+                            // OVERWRITE VARS WITH GLOBAL FXPARAMS
+                            if (GlobalFXParams.TryGetValue(paramNew.Key, out object globalFXValue))
+                            {
+                                if (!initValue.Equals(globalFXValue))
+                                {
+                                    initValue = globalFXValue;
+                                    // update var in ParamDecl
+                                    _currentShaderEffect.SetEffectParam(paramNew.Key, globalFXValue);
+                                }
+                            }
+
+                            // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
+                            SetShaderParamT(compiledShaderEffect.ParamsPerPass[i][paramNew.Key]);
+                        }
+                    }
 
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
+
+
+                    // After rendering always cleanup pending meshes
+                    _meshManager.Cleanup();
+                    _textureManager.Cleanup();
+
+                    // After rendering all passes cleanup shader effect
+                    _shaderEffectManager.Cleanup();
                 }
-
-                // After rendering always cleanup pending meshes
-                _meshManager.Cleanup();
-                _textureManager.Cleanup();
-
-                // After rendering all passes cleanup shader effect
-                _shaderEffectManager.Cleanup();
+                catch (Exception ex)
+                {
+                    throw new Exception("Error while rendering pass " + i, ex);
+                }
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error while rendering pass " + i, ex);
-            }
-        }      
+        }
 
-        #endregion        
+        #endregion
 
         /// <summary>
         /// Resets the RenderContexts View, Projection and Viewport to the values defined in <see cref="DefaultState"/>.
