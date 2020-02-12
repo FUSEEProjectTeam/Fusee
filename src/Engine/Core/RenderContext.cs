@@ -60,8 +60,6 @@ namespace Fusee.Engine.Core
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
 
-        private bool _updatedShaderParams;
-
         #region RenderState management properties
 
         /// <summary>
@@ -106,11 +104,6 @@ namespace Fusee.Engine.Core
 
         private readonly ShaderEffectManager _shaderEffectManager;
         private readonly Dictionary<ShaderEffect, CompiledShaderEffect> _allCompiledShaderEffects = new Dictionary<ShaderEffect, CompiledShaderEffect>();
-
-        /// <summary>
-        /// Caches matrices of the current shader to minimize <see cref="SetShaderEffect(ShaderEffect)"/> calls.
-        /// </summary>
-        private readonly MatrixParams _currentShaderMatrixParams;
 
         /// <summary>
         /// The currently used <see cref="ShaderEffect"/> is set in <see cref="SetShaderEffect(ShaderEffect)"/>.
@@ -214,7 +207,7 @@ namespace Fusee.Engine.Core
                 _transModelViewProjectionOk = false;
                 _modelViewOK = false;
 
-                UpdateCurrentShader();
+                UpdateGlobalMatrixparams();
             }
         }
 
@@ -249,7 +242,7 @@ namespace Fusee.Engine.Core
                 _transModelViewProjectionOk = false;
                 _modelViewOK = false;
 
-                UpdateCurrentShader();
+                UpdateGlobalMatrixparams();
             }
         }
 
@@ -283,7 +276,7 @@ namespace Fusee.Engine.Core
                 _transProjectionOk = false;
                 _transProjectionOk = false;
 
-                UpdateCurrentShader();
+                UpdateGlobalMatrixparams();
             }
         }
 
@@ -325,9 +318,6 @@ namespace Fusee.Engine.Core
             {
                 if (!_modelViewProjectionOk)
                 {
-                    // Row order notation
-                    // _modelViewProjection = float4x4.Mult(ModelView, Projection);
-
                     // Column order notation
                     _modelViewProjection = float4x4.Mult(Projection, ModelView);
                     _modelViewProjectionOk = true;
@@ -733,7 +723,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                UpdateCurrentShader();
+                UpdateGlobalMatrixparams();
             }
         }
 
@@ -758,7 +748,6 @@ namespace Fusee.Engine.Core
 
             _shaderEffectManager = new ShaderEffectManager(this);
 
-            _currentShaderMatrixParams = new MatrixParams();
             _updatedShaderParams = false;
         }
 
@@ -921,12 +910,22 @@ namespace Fusee.Engine.Core
                 ShaderPrograms = new ShaderProgram[nPasses]
             };
 
+            //Minimal list of uniforms of the shader source code over all ShaderEffect passes
+            var activeUniforms = new Dictionary<string, ShaderParamInfo>();
+
             try // to compile all the shaders
             {
                 for (i = 0; i < nPasses; i++)
                 {
                     var shaderOnGpu = _rci.CreateShaderProgram(ef.VertexShaderSrc[i], ef.PixelShaderSrc[i], ef.GeometryShaderSrc[i]);
                     var shaderParams = _rci.GetShaderParamList(shaderOnGpu).ToDictionary(info => info.Name, info => info);
+
+                    foreach (var param in shaderParams)
+                    {
+                        if (!activeUniforms.ContainsKey(param.Key))
+                            activeUniforms.Add(param.Key, param.Value);
+                    }
+
                     compiledEffect.ShaderPrograms[i] = new ShaderProgram(shaderParams, shaderOnGpu);
                 }
             }
@@ -938,76 +937,95 @@ namespace Fusee.Engine.Core
 
             _allCompiledShaderEffects.Add(ef, compiledEffect);
 
-            CreateAllShaderEffectVariables(ef);
-
             // register built shader effect
             _shaderEffectManager.RegisterShaderEffect(ef);
+
+            CreateAllShaderEffectVariables(ef, activeUniforms);
 
             // register this shader effect as current shader
             _currentShaderEffect = ef;
         }
 
         /// <summary>
-        /// Sets global effect parameters.
-        /// Overwrites values with the same name in current ShaderEffect
+        /// Gets the <see cref="CompiledShaderEffect"/> from the RC's dictionary and creates all effect parameters. 
+        /// </summary>
+        /// <param name="ef">The ShaderEffect the parameters are created for.</param>
+        /// <param name="activeUniforms">The active uniform parameters, as they are saved in the source shader on the gpu.</param>
+        private void CreateAllShaderEffectVariables(ShaderEffect ef, Dictionary<string, ShaderParamInfo> activeUniforms)
+        {
+            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect))
+                throw new ArgumentException("ShaderEffect isn't build yet - no compiled effect found!");
+
+            if (compiledEffect.Parameters.Count != 0)
+                throw new ArgumentException("The compiled effect already has parameters!");
+
+            for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
+                compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
+
+            //Iterate src shader's active uniforms and create a EffectParam for each one.
+            foreach (var param in activeUniforms)
+            {
+                if (!ef.ParamDecl.TryGetValue(param.Key, out object initialValue))
+                {
+                    Diagnostics.Error(initialValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                    continue;
+                }
+
+                var effectParam = new EffectParam()
+                {
+                    Info = param.Value
+                };
+
+                // Set init values as they are saved in the "globals" list
+                if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
+                    effectParam.Value = globalFXValue;
+                else
+                    effectParam.Value = initialValue;
+
+                compiledEffect.Parameters.Add(param.Key, effectParam);
+
+                //For each pass (== ShaderProgram) add the same(!) EffectParam to the ParamsPerPass Dictionary
+                for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
+                {
+                    var shaderProgram = compiledEffect.ShaderPrograms[i];
+                    if (shaderProgram.ParamsByName.ContainsKey(param.Key))
+                        compiledEffect.ParamsPerPass[i].Add(param.Key, effectParam);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sets global effect parameters by updating or adding them in the GlobalFXParams list.
+        /// Changes will only have an effect when rendering.
         /// </summary>
         /// <param name="name">Effect parameter name.</param>
         /// <param name="value">Effect parameter value.</param>        
         internal void SetGlobalEffectParam(string name, object value)
         {
-            if (GlobalFXParams.ContainsKey(name))
+            if (GlobalFXParams.TryGetValue(name, out var currentValue))
             {
-                if (GlobalFXParams[name].Equals(value)) return; // no new value
-
+                if (currentValue.Equals(value)) return; // no new value
                 GlobalFXParams[name] = value;
             }
-            else
-                GlobalFXParams.Add(name, value);
-
-            // Update ShaderEffect
-            _currentShaderEffect.SetEffectParam(name, value);
-        }                
-
-        internal void CreateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
-        {
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
-
-            for (int i = 0; i < compiledEffect.ParamsPerPass.Count; i++)
+            else if (value != null)
             {
-                var passParams = compiledEffect.ParamsPerPass[i];
-                if (passParams.ContainsKey(name))
-                {
-                    Diagnostics.Warn("Trying to add Parameter that is already part of this effect. Ignoring this parameter!");
-                    continue;
-                }
-                else
-                {
-                    var info = compiledEffect.ShaderPrograms[i].GetShaderParamInfo(name);
-                    var newParam = new EffectParam()
-                    {
-                        Info = info,
-                        Value = paramValue
-                    };
-                    passParams.Add(name, newParam);
-                }
+                GlobalFXParams.Add(name, value);
             }
-
         }
 
         internal void UpdateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
 
-            for (int i = 0; i < compiledEffect.ParamsPerPass.Count; i++)
+            //We only need to look the parameter in the "all" parameters collection because EffectParam is a reference type.
+            //Because of this we do not need to take about which passes this effect belongs to.
+            if (compiledEffect.Parameters.TryGetValue(name, out EffectParam effectParam))
             {
-                var passParams = compiledEffect.ParamsPerPass[i];
-                if (passParams.TryGetValue(name, out var effectParam))
-                    effectParam.Value = paramValue;
-                else
-                {
-                    Diagnostics.Warn($"Parameter {name} is declared in ShaderEffect but currently not used by the shader.");
-                }
+                effectParam.Value = paramValue;
+                effectParam.HasValueChanged = true;
             }
+            else
+                Diagnostics.Warn($"Parameter {name} is declared in ShaderEffect but currently not used by the shader.");
         }
 
         /// <summary>
@@ -1038,105 +1056,7 @@ namespace Fusee.Engine.Core
                 _rci.SetShader(program.GpuHandle);
             }
 
-            UpdateShaderParams();
-        }
-
-        /// <summary>
-        /// Gets the <see cref="CompiledShaderEffect"/> from the RC's dictionary and creates all effect parameters. 
-        /// </summary>
-        /// <param name="ef">The ShaderEffect the parameters are created for.</param>
-        private void CreateAllShaderEffectVariables(ShaderEffect ef)
-        {
-            int nPasses = ef.VertexShaderSrc.Length;
-            
-            if (!_allCompiledShaderEffects.TryGetValue(ef, out var compiledEffect))
-                throw new ArgumentException("ShaderEffect isn't build yet!");
-
-            // Enumerate all shader parameters of all passes and enlist them in lookup tables
-            for (var i = 0; i < nPasses; i++)
-            {
-                if (compiledEffect.ParamsPerPass.Count <= i)
-                    compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
-
-                foreach (var paramNew in compiledEffect.ShaderPrograms[i].ParamsByName)
-                {
-                    if (ef.ParamDecl.TryGetValue(paramNew.Key, out object initValue))
-                    {
-                        if (initValue == null)
-                            continue;
-
-                        // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                        if (GlobalFXParams.TryGetValue(paramNew.Key, out object globalFXValue))
-                        {
-                            if (!initValue.Equals(globalFXValue))
-                            {
-                                // Diagnostics.Debug($"Global Overwrite {paramNew.Name},  with {globalFXValue}");
-
-                                initValue = globalFXValue;
-                                // update var in ParamDecl
-                                ef.ParamDecl[paramNew.Key] = globalFXValue;
-                            }
-                        }
-
-                        // IsAssignableFrom the boxed initValue object will cause JSIL to give an answer based on the value of the contents
-                        // If the type originally was float but contains an integral value (e.g. 3), JSIL.GetType() will return Integer...
-                        // Thus for primitive types (float, int, ) we hack a check ourselves. For other types (float2, ..) IsAssignableFrom works well.
-
-                        // ReSharper disable UseMethodIsInstanceOfType
-                        // ReSharper disable OperatorIsCanBeUsed
-                        var initValType = initValue.GetType();
-
-                        if (!(((paramNew.Value.Type == typeof(int) || paramNew.Value.Type == typeof(float))
-                                  &&
-                                  (initValType == typeof(int) || initValType == typeof(float) || initValType == typeof(double))
-                                )
-                                ||
-                                (paramNew.Value.Type.IsAssignableFrom(initValType))
-                             )
-                            && (!paramNew.Key.Contains("BONES") && !paramNew.Key.Contains("[0]"))
-                        )
-                        {
-                            throw new Exception("Error preparing effect pass " + i + ". Shader parameter " + paramNew.Value.Type.ToString() + " " + paramNew.Key +
-                                                " was defined as " + initValType.ToString() + " " + paramNew.Key + " during initialization (different types).");
-                        }
-                        // ReSharper restore OperatorIsCanBeUsed
-                        // ReSharper restore UseMethodIsInstanceOfType
-
-                        // Parameter was declared by user and type is correct in shader - carry on.
-                        EffectParam paramExisting;
-                        if (compiledEffect.ParamsPerPass[i].TryGetValue(paramNew.Key, out var paramExistingTmp))
-                        {
-                            paramExisting = paramExistingTmp;
-                            // The parameter is already there from a previous pass.
-                            if (paramExisting.Info.Size != paramNew.Value.Size || paramExisting.Info.Type != paramNew.Value.Type)
-                            {
-                                // This should never happen due to the previous error check. Check it anyway...
-                                throw new Exception("Error preparing effect pass " + i + ". Shader parameter " +
-                                                    paramNew.Key +
-                                                    " already defined with a different type in effect pass");
-                            }                            
-                        }
-                        else
-                        {
-                            paramExisting = new EffectParam()
-                            {
-                                Info = paramNew.Value,
-                                Value = initValue
-                            };
-                            compiledEffect.Parameters.Add(paramExisting);
-                        }
-                        //sFxParam.ParamsPerPass[i].Add(paramExisting);
-                        if (!compiledEffect.ParamsPerPass[i].ContainsKey(paramExisting.Info.Name))
-                            compiledEffect.ParamsPerPass[i].Add(paramExisting.Info.Name, paramExisting);
-
-                    }
-                    else
-                    {
-                        // This should not happen due to shader compiler optimization
-                        Diagnostics.Warn($"Uniform variable {paramNew.Key} found but no value is given. Please add this variable to ParamDecl of current ShaderEffect.");
-                    }
-                }
-            }
+            UpdateGlobalMatrixparams();
         }
 
         /// <summary>
@@ -1211,119 +1131,38 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
 
-        }       
-
-        /// <summary>
-        /// Checks the matrix cache and updates the found parameters in the _currentShaderEffect.
-        /// This method is called whenever a base matrix (model, view or projection is changed).
-        /// The derived matrices are updated due to the use of the Getters of the derived matrices here.
-        /// </summary>
-        private void UpdateCurrentShader()
-        {
-            if (_currentShaderProgram == null)
-                return;
-
-            if (!_updatedShaderParams)
-                UpdateShaderParams();
-
-            // Normal versions of MV and P
-            if (_currentShaderMatrixParams.FUSEE_M != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, Model);
-
-            if (_currentShaderMatrixParams.FUSEE_V != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, View);
-
-            if (_currentShaderMatrixParams.FUSEE_IV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
-
-            if (_currentShaderMatrixParams.FUSEE_MV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_P != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, Projection);
-
-            if (_currentShaderMatrixParams.FUSEE_MVP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
-
-            // Inverted versions
-            // Todo: Add inverted versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_IMV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_ITV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
-
-            if (_currentShaderMatrixParams.FUSEE_IP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_IMVP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
-
-            // Transposed versions
-            // Todo: Add transposed versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_TMV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_TP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_TMVP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, TransModelViewProjection);
-
-            // Inverted and transposed versions
-            // Todo: Add inverted & transposed versions for M and V
-            if (_currentShaderMatrixParams.FUSEE_ITMV != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
-
-            if (_currentShaderMatrixParams.FUSEE_ITP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
-
-            if (_currentShaderMatrixParams.FUSEE_ITMVP != null)
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
-
-            // Bones (if any)
-            if (_currentShaderMatrixParams.FUSEE_BONES != null && Bones != null)
-                SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
-
         }
 
-        private void UpdateShaderParams()
+        //TODO: Only update the parameters that are needed when this method is called
+        //Updates all matrices in the GlobalFXParams collection.
+        private void UpdateGlobalMatrixparams()
         {
-            if (_currentShaderProgram == null)
-            {
-                Diagnostics.Warn("No shader is currently set! Use RenderContext.SetShader first!");
-                return;
-            }
-
-            // Normal versions of MV and P
-            _currentShaderMatrixParams.FUSEE_M = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.Model);
-            _currentShaderMatrixParams.FUSEE_V = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.View);
-            _currentShaderMatrixParams.FUSEE_MV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ModelView);
-            _currentShaderMatrixParams.FUSEE_P = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.Projection);
-            _currentShaderMatrixParams.FUSEE_MVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ModelViewProjection);
-
-            // Inverted versions
-            _currentShaderMatrixParams.FUSEE_IMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IModelView);
-            _currentShaderMatrixParams.FUSEE_IP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IProjection);
-            _currentShaderMatrixParams.FUSEE_IMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IModelViewProjection);
-            _currentShaderMatrixParams.FUSEE_IV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.IView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, Model);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, View);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, Projection);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
 
             // Transposed versions
-            _currentShaderMatrixParams.FUSEE_TMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TModelView);
-            _currentShaderMatrixParams.FUSEE_TP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TProjection);
-            _currentShaderMatrixParams.FUSEE_TMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.TModelViewProjection);
+            // Todo: Add transposed versions for M and V           
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, TransModelViewProjection);
 
             // Inverted and transposed versions
-            _currentShaderMatrixParams.FUSEE_ITMV = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITModelView);
-            _currentShaderMatrixParams.FUSEE_ITP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITProjection);
-            _currentShaderMatrixParams.FUSEE_ITMVP = _currentShaderProgram.GetShaderParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection);
+            // Todo: Add inverted & transposed versions for M and V          
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
+            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
 
-            // Bones
-            _currentShaderMatrixParams.FUSEE_BONES = _currentShaderProgram.GetShaderParam("FUSEE_BONES[0]");
-
-            _updatedShaderParams = true;
-            UpdateCurrentShader();
+            SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
         }
+
         #endregion
 
         #region Render related methods
@@ -1535,7 +1374,7 @@ namespace Fusee.Engine.Core
         internal void Render(Mesh m)
         {
             if (_currentShaderEffect == null) return;
-            
+
             var compiledShaderEffect = _allCompiledShaderEffects[_currentShaderEffect];
 
             for (int i = 0; i < compiledShaderEffect.ShaderPrograms.Length; i++)
@@ -1545,33 +1384,33 @@ namespace Fusee.Engine.Core
                     SetShaderProgram(compiledShaderEffect.ShaderPrograms[i]);
                     SetRenderStateSet(_currentShaderEffect.States[i]);
 
-                    foreach (var paramNew in compiledShaderEffect.ShaderPrograms[i].ParamsByName)
+                    foreach (var paramItem in compiledShaderEffect.ShaderPrograms[i].ParamsByName)
                     {
-                        if (_currentShaderEffect.ParamDecl.TryGetValue(paramNew.Key, out object initValue))
+                        if (!_currentShaderEffect.ParamDecl.TryGetValue(paramItem.Key, out object currentValue))
                         {
-                            if (initValue == null)
-                                continue;
-
-                            // OVERWRITE VARS WITH GLOBAL FXPARAMS
-                            if (GlobalFXParams.TryGetValue(paramNew.Key, out object globalFXValue))
-                            {
-                                if (!initValue.Equals(globalFXValue))
-                                {
-                                    initValue = globalFXValue;
-                                    // update var in ParamDecl
-                                    _currentShaderEffect.SetEffectParam(paramNew.Key, globalFXValue);
-                                }
-                            }
-
-                            // TODO: Use shared uniform parameters - currently SetShader will query the shader params and set all the common uniforms (like matrices and light)
-                            SetShaderParamT(compiledShaderEffect.ParamsPerPass[i][paramNew.Key]);
+                            Diagnostics.Error(currentValue, new NullReferenceException("Found uniform declaration in source shader that doesn't have a corresponding Parameter Declaration in the ShaderEffect!"));
+                            continue;
                         }
+
+                        // OVERWRITE Values in the ShaderEffect with the newest ones from the GlobalFXParams collection.
+                        if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
+                        {
+                            if (!currentValue.Equals(globalFXValue))
+                                _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
+                        }
+
+                        // TODO: Set value on the gpu only for the EffectParams whose values have changed.
+                        var param = compiledShaderEffect.ParamsPerPass[i][paramItem.Key];
+                        //if (param.HasValueChanged)
+                        //{
+                        SetShaderParamT(param);
+                        param.HasValueChanged = false;
+                        //}
                     }
 
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.
                     var meshImp = _meshManager.GetMeshImpFromMesh(m);
                     _rci.Render(meshImp);
-
 
                     // After rendering always cleanup pending meshes
                     _meshManager.Cleanup();
@@ -1601,38 +1440,22 @@ namespace Fusee.Engine.Core
         }
     }
 
-    internal sealed class MatrixParams
-    {
-        // ReSharper disable InconsistentNaming
-        public IShaderParam FUSEE_M;
-        public IShaderParam FUSEE_V;
-        public IShaderParam FUSEE_MV;
-
-        public IShaderParam FUSEE_P;
-        public IShaderParam FUSEE_MVP;
-
-        public IShaderParam FUSEE_IV;
-        public IShaderParam FUSEE_IMV;
-        public IShaderParam FUSEE_ITV;
-        public IShaderParam FUSEE_IP;
-        public IShaderParam FUSEE_IMVP;
-
-        public IShaderParam FUSEE_TMV;
-        public IShaderParam FUSEE_TP;
-        public IShaderParam FUSEE_TMVP;
-
-        public IShaderParam FUSEE_ITMV;
-        public IShaderParam FUSEE_ITP;
-        public IShaderParam FUSEE_ITMVP;
-
-        public IShaderParam FUSEE_BONES;
-        // ReSharper restore InconsistentNaming
-    };
-
     internal sealed class EffectParam
     {
         public ShaderParamInfo Info;
-        public object Value;
+
+        public object Value
+        {
+            get { return _value; }
+            set
+            {
+                HasValueChanged = true;
+                _value = value;
+            }
+        }
+        private object _value;
+
+        public bool HasValueChanged { get; set; } = true;
     }
 
     /// <summary>
@@ -1655,7 +1478,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The shader parameters of all passes. See <see cref="EffectParam"/> on the parameter infos that are saved.
         /// </summary>
-        internal List<EffectParam> Parameters = new List<EffectParam>();
+        internal Dictionary<string, EffectParam> Parameters = new Dictionary<string, EffectParam>();
 
     }
 
@@ -1736,5 +1559,4 @@ namespace Fusee.Engine.Core
             Projection = float4x4.CreatePerspectiveFieldOfView(FovDefault, _aspect, ZNearDefautlt, ZFarDefault);
         }
     }
-
 }

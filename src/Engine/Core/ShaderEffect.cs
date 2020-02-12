@@ -241,14 +241,7 @@ namespace Fusee.Engine.Core
                 }
                 else
                 {
-                    // not in Parameters yet, add it and call uniform_var_changed!
-                    ParamDecl.Add(name, value);
-
-                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_ADDED;
-                    EffectEventArgs.ChangedEffectVarName = name;
-                    EffectEventArgs.ChangedEffectVarValue = value;
-
-                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
+                    Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
                 }
             }
         }
@@ -413,7 +406,10 @@ namespace Fusee.Engine.Core
     {
         DISPOSE = 0,
         UNIFORM_VAR_UPDATED = 1,
-        UNIFORM_VAR_ADDED = 2,
+
+        //Not needed at the moment, because a ShaderEffect must declare all it's parameter declarations at creation.
+        //UNIFORM_VAR_ADDED = 2,
+
         UNCHANGED = 3
     }
 }
