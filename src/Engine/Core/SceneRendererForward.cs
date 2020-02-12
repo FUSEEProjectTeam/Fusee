@@ -75,11 +75,6 @@ namespace Fusee.Engine.Core
         protected RenderContext _rc;
 
         /// <summary>
-        /// The ShaderEffect, used if no other effect is found while traversing the scene.
-        /// </summary>
-        protected ShaderEffect _defaultEffect;
-
-        /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
         protected RendererState _state;
@@ -268,23 +263,7 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
-
-                var defaultMat = new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer
-                    {
-                        Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
-                    },
-                    Specular = new SpecularChannelContainer
-                    {
-                        Color = new float4(1, 1, 1, 1),
-                        Intensity = 0.5f,
-                        Shininess = 22
-                    }
-                };
-
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-                _rc.SetShaderEffect(_defaultEffect);
+                _rc.SetShaderEffect(ShaderCodeBuilder.Default);
             }
         }
         #endregion
@@ -591,8 +570,7 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
             _state.Effect = shaderComponent.Effect;
-            _rc.SetShaderEffect(shaderComponent.Effect);
-
+            _rc.SetShaderEffect(_state.Effect);
         }
 
         /// <summary>
@@ -680,7 +658,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = _defaultEffect;
+            _state.Effect = ShaderCodeBuilder.Default;
             _state.RenderUndoStates = new RenderStateSet();
         }
 

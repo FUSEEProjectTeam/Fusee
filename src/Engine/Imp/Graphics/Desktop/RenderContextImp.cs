@@ -17,7 +17,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
-        private int _textureCount;
+        private int _textureCountPerShader;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
         private BlendEquationMode _blendEquationAlpha;
@@ -37,7 +37,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="renderCanvas">The render canvas interface.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            _textureCount = 0;
+            _textureCountPerShader = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
@@ -414,7 +414,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (texHandle.TexHandle != -1)
             {
                 GL.DeleteTexture(texHandle.TexHandle);
-                _textureCount--;
+                _textureCountPerShader--;
             }
         }
         #endregion
@@ -523,7 +523,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="program">The shader program.</param>
         public void SetShader(IShaderHandle program)
         {
-            _textureCount = 0;
+            _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
             GL.UseProgram(((ShaderHandleImp)program).Handle);
@@ -762,14 +762,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int iParam = ((ShaderParam)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
-                _textureCount++;
-                texUnit = _textureCount;
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
+            GL.Uniform1(iParam, texUnit);
         }
 
         /// <summary>
@@ -784,9 +784,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
             {
-                _textureCount++;
-                firstTexUnit = _textureCount;
-                _textureCount += texIds.Length;
+                _textureCountPerShader++;
+                firstTexUnit = _textureCountPerShader;
+                _textureCountPerShader += texIds.Length;
                 _shaderParam2TexUnit[iParam] = firstTexUnit;
             }
 
@@ -812,14 +812,14 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             int iParam = ((ShaderParam)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
-                _textureCount++;
-                texUnit = _textureCount;
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
-
-            GL.Uniform1(iParam, texUnit);
+            
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
             GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
+            GL.Uniform1(iParam, texUnit);
         }
         #endregion
 

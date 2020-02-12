@@ -17,6 +17,11 @@ namespace Fusee.Engine.Core
     /// </summary>
     public static class ShaderCodeBuilder
     {
+        /// <summary>
+        /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
+        /// </summary>
+        public static ShaderEffect Default { get; } = CreateDefaultEffect();
+
         #region Deferred
 
         /// <summary>
@@ -868,6 +873,25 @@ namespace Fusee.Engine.Core
 
             return new Texture(new ImageData());
         }
+
+        private static ShaderEffect CreateDefaultEffect()
+        {
+            var defaultMat = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = new float4(1, 1, 1, 1),
+                    Intensity = 0.5f,
+                    Shininess = 22
+                }
+            };
+
+            return MakeShaderEffectFromMatComp(defaultMat);
+        }       
 
     }
 }
