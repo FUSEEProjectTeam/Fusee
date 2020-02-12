@@ -193,7 +193,9 @@ namespace Fusee.Engine.Core
             {
                 _view = value;
 
+                _modelViewOK = false;
                 _modelViewProjectionOk = false;
+
                 _invViewOk = false;
                 _invModelViewOk = false;
                 _invModelViewProjectionOk = false;
@@ -205,9 +207,22 @@ namespace Fusee.Engine.Core
                 _transViewOk = false;
                 _transModelViewOk = false;
                 _transModelViewProjectionOk = false;
-                _modelViewOK = false;
 
-                UpdateGlobalMatrixparams();
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, _view);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TView, TransView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
             }
         }
 
@@ -222,13 +237,14 @@ namespace Fusee.Engine.Core
         /// </remarks>
         public float4x4 Model
         {
-
             get { return _model; }
             set
             {
                 _model = value;
 
+                _modelViewOK = false;
                 _modelViewProjectionOk = false;
+
                 _invModelOk = false;
                 _invModelViewOk = false;
                 _invModelViewProjectionOk = false;
@@ -239,10 +255,23 @@ namespace Fusee.Engine.Core
 
                 _transModelOk = false;
                 _transModelViewOk = false;
-                _transModelViewProjectionOk = false;
-                _modelViewOK = false;
+                _transModelViewProjectionOk = false;               
 
-                UpdateGlobalMatrixparams();
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, _model);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModel, InvModel);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModel, InvTransModel);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
+
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModel, TransModel);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
             }
         }
 
@@ -270,13 +299,14 @@ namespace Fusee.Engine.Core
                 // Invalidate derived matrices
                 _modelViewProjectionOk = false;
                 _invProjectionOk = false;
-                _invProjectionOk = false;
                 _invTransProjectionOk = false;
-                _invTransProjectionOk = false;
-                _transProjectionOk = false;
-                _transProjectionOk = false;
+                _transProjectionOk = false;               
 
-                UpdateGlobalMatrixparams();
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, _projection);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
             }
         }
 
@@ -297,7 +327,10 @@ namespace Fusee.Engine.Core
             get
             {
                 if (!_modelViewOK)
+                {
                     _modelView = View * Model;
+                    _modelViewOK = true;
+                }
                 return _modelView;
             }
         }
@@ -310,7 +343,7 @@ namespace Fusee.Engine.Core
         /// The 4x4 matrix resulting from the matrix multiplication of the ModelView and the Projection matrix.
         /// </value>
         /// <remarks>
-        /// <see cref="RenderContext.ModelView"/> and <see cref="RenderContext.Projection"/>.
+        /// <see cref="ModelView"/> and <see cref="Projection"/>.
         /// </remarks>
         public float4x4 ModelViewProjection
         {
@@ -319,7 +352,7 @@ namespace Fusee.Engine.Core
                 if (!_modelViewProjectionOk)
                 {
                     // Column order notation
-                    _modelViewProjection = float4x4.Mult(Projection, ModelView);
+                    _modelViewProjection = Projection * ModelView;
                     _modelViewProjectionOk = true;
                 }
                 return _modelViewProjection;
@@ -336,8 +369,8 @@ namespace Fusee.Engine.Core
         /// If the View matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.View"/>
-        /// <seealso cref="RenderContext.TransView"/>
+        /// <seealso cref="View"/>
+        /// <seealso cref="TransView"/>
         public float4x4 InvView
         {
             get
@@ -361,8 +394,8 @@ namespace Fusee.Engine.Core
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Model"/>
-        /// <seealso cref="RenderContext.TransModel"/>
+        /// <seealso cref="Model"/>
+        /// <seealso cref="TransModel"/>
         public float4x4 InvModel
         {
             get
@@ -386,8 +419,8 @@ namespace Fusee.Engine.Core
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelView"/>
-        /// <seealso cref="RenderContext.TransModelView"/>
+        /// <seealso cref="ModelView"/>
+        /// <seealso cref="TransModelView"/>
         public float4x4 InvModelView
         {
             get
@@ -412,8 +445,8 @@ namespace Fusee.Engine.Core
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Projection"/>
-        /// <seealso cref="RenderContext.TransProjection"/>
+        /// <seealso cref="Projection"/>
+        /// <seealso cref="TransProjection"/>
         public float4x4 InvProjection
         {
             get
@@ -438,8 +471,8 @@ namespace Fusee.Engine.Core
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its inverse matrix
         /// is equal to its transpose matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelViewProjection"/>
-        /// <seealso cref="RenderContext.TransModelViewProjection"/>
+        /// <seealso cref="ModelViewProjection"/>
+        /// <seealso cref="TransModelViewProjection"/>
         public float4x4 InvModelViewProjection
         {
             get
@@ -463,8 +496,8 @@ namespace Fusee.Engine.Core
         /// If the View matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.View"/>
-        /// <seealso cref="RenderContext.InvView"/>
+        /// <seealso cref="View"/>
+        /// <seealso cref="InvView"/>
         public float4x4 TransView
         {
             get
@@ -488,8 +521,8 @@ namespace Fusee.Engine.Core
         /// If the Model matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Model"/>
-        /// <seealso cref="RenderContext.InvModel"/>
+        /// <seealso cref="Model"/>
+        /// <seealso cref="InvModel"/>
         public float4x4 TransModel
         {
             get
@@ -513,8 +546,8 @@ namespace Fusee.Engine.Core
         /// If the ModelView matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelView"/>
-        /// <seealso cref="RenderContext.InvModelView"/>
+        /// <seealso cref="ModelView"/>
+        /// <seealso cref="InvModelView"/>
         public float4x4 TransModelView
         {
             get
@@ -539,8 +572,8 @@ namespace Fusee.Engine.Core
         /// If the Projection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.Projection"/>
-        /// <seealso cref="RenderContext.InvProjection"/>
+        /// <seealso cref="Projection"/>
+        /// <seealso cref="InvProjection"/>
         public float4x4 TransProjection
         {
             get
@@ -565,8 +598,8 @@ namespace Fusee.Engine.Core
         /// If the ModelViewProjection matrix is orthogonal (i.e. contains no scale component), its transpose matrix
         /// is equal to its inverse matrix.
         /// </remarks>
-        /// <seealso cref="RenderContext.ModelViewProjection"/>
-        /// <seealso cref="RenderContext.InvModelViewProjection"/>
+        /// <seealso cref="ModelViewProjection"/>
+        /// <seealso cref="InvModelViewProjection"/>
         public float4x4 TransModelViewProjection
         {
             get
@@ -723,7 +756,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                UpdateGlobalMatrixparams();
+                SetGlobalEffectParam("BONES[0]", _bones);
             }
         }
 
@@ -747,8 +780,6 @@ namespace Fusee.Engine.Core
             _textureManager = new TextureManager(_rci);
 
             _shaderEffectManager = new ShaderEffectManager(this);
-
-            _updatedShaderParams = false;
         }
 
         /// <summary>
@@ -1048,15 +1079,11 @@ namespace Fusee.Engine.Core
         /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>       
         private void SetShaderProgram(ShaderProgram program)
         {
-            _updatedShaderParams = false;
-
             if (_currentShaderProgram != program)
             {
                 _currentShaderProgram = program;
                 _rci.SetShader(program.GpuHandle);
             }
-
-            UpdateGlobalMatrixparams();
         }
 
         /// <summary>
@@ -1131,36 +1158,6 @@ namespace Fusee.Engine.Core
                 SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
             }
 
-        }
-
-        //TODO: Only update the parameters that are needed when this method is called
-        //Updates all matrices in the GlobalFXParams collection.
-        private void UpdateGlobalMatrixparams()
-        {
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, Model);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.View, View);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IView, InvView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, Projection);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelView, InvModelView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITView, InvTransView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IModelViewProjection, InvModelViewProjection);
-
-            // Transposed versions
-            // Todo: Add transposed versions for M and V           
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, TransModelViewProjection);
-
-            // Inverted and transposed versions
-            // Todo: Add inverted & transposed versions for M and V          
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelView, InvTransModelView);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
-            SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITModelViewProjection, InvTransModelViewProjection);
-
-            SetGlobalEffectParam("FUSEE_BONES[0]", Bones);
         }
 
         #endregion
