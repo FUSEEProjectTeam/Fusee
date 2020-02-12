@@ -683,8 +683,7 @@ namespace Fusee.Engine.Core
             effect.SetEffectParam("light.strength", strength);
             effect.SetEffectParam("light.outerConeAngle", M.DegreesToRadians(light.OuterConeAngle));
             effect.SetEffectParam("light.innerConeAngle", M.DegreesToRadians(light.InnerConeAngle));
-            effect.SetEffectParam("light.direction", dirViewSpace);
-            effect.SetEffectParam("light.directionWorldSpace", dirWorldSpace);
+            effect.SetEffectParam("light.direction", dirViewSpace);            
             effect.SetEffectParam("light.lightType", (int)light.Type);
             effect.SetEffectParam("light.isActive", light.Active ? 1 : 0);
             effect.SetEffectParam("light.isCastingShadows", light.IsCastingShadows ? 1 : 0);

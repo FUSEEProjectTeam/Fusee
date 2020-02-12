@@ -262,7 +262,7 @@ namespace Fusee.Examples.SimpleDeferred.Core
             _camTransform.FpsView(_angleHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 1000);
 
             _sceneRenderer.Render(RC);            
-            _guiRenderer.Render(RC);
+            //_guiRenderer.Render(RC);
 
             if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);

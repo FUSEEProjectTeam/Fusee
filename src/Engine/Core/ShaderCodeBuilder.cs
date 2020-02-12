@@ -165,7 +165,7 @@ namespace Fusee.Engine.Core
             {
                 if (lc.Type != LightType.Point)
                 {
-                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = Array.Empty<float4x4>() });
+                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
                     effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
-            effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = Array.Empty<float4x4>() });
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
             effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
 

@@ -24,8 +24,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         {
             vec3 position;            
             vec4 intensities;
-            vec3 direction;
-            vec3 directionWorldSpace;
+            vec3 direction;            
             float maxDistance;
             float strength;
             float outerConeAngle;
@@ -742,8 +741,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
         public string Strength;
         public string OuterAngle;
         public string InnerAngle;
-        public string Direction;
-        public string DirectionWorldSpace;
+        public string Direction;        
         public string LightType;
         public string IsActive;
         public string IsCastingShadows;
@@ -758,7 +756,6 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
             OuterAngle = $"allLights[{arrayPos}].outerConeAngle";
             InnerAngle = $"allLights[{arrayPos}].innerConeAngle";
             Direction = $"allLights[{arrayPos}].direction";
-            DirectionWorldSpace = $"allLights[{arrayPos}].directionWorldSpace";
             LightType = $"allLights[{arrayPos}].lightType";
             IsActive = $"allLights[{arrayPos}].isActive";
             IsCastingShadows = $"allLights[{arrayPos}].isCastingShadows";

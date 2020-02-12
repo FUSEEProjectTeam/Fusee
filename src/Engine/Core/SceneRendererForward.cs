@@ -742,8 +742,7 @@ namespace Fusee.Engine.Core
             _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
             _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
             _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetGlobalEffectParam(lightParamStrings.DirectionWorldSpace, dirWorldSpace);
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);            
             _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
             _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
