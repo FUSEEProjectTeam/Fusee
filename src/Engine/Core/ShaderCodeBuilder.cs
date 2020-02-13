@@ -854,7 +854,7 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                Name = UniformNameDeclarations.Bones,
+                Name = UniformNameDeclarations.BonesArray,
                 Value = new[] { float4x4.Identity }
             });
 

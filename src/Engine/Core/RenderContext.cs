@@ -756,7 +756,7 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Bones, _bones);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.BonesArray, _bones);
             }
         }        
 
@@ -1432,7 +1432,7 @@ namespace Fusee.Engine.Core
                         // OVERWRITE Values in the ShaderEffect with the newest ones from the GlobalFXParams collection.
                         if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
                         {
-                            if (!currentValue.Equals(globalFXValue))
+                            if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices because of rounding (?) errors
                                 _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
                         }
 

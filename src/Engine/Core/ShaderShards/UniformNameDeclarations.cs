@@ -9,6 +9,11 @@ namespace Fusee.Engine.Core.ShaderShards
     /// </summary>
     public static class UniformNameDeclarations
     {
+        /// <summary>
+        /// The array postfix as we get it for uniforms of array types, if we call gl.GetShaderParamList().
+        /// </summary>
+        public static readonly string ArrayPostfix = "[0]";
+
         #region Fusee internal
 
         /// <summary>
@@ -153,7 +158,13 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The bones array.
         /// </summary>
-        public static readonly string Bones = "FUSEE_BONES[0]";
+        public static readonly string Bones = "FUSEE_BONES";        
+
+        /// <summary>
+        /// The bones array including the postfix.
+        /// </summary>
+        public static readonly string BonesArray = Bones + ArrayPostfix;
+
 
         #endregion
 
@@ -181,17 +192,17 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform LightSpaceMatrix.
         /// </summary>
-        public static string LightSpaceMatrix { get; } = "LightSpaceMatrix";
+        public static readonly string LightSpaceMatrix = "LightSpaceMatrix"; 
 
         /// <summary>
         /// The var name for the uniform ShadowMap.
         /// </summary>
-        public static string ShadowMap { get; } = "ShadowMap";
+        public static readonly string ShadowMap = "ShadowMap";
 
         /// <summary>
         /// The var name for the uniform ShadowCubeMap.
         /// </summary>
-        public static string ShadowCubeMap { get; } = "ShadowCubeMap";
+        public static readonly string ShadowCubeMap = "ShadowCubeMap";
 
         #endregion
 
@@ -199,107 +210,107 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The var name for the uniform PassNo variable.
         /// </summary>
-        public static string RenderPassNo { get; } = "PassNo";
+        public static readonly string RenderPassNo = "PassNo";
 
         /// <summary>
         /// The var name for the uniform BackgroundColor.
         /// </summary>
-        public static string BackgroundColor { get; } = "BackgroundColor";
+        public static readonly string BackgroundColor = "BackgroundColor";
 
         /// <summary>
         /// The var name for the uniform ScreenParams (width and height of the window).
         /// </summary>
-        public static string ScreenParams { get; } = "ScreenParams";
+        public static readonly string ScreenParams = "ScreenParams";
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public static string AmbientStrengthName { get; } = "AmbientStrength";
+        public static readonly string AmbientStrengthName = "AmbientStrength";
 
         /// <summary>
         /// The var name for the uniform DiffuseColor variable within the pixel shaders.
         /// </summary>
-        public static string DiffuseColor { get; } = "DiffuseColor";
+        public static readonly string DiffuseColor = "DiffuseColor";
 
         /// <summary>
         /// The var name for the uniform SpecularColor variable within the pixel shaders.
         /// </summary>
-        public static string SpecularColor { get; } = "SpecularColor";
+        public static readonly string SpecularColor = "SpecularColor";
 
         /// <summary>
         /// The var name for the uniform EmissiveColor variable within the pixel shaders.
         /// </summary>
-        public static string EmissiveColorName { get; } = "EmissiveColor";
+        public static readonly string EmissiveColorName = "EmissiveColor";
 
         /// <summary>
         /// The var name for the uniform DiffuseTexture variable within the pixel shaders.
         /// </summary>
-        public static string DiffuseTexture { get; } = "DiffuseTexture";
+        public static readonly string DiffuseTexture = "DiffuseTexture";
 
         /// <summary>
         /// The var name for the uniform SpecularTexture variable within the pixel shaders.
         /// </summary>
-        public static string SpecularTextureName { get; } = "SpecularTexture";
+        public static readonly string SpecularTextureName = "SpecularTexture";
 
         /// <summary>
         /// The var name for the uniform EmissiveTexture variable within the pixel shaders.
         /// </summary>
-        public static string EmissiveTextureName { get; } = "EmissiveTexture";
+        public static readonly string EmissiveTextureName = "EmissiveTexture";
 
         /// <summary>
         /// The var name for the uniform BumpTexture variable within the pixel shaders.
         /// </summary>
-        public static string BumpTextureName { get; } = "BumpTexture";
+        public static readonly string BumpTextureName = "BumpTexture";
 
         /// <summary>
         /// The var name for the uniform DiffuseMix variable within the pixel shaders.
         /// </summary>
-        public static string DiffuseMix { get; } = "DiffuseMix";
+        public static readonly string DiffuseMix = "DiffuseMix";
 
         /// <summary>
         /// The var name for the uniform SpecularMix variable within the pixel shaders.
         /// </summary>
-        public static string SpecularMixName { get; } = "SpecularMix";
+        public static readonly string SpecularMixName = "SpecularMix";
 
         /// <summary>
         /// The var name for the uniform EmissiveMix variable within the pixel shaders.
         /// </summary>
-        public static string EmissiveMixName { get; } = "EmissiveMix";
+        public static readonly string EmissiveMixName = "EmissiveMix";
 
         /// <summary>
         /// The var name for the uniform SpecularShininess variable within the pixel shaders.
         /// </summary>
-        public static string SpecularShininessName { get; } = "SpecularShininess";
+        public static readonly string SpecularShininessName = "SpecularShininess";
 
         /// <summary>
         /// The var name for the uniform SpecularIntensity variable within the pixel shaders.
         /// </summary>
-        public static string SpecularStrength { get; } = "SpecularIntensity";
+        public static readonly string SpecularStrength = "SpecularIntensity";
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] Describes the roughness of the material.
         /// </summary>       
-        public static string RoughnessValue { get; } = "RoughnessValue";
+        public static readonly string RoughnessValue = "RoughnessValue";
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] This float describes the fresnel reflectance of the material.
         /// </summary>        
-        public static string FresnelReflectance { get; } = "FresnelReflectance";
+        public static readonly string FresnelReflectance = "FresnelReflectance";
 
         /// <summary>
         /// [PBR (Cook-Torrance) only] This float describes the diffuse fraction of the material.
         /// </summary>       
-        public static string DiffuseFraction { get; } = "DiffuseFraction";
+        public static readonly string DiffuseFraction = "DiffuseFraction";
 
         /// <summary>
         /// The var name for the uniform BumpIntensity variable within the pixel shaders.
         /// </summary>
-        public static string BumpIntensityName { get; } = "BumpIntensityName";
+        public static readonly string BumpIntensityName = "BumpIntensityName";
 
         /// <summary>
         /// List of all possible render texture names.
         /// </summary>
-        public static List<string> DeferredRenderTextures { get; } = new List<string>()
+        public static readonly List<string> DeferredRenderTextures = new List<string>()
         {
             Enum.GetName(typeof(RenderTargetTextureTypes), 0),
             Enum.GetName(typeof(RenderTargetTextureTypes), 1),
