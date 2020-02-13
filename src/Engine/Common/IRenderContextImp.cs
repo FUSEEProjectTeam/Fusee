@@ -63,7 +63,7 @@ namespace Fusee.Engine.Common
         IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null);
 
         /// <summary>
-        /// Removes given shaderprogramm from GPU
+        /// Removes given shader program from GPU
         /// </summary>
         /// <param name="sp"></param>
         void RemoveShader(IShaderHandle sp);
@@ -237,27 +237,56 @@ namespace Fusee.Engine.Common
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding.</param>
         /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId);
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget);
+
+        /// <summary>
+        /// Sets a texture active and binds it.
+        /// </summary>
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texId">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="texUnit">The texture unit.</param>
+        void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit);
+
+        /// <summary>
+        /// Sets a texture active and binds it.
+        /// </summary>
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texId">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget);
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
-        void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds);
+        /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
 
         /// <summary>
-        /// Sets a Shader Parameter to a created texture.
+        /// Sets a texture active and binds it.
         /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding.</param>
-        /// <param name="texId">An ITexture probably returned from CreateTexture() method.</param>
-        void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId);
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texIds">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="texUnitArray">The texture units.</param>
+        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray);
 
         /// <summary>
-        /// Updates the given region of a texture with te passed image data.
+        /// Sets a texture active and binds it.
+        /// </summary>
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texIds">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget);
+
+        /// <summary>
+        /// Updates the given region of a texture with the passed image data.
         /// </summary>
         /// <param name="tex">The tex.</param>
-        /// <param name="img">The img.</param>
+        /// <param name="img">The image.</param>
         /// <param name="startX">The start x.</param>
         /// <param name="startY">The start y.</param>
         /// <param name="width">The width.</param>
@@ -302,20 +331,20 @@ namespace Fusee.Engine.Common
         void SetLineWidth(float width);
 
         /// <summary>
-        /// Erases the contents of the speciefied rendering buffers.
+        /// Erases the contents of the specified rendering buffers.
         /// </summary>
         /// <param name="flags">A combination of flags specifying the rendering buffers to clear.</param>
         /// <remarks>
         /// Calling this method erases all contents of the rendering buffers. A typical use case for this method
         /// is to erase the contents of the color buffer and the depth buffer (z-buffer) before rendering starts
         /// at the beginning of a rendering loop. Thus, rendering the current frame starts with an empty color and
-        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwisee
+        /// z-buffer. <see cref="ClearFlags"/> for a list of possible buffers to clear. Make sure to use the bitwise
         /// or-operator (|) to combine several buffers to clear.
         /// </remarks>
         void Clear(ClearFlags flags);
 
         /// <summary>
-        /// Binds the vertices onto the GL Rendercontext and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the vertices onto the GL render context and assigns an VertexBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mesh">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="vertices">The vertices.</param>
@@ -323,7 +352,7 @@ namespace Fusee.Engine.Common
         void SetVertices(IMeshImp mesh, float3[] vertices);
 
         /// <summary>
-        /// Binds the tangents onto the GL Rendercontext and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the tangents onto the GL render context and assigns an TangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="tangents">The tangents.</param>
@@ -332,7 +361,7 @@ namespace Fusee.Engine.Common
         void SetTangents(IMeshImp mr, float4[] tangents);
 
         /// <summary>
-        /// Binds the bitangents onto the GL Rendercontext and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the bitangents onto the GL render context and assigns an BiTangentBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name = "bitangents">THe bitangents.</param>
@@ -341,7 +370,7 @@ namespace Fusee.Engine.Common
         void SetBiTangents(IMeshImp mr, float3[] bitangents);
 
         /// <summary>
-        /// Binds the normals onto the GL Rendercontext and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the normals onto the GL render context and assigns an NormalBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="normals">The normals.</param>
@@ -349,7 +378,7 @@ namespace Fusee.Engine.Common
         void SetNormals(IMeshImp mr, float3[] normals);
 
         /// <summary>
-        /// Binds the UV coordinates onto the GL Rendercontext and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the UV coordinates onto the GL render context and assigns an UVBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="uvs">The UV's.</param>
@@ -357,7 +386,7 @@ namespace Fusee.Engine.Common
         void SetUVs(IMeshImp mr, float2[] uvs);
 
         /// <summary>
-        /// Binds the colors onto the GL Rendercontext and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the colors onto the GL render context and assigns an ColorBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="colors">The colors.</param>
@@ -365,7 +394,7 @@ namespace Fusee.Engine.Common
         void SetColors(IMeshImp mr, uint[] colors);
 
         /// <summary>
-        /// Binds the triangles onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the triangles onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
         /// <param name="triangleIndices">The triangle indices.</param>
@@ -373,18 +402,18 @@ namespace Fusee.Engine.Common
         void SetTriangles(IMeshImp mr, ushort[] triangleIndices);
 
         /// <summary>
-        /// Binds the boneindices onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the bone indices onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="boneIndices">The boneindices.</param>
+        /// <param name="boneIndices">The bone indices.</param>
         /// <exception cref="System.ArgumentException">boneIndices must not be null or empty</exception>
         void SetBoneIndices(IMeshImp mr, float4[] boneIndices);
 
         /// <summary>
-        /// Binds the boneweights onto the GL Rendercontext and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
+        /// Binds the bone weights onto the GL render context and assigns an ElementBuffer index to the passed <see cref="IMeshImp" /> instance.
         /// </summary>
         /// <param name="mr">The <see cref="IMeshImp" /> instance.</param>
-        /// <param name="boneWeights">The boneweights.</param>
+        /// <param name="boneWeights">The bone weights.</param>
         /// <exception cref="System.ArgumentException">boneWeights must not be null or empty</exception>
         void SetBoneWeights(IMeshImp mr, float4[] boneWeights);
 
@@ -456,9 +485,9 @@ namespace Fusee.Engine.Common
         /// <param name="x">leftmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="y">topmost pixel of the rectangular output region within the output buffer.</param>
         /// <param name="width">horizontal size (in pixels) of the output region.</param>
-        /// <param name="height">vertical size (in pixels) of the ouput region.</param>
+        /// <param name="height">vertical size (in pixels) of the output region.</param>
         /// <remarks>
-        /// Setting the Viewport limits the rendering ouptut to the specified rectangular region.
+        /// Setting the Viewport limits the rendering output to the specified rectangular region.
         /// </remarks>
         void Viewport(int x, int y, int width, int height);
 
@@ -495,7 +524,7 @@ namespace Fusee.Engine.Common
         /// <summary>
         /// Draws a Debug Line in 3D Space by using a start and end point (float3).
         /// </summary>
-        /// <param name="start">The startpoint of the DebugLine.</param>
+        /// <param name="start">The start point of the DebugLine.</param>
         /// <param name="end">The endpoint of the DebugLine.</param>
         /// <param name="color">The color of the DebugLine.</param>
         void DebugLine(float3 start, float3 end, float4 color);

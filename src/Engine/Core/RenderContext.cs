@@ -255,7 +255,7 @@ namespace Fusee.Engine.Core
 
                 _transModelOk = false;
                 _transModelViewOk = false;
-                _transModelViewProjectionOk = false;               
+                _transModelViewProjectionOk = false;
 
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Model, _model);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelView, ModelView);
@@ -282,7 +282,7 @@ namespace Fusee.Engine.Core
         /// The 4x4 projection matrix applied to view coordinates yielding clip space coordinates.
         /// </value>
         /// <remarks>
-        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="RenderContext.ModelView"/>).
+        /// View coordinates are the result of the ModelView matrix multiplied to the geometry (<see cref="ModelView"/>).
         /// The coordinate system of the view space has its origin in the camera center with the z axis aligned to the viewing direction, and the x- and
         /// y axes aligned to the viewing plane. Still, no projection from 3d space to the viewing plane has been performed. This is done by multiplying
         /// view coordinate geometry with the projection matrix. Typically, the projection matrix either performs a parallel projection or a perspective
@@ -300,7 +300,7 @@ namespace Fusee.Engine.Core
                 _modelViewProjectionOk = false;
                 _invProjectionOk = false;
                 _invTransProjectionOk = false;
-                _transProjectionOk = false;               
+                _transProjectionOk = false;
 
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Projection, _projection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ModelViewProjection, ModelViewProjection);
@@ -756,9 +756,9 @@ namespace Fusee.Engine.Core
             set
             {
                 _bones = value;
-                SetGlobalEffectParam("BONES[0]", _bones);
+                SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.Bones, _bones);
             }
-        }
+        }        
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.
@@ -866,7 +866,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamTexture(IShaderParam param, Texture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
         /// <summary>
@@ -877,7 +877,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamWritableTexture(IShaderParam param, WritableTexture texture)
         {
             ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(texture);
-            _rci.SetShaderParamTexture(param, textureHandle);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE2D);
         }
 
         /// <summary>
@@ -893,7 +893,8 @@ namespace Fusee.Engine.Core
                 ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
                 texHandles.Add(textureHandle);
             }
-            _rci.SetShaderParamTextureArray(param, texHandles.ToArray());
+            var handlesAsArray = texHandles.ToArray();
+            _rci.SetShaderParamTextureArray(param, handlesAsArray, TextureType.TEXTURE2D);
         }
 
         /// <summary>
@@ -904,7 +905,7 @@ namespace Fusee.Engine.Core
         private void SetShaderParamWritableCubeMap(IShaderParam param, WritableCubeMap texture)
         {
             ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture(texture);
-            _rci.SetShaderParamCubeTexture(param, textureHandle);
+            _rci.SetShaderParamTexture(param, textureHandle, TextureType.TEXTURE_CUBE_MAP);
         }
 
         #endregion
@@ -913,16 +914,16 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Activates the passed shader effect as the current shader for geometry rendering.
-        /// Will compile a shader by calling <see cref="IRenderContextImp.CreateShaderProgram(string, string, string)"/> if it hasn't been yet.
+        /// Will compile a shader by calling <see cref="IRenderContextImp.CreateShaderProgram(string, string, string)"/> if it hasn't been compiled yet.
         /// </summary>
-        /// <param name="ef">The shader effect use.</param>
+        /// <param name="ef">The shader effect.</param>
         /// <remarks>A ShaderEffect must be attached to a context before you can render geometry with it. The main
         /// task performed in this method is compiling the provided shader source code and uploading the shaders to
         /// the gpu.</remarks>
         public void SetShaderEffect(ShaderEffect ef)
         {
             if (_rci == null)
-                throw new ArgumentNullException("rc", "must pass a valid render context.");
+                throw new NullReferenceException("No render context Implementation found!");
 
             if (ef == null)
                 return;
@@ -993,7 +994,7 @@ namespace Fusee.Engine.Core
             for (int i = 0; i < compiledEffect.ShaderPrograms.Length; i++)
                 compiledEffect.ParamsPerPass.Add(new Dictionary<string, EffectParam>());
 
-            //Iterate src shader's active uniforms and create a EffectParam for each one.
+            //Iterate source shader's active uniforms and create a EffectParam for each one.
             foreach (var param in activeUniforms)
             {
                 if (!ef.ParamDecl.TryGetValue(param.Key, out object initialValue))
@@ -1007,7 +1008,7 @@ namespace Fusee.Engine.Core
                     Info = param.Value
                 };
 
-                // Set init values as they are saved in the "globals" list
+                // Set the initial values as they are saved in the "globals" list
                 if (GlobalFXParams.TryGetValue(param.Key, out object globalFXValue))
                     effectParam.Value = globalFXValue;
                 else
@@ -1044,6 +1045,12 @@ namespace Fusee.Engine.Core
             }
         }
 
+        /// <summary>
+        /// Called from the <see cref="ShaderEffect.ShaderEffectChanged"/> event. Will lookup the CompiledShaderEffect and change the value of the parameter there.
+        /// </summary>
+        /// <param name="ef">The ShaderEffect.</param>
+        /// <param name="name">The parameter's name</param>
+        /// <param name="paramValue">The parameter's value.</param>
         internal void UpdateParameterInCompiledEffect(ShaderEffect ef, string name, object paramValue)
         {
             if (!_allCompiledShaderEffects.TryGetValue(ef, out CompiledShaderEffect compiledEffect)) throw new ArgumentException("ShaderEffect isn't build yet!");
@@ -1076,7 +1083,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Activates the passed shader program as the current shader for rendering.
         /// </summary>
-        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>       
+        /// <param name="program">The shader to apply to mesh geometry subsequently passed to the RenderContext</param>
         private void SetShaderProgram(ShaderProgram program)
         {
             if (_currentShaderProgram != program)
@@ -1092,70 +1099,103 @@ namespace Fusee.Engine.Core
         /// <param name="param"></param>
         private void SetShaderParamT(EffectParam param)
         {
-            if (param.Info.Type == typeof(int))
+            if (param.HasValueChanged)
             {
-                _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
-            }
-            else if (param.Info.Type == typeof(float))
-            {
-                _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
-            }
-            else if (param.Info.Type == typeof(float2))
-            {
-                if (param.Info.Size > 1)
+                if (param.Info.Type == typeof(int))
                 {
-                    // parameter is an array
-                    var paramArray = (float2[])param.Value;
-                    _rci.SetShaderParam(param.Info.Handle, paramArray);
-                    return;
+                    _rci.SetShaderParam(param.Info.Handle, (int)param.Value);
                 }
-                _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
-            }
-            else if (param.Info.Type == typeof(float3))
-            {
-                if (param.Info.Size > 1)
+                else if (param.Info.Type == typeof(float))
                 {
-                    // parameter is an array
-                    var paramArray = (float3[])param.Value;
-                    _rci.SetShaderParam(param.Info.Handle, paramArray);
-                    return;
+                    _rci.SetShaderParam(param.Info.Handle, (float)param.Value);
                 }
-                _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
-            }
-            else if (param.Info.Type == typeof(float4))
-            {
-                _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
-            }
-            else if (param.Info.Type == typeof(float4x4))
-            {
-                if (param.Info.Size > 1)
+                else if (param.Info.Type == typeof(float2))
                 {
-                    // parameter is an array
-                    var paramArray = (float4x4[])param.Value;
-                    _rci.SetShaderParam(param.Info.Handle, paramArray);
-                    return;
+                    if (param.Info.Size > 1)
+                    {
+                        // parameter is an array
+                        var paramArray = (float2[])param.Value;
+                        _rci.SetShaderParam(param.Info.Handle, paramArray);
+                        return;
+                    }
+                    _rci.SetShaderParam(param.Info.Handle, (float2)param.Value);
                 }
-                _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                else if (param.Info.Type == typeof(float3))
+                {
+                    if (param.Info.Size > 1)
+                    {
+                        // parameter is an array
+                        var paramArray = (float3[])param.Value;
+                        _rci.SetShaderParam(param.Info.Handle, paramArray);
+                        return;
+                    }
+                    _rci.SetShaderParam(param.Info.Handle, (float3)param.Value);
+                }
+                else if (param.Info.Type == typeof(float4))
+                {
+                    _rci.SetShaderParam(param.Info.Handle, (float4)param.Value);
+                }
+                else if (param.Info.Type == typeof(float4x4))
+                {
+                    if (param.Info.Size > 1)
+                    {
+                        // parameter is an array
+                        var paramArray = (float4x4[])param.Value;
+                        _rci.SetShaderParam(param.Info.Handle, paramArray);
+                        return;
+                    }
+                    _rci.SetShaderParam(param.Info.Handle, (float4x4)param.Value);
+                }
+                else if (param.Info.Type == typeof(float4x4[]))
+                {
+                    _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
+                }
+
+                else if (param.Value is IWritableCubeMap)
+                {
+                    SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
+                }
+                else if (param.Value is IWritableTexture[])
+                {
+                    SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
+                }
+                else if (param.Value is IWritableTexture)
+                {
+                    SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
+                }
+                else if (param.Value is ITexture)
+                {
+                    SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+                }
             }
-            else if (param.Info.Type == typeof(float4x4[]))
+            else
             {
-                _rci.SetShaderParam(param.Info.Handle, (float4x4[])param.Value);
-            }
-            else if (param.Value is IWritableCubeMap)
-            {
-                SetShaderParamWritableCubeMap(param.Info.Handle, ((WritableCubeMap)param.Value));
-            }
-            else if (param.Value is IWritableTexture[])
-            {
-                SetShaderParamWritableTextureArray(param.Info.Handle, (WritableTexture[])param.Value);
-            }
-            else if (param.Value is IWritableTexture)
-            {
-                SetShaderParamWritableTexture(param.Info.Handle, ((WritableTexture)param.Value));
-            }
-            else if (param.Value is ITexture)
-            {
-                SetShaderParamTexture(param.Info.Handle, (Texture)param.Value);
+                if (param.Value is ITextureBase)
+                {
+                    if (param.Value is IWritableCubeMap)
+                    {
+                        ITextureHandle textureHandle = _textureManager.GetWritableCubeMapHandleFromTexture((WritableCubeMap)param.Value);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE_CUBE_MAP);
+                    }
+                    else if (param.Value is IWritableTexture)
+                    {
+                        ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture((WritableTexture)param.Value);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                    }
+                    else if (param.Value is ITexture)
+                    {
+                        ITextureHandle textureHandle = _textureManager.GetTextureHandleFromTexture((Texture)param.Value);
+                        _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                    }
+                    else if (param.Value is IWritableTexture[])
+                    {
+                        foreach (var tex in (WritableTexture[])param.Value)
+                        {
+                            ITextureHandle textureHandle = _textureManager.GetWritableTextureHandleFromTexture(tex);
+                            _rci.SetActiveAndBindTexture(param.Info.Handle, textureHandle, TextureType.TEXTURE2D);
+                        }
+                    }
+                }
             }
 
         }
@@ -1354,7 +1394,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Specifies the rasterized width of both aliased and antialiased lines.
         /// </summary>
-        /// <param name="width">The width in px.</param>
+        /// <param name="width">The width in pixel.</param>
         public void SetLineWidth(float width)
         {
             _rci.SetLineWidth(width);
@@ -1396,13 +1436,9 @@ namespace Fusee.Engine.Core
                                 _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
                         }
 
-                        // TODO: Set value on the gpu only for the EffectParams whose values have changed.
                         var param = compiledShaderEffect.ParamsPerPass[i][paramItem.Key];
-                        //if (param.HasValueChanged)
-                        //{
                         SetShaderParamT(param);
                         param.HasValueChanged = false;
-                        //}
                     }
 
                     // TODO: split up RenderContext.Render into a preparation and a draw call so that we can prepare a mesh once and draw it for each pass.

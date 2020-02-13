@@ -4,6 +4,31 @@ using System;
 
 namespace Fusee.Engine.Common
 {
+    /// <summary>
+    /// Abstraction for the different texture target used in the graphics API.
+    /// </summary>
+    public enum TextureType
+    {
+        /// <summary>
+        /// 1D Texture, width only.
+        /// </summary>
+        TEXTURE1D,
+
+        /// <summary>
+        /// 2D Texture, width and height.
+        /// </summary>        
+        TEXTURE2D,
+
+        /// <summary>
+        /// 3D Texture, width, height, depth.
+        /// </summary>
+        TEXTURE3D,
+
+        /// <summary>
+        /// Exactly 6 distinct sets of 2D images, all of the same size. They act as 6 faces of a cube.
+        /// </summary>
+        TEXTURE_CUBE_MAP
+    }
 
     /// <summary>
     /// Defines how the texture should be sampled when a uv coordinate outside the range of 0 to 1 is given.
