@@ -153,7 +153,7 @@ namespace Fusee.Engine.Core.ShaderShards
         /// <summary>
         /// The bones array.
         /// </summary>
-        public static readonly string Bones = "FUSEE_BONES";
+        public static readonly string Bones = "FUSEE_BONES[0]";
 
         #endregion
 

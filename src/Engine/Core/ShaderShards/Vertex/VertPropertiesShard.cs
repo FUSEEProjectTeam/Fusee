@@ -85,7 +85,7 @@ namespace Fusee.Engine.Core.ShaderShards.Vertex
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.View));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Projection));
                 uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.IModelView));
-                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, UniformNameDeclarations.Bones+"["+ HeaderShard.BoneDefineVar+"]"));
+                uniforms.Add(GLSL.CreateUniform(GLSL.Type.Mat4, "FUSEE_BONES"+"["+ HeaderShard.BoneDefineVar+"]"));
             }
 
             return string.Join("\n", uniforms);
