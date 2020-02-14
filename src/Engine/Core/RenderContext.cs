@@ -1432,7 +1432,7 @@ namespace Fusee.Engine.Core
                         // OVERWRITE Values in the ShaderEffect with the newest ones from the GlobalFXParams collection.
                         if (GlobalFXParams.TryGetValue(paramItem.Key, out object globalFXValue))
                         {
-                            if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices because of rounding (?) errors
+                            if (!currentValue.Equals(globalFXValue)) //TODO: does NOT work for matrices some times because of rounding (?) errors
                                 _currentShaderEffect.SetEffectParam(paramItem.Key, globalFXValue);
                         }
 

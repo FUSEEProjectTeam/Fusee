@@ -269,7 +269,7 @@ namespace Fusee.Engine.Common
         /// Sets a texture active and binds it.
         /// </summary>
         /// <param name="param">The shader parameter, associated with this texture.</param>
-        /// <param name="texIds">The texture handle.</param>
+        /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
         /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
         /// <param name="texUnitArray">The texture units.</param>
         void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray);
