@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
-using Fusee.Engine.Common;
+using Fusee.Base.Core;
 using Fusee.Engine.Core.ShaderShards;
 using Fusee.Engine.Core.ShaderShards.Fragment;
 using Fusee.Serialization;
@@ -57,7 +57,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Pixel- or fragment shader as string
         /// </summary>
-        public string PS { get; set; }        
+        public string PS { get; set; }
     }
 
     /// <summary>
@@ -99,6 +99,7 @@ namespace Fusee.Engine.Core
         /// Name
         /// </summary>
         public string Name;
+
         /// <summary>
         /// Value
         /// </summary>
@@ -109,10 +110,10 @@ namespace Fusee.Engine.Core
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
     /// In addition a ShaderEffect contains the actual values for all the shaders' (uniform) variables.
     /// </summary>
-    public class ShaderEffect : DynamicObject, IDisposable
+    public class ShaderEffect : IDisposable
     {
         /// <summary>
-        /// The uniform parameter and value of a <see cref="ShaderEffect"/>
+        /// The ShaderEffect'S uniform parameters and their values.
         /// </summary>
         public Dictionary<string, object> ParamDecl { get; protected set; }
 
@@ -216,8 +217,6 @@ namespace Fusee.Engine.Core
             ShaderEffectChanged?.Invoke(this, new ShaderEffectEventArgs(this, ShaderEffectChangedEnum.DISPOSE));
         }
 
-        
-
         /// <summary>
         /// Set effect parameter
         /// </summary>
@@ -228,11 +227,9 @@ namespace Fusee.Engine.Core
             if (ParamDecl != null)
             {
                 if (ParamDecl.ContainsKey(name))
-                {                    
+                {
                     if (ParamDecl[name] != null)
-                    {// do nothing if new value = old value
-                        if (ParamDecl[name].Equals(value)) return; // TODO: Write a better compare method! 
-                    }
+                        if (ParamDecl[name].Equals(value)) return;
 
                     ParamDecl[name] = value;
 
@@ -241,17 +238,10 @@ namespace Fusee.Engine.Core
                     EffectEventArgs.ChangedEffectVarValue = value;
 
                     ShaderEffectChanged?.Invoke(this, EffectEventArgs);
-                }                
+                }
                 else
                 {
-                    // not in Parameters yet, add it and call uniform_var_changed!
-                    ParamDecl.Add(name, value);
-
-                    EffectEventArgs.Changed = ShaderEffectChangedEnum.UNIFORM_VAR_ADDED;
-                    EffectEventArgs.ChangedEffectVarName = null;
-                    EffectEventArgs.ChangedEffectVarValue = null;
-
-                    ShaderEffectChanged?.Invoke(this, EffectEventArgs);
+                    Diagnostics.Warn("Trying to set unknown parameter! Ignoring change....");
                 }
             }
         }
@@ -297,81 +287,7 @@ namespace Fusee.Engine.Core
         /// Needed for <see cref="DynamicObject"/>
         /// </summary>
         public int Count => ParamDecl.Count;
-
-        // If you try to get a value of a property 
-        // not defined in the class, this method is called.
-        /// <summary>
-        /// Returns value of property <see cref="ParamDecl"/>.
-        /// Needed for <see cref="DynamicObject"/>
-        /// </summary>
-        /// <param name="binder">Name</param>
-        /// <param name="result">Result, in this case the value of one <see cref="ParamDecl"/> object.</param>
-        /// <returns></returns>
-        public override bool TryGetMember(
-            GetMemberBinder binder, out object result)
-        {
-            // Converting the property name to lowercase
-            // so that property names become case-insensitive.
-            string name = binder.Name;
-
-            // If the property name is found in a dictionary,
-            // set the result parameter to the property value and return true.
-            // Otherwise, return false.
-
-            return ParamDecl.TryGetValue(name, out result);
-        }
-
-        // If you try to set a value of a property that is
-        // not defined in the class, this method is called.
-        /// <summary>
-        /// Set a uniform variable
-        /// Needed for <see cref="DynamicObject"/>
-        /// </summary>
-        /// <param name="binder">Name of the uniform variable</param>
-        /// <param name="value">Value of the uniform variable as <see cref="EffectParam"/>EffectParam</param>
-        /// <returns>Element found and from type EffectParam</returns>
-        public override bool TrySetMember(
-            SetMemberBinder binder, object value)
-        {
-            object result;
-
-            if (!ParamDecl.TryGetValue(binder.Name, out result))
-                return false;
-
-            SetEffectParam(binder.Name, value);
-
-            return true;
-        }
-
-        internal class ShaderEffectEventArgs : EventArgs
-        {
-            internal ShaderEffect Effect { get; }
-            internal ShaderEffectChangedEnum Changed { get; set; }
-            internal EffectParam EffectParameter { get; }
-            internal string ChangedEffectVarName { get; set; }
-            internal object ChangedEffectVarValue { get; set; }
-
-            internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
-            {
-                Effect = effect;
-                Changed = changed;
-
-                if (changedName == null || changedValue == null) return;
-
-                ChangedEffectVarName = changedName;
-                ChangedEffectVarValue = changedValue;
-            }
-        }
-
-        internal enum ShaderEffectChangedEnum
-        {            
-            DISPOSE = 0,
-            UNIFORM_VAR_UPDATED = 1,
-            UNIFORM_VAR_ADDED = 2,
-            UNCHANGED = 3
-        }
     }
-
 
     /// <summary>
     /// A ShaderEffect contains a list of render passes with each pass item being a combination of a set of render states, and Shader Programs (the code running on the GPU).
@@ -454,7 +370,7 @@ namespace Fusee.Engine.Core
                 {
                     var pxBody = new List<string>()
                     {
-                        FragPropertiesShard.GBufferOut(),                        
+                        FragPropertiesShard.GBufferOut(),
                         FragMainShard.RenderToGBuffer(EffectProps)
                     };
                     PixelShaderSrc[i] = _effectPasses[i].ProtoPS + string.Join("\n", pxBody);
@@ -464,5 +380,36 @@ namespace Fusee.Engine.Core
                 }
             }
         }
+    }
+
+    internal class ShaderEffectEventArgs : EventArgs
+    {
+        internal ShaderEffect Effect { get; }
+        internal ShaderEffectChangedEnum Changed { get; set; }
+        internal EffectParam EffectParameter { get; }
+        internal string ChangedEffectVarName { get; set; }
+        internal object ChangedEffectVarValue { get; set; }
+
+        internal ShaderEffectEventArgs(ShaderEffect effect, ShaderEffectChangedEnum changed, string changedName = null, object changedValue = null)
+        {
+            Effect = effect;
+            Changed = changed;
+
+            if (changedName == null || changedValue == null) return;
+
+            ChangedEffectVarName = changedName;
+            ChangedEffectVarValue = changedValue;
+        }
+    }
+
+    internal enum ShaderEffectChangedEnum
+    {
+        DISPOSE = 0,
+        UNIFORM_VAR_UPDATED = 1,
+
+        //Not needed at the moment, because a ShaderEffect must declare all it's parameter declarations at creation.
+        //UNIFORM_VAR_ADDED = 2,
+
+        UNCHANGED = 3
     }
 }

@@ -17,7 +17,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
     /// </summary>
     public class RenderContextImp : IRenderContextImp
     {
-        private int _textureCount;
+        private int _textureCountPerShader;
         private readonly Dictionary<int, int> _shaderParam2TexUnit;
 
         private BlendEquationMode _blendEquationAlpha;
@@ -37,7 +37,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="renderCanvas">The render canvas interface.</param>
         public RenderContextImp(IRenderCanvasImp renderCanvas)
         {
-            _textureCount = 0;
+            _textureCountPerShader = 0;
             _shaderParam2TexUnit = new Dictionary<int, int>();
 
             // Due to the right-handed nature of OpenGL and the left-handed design of FUSEE
@@ -414,7 +414,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             if (texHandle.TexHandle != -1)
             {
                 GL.DeleteTexture(texHandle.TexHandle);
-                _textureCount--;
+                _textureCountPerShader--;
             }
         }
         #endregion
@@ -428,10 +428,10 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="vs">The vertex shader code.</param>
         /// <param name="gs">The geometry shader code.</param>
         /// <param name="ps">The pixel(=fragment) shader code.</param>
-        /// <returns>An instance of <see cref="IShaderProgramImp" />.</returns>
+        /// <returns>An instance of <see cref="IShaderHandle" />.</returns>
         /// <exception cref="ApplicationException">
         /// </exception>
-        public IShaderProgramImp CreateShader(string vs, string ps, string gs = null)
+        public IShaderHandle CreateShaderProgram(string vs, string ps, string gs = null)
         {
             int vertexObject = GL.CreateShader(ShaderType.VertexShader);
             int fragmentObject = GL.CreateShader(ShaderType.FragmentShader);
@@ -495,7 +495,7 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             //GL.DeleteShader(fragmentObject);
             //GL.DeleteShader(vertexObject);
 
-            return new ShaderProgramImp { Program = program };
+            return new ShaderHandleImp { Handle = program };
         }
 
         /// <inheritdoc />
@@ -503,9 +503,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Removes shader from the GPU
         /// </summary>
         /// <param name="sp"></param>
-        public void RemoveShader(IShaderProgramImp sp)
+        public void RemoveShader(IShaderHandle sp)
         {
-            var program = ((ShaderProgramImp)sp).Program;
+            var program = ((ShaderHandleImp)sp).Handle;
 
             // wait for all threads to be finished
             GL.Finish();
@@ -521,12 +521,12 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// Sets the shader program onto the GL Render context.
         /// </summary>
         /// <param name="program">The shader program.</param>
-        public void SetShader(IShaderProgramImp program)
+        public void SetShader(IShaderHandle program)
         {
-            _textureCount = 0;
+            _textureCountPerShader = 0;
             _shaderParam2TexUnit.Clear();
 
-            GL.UseProgram(((ShaderProgramImp)program).Program);
+            GL.UseProgram(((ShaderHandleImp)program).Handle);
         }
 
         /// <summary>
@@ -537,9 +537,9 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="shaderProgram">The shader program.</param>
         /// <param name="paramName">Name of the parameter.</param>
         /// <returns>The Shader parameter is returned if the name is found, otherwise null.</returns>
-        public IShaderParam GetShaderParam(IShaderProgramImp shaderProgram, string paramName)
+        public IShaderParam GetShaderParam(IShaderHandle shaderProgram, string paramName)
         {
-            int h = GL.GetUniformLocation(((ShaderProgramImp)shaderProgram).Program, paramName);
+            int h = GL.GetUniformLocation(((ShaderHandleImp)shaderProgram).Handle, paramName);
             return (h == -1) ? null : new ShaderParam { handle = h };
         }
 
@@ -550,32 +550,29 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// <param name="program">The program.</param>
         /// <param name="param">The parameter.</param>
         /// <returns>A float number (default is 0).</returns>
-        public float GetParamValue(IShaderProgramImp program, IShaderParam param)
+        public float GetParamValue(IShaderHandle program, IShaderParam param)
         {
-            GL.GetUniform(((ShaderProgramImp)program).Program, ((ShaderParam)param).handle, out float f);
+            GL.GetUniform(((ShaderHandleImp)program).Handle, ((ShaderParam)param).handle, out float f);
             return f;
         }
 
         /// <summary>
-        /// Gets the shader parameter list of a specific <see cref="IShaderProgramImp" />. 
+        /// Gets the shader parameter list of a specific <see cref="IShaderHandle" />. 
         /// </summary>
         /// <param name="shaderProgram">The shader program.</param>
         /// <returns>All Shader parameters of a shader program are returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException"></exception>
-        public IList<ShaderParamInfo> GetShaderParamList(IShaderProgramImp shaderProgram)
+        public IList<ShaderParamInfo> GetShaderParamList(IShaderHandle shaderProgram)
         {
-            var sProg = (ShaderProgramImp)shaderProgram;
+            var sProg = (ShaderHandleImp)shaderProgram;
             var paramList = new List<ShaderParamInfo>();
 
-            int nParams;
-            GL.GetProgram(sProg.Program, GetProgramParameterName.ActiveUniforms, out nParams);
+            GL.GetProgram(sProg.Handle, GetProgramParameterName.ActiveUniforms, out int nParams);
 
             for (var i = 0; i < nParams; i++)
             {
-                ActiveUniformType uType;
-
                 var paramInfo = new ShaderParamInfo();
-                paramInfo.Name = GL.GetActiveUniform(sProg.Program, i, out paramInfo.Size, out uType);
+                paramInfo.Name = GL.GetActiveUniform(sProg.Handle, i, out paramInfo.Size, out ActiveUniformType uType);
                 paramInfo.Handle = GetShaderParam(sProg, paramInfo.Name);
 
                 //Diagnostics.Log($"Active Uniforms: {paramInfo.Name}");
@@ -755,41 +752,85 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
             GL.Uniform1(((ShaderParam)param).handle, val);
         }
 
+        private void BindTextureByTarget(ITextureHandle texId, TextureType texTarget)
+        {
+            switch (texTarget)
+            {
+                case TextureType.TEXTURE1D:
+                    GL.BindTexture(TextureTarget.Texture1D, ((TextureHandle)texId).TexHandle);
+                    break;
+                case TextureType.TEXTURE2D:
+                    GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
+                    break;
+                case TextureType.TEXTURE3D:
+                    GL.BindTexture(TextureTarget.Texture3D, ((TextureHandle)texId).TexHandle);
+                    break;
+                case TextureType.TEXTURE_CUBE_MAP:
+                    GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+
         /// <summary>
-        /// Sets a given Shader Parameter to a created texture
+        /// Sets a texture active and binds it.
         /// </summary>
-        /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
-        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId)
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texId">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
             int iParam = ((ShaderParam)param).handle;
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
             {
-                _textureCount++;
-                texUnit = _textureCount;
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
                 _shaderParam2TexUnit[iParam] = texUnit;
             }
 
-            GL.Uniform1(iParam, texUnit);
             GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texId).TexHandle);
+            BindTextureByTarget(texId, texTarget);
+        }
+
+        /// <summary>
+        /// Sets a texture active and binds it.
+        /// </summary>
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texId">The texture handle.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="texUnit">The texture unit.</param>
+        public void SetActiveAndBindTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget, out int texUnit)
+        {
+            int iParam = ((ShaderParam)param).handle;
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out texUnit))
+            {
+                _textureCountPerShader++;
+                texUnit = _textureCountPerShader;
+                _shaderParam2TexUnit[iParam] = texUnit;
+            }
+
+            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
+            BindTextureByTarget(texId, texTarget);
         }
 
         /// <summary>
         /// Sets a given Shader Parameter to a created texture
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
-        /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
-        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds)
+        /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
+        /// /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
         {
             int iParam = ((ShaderParam)param).handle;
             int[] texUnitArray = new int[texIds.Length];
 
             if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
             {
-                _textureCount++;
-                firstTexUnit = _textureCount;
-                _textureCount += texIds.Length;
+                _textureCountPerShader++;
+                firstTexUnit = _textureCountPerShader;
+                _textureCountPerShader += texIds.Length;
                 _shaderParam2TexUnit[iParam] = firstTexUnit;
             }
 
@@ -798,11 +839,37 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
                 texUnitArray[i] = firstTexUnit + i;
 
                 GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
-                GL.BindTexture(TextureTarget.Texture2D, ((TextureHandle)texIds[i]).TexHandle);
+                BindTextureByTarget(texIds[i], texTarget);
+            }
+        }
+
+        /// <summary>
+        /// Sets a texture active and binds it.
+        /// </summary>
+        /// <param name="param">The shader parameter, associated with this texture.</param>
+        /// <param name="texIds">An array of ITextureHandles returned from CreateTexture method or the ShaderEffectManager.</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        /// <param name="texUnitArray">The texture units.</param>
+        public void SetActiveAndBindTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget, out int[] texUnitArray)
+        {
+            int iParam = ((ShaderParam)param).handle;
+           texUnitArray = new int[texIds.Length];
+
+            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int firstTexUnit))
+            {
+                _textureCountPerShader++;
+                firstTexUnit = _textureCountPerShader;
+                _textureCountPerShader += texIds.Length;
+                _shaderParam2TexUnit[iParam] = firstTexUnit;
             }
 
-            fixed (int* pFlt = &texUnitArray[0])
-                GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
+            for (int i = 0; i < texIds.Length; i++)
+            {
+                texUnitArray[i] = firstTexUnit + i;
+
+                GL.ActiveTexture(TextureUnit.Texture0 + firstTexUnit + i);
+                BindTextureByTarget(texIds[i], texTarget);
+            }
         }
 
         /// <summary>
@@ -810,20 +877,27 @@ namespace Fusee.Engine.Imp.Graphics.Desktop
         /// </summary>
         /// <param name="param">Shader Parameter used for texture binding</param>
         /// <param name="texId">An ITextureHandle probably returned from CreateTexture method</param>
-        public void SetShaderParamCubeTexture(IShaderParam param, ITextureHandle texId)
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        public void SetShaderParamTexture(IShaderParam param, ITextureHandle texId, TextureType texTarget)
         {
-            int iParam = ((ShaderParam)param).handle;
-            if (!_shaderParam2TexUnit.TryGetValue(iParam, out int texUnit))
-            {
-                _textureCount++;
-                texUnit = _textureCount;
-                _shaderParam2TexUnit[iParam] = texUnit;
-            }
-
-            GL.Uniform1(iParam, texUnit);
-            GL.ActiveTexture(TextureUnit.Texture0 + texUnit);
-            GL.BindTexture(TextureTarget.TextureCubeMap, ((TextureHandle)texId).TexHandle);
+            SetActiveAndBindTexture(param, texId, texTarget, out int texUnit);            
+            GL.Uniform1(((ShaderParam)param).handle, texUnit);
         }
+
+        /// <summary>
+        /// Sets a given Shader Parameter to a created texture
+        /// </summary>
+        /// <param name="param">Shader Parameter used for texture binding</param>
+        /// <param name="texIds">An array of ITextureHandles probably returned from CreateTexture method</param>
+        /// <param name="texTarget">The texture type, describing to which texture target the texture gets bound to.</param>
+        public unsafe void SetShaderParamTextureArray(IShaderParam param, ITextureHandle[] texIds, TextureType texTarget)
+        {
+            SetActiveAndBindTextureArray(param, texIds, texTarget, out int[] texUnitArray);
+
+            fixed (int* pFlt = &texUnitArray[0])
+                GL.Uniform1(((ShaderParam)param).handle, texUnitArray.Length, pFlt);
+        }
+        
         #endregion
 
         #region Clear
