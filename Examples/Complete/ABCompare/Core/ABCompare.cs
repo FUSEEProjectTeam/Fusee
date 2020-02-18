@@ -25,7 +25,6 @@ namespace Fusee.Examples.ABCompare.Core
         private static float _angleHorz = M.PiOver3, _angleVert = -M.PiOver6 * 0.5f, _angleVelHorz, _angleVelVert, _angleRoll, _angleRollInit, _zoomVel, _zoom, _viewtranslate;
         private static float2 _offset;
         private static float2 _offsetInit;
-
         private const float RotationSpeed = 7;
         private const float Damping = 0.8f;
         private SceneContainer _scene1;
@@ -37,7 +36,6 @@ namespace Fusee.Examples.ABCompare.Core
         private bool _twoTouchRepeated;
 
         private bool _keys;
-
         private const float ZNear = 1f;
         private const float ZFar = 3000;
         private float _aspectRatio;
@@ -58,35 +56,61 @@ namespace Fusee.Examples.ABCompare.Core
 
         private GamePadDevice _gamePad;
 
-        private WritableTexture _renderTex;
+
+        private bool _abbtn1;
+        private bool _abbtn2;
+        private bool _viewports = false;
+        private bool _multipass = false;
+        private Texture _bltDestinationTex;
+        private WritableTexture _renderTex1;
+        private WritableTexture _renderTex2;
+        private float2 _point1;
+        private float2 _point2;
+        private float _radius;
+        private float2 _middlepoint;
         private ShaderEffect _blurPassEffect;
         private SceneContainer _quadScene;
         private SceneRendererForward _sceneRendererBlur;
         private readonly int _texRes = (int)TexRes.HIGH_RES;
+        
 
-
+        
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
             //Initialize objects we need for the multipass blur effect
-            _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+            _renderTex1 = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+            _renderTex2 = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
+
+            //=> Punkte zur Geradenberechnung dürfen nicht aufeinander liegen!!
+
+            _point1 = new float2(0.5f, 0.5f);
+            _point2 = new float2(0.5f, 0.6f);
+            _radius = 0.1f;
+            _middlepoint = new float2(0.5f, 0.5f);
 
             _blurPassEffect = new ShaderEffect(new[]
             {
                 new EffectPassDeclaration
                 {
                     VS = AssetStorage.Get<string>("screenFilledQuad.vert"),
-                    PS = AssetStorage.Get<string>("simpleBlur.frag"),
+                    PS = AssetStorage.Get<string>("multitex.frag"),
                     StateSet = new RenderStateSet
                     {
                         AlphaBlendEnable = false,
                         ZEnable = true,
-                    }
+                    },
                 }
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = "InputTex", Value = _renderTex},
+                new EffectParameterDeclaration { Name = "InputTex1", Value = _renderTex1},
+                new EffectParameterDeclaration { Name = "InputTex2", Value = _renderTex2},
+                new EffectParameterDeclaration { Name = "Point1", Value = _point1},
+                new EffectParameterDeclaration { Name = "Point2", Value = _point2},
+                new EffectParameterDeclaration { Name = "Middlepoint", Value = _middlepoint},
+                new EffectParameterDeclaration { Name = "Radius", Value = _radius}
+
             });
 
             _quadScene = new SceneContainer()
@@ -137,17 +161,17 @@ namespace Fusee.Examples.ABCompare.Core
             
             _scene1 = AssetStorage.Get<SceneContainer>(ModelFile);
 
-            
-           // _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
-            
 
-           // _scene1.Children.RemoveAt(0);
-           // _scene2.Children.RemoveAt(0);
+            _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
+
+            // _scene1.Children.RemoveAt(0);
+             //_scene2.Children.RemoveAt(0);
 
             // New Shader for used Models ===> not usable right now
-           //_scene1.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
-           //_scene1.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
-            //_scene2.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(1, 0, 0, 1), 0.5f, 0.5f);
+            //_scene1.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
+            //_scene1.Children[2].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 1, 1), new float4(0, 0, 1, 1), 0.5f, 0.5f);
+           // _scene2.Children[1].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(1, 0, 0, 1), 0.5f, 0.5f);
+            //_scene2.Children[2].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 1, 1), new float4(0, 0, 0, 1), 0.5f, 0.5f);
 
             _gui = CreateGui();
             // Create the interaction handler
@@ -195,7 +219,7 @@ namespace Fusee.Examples.ABCompare.Core
             //==> rendering with multiple viewports
              _sceneRenderer1 = new SceneRendererForward(_scene1);
            
-            //_sceneRenderer2 = new SceneRendererForward(_scene2);
+            _sceneRenderer2 = new SceneRendererForward(_scene2);
             
             _guiRenderer = new SceneRendererForward(_gui);
 
@@ -206,6 +230,7 @@ namespace Fusee.Examples.ABCompare.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
+
             //if (_gamePad != null)
             //    Diagnostics.Log(_gamePad.LSX);
 
@@ -253,27 +278,60 @@ namespace Fusee.Examples.ABCompare.Core
             // UpDown / LeftRight rotation
             if (Mouse.LeftButton)
             {
+              
+                 float mousex = (Mouse.Position.x / Width);
+                 float mousey = 1.0f - (Mouse.Position.y / Height);
 
-                _keys = false;
-                _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                if (_abbtn1)
+                {
+                  
+                    _point1 = new float2(mousex,mousey);
+                    
+                    Diagnostics.Log(Mouse.Position);
+                    Diagnostics.Log(_point1);
+
+                    _gui.Children.FindNodes(node => node.Name == "ab1").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point1.x, _initCanvasHeight *_point1.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f));
+                }
+
+                else if(_abbtn2)
+                {
+                   
+                    _point2 = new float2(mousex, mousey);
+
+                    Diagnostics.Log(Mouse.Position);
+
+                    _gui.Children.FindNodes(node => node.Name == "ab2").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point2.x, _initCanvasHeight * _point2.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f));
+                }
+
+                else
+                {
+                    _keys = false;
+                    _angleVelHorz = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+                    _angleVelVert = -RotationSpeed * Mouse.YVel * DeltaTime * 0.0005f;
+                }
+
             }
-
-            else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
+                     
+           /* else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _keys = false;
                 float2 touchVel;
                 touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
                 _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
                 _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }
+            }*/
             else
             {
+
+                _abbtn1 = false;
+                _abbtn2 = false;
+
                 if (_keys)
                 {
                     _angleVelHorz = -RotationSpeed * Keyboard.LeftRightAxis * DeltaTime;
                     _angleVelVert = -RotationSpeed * Keyboard.UpDownAxis * DeltaTime;
                     _viewtranslate = Keyboard.ADAxis * 0.5f;
+                    _radius = Keyboard.ADAxis;
                 }
                 else
                 {
@@ -281,6 +339,13 @@ namespace Fusee.Examples.ABCompare.Core
                     _angleVelVert *= curDamp;
                 }
             }
+
+
+            //=> Zugriff auf Uniform zur Laufzeit!!!
+
+            _blurPassEffect.SetEffectParam("Radius", _radius);
+            _blurPassEffect.SetEffectParam("Point1", _point1);
+            _blurPassEffect.SetEffectParam("Point2", _point2);
 
             _zoom += _zoomVel;
             // Limit zoom
@@ -317,30 +382,49 @@ namespace Fusee.Examples.ABCompare.Core
             // Tick any animations and Render the scene loaded in Init()
             _sceneRenderer1.Animate();
             
-            //_sceneRenderer2.Animate();
-            
+            _sceneRenderer2.Animate();
+
 
             // Create two Viewports
             //==> sceneRenderer for Multipass Example
-            var width = Width;
-            var height = Height;
-            RC.Viewport(0, 0, _texRes, _texRes, false);
-            _sceneRenderer1.Render(RC, _renderTex);   //Pass 1: render the rocket to "_renderTex", using the standard material. 
+            if (_multipass)
+            {
+                var width = Width;
+                var height = Height;
+                RC.Viewport(0, 0, _texRes, _texRes, false);
+                _sceneRenderer1.Render(RC, _renderTex1);   //Pass 1: render the rocket to "_renderTex", using the standard material. 
 
-            RC.Viewport(0, 0, width, height);
-            _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
-           
+                RC.Viewport(0, 0, _texRes, _texRes, false);
+                _sceneRenderer2.Render(RC, _renderTex2);
 
-            //==> sceneRenderer for multiple Viewports
-            /*
-            var aspect = Width / (float)Height;
-            RC.Projection = CreatePerspectiveFieldOfViewOwn(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
-            RC.Viewport(0, 0, Width / 2, Height);
-            _sceneRenderer1.Render(RC);
-            RC.Projection = CreatePerspectiveFieldOfViewOwn2(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
-            RC.Viewport(Width / 2, 0, Width / 2, Height);
-            _sceneRenderer2.Render(RC);
-            */
+                RC.Viewport(0, 0, width, height);
+                _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
+                
+                _sih.View = RC.View;
+
+                _guiRenderer.Render(RC);
+            }
+            else if (_viewports)
+            {
+                //==> sceneRenderer for multiple Viewports
+                
+                var aspect = Width / (float)Height;
+                RC.Projection = CreatePerspectiveFieldOfViewOwn(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
+                RC.Viewport(0, 0, Width / 2, Height);
+                _sceneRenderer1.Render(RC);
+                RC.Projection = CreatePerspectiveFieldOfViewOwn2(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
+                RC.Viewport(Width / 2, 0, Width / 2, Height);
+                _sceneRenderer2.Render(RC);
+                
+            }
+            else
+            {
+                var aspect = Width / (float)Height;
+                RC.Projection = float4x4.CreatePerspectiveFieldOfView(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
+                RC.Viewport(0, 0, Width, Height);
+                _sceneRenderer1.Render(RC);
+            }
+
             _sih.View = RC.View;
 
             _guiRenderer.Render(RC);
@@ -424,9 +508,39 @@ namespace Fusee.Examples.ABCompare.Core
             {
                 Name = "Canvas_Button"
             };
+
             btnFuseeLogo.OnMouseEnter += BtnLogoEnter;
             btnFuseeLogo.OnMouseExit += BtnLogoExit;
             btnFuseeLogo.OnMouseDown += BtnLogoDown;
+           
+
+            var btnAB1 = new GUIButton
+            {
+                Name = "AB_Compare1"
+            };
+
+            btnAB1.OnMouseDown += BtnAB1Down;
+
+            var btnAB2 = new GUIButton
+            {
+                Name = "AB_Compare2"
+            };
+
+            btnAB2.OnMouseDown += BtnAB2Down;
+       
+            var btnmultiview = new GUIButton
+            {
+                Name = "Multiple Viewports"
+            };
+
+            btnmultiview.OnMouseDown += BtnMultiviewDown;
+            
+            var btnmultipass = new GUIButton
+            {
+                Name = "Multipass"
+            };
+
+            btnmultipass.OnMouseDown += BtnMultipassDown;
 
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNodeContainer(
@@ -442,6 +556,37 @@ namespace Fusee.Examples.ABCompare.Core
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
+
+            var ab1 = new TextureNodeContainer(
+                "ab1",
+                vsTex,
+                psTex,
+                //Set the diffuse texture you want to use.
+                _bltDestinationTex,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point1.x, _initCanvasHeight * _point1.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f))
+                );
+            ab1.AddComponent(btnAB1);
+            ab1.GetComponent<ShaderEffectComponent>().Effect =  ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
+            
+            var ab2 = new TextureNodeContainer(
+                "ab2",
+                vsTex,
+                psTex,
+                //Set the diffuse texture you want to use.
+                _bltDestinationTex,
+                //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+                //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                //Define Offset and therefor the size of the element.                
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point2.x, _initCanvasHeight * _point2.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f))
+                );
+            ab2.AddComponent(btnAB2);
+            ab2.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 1, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
+
 
             // Initialize the information text line.
             var textToDisplay = "FUSEE 3D Scene";
@@ -468,6 +613,67 @@ namespace Fusee.Examples.ABCompare.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 200f);
 
+            var textmultipass = new TextNodeContainer(
+                "Multipass Example",
+                "MultipassExample",
+                vsTex,
+                psTex,
+                UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
+                new MinMaxRect
+                {
+                    Min = new float2(0.0f, 0.0f),
+                    Max = new float2(0.0f, 0.0f)
+                }, 
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery), 200f);
+
+            var multipasscontainer = new TextureNodeContainer(
+               "multipasscontainer",
+               vsTex,
+               psTex,
+               //Set the diffuse texture you want to use.
+               _bltDestinationTex,
+               //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+               //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+               UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+               //Define Offset and therefor the size of the element.                
+               UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.7f), _initCanvasHeight, _initCanvasWidth, new float2(2.0f, 0.5f))
+               )
+            { Children = new ChildList() { textmultipass } };
+
+            multipasscontainer.AddComponent(btnmultipass);
+            multipasscontainer.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 0.5f, 0.5f);
+
+            var textmultiview = new TextNodeContainer(
+                "Viewport Example",
+                "ViewportExample",
+                vsTex,
+                psTex,
+                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
+                new MinMaxRect
+                {
+                    Min = new float2(0.0f, 0.0f),
+                    Max = new float2(0.0f, 0.0f)
+                }, 
+                guiLatoBlack,
+                ColorUint.Tofloat4(ColorUint.Greenery), 200f);
+
+            var multiviewcontainer = new TextureNodeContainer(
+               "multiviewcontainer",
+               vsTex,
+               psTex,
+               //Set the diffuse texture you want to use.
+               _bltDestinationTex,
+               //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
+               //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
+               UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+               //Define Offset and therefor the size of the element.                
+               UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.6f), _initCanvasHeight, _initCanvasWidth, new float2(2.0f, 0.5f))
+               )
+            { Children = new ChildList() { textmultiview } };
+
+            multiviewcontainer.AddComponent(btnmultiview);
+            multiviewcontainer.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 0.5f, 0.5f);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
@@ -479,7 +685,14 @@ namespace Fusee.Examples.ABCompare.Core
                 });
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
+            canvas.Children.Add(multipasscontainer);
+            canvas.Children.Add(multiviewcontainer);
 
+            if (_multipass)
+            {
+                canvas.Children.Add(ab1);
+                canvas.Children.Add(ab2);
+            }
             //Create canvas projection component and add resize delegate
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
@@ -498,6 +711,7 @@ namespace Fusee.Examples.ABCompare.Core
         public void BtnLogoEnter(CodeComponent sender)
         {
             _gui.Children.FindNodes(node => node.Name == "fuseeLogo").First().GetComponent<ShaderEffectComponent>().Effect.SetEffectParam("DiffuseColor", new float4(0.8f, 0.8f, 0.8f, 1f));
+      
         }
 
         public void BtnLogoExit(CodeComponent sender)
@@ -508,6 +722,35 @@ namespace Fusee.Examples.ABCompare.Core
         public void BtnLogoDown(CodeComponent sender)
         {
             OpenLink("http://fusee3d.org");
+
         }
+
+
+        public void BtnMultiviewDown(CodeComponent sender)
+        {
+            _viewports = true;
+        }
+
+        public void BtnMultipassDown(CodeComponent sender)
+        {
+            _multipass = true;
+
+            _gui = CreateGui();
+            _sih = new SceneInteractionHandler(_gui);
+            _guiRenderer = new SceneRendererForward(_gui);
+        }
+
+        public void BtnAB1Down(CodeComponent sender)
+        {
+            _abbtn1 = true;
+            _abbtn2 = false;
+        }
+        
+        public void BtnAB2Down(CodeComponent sender)
+        {
+            _abbtn1 = false;
+            _abbtn2 = true;
+        }
+
     }
 }

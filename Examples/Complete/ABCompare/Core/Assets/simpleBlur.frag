@@ -3,7 +3,8 @@ precision highp float;
 #define KERNEL_SIZE_HALF 8
 
 in vec2 vUV;
-uniform sampler2D InputTex;
+uniform sampler2D InputTex1;
+
 layout (location = 0) out vec4 oBlurred;
 
 void main() 
@@ -16,12 +17,14 @@ void main()
 		for (int y = -KERNEL_SIZE_HALF; y < KERNEL_SIZE_HALF; ++y) 
 		{
 			vec2 offset = vec2(float(x), float(y)) * texelSize;
-			result += texture(InputTex, vUV + offset).rgb;
+			result += texture(InputTex1, vUV + offset).rgb;
+			
 		}
 	}
             
 	float kernelSize = float(KERNEL_SIZE_HALF) * 4.0;
 	result = result / (kernelSize * kernelSize);
+	
             
 	oBlurred = vec4(result, 1.0);
 }
