@@ -18,6 +18,11 @@ namespace Fusee.Engine.Core
     /// </summary>
     public static class ShaderCodeBuilder
     {
+        /// <summary>
+        /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
+        /// </summary>
+        public static ShaderEffect Default { get; } = CreateDefaultEffect();
+
         #region Deferred
 
         /// <summary>
@@ -46,7 +51,7 @@ namespace Fusee.Engine.Core
             new[]
             {
                 new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcTex},
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
             });
 
         }
@@ -87,14 +92,14 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = geomPassRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
 
-                new EffectParameterDeclaration { Name = "ScreenParams", Value = screenParams},
-                new EffectParameterDeclaration {Name = "SSAOKernel[0]", Value = ssaoKernel},
-                new EffectParameterDeclaration {Name = "NoiseTex", Value = ssaoNoiseTex},
-                new EffectParameterDeclaration {Name = "FUSEE_P", Value = float4x4.Identity},
+                new EffectParameterDeclaration {Name = UniformNameDeclarations.ScreenParams, Value = screenParams},
+                new EffectParameterDeclaration {Name = UniformNameDeclarations.SSAOKernel, Value = ssaoKernel},
+                new EffectParameterDeclaration {Name = UniformNameDeclarations.NoiseTex, Value = ssaoNoiseTex},
+                new EffectParameterDeclaration {Name = UniformNameDeclarations.Projection, Value = float4x4.Identity},
             });
 
         }
@@ -166,11 +171,11 @@ namespace Fusee.Engine.Core
             {
                 if (lc.Type != LightType.Point)
                 {
-                    effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
-                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMap", Value = (WritableTexture)shadowMap });
+                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity });
+                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowMap, Value = (WritableTexture)shadowMap });
                 }
                 else
-                    effectParams.Add(new EffectParameterDeclaration { Name = "ShadowCubeMap", Value = (WritableCubeMap)shadowMap });
+                    effectParams.Add(new EffectParameterDeclaration { Name = UniformNameDeclarations.ShadowCubeMap, Value = (WritableCubeMap)shadowMap });
             }
 
             return new ShaderEffect(new[]
@@ -207,7 +212,7 @@ namespace Fusee.Engine.Core
         {
             var effectParams = DeferredLightingEffectParams(srcRenderTarget, backgroundColor);
 
-            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = new float4x4[] { } });
+            effectParams.Add(new EffectParameterDeclaration { Name = "LightSpaceMatrices[0]", Value = Array.Empty<float4x4>() });
             effectParams.Add(new EffectParameterDeclaration { Name = "ShadowMaps[0]", Value = shadowMaps });
             effectParams.Add(new EffectParameterDeclaration { Name = "ClipPlanes[0]", Value = clipPlanes });
 
@@ -239,8 +244,8 @@ namespace Fusee.Engine.Core
         {
             var effectParamDecls = new List<EffectParameterDeclaration>
             {
-                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity },
-                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity },
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity },
                 new EffectParameterDeclaration { Name = "LightMatClipPlanes", Value = float2.One },
                 new EffectParameterDeclaration { Name = "LightPos", Value = float3.One },
                 new EffectParameterDeclaration { Name = $"LightSpaceMatrices[0]", Value = lightSpaceMatrices }
@@ -288,10 +293,8 @@ namespace Fusee.Engine.Core
             },
             new[]
             {
-                new EffectParameterDeclaration { Name = "FUSEE_M", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightSpaceMatrix", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "LightType", Value = 0},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.Model, Value = float4x4.Identity},                
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.LightSpaceMatrix, Value = float4x4.Identity},                
             });
         }
 
@@ -299,19 +302,15 @@ namespace Fusee.Engine.Core
         {
             return new List<EffectParameterDeclaration>()
             {
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_POSITION.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_NORMAL.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_ALBEDO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SSAO.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
-                new EffectParameterDeclaration { Name = RenderTargetTextureTypes.G_SPECULAR.ToString(), Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
-                new EffectParameterDeclaration { Name = "FUSEE_MVP", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_MV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_IV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_V", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_ITV", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "FUSEE_P", Value = float4x4.Identity},
-                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},
-                new EffectParameterDeclaration { Name = "light.positionWorldSpace", Value = new float3(0, 0, -1.0f)},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_POSITION], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_POSITION]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_NORMAL], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_NORMAL]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_ALBEDO]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SSAO], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SSAO]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.DeferredRenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR], Value = srcRenderTarget.RenderTextures[(int)RenderTargetTextureTypes.G_SPECULAR]},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.IView, Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.View, Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.ITView, Value = float4x4.Identity},
+                new EffectParameterDeclaration { Name = "light.position", Value = new float3(0, 0, -1.0f)},                
                 new EffectParameterDeclaration { Name = "light.intensities", Value = float4.Zero},
                 new EffectParameterDeclaration { Name = "light.maxDistance", Value = 0.0f},
                 new EffectParameterDeclaration { Name = "light.strength", Value = 0.0f},
@@ -322,9 +321,9 @@ namespace Fusee.Engine.Core
                 new EffectParameterDeclaration { Name = "light.isActive", Value = 1},
                 new EffectParameterDeclaration { Name = "light.isCastingShadows", Value = 0},
                 new EffectParameterDeclaration { Name = "light.bias", Value = 0.0f},
-                new EffectParameterDeclaration { Name = "PassNo", Value = 0},
-                new EffectParameterDeclaration { Name = "BackgroundColor", Value = backgroundColor},
-                new EffectParameterDeclaration { Name = "SsaoOn", Value = 1},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.RenderPassNo, Value = 0},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.BackgroundColor, Value = backgroundColor},
+                new EffectParameterDeclaration { Name = UniformNameDeclarations.SsaoOn, Value = 1},
             };
         }
 
@@ -517,8 +516,10 @@ namespace Fusee.Engine.Core
                     }
                 },
                 effectParameters
-            );
-            ret.EffectProps = effectProps;
+            )
+            {
+                EffectProps = effectProps
+            };
             return ret;
         }
 
@@ -530,7 +531,7 @@ namespace Fusee.Engine.Core
         {
             var vertexShader = new List<string>
             {
-                HeaderShard.Version300Es(),
+                HeaderShard.Version300Es,
                 HeaderShard.DefineBones(effectProps, wc),
                 VertPropertiesShard.FuseeUniforms(effectProps),
                 VertPropertiesShard.InAndOutParams(effectProps),
@@ -546,15 +547,15 @@ namespace Fusee.Engine.Core
         {
             var pixelShader = new List<string>
             {
-                HeaderShard.Version300Es(),
-                HeaderShard.EsPrecisionHighpFloat(),
+                HeaderShard.Version300Es,
+                HeaderShard.EsPrecisionHighpFloat,
 
-                LightingShard.LightStructDeclaration(),
+                LightingShard.LightStructDeclaration,
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeMatrixUniforms(),
                 FragPropertiesShard.MaterialPropsUniforms(effectProps),
-                FragPropertiesShard.FixedNumberLightArray(),
+                FragPropertiesShard.FixedNumberLightArray,
                 FragPropertiesShard.ColorOut(),
                 LightingShard.AssembleLightingMethods(effectProps)
             };
@@ -569,8 +570,8 @@ namespace Fusee.Engine.Core
         {
             var protoPixelShader = new List<string>
             {
-                HeaderShard.Version300Es(),
-                HeaderShard.EsPrecisionHighpFloat(),
+                HeaderShard.Version300Es,
+                HeaderShard.EsPrecisionHighpFloat,
 
                 FragPropertiesShard.InParams(effectProps),
                 FragPropertiesShard.FuseeMatrixUniforms(),
@@ -583,14 +584,15 @@ namespace Fusee.Engine.Core
         private static string CreateDeferredLightingPixelShader(LightComponent lc, bool isCascaded = false, int numberOfCascades = 0, bool debugCascades = false)
         {
             var frag = new StringBuilder();
-            frag.Append(HeaderShard.Version300Es());
+            frag.Append(HeaderShard.Version300Es);
             frag.Append("#extension GL_ARB_explicit_uniform_location : enable\n");
-            frag.Append(HeaderShard.EsPrecisionHighpFloat());
+            frag.Append("#extension GL_ARB_gpu_shader5 : enable\n");
+            frag.Append(HeaderShard.EsPrecisionHighpFloat);
 
             frag.Append(FragPropertiesShard.DeferredTextureUniforms());
             frag.Append(FragPropertiesShard.FuseeMatrixUniforms());
 
-            frag.Append(LightingShard.LightStructDeclaration());
+            frag.Append(LightingShard.LightStructDeclaration);
             frag.Append(FragPropertiesShard.DeferredLightAndShadowUniforms(lc, isCascaded, numberOfCascades));
 
             frag.Append(GLSL.CreateIn(GLSL.Type.Vec2, VaryingNameDeclarations.TextureCoordinates));
@@ -747,59 +749,64 @@ namespace Fusee.Engine.Core
 
             for (int i = 0; i < LightingShard.NumberOfLightsForward; i++)
             {
+                if (!LightingShard.LightPararamStringsAllLights.ContainsKey(i))
+                {
+                    LightingShard.LightPararamStringsAllLights.Add(i, new LightParamStrings(i));
+                }
+
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].position",
+                    Name = LightingShard.LightPararamStringsAllLights[i].PositionViewSpace,
                     Value = new float3(0, 0, -1.0f)
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].intensities",
+                    Name = LightingShard.LightPararamStringsAllLights[i].Intensities,
                     Value = float4.Zero
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].maxDistance",
+                    Name = LightingShard.LightPararamStringsAllLights[i].MaxDistance,
                     Value = 0.0f
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].strength",
+                    Name = LightingShard.LightPararamStringsAllLights[i].Strength,
                     Value = 0.0f
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].outerConeAngle",
+                    Name = LightingShard.LightPararamStringsAllLights[i].OuterAngle,
                     Value = 0.0f
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].innerConeAngle",
+                    Name = LightingShard.LightPararamStringsAllLights[i].InnerAngle,
                     Value = 0.0f
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].direction",
+                    Name = LightingShard.LightPararamStringsAllLights[i].Direction,
                     Value = float3.Zero
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].lightType",
+                    Name = LightingShard.LightPararamStringsAllLights[i].LightType,
                     Value = 1
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].isActive",
+                    Name = LightingShard.LightPararamStringsAllLights[i].IsActive,
                     Value = 1
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].isCastingShadows",
+                    Name = LightingShard.LightPararamStringsAllLights[i].IsCastingShadows,
                     Value = 0
                 });
                 effectParameters.Add(new EffectParameterDeclaration
                 {
-                    Name = "allLights[" + i + "].bias",
+                    Name = LightingShard.LightPararamStringsAllLights[i].Bias,
                     Value = 0f
                 });
             }
@@ -849,7 +856,7 @@ namespace Fusee.Engine.Core
             });
             effectParameters.Add(new EffectParameterDeclaration
             {
-                Name = UniformNameDeclarations.Bones,
+                Name = UniformNameDeclarations.BonesArray,
                 Value = new[] { float4x4.Identity }
             });
 
@@ -868,6 +875,25 @@ namespace Fusee.Engine.Core
 
             return new Texture(new ImageData());
         }
+
+        private static ShaderEffect CreateDefaultEffect()
+        {
+            var defaultMat = new MaterialComponent
+            {
+                Diffuse = new MatChannelContainer
+                {
+                    Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
+                },
+                Specular = new SpecularChannelContainer
+                {
+                    Color = new float4(1, 1, 1, 1),
+                    Intensity = 0.5f,
+                    Shininess = 22
+                }
+            };
+
+            return MakeShaderEffectFromMatComp(defaultMat);
+        }       
 
     }
 }

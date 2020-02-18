@@ -13,23 +13,6 @@ namespace Fusee.Xene
     public static class ContainerExtensions
     {
         /// <summary>
-        /// Calculates the appropriate projection matrix for the given projection method.
-        /// </summary>
-        /// <param name="pc">The projection component.</param>        
-        public static float4x4 Matrix(this ProjectionComponent pc)
-        {
-            switch (pc.ProjectionMethod)
-            {
-                default:
-                case ProjectionMethod.PERSPECTIVE:
-                    var aspect = pc.Width / (float)pc.Height;
-                    return float4x4.CreatePerspectiveFieldOfView(pc.Fov, aspect, pc.ZNear, pc.ZFar);
-                case ProjectionMethod.ORTHOGRAPHIC:
-                    return float4x4.CreateOrthographic(pc.Width, pc.Height, pc.ZNear, pc.ZFar);
-            }
-        }
-
-        /// <summary>
         /// Calculates a transformation matrix from this transform component.
         /// </summary>
         /// <param name="tcThis">This transform component.</param>
@@ -109,30 +92,8 @@ namespace Fusee.Xene
         public static float4x4 GetLocalTransformation(this TransformComponent tc)
         {
             return tc == null ? float4x4.Identity : tc.Matrix();
-        }
+        }       
         
-        /// <summary>
-        /// Returns the projection matrix of the next superordinate SceneNodeContainer that has a ProjectionComponent.
-        /// </summary>
-        public static float4x4 GetParentProjection(this SceneNodeContainer snc)
-        {
-            var res = float4x4.Identity;
-
-            if (snc.Parent == null)
-                return snc.GetComponent<ProjectionComponent>().Matrix();
-
-            var parent = snc.Parent;
-            while (true)
-            {
-                if (parent.Parent == null || res != float4x4.Identity)
-                {
-                    return res;
-                }
-
-                res = parent.GetComponent<ProjectionComponent>().Matrix();
-                parent = parent.Parent;
-            }
-        }
 
         /// <summary>
         /// Removes the components with the specified type and the sub-types in the children of this scene node container.
@@ -435,6 +396,32 @@ namespace Fusee.Xene
         }
 
         /// <summary>
+        /// Use this if the TransformComponent is part of a camera and you want to achieve a first person behavior.
+        /// </summary>
+        /// <param name="tc">This TransformComponent</param>
+        /// <param name="angleHorz">The horizontal rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="angleVert">The vertical rotation angle in rad. Should probably come from Mouse input.</param>
+        /// <param name="inputWSAxis">The value we want to translate the camera when pressing the W or S key.</param>
+        /// <param name="inputADAxis">The value we want to translate the camera when pressing the A or D key.</param>
+        /// <param name="speed">Changes the speed of the camera movement.</param>
+        public static void FpsView(this TransformComponent tc, float angleHorz, float angleVert, float inputWSAxis, float inputADAxis, float speed)
+        {
+            if ((angleHorz >= M.TwoPi && angleHorz > 0f) || angleHorz <= -M.TwoPi)
+                angleHorz %= M.TwoPi;
+            if ((angleVert >= M.TwoPi && angleVert > 0f) || angleVert <= -M.TwoPi)
+                angleVert %= M.TwoPi;
+
+            var camForward = float4x4.CreateRotationYX(new float2(angleVert, angleHorz)) * float3.UnitZ;
+            var camRight = float4x4.CreateRotationYX(new float2 (angleVert, angleHorz)) * float3.UnitX;
+
+            tc.Translation += camForward * inputWSAxis * speed;
+            tc.Translation += camRight * inputADAxis * speed;
+
+            tc.Rotation.y = angleHorz;
+            tc.Rotation.x = angleVert;
+        }
+
+        /// <summary>
         /// Rotates this node.
         /// </summary>
         /// <param name="tc"></param>
@@ -457,23 +444,21 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Rotates this node around a given point.
+        /// Rotates this node around a given point. Uses axis-angle representation to describe the desired rotation.
         /// </summary>
         /// <param name="tc">The node to rotate.</param>
         /// <param name="center">The point we want to rotate around.</param>
-        /// <param name="angles">The x, y and z angles.</param>
-        public static void RotateAround(this TransformComponent tc, float3 center, float3 angles)
+        /// <param name="upVector">The axis we want to rotate around.</param>
+        /// <param name="angle">The angle with which we want to rotate.</param>
+        public static void RotateAround(this TransformComponent tc, float3 center, float3 upVector,  float angle)
         {
-            var pos = tc.Translation;
-            var addRotationMtx = float4x4.CreateRotationYXZ(angles); // get the desired rotation
-            var dir = pos - center; // find current direction relative to center
-            dir = addRotationMtx * dir; // rotate the direction
+            var dir = tc.Translation - center; // find current direction relative to center
+            dir = float4x4.CreateFromAxisAngle(upVector, angle) * dir; // rotate the direction
             tc.Translation = center + dir; // define new position
-            
+
             // rotate object to keep looking at the center:
-            var currentRotationMtx = float4x4.CreateRotationYXZ(tc.Rotation);
-            var euler = float4x4.RotMatToEuler(currentRotationMtx);
-            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitY, euler.y) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitX, euler.x) * float4x4.CreateFromAxisAngle(float4x4.Invert(currentRotationMtx) * float3.UnitZ, euler.z));
+            var addRotationMtx = float4x4.CreateFromAxisAngle(upVector, angle); // get the desired rotation
+            tc.Rotation = float4x4.RotMatToEuler(addRotationMtx * float4x4.CreateFromAxisAngle(float3.UnitY, tc.Rotation.y) * float4x4.CreateFromAxisAngle(float3.UnitX, tc.Rotation.x) * float4x4.CreateFromAxisAngle(float3.UnitZ, tc.Rotation.z));
         }
 
         /// <summary>

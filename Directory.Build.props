@@ -21,6 +21,9 @@
     <PackageIcon>images\icon.png</PackageIcon>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
 
+    <TieredCompilation>false</TieredCompilation>
+    <PublishReadyToRun Condition="'$(Configuration)' == 'Release' ">true</PublishReadyToRun>
+
     <!--
     Suppress warnings
     1701 and 1702 is standard.

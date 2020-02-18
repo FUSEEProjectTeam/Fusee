@@ -110,17 +110,26 @@ namespace Fusee.Engine.Core
 
         #region HierarchyLevel
 
+        /// <summary>
+        /// Method is called when traversal starts to initialize the traversal state.
+        /// </summary>
         protected override void InitState()
         {
             _state.Clear();
             _state.ModelView = float4x4.Identity;
         }
 
+        /// <summary>
+        /// Method is called when going down one hierarchy level while traversing.
+        /// </summary>
         protected override void PushState()
         {
             _state.Push();
         }
 
+        /// <summary>
+        /// Method is called when going up one hierarchy level while traversing.
+        /// </summary>
         protected override void PopState()
         {
             _state.Pop();
@@ -242,6 +251,9 @@ namespace Fusee.Engine.Core
 
         #region HierarchyLevel
 
+        /// <summary>
+        /// Method is called when traversal starts to initialize the traversal state.
+        /// </summary>
         protected override void InitState()
         {
             _boxValid = false;
@@ -249,11 +261,17 @@ namespace Fusee.Engine.Core
             _state.ModelView = float4x4.Identity;
         }
 
+        /// <summary>
+        /// Method is called when going down one hierarchy level while traversing.
+        /// </summary>
         protected override void PushState()
         {
             _state.Push();
         }
 
+        /// <summary>
+        /// Method is called when going up one hierarchy level while traversing.
+        /// </summary>
         protected override void PopState()
         {
             _state.Pop();

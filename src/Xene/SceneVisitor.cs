@@ -524,11 +524,10 @@ namespace Fusee.Xene
 
         private void DoVisitComponent(SceneComponentContainer component)
         {
-            VisitComponentMethod visitComponent;
             var compType = component.GetType();
 
-            if (_visitors.Components.TryGetValue(compType, out visitComponent))
-            {                
+            if (_visitors.Components.TryGetValue(compType, out VisitComponentMethod visitComponent))
+            {
                 // Fast lane: we found a directly matching Visitor. Call it and leave.
                 visitComponent(this, component);
             }

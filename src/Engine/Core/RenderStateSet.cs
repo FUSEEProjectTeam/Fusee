@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Engine.Common;
 using Fusee.Math.Core;
@@ -10,40 +11,168 @@ namespace Fusee.Engine.Core
     /// Instances are used in the effects system to set a couple of states before a render pass is performed.
     /// </summary>
     public class RenderStateSet
-    { 
+    {
+        /// <summary>
+        /// OpenGL defaults for the render states.
+        /// </summary>
         public static RenderStateSet Default
         {
             get
             {
-                return new RenderStateSet()
+                if (_default == null)
                 {
-                    AlphaBlendEnable = false,
-                    BlendFactor = float4.Zero,
-                    BlendOperation = BlendOperation.Add,
-                    BlendOperationAlpha = BlendOperation.Add,
-                    DestinationBlend = Blend.Zero,
-                    DestinationBlendAlpha = Blend.Zero,
-                    SourceBlend = Blend.One,
-                    SourceBlendAlpha = Blend.One,
+                    _default = new RenderStateSet()
+                    {
+                        AlphaBlendEnable = false,
+                        BlendFactor = float4.Zero,
+                        BlendOperation = BlendOperation.Add,
+                        BlendOperationAlpha = BlendOperation.Add,
+                        DestinationBlend = Blend.Zero,
+                        DestinationBlendAlpha = Blend.Zero,
+                        SourceBlend = Blend.One,
+                        SourceBlendAlpha = Blend.One,
 
-                    CullMode = Cull.Counterclockwise,
-                    Clipping = true,
-                    FillMode = FillMode.Solid,
-                    ZEnable = true,
-                    ZFunc = Compare.Less,
-                    ZWriteEnable = true
-                };
+                        CullMode = Cull.Counterclockwise,
+                        Clipping = true,
+                        FillMode = FillMode.Solid,
+                        ZEnable = true,
+                        ZFunc = Compare.Less,
+                        ZWriteEnable = true
+                    };
+                }
+                return _default;
             }
         }
+        private static RenderStateSet _default;
 
-        private readonly Dictionary<RenderState, uint> _states = new Dictionary<RenderState, uint>();
+        /// <summary>
+        /// Enumerate this set of render states for its contents
+        /// </summary>
+        /// <value>An enumerator to be used in loops returning a key and its respective value.</value>
+        /// <example>
+        /// Use this enumerator in loops to query a RenderStateSet's contents.
+        /// <code>
+        /// RenderStateSet aRenderStateSet = ...;
+        /// foreach (var state in aRenderStateSet.States)
+        ///     DoSomethingWithState(state.Key, state.Value);
+        /// </code>
+        /// </example>
+        public IEnumerable<KeyValuePair<RenderState, uint>> States
+        {
+            get { return _states; }
+        }
+        private readonly Dictionary<RenderState, uint> _states;
 
-        public void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
+        /// <summary>
+        /// Returns a new instance of type <see cref="RenderStateSet"/>.
+        /// </summary>
+        public RenderStateSet()
+        {
+            _states = new Dictionary<RenderState, uint>();
+        }
+
+        /// <summary>
+        /// Returns a new instance of type <see cref="RenderStateSet"/>.
+        /// </summary>
+        /// <param name="states">The values to fill this state set with.</param>
+        public RenderStateSet(Dictionary<RenderState, uint> states)
+        {
+            _states = states;
+        }
+
+        /// <summary>
+        /// Returns a new RenderStateSet with the same states as this instance.
+        /// </summary>
+        public RenderStateSet Copy()
+        {
+            return new RenderStateSet(new Dictionary<RenderState, uint>(_states));
+        }
+
+        /// <summary>
+        /// Returns a new RenderStateSet which contains the delta of this instance (A) and a given RenderStateSet (B).
+        /// Rules
+        /// 1. A has state and B has state and A == B: no need to add the state.
+        /// 2. A has state and B has state and A != B: set state to value of A.
+        /// 3. A has state and B does not: set state to value of A.
+        /// 4. B has state and A has not: set state to default value.
+        /// </summary>
+        /// <param name="otherSet"></param>
+        /// <returns></returns>
+        internal RenderStateSet Delta(RenderStateSet otherSet)
+        {
+            var resStates = new Dictionary<RenderState, uint>();
+
+            //Rule 1 and 2
+            var intersectKeys = _states.Keys.Intersect(otherSet._states.Keys);
+            foreach (var stateEnum in intersectKeys)
+            {
+                if (_states[stateEnum] != otherSet._states[stateEnum])
+                    resStates.Add(stateEnum, _states[stateEnum]);
+            }
+
+            //Rule 3
+            var aWithoutBKeys = _states.Keys.Except(otherSet._states.Keys);
+            foreach (var stateEnum in aWithoutBKeys)
+                resStates.Add(stateEnum, _states[stateEnum]);
+
+            //Rule 4
+            var bWithoutAKeys = otherSet._states.Keys.Except(_states.Keys);
+            foreach (var stateEnum in bWithoutAKeys)
+                resStates.Add(stateEnum, (uint)Default.GetRenderState(stateEnum));
+
+            return new RenderStateSet(resStates);
+        }
+
+        /// <summary>
+        /// Sets the RenderStates in the Set.
+        /// </summary>
+        /// <param name="renderStateContainer"></param>
+        internal void SetRenderStates(Dictionary<uint, uint> renderStateContainer)
         {
             foreach (var renderState in renderStateContainer)
             {
                 _states[(RenderState)renderState.Key] = renderState.Value;
             }
+        }
+
+        /// <summary>
+        /// Sets the given <see cref="RenderState"/> on the internal state collection.
+        /// </summary>
+        /// <param name="state">The state.</param>
+        /// <param name="value">The value.</param>
+        internal void SetRenderState(RenderState state, uint value)
+        {
+            if (_states.ContainsKey(state))
+                _states[state] = value;
+            else
+                _states.Add(state, value);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the given <see cref="RenderState"/> from the internal state collection.
+        /// </summary>
+        /// <param name="state">The render state.</param>
+        /// <returns></returns>
+        internal uint? GetRenderState(RenderState state)
+        {
+            if (_states.ContainsKey(state))
+                return _states[state];
+            else
+                return null;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the given <see cref="RenderState"/> from the internal state collection.
+        /// </summary>
+        /// <param name="state">The render state</param>
+        /// <param name="val">The state as uint.</param>
+        /// <returns></returns>
+        internal void GetRenderState(RenderState state, out uint? val)
+        {
+            if (_states.ContainsKey(state))
+                val = _states[state];
+            else
+                val = null;
         }
 
         #region Butter and bread states
@@ -87,7 +216,7 @@ namespace Fusee.Engine.Core
         /// <remarks>
         /// Blending describes the process how the pixel generated by the pixel shader is written into the render target buffer. Typically
         /// it is just copied at its respective pixel position, but several operations are possible to perform a calculation between the 
-        /// pixel vlaue (rgb and a) already in the buffer and the pixel value (rgb and a) created by the pixel shader. The general blending
+        /// pixel value (rgb and a) already in the buffer and the pixel value (rgb and a) created by the pixel shader. The general blending
         /// assignment is  (always independent for rgb and alpha): 
         /// <code>
         ///      OUTrgb = SRCrgb * SourceBlend       {BlendOperation: [+|-|-inv|min|max]}        DSTrgb * DestinationBlend;
@@ -233,71 +362,6 @@ namespace Fusee.Engine.Core
         }
         #endregion
 
-        /* TODO: Implement texture wrapping rahter as a texture property than a "global" render state. This is most
-         * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
-        
-        #region Texture states
-        /////// ==============
-
-        /// <summary>
-        /// Texture-wrapping behavior for multiple sets of texture coordinates.
-        /// Valid values for this render state can be any combination of <see cref="T:Fusee.Engine.TextureWrapping"/>. 
-        /// These cause the system to wrap in the direction of the first, second, third, and fourth dimensions, 
-        /// sometimes referred to as the u/v/w or the s/t/r/q directions for a given texture.
-        /// </summary>
-        public TextureWrapping Wrap0
-        {
-            get { return (TextureWrapping)_states[RenderState.Wrap0]; }
-            set { _states[RenderState.Wrap0] = (uint)value; }
-        }
-            
-        /// <summary>
-        /// See <see cref="Wrap0"/>.
-        /// </summary>
-        public TextureWrapping Wrap1
-        {
-            get { return (TextureWrapping)_states[RenderState.Wrap1]; }
-            set { _states[RenderState.Wrap1] = (uint)value; }
-        }
-
-        /// <summary>
-        /// See <see cref="Wrap0"/>.
-        /// </summary>
-        public TextureWrapping Wrap2
-        {
-            get { return (TextureWrapping)_states[RenderState.Wrap2]; }
-            set { _states[RenderState.Wrap2] = (uint)value; }
-        }
-
-        /// <summary>
-        /// See <see cref="Wrap0"/>.
-        /// </summary>
-        public TextureWrapping Wrap3
-        {
-            get { return (TextureWrapping)_states[RenderState.Wrap3]; }
-            set { _states[RenderState.Wrap3] = (uint)value; }
-        }
-        #endregion
-        */
-
-
-        /// <summary>
-        /// Enumerate this set of render states for its contents
-        /// </summary>
-        /// <value>An enumerator to be used in loops returning a key and its respective value.</value>
-        /// <example>
-        /// Use this enumerator in loops to query a RenderStateSet's contents.
-        /// <code>
-        /// RenderStateSet aRenderStateSet = ...;
-        /// foreach (var state in aRenderStateSet.States)
-        ///     DoSomethingWithState(state.Key, state.Value);
-        /// </code>
-        /// </example>
-        public IEnumerable<KeyValuePair<RenderState, uint>> States
-        {
-            get { return _states; }
-        }
-
         // Currently not supported by FUSEE:
         //==================================
         // StencilEnable;
@@ -358,8 +422,6 @@ namespace Fusee.Engine.Core
         // SrgbWriteEnable;
         // DepthBias;
 
-
-
         // Obsolete with Shaders: 
         //=======================
         // ShadeMode ShadeMode;
@@ -393,7 +455,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// Enables or disables the separate for the alpha channel.
         /// When set to false, the render target blending factors and operations applied to alpha are forced to be the same as those defined for color. 
-        /// A number of graphics hardware and implementations do not support handling seprate alpha. In this case, this render state behaves as if set to false.
+        /// A number of graphics hardware and implementations do not support handling separate alpha. In this case, this render state behaves as if set to false.
         /// The type of separate alpha blending is controlled by <see cref="SourceBlendAlpha"/> and <see cref="DestinationBlendAlpha"/>.
         /// </summary>
         public bool SeparateAlphaBlendEnable
@@ -402,8 +464,5 @@ namespace Fusee.Engine.Core
             set { _states[RenderState.SeparateAlphaBlendEnable] = value ? 1U : 0U; }
         }
         */
-
-
-
     }
 }

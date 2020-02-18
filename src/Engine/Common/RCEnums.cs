@@ -145,27 +145,6 @@ namespace Fusee.Engine.Common
 #pragma warning restore 1591
     }
 
-    /* TODO: Implement texture wrapping rather as a texture property than a "global" render state. This is most
-     * convenient to implment with OpenGL/TK and easier to mimic in DirectX than the other way round.
-    /// <summary>
-    /// Bitwise combinations of these values specify if texure wrapping along the given texture coordinate axes is performed. 
-    /// With two- or three-dimensional textures Coordinate0, Coordinate1, and Coordinate2 are typically called U, V, and W, respectively.
-    /// With four dimensional textures the coordinate axes are commonly called s, t, r, q.
-    /// </summary>
-    [Flags]
-    public enum TextureWrapping
-    {
-        WrapCoordinate0 = 1,
-        WrapU = 1,
-        WrapCoordinate1 = 2,
-        WrapV = 2,
-        WrapCoordinate2 = 4,
-        WrapW = 4,
-        WrapCoordinate3 = 8,
-        None = 0,
-    }
-    */
-
     /// <summary>
     /// Specifies the comparison tests to perform in Z-Buffer and in Stencil tests
     /// </summary>

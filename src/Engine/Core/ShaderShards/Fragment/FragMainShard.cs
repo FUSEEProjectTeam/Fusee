@@ -65,7 +65,7 @@ namespace Fusee.Engine.Core.ShaderShards.Fragment
                         break;
                     case (int)RenderTargetTextureTypes.G_ALBEDO:
                         if (effectProps.MatProbs.HasDiffuseTexture)
-                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColor}.xyz, texture(DiffuseTexture, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
+                            fragMainBody.Add($"{texName} = vec4(mix({UniformNameDeclarations.DiffuseColor}.xyz, texture({UniformNameDeclarations.DiffuseTexture}, {VaryingNameDeclarations.TextureCoordinates}).xyz, {UniformNameDeclarations.DiffuseMix}), 1.0);");
                         else
                             fragMainBody.Add($"{texName} = vec4({UniformNameDeclarations.DiffuseColor}.xyz, 1.0);");
                         break;

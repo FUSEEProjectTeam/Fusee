@@ -164,7 +164,10 @@ namespace Fusee.Engine.Imp.WebAsm
         /// </value>
         public bool TrianglesSet { get { return ElementBufferObject != null; } }
 
-        OpenGLPrimitiveType IMeshImp.MeshType { get; set; }
+        /// <summary>
+        /// Type of data of this mesh (e.g. Triangles, Points, Lines, etc.)
+        /// </summary>
+        public OpenGLPrimitiveType MeshType { get; set; }
 
 
         #endregion

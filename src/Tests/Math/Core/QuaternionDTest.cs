@@ -1,6 +1,7 @@
 ﻿using Fusee.Math.Core;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Xunit;
 
 namespace Fusee.Test.Math.Core
@@ -344,6 +345,22 @@ namespace Fusee.Test.Math.Core
 
         #endregion
 
+        #region Conversion
+
+        [Theory]
+        [MemberData(nameof(GetEuler))]
+        public void EulerToQuaternion_MainRotations(double3 euler, QuaternionD expected)
+        {
+            var actual = QuaternionD.EulerToQuaternion(euler, true);
+
+            Assert.Equal(expected.x, actual.x, 14);
+            Assert.Equal(expected.y, actual.y, 14);
+            Assert.Equal(expected.z, actual.z, 14);
+            Assert.Equal(expected.w, actual.w, 14);
+        }
+
+        #endregion
+
         #region Transform
 
         [Theory]
@@ -447,13 +464,27 @@ namespace Fusee.Test.Math.Core
         #region Overrides
 
         [Fact]
-        public void ToString_isString()
+        public void ToString_NoCulture()
         {
-            var quat = new QuaternionD(1, 2, 3, 4);
+            Assert.NotNull(new QuaternionD().ToString());
+        }
 
-            var actual = quat.ToString();
+        [Fact]
+        public void ToString_InvariantCulture()
+        {
+            string s = "V: (0.16751879124639693, 0.5709414713577319, 0.5709414713577319) w: 0.5656758145325667";
+            QuaternionD q = QuaternionD.EulerToQuaternion(double3.One);
 
-            Assert.Equal("V: (1, 2, 3), w: 4", actual);
+            Assert.Equal(s, q.ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Fact]
+        public void ToString_CultureDE()
+        {
+            string s = "V: (0,16751879124639693; 0,5709414713577319; 0,5709414713577319) w: 0,5656758145325667";
+            QuaternionD q = QuaternionD.EulerToQuaternion(double3.One);
+
+            Assert.Equal(s, q.ToString(new CultureInfo("de-DE")));
         }
 
         //TODO: Equals(obj)
@@ -569,6 +600,25 @@ namespace Fusee.Test.Math.Core
                 {z, new QuaternionD(0, (double) System.Math.Sqrt(0.5f), 0, (double) System.Math.Sqrt(0.5f)), x};
             yield return new object[]
                 {x, new QuaternionD(0, 0, (double) System.Math.Sqrt(0.5f), (double) System.Math.Sqrt(0.5f)), y};
+        }
+
+        public static IEnumerable<object[]> GetEuler()
+        {
+            yield return new object[]
+            {
+                new double3(90, 0, 0),
+                new QuaternionD(System.Math.Sqrt(0.5f), 0, 0, System.Math.Sqrt(0.5f))
+            };
+            yield return new object[]
+            {
+                new double3(0, 90, 0),
+                new QuaternionD(0, System.Math.Sqrt(0.5f), 0, System.Math.Sqrt(0.5f))
+            };
+            yield return new object[]
+            {
+                new double3(0, 0, 90),
+                new QuaternionD(0, 0, System.Math.Sqrt(0.5f), System.Math.Sqrt(0.5f))
+            };
         }
 
         #endregion

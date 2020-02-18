@@ -4,6 +4,7 @@
     <PackageId>Fusee.Base.Imp.WebAsm</PackageId>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <DefineConstants>$(DefineConstants);PLATFORM_WEBASM</DefineConstants>
   </PropertyGroup>
 
   <PropertyGroup>
