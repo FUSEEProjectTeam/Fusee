@@ -32,11 +32,11 @@ namespace Fusee.Examples.Camera.Core
 
         private TransformComponent _mainCamTransform;
         private TransformComponent _guiCamTransform;
-        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
+        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 20, M.PiOver4);
         private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
         private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
-
+        private TransformComponent _cubeOneTransform;
 
         // Init is called on startup. 
         public override async Task<bool> Init()
@@ -44,23 +44,23 @@ namespace Fusee.Examples.Camera.Core
             VSync = false;
 
             _mainCam.Viewport = new float4(0, 0, 100, 100);
-            _mainCam.BackgroundColor = new float4(1, 1, 1, 1);
+            _sndCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
             _mainCam.Layer = -1;
+            _mainCam.FrustumCullingOn = true;
 
             _sndCam.Viewport = new float4(60, 60, 40, 40);
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
+            _sndCam.FrustumCullingOn = false;
 
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
-
-            // Set the clear color for the backbuffer to white (100% intensity in all color channels R, G, B, A).
-            // RC.ClearColor = new float4(1, 1, 1, 1);
+            _guiCam.FrustumCullingOn = false;
 
             _mainCamTransform = _guiCamTransform = new TransformComponent()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 2, -10),
+                Translation = new float3(0, 1, -10),
                 Scale = new float3(0.33f, 0.33f, 0.5f)
             };
 
@@ -75,7 +75,7 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    new Cube()
+                    //new Cube()
                 },
                 Children = new ChildList()
                 {
@@ -88,7 +88,7 @@ namespace Fusee.Examples.Camera.Core
                                 Scale = new float3(3.03f, 3.03f, 2f),
                                 Translation = new float3(0,0,-1.4f)
                             },
-                            new Cube()
+                            //new Cube()
                         }
                     }
                 }
@@ -102,7 +102,7 @@ namespace Fusee.Examples.Camera.Core
                     new TransformComponent()
                     {
                         Rotation = new float3(0, 0, 0),//float3.Zero,
-                        Translation = new float3(0, 2, -20),
+                        Translation = new float3(0, 0, -30),
                         Scale = float3.One
                     },
                     _sndCam,
@@ -110,7 +110,10 @@ namespace Fusee.Examples.Camera.Core
             };
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("cubes.fus");
+
+            _cubeOneTransform = _rocketScene.Children[0].GetComponent<TransformComponent>();
+            _cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
 
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
@@ -129,7 +132,16 @@ namespace Fusee.Examples.Camera.Core
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            _mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
+            //_mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
+
+            if (Keyboard.GetKey(KeyCodes.A))
+                _cubeOneTransform.Translation.x -= 2* DeltaTime;
+            if (Keyboard.GetKey(KeyCodes.D))
+                _cubeOneTransform.Translation.x += 2* DeltaTime;
+            if (Keyboard.GetKey(KeyCodes.W))
+                _cubeOneTransform.Translation.z += 2 * DeltaTime;
+            if (Keyboard.GetKey(KeyCodes.S))
+                _cubeOneTransform.Translation.z -= 2 * DeltaTime;
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);

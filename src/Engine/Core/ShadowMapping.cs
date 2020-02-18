@@ -18,10 +18,10 @@ namespace Fusee.Engine.Core
     /// <summary>
     /// Saves a axis aligned bounding box in light space and the clipping planes of the associated sub-frustum.
     /// </summary>
-    internal struct Cascade 
+    internal struct Cascade
     {
         public AABBf Aabb;
-        public float2 ClippingPlanes;        
+        public float2 ClippingPlanes;
     }
 
     /// <summary>
@@ -54,7 +54,7 @@ namespace Fusee.Engine.Core
                 yield return new Cascade { Aabb = aabb, ClippingPlanes = tuple.Item2 };
             }
         }
-        
+
         /// <summary>
         /// Returns the clipping planes for each sub-frustum.
         /// </summary>
@@ -176,7 +176,7 @@ namespace Fusee.Engine.Core
         private static IEnumerable<Tuple<float4x4, float2>> CascadesProjectionMatrices(int numberOfCascades, float lambda, float zNear, float zFar, int width, int height, float fov)
         {
             var clipPlanes = GetClippingPlanesOfSplitFrustums(zNear, zFar, numberOfCascades, lambda).ToList();
-            
+
             for (int i = 0; i < clipPlanes.Count - 1; i++)
             {
                 var cascadeNear = clipPlanes[i];
@@ -185,13 +185,13 @@ namespace Fusee.Engine.Core
                 //Subtract buffer value from cascades near plane to avoid artifacts from blending cascades.
                 if (i > 0)
                 {
-                    float bufferPercent = 100 - System.Math.Max(85.0f - (5.0f * (i-1)), 50.0f); //The same function (max) must be used in the shader while blending the cascades.
+                    float bufferPercent = 100 - System.Math.Max(85.0f - (5.0f * (i - 1)), 50.0f); //The same function (max) must be used in the shader while blending the cascades.
                     var zPrecedingCascade = clipPlanes[i] - clipPlanes[i - 1];
                     var bufferLength = zPrecedingCascade / 100 * bufferPercent;
                     cascadeNear -= bufferLength;
                 }
 
-                var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);                
+                var thisCascadesClipPlanes = new float2(cascadeNear, cascadeFar);
                 var aspect = (float)width / height;
                 yield return new Tuple<float4x4, float2>(float4x4.CreatePerspectiveFieldOfView(fov * 2, aspect, cascadeNear, cascadeFar), thisCascadesClipPlanes);
             }
@@ -213,8 +213,8 @@ namespace Fusee.Engine.Core
             var allSplitProjectionMatrices = CascadesProjectionMatrices(numberOfCascades, lambda, zNear, zFar, width, height, fov);
 
             foreach (Tuple<float4x4, float2> tuple in allSplitProjectionMatrices)
-                yield return new Tuple<float4[], float2>(GetWorldSpaceFrustumCorners(tuple.Item1, view),tuple.Item2);
-        }       
+                yield return new Tuple<float4[], float2>(GetWorldSpaceFrustumCorners(tuple.Item1, view), tuple.Item2);
+        }
 
         #endregion
 

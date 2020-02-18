@@ -32,8 +32,8 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a tranformation on the bounding box. After the tranformation another
-        ///     axis alignes bounding box results. This is done by transforming all eight
+        ///     Applies a transformation on the bounding box. After the transformation another
+        ///     axis aligned bounding box results. This is done by transforming all eight
         ///     vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="m">The transformation matrix</param>
@@ -113,7 +113,7 @@ namespace Fusee.Math.Core
         ///     Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box, to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBf operator |(AABBf a, AABBf b) => Union(a, b);
 
@@ -159,7 +159,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if point lies in this AABB
+        /// Check if point lies in this AABB
         /// </summary>
         /// <param name="point"></param>
         /// <returns></returns>
@@ -171,85 +171,32 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Checks if a viewing frustrum lies within this AABB.
-        ///     If feeded with a projection matrix, the result of the clipping planes is in view space
-        ///     If feeded with a projection view matrix, the clipping planes are given in model space
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="viewingFrustrum">Projection matrix</param>
-        /// <returns>false if fully outside, true if inside or intersects</returns>
-        public bool Intersects(float4x4 viewingFrustrum)
+        /// <param name="frustumPlanes">The frustum planes to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingFrustum(Plane[] frustumPlanes)
         {
-            // shorter variable
-            var vF = viewingFrustrum;
-
-            // split the viewing frustrum in 6 planes
-            // plane equation = ax + by + cz + d = 0;
-            // For the GL-style frustum we find, that the six frustum planes in view space are exactly the six planes p_4^T±p_i^T for i=1, 2, 3
-            var planes = new float4[6];
-            // left
-            planes[0] = new float4(vF.M41 + vF.M11,
-                                    vF.M42 + vF.M12,
-                                    vF.M43 + vF.M13,
-                                    vF.M44 + vF.M14);
-            // right
-            planes[1] = new float4(vF.M41 - vF.M11,
-                                    vF.M42 - vF.M12,
-                                    vF.M43 - vF.M13,
-                                    vF.M44 - vF.M14);
-
-            // bottom
-            planes[2] = new float4(vF.M41 + vF.M21,
-                                    vF.M42 + vF.M22,
-                                    vF.M43 + vF.M23,
-                                    vF.M44 + vF.M24);
-
-            // top
-            planes[3] = new float4(vF.M41 - vF.M21,
-                                    vF.M42 - vF.M22,
-                                    vF.M43 - vF.M23,
-                                    vF.M44 - vF.M24);
-
-            // near
-            planes[4] = new float4(vF.M41 + vF.M31,
-                                     vF.M42 + vF.M32,
-                                     vF.M43 + vF.M33,
-                                     vF.M44 + vF.M34);
-
-            // far
-            planes[5] = new float4(vF.M41 - vF.M31,
-                                    vF.M42 - vF.M32,
-                                    vF.M43 - vF.M33,
-                                    vF.M44 - vF.M34);
-
-            foreach (var plane in planes)
+            foreach (var plane in frustumPlanes)
             {
-                var side = Classify(this, plane);
-                if (side < 0) return false;
+                if (!plane.InsideOrIntersectingAABB(this))
+                    return false;
             }
             return true;
         }
 
-        private float Classify(AABBf aabb, float4 plane)
+        /// <summary>
+        /// Checks if a viewing frustum lies within or intersects this AABB.      
+        /// </summary>
+        /// <param name="plane">The plane to test against.</param>
+        /// <returns>false if fully outside, true if inside or intersecting.</returns>
+        public bool InsideOrIntersectingPlane(Plane plane)
         {
-            // maximum extent in direction of plane normal (plane.xyz)
-            var r = System.Math.Abs(aabb.Size.x * plane.x)
-                + System.Math.Abs(aabb.Size.y * plane.y)
-                + System.Math.Abs(aabb.Size.z * plane.z);
-
-            // signed distance between box center and plane
-            //float d = plane.Test(mCenter);
-            var d = float3.Dot(plane.xyz, aabb.Center) + plane.w;
-
-            // return signed distance
-            if (System.Math.Abs(d) < r)
-                return 0.0f;
-            else if (d < 0.0f)
-                return d + r;
-            return d - r;
+            return plane.InsideOrIntersectingAABB(this);
         }
 
         /// <summary>
-        ///     Check if two AABBs intersect each other
+        ///  Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>

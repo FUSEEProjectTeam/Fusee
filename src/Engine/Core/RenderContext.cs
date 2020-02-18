@@ -53,6 +53,16 @@ namespace Fusee.Engine.Core
         public RenderContextDefaultState DefaultState { get; private set; }
 
         /// <summary>
+        /// The world space frustum planes, derived from the current view-projection matrix.
+        /// </summary>
+        public IReadOnlyCollection<Math.Core.Plane> FrustumPlanes { get; private set; }
+
+        /// <summary>
+        /// Enables or disables Frustum Culling.
+        /// </summary>
+        public bool DoFrumstumCulling;
+
+        /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
         internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
@@ -223,6 +233,8 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TView, TransView);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
+
+                FrustumPlanes = GetFrustumPlanes(_projection * View);
             }
         }
 
@@ -307,6 +319,8 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.IProjection, InvProjection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
+
+                FrustumPlanes = GetFrustumPlanes(_projection * View);
             }
         }
 
@@ -772,6 +786,7 @@ namespace Fusee.Engine.Core
             View = DefaultState.View;
             Model = float4x4.Identity;
             Projection = DefaultState.Projection;
+            DoFrumstumCulling = DefaultState.DoFrustumCulling;
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -1205,6 +1220,76 @@ namespace Fusee.Engine.Core
         #region Render related methods
 
         /// <summary>
+        /// Checks if a viewing frustum lies within this AABB.
+        /// If feeded with a projection matrix, the frustum plane are in View Space.
+        /// If feeded with a view projection matrix, the frustum plane are in World Space.
+        /// If feeded with a model view projection matrix, the frustum plane are in Model Space.
+        /// See: http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
+        /// </summary>
+        /// <param name="mat">The matrix from which to extract the planes.</param>
+        /// <returns>false if fully outside, true if inside or intersects</returns>
+        internal Math.Core.Plane[] GetFrustumPlanes(float4x4 mat)
+        {
+            // split the viewing frustum in 6 planes
+            // plane equation = ax + by + cz + d = 0 or ax + by + cz = d
+            var planes = new Math.Core.Plane[6];
+            // left
+            planes[0] = new Math.Core.Plane()
+            {
+                A = mat.M41 + mat.M11,
+                B = mat.M42 + mat.M12,
+                C = mat.M43 + mat.M13,
+                D = mat.M44 + mat.M14
+            };
+            // right
+            planes[1] = new Math.Core.Plane()
+            {
+                A = mat.M41 - mat.M11,
+                B = mat.M42 - mat.M12,
+                C = mat.M43 - mat.M13,
+                D = mat.M44 - mat.M14
+            };
+
+            // bottom
+            planes[2] = new Math.Core.Plane()
+            {
+                A = mat.M41 + mat.M21,
+                B = mat.M42 + mat.M22,
+                C = mat.M43 + mat.M23,
+                D = mat.M44 + mat.M24
+            };
+
+            // top
+            planes[3] = new Math.Core.Plane()
+            {
+                A = mat.M41 - mat.M21,
+                B = mat.M42 - mat.M22,
+                C = mat.M43 - mat.M23,
+                D = mat.M44 - mat.M24
+            };
+
+            // near
+            planes[4] = new Math.Core.Plane()
+            {
+                A = mat.M41 + mat.M31,
+                B = mat.M42 + mat.M32,
+                C = mat.M43 + mat.M33,
+                D = mat.M44 + mat.M34
+            };
+
+            // far
+            planes[5] = new Math.Core.Plane()
+            {
+                A = mat.M41 - mat.M31,
+                B = mat.M42 - mat.M32,
+                C = mat.M43 - mat.M33,
+                D = mat.M44 - mat.M34
+            };
+
+            return planes;
+        }
+
+        /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 
         /// This is done with glEnable(GL_DEPTH_CLAMP). This will cause the clip-space Z to remain unclipped by the front and rear viewing volume.
         /// See: https://www.khronos.org/opengl/wiki/Vertex_Post-Processing#Depth_clamping
@@ -1470,6 +1555,7 @@ namespace Fusee.Engine.Core
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
             Projection = DefaultState.Projection;
+            DoFrumstumCulling = DefaultState.DoFrustumCulling;
         }
     }
 }

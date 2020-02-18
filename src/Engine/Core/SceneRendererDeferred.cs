@@ -343,6 +343,7 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        _rc.DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam, renderTex);
                         //Reset Viewport in case we have another scene, rendered without a camera 
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);

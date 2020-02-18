@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using Fusee.Base.Core;
 using Fusee.Math.Core;
@@ -288,21 +287,25 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
+                        _rc.DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam);
-                        //Reset Viewport in case we have another scene, rendered without a camera 
+                        //Reset Viewport in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
                     }
                 }
             }
             else
-            {
+            {                
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
         }
 
+        
+
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
         {
+            
             var tex = cam.Item2.Camera.RenderTexture;
 
             if (tex != null)
@@ -582,6 +585,13 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
+           
+            if (_rc.DoFrumstumCulling)
+            {
+                var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))
+                    return;
+            }
 
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)
