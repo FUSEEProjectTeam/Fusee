@@ -289,23 +289,24 @@ namespace Fusee.Engine.Core
                     {
                         _rc.DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam);
-                        //Reset Viewport in case we have another scene, rendered without a camera
+                        //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
+                        _rc.DoFrumstumCulling = rc.DefaultState.DoFrustumCulling;
                     }
                 }
             }
             else
-            {                
+            {
                 UpdateShaderParamsForAllLights();
                 Traverse(_sc.Children);
             }
         }
 
-        
+
 
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
         {
-            
+
             var tex = cam.Item2.Camera.RenderTexture;
 
             if (tex != null)
@@ -585,7 +586,7 @@ namespace Fusee.Engine.Core
         public void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
-           
+
             if (_rc.DoFrumstumCulling)
             {
                 var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
@@ -724,17 +725,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);            
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
             _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
             _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
             _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
             _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
             _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);            
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);
             _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
             _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
             _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
-        }       
+        }
     }
 }

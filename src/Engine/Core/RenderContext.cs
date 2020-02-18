@@ -772,7 +772,7 @@ namespace Fusee.Engine.Core
                 _bones = value;
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.BonesArray, _bones);
             }
-        }        
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext"/> class.

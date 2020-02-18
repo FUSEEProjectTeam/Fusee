@@ -11,6 +11,10 @@ namespace Fusee.Engine.Core
         // For omni directional shadow mapping there will be six LightSpaceMatrices
         // to allow the creation of the cube map in one pass.
         public float4x4[] LightSpaceMatrices;
+
+        //The world space frustum planes of the light frustum.
+        public List<Math.Core.Plane[]> FrustumPlanes;
+
         public IWritableTexture[] ShadowMaps;
         public float2[] ClipPlanesForLightMat;
     }

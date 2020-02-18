@@ -8,17 +8,17 @@
         /// <summary>
         /// The A plane coefficient.
         /// </summary>
-        public float A 
-        { 
-            get 
-            { 
+        public float A
+        {
+            get
+            {
                 return _a;
-            } 
-            set 
-            { 
-                _a = value; 
-                _normal = new float3(A, B, C); 
-            } 
+            }
+            set
+            {
+                _a = value;
+                _normal = new float3(A, B, C);
+            }
         }
         private float _a;
 
@@ -124,7 +124,7 @@
         /// <param name="aabb">The axis aligned bounding box.</param> 
         public bool Intersects(AABBf aabb)
         {
-            var r = BoxExtendInNormalDirection(aabb);        
+            var r = BoxExtendInNormalDirection(aabb);
             var s = SignedDistanceBoxCenter(aabb);
 
             return System.Math.Abs(s) <= r;
@@ -149,7 +149,7 @@
         /// </summary>
         /// <param name="aabb">The axis aligned bounding box.</param> 
         public bool InsideOrIntersectingAABB(AABBf aabb)
-        {           
+        {
             var r = BoxExtendInNormalDirection(aabb);
             //Distance from aabb center to plane
             var s = DistancePointToPlane(aabb.Center);
@@ -174,7 +174,7 @@
         }
 
         /// <summary>
-        /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
+        /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
         /// <param name="aabb">The axis aligned bounding box.</param> 
         private float BoxExtendInNormalDirection(OBBf obb)
         {
@@ -186,7 +186,6 @@
 
             var boxExtend = obb.Size * 0.5f;
 
-            //Projection interval radius of obb onto line L(t) = obb.Center + t * plane.Normal
             return boxExtend.x * System.Math.Abs(float3.Dot(Normal, xAxis)) +
                     boxExtend.y * System.Math.Abs(float3.Dot(Normal, yAxis)) +
                     boxExtend.z * System.Math.Abs(float3.Dot(Normal, zAxis));
@@ -206,6 +205,6 @@
         private float SignedDistanceBoxCenter(OBBf obb)
         {
             return float3.Dot(obb.Center, Normal) + D;
-        }        
+        }
     }
 }
