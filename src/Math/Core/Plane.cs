@@ -74,7 +74,7 @@
         private float _d;
 
         /// <summary>
-        /// The plane's normal vector;
+        /// The plane's normal vector. May NOT be of unit length if the plane isn't normalized.
         /// </summary>
         public float3 Normal
         {
@@ -170,7 +170,7 @@
         private float BoxExtendInNormalDirection(AABBf aabb)
         {
             var boxExtend = aabb.Size * 0.5f;
-            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) * boxExtend.z * System.Math.Abs(Normal.z);
+            return boxExtend.x * System.Math.Abs(Normal.x) + boxExtend.y * System.Math.Abs(Normal.y) + boxExtend.z * System.Math.Abs(Normal.z);
         }
 
         /// <summary>

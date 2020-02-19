@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
@@ -32,11 +32,13 @@ namespace Fusee.Examples.Camera.Core
 
         private TransformComponent _mainCamTransform;
         private TransformComponent _guiCamTransform;
-        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 20, M.PiOver4);
+        private TransformComponent _sndCamTransform;
+        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 5, 250, M.PiOver4);
         private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
         private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
         private TransformComponent _cubeOneTransform;
+        private WireframeCube _frustum;
 
         // Init is called on startup. 
         public override async Task<bool> Init()
@@ -60,13 +62,24 @@ namespace Fusee.Examples.Camera.Core
             _mainCamTransform = _guiCamTransform = new TransformComponent()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 1, -10),
-                Scale = new float3(0.33f, 0.33f, 0.5f)
+                Translation = new float3(0, 1, -20),
+                Scale = new float3(1, 1, 1)
             };
 
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
+
+            _frustum = new WireframeCube();
+            var frustumNode = new SceneNodeContainer()
+            {
+                Name = "Frustum",
+                Components = new List<SceneComponentContainer>()
+                {
+                    new ShaderEffectComponent(){Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 0) },
+                    _frustum
+                }
+            };
 
             var cam = new SceneNodeContainer()
             {
@@ -75,7 +88,9 @@ namespace Fusee.Examples.Camera.Core
                 {
                     _mainCamTransform,
                     _mainCam,
-                    //new Cube()
+                    new ShaderEffectComponent(){Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10) },
+                    new Cube(),
+                    
                 },
                 Children = new ChildList()
                 {
@@ -85,13 +100,20 @@ namespace Fusee.Examples.Camera.Core
                         {
                             new TransformComponent()
                             {
-                                Scale = new float3(3.03f, 3.03f, 2f),
-                                Translation = new float3(0,0,-1.4f)
+                                Scale = new float3(0.5f, 0.5f, 1f),
+                                Translation = new float3(0,0, 1f)
                             },
-                            //new Cube()
+                            new Cube()
                         }
                     }
                 }
+            };
+
+            _sndCamTransform = new TransformComponent()
+            {
+                Rotation = new float3(M.PiOver6, 0, 0),//float3.Zero,
+                Translation = new float3(10, 40, -60),
+                Scale = float3.One
             };
 
             var cam1 = new SceneNodeContainer()
@@ -99,25 +121,22 @@ namespace Fusee.Examples.Camera.Core
                 Name = "SecondCam",
                 Components = new List<SceneComponentContainer>()
                 {
-                    new TransformComponent()
-                    {
-                        Rotation = new float3(0, 0, 0),//float3.Zero,
-                        Translation = new float3(0, 0, -30),
-                        Scale = float3.One
-                    },
+                    _sndCamTransform,
                     _sndCam,
                 }
-            };
+            };           
+            
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("cubes.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
 
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<TransformComponent>();
-            _cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
-
+            //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
+                        
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
-
+            _rocketScene.Children.Add(frustumNode);
+           
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -129,19 +148,82 @@ namespace Fusee.Examples.Camera.Core
         }
 
 
+        private static float3[] GetWorldSpaceFrustumCorners(float4x4 projectionMatrix, float4x4 viewMatrix)
+        {
+            //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
+            //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
+            //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
+            var invViewProjection = float4x4.Invert(projectionMatrix * viewMatrix);
+
+            var res = new float3[8];
+            var frustumCorners = new float4[8];
+
+            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
+            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
+            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
+            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
+            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
+            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
+            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
+            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
+
+            for (int i = 0; i < frustumCorners.Length; i++)
+            {
+                var corner = frustumCorners[i];
+                corner /= corner.w; //world space frustum corners               
+                frustumCorners[i] = corner;
+                res[i] = frustumCorners[i].xyz;
+            }
+
+            return res;
+        }
+
+        private float anlgeHorz;
+        private float angleVert; 
+
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             //_mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
+            if (!Mouse.LeftButton)
+            {
+                if (Keyboard.GetKey(KeyCodes.Left) || Keyboard.GetKey(KeyCodes.A))
+                {
+                    _mainCamTransform.Translation.x -= 2 * DeltaTime;
+                }
+                else if (Keyboard.GetKey(KeyCodes.Right) || Keyboard.GetKey(KeyCodes.D))
+                {
+                    _mainCamTransform.Translation.x += 2 * DeltaTime;
+                }
 
-            if (Keyboard.GetKey(KeyCodes.A))
-                _cubeOneTransform.Translation.x -= 2* DeltaTime;
-            if (Keyboard.GetKey(KeyCodes.D))
-                _cubeOneTransform.Translation.x += 2* DeltaTime;
-            if (Keyboard.GetKey(KeyCodes.W))
-                _cubeOneTransform.Translation.z += 2 * DeltaTime;
-            if (Keyboard.GetKey(KeyCodes.S))
-                _cubeOneTransform.Translation.z -= 2 * DeltaTime;
+                if (Mouse.RightButton)
+                {
+                    _mainCamTransform.Rotation.y += Mouse.XVel * 0.005f * DeltaTime;
+                }
+            }
+
+            if (Mouse.LeftButton)
+            {
+                var valHorz = Mouse.XVel * 0.000005f;
+                var valVert = Mouse.YVel * 0.000005f;
+
+                anlgeHorz -= valHorz;
+                angleVert -= valVert;
+                _sndCamTransform.FpsView(anlgeHorz, angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+            }
+
+            
+
+            _frustum.Vertices = GetWorldSpaceFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport), float4x4.Invert(_mainCamTransform.Matrix()));            
+
+            //if (Keyboard.GetKey(KeyCodes.A))
+            //    _cubeOneTransform.Translation.x -= 2 * DeltaTime;
+            //if (Keyboard.GetKey(KeyCodes.D))
+            //    _cubeOneTransform.Translation.x += 2 * DeltaTime;
+            //if (Keyboard.GetKey(KeyCodes.W))
+            //    _cubeOneTransform.Translation.z += 2 * DeltaTime;
+            //if (Keyboard.GetKey(KeyCodes.S))
+            //    _cubeOneTransform.Translation.z -= 2 * DeltaTime;
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);

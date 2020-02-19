@@ -585,14 +585,38 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderMesh(Mesh mesh)
         {
+            //TODO: Cleanup if frustum culling is complete
+            //--------- DEBUG ONLY -------------------
+            var name = CurrentNode.Name;
+            if (name != null)
+            {
+                if (!name.Contains("Cam") && !name.Contains("Frustum"))
+                {
+                    if (_rc.DoFrumstumCulling)
+                    {
+                        var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                        if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))
+                        {
+                            mesh.Active = false;
+                            return;
+                        }
+                        else
+                            mesh.Active = true;
+                    }
+                }
+            }
+            //------------------------------------
+
             if (!mesh.Active) return;
 
-            if (_rc.DoFrumstumCulling)
-            {
-                var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-                if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))
-                    return;
-            }
+            //--------- GENERALIZED -------------------
+            //if (_rc.DoFrumstumCulling)
+            //{
+            //  var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+            //  if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))            
+            //      return;
+            //}
+            //----------------------------------------
 
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)
