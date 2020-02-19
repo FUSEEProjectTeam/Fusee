@@ -111,9 +111,8 @@
         /// 3.If the distance is positive the point lies in the positive half-space.
         /// </summary>
         /// <param name="pt">An arbitrary point.</param>
-        public float DistancePointToPlane(float3 pt)
+        public float SignedDistanceFromPoint(float3 pt)
         {
-            //Is equal to float3.Dot(Normal, pt) + w if the plane is normalized.
             return A * pt.x + B * pt.y + C * pt.z + D;
         }
 
@@ -125,7 +124,7 @@
         public bool Intersects(AABBf aabb)
         {
             var r = BoxExtendInNormalDirection(aabb);
-            var s = SignedDistanceBoxCenter(aabb);
+            var s = SignedDistanceFromPoint(aabb.Center);
 
             return System.Math.Abs(s) <= r;
         }
@@ -138,7 +137,7 @@
         public bool Intersects(OBBf obb)
         {
             var r = BoxExtendInNormalDirection(obb);
-            var s = SignedDistanceBoxCenter(obb);
+            var s = SignedDistanceFromPoint(obb.Center);
 
             return System.Math.Abs(s) <= r;
         }
@@ -152,7 +151,28 @@
         {
             var r = BoxExtendInNormalDirection(aabb);
             //Distance from aabb center to plane
-            var s = DistancePointToPlane(aabb.Center);
+            var s = SignedDistanceFromPoint(aabb.Center);
+
+            //Completely outside
+            if (s <= -r)
+                return false;
+            //Completely inside
+            else if (r <= s)
+                return true;
+            //else intersecting
+            return true;
+        }
+
+        /// <summary>
+        /// Test whether a <see cref="AABBf"/> intersects this plane.
+        /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// </summary>
+        /// <param name="obb">The object oriented bounding box.</param> 
+        public bool InsideOrIntersectingOBB(OBBf obb)
+        {
+            var r = BoxExtendInNormalDirection(obb);
+            //Distance from obb center to plane
+            var s = SignedDistanceFromPoint(obb.Center);
 
             //Completely outside
             if (s <= -r)
@@ -189,22 +209,6 @@
             return boxExtend.x * System.Math.Abs(float3.Dot(Normal, xAxis)) +
                     boxExtend.y * System.Math.Abs(float3.Dot(Normal, yAxis)) +
                     boxExtend.z * System.Math.Abs(float3.Dot(Normal, zAxis));
-        }
-
-        /// <summary>
-        /// Calculates the projection interval radius of aabb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
-        private float SignedDistanceBoxCenter(AABBf aabb)
-        {
-            return float3.Dot(aabb.Center, Normal) + D;
-        }
-
-        /// <summary>
-        /// Calculates the projection interval radius of obb onto line L(t) = aabb.Center + t * plane.Normal (extend (radius) in direction of the plane normal).      
-        /// <param name="aabb">The axis aligned bounding box.</param> 
-        private float SignedDistanceBoxCenter(OBBf obb)
-        {
-            return float3.Dot(obb.Center, Normal) + D;
-        }
+        }        
     }
 }

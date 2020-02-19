@@ -39,6 +39,10 @@ namespace Fusee.Examples.Camera.Core
 
         private TransformComponent _cubeOneTransform;
         private WireframeCube _frustum;
+        private float _anlgeHorz;
+        private float _angleVert;
+        private float _valHorz;
+        private float _valVert;
 
         // Init is called on startup. 
         public override async Task<bool> Init()
@@ -62,7 +66,7 @@ namespace Fusee.Examples.Camera.Core
             _mainCamTransform = _guiCamTransform = new TransformComponent()
             {
                 Rotation = float3.Zero,
-                Translation = new float3(0, 1, -20),
+                Translation = new float3(0, 1, -30),
                 Scale = new float3(1, 1, 1)
             };
 
@@ -147,17 +151,17 @@ namespace Fusee.Examples.Camera.Core
             return true;
         }
 
-
-        private static float3[] GetWorldSpaceFrustumCorners(float4x4 projectionMatrix, float4x4 viewMatrix)
+        //TODO: borrowed from ShadowMapping - find a place for this method where it can be accessed for shadow mapping, frustum debugging and all the other cases.
+        private static IEnumerable<float3> GetWorldSpaceFrustumCorners(float4x4 projectionMatrix, float4x4 viewMatrix)
         {
             //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
             //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
             //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
             var invViewProjection = float4x4.Invert(projectionMatrix * viewMatrix);
-
-            var res = new float3[8];
+            
             var frustumCorners = new float4[8];
 
+            //TODO: make the NDC corners static, likely at the same place where this method lives in the future. "Frustum" Object?
             frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
             frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
             frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
@@ -172,58 +176,37 @@ namespace Fusee.Examples.Camera.Core
                 var corner = frustumCorners[i];
                 corner /= corner.w; //world space frustum corners               
                 frustumCorners[i] = corner;
-                res[i] = frustumCorners[i].xyz;
-            }
-
-            return res;
+                yield return frustumCorners[i].xyz;
+            }            
         }
-
-        private float anlgeHorz;
-        private float angleVert; 
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-            //_mainCamTransform.RotateAround(_rotPivot, _rotAxis, _rotAngle * DeltaTime * 5);
-            if (!Mouse.LeftButton)
+            if (Mouse.RightButton)
             {
-                if (Keyboard.GetKey(KeyCodes.Left) || Keyboard.GetKey(KeyCodes.A))
-                {
-                    _mainCamTransform.Translation.x -= 2 * DeltaTime;
-                }
-                else if (Keyboard.GetKey(KeyCodes.Right) || Keyboard.GetKey(KeyCodes.D))
-                {
-                    _mainCamTransform.Translation.x += 2 * DeltaTime;
-                }
+                _valHorz = Mouse.XVel * 0.000005f;
+                _valVert = Mouse.YVel * 0.000005f;
 
-                if (Mouse.RightButton)
-                {
-                    _mainCamTransform.Rotation.y += Mouse.XVel * 0.005f * DeltaTime;
-                }
+                _anlgeHorz -= _valHorz;
+                _angleVert -= _valVert;
+                _valHorz = _valVert = 0;
+
+                _sndCamTransform.FpsView(_anlgeHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+            }
+            else if (Mouse.LeftButton)
+            {
+                _valHorz = Mouse.XVel * 0.00005f;
+                _valVert = Mouse.YVel * 0.00005f;
+
+                _anlgeHorz -= _valHorz;
+                _angleVert -= _valVert;
+                _valHorz = _valVert = 0;
+
+                _mainCamTransform.FpsView(_anlgeHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
             }
 
-            if (Mouse.LeftButton)
-            {
-                var valHorz = Mouse.XVel * 0.000005f;
-                var valVert = Mouse.YVel * 0.000005f;
-
-                anlgeHorz -= valHorz;
-                angleVert -= valVert;
-                _sndCamTransform.FpsView(anlgeHorz, angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
-            }
-
-            
-
-            _frustum.Vertices = GetWorldSpaceFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport), float4x4.Invert(_mainCamTransform.Matrix()));            
-
-            //if (Keyboard.GetKey(KeyCodes.A))
-            //    _cubeOneTransform.Translation.x -= 2 * DeltaTime;
-            //if (Keyboard.GetKey(KeyCodes.D))
-            //    _cubeOneTransform.Translation.x += 2 * DeltaTime;
-            //if (Keyboard.GetKey(KeyCodes.W))
-            //    _cubeOneTransform.Translation.z += 2 * DeltaTime;
-            //if (Keyboard.GetKey(KeyCodes.S))
-            //    _cubeOneTransform.Translation.z -= 2 * DeltaTime;
+            _frustum.Vertices = GetWorldSpaceFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport), float4x4.Invert(_mainCamTransform.Matrix())).ToArray();
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
