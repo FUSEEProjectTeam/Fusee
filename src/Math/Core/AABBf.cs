@@ -32,9 +32,9 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a transformation on the bounding box. After the transformation another
-        ///     axis aligned bounding box results. This is done by transforming all eight
-        ///     vertices of the box and re-aligning to the axes afterwards.
+        /// Applies a transformation on the bounding box. After the transformation another
+        /// axis aligned bounding box results. This is done by transforming all eight
+        /// vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="m">The transformation matrix</param>
         /// <param name="box">the box to transform</param>

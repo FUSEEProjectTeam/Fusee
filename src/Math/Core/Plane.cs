@@ -176,10 +176,10 @@ namespace Fusee.Math.Core
 
             //Completely outside
             if (s <= -r)
-                return false;
+                return true;
             //Completely inside
             else if (r <= s)
-                return true;
+                return false;
             //else intersecting
             return true;
         }
@@ -200,9 +200,9 @@ namespace Fusee.Math.Core
         {
             var transformationMat = obb.Rotation * float4x4.CreateTranslation(obb.Translation); //without scale!
 
-            var xAxis = float3.UnitX * transformationMat;
-            var yAxis = float3.UnitY * transformationMat;
-            var zAxis = float3.UnitZ * transformationMat;
+            var xAxis = (float3.UnitX * transformationMat).Normalize();
+            var yAxis = (float3.UnitY * transformationMat).Normalize();
+            var zAxis = (float3.UnitZ * transformationMat).Normalize();
 
             var boxExtend = obb.Size * 0.5f;
 
