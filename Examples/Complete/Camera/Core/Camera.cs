@@ -33,22 +33,25 @@ namespace Fusee.Examples.Camera.Core
         private TransformComponent _mainCamTransform;
         private TransformComponent _guiCamTransform;
         private TransformComponent _sndCamTransform;
-        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 5, 250, M.PiOver4);
+        private readonly CameraComponent _mainCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 5, 50, M.PiOver4);
         private readonly CameraComponent _guiCam = new CameraComponent(ProjectionMethod.ORTHOGRAPHIC, 1, 1000, M.PiOver4);
         private readonly CameraComponent _sndCam = new CameraComponent(ProjectionMethod.PERSPECTIVE, 1, 1000, M.PiOver4);
 
         private TransformComponent _cubeOneTransform;
         private WireframeCube _frustum;
-        private float _anlgeHorz;
-        private float _angleVert;
-        private float _valHorz;
-        private float _valVert;
+        private float _anlgeHorznd;
+        private float _angleVertSnd;
+        private float _valHorzSnd;
+        private float _valVertSnd;
+
+        private float _anlgeHorzMain;
+        private float _angleVertMain;
+        private float _valHorzMain;
+        private float _valVertMain;
 
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
-            VSync = false;
-
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _sndCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
             _mainCam.Layer = -1;
@@ -128,11 +131,15 @@ namespace Fusee.Examples.Camera.Core
                     _sndCamTransform,
                     _sndCam,
                 }
-            };           
-            
+            };
+
+            _anlgeHorznd = _sndCamTransform.Rotation.y;
+            _angleVertSnd = _sndCamTransform.Rotation.x;
+            _anlgeHorzMain = _mainCamTransform.Rotation.y;
+            _angleVertMain = _mainCamTransform.Rotation.x;
 
             // Load the rocket model            
-            _rocketScene = AssetStorage.Get<SceneContainer>("rnd.fus");
+            _rocketScene = AssetStorage.Get<SceneContainer>("cubes.fus");
 
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<TransformComponent>();
             //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
@@ -185,25 +192,27 @@ namespace Fusee.Examples.Camera.Core
         {
             if (Mouse.RightButton)
             {
-                _valHorz = Mouse.XVel * 0.000005f;
-                _valVert = Mouse.YVel * 0.000005f;
+                _valHorzSnd = Mouse.XVel * 0.00005f;
+                _valVertSnd = Mouse.YVel * 0.00005f;
 
-                _anlgeHorz -= _valHorz;
-                _angleVert -= _valVert;
-                _valHorz = _valVert = 0;
+                _anlgeHorznd += _valHorzSnd;
+                _angleVertSnd += _valVertSnd;
 
-                _sndCamTransform.FpsView(_anlgeHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+                _valHorzSnd = _valVertSnd = 0;
+
+                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
             }
             else if (Mouse.LeftButton)
             {
-                _valHorz = Mouse.XVel * 0.00005f;
-                _valVert = Mouse.YVel * 0.00005f;
+                _valHorzMain = Mouse.XVel * 0.00005f;
+                _valVertMain = Mouse.YVel * 0.00005f;
 
-                _anlgeHorz -= _valHorz;
-                _angleVert -= _valVert;
-                _valHorz = _valVert = 0;
+                _anlgeHorzMain += _valHorzMain;
+                _angleVertMain += _valVertMain;
 
-                _mainCamTransform.FpsView(_anlgeHorz, _angleVert, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+                _valHorzMain = _valVertMain = 0;
+
+                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
             }
 
             _frustum.Vertices = GetWorldSpaceFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport), float4x4.Invert(_mainCamTransform.Matrix())).ToArray();

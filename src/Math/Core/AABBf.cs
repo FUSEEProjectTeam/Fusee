@@ -179,7 +179,7 @@ namespace Fusee.Math.Core
         {
             foreach (var plane in frustumPlanes)
             {
-                if (!plane.InsideOrIntersectingAABB(this))
+                if (!plane.InsideOrIntersecting(this))
                     return false;
             }
             return true;
@@ -192,7 +192,7 @@ namespace Fusee.Math.Core
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
         public bool InsideOrIntersectingPlane(Plane plane)
         {
-            return plane.InsideOrIntersectingAABB(this);
+            return plane.InsideOrIntersecting(this);
         }
 
         /// <summary>

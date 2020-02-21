@@ -234,7 +234,9 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelView, TransModelView);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TModelViewProjection, TransModelViewProjection);
 
-                FrustumPlanes = GetFrustumPlanes(_projection * View);
+                var invZMat = float4x4.Identity;
+                invZMat.M33 = -1;
+                FrustumPlanes = GetFrustumPlanes(_projection  * View);
             }
         }
 
@@ -320,7 +322,9 @@ namespace Fusee.Engine.Core
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.ITProjection, InvTransProjection);
                 SetGlobalEffectParam(ShaderShards.UniformNameDeclarations.TProjection, TransProjection);
 
-                FrustumPlanes = GetFrustumPlanes(_projection * View);
+                var invZMat = float4x4.Identity;
+                invZMat.M33 = -1;
+                FrustumPlanes = GetFrustumPlanes(_projection *  View);
             }
         }
 
@@ -1229,10 +1233,9 @@ namespace Fusee.Engine.Core
         /// <param name="mat">The matrix from which to extract the planes.</param>
         /// <returns>false if fully outside, true if inside or intersects</returns>
         internal Math.Core.Plane[] GetFrustumPlanes(float4x4 mat)
-        {
-            // split the viewing frustum in 6 planes
-            // plane equation = ax + by + cz + d = 0 or ax + by + cz = d
+        { 
             var planes = new Math.Core.Plane[6];
+
             // left
             planes[0] = new Math.Core.Plane()
             {
@@ -1241,6 +1244,7 @@ namespace Fusee.Engine.Core
                 C = mat.M43 + mat.M13,
                 D = mat.M44 + mat.M14
             };
+
             // right
             planes[1] = new Math.Core.Plane()
             {
@@ -1249,6 +1253,7 @@ namespace Fusee.Engine.Core
                 C = mat.M43 - mat.M13,
                 D = mat.M44 - mat.M14
             };
+            
 
             // bottom
             planes[2] = new Math.Core.Plane()
@@ -1258,6 +1263,7 @@ namespace Fusee.Engine.Core
                 C = mat.M43 + mat.M23,
                 D = mat.M44 + mat.M24
             };
+            
 
             // top
             planes[3] = new Math.Core.Plane()
@@ -1267,6 +1273,7 @@ namespace Fusee.Engine.Core
                 C = mat.M43 - mat.M23,
                 D = mat.M44 - mat.M24
             };
+            
 
             // near
             planes[4] = new Math.Core.Plane()
@@ -1276,6 +1283,7 @@ namespace Fusee.Engine.Core
                 C = mat.M43 + mat.M33,
                 D = mat.M44 + mat.M34
             };
+            
 
             // far
             planes[5] = new Math.Core.Plane()
@@ -1285,6 +1293,22 @@ namespace Fusee.Engine.Core
                 C = mat.M43 - mat.M33,
                 D = mat.M44 - mat.M34
             };
+
+            //Negate D because Fusee uses ax +by + cz = d
+            planes[0].D *= -1;
+            planes[1].D *= -1;
+            planes[2].D *= -1;
+            planes[3].D *= -1;
+            planes[4].D *= -1;
+            planes[5].D *= -1;
+
+            //Invert plane to get the normal to face outwards.
+            planes[0] *= -1;
+            planes[1] *= -1;
+            planes[2] *= -1;
+            planes[3] *= -1;
+            planes[4] *= -1;
+            planes[5] *= -1;
 
             return planes;
         }

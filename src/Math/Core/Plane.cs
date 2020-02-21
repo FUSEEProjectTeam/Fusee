@@ -1,7 +1,12 @@
-﻿namespace Fusee.Math.Core
+﻿using System;
+
+namespace Fusee.Math.Core
 {
     /// <summary>
-    /// Represents a plane in the form of Ax + By + Cz + D = 0    
+    /// Represents a plane in the form of Ax + By + Cz = D. The following applies: Ax + Bx + Cz - D = 0.
+    /// The plane's normal equals n = (A, B, C) and may NOT necessarily be of unit length.
+    /// The plane divides a space into two half-spaces.The direction plane's normal vector defines the "outer" or negative half-space.
+    /// Points that lie in the positive half space of the plane do have a negative signed distance to the plane.
     /// </summary>
     public struct Plane
     {
@@ -17,7 +22,7 @@
             set
             {
                 _a = value;
-                _normal = new float3(A, B, C);
+                _normal.x = _a;
             }
         }
         private float _a;
@@ -34,7 +39,7 @@
             set
             {
                 _b = value;
-                _normal = new float3(A, B, C);
+                _normal.y = _b;
             }
         }
         private float _b;
@@ -51,7 +56,7 @@
             set
             {
                 _c = value;
-                _normal = new float3(A, B, C);
+                _normal.z = _c;
             }
         }
         private float _c;
@@ -59,19 +64,7 @@
         /// <summary>
         /// The D plane coefficient.
         /// </summary>
-        public float D
-        {
-            get
-            {
-                return _d;
-            }
-            set
-            {
-                _d = value;
-                _normal = new float3(A, B, C);
-            }
-        }
-        private float _d;
+        public float D;
 
         /// <summary>
         /// The plane's normal vector. May NOT be of unit length if the plane isn't normalized.
@@ -81,7 +74,7 @@
             get
             {
                 if (_normal == float3.Zero)
-                    _normal = new float3(A, B, C);
+                    _normal = new float3(_a, _b, _c);
 
                 return _normal;
             }
@@ -91,15 +84,15 @@
         /// <summary>
         /// Normalizes this plane.
         /// </summary>
-        public void Normalize()
+        public Plane Normalize()
         {
             var mag = (float)System.Math.Sqrt(A * A + B * B + C * C);
-            A /= mag;
-            B /= mag;
-            C /= mag;
-            D /= mag;
+            var a = A / mag;
+            var b = B / mag;
+            var c = C / mag;
+            var d = D / mag;
 
-            _normal = new float3(A, B, C);
+            return new Plane() { A = a, B = b, C = c, D = d };
         }
 
         /// <summary>
@@ -113,8 +106,10 @@
         /// <param name="pt">An arbitrary point.</param>
         public float SignedDistanceFromPoint(float3 pt)
         {
-            return A * pt.x + B * pt.y + C * pt.z + D;
+            return A * pt.x + B * pt.y + C * pt.z - D;
         }
+
+        #region Plane-Box Intersection
 
         /// <summary>
         /// Test whether a <see cref="AABBf"/> intersects this plane.
@@ -145,20 +140,23 @@
         /// <summary>
         /// Test whether a <see cref="AABBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
         /// </summary>
         /// <param name="aabb">The axis aligned bounding box.</param> 
-        public bool InsideOrIntersectingAABB(AABBf aabb)
+        public bool InsideOrIntersecting(AABBf aabb)
         {
             var r = BoxExtendInNormalDirection(aabb);
+
             //Distance from aabb center to plane
             var s = SignedDistanceFromPoint(aabb.Center);
 
-            //Completely outside
-            if (s <= -r)
-                return false;
             //Completely inside
-            else if (r <= s)
+            if (s <= -r)
                 return true;
+            //Completely outside
+            else if (r <= s)
+                return false;
             //else intersecting
             return true;
         }
@@ -166,9 +164,11 @@
         /// <summary>
         /// Test whether a <see cref="AABBf"/> intersects this plane.
         /// See: Ericson 2005, Real Time Collision Detection, p. 161 - 164
+        /// CAREFUL: the definition whats completely inside and outside is flipped in comparison to Ericson, 
+        /// because FUSEE defines a point with a negative signed distance to be inside.
         /// </summary>
         /// <param name="obb">The object oriented bounding box.</param> 
-        public bool InsideOrIntersectingOBB(OBBf obb)
+        public bool InsideOrIntersecting(OBBf obb)
         {
             var r = BoxExtendInNormalDirection(obb);
             //Distance from obb center to plane
@@ -209,6 +209,82 @@
             return boxExtend.x * System.Math.Abs(float3.Dot(Normal, xAxis)) +
                     boxExtend.y * System.Math.Abs(float3.Dot(Normal, yAxis)) +
                     boxExtend.z * System.Math.Abs(float3.Dot(Normal, zAxis));
-        }        
+        }
+
+        #endregion
+
+        #region Operators
+
+        /// <summary>
+        /// Operator override for multiplying a Plane with a float.
+        /// </summary>
+        /// <param name="plane">The plane.</param>
+        /// <param name="scalar">The scalar value.</param>
+        /// <returns></returns>
+        public static Plane operator *(Plane plane, float scalar)
+        {
+            return new Plane()
+            {
+                A = plane.A * scalar,
+                B = plane.B * scalar,
+                C = plane.C * scalar,
+                D = plane.D * scalar
+            };
+        }       
+
+        /// <summary>
+        /// Operator override for equality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator ==(Plane left, Plane right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Operator override for inequality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator !=(Plane left, Plane right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Indicates whether this plane is equal to another object.
+        /// </summary>
+        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="Plane"/>.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(Plane)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+
+            var other = (Plane)obj;
+            return
+                System.Math.Abs(A - other.A) < M.EpsilonFloat &&
+                System.Math.Abs(B - other.B) < M.EpsilonFloat &&
+                System.Math.Abs(C - other.C) < M.EpsilonFloat &&
+                System.Math.Abs(D - other.D) < M.EpsilonFloat;
+        }
+
+        /// <summary>
+        /// Generates a hash code for this plane.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 29 + A.GetHashCode();
+                hash = hash * 29 + B.GetHashCode();
+                hash = hash * 29 + C.GetHashCode();
+                hash = hash * 29 + D.GetHashCode();
+                return hash;
+            }
+        }
+
+        #endregion
     }
 }
