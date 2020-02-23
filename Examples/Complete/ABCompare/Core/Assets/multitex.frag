@@ -82,11 +82,14 @@ void main()
 	//=> Linear Equation
 	
 	float Se = (vUV.y - Point1.y)*(Point2.x - Point1.x) - (Point2.y - Point1.y)*(vUV.x - Point1.x);
-	
-	
+		
 	Se = step(0.0,Se);
 	
-	result = mix(tex2, tex1, Se);
+	//=> for interpolation
+	
+	//Se = smoothstep(-0.01,0.01,Se);
+	
+	result = mix(tex1, tex2, Se);
 	
 	
 	//=> Circle

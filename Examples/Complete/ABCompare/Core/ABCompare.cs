@@ -66,6 +66,7 @@ namespace Fusee.Examples.ABCompare.Core
         private WritableTexture _renderTex2;
         private float2 _point1;
         private float2 _point2;
+        private float2 btnscale;
         private float _radius;
         private float2 _middlepoint;
         private ShaderEffect _blurPassEffect;
@@ -164,8 +165,9 @@ namespace Fusee.Examples.ABCompare.Core
 
             _scene2 = AssetStorage.Get<SceneContainer>(ModelFile2);
 
-            // _scene1.Children.RemoveAt(0);
-             //_scene2.Children.RemoveAt(0);
+            //==> Muss für eigene Projektion entfernt werden!
+             _scene1.Children.RemoveAt(0);
+             _scene2.Children.RemoveAt(0);
 
             // New Shader for used Models ===> not usable right now
             //_scene1.Children[0].GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
@@ -287,10 +289,8 @@ namespace Fusee.Examples.ABCompare.Core
                   
                     _point1 = new float2(mousex,mousey);
                     
-                    Diagnostics.Log(Mouse.Position);
-                    Diagnostics.Log(_point1);
 
-                    _gui.Children.FindNodes(node => node.Name == "ab1").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point1.x, _initCanvasHeight *_point1.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f));
+                    _gui.Children.FindNodes(node => node.Name == "ab1").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(_initCanvasWidth * _point1.x - (btnscale.x/2), _initCanvasHeight *_point1.y - (btnscale.y/2)), _initCanvasHeight, _initCanvasWidth, btnscale);
                 }
 
                 else if(_abbtn2)
@@ -298,9 +298,8 @@ namespace Fusee.Examples.ABCompare.Core
                    
                     _point2 = new float2(mousex, mousey);
 
-                    Diagnostics.Log(Mouse.Position);
 
-                    _gui.Children.FindNodes(node => node.Name == "ab2").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point2.x, _initCanvasHeight * _point2.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f));
+                    _gui.Children.FindNodes(node => node.Name == "ab2").First().GetComponent<RectTransformComponent>().Offsets = UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(_initCanvasWidth * _point2.x - (btnscale.x / 2), _initCanvasHeight * _point2.y - (btnscale.y / 2)), _initCanvasHeight, _initCanvasWidth, btnscale);
                 }
 
                 else
@@ -311,15 +310,6 @@ namespace Fusee.Examples.ABCompare.Core
                 }
 
             }
-                     
-           /* else if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
-            {
-                _keys = false;
-                float2 touchVel;
-                touchVel = Touch.GetVelocity(TouchPoints.Touchpoint_0);
-                _angleVelHorz = -RotationSpeed * touchVel.x * DeltaTime * 0.0005f;
-                _angleVelVert = -RotationSpeed * touchVel.y * DeltaTime * 0.0005f;
-            }*/
             else
             {
 
@@ -391,6 +381,8 @@ namespace Fusee.Examples.ABCompare.Core
             {
                 var width = Width;
                 var height = Height;
+                var aspect = Width / (float)Height;
+                RC.Projection = float4x4.CreatePerspectiveFieldOfView(45.0f * M.Pi / 180.0f, aspect, ZNear, ZFar);
                 RC.Viewport(0, 0, _texRes, _texRes, false);
                 _sceneRenderer1.Render(RC, _renderTex1);   //Pass 1: render the rocket to "_renderTex", using the standard material. 
 
@@ -424,6 +416,8 @@ namespace Fusee.Examples.ABCompare.Core
                 RC.Viewport(0, 0, Width, Height);
                 _sceneRenderer1.Render(RC);
             }
+
+            RC.Viewport(0, 0, Width, Height);
 
             _sih.View = RC.View;
 
@@ -499,6 +493,9 @@ namespace Fusee.Examples.ABCompare.Core
 
         }
 
+        private TextureNodeContainer ab1;
+        private TextureNodeContainer ab2;
+
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
@@ -542,6 +539,13 @@ namespace Fusee.Examples.ABCompare.Core
 
             btnmultipass.OnMouseDown += BtnMultipassDown;
 
+            var btnstandard = new GUIButton
+            {
+                Name = "Standard"
+            };
+
+            btnstandard.OnMouseDown += BtnStandardDown;
+
             var guiFuseeLogo = new Texture(AssetStorage.Get<ImageData>("FuseeText.png"));
             var fuseeLogo = new TextureNodeContainer(
                 "fuseeLogo",
@@ -557,36 +561,40 @@ namespace Fusee.Examples.ABCompare.Core
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
 
-            var ab1 = new TextureNodeContainer(
+
+            btnscale = new float2(0.3f, 0.3f);
+
+            var guiButtonPoint = new Texture(AssetStorage.Get<ImageData>("buttonpoint.png"));
+
+            ab1 = new TextureNodeContainer(
                 "ab1",
                 vsTex,
                 psTex,
                 //Set the diffuse texture you want to use.
-                _bltDestinationTex,
+                guiButtonPoint,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT),
                 //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point1.x, _initCanvasHeight * _point1.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(_initCanvasWidth * _point1.x - (btnscale.x/2), _initCanvasHeight * _point1.y - (btnscale.y/2)), _initCanvasHeight, _initCanvasWidth, btnscale)
                 );
             ab1.AddComponent(btnAB1);
-            ab1.GetComponent<ShaderEffectComponent>().Effect =  ShaderCodeBuilder.MakeShaderEffect(new float4(1, 0, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
-            
-            var ab2 = new TextureNodeContainer(
+            ab1.GetComponent<Plane>().Active = _multipass;
+
+            ab2 = new TextureNodeContainer(
                 "ab2",
                 vsTex,
                 psTex,
                 //Set the diffuse texture you want to use.
-                _bltDestinationTex,
+                guiButtonPoint,
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_LEFT),
                 //Define Offset and therefor the size of the element.                
-                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * _point2.x, _initCanvasHeight * _point2.y), _initCanvasHeight, _initCanvasWidth, new float2(0.5f, 0.5f))
+                UIElementPosition.CalcOffsets(AnchorPos.DOWN_DOWN_LEFT, new float2(_initCanvasWidth * _point2.x - (btnscale.x / 2), _initCanvasHeight * _point2.y - (btnscale.y / 2)), _initCanvasHeight, _initCanvasWidth, btnscale)
                 );
             ab2.AddComponent(btnAB2);
-            ab2.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 1, 0, 1), new float4(1, 0, 1, 1), 0.5f, 0.5f);
-
+            ab2.GetComponent<Plane>().Active = _multipass;
 
             // Initialize the information text line.
             var textToDisplay = "FUSEE 3D Scene";
@@ -618,62 +626,39 @@ namespace Fusee.Examples.ABCompare.Core
                 "MultipassExample",
                 vsTex,
                 psTex,
-                UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
-                new MinMaxRect
-                {
-                    Min = new float2(0.0f, 0.0f),
-                    Max = new float2(0.0f, 0.0f)
-                }, 
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.7f), _initCanvasHeight, _initCanvasWidth, new float2(2, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 200f);
 
-            var multipasscontainer = new TextureNodeContainer(
-               "multipasscontainer",
-               vsTex,
-               psTex,
-               //Set the diffuse texture you want to use.
-               _bltDestinationTex,
-               //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-               //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
-               UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-               //Define Offset and therefor the size of the element.                
-               UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.7f), _initCanvasHeight, _initCanvasWidth, new float2(2.0f, 0.5f))
-               )
-            { Children = new ChildList() { textmultipass } };
-
-            multipasscontainer.AddComponent(btnmultipass);
-            multipasscontainer.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 0.5f, 0.5f);
+            textmultipass.Children[0].AddComponent(btnmultipass);
+           
+           
 
             var textmultiview = new TextNodeContainer(
                 "Viewport Example",
                 "ViewportExample",
                 vsTex,
                 psTex,
-                 UIElementPosition.GetAnchors(AnchorPos.STRETCH_ALL),
-                new MinMaxRect
-                {
-                    Min = new float2(0.0f, 0.0f),
-                    Max = new float2(0.0f, 0.0f)
-                }, 
+                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
+                UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(2, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 200f);
 
-            var multiviewcontainer = new TextureNodeContainer(
-               "multiviewcontainer",
+            textmultiview.Children[0].AddComponent(btnmultiview);
+
+
+            var textstandard = new TextNodeContainer(
+               "Standard Example",
+               "StandardExample",
                vsTex,
                psTex,
-               //Set the diffuse texture you want to use.
-               _bltDestinationTex,
-               //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
-               //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-               //Define Offset and therefor the size of the element.                
-               UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.6f), _initCanvasHeight, _initCanvasWidth, new float2(2.0f, 0.5f))
-               )
-            { Children = new ChildList() { textmultiview } };
+               UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(_initCanvasWidth * 0.01f, _initCanvasHeight * 0.3f), _initCanvasHeight, _initCanvasWidth, new float2(2, 1)),
+               guiLatoBlack,
+               ColorUint.Tofloat4(ColorUint.Greenery), 200f);
 
-            multiviewcontainer.AddComponent(btnmultiview);
-            multiviewcontainer.GetComponent<ShaderEffectComponent>().Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 0.5f, 0.5f);
+            textstandard.Children[0].AddComponent(btnstandard);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
@@ -685,14 +670,13 @@ namespace Fusee.Examples.ABCompare.Core
                 });
             canvas.Children.Add(fuseeLogo);
             canvas.Children.Add(text);
-            canvas.Children.Add(multipasscontainer);
-            canvas.Children.Add(multiviewcontainer);
+            canvas.Children.Add(textmultipass);
+            canvas.Children.Add(textmultiview);
+            canvas.Children.Add(textstandard);
 
-            if (_multipass)
-            {
-                canvas.Children.Add(ab1);
-                canvas.Children.Add(ab2);
-            }
+            canvas.Children.Add(ab1);
+            canvas.Children.Add(ab2);
+
             //Create canvas projection component and add resize delegate
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
@@ -728,27 +712,39 @@ namespace Fusee.Examples.ABCompare.Core
 
         public void BtnMultiviewDown(CodeComponent sender)
         {
-            _viewports = true;
+            _viewports = !_viewports;
+            _multipass = false;
+            ab1.GetComponent<Plane>().Active = _multipass;
+            ab2.GetComponent<Plane>().Active = _multipass;
         }
 
         public void BtnMultipassDown(CodeComponent sender)
         {
-            _multipass = true;
+            _multipass = !_multipass;
+            _viewports = false;
 
-            _gui = CreateGui();
-            _sih = new SceneInteractionHandler(_gui);
-            _guiRenderer = new SceneRendererForward(_gui);
+            ab1.GetComponent<Plane>().Active = _multipass;
+            ab2.GetComponent<Plane>().Active = _multipass;
+        }
+
+        public void BtnStandardDown(CodeComponent sender)
+        {
+            _multipass = false;
+            _viewports = false;
+            
+            ab1.GetComponent<Plane>().Active = _multipass;
+            ab2.GetComponent<Plane>().Active = _multipass;
         }
 
         public void BtnAB1Down(CodeComponent sender)
         {
             _abbtn1 = true;
-            _abbtn2 = false;
+            
         }
         
         public void BtnAB2Down(CodeComponent sender)
         {
-            _abbtn1 = false;
+           
             _abbtn2 = true;
         }
 
