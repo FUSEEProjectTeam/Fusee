@@ -98,7 +98,7 @@ namespace Fusee.Examples.Simple.Core
 
         SceneContainer CreateScene()
         {
-            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset1.fus");
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
             SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
             SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
@@ -180,7 +180,7 @@ namespace Fusee.Examples.Simple.Core
                                 {
                                     new TransformComponent
                                     {
-                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, ballradius, countY * (wallZbox.y + cornerbox.y)/2)
+                                        Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, ballradius, countY * (wallZbox.y + cornerbox.y)/2),
                                     },
                                     head.GetComponent<ShaderEffectComponent>(),
                                     head.GetComponent<Mesh>()
@@ -451,7 +451,7 @@ namespace Fusee.Examples.Simple.Core
             else
             {
                 mtxCam = float4x4.LookAt(_head.Translation.x - cam.x * M.Cos(_angleVert), _head.Translation.y + cam.y, _head.Translation.z - cam.z * M.Sin(_angleVert), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
-                _head.Rotation = new float3(_head.Rotation.x, - angle, _head.Rotation.z);
+                _head.Rotation = new float3(_head.Rotation.x, - angle - 90 * M.Pi / 180, _head.Rotation.z);
                 _bodytrans.Rotation = new float3(_body.Rotation.x, angle, _body.Rotation.z);
 
             }
@@ -554,7 +554,7 @@ namespace Fusee.Examples.Simple.Core
                 _head.Translation.x += _moveX * M.Sin(deg);
                 _head.Translation.z -= _moveX * M.Cos(deg);
             }
-            _body.RotateAround(new float3(_body.Translation.x, _body.Translation.y, _body.Translation.z), new float3(_moveX * - M.Cos(deg), 0, -_moveX * M.Sin(deg)));
+            //rotation
 
             if (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D) || velocityAD == 0)
             {
@@ -638,7 +638,7 @@ namespace Fusee.Examples.Simple.Core
                     _head.Translation.z += _moveZ * M.Sin(deg);
 
                 }
-                _body.RotateAround(new float3(_body.Translation.x, _body.Translation.y, _body.Translation.z), new float3(_moveZ * M.Sin(deg), 0, -_moveZ * M.Cos(deg)));
+                //rotation
             }
         }
 
@@ -799,7 +799,7 @@ namespace Fusee.Examples.Simple.Core
 
         public void makebox()
         {
-            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset1.fus");
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
             var cornerstone = mazeScene.Children.FindNodes(node => node.Name == "Cornerstone")?.FirstOrDefault()?.GetMesh();
             cornerbox = cornerstone.BoundingBox.Size.xz;
             var wallZ = mazeScene.Children.FindNodes(node => node.Name == "WallZ")?.FirstOrDefault()?.GetMesh();
