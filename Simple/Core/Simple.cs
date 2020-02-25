@@ -44,7 +44,9 @@ namespace Fusee.Examples.Simple.Core
 
         private float4x4 mtxCam;
         private float deg = 0;
-        private TransformComponent _ball;
+        private TransformComponent _head;
+        private TransformComponent _body;
+        private TransformComponent _bodytrans;
         private SceneContainer _scene;
         private float _moveX, _moveZ;
         private TransformComponent mazeTransform = new TransformComponent();
@@ -96,7 +98,7 @@ namespace Fusee.Examples.Simple.Core
 
         SceneContainer CreateScene()
         {
-            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset1.fus");
             SceneNodeContainer cornerstone = mazeScene.Children.FindNodes(n => n.Name == "Cornerstone").First();
             SceneNodeContainer wallX = mazeScene.Children.FindNodes(n => n.Name == "WallX").First();
             SceneNodeContainer wallZ = mazeScene.Children.FindNodes(n => n.Name == "WallZ").First();
@@ -192,14 +194,29 @@ namespace Fusee.Examples.Simple.Core
                                     {
                                     new TransformComponent
                                         {
-                                            Translation = new float3(countX * (wallXbox.x + cornerbox.x)/2, ballradius, countY * (wallZbox.y + cornerbox.y)/2)
+                                            Translation = new float3(0,0,0)
                                         },
-                                        ball.GetComponent<ShaderEffectComponent>(),
-                                        ball.GetComponent<Mesh>()
                                     },
-                                Name = "Body",
+                                Name = "Bodytrans",
+                                Children = new ChildList
+                                {
+                                    new SceneNodeContainer
+                                    {
+                                        Components = new List<SceneComponentContainer>
+                                        {
+                                        new TransformComponent
+                                            {
+                                                Translation = new float3(0,0,0)
+                                            },
+                                            ball.GetComponent<ShaderEffectComponent>(),
+                                            ball.GetComponent<Mesh>()
+                                        },
+                                    Name = "Body",
+                                    }
+                                },
                                 }
                             },
+
                         }
                         );
                     }
@@ -262,9 +279,11 @@ namespace Fusee.Examples.Simple.Core
             _guiRenderer = new SceneRendererForward(_gui);
 
             //my Init
-            _ball = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetTransform();
-            oldX = _ball.Translation.x;
-            oldY = _ball.Translation.z;
+            _head = _scene.Children.FindNodes(node => node.Name == "Head")?.FirstOrDefault()?.GetTransform();
+            _body = _scene.Children.FindNodes(node => node.Name == "Body")?.FirstOrDefault()?.GetTransform();
+            _bodytrans = _scene.Children.FindNodes(node => node.Name == "Bodytrans")?.FirstOrDefault()?.GetTransform();
+            oldX = _head.Translation.x;
+            oldY = _head.Translation.z;
             return true;
         }
 
@@ -279,6 +298,7 @@ namespace Fusee.Examples.Simple.Core
             if (Mouse.LeftButton)
             {
                 _angleVelVert = -RotationSpeed * Mouse.XVel * DeltaTime * 0.0005f;
+
             }
             else
             {
@@ -430,12 +450,15 @@ namespace Fusee.Examples.Simple.Core
             }
             else
             {
-               mtxCam = float4x4.LookAt(_ball.Translation.x - cam.x * M.Cos(_angleVert), _ball.Translation.y + cam.y, _ball.Translation.z - cam.z * M.Sin(_angleVert), _ball.Translation.x, _ball.Translation.y, _ball.Translation.z, 0, 1, 0);
+                mtxCam = float4x4.LookAt(_head.Translation.x - cam.x * M.Cos(_angleVert), _head.Translation.y + cam.y, _head.Translation.z - cam.z * M.Sin(_angleVert), _head.Translation.x, _head.Translation.y, _head.Translation.z, 0, 1, 0);
+                _head.Rotation = new float3(_head.Rotation.x, - angle, _head.Rotation.z);
+                _bodytrans.Rotation = new float3(_body.Rotation.x, angle, _body.Rotation.z);
+
             }
             RC.View = mtxCam;
             //move the ball
-            oldX = _ball.Translation.x;
-            oldY = _ball.Translation.z;
+            oldX = _head.Translation.x;
+            oldY = _head.Translation.z;
             angle = _angleVert;
 
             if (angle >= 45 * (M.Pi / 180) + deg)
@@ -449,8 +472,8 @@ namespace Fusee.Examples.Simple.Core
             }
 
 
-            oldX = _ball.Translation.x;
-            oldY = _ball.Translation.z;
+            oldX = _head.Translation.x;
+            oldY = _head.Translation.z;
 
 
             if(!Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S) || velocityWS == 0)
@@ -523,17 +546,17 @@ namespace Fusee.Examples.Simple.Core
 
             if (_moveX <= 0)
             {
-                _ball.Translation.x += _moveX * M.Sin(deg);
-                _ball.Translation.z -= _moveX * M.Cos(deg);
+                _head.Translation.x += _moveX * M.Sin(deg);
+                _head.Translation.z -= _moveX * M.Cos(deg);
             }
             else
             {
-                _ball.Translation.x += _moveX * M.Sin(deg);
-                _ball.Translation.z -= _moveX * M.Cos(deg);
+                _head.Translation.x += _moveX * M.Sin(deg);
+                _head.Translation.z -= _moveX * M.Cos(deg);
             }
-            _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(-_moveX * M.Cos(deg), 0, -_moveX * M.Sin(deg)));
+            _body.RotateAround(new float3(_body.Translation.x, _body.Translation.y, _body.Translation.z), new float3(_moveX * - M.Cos(deg), 0, -_moveX * M.Sin(deg)));
 
-            if(!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D) || velocityAD == 0)
+            if (!Keyboard.GetKey(KeyCodes.A) && !Keyboard.GetKey(KeyCodes.D) || velocityAD == 0)
             {
                 if (Keyboard.GetKey(KeyCodes.W) && !Keyboard.GetKey(KeyCodes.S))
                 {
@@ -605,17 +628,17 @@ namespace Fusee.Examples.Simple.Core
                 _moveZ = velocityWS * DeltaTime;
                 if (_moveZ <= 0)
                 {
-                    _ball.Translation.x += _moveZ * M.Cos(deg);
-                    _ball.Translation.z += _moveZ * M.Sin(deg);
+                    _head.Translation.x += _moveZ * M.Cos(deg);
+                    _head.Translation.z += _moveZ * M.Sin(deg);
 
                 }
                 else
                 {
-                    _ball.Translation.x += _moveZ * M.Cos(deg);
-                    _ball.Translation.z += _moveZ * M.Sin(deg);
+                    _head.Translation.x += _moveZ * M.Cos(deg);
+                    _head.Translation.z += _moveZ * M.Sin(deg);
 
                 }
-                _ball.RotateAround(new float3(_ball.Translation.x, _ball.Translation.y, _ball.Translation.z), new float3(_moveZ * M.Sin(deg), 0, -_moveZ * M.Cos(deg)));
+                _body.RotateAround(new float3(_body.Translation.x, _body.Translation.y, _body.Translation.z), new float3(_moveZ * M.Sin(deg), 0, -_moveZ * M.Cos(deg)));
             }
         }
 
@@ -625,13 +648,13 @@ namespace Fusee.Examples.Simple.Core
                       
 
 
-            if (translation[ballbmp[0], ballbmp[1]].x <= _ball.Translation.x)
+            if (translation[ballbmp[0], ballbmp[1]].x <= _head.Translation.x)
             {
-                if (translation[ballbmp[0], ballbmp[1]].z >= _ball.Translation.x)
+                if (translation[ballbmp[0], ballbmp[1]].z >= _head.Translation.x)
                 {
-                    if (translation[ballbmp[0], ballbmp[1]].y <= _ball.Translation.z)
+                    if (translation[ballbmp[0], ballbmp[1]].y <= _head.Translation.z)
                     {
-                        if (translation[ballbmp[0], ballbmp[1]].w >= _ball.Translation.z)
+                        if (translation[ballbmp[0], ballbmp[1]].w >= _head.Translation.z)
                         {
 
                         }
@@ -662,27 +685,27 @@ namespace Fusee.Examples.Simple.Core
             //Walls
             if (bmp[ballbmp[0] - 1, ballbmp[1]] == 1)
             {
-                if (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w < ballradius)
+                if (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]].w < ballradius)
                 {
-                   _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + ballradius;
+                   _head.Translation.z = translation[ballbmp[0] - 1, ballbmp[1]].w + ballradius + 0.0001f;
                     velocityAD = 0;
                     velocityWS = 0;
                 }
             }
             if (bmp[ballbmp[0] + 1, ballbmp[1]] == 1)
             {
-                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _ball.Translation.z < ballradius)
+                if (translation[ballbmp[0] + 1, ballbmp[1]].y - _head.Translation.z < ballradius)
                 {
-                    _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - ballradius;
+                    _head.Translation.z = translation[ballbmp[0] + 1, ballbmp[1]].y - ballradius - 0.0001f;
                     velocityAD = 0;
                     velocityWS = 0;
                 }
             }
             if (bmp[ballbmp[0], ballbmp[1] - 1] == 1)
             {
-                if (_ball.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z < ballradius)
+                if (_head.Translation.x - translation[ballbmp[0], ballbmp[1] - 1].z < ballradius)
                 {
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + ballradius;
+                    _head.Translation.x = translation[ballbmp[0], ballbmp[1] - 1].z + ballradius + 0.0001f;
                     velocityAD = 0;
                     velocityWS = 0;
                 }
@@ -690,9 +713,9 @@ namespace Fusee.Examples.Simple.Core
             if (bmp[ballbmp[0], ballbmp[1] + 1] == 1)
             {
                 
-                if (translation[ballbmp[0], ballbmp[1] + 1].x - _ball.Translation.x < ballradius)
+                if (translation[ballbmp[0], ballbmp[1] + 1].x - _head.Translation.x < ballradius)
                 {               
-                    _ball.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - ballradius - 0.0001f;
+                    _head.Translation.x = translation[ballbmp[0], ballbmp[1] + 1].x - ballradius - 0.0001f;
                     velocityAD = 0;
                     velocityWS = 0;
                 }
@@ -702,61 +725,61 @@ namespace Fusee.Examples.Simple.Core
             if (bmp[ballbmp[0] - 1, ballbmp[1] - 1] == 1)
             {
                 
-                if (M.Sqrt((_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]-1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) + (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)) <= ballradius)
+                if (M.Sqrt((_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1]-1].w) * (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) + (_head.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_head.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)) <= ballradius)
                 {
-                   if(_ball.Translation.x < oldX)
+                   if(_head.Translation.x < oldX)
                     {
-                        _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] - 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)));
+                        _head.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] - 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_head.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z) * (_head.Translation.x - translation[ballbmp[0] - 1, ballbmp[1] - 1].z)));
                     }
-                    if(_ball.Translation.z < oldY)
+                    if(_head.Translation.z < oldY)
                     {
-                        _ball.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w)));
+                        _head.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w) * (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] - 1].w)));
                     }
                 }
             }
             if (bmp[ballbmp[0] - 1, ballbmp[1] + 1] == 1)
             {
 
-                if (M.Sqrt((_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) + (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x)) <= ballradius)
+                if (M.Sqrt((_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) + (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x)) <= ballradius)
                 {
-                    if (_ball.Translation.x > oldX)
+                    if (_head.Translation.x > oldX)
                     {
-                        _ball.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] + 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _ball.Translation.x)));
+                        _head.Translation.z = translation[ballbmp[0] - 1, ballbmp[1] + 1].w + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] - 1, ballbmp[1] + 1].x - _head.Translation.x)));
                     }
-                    if (_ball.Translation.z < oldY)
+                    if (_head.Translation.z < oldY)
                     {
-                        _ball.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_ball.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w)));
+                        _head.Translation.x = translation[ballbmp[0] - 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w) * (_head.Translation.z - translation[ballbmp[0] - 1, ballbmp[1] + 1].w)));
                     }
                 }
             }
             if (bmp[ballbmp[0] + 1, ballbmp[1] - 1] == 1)
             {
 
-                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) + (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)) <= ballradius)
+                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _head.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _head.Translation.z) + (_head.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_head.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)) <= ballradius)
                 {
 
-                    if (_ball.Translation.x < oldX)
+                    if (_head.Translation.x < oldX)
                     {
-                        _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] - 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_ball.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)));
+                        _head.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] - 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (_head.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z) * (_head.Translation.x - translation[ballbmp[0] + 1, ballbmp[1] - 1].z)));
                     }
-                    if (_ball.Translation.z > oldY)
+                    if (_head.Translation.z > oldY)
                     {
-                    _ball.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _ball.Translation.z)));
+                    _head.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] - 1].z + M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _head.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] - 1].y - _head.Translation.z)));
                     }
                 }
             }
             if (bmp[ballbmp[0] + 1, ballbmp[1] + 1] == 1)
             {
 
-                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) + (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x)) <= ballradius)
+                if (M.Sqrt((translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _head.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _head.Translation.z) + (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _head.Translation.x)) <= ballradius)
                 {
-                    if (_ball.Translation.x > oldX)
+                    if (_head.Translation.x > oldX)
                     {
-                        _ball.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] + 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _ball.Translation.x)));
+                        _head.Translation.z = translation[ballbmp[0] + 1, ballbmp[1] + 1].y - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _head.Translation.x) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].x - _head.Translation.x)));
                     }
-                    if (_ball.Translation.z > oldY)
+                    if (_head.Translation.z > oldY)
                     {
-                        _ball.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _ball.Translation.z)));
+                        _head.Translation.x = translation[ballbmp[0] + 1, ballbmp[1] + 1].x - M.Sqrt((((ballradius + 0.01f) * (ballradius + 0.01f)) - (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _head.Translation.z) * (translation[ballbmp[0] + 1, ballbmp[1] + 1].y - _head.Translation.z)));
 
                     }
                 }
@@ -776,7 +799,7 @@ namespace Fusee.Examples.Simple.Core
 
         public void makebox()
         {
-            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset.fus");
+            SceneContainer mazeScene = AssetStorage.Get<SceneContainer>("mazeAsset1.fus");
             var cornerstone = mazeScene.Children.FindNodes(node => node.Name == "Cornerstone")?.FirstOrDefault()?.GetMesh();
             cornerbox = cornerstone.BoundingBox.Size.xz;
             var wallZ = mazeScene.Children.FindNodes(node => node.Name == "WallZ")?.FirstOrDefault()?.GetMesh();
