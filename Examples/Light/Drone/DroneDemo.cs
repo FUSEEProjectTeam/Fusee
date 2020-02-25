@@ -413,7 +413,6 @@ namespace FuseeApp
             {
                 var Orientation = Quaternion.FromAxisAngle(float3.UnitY, Yaw) * Quaternion.FromAxisAngle(float3.UnitX, Pitch);
                 return float3.Rotate(Orientation, float3.UnitZ);
-                
             }
         }
         public float4x4 ViewMatrix
