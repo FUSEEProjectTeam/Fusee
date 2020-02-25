@@ -50,6 +50,9 @@ namespace Fusee.Jometri
     /// <typeparam name="TV">The type of the tree's value.</typeparam>
     public class BinarySearchTree<TK, TV> where TK : IComparable<TK>
     {
+        /// <summary>
+        /// The root node of the tree.
+        /// </summary>
         protected Node<TK, TV> _globalRoot;
 
         /// <summary>
@@ -242,6 +245,11 @@ namespace Fusee.Jometri
             return FindMin(_globalRoot).Value;
         }
 
+        /// <summary>
+        /// Returns the minimum value in the tree, starting at the given node.
+        /// </summary>
+        /// <param name="root">The node at which to start the search.</param>
+        /// <returns>The node containing the minimum value.</returns>
         protected static Node<TK, TV> FindMin(Node<TK, TV> root)
         {
             var current = root;

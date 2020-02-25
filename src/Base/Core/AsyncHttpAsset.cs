@@ -97,7 +97,7 @@ namespace Fusee.Base.Core
 
             if (!_assetHandlers.ContainsKey(Type))
             {
-                Diagnostics.Log(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
+                Diagnostics.Warn(this.GetType() + " does not contain an AssetHandler for type " + Type + " returning data as " + typeof(byte[]));
                 Type = typeof(byte[]);
             }
 
@@ -123,14 +123,17 @@ namespace Fusee.Base.Core
 
         private void AsyncHttpAsset_onDone(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Done");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Done");
         }
 
         private void AsyncHttpAsset_onFail(object sender, EventArgs e)
         {
-            Diagnostics.Log("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
+            Diagnostics.Debug("Download " + ((AsyncHttpAsset)sender).Id + " Failed");
         }
 
+        /// <summary>
+        /// Starts to load the assets.
+        /// </summary>
         public void StartLoad()
         {
             if (State == AsyncAssetState.None)
@@ -156,7 +159,7 @@ namespace Fusee.Base.Core
                     //onDownloaded
                     ProcessAsset(bytes);
                 }
-                catch (HttpRequestException e)
+                catch
                 {
                     FailCallback();
                 }
@@ -186,7 +189,9 @@ namespace Fusee.Base.Core
             onFail?.Invoke(this, EventArgs.Empty);
         }
     }
-
+    /// <summary>
+    /// The states an asset can inhibit.
+    /// </summary>
     public enum AsyncAssetState
     {
         /// <summary>
@@ -209,16 +214,40 @@ namespace Fusee.Base.Core
         /// State: failed.
         /// </summary>
         Failed,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState1,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState2,
+        /// <summary>
+        /// State: defined by User.
+        /// </summary>
         UserState3
     }
 
+    /// <summary>
+    /// The asset handler.
+    /// </summary>
     public struct AsyncAssetHandler
     {
+        /// <summary>
+        /// The asset load type.
+        /// </summary>
         public Type ReturnedType;
+        /// <summary>
+        /// The asset decoder.
+        /// </summary>
         public AsyncAssetDecoder Decoder;
     }
 
+    /// <summary>
+    /// The asset decoder
+    /// </summary>
+    /// <param name="id">The asset id.</param>
+    /// <param name="data">The asset data.</param>
+    /// <param name="callback">The decoded asset data.</param>
     public delegate void AsyncAssetDecoder(string id, object data, Action<object> callback);
 }

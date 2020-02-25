@@ -108,6 +108,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         case ".fus":
                             modelFile = Path.GetFileName(filepath);
+                            tApp = typeof(Fusee.Engine.Player.Core.Player);
                             break;
 
                         case ".fuz":
@@ -128,29 +129,33 @@ namespace Fusee.Tools.fuseeCmdLine
                             try
                             {
                                 Assembly asm = Assembly.LoadFrom(filepath);
+
+                                // Comparing our version with the version of the referenced Fusee.Serialization
+                                var serversion = asm.GetReferencedAssemblies().First(x => x.Name == "Fusee.Serialization").Version;
+                                var ourversion = Assembly.GetEntryAssembly().GetName().Version;
+
+                                if (serversion != ourversion)
+                                {
+                                    Console.WriteLine("Warning: Fusee player and the assembly are on different versions. This can result in unexpected behaviour.\nPlayer version: " + ourversion + "\nAssembly version: " + serversion);
+                                }
+
                                 tApp = asm.GetTypes().FirstOrDefault(t => typeof(RenderCanvas).IsAssignableFrom(t));
                                 TryAddDir(assetDirs, Path.Combine(Path.GetDirectoryName(filepath), "Assets"));
                             }
                             catch (Exception e)
                             {
-                                Diagnostics.Log(e.ToString());
+                                Diagnostics.Error("Error opening assembly", e);
                             }
                             break;
                     }
                 }
                 else
                 {
-                    Diagnostics.Log($"Cannot open {input}.");
+                    Diagnostics.Warn($"Cannot open {input}.");
                 }
             }
-            else
+            else if (File.Exists("Fusee.App.dll"))
             {
-                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
-            }
-
-            if (tApp == null)
-            {
-                // See if we are in "Deployed mode". That is: A Fusee.App.dll is lying next to us.
                 try
                 {
                     Assembly asm = Assembly.LoadFrom(Path.Combine(ExeDir, "Fusee.App.dll"));
@@ -158,14 +163,16 @@ namespace Fusee.Tools.fuseeCmdLine
                 }
                 catch (Exception e)
                 {
-                    Diagnostics.Log(e.ToString());
-                }
-                // No App was specified and we're not in Deplyed mode. Simply use the default App (== Viewer)
-                if (tApp == null)
-                {
-                    tApp = typeof(Fusee.Engine.Player.Core.Player);
+                    Diagnostics.Debug("Could not load Fusee.App.dll", e);
                 }
             }
+            else
+            {
+                Console.WriteLine("Fusee test scene. Use 'fusee player <filename/Uri>' to view .fus/.fuz files or Fusee .dlls.");
+                tApp = typeof(Fusee.Engine.Player.Core.Player);
+            }
+
+
 
             var fap = new Fusee.Base.Imp.Desktop.FileAssetProvider(assetDirs);
             fap.RegisterTypeHandler(
@@ -187,11 +194,7 @@ namespace Fusee.Tools.fuseeCmdLine
                     {
                         if (!Path.GetExtension(id).ToLower().Contains("fus")) return null;
 
-                        var scene = ProtoBuf.Serializer.Deserialize<SceneContainer>((Stream)storage);
-
-                        var container = scene;
-
-                        return new ConvertSceneGraph().Convert(container);
+                        return Serializer.DeserializeSceneContainer((Stream)storage);
                     },
                     Checker = id => Path.GetExtension(id).ToLower().Contains("fus")
                 });
@@ -202,7 +205,7 @@ namespace Fusee.Tools.fuseeCmdLine
             var ctor = tApp.GetConstructor(Type.EmptyTypes);
             if (ctor == null)
             {
-                Diagnostics.Log($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
+                Diagnostics.Warn($"Cannot instantiate FUSEE App. {tApp.Name} contains no default constructor");
             }
             else
             {

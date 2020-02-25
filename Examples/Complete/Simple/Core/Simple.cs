@@ -1,15 +1,16 @@
-using System.Collections.Generic;
-using System.Linq;
 using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
+using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using static Fusee.Engine.Core.Input;
 using static Fusee.Engine.Core.Time;
-using Fusee.Engine.GUI;
 
 namespace Fusee.Examples.Simple.Core
 {
@@ -36,11 +37,11 @@ namespace Fusee.Examples.Simple.Core
 
         private bool _keys;
 
-        // Init is called on startup. 
-        public override void Init()
+        // Init is called on startup.
+        public override async Task<bool> Init()
         {
             _gui = CreateGui();
-            Resize(new ResizeEventArgs(Width, Height));
+
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
 
@@ -48,13 +49,15 @@ namespace Fusee.Examples.Simple.Core
             RC.ClearColor = new float4(1, 1, 1, 1);
 
             // Load the rocket model
-            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");                 
+            _rocketScene = AssetStorage.Get<SceneContainer>("FUSEERocket.fus");
 
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
-            _guiRenderer = new SceneRendererForward(_gui);
-        }
 
+            _guiRenderer = new SceneRendererForward(_gui);
+
+            return true;
+        }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -108,14 +111,14 @@ namespace Fusee.Examples.Simple.Core
             _sih.View = RC.View;
 
             // Constantly check for interactive objects.
-            if(!Mouse.Desc.Contains("Android"))
+            if (!Mouse.Desc.Contains("Android"))
                 _sih.CheckForInteractiveObjects(Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
                 _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-               
+
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -150,7 +153,7 @@ namespace Fusee.Examples.Simple.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -167,7 +170,6 @@ namespace Fusee.Examples.Simple.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(canvasWidth / 2 - 4, 0), canvasHeight, canvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
-
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
@@ -187,7 +189,7 @@ namespace Fusee.Examples.Simple.Core
             };
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);            
+            canvas.Components.Insert(0, canvasProjComp);
 
             return new SceneContainer
             {

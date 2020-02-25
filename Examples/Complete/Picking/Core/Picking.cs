@@ -1,12 +1,4 @@
-﻿#define GUI_SIMPLE
-
-// dynamic magic works @desktopbuild only! 
-#define WEBBUILD
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Fusee.Base.Common;
+﻿using Fusee.Base.Common;
 using Fusee.Base.Core;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
@@ -14,13 +6,13 @@ using Fusee.Engine.GUI;
 using Fusee.Math.Core;
 using Fusee.Serialization;
 using Fusee.Xene;
-#if GUI_SIMPLE
-
-#endif
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Fusee.Examples.Picking.Core
 {
-
     [FuseeApplication(Name = "FUSEE Picking Example", Description = "How to use the Scene Picker.")]
     public class Picking : RenderCanvas
     {
@@ -38,41 +30,30 @@ namespace Fusee.Examples.Picking.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 1000;
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
-
-#if GUI_SIMPLE
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWindowWidth;
-        private float _initWindowHeight;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
         private float _canvasHeight = 9;
 
-#endif
         private PickResult _currentPick;
         private float4 _oldColor;
         private bool _pick;
         private float2 _pickPos;
 
-        // Init is called on startup. 
-        public override void Init()
+        // Init is called on startup.
+        public override async Task<bool> Init()
         {
-            _initWindowWidth = Width;
-            _initWindowHeight = Height;
-
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
 
             _canvasHeight = _initCanvasHeight;
             _canvasWidth = _initCanvasWidth;
-
-            _aspectRatio = Width / (float)Height;
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);
@@ -84,18 +65,17 @@ namespace Fusee.Examples.Picking.Core
             _sceneRenderer = new SceneRendererForward(_scene);
             _scenePicker = new ScenePicker(_scene);
 
-#if GUI_SIMPLE
             _gui = CreateGui();
             // Create the interaction handler
             _sih = new SceneInteractionHandler(_gui);
             _guiRenderer = new SceneRendererForward(_gui);
-#endif
+
+            return true;
         }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
-
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
@@ -144,61 +124,39 @@ namespace Fusee.Examples.Picking.Core
             var mtxRot = float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
             var mtxCam = float4x4.LookAt(0, 20, -600, 0, 150, 0, 0, 1, 0);
 
-            // Check 
+            // Check
             if (_pick)
             {
-                Diagnostics.Log(_pickPos);
+                Diagnostics.Debug(_pickPos);
                 float2 pickPosClip = _pickPos * new float2(2.0f / Width, -2.0f / Height) + new float2(-1, 1);
 
                 _scenePicker.View = mtxCam * mtxRot;
 
                 PickResult newPick = _scenePicker.Pick(pickPosClip).ToList().OrderBy(pr => pr.ClipPos.z).FirstOrDefault();
 
-#if WEBBUILD
-
                 if (newPick?.Node != _currentPick?.Node)
                 {
-
                     if (_currentPick != null)
                     {
                         var ef = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
                         ef.SetEffectParam("DiffuseColor", _oldColor);
                     }
+
                     if (newPick != null)
                     {
                         var ef = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed 
+                        _oldColor = (float4)ef.GetEffectParam("DiffuseColor"); // cast needed
                         ef.SetEffectParam("DiffuseColor", ColorUint.Tofloat4(ColorUint.LawnGreen));
                     }
                     _currentPick = newPick;
                 }
-#else
-                if (newPick?.Node != _currentPick?.Node)
-                {
-                    dynamic shaderEffectComponent; // this needs to be dynamic! & reference Microsoft.CSharp.dll
 
-                    if (_currentPick != null)
-                    {
-                        shaderEffectComponent = _currentPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        shaderEffectComponent.DiffuseColor = _oldColor;
-
-                    }
-                    if (newPick != null)
-                    {
-                        shaderEffectComponent = newPick.Node.GetComponent<ShaderEffectComponent>().Effect;
-                        _oldColor = (float4) shaderEffectComponent.DiffuseColor;
-                        shaderEffectComponent.DiffuseColor = ColorUint.Tofloat4(ColorUint.LawnGreen);
-                    }
-                    _currentPick = newPick;
-                }
-#endif
                 _pick = false;
             }
 
             RC.View = mtxCam * mtxRot;
             // Render the scene loaded in Init()
             _sceneRenderer.Render(RC);
-#if GUI_SIMPLE
 
             //Set the view matrix for the interaction handler.
             _sih.View = RC.View;
@@ -211,8 +169,8 @@ namespace Fusee.Examples.Picking.Core
             {
                 _sih.CheckForInteractiveObjects(Input.Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
-            _guiRenderer.Render(RC);          
-#endif           
+            _guiRenderer.Render(RC);
+
             // Swap buffers: Show the contents of the backbuffer (containing the currently rerndered farame) on the front buffer.
             Present();
         }
@@ -222,19 +180,11 @@ namespace Fusee.Examples.Picking.Core
             return (T)Convert.ChangeType(value, typeof(T));
         }
 
-
         private InputDevice Creator(IInputDeviceImp device)
         {
             throw new NotImplementedException();
         }
 
-        // Is called when the window was resized
-        public override void Resize(ResizeEventArgs e)
-        {
-            
-        }
-
-#if GUI_SIMPLE
         private SceneContainer CreateGui()
         {
             var vsTex = AssetStorage.Get<string>("texture.vert");
@@ -258,7 +208,7 @@ namespace Fusee.Examples.Picking.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, _initCanvasHeight - 0.5f), _initCanvasHeight, _initCanvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);
@@ -276,7 +226,6 @@ namespace Fusee.Examples.Picking.Core
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery), 250f);
 
-
             var canvas = new CanvasNodeContainer(
                 "Canvas",
                 _canvasRenderMode,
@@ -291,7 +240,7 @@ namespace Fusee.Examples.Picking.Core
 
             var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
             canvas.Components.Insert(0, canvasProjComp);
-            
+
             return new SceneContainer
             {
                 Children = new List<SceneNodeContainer>
@@ -316,7 +265,6 @@ namespace Fusee.Examples.Picking.Core
         {
             OpenLink("http://fusee3d.org");
         }
-#endif
 
         private SceneContainer CreateScene()
         {
@@ -422,7 +370,6 @@ namespace Fusee.Examples.Picking.Core
             });
         }
 
-
         public static Mesh CreateCuboid(float3 size)
         {
             return new Mesh
@@ -474,7 +421,6 @@ namespace Fusee.Examples.Picking.Core
 
                     // bottom face
                     20, 22, 21, 20, 23, 22
-
                 },
 
                 Normals = new[]

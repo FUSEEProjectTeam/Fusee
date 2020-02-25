@@ -163,7 +163,7 @@ namespace Fusee.Xene
         /// </summary>
         /// <typeparam name="TComp">The type of the components to look for.</typeparam>
         /// <param name="sncThis">This scene node container.</param>
-        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        /// <returns>A List of components of the specified type, if contained within the given container.</returns>
         public static void RemoveComponentsInChildren<TComp>(this SceneNodeContainer sncThis)
             where TComp : SceneComponentContainer
         {
@@ -199,7 +199,7 @@ namespace Fusee.Xene
         /// </summary>
         /// <typeparam name="TComp">The type of the components to look for.</typeparam>
         /// <param name="sncThis">This scene node container.</param>
-        /// <returns>A List of compontetns of the specified type, if contained within the given container.</returns>
+        /// <returns>A List of components of the specified type, if contained within the given container.</returns>
         public static IEnumerable<TComp> GetComponentsInChildren<TComp>(this SceneNodeContainer sncThis)
             where TComp : SceneComponentContainer
         {
@@ -382,7 +382,7 @@ namespace Fusee.Xene
         }
 
         /// <summary>
-        /// Converts the SceneContainer to a SceneNodeContainer with a seperate TransformComponent
+        /// Converts the SceneContainer to a SceneNodeContainer with a separate TransformComponent
         /// </summary>
         /// <param name="sc">this node.</param>
         public static SceneNodeContainer ToSceneNodeContainer(this SceneContainer sc)
@@ -456,6 +456,12 @@ namespace Fusee.Xene
             Rotate(tc, Quaternion.QuaternionToMatrix(quaternion), space);
         }
 
+        /// <summary>
+        /// Rotates this node around a given point.
+        /// </summary>
+        /// <param name="tc">The node to rotate.</param>
+        /// <param name="center">The point we want to rotate around.</param>
+        /// <param name="angles">The x, y and z angles.</param>
         public static void RotateAround(this TransformComponent tc, float3 center, float3 angles)
         {
             var pos = tc.Translation;
