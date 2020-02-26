@@ -46,23 +46,6 @@ namespace Fusee.Math.Core
         public double3 EulerRotation => double4x4.RotMatToEuler(Rotation);
 
         /// <summary>
-        ///     Create a new axis aligned bounding box
-        /// </summary>
-        /// <param name="min_">the minimum x y and z values</param>
-        /// <param name="max_">the maximum x y and z values</param>
-        /// <param name="rotation_">the rotation of this box</param>
-        /// <param name="translation_">the translation of this box</param>
-        /// <param name="size_">the size of this box</param>
-        public OBBd(double3 min_, double3 max_, double4x4 rotation_, double3 translation_, double3 size_)
-        {
-            Min = min_;
-            Max = max_;
-            Size = size_;
-            Rotation = rotation_;
-            Translation = translation_;
-        }
-
-        /// <summary>
         ///     Generates a new  oriented bounding box from a given set of vertices or points
         /// </summary>
         /// <param name="vertices"></param>
