@@ -45,7 +45,8 @@ namespace Fusee.Examples.ABCompare.Desktop
 
             AssetStorage.RegisterProvider(fap);
 
-            Console.ReadKey();
+            //==> Only relevant when using RenderDoc!
+            //Console.ReadKey();
 
             var app = new Core.ABCompare();
             

@@ -38,15 +38,12 @@ namespace Fusee.Engine.Player.Core
 
         private const float ZNear = 1f;
         private const float ZFar = 3000;
-        private float _aspectRatio;
         private float _fovy = M.PiOver4;
 
         private SceneRendererForward _guiRenderer;
         private SceneContainer _gui;
         private SceneInteractionHandler _sih;
         private readonly CanvasRenderMode _canvasRenderMode = CanvasRenderMode.SCREEN;
-        private float _initWindowWidth;
-        private float _initWindowHeight;
         private float _initCanvasWidth;
         private float _initCanvasHeight;
         private float _canvasWidth = 16;
@@ -56,26 +53,14 @@ namespace Fusee.Engine.Player.Core
 
         private GamePadDevice _gamePad;
 
-        private WritableTexture _renderTex;
-        private ShaderEffect _blurPassEffect;
-        private SceneContainer _quadScene;
-        private SceneRendererForward _sceneRendererBlur;
-        private readonly int _texRes = (int)TexRes.HIGH_RES;
-
-
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
-            _initWindowWidth = Width;
-            _initWindowHeight = Height;
-
             _initCanvasWidth = Width / 100f;
             _initCanvasHeight = Height / 100f;
 
             _canvasHeight = _initCanvasHeight;
-            _canvasWidth = _initCanvasWidth;
-
-            _aspectRatio = Width / (float)Height;
+            _canvasWidth = _initCanvasWidth;            
 
             // Initial "Zoom" value (it's rather the distance in view direction, not the camera's focal distance/opening angle)
             _zoom = 400;
@@ -98,53 +83,6 @@ namespace Fusee.Engine.Player.Core
            
             // Register the input devices that are not already given.
             _gamePad = GetDevice<GamePadDevice>(0);
-
-            //Initialize objects we need for the multipass blur effect
-            _renderTex = WritableTexture.CreateAlbedoTex(_texRes, _texRes);
-            
-           // _renderTex.WrapMode = TextureWrapMode.CLAMP_TO_EDGE;
-
-            _blurPassEffect = new ShaderEffect(new[]
-            {
-                new EffectPassDeclaration
-                {
-                    VS = AssetStorage.Get<string>("screenFilledQuad_1.vert"),
-                    PS = AssetStorage.Get<string>("simpleBlur_1.frag"),
-                    StateSet = new RenderStateSet
-                    {
-                        AlphaBlendEnable = false,
-                        ZEnable = true,
-                    }
-                }
-            },
-            new[]
-            {
-                new EffectParameterDeclaration { Name = "InputTex", Value = _renderTex},
-
-            });
-
-            _quadScene = new SceneContainer()
-            {
-                Children = new List<SceneNodeContainer>()
-                {
-                    new SceneNodeContainer()
-                    {
-                        Components = new List<SceneComponentContainer>()
-                        {
-                            new ProjectionComponent(ProjectionMethod.PERSPECTIVE, 0.1f, 1, M.DegreesToRadians(45f)),
-
-                            new ShaderEffectComponent()
-                            {
-                                Effect = _blurPassEffect
-                            },
-                            new Plane()
-                        }
-                    }
-                }
-            };
-
-            _sceneRendererBlur = new SceneRendererForward(_quadScene);
-
 
             AABBCalculator aabbc = new AABBCalculator(_scene);
             var bbox = aabbc.GetBox();
@@ -190,6 +128,7 @@ namespace Fusee.Engine.Player.Core
             // Clear the backbuffer
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
+            RC.Viewport(0, 0, Width, Height);
 
             // Mouse and keyboard movement
             if (Keyboard.LeftRightAxis != 0 || Keyboard.UpDownAxis != 0)
@@ -273,31 +212,30 @@ namespace Fusee.Engine.Player.Core
 
             // Create the camera matrix and set it as the current View transformation
             var mtxRot = /*float4x4.CreateRotationZ(_angleRoll) **/ float4x4.CreateRotationX(_angleVert) * float4x4.CreateRotationY(_angleHorz);
-            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);
-            RC.View = mtxCam * mtxRot * _sceneScale * _sceneCenter;
-            var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);
-            RC.Projection *= mtxOffset;
+            var mtxCam = float4x4.LookAt(0, 20, -_zoom, 0, 0, 0, 0, 1, 0);            
+            var mtxOffset = float4x4.CreateTranslation(2f * _offset.x / Width, -2f * _offset.y / Height, 0);            
 
+            var view = mtxCam * mtxRot * _sceneScale * _sceneCenter; ;
+            var perspective = float4x4.CreatePerspectiveFieldOfView(_fovy, (float)Width / Height, ZNear, ZFar) * mtxOffset;
+            var orthographic = float4x4.CreateOrthographic(Width, Height, ZNear, ZFar);
+
+            RC.View = view;
+            RC.Projection = orthographic;
             // Constantly check for interactive objects.
-            _sih.CheckForInteractiveObjects(Input.Mouse.Position, Width, Height);
+            _sih.CheckForInteractiveObjects(RC, Mouse.Position, Width, Height);
 
             if (Touch.GetTouchActive(TouchPoints.Touchpoint_0) && !Touch.TwoPoint)
             {
-                _sih.CheckForInteractiveObjects(Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
+                _sih.CheckForInteractiveObjects(RC, Touch.GetPosition(TouchPoints.Touchpoint_0), Width, Height);
             }
             // Tick any animations and Render the scene loaded in Init()
-            var width = Width;
-            var height = Height;
-            RC.Viewport(0, 0, _texRes, _texRes, false);
-            _sceneRenderer.Render(RC, _renderTex);   //Pass 1: render the rocket to "_renderTex", using the standard material.
-
+            RC.View = view;
+            RC.Projection = perspective;
             _sceneRenderer.Animate();
-            // _sceneRenderer.Render(RC);            
-            RC.Viewport(0, 0, width, height);
-            _sceneRendererBlur.Render(RC);           //Pass 2: render a screen filled quad, using the "_blurPassEffect" material we defined above.
+            _sceneRenderer.Render(RC);
 
-            _sih.View = RC.View;
-
+            RC.View = view;
+            RC.Projection = orthographic;
             _guiRenderer.Render(RC);            
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
@@ -378,11 +316,7 @@ namespace Fusee.Engine.Player.Core
                     Max = new float2(_canvasWidth / 2, _canvasHeight / 2f)
                 });
             canvas.Children.Add(fuseeLogo);
-            canvas.Children.Add(text);
-
-            //Create canvas projection component and add resize delegate
-            var canvasProjComp = new ProjectionComponent(ProjectionMethod.ORTHOGRAPHIC, ZNear, ZFar, _fovy);
-            canvas.Components.Insert(0, canvasProjComp);
+            canvas.Children.Add(text);           
             
             return new SceneContainer
             {

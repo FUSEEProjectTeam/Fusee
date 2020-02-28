@@ -10,6 +10,8 @@ void main()
 {
 	vec3 result = vec3(0.0, 0.0, 0.0);
 	
+	//=> Erstellung einer simplen Verzerrung
+	
 	result = texture(InputTex1, vUV + 0.005*vec2( sin(1024.0*vUV.r),cos(768.0*vUV.g))).rgb;
 	        
 	oBlurred = vec4(result, 1.0);
