@@ -40,9 +40,9 @@ namespace Fusee.Engine.Core
                 scale = M.Lerp(0.1f, 1.0f, scale * scale);
                 kernel[i] *= scale;
             }
-            
+
             return kernel;
-        }        
+        }
 
         /// <summary>
         /// Creates a noise texture with size 4x4.
@@ -67,8 +67,8 @@ namespace Fusee.Engine.Core
                 pxData.AddRange(bytesZ);
             }
 
-            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)),true , Common.TextureFilterMode.NEAREST);
-        }          
+            return new Texture(new ImageData(pxData.ToArray(), texSize, texSize, new ImagePixelFormat(ColorFormat.fRGB16)), true, Common.TextureFilterMode.NEAREST);
+        }
 
         private static float3[] SSAONoise(int noiseSize) //should be a multiple of 4...
         {
@@ -88,7 +88,5 @@ namespace Fusee.Engine.Core
 
             return noise;
         }
-
-        
     }
 }

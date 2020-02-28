@@ -75,11 +75,6 @@ namespace Fusee.Engine.Core
         protected RenderContext _rc;
 
         /// <summary>
-        /// The ShaderEffect, used if no other effect is found while traversing the scene.
-        /// </summary>
-        protected ShaderEffect _defaultEffect;
-
-        /// <summary>
         /// Holds the status of the model matrices and other information we need while traversing up and down the scene graph.
         /// </summary>
         protected RendererState _state;
@@ -268,23 +263,7 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
-
-                var defaultMat = new MaterialComponent
-                {
-                    Diffuse = new MatChannelContainer
-                    {
-                        Color = new float4(0.5f, 0.5f, 0.5f, 1.0f)
-                    },
-                    Specular = new SpecularChannelContainer
-                    {
-                        Color = new float4(1, 1, 1, 1),
-                        Intensity = 0.5f,
-                        Shininess = 22
-                    }
-                };
-
-                _defaultEffect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(defaultMat);
-                _rc.SetShaderEffect(_defaultEffect);
+                _rc.SetShaderEffect(ShaderCodeBuilder.Default);
             }
         }
         #endregion
@@ -591,8 +570,7 @@ namespace Fusee.Engine.Core
                 HasNumberOfLightsChanged = false;
             }
             _state.Effect = shaderComponent.Effect;
-            _rc.SetShaderEffect(shaderComponent.Effect);
-
+            _rc.SetShaderEffect(_state.Effect);
         }
 
         /// <summary>
@@ -680,7 +658,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = _defaultEffect;
+            _state.Effect = ShaderCodeBuilder.Default;
             _state.RenderUndoStates = new RenderStateSet();
         }
 
@@ -736,72 +714,17 @@ namespace Fusee.Engine.Core
             var lightParamStrings = LightingShard.LightPararamStringsAllLights[position];
 
             // Set params in modelview space since the lightning calculation is in modelview space
-            _rc.SetFXParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);
-            _rc.SetFXParam(lightParamStrings.PositionWorldSpace, lightRes.WorldSpacePos);
-            _rc.SetFXParam(lightParamStrings.Intensities, light.Color);
-            _rc.SetFXParam(lightParamStrings.MaxDistance, light.MaxDistance);
-            _rc.SetFXParam(lightParamStrings.Strength, strength);
-            _rc.SetFXParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
-            _rc.SetFXParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
-            _rc.SetFXParam(lightParamStrings.Direction, dirViewSpace);
-            _rc.SetFXParam(lightParamStrings.DirectionWorldSpace, dirWorldSpace);
-            _rc.SetFXParam(lightParamStrings.LightType, (int)light.Type);
-            _rc.SetFXParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
-            _rc.SetFXParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
-            _rc.SetFXParam(lightParamStrings.Bias, light.Bias);
-        }
-
-        #region RenderContext/Asset Setup
-
-        private static EffectParameterDeclaration CreateEffectParameterDeclaration(TypeContainer effectParameter)
-        {
-            if (effectParameter.Name == null)
-                throw new InvalidDataException("EffectParameterDeclaration: Name is empty!");
-
-            var returnEffectParameterDeclaration = new EffectParameterDeclaration { Name = effectParameter.Name };
-
-            var t = effectParameter.TypeId;
-
-            switch (t)
-            {
-                case TypeId.Int:
-                    if (effectParameter is TypeContainerInt effectParameterInt)
-                        returnEffectParameterDeclaration.Value = effectParameterInt.Value;
-                    break;
-                case TypeId.Double:
-                    if (effectParameter is TypeContainerDouble effectParameterDouble)
-                        returnEffectParameterDeclaration.Value = effectParameterDouble.Value;
-                    break;
-                case TypeId.Float:
-                    if (effectParameter is TypeContainerFloat effectParameterFloat)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat.Value;
-                    break;
-                case TypeId.Float2:
-                    if (effectParameter is TypeContainerFloat2 effectParameterFloat2)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat2.Value;
-                    break;
-                case TypeId.Float3:
-                    if (effectParameter is TypeContainerFloat3 effectParameterFloat3)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat3.Value;
-                    break;
-                case TypeId.Float4:
-                    if (effectParameter is TypeContainerFloat4 effectParameterFloat4)
-                        returnEffectParameterDeclaration.Value = effectParameterFloat4.Value;
-                    break;
-                case TypeId.Bool:
-                    if (effectParameter is TypeContainerBool effectParameterBool)
-                        returnEffectParameterDeclaration.Value = effectParameterBool.Value;
-                    break;
-                default:
-                    throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name} is of unhandled type {t.ToString()}!");
-            }
-
-            if (returnEffectParameterDeclaration.Value == null)
-                throw new InvalidDataException($"EffectParameterDeclaration:{effectParameter.Name}, value is null");
-
-            return returnEffectParameterDeclaration;
-        }
-
-        #endregion
+            _rc.SetGlobalEffectParam(lightParamStrings.PositionViewSpace, _rc.View * lightRes.WorldSpacePos);            
+            _rc.SetGlobalEffectParam(lightParamStrings.Intensities, light.Color);
+            _rc.SetGlobalEffectParam(lightParamStrings.MaxDistance, light.MaxDistance);
+            _rc.SetGlobalEffectParam(lightParamStrings.Strength, strength);
+            _rc.SetGlobalEffectParam(lightParamStrings.OuterAngle, M.DegreesToRadians(light.OuterConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.InnerAngle, M.DegreesToRadians(light.InnerConeAngle));
+            _rc.SetGlobalEffectParam(lightParamStrings.Direction, dirViewSpace);            
+            _rc.SetGlobalEffectParam(lightParamStrings.LightType, (int)light.Type);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsActive, light.Active ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.IsCastingShadows, light.IsCastingShadows ? 1 : 0);
+            _rc.SetGlobalEffectParam(lightParamStrings.Bias, light.Bias);
+        }       
     }
 }
