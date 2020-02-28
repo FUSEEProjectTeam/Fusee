@@ -74,52 +74,6 @@ namespace Fusee.Serialization
             var distance = (Center - camPos).Length;
             var slope = System.Math.Tan(fov / 2d);
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
-        }
-
-        /// <summary>
-        /// Returns whether the given float4x4 intersects with the planes
-        /// </summary>
-        /// <param name="vf"></param>
-        /// <returns></returns>
-        public bool Intersects(float4x4 vf)
-        {            
-            var planes = new float4[6];
-
-            planes[0] = vf.Row3 + vf.Row2;
-            planes[1] = vf.Row3 - vf.Row2;            
-            planes[2] = vf.Row3 + vf.Row0;           
-            planes[3] = vf.Row3 - vf.Row0;           
-            planes[4] = vf.Row3 + vf.Row1;           
-            planes[5] = vf.Row3 - vf.Row1;           
-
-            foreach (var plane in planes)
-            {
-                var side = Classify(plane);
-                if (side < 0) return false;
-            }
-            return true;
-            //return PlaneIntersects(planes);
-        }
-
-        private float Classify(float4 plane)
-        {
-            plane.Normalize();
-
-            // maximum extent in direction of plane normal (plane.xyz)
-            var r = System.Math.Abs(Size * plane.x)
-                + System.Math.Abs(Size * plane.y)
-                + System.Math.Abs(Size * plane.z);
-
-            // signed distance between box center and plane
-            //float d = plane.Test(mCenter);
-            var d = float3.Dot(plane.xyz, (float3)Center) + plane.w;
-
-            // return signed distance
-            if (System.Math.Abs(d) < r)
-                return 0.0f;
-            else if (d < 0.0)
-                return (float)(d + r);
-            return (float)(d - r);
-        }
+        }        
     }
 }
