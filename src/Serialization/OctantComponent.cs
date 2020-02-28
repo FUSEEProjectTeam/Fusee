@@ -72,12 +72,12 @@ namespace Fusee.Serialization
         public void ComputeScreenProjectedSize(double3 camPos, int screenHeight, float fov)
         {
             var distance = (Center - camPos).Length;
-            var slope = (float)System.Math.Tan(fov / 2f);
+            var slope = System.Math.Tan(fov / 2d);
             ProjectedScreenSize = screenHeight / 2d * Size / (slope * distance);
         }
 
         /// <summary>
-        /// Returns wether the given float4x4 intersects with the planes
+        /// Returns whether the given float4x4 intersects with the planes
         /// </summary>
         /// <param name="vf"></param>
         /// <returns></returns>
@@ -120,83 +120,6 @@ namespace Fusee.Serialization
             else if (d < 0.0)
                 return (float)(d + r);
             return (float)(d - r);
-        }
-
-
-        //see: http://old.cescg.org/CESCG-2002/DSykoraJJelinek/
-        private bool PlaneIntersects(double4[] planes)
-        {
-            var res = true;
-            foreach (var plane in planes)
-            {
-                var normPlane = plane.Normalize();
-                normPlane *= -1;
-
-                var pVert = GetPVert(normPlane.xyz);
-                var nVert = GetNVert(normPlane.xyz);
-
-                var m = (normPlane.x * nVert.x) + (normPlane.y * nVert.y) + (normPlane.z * nVert.z);
-                var n = (normPlane.x * pVert.x) + (normPlane.y * pVert.y) + (normPlane.z * pVert.z);
-                if (m > -normPlane.w)
-                {
-                    res = false;
-                    return res;
-                } //outside
-
-                if (n > -normPlane.w)
-                {
-                    res = true;
-                } //intersects
-            }
-
-            return res; //inside            
-        }
-
-        private double3 GetPVert(double3 planeNormal)
-        {
-
-            var Max = Center + new double3(Size, Size, Size);
-            var Min = Center - new double3(Size, Size, Size);
-
-            if (planeNormal.x > 0 && planeNormal.y > 0 && planeNormal.z > 0)        //+ + +
-                return Max;
-            else if (planeNormal.x > 0 && planeNormal.y > 0 && planeNormal.z < 0)   //+ + -
-                return new double3(Max.x, Max.y, Min.z);
-            else if (planeNormal.x > 0 && planeNormal.y < 0 && planeNormal.z > 0)   //+ - +
-                return new double3(Max.x, Min.y, Max.z);
-            else if (planeNormal.x > 0 && planeNormal.y < 0 && planeNormal.z < 0)   //+ - -
-                return new double3(Max.x, Min.y, Min.z);
-            else if (planeNormal.x < 0 && planeNormal.y > 0 && planeNormal.z > 0)   //- + +
-                return new double3(Min.x, Max.y, Max.z);
-            else if (planeNormal.x < 0 && planeNormal.y > 0 && planeNormal.z < 0)   //- + -
-                return new double3(Min.x, Max.y, Min.z);
-            else if (planeNormal.x < 0 && planeNormal.y < 0 && planeNormal.z > 0)   //- - +
-                return new double3(Min.x, Min.y, Max.z);
-            else                                                                    //- - -
-                return Min;
-        }
-
-        private double3 GetNVert(double3 planeNormal)
-        {
-            var Max = Center + new double3(Size, Size, Size);
-            var Min = Center - new double3(Size, Size, Size);
-
-            if (planeNormal.x > 0 && planeNormal.y > 0 && planeNormal.z > 0)        //+ + +
-                return Min;
-            else if (planeNormal.x > 0 && planeNormal.y > 0 && planeNormal.z < 0)   //+ + -
-                return new double3(Min.x, Min.y, Max.z);
-            else if (planeNormal.x > 0 && planeNormal.y < 0 && planeNormal.z > 0)   //+ - +
-                return new double3(Min.x, Max.y, Min.z);
-            else if (planeNormal.x > 0 && planeNormal.y < 0 && planeNormal.z < 0)   //+ - -
-                return new double3(Min.x, Max.y, Max.z);
-            else if (planeNormal.x < 0 && planeNormal.y > 0 && planeNormal.z > 0)   //- + +
-                return new double3(Max.x, Min.y, Min.z);
-            else if (planeNormal.x < 0 && planeNormal.y > 0 && planeNormal.z < 0)   //- + -
-                return new double3(Max.x, Min.y, Max.z);
-            else if (planeNormal.x < 0 && planeNormal.y < 0 && planeNormal.z > 0)   //- - +
-                return new double3(Max.x, Max.y, Min.z);
-            else                                                                    //- - -
-                return Max;
         }
     }
 }

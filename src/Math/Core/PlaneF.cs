@@ -8,7 +8,7 @@ namespace Fusee.Math.Core
     /// The plane divides a space into two half-spaces.The direction plane's normal vector defines the "outer" or negative half-space.
     /// Points that lie in the positive half space of the plane do have a negative signed distance to the plane.
     /// </summary>
-    public struct Plane
+    public struct PlaneF
     {
         /// <summary>
         /// The A plane coefficient.
@@ -84,7 +84,7 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Normalizes this plane.
         /// </summary>
-        public Plane Normalize()
+        public PlaneF Normalize()
         {
             var mag = (float)System.Math.Sqrt(A * A + B * B + C * C);
             var a = A / mag;
@@ -92,7 +92,7 @@ namespace Fusee.Math.Core
             var c = C / mag;
             var d = D / mag;
 
-            return new Plane() { A = a, B = b, C = c, D = d };
+            return new PlaneF() { A = a, B = b, C = c, D = d };
         }
 
         /// <summary>
@@ -221,9 +221,9 @@ namespace Fusee.Math.Core
         /// <param name="plane">The plane.</param>
         /// <param name="scalar">The scalar value.</param>
         /// <returns></returns>
-        public static Plane operator *(Plane plane, float scalar)
+        public static PlaneF operator *(PlaneF plane, float scalar)
         {
-            return new Plane()
+            return new PlaneF()
             {
                 A = plane.A * scalar,
                 B = plane.B * scalar,
@@ -237,7 +237,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The plane.</param>
         /// <param name="right">The scalar value.</param>        
-        public static bool operator ==(Plane left, Plane right)
+        public static bool operator ==(PlaneF left, PlaneF right)
         {
             return left.Equals(right);
         }
@@ -247,7 +247,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="left">The plane.</param>
         /// <param name="right">The scalar value.</param>        
-        public static bool operator !=(Plane left, Plane right)
+        public static bool operator !=(PlaneF left, PlaneF right)
         {
             return !(left == right);
         }
@@ -255,13 +255,13 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Indicates whether this plane is equal to another object.
         /// </summary>
-        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="Plane"/>.</param>
+        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="PlaneF"/>.</param>
         /// <returns></returns>
         public override bool Equals(object obj)
         {
-            if (obj.GetType() != typeof(Plane)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+            if (obj.GetType() != typeof(PlaneF)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
 
-            var other = (Plane)obj;
+            var other = (PlaneF)obj;
             return
                 System.Math.Abs(A - other.A) < M.EpsilonFloat &&
                 System.Math.Abs(B - other.B) < M.EpsilonFloat &&

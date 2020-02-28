@@ -55,7 +55,7 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The world space frustum planes, derived from the current view-projection matrix.
         /// </summary>
-        public IReadOnlyCollection<Math.Core.Plane> FrustumPlanes { get; private set; }
+        public IReadOnlyCollection<PlaneF> FrustumPlanes { get; private set; }
 
         /// <summary>
         /// Enables or disables Frustum Culling.
@@ -1232,12 +1232,12 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="mat">The matrix from which to extract the planes.</param>
         /// <returns>false if fully outside, true if inside or intersects</returns>
-        internal Math.Core.Plane[] GetFrustumPlanes(float4x4 mat)
+        internal PlaneF[] GetFrustumPlanes(float4x4 mat)
         { 
-            var planes = new Math.Core.Plane[6];
+            var planes = new PlaneF[6];
 
             // left
-            planes[0] = new Math.Core.Plane()
+            planes[0] = new PlaneF()
             {
                 A = mat.M41 + mat.M11,
                 B = mat.M42 + mat.M12,
@@ -1246,7 +1246,7 @@ namespace Fusee.Engine.Core
             };
 
             // right
-            planes[1] = new Math.Core.Plane()
+            planes[1] = new PlaneF()
             {
                 A = mat.M41 - mat.M11,
                 B = mat.M42 - mat.M12,
@@ -1256,7 +1256,7 @@ namespace Fusee.Engine.Core
             
 
             // bottom
-            planes[2] = new Math.Core.Plane()
+            planes[2] = new PlaneF()
             {
                 A = mat.M41 + mat.M21,
                 B = mat.M42 + mat.M22,
@@ -1266,7 +1266,7 @@ namespace Fusee.Engine.Core
             
 
             // top
-            planes[3] = new Math.Core.Plane()
+            planes[3] = new PlaneF()
             {
                 A = mat.M41 - mat.M21,
                 B = mat.M42 - mat.M22,
@@ -1276,7 +1276,7 @@ namespace Fusee.Engine.Core
             
 
             // near
-            planes[4] = new Math.Core.Plane()
+            planes[4] = new PlaneF()
             {
                 A = mat.M41 + mat.M31,
                 B = mat.M42 + mat.M32,
@@ -1286,7 +1286,7 @@ namespace Fusee.Engine.Core
             
 
             // far
-            planes[5] = new Math.Core.Plane()
+            planes[5] = new PlaneF()
             {
                 A = mat.M41 - mat.M31,
                 B = mat.M42 - mat.M32,

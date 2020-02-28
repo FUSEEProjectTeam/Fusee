@@ -227,7 +227,7 @@ namespace Fusee.Examples.UI.Core
             };
             
             canvas.AddComponent(canvasMat);
-            canvas.AddComponent(new Engine.Core.Plane());
+            canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
 
             return new SceneContainer

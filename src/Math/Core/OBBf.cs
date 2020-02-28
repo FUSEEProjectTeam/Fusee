@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 namespace Fusee.Math.Core
 {
     /// <summary>
-    ///     Represents an oriented bounding box.
+    /// Represents an oriented bounding box.
     /// </summary>
     [ProtoContract]
     [StructLayout(LayoutKind.Sequential)]

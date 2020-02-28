@@ -13,7 +13,7 @@ namespace Fusee.Engine.Core
         public float4x4[] LightSpaceMatrices;
 
         //The world space frustum planes of the light frustum.
-        public List<Math.Core.Plane[]> FrustumPlanes;
+        public List<PlaneF[]> FrustumPlanes;
 
         public IWritableTexture[] ShadowMaps;
         public float2[] ClipPlanesForLightMat;

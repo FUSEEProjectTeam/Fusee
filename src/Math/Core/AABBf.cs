@@ -175,7 +175,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="frustumPlanes">The frustum planes to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(Plane[] frustumPlanes)
+        public bool InsideOrIntersectingFrustum(PlaneF[] frustumPlanes)
         {
             foreach (var plane in frustumPlanes)
             {
@@ -190,7 +190,7 @@ namespace Fusee.Math.Core
         /// </summary>
         /// <param name="plane">The plane to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingPlane(Plane plane)
+        public bool InsideOrIntersectingPlane(PlaneF plane)
         {
             return plane.InsideOrIntersecting(this);
         }

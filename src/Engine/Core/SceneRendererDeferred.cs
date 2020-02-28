@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
 
-        private Math.Core.Plane[] _lightFrustumPlanes;
+        private PlaneF[] _lightFrustumPlanes;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -165,7 +165,7 @@ namespace Fusee.Engine.Core
 
             if (_rc.DoFrumstumCulling)
             {
-                Math.Core.Plane[] frustumPlanes;
+                PlaneF[] frustumPlanes;
                 if (_currentPass == RenderPasses.SHADOW)
                     frustumPlanes = _lightFrustumPlanes;
                 else
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Core
         private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNodeContainer, LightComponent> key)
         {
             float4x4[] lightSpaceMatrices;
-            List<Math.Core.Plane[]> frustumPlanes;
+            List<PlaneF[]> frustumPlanes;
             var shadowParamClipPlanes = new float2[NumberOfCascades];
 
             //1. Calculate light space matrices and clip planes
@@ -222,7 +222,7 @@ namespace Fusee.Engine.Core
                 case LightType.Parallel:
                     {
                         lightSpaceMatrices = new float4x4[NumberOfCascades];
-                        frustumPlanes = new List<Math.Core.Plane[]>();
+                        frustumPlanes = new List<PlaneF[]>();
 
                         var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
 
@@ -271,7 +271,7 @@ namespace Fusee.Engine.Core
                 case LightType.Point:
                     {
                         lightSpaceMatrices = new float4x4[6];
-                        frustumPlanes = new List<Math.Core.Plane[]>(6);
+                        frustumPlanes = new List<PlaneF[]>(6);
 
                         var lightPos = lr.WorldSpacePos;
                         shadowParamClipPlanes = new float2[] { new float2(1, 1 + lr.Light.MaxDistance) };
@@ -309,7 +309,7 @@ namespace Fusee.Engine.Core
                 case LightType.Spot:
                     {
                         lightSpaceMatrices = new float4x4[1];
-                        frustumPlanes = new List<Math.Core.Plane[]>();
+                        frustumPlanes = new List<PlaneF[]>();
 
                         var lightPos = lr.WorldSpacePos;
                         shadowParamClipPlanes = new float2[] { new float2(0.1f, 0.1f + lr.Light.MaxDistance) };
