@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using System;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -215,6 +216,53 @@ namespace Fusee.Math.Core
         public static bool Intersects(AABBf aabb, float3 point)
         {
             return aabb.Intersects(point);
+        }
+
+        /// <summary>
+        /// Operator override for equality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator ==(AABBf left, AABBf right)
+        {
+            return left.Equals(right);
+        }
+
+        /// <summary>
+        /// Operator override for inequality.
+        /// </summary>
+        /// <param name="left">The plane.</param>
+        /// <param name="right">The scalar value.</param>        
+        public static bool operator !=(AABBf left, AABBf right)
+        {
+            return !(left == right);
+        }
+
+        /// <summary>
+        /// Indicates whether this plane is equal to another object.
+        /// </summary>
+        /// <param name="obj">The object. This method will throw an exception if the object isn't of type <see cref="AABBf"/>.</param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            if (obj.GetType() != typeof(AABBf)) throw new ArgumentException($"{obj} is not of Type 'Plane'.");
+
+            var other = (AABBf)obj;
+            return max.Equals(other.max) && min.Equals(other.min);
+        }
+
+        /// <summary>
+        /// Generates a hash code for this plane.
+        /// </summary>        
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + max.GetHashCode();
+                hash = hash * 23 + min.GetHashCode();
+                return hash;
+            }
         }
     }
 }
