@@ -77,7 +77,7 @@ namespace Fusee.Serialization
         }
 
         /// <summary>
-        /// Returns wether the given float4x4 intersects with the planes
+        /// Returns whether the given float4x4 intersects with the planes
         /// </summary>
         /// <param name="vf"></param>
         /// <returns></returns>

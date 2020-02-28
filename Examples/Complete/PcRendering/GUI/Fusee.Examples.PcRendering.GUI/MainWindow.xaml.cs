@@ -94,17 +94,20 @@ namespace Fusee.Examples.PcRendering.WPF
         #region ssao strength
         private void SSAOStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             _ssaoStrengthDragStarted = true;
         }
 
         private void SSAOStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
-        {            
+        {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.SSAOStrength = (float)((Slider)sender).Value;
             _ssaoStrengthDragStarted = false;
         }
 
         private void SSAOStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (_ssaoStrengthDragStarted) return;
             PtRenderingParams.SSAOStrength = (float)e.NewValue;
         }
@@ -113,17 +116,20 @@ namespace Fusee.Examples.PcRendering.WPF
         #region edl strength
         private void EDLStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             _edlStrengthDragStarted = true;
         }
 
         private void EDLStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.EdlStrength = (float)((Slider)sender).Value;
             _edlStrengthDragStarted = false;
         }
 
         private void EDLStrengthSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             EDLStrengthVal.Content = e.NewValue.ToString("0.000");
 
             if (_edlStrengthDragStarted) return;
@@ -135,11 +141,13 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void EDLNeighbourPx_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             _edlNeighbourPxDragStarted = true;
         }
 
         private void EDLNeighbourPx_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = ((Slider)sender).Value.ToString("0");            
@@ -150,6 +158,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void EDLNeighbourPxSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (EDLNeighbourPxVal == null) return;
 
             EDLNeighbourPxVal.Content = e.NewValue.ToString("0");
@@ -176,6 +185,7 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void PtSize_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (PtSizeVal == null) return;
             PtSizeVal.Content = e.NewValue.ToString("0");
 
@@ -188,17 +198,20 @@ namespace Fusee.Examples.PcRendering.WPF
         #region specular strength
         private void SpecStrength_DragStarted(object sender, System.Windows.Controls.Primitives.DragStartedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             _specularStrengthPxDragStarted = true;
         }
 
         private void SpecStrength_DragCompleted(object sender, System.Windows.Controls.Primitives.DragCompletedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.SpecularStrength = (float)((Slider)sender).Value;
             _specularStrengthPxDragStarted = false;
         }
 
         private void SpecStrength_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             if (_specularStrengthPxDragStarted) return;
             PtRenderingParams.SpecularStrength = (float)e.NewValue;
         }
@@ -240,6 +253,8 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void Lighting_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
+
             PtRenderingParams.Lighting = (Lighting)e.AddedItems[0];
 
             if (PtRenderingParams.Lighting == Pointcloud.Common.Lighting.SSAO_ONLY || PtRenderingParams.Lighting == Pointcloud.Common.Lighting.UNLIT)
@@ -293,16 +308,19 @@ namespace Fusee.Examples.PcRendering.WPF
 
         private void PtShape_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.Shape = (PointShape)e.AddedItems[0];
         }
 
         private void PtSizeMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.PtMode = (PointSizeMode)e.AddedItems[0];
         }
 
         private void ColorMode_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
+            if (!_isAppInizialized || !app.IsSceneLoaded) return;
             PtRenderingParams.ColorMode = (ColorMode)e.AddedItems[0];
 
             if (PtRenderingParams.ColorMode != Pointcloud.Common.ColorMode.SINGLE)

@@ -8,9 +8,12 @@ namespace Fusee.Examples.PcRendering.Core
 {
     public static class PtRenderingParams
     {
-        public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();       
+        public static ConcurrentDictionary<string, object> ShaderParamsToUpdate = new ConcurrentDictionary<string, object>();
         public static int MaxNoOfVisiblePoints = 500000;
         public static string PathToOocFile = "D://HolbeinPferdOctree";
+
+        public static ShaderEffect DepthPassEf;
+        public static ShaderEffect ColorPassEf;
 
         private static Lighting _lighting = Lighting.EDL;
         public static Lighting Lighting
@@ -144,7 +147,7 @@ namespace Fusee.Examples.PcRendering.Core
             }
         }
 
-        internal static ShaderEffect DepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
+        internal static ShaderEffect CreateDepthPassEffect(float2 screenParams, float initCamPosZ, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             return new ShaderEffect(new[]
             {
@@ -185,7 +188,7 @@ namespace Fusee.Examples.PcRendering.Core
             });
         }
 
-        internal static ShaderEffect ColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
+        internal static ShaderEffect CreateColorPassEffect(float2 screenParams, float initCamPosZ, float2 clipPlaneDist, WritableTexture depthTex, Texture octreeTex, double3 octreeRootCenter, double octreeRootLength)
         {
             var kernelLength = 32;
             var ssaoKernel = SSAOHelper.CreateKernel(kernelLength);

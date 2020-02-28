@@ -84,9 +84,14 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         private readonly WireframeCube wfc = new WireframeCube();
         private readonly ShaderEffect _wfcEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(0, 0, 0, 1), new float4(1, 1, 1, 1), 10);
 
+        /// <summary>
+        /// The path to the folder that holds the file.
+        /// </summary>
         public string FileFolderPath;
 
-        // Maximal number of points that are visible in one frame - tradeoff between performance and quality
+        /// <summary>
+        /// Maximal number of points that are visible in one frame - tradeoff between performance and quality.
+        /// </summary>
         public int PointThreshold = 1000000;
 
         private float _initRootScreenProjSize;
@@ -101,6 +106,11 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         //Load the five biggest nodes (screen projected size) as proposed in Schütz' thesis.
         private readonly int _noOfLoadedNodes = 5;
 
+        /// <summary>
+        /// Creates a new instance of type <see cref="PtOctantLoader{TPoint}"/>.
+        /// </summary>
+        /// <param name="fileFolderPath">Path to the folder that holds the file.</param>
+        /// <param name="rc">The <see cref="RenderContext"/> that is used.</param>
         public PtOctantLoader(string fileFolderPath, RenderContext rc)
         {
             _nodesToRender = new Dictionary<Guid, SceneNodeContainer>();
@@ -139,10 +149,9 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Updates the visible octree hierarchy in the scene and updates the VisibleOctreeHierarchyTex in the shaders.
         /// </summary>
+        /// <param name="ptSizeMode">The <see cref="PointSizeMode"./></param>
         /// <param name="depthPassEf">Shader effect used in the depth pass in eye dome lighting.</param>
-        /// <param name="colorPassEf">Shader effect that is accountable for rendering the color pass.</param>        
-        /// <param name="GetMeshsForNode">User-given Function that defines how to create the mesh for a scene node.</param>
-        /// <param name="ptAccessor">PointAccessor, needed to load the actual point data.</param>       
+        /// <param name="colorPassEf">Shader effect that is accountable for rendering the color pass.</param>       
         public void UpdateScene(PointSizeMode ptSizeMode, ShaderEffect depthPassEf, ShaderEffect colorPassEf)
         {
             WasSceneUpdated = false;
@@ -176,9 +185,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         /// <summary>
         /// Iterates the VisibleNodes list and sets the octant mesh for visible nodes.
         /// </summary>
-        /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>
-        /// <param name="wfc">A wireframe cube. Only needed to visualize the octants.</param>
-        /// <param name="effect">Shader effect for rendering the wireframe cubes.</param>
+        /// <param name="scene">The scene that contains the point cloud and the wireframe cubes. Only needed to visualize the octants.</param>       
         public void ShowOctants(SceneContainer scene)
         {
             WasSceneUpdated = false;
@@ -212,6 +219,10 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             WasSceneUpdated = true;
         }
 
+        /// <summary>
+        /// Deletes all wireframe cubes from the scene.
+        /// </summary>
+        /// <param name="scene"></param>
         public void DeleteOctants(SceneContainer scene)
         {
             scene.Children.RemoveAll(node => node.Name == "WireframeCube");
@@ -232,7 +243,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             }
         }
 
-        /// <summary>ptOctantComp.WasLoaded
+        /// <summary>
         /// Traverses the scene nodes the point cloud is stored in and searches for visible nodes in screen-projected-size order.
         /// </summary>        
         private void TraverseByProjectedSizeOrder()
@@ -295,7 +306,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
         {
             var ptOctantChildComp = node.GetComponent<PtOctantComponent>();
 
-            //If node does not intersect the viewing frustum, remove it from loaded meshs and return.
+            //If node does not intersect the viewing frustum, remove it from loaded meshes and return.
             if (!ptOctantChildComp.Intersects(RC.Projection * RC.View))
             {
                 _globalLoadingCache.TryRemove(ptOctantChildComp.Guid, out var val); //node that is in loading cache isn't visible anymore                
@@ -308,7 +319,7 @@ namespace Fusee.Pointcloud.OoCFileReaderWriter
             // gets pixel radius of the node
             ptOctantChildComp.ComputeScreenProjectedSize(camPosD, RC.ViewportHeight, fov);
 
-            //If the nodes screen projected size is too small, remove it from loaded meshs and return.
+            //If the nodes screen projected size is too small, remove it from loaded meshes and return.
             if (ptOctantChildComp.ProjectedScreenSize < _minScreenProjectedSize)
             {
                 _globalLoadingCache.TryRemove(ptOctantChildComp.Guid, out var val); //node that is in loading cache isn't visible anymore                
