@@ -839,7 +839,6 @@ namespace Fusee.Engine.Core
             ViewportHeight = height;
             ViewportXStart = x;
             ViewportYStart = y;
-
         }
 
         #region Image Data related methods
@@ -1225,9 +1224,9 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Checks if a viewing frustum lies within this AABB.
-        /// If feeded with a projection matrix, the frustum plane are in View Space.
-        /// If feeded with a view projection matrix, the frustum plane are in World Space.
-        /// If feeded with a model view projection matrix, the frustum plane are in Model Space.
+        /// If feeded with a projection matrix, the frustum planes are in View Space.
+        /// If feeded with a view projection matrix, the frustum planes are in World Space.
+        /// If feeded with a model view projection matrix, the frustum planes are in Model Space.
         /// See: http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
         /// </summary>
         /// <param name="mat">The matrix from which to extract the planes.</param>
