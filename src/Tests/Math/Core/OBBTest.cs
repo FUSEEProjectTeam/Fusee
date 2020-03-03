@@ -1,9 +1,6 @@
 ﻿using Fusee.Math.Core;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
 using Xunit;
-using Xunit.Sdk;
 
 namespace Fusee.Test.Math.Core
 {
@@ -54,7 +51,7 @@ namespace Fusee.Test.Math.Core
         {
             var actual = new OBBf(vertices);
 
-            for (int i = 0; i < 3; i++)
+            for (var i = 0; i < 3; i++)
             {
                 Assert.Equal(0f, actual.Min[i], fPrecision);
                 Assert.Equal(2f, actual.Max[i], fPrecision);
@@ -67,8 +64,8 @@ namespace Fusee.Test.Math.Core
         {
             var actual = new OBBd(vertices);
 
-            for (int i = 0; i < 3; i++)
-            { 
+            for (var i = 0; i < 3; i++)
+            {
                 Assert.Equal(0, actual.Min[i], dPrecision);
                 Assert.Equal(2, actual.Max[i], dPrecision);
             }
