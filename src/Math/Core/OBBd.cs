@@ -55,7 +55,7 @@ namespace Fusee.Math.Core
             var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
             var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
 
-            Rotation = eigen.Vectors;
+            Rotation = eigen.RotationMatrix;
 
             var changeBasis = Rotation.Invert();
 
@@ -83,11 +83,10 @@ namespace Fusee.Math.Core
                    Max.z < pt.z ? pt.z : Max.z);
             }
 
-            // Get size of box before translating back
-            Size = Max - Min;
-
             Max = (Rotation * Max) + Translation;
             Min = (Rotation * Min) + Translation;
+
+            Size = Max - Min;
         }
     }
 }
