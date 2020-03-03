@@ -379,11 +379,23 @@ namespace Fusee.Engine.GUI
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">The offsets.</param>
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="textScaleFactor">By default a text has the with of 1 fusee unit. Set this to adapt the text size.</param>
+        /// <param name="color">The color.</param>       
         public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
-            FontMap fontMap, float4 color, float textScaleFactor = 1)
+            FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.LEFT, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.TOP)
         {
+            var textMesh = new GUIText(fontMap, text, horizontalAlignment)
+            {
+                Name = name + "textMesh"
+            };
+
+            var xFormText = new XFormTextComponent
+            {
+                Width = textMesh.Width,
+                Height = textMesh.Height,
+                HorizontalAlignment = textMesh.HorizontalAlignment,
+                VerticalAlignment = verticalTextAlignment
+            };
+
             Name = name;
             Components = new List<SceneComponentContainer>
             {
@@ -405,7 +417,7 @@ namespace Fusee.Engine.GUI
                 {
                     Components = new List<SceneComponentContainer>()
                     {
-                        new XFormTextComponent(textScaleFactor),
+                        xFormText,
                         new ShaderEffectComponent
                         {
                             Effect = new ShaderEffect(new[]
@@ -438,11 +450,8 @@ namespace Fusee.Engine.GUI
                                     new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                                 })
                         },
-                        new GUIText(fontMap, text)
-                        {
-                            Name = name + "textMesh"
-                        }
-                    }
+                        textMesh,                        
+                     }
                 }
             };
 

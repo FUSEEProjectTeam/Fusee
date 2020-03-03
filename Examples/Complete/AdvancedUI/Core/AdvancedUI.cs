@@ -397,12 +397,10 @@ namespace Fusee.Examples.AdvancedUI.Core
 
         private SceneContainer CreateGui()
         {
-            var canvasScaleFactor = _initWidth / _canvasWidth;
-            float textSize = 2;
+            var canvasScaleFactor = _initWidth / _canvasWidth;           
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
                 borderScaleFactor = canvasScaleFactor;
             }
 
@@ -445,12 +443,12 @@ namespace Fusee.Examples.AdvancedUI.Core
                 var item = _uiInput[i];
                 if (item.AnnotationKind != UIHelper.AnnotationKind.CONFIRMED)
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
+                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                     "#" + i + " " + item.SegmentationClass + ", " + item.Probability.ToString(CultureInfo.GetCultureInfo("en-gb")));
                 }
                 else
                 {
-                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, textSize, borderScaleFactor,
+                    UIHelper.CreateAndAddCircleAnnotationAndLine(markModelContainer, item.AnnotationKind, item.Size, _uiInput[i].AnnotationCanvasPos, borderScaleFactor,
                    "#" + i + " " + item.SegmentationClass);
                 }
             }           

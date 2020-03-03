@@ -58,16 +58,18 @@ namespace Fusee.Examples.UI.Core
             var psNineSlice = AssetStorage.Get<string>("nineSliceTile.frag");
 
             var canvasScaleFactor = _initWindowWidth / _canvasWidth;
-            float textSize = 2;
+            
             float borderScaleFactor = 1;
             if (_canvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                textSize *= canvasScaleFactor;
                 borderScaleFactor = canvasScaleFactor;
             }
 
             var text = new TextNodeContainer(
-                "Hallo !",
+                "The five\n" +
+                "boxing wizards\n" +
+                "jump\n" +
+                "quickly.",
                 "ButtonText",
                 vsTex,
                 psTex,
@@ -78,7 +80,9 @@ namespace Fusee.Examples.UI.Core
                     Max = new float2(-1f, -0.5f)
                 },
                 _fontMap,
-                ColorUint.Tofloat4(ColorUint.Greenery), textSize);
+                ColorUint.Tofloat4(ColorUint.Greenery),
+                HorizontalTextAlignment.RIGHT,
+                VerticalTextAlignment.TOP);
 
             var catTextureNode = new TextureNodeContainer(
                 "Cat",
@@ -225,7 +229,7 @@ namespace Fusee.Examples.UI.Core
                     Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
                 })
             };
-            
+
             canvas.AddComponent(canvasMat);
             canvas.AddComponent(new Plane());
             canvas.AddComponent(_btnCanvas);
@@ -235,7 +239,22 @@ namespace Fusee.Examples.UI.Core
                 Children = new List<SceneNodeContainer>
                 {
                     //Add canvas.
-                    canvas
+
+                    new SceneNodeContainer()
+                    {
+                        Components = new List<SceneComponentContainer>()
+                        {
+                            new TransformComponent()
+                            {
+                                Translation = new float3(0,0,0)
+                            } 
+                        },
+                        Children = new ChildList()
+                        {
+                            canvas
+                        }
+                    },
+                    
                 }
             };
         }
@@ -327,7 +346,7 @@ namespace Fusee.Examples.UI.Core
             var fontLato = AssetStorage.Get<Font>("Lato-Black.ttf");
 
             _fontMap1 = new FontMap(fontLato, 8);
-            _fontMap = new FontMap(fontLato, 72);
+            _fontMap = new FontMap(fontLato, 24);
 
             // Set the clear color for the back buffer to white (100% intensity in all color channels R, G, B, A).
             RC.ClearColor = new float4(1, 1, 1, 1);

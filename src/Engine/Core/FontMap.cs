@@ -53,32 +53,33 @@ namespace Fusee.Engine.Core
     /// </summary>
     public class FontMap
     {
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="FontMap"/> is up-to-date.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if up-to-date; otherwise, <c>false</c>.
+        /// </value>
+        public bool Uptodate { get; private set; }
+
         private Font _font;
         private Texture _image;
         private uint _pixelHeight;
         private string _alphabet;
-        private bool _uptodate;
         private readonly Dictionary<uint, GlyphOnMap> _glyphOnMapCache;
-
-        private readonly bool _optimizeFontTexRes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FontMap"/> class.
         /// </summary>
         /// <param name="font">The font to be used. See <see cref="Font"/>.</param>
         /// <param name="pixelHeight">Height in pixels of a character. See <see cref="PixelHeight"/>.</param>
-        /// <param name="optimizeFontTexRes">Toggles the optimization for the texture atlas resolution. </param>
         /// <param name="alphabet">The alphabet. See <see cref="Alphabet"/>.</param>
         /// <exception cref="System.ArgumentNullException"></exception>
         /// <exception cref="System.ArgumentOutOfRangeException"></exception>
-        public FontMap(Font font, uint pixelHeight, bool optimizeFontTexRes = true, string alphabet = null)
+        public FontMap(Font font, uint pixelHeight, string alphabet = null)
         {
-            if (font == null) throw new ArgumentNullException(nameof(font));
-            if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));
+            if (pixelHeight <= 0) throw new ArgumentOutOfRangeException(nameof(pixelHeight));          
 
-            _optimizeFontTexRes = optimizeFontTexRes;
-
-            _font = font;
+            _font = font ?? throw new ArgumentNullException(nameof(font));
             _pixelHeight = pixelHeight;
             _glyphOnMapCache = new Dictionary<uint, GlyphOnMap>();
             Alphabet = alphabet; // will invalidate _uptodate
@@ -87,7 +88,7 @@ namespace Fusee.Engine.Core
         private void Invalidate()
         {
             _glyphOnMapCache.Clear();
-            _uptodate = false;
+            Uptodate = false;
         }
 
         /// <summary>
@@ -103,7 +104,7 @@ namespace Fusee.Engine.Core
         {
             get
             {
-                if (_uptodate)
+                if (Uptodate)
                     return _image;
 
                 _font.PixelHeight = _pixelHeight;
@@ -121,7 +122,7 @@ namespace Fusee.Engine.Core
                     charCount++;
                 }
 
-                averageAdvance = averageAdvance / charCount;
+                averageAdvance /= charCount;
 
                 //_alphabet.ToCharArray().Length * averageAdvance * _pixelHeight is the area of ​​the rectangle with the width equal to the number of letters * averageAdvance and the height equals pixelHeight.
                 // Since this rectangle has the same area as the desired square (texture atlas), the square root of the rectangle is the width of that square.
@@ -132,13 +133,6 @@ namespace Fusee.Engine.Core
                 {
                     width = maxWidth;
                     Debug.WriteLine("Font texture resolution automatically set to 4096 - consider to choose a lower font size");
-                }
-
-                //Scale FontSize for better 
-                if (_optimizeFontTexRes)
-                {
-                    var mult = width / widthOld;
-                    _font.PixelHeight = (uint)(_pixelHeight * (mult));
                 }
 
                 // Create the font atlas (the texture containing ALL glyphs)
@@ -182,7 +176,7 @@ namespace Fusee.Engine.Core
                     offX += glyphImg.Width + 1;
                 }
 
-                _uptodate = true;
+                Uptodate = true;
                 return _image;
 
             }
@@ -274,14 +268,6 @@ namespace Fusee.Engine.Core
                 Invalidate();
             }
         }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="FontMap"/> is up-to-date.
-        /// </summary>
-        /// <value>
-        ///   <c>true</c> if up-to-date; otherwise, <c>false</c>.
-        /// </value>
-        public bool Uptodate => _uptodate;
 
         /// <summary>
         /// Gets the glyph on map information for the given character/glyph. This information can be used to create geometry textured with on single 
