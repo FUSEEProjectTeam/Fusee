@@ -353,7 +353,7 @@ namespace Fusee.Engine.Core
                     case HorizontalTextAlignment.LEFT:
                         translationX = -_state.UiRect.Size.x / 2;
                         break;
-                    case HorizontalTextAlignment.MIDDLE:
+                    case HorizontalTextAlignment.CENTER:
                         translationX = -xfc.Width / 2;
                         break;
                     case HorizontalTextAlignment.RIGHT:
@@ -368,7 +368,7 @@ namespace Fusee.Engine.Core
                     case VerticalTextAlignment.TOP:
                         translationY = _state.UiRect.Size.y / 2;
                         break;
-                    case VerticalTextAlignment.MIDDLE:
+                    case VerticalTextAlignment.CENTER:
                         translationY = xfc.Height / 2;
                         break;
                     case VerticalTextAlignment.BOTTOM:
@@ -390,7 +390,7 @@ namespace Fusee.Engine.Core
                     case HorizontalTextAlignment.LEFT:
                         translationX = -_state.UiRect.Size.x * invScaleFactor / 2;
                         break;
-                    case HorizontalTextAlignment.MIDDLE:
+                    case HorizontalTextAlignment.CENTER:
                         translationX = -xfc.Width / 2;
                         break;
                     case HorizontalTextAlignment.RIGHT:
@@ -405,7 +405,7 @@ namespace Fusee.Engine.Core
                     case VerticalTextAlignment.TOP:
                         translationY = _state.UiRect.Size.y * invScaleFactor / 2;
                         break;
-                    case VerticalTextAlignment.MIDDLE:
+                    case VerticalTextAlignment.CENTER:
                         translationY = xfc.Height / 2;
                         break;
                     case VerticalTextAlignment.BOTTOM:

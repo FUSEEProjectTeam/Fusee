@@ -81,8 +81,8 @@ namespace Fusee.Examples.UI.Core
                 },
                 _fontMap,
                 ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.RIGHT,
-                VerticalTextAlignment.TOP);
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var catTextureNode = new TextureNodeContainer(
                 "Cat",

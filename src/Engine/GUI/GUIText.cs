@@ -100,7 +100,7 @@ namespace Fusee.Engine.GUI
                             allVerts.Add(vert);
                         }
                         break;
-                    case HorizontalTextAlignment.MIDDLE:
+                    case HorizontalTextAlignment.CENTER:
 
                         for (int j = 0; j < LineVertices[i].Count; j++)
                         {

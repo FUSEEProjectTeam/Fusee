@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Fusee.Engine.Common;
 using Fusee.Engine.Core;
 using Fusee.Math.Core;
@@ -379,7 +379,9 @@ namespace Fusee.Engine.GUI
         /// <param name="anchors">Anchors for the mesh. Influences the scaling of the object if the enclosing canvas is resized.</param>
         /// <param name="offsets">The offsets.</param>
         /// <param name="fontMap">Offsets for the mesh. Defines the position of the object relative to its enclosing UI element.</param>
-        /// <param name="color">The color.</param>       
+        /// <param name="color">The color.</param>
+        /// <param name="horizontalAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s x-axis.</param>
+        /// <param name="verticalTextAlignment">The <see cref="HorizontalTextAlignment"/> defines the text's placement along the enclosing <see cref="MinMaxRect"/>'s y-axis.</param>
         public TextNodeContainer(string text, string name, string vs, string ps, MinMaxRect anchors, MinMaxRect offsets,
             FontMap fontMap, float4 color, HorizontalTextAlignment horizontalAlignment = HorizontalTextAlignment.LEFT, VerticalTextAlignment verticalTextAlignment = VerticalTextAlignment.TOP)
         {
@@ -450,7 +452,7 @@ namespace Fusee.Engine.GUI
                                     new EffectParameterDeclaration {Name = "FUSEE_MVP", Value = float4x4.Identity},
                                 })
                         },
-                        textMesh,                        
+                        textMesh,
                      }
                 }
             };

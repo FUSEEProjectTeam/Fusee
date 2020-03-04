@@ -151,11 +151,11 @@ namespace Fusee.Examples.AdvancedUI.Core
                     Min = new float2(0, 0),
                     Max = new float2(1, 1)
                 },
-                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(2.5f, 0.35f)),
+                UIElementPosition.CalcOffsets(AnchorPos.STRETCH_ALL, new float2(0.5f, 0.07f), AnnotationDim.y, AnnotationDim.x, new float2(0.5f, 0.35f)),
                 RalewayFontMap,
                 ColorUint.Tofloat4(ColorUint.Black),
-                HorizontalTextAlignment.MIDDLE,
-                VerticalTextAlignment.MIDDLE);
+                HorizontalTextAlignment.LEFT,
+                VerticalTextAlignment.CENTER);
 
             var annotation = new TextureNodeContainer(
                 "Annotation",

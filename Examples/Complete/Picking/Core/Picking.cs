@@ -229,8 +229,8 @@ namespace Fusee.Examples.Picking.Core
                 UIElementPosition.CalcOffsets(AnchorPos.STRETCH_HORIZONTAL, new float2(_initCanvasWidth / 2 - 4, 0), _initCanvasHeight, _initCanvasWidth, new float2(8, 1)),
                 guiLatoBlack,
                 ColorUint.Tofloat4(ColorUint.Greenery),
-                HorizontalTextAlignment.MIDDLE,
-                VerticalTextAlignment.MIDDLE);
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER);
 
             var canvas = new CanvasNodeContainer(
                 "Canvas",
