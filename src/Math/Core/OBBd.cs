@@ -1,4 +1,5 @@
 ﻿using ProtoBuf;
+using System.Linq;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -51,6 +52,17 @@ namespace Fusee.Math.Core
         /// <param name="vertices"></param>
         public OBBd(double3[] vertices)
         {
+            var verticesList = vertices.ToList();
+            if (verticesList.Any(pt => pt.IsInfinity) || verticesList.Any(pt => pt.IsNaN))
+            {
+                Max = double3.PositiveInfinity;
+                Min = double3.NegativeInfinity;
+                Rotation = double4x4.Identity;
+                Translation = double3.Zero;
+                Size = double3.Zero;
+                return;
+            }
+
             Translation = M.CalculateCentroid(vertices);
             var covarianceMatrix = M.CreateCovarianceMatrix(Translation, vertices);
             var eigen = M.EigenFromCovarianceMat(covarianceMatrix);
