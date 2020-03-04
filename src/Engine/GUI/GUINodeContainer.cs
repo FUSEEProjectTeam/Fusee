@@ -415,15 +415,6 @@ namespace Fusee.Engine.GUI
 
             Children = new ChildList()
             {
-                //new SceneNodeContainer()
-                //{
-                //    Components = new List<SceneComponentContainer>()
-                //    {
-                //        new ShaderEffectComponent(){Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1,1,0,1), float4.One, 1) },
-                //        new Plane()
-                //    }
-                //},
-
                 new SceneNodeContainer()
                 {
                     Components = new List<SceneComponentContainer>()
