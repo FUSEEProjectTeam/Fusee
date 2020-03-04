@@ -253,7 +253,6 @@ namespace Fusee.Examples.AdvancedUI.Core
 
             #endregion Controls
 
-            //Annotations will be unpdated according to circle positions.
             //Annotations will be updated according to circle positions.
             //Lines will be updated according to circle and annotation positions.
 
@@ -265,7 +264,7 @@ namespace Fusee.Examples.AdvancedUI.Core
             {
                 if (!child.Name.Contains("MarkModelContainer")) continue;
 
-                //1.    Calculate the circles canvas position.
+                //1. Calculate the circles canvas position.
                 for (var k = 0; k < child.Children.Count; k++)
                 {
                     var container = child.Children[k];

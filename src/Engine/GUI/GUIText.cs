@@ -14,11 +14,45 @@ namespace Fusee.Engine.GUI
     public class GUIText : Mesh
     {
         private readonly FontMap _fontMap;
-        private readonly string _text;
-        readonly List<List<float3>> LineVertices;
-        readonly List<List<ushort>> LineTriangles;
-        readonly List<List<float3>> LineNormals;
-        readonly List<List<float2>> LineUVs;
+
+        /// <summary>
+        /// The text to display.
+        /// The Vertices, Triangles, Normals and UV coordinates will be recalculated if this value is set.
+        /// </summary>
+        public string Text 
+        { 
+            get 
+            { 
+                return _text; 
+            } 
+            set 
+            { 
+                _text = value; 
+                CreateTextMesh();
+                Merge(); 
+            } 
+        }
+        private string _text;
+
+        /// <summary>
+        /// The Vertices per line of text.
+        /// </summary>
+        public List<List<float3>> LineVertices { get; private set; }
+
+        /// <summary>
+        /// The Triangles per line of text.
+        /// </summary>
+        public List<List<ushort>> LineTriangles { get; private set; }
+
+        /// <summary>
+        /// The Normals per line of text.
+        /// </summary>
+        public List<List<float3>> LineNormals { get; private set; }
+
+        /// <summary>
+        /// The UV coordinates per line of text.
+        /// </summary>
+        public List<List<float2>> LineUVs { get; private set; }
 
         /// <summary>
         /// Defines the <see cref="HorizontalAlignment"/> of the text. 
@@ -62,22 +96,12 @@ namespace Fusee.Engine.GUI
             _fontMap = fontMap;
             _text = text;
 
-            LineVertices = new List<List<float3>>();
-            LineTriangles = new List<List<ushort>>();
-            LineNormals = new List<List<float3>>();
-            LineUVs = new List<List<float2>>();
-
             CreateTextMesh();
             HorizontalAlignment = horizontalAlignment;
         }
 
         private void Merge()
         {
-            Vertices = Array.Empty<float3>();
-            Triangles = Array.Empty<ushort>();
-            Normals = Array.Empty<float3>();
-            UVs = Array.Empty<float2>();
-
             var allVerts = new List<float3>();
             var allTriangles = new List<ushort>();
             var allNormals = new List<float3>();
@@ -149,6 +173,11 @@ namespace Fusee.Engine.GUI
             if (_fontMap == null)
                 throw new ArgumentException("Can not create Text Mesh - FontMap not found!");
 
+            LineVertices = new List<List<float3>>();
+            LineTriangles = new List<List<ushort>>();
+            LineNormals = new List<List<float3>>();
+            LineUVs = new List<List<float2>>();
+
             var verts = new List<float3>();
             var uvs = new List<float2>();
             var tris = new List<ushort>();
@@ -171,7 +200,60 @@ namespace Fusee.Engine.GUI
             // now build the mesh
             for (int j = 0; j <= _text.Length; j++)
             {
-                if (j == _text.Length || _text[j] == '\n')
+                if (j != _text.Length && _text[j] != '\n')
+                {
+                    GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(_text[j]);
+                    GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(_text[j]);
+
+                    var x = advanceX + glyphOnMap.BitmapL;
+                    var y = advanceY - glyphOnMap.BitmapT;
+                    var w = glyphOnMap.BitmapW;
+                    var h = glyphOnMap.BitmapH;
+
+                    advanceX += glyphInfo.AdvanceX;
+                    advanceY += glyphInfo.AdvanceY;
+
+                    // skip glyphs that have no pixels
+                    if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
+                        continue;
+
+                    var bitmapW = glyphOnMap.BitmapW;
+                    var bitmapH = glyphOnMap.BitmapH;
+                    var texOffsetX = glyphOnMap.TexOffX;
+                    var texOffsetY = glyphOnMap.TexOffY;
+
+                    //account for line height
+                    y += lineCnt * lineBreakOffset;
+
+                    // vertices
+                    verts.Add(new float3(x, -y - h, 0));
+                    verts.Add(new float3(x, -y, 0));
+                    verts.Add(new float3(x + w, -y - h, 0));
+                    verts.Add(new float3(x + w, -y, 0));
+
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+                    normals.Add(-float3.UnitZ);
+
+                    // uvs
+                    uvs.Add(new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight));
+                    uvs.Add(new float2(texOffsetX, texOffsetY));
+                    uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight));
+                    uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY));
+
+                    // indices
+                    tris.Add((ushort)(vertex + 1));
+                    tris.Add(vertex);
+                    tris.Add((ushort)(vertex + 2));
+
+                    tris.Add((ushort)(vertex + 1));
+                    tris.Add((ushort)(vertex + 2));
+                    tris.Add((ushort)(vertex + 3));
+
+                    vertex += 4;
+                }
+                else //new line or last char in the text
                 {
                     lineCnt++;
                     advanceX = 0;
@@ -205,62 +287,8 @@ namespace Fusee.Engine.GUI
                     uvs = new List<float2>();
                     tris = new List<ushort>();
                     normals = new List<float3>();
-
-                    if (j == _text.Length)
-                        break;
-                    continue;
+                    
                 }
-
-                GlyphOnMap glyphOnMap = _fontMap.GetGlyphOnMap(_text[j]);
-                GlyphInfo glyphInfo = _fontMap.Font.GetGlyphInfo(_text[j]);
-
-                var x = advanceX + glyphOnMap.BitmapL;
-                var y = advanceY - glyphOnMap.BitmapT;
-                var w = glyphOnMap.BitmapW;
-                var h = glyphOnMap.BitmapH;
-
-                advanceX += glyphInfo.AdvanceX;
-                advanceY += glyphInfo.AdvanceY;
-
-                // skip glyphs that have no pixels
-                if ((w <= M.EpsilonFloat) || (h <= M.EpsilonFloat))
-                    continue;
-
-                var bitmapW = glyphOnMap.BitmapW;
-                var bitmapH = glyphOnMap.BitmapH;
-                var texOffsetX = glyphOnMap.TexOffX;
-                var texOffsetY = glyphOnMap.TexOffY;
-
-                //account for line height
-                y += lineCnt * lineBreakOffset;
-
-                // vertices
-                verts.Add(new float3(x, -y - h, 0));
-                verts.Add(new float3(x, -y, 0));
-                verts.Add(new float3(x + w, -y - h, 0));
-                verts.Add(new float3(x + w, -y, 0));
-
-                normals.Add(-float3.UnitZ);
-                normals.Add(-float3.UnitZ);
-                normals.Add(-float3.UnitZ);
-                normals.Add(-float3.UnitZ);
-
-                // uvs
-                uvs.Add(new float2(texOffsetX, texOffsetY + bitmapH / atlasHeight));
-                uvs.Add(new float2(texOffsetX, texOffsetY));
-                uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY + bitmapH / atlasHeight));
-                uvs.Add(new float2(texOffsetX + bitmapW / atlasWidth, texOffsetY));
-
-                // indices
-                tris.Add((ushort)(vertex + 1));
-                tris.Add(vertex);
-                tris.Add((ushort)(vertex + 2));
-
-                tris.Add((ushort)(vertex + 1));
-                tris.Add((ushort)(vertex + 2));
-                tris.Add((ushort)(vertex + 3));
-
-                vertex += 4;
             }
         }
     }

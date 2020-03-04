@@ -49,6 +49,8 @@ namespace Fusee.Examples.UI.Core
         private float zFar = 1000;
         private float fov = M.PiOver4;
 
+        private GUIText _fpsText;
+
         //Build a scene graph consisting out of a canvas and other UI elements.
         private SceneContainer CreateNineSliceScene()
         {
@@ -64,6 +66,25 @@ namespace Fusee.Examples.UI.Core
             {
                 borderScaleFactor = canvasScaleFactor;
             }
+
+            var fps = new TextNodeContainer(
+                "FPS: 0.00",
+                "FPSText",
+                vsTex,
+                psTex,
+                UIElementPosition.GetAnchors(AnchorPos.DOWN_DOWN_RIGHT),
+                new MinMaxRect
+                {
+                    Min = new float2(-2, 0),
+                    Max = new float2(0, 1)
+                },
+                 _fontMap,
+                ColorUint.Tofloat4(ColorUint.White),
+                HorizontalTextAlignment.CENTER,
+                VerticalTextAlignment.CENTER
+            );
+
+            _fpsText = fps.GetComponentsInChildren<GUIText>().FirstOrDefault();
 
             var text = new TextNodeContainer(
                 "The five\n" +
@@ -156,7 +177,7 @@ namespace Fusee.Examples.UI.Core
                 2.5f, 2.5f, 2.5f, 2.5f,
                 borderScaleFactor
             )
-            { Children = new ChildList() { text, quagganTextureNode1 } };
+            { Children = new ChildList() { quagganTextureNode1, text } };
 
             var quagganTextureNode = new TextureNodeContainer(
                 "Quaggan",
@@ -218,7 +239,8 @@ namespace Fusee.Examples.UI.Core
                     quagganTextureNode,
                     nineSliceTextureNode,
                     quagganTextureNode2,
-                    quagganTextureNode3
+                    quagganTextureNode3,
+                    fps
                 }
             };
 
@@ -394,6 +416,8 @@ namespace Fusee.Examples.UI.Core
             RC.Clear(ClearFlags.Color | ClearFlags.Depth);
 
             RC.Viewport(0, 0, Width, Height);
+
+            _fpsText.Text = "FPS: " + Time.FramePerSecond.ToString("0.00");
 
             // Mouse and keyboard movement
             if (Input.Keyboard.LeftRightAxis != 0 || Input.Keyboard.UpDownAxis != 0)

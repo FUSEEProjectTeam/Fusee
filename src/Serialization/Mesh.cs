@@ -44,11 +44,7 @@ namespace Fusee.Serialization
             set
             {
                 _vertices = value;
-                var del = this.MeshChanged;
-                if (del != null)
-                {
-                    del(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices));
-                }
+                MeshChanged?.Invoke(this, new MeshDataEventArgs(this, MeshChangedEnum.Vertices));
             }
         }
         /// <summary>
