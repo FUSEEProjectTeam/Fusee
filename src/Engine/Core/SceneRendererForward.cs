@@ -24,6 +24,12 @@ namespace Fusee.Engine.Core
         protected bool HasNumberOfLightsChanged;
 
         /// <summary>
+        /// Enables or disables Frustum Culling.
+        /// If we render with one or more cameras this value will be overwritten by <see cref="CameraComponent.FrustumCullingOn"/>.
+        /// </summary>
+        public bool DoFrumstumCulling = true;
+
+        /// <summary>
         /// Light results, collected from the scene in the <see cref="Core.PrePassVisitor"/>.
         /// </summary>
         public List<Tuple<SceneNodeContainer, LightResult>> LightViseratorResults
@@ -287,11 +293,12 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
-                        _rc.DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
+                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam);
                         //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                        _rc.DoFrumstumCulling = rc.DefaultState.DoFrustumCulling;
+                        //Standard value: frustum culling is on.
+                        DoFrumstumCulling = true;
                     }
                 }
             }
@@ -301,12 +308,9 @@ namespace Fusee.Engine.Core
                 Traverse(_sc.Children);
             }
         }
-
-
-
+        
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
         {
-
             var tex = cam.Item2.Camera.RenderTexture;
 
             if (tex != null)
@@ -331,7 +335,6 @@ namespace Fusee.Engine.Core
 
             Traverse(_sc.Children);
         }
-
 
         /// <summary>
         /// Viserates the LightComponent and caches them in a dedicated field.
@@ -592,7 +595,7 @@ namespace Fusee.Engine.Core
             {
                 if (!name.Contains("Cam") && !name.Contains("Frustum"))
                 {
-                    if (_rc.DoFrumstumCulling)
+                    if (DoFrumstumCulling)
                     {
                         var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
                         if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))

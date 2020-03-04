@@ -66,11 +66,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public readonly float FovDefault = M.DegreesToRadians(45);
 
-        /// <summary>
-        /// The default for Frustum Culling is disabled.
-        /// </summary>
-        public readonly bool DoFrustumCulling = false;
-
         private int _height = 9;
         private int _width = 16;
         private float _aspect;

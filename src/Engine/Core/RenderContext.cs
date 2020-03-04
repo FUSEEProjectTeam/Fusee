@@ -57,10 +57,6 @@ namespace Fusee.Engine.Core
         /// </summary>
         public IReadOnlyCollection<PlaneF> FrustumPlanes { get; private set; }
 
-        /// <summary>
-        /// Enables or disables Frustum Culling.
-        /// </summary>
-        public bool DoFrumstumCulling;
 
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
@@ -789,8 +785,7 @@ namespace Fusee.Engine.Core
 
             View = DefaultState.View;
             Model = float4x4.Identity;
-            Projection = DefaultState.Projection;
-            DoFrumstumCulling = DefaultState.DoFrustumCulling;
+            Projection = DefaultState.Projection;            
 
             // mesh management
             _meshManager = new MeshManager(_rci);
@@ -1577,8 +1572,7 @@ namespace Fusee.Engine.Core
         {
             Viewport(0, 0, DefaultState.CanvasWidth, DefaultState.CanvasHeight);
             View = DefaultState.View;
-            Projection = DefaultState.Projection;
-            DoFrumstumCulling = DefaultState.DoFrustumCulling;
+            Projection = DefaultState.Projection;            
         }
     }
 }

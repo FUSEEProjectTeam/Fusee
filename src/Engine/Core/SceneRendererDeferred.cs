@@ -163,7 +163,7 @@ namespace Fusee.Engine.Core
         {
             if (!mesh.Active) return;
 
-            if (_rc.DoFrumstumCulling)
+            if (DoFrumstumCulling)
             {
                 PlaneF[] frustumPlanes;
                 if (_currentPass == RenderPasses.SHADOW)
@@ -396,11 +396,11 @@ namespace Fusee.Engine.Core
                 {
                     if (cam.Item2.Camera.Active)
                     {
-                        _rc.DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
+                        DoFrumstumCulling = cam.Item2.Camera.FrustumCullingOn;
                         PerCamRender(cam, renderTex);
                         //Reset Viewport and frustum culling bool in case we have another scene, rendered without a camera
                         _rc.Viewport(0, 0, rc.DefaultState.CanvasWidth, rc.DefaultState.CanvasHeight);
-                        _rc.DoFrumstumCulling = rc.DefaultState.DoFrustumCulling;
+                        DoFrumstumCulling = true;
                     }
                 }
             }
@@ -451,9 +451,9 @@ namespace Fusee.Engine.Core
             _rc.Viewport(0, 0, (int)ShadowMapRes, (int)ShadowMapRes);
 
             //Cache state because rendering the shadow maps will change the state eventually.
-            var doCulling = _rc.DoFrumstumCulling;
+            var doCulling = DoFrumstumCulling;
             RenderShadowMaps();
-            _rc.DoFrumstumCulling = doCulling;
+            DoFrumstumCulling = doCulling;
 
             //Undo all user-made and shadow pass related render state changes to be able to work on a "white sheet" from here on.
             _rc.UnlockAllRenderStates();
@@ -622,7 +622,7 @@ namespace Fusee.Engine.Core
                 {
                     case LightType.Point:
                         {
-                            _rc.DoFrumstumCulling = false;
+                            DoFrumstumCulling = false;
 
                             if (_shadowCubeMapEffect == null)
                                 _shadowCubeMapEffect = ShaderCodeBuilder.ShadowCubeMapEffect(shadowParams.LightSpaceMatrices);
@@ -640,7 +640,7 @@ namespace Fusee.Engine.Core
                     case LightType.Legacy:
                     case LightType.Parallel:
                         {
-                            _rc.DoFrumstumCulling = true;
+                            DoFrumstumCulling = true;
                             for (int i = 0; i < shadowParams.LightSpaceMatrices.Length; i++)
                             {
                                 _shadowEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[i]);
@@ -656,7 +656,7 @@ namespace Fusee.Engine.Core
                         }
                     case LightType.Spot:
                         {
-                            _rc.DoFrumstumCulling = true;
+                            DoFrumstumCulling = true;
                             _shadowEffect.SetEffectParam(ShaderShards.UniformNameDeclarations.LightSpaceMatrix, shadowParams.LightSpaceMatrices[0]);
                             _rc.SetShaderEffect(_shadowEffect);
                             _rc.SetRenderTarget(shadowParams.ShadowMaps[0]);
