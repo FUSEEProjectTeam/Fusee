@@ -538,8 +538,7 @@ namespace Fusee.Engine.Core
             {
                 //Undo parent scale
                 scaleX = 1 / _state.UiRect.Size.x;
-                scaleY = 1 / _state.UiRect.Size.y;
-                
+                scaleY = 1 / _state.UiRect.Size.y;                
 
                 //Calculate translation according to alignment
                 switch (xfc.HorizontalAlignment)

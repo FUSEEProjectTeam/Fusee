@@ -419,59 +419,96 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderXFormText(XFormTextComponent xfc)
         {
-            float4x4 scale;
+            var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
+            var scaleFactor = zNear / 100;
+            var invScaleFactor = 1 / scaleFactor;
+
+            float translationY;
+            float translationX;
+
+            float scaleX;
+            float scaleY;
+
             if (_ctc.CanvasRenderMode == CanvasRenderMode.SCREEN)
             {
-                //Undo scale
-                var scaleX = 1 / State.UiRect.Size.x;
-                var scaleY = 1 / State.UiRect.Size.y;
-                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+                //Undo parent scale
+                scaleX = 1 / State.UiRect.Size.x;
+                scaleY = 1 / State.UiRect.Size.y;
+
+                //Calculate translation according to alignment
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -State.UiRect.Size.x / 2;
+                        break;
+                    case HorizontalTextAlignment.MIDDLE:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = State.UiRect.Size.x / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = State.UiRect.Size.y / 2;
+                        break;
+                    case VerticalTextAlignment.MIDDLE:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (State.UiRect.Size.y / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
             }
             else
             {
-                var zNear = (_rc.InvProjection * new float4(-1, -1, -1, 1)).z;
+                //Undo parent scale, scale by distance
+                scaleX = 1 / State.UiRect.Size.x * scaleFactor;
+                scaleY = 1 / State.UiRect.Size.y * scaleFactor;
 
-                //Undo scale
-                var scaleX = 1 / State.UiRect.Size.x * (zNear / 100);
-                var scaleY = 1 / State.UiRect.Size.y * (zNear / 100);
-                scale = float4x4.CreateScale(scaleX, scaleY, 1);
+                //Calculate translation according to alignment by scaling the rectangle size
+                switch (xfc.HorizontalAlignment)
+                {
+                    case HorizontalTextAlignment.LEFT:
+                        translationX = -State.UiRect.Size.x * invScaleFactor / 2;
+                        break;
+                    case HorizontalTextAlignment.MIDDLE:
+                        translationX = -xfc.Width / 2;
+                        break;
+                    case HorizontalTextAlignment.RIGHT:
+                        translationX = State.UiRect.Size.x * invScaleFactor / 2 - xfc.Width;
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
+
+                switch (xfc.VerticalAlignment)
+                {
+                    case VerticalTextAlignment.TOP:
+                        translationY = State.UiRect.Size.y * invScaleFactor / 2;
+                        break;
+                    case VerticalTextAlignment.MIDDLE:
+                        translationY = xfc.Height / 2;
+                        break;
+                    case VerticalTextAlignment.BOTTOM:
+                        translationY = xfc.Height - (State.UiRect.Size.y * invScaleFactor / 2);
+                        break;
+                    default:
+                        throw new ArgumentException("Invalid Horizontal Alignment");
+                }
             }
 
-            float translationX;
-            switch (xfc.HorizontalAlignment)
-            {
-                case HorizontalTextAlignment.LEFT:
-                    translationX = -State.UiRect.Size.x / 2;
-                    break;
-                case HorizontalTextAlignment.MIDDLE:
-                    translationX = -xfc.Width / 2;
-                    break;
-                case HorizontalTextAlignment.RIGHT:
-                    translationX = State.UiRect.Size.x / 2 - xfc.Width;
-                    break;
-                default:
-                    throw new ArgumentException("Invalid Horizontal Alignment");
-            }
+            var translation = float4x4.CreateTranslation(translationX, translationY, 0);
+            var scale = float4x4.CreateScale(scaleX, scaleY, 1);
 
-            float translationY;
-            switch (xfc.VerticalAlignment)
-            {
-                case VerticalTextAlignment.TOP:
-                    translationY = State.UiRect.Size.y / 2;
-                    break;
-                case VerticalTextAlignment.MIDDLE:
-                    translationY = xfc.Height / 2;
-                    break;
-                case VerticalTextAlignment.BOTTOM:
-                    translationY = xfc.Height - (State.UiRect.Size.y / 2);
-                    break;
-                default:
-                    throw new ArgumentException("Invalid Horizontal Alignment");
-            }
-
-            var transform = float4x4.CreateTranslation(translationX, translationY, 0);
-
-            State.Model *= (scale * transform);
+            State.Model *= scale;
+            State.Model *= translation;
             _rc.Model = State.Model;
         }
 
