@@ -75,8 +75,8 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Applies a tranformation function on the bounding box. After the tranformation another
-        ///     axis alignes bounding box results. This is done by transforming all eight
+        ///     Applies a transformation function on the bounding box. After the transformation another
+        ///     axis aligned bounding box results. This is done by transforming all eight
         ///     vertices of the box with the given transformation function and re-aligning to the axes afterwards.
         /// </summary>
         /// <param name="func">The transformation function</param>

@@ -183,6 +183,17 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Returns the trace of this matrix
+        /// </summary>
+        public float Trace
+        {
+            get
+            {
+                return Row0.x + Row1.y + Row2.z + Row3.w;
+            }
+        }
+
+        /// <summary>
         /// The first column of this matrix
         /// </summary>
         public float4 Column0

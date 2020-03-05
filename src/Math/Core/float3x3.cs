@@ -220,23 +220,9 @@ namespace Fusee.Math.Core
 
         #endregion Properties
 
-        #region Instance
 
-        /// <summary>
-        ///     Returns this matrix as an array
-        /// </summary>
-        public float[] AsArray
-        {
-            get
-            {
-                return new float[]
-                {
-                    M11, M12, M13,
-                    M21, M22, M23,
-                    M31, M32, M33,
-                };
-            }
-        }
+
+        #region Instance
 
         #region public Transpose()
 
@@ -247,16 +233,6 @@ namespace Fusee.Math.Core
         {
             return Transpose(this);
         }
-
-        #region float[] ToArray()
-
-        private float[] ToArray()
-        {
-            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
-            // return new float[] { M11, M21, M31, M12, M22, M32, M13, M23, M33 };
-        }
-
-        #endregion float[] ToArray()
 
         #endregion public Transpose()
 
@@ -581,6 +557,18 @@ namespace Fusee.Math.Core
         #endregion Overrides
 
         #endregion Public Members
+
+        #region ToArray()
+
+        /// <summary>
+        ///     Returns this matrix as an array
+        /// </summary>
+        public float[] ToArray()
+        {
+            return new[] { M11, M12, M13, M21, M22, M23, M31, M32, M33 };
+        }
+
+        #endregion
 
         #region IEquatable<Matri3x3> Members
 
