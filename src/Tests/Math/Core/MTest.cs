@@ -408,10 +408,6 @@ namespace Fusee.Test.Math.Core
 
             var expectedVectors = new float3[]
             {
-                //new float3(0.655802f, 0.429198f, 0.621058f),
-                //new float3(-0.64879f, 0.74105f, 0.172964f),
-                //new float3(-0.385999f, -0.516366f, 0.764441f),
-
                 new float3(0.655802f, -0.64879f, -0.385999f),
                 new float3(0.429198f, 0.74105f, -0.516366f),
                 new float3(0.621058f, 0.172964f, 0.764441f),
@@ -457,10 +453,6 @@ namespace Fusee.Test.Math.Core
 
             var expectedVectors = new double3[]
             {
-                //new double3(0.655802, 0.429198, 0.621058),
-                //new double3(-0.64879, 0.74105, 0.172964),
-                //new double3(-0.385999, -0.516366, 0.764441),
-
                 new double3(0.655802, -0.64879, -0.385999),
                 new double3(0.429198, 0.74105, -0.516366),
                 new double3(0.621058, 0.172964, 0.764441),
