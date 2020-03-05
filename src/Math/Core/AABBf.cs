@@ -174,15 +174,23 @@ namespace Fusee.Math.Core
         /// <summary>
         /// Checks if a viewing frustum lies within or intersects this AABB.      
         /// </summary>
-        /// <param name="frustumPlanes">The frustum planes to test against.</param>
+        /// <param name="frustum">The frustum to test against.</param>
         /// <returns>false if fully outside, true if inside or intersecting.</returns>
-        public bool InsideOrIntersectingFrustum(PlaneF[] frustumPlanes)
+        public bool InsideOrIntersectingFrustum(Frustum frustum)
         {
-            foreach (var plane in frustumPlanes)
-            {
-                if (!plane.InsideOrIntersecting(this))
-                    return false;
-            }
+            if (!frustum.Near.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Far.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Left.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Right.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Top.InsideOrIntersecting(this))
+                return false;
+            if (!frustum.Bottom.InsideOrIntersecting(this))
+                return false;
+
             return true;
         }
 

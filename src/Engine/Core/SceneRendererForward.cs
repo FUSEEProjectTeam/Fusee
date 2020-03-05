@@ -598,7 +598,7 @@ namespace Fusee.Engine.Core
                     if (DoFrumstumCulling)
                     {
                         var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-                        if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))
+                        if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
                         {
                             mesh.Active = false;
                             return;

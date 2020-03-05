@@ -156,36 +156,7 @@ namespace Fusee.Examples.Camera.Core
             _rotPivot = _rocketScene.Children[1].GetComponent<TransformComponent>().Translation;
 
             return true;
-        }
-
-        //TODO: borrowed from ShadowMapping - find a place for this method where it can be accessed for shadow mapping, frustum debugging and all the other cases.
-        private static IEnumerable<float3> GetWorldSpaceFrustumCorners(float4x4 projectionMatrix, float4x4 viewMatrix)
-        {
-            //1. Calculate the 8 corners of the view frustum in world space. This can be done by using the inverse view-projection matrix to transform the 8 corners of the NDC cube (which in OpenGL is [‒1, 1] along each axis).
-            //2. Transform the frustum corners to a space aligned with the shadow map axes.This would commonly be the directional light object's local space. 
-            //In fact, steps 1 and 2 can be done in one step by combining the inverse view-projection matrix of the camera with the inverse world matrix of the light.
-            var invViewProjection = float4x4.Invert(projectionMatrix * viewMatrix);
-            
-            var frustumCorners = new float4[8];
-
-            //TODO: make the NDC corners static, likely at the same place where this method lives in the future. "Frustum" Object?
-            frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
-            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
-            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
-            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
-            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
-            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
-            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
-
-            for (int i = 0; i < frustumCorners.Length; i++)
-            {
-                var corner = frustumCorners[i];
-                corner /= corner.w; //world space frustum corners               
-                frustumCorners[i] = corner;
-                yield return frustumCorners[i].xyz;
-            }            
-        }
+        }        
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
@@ -215,7 +186,7 @@ namespace Fusee.Examples.Camera.Core
                 _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
             }
 
-            _frustum.Vertices = GetWorldSpaceFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport), float4x4.Invert(_mainCamTransform.Matrix())).ToArray();
+            _frustum.Vertices = Frustum.CalculateFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix())).ToArray();
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);

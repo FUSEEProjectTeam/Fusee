@@ -72,7 +72,7 @@ namespace Fusee.Engine.Core
             }
         }
         /// <summary>
-        /// Returns the barycentric tiangel coordinates.
+        /// Returns the barycentric triangle coordinates.
         /// </summary>
         public float3 TriangleBarycentric
         {

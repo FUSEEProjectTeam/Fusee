@@ -55,13 +55,13 @@ namespace Fusee.Engine.Core
         /// <summary>
         /// The world space frustum planes, derived from the current view-projection matrix.
         /// </summary>
-        public IReadOnlyCollection<PlaneF> FrustumPlanes { get; private set; }
+        public Frustum RenderFrustum { get; private set; }
 
 
         /// <summary>
         /// Saves all global shader parameters. "Global" are those which get updated by a SceneRenderer, e.g. the matrices or the parameters of the lights.
         /// </summary>
-        internal readonly Dictionary<string, object> GlobalFXParams = new Dictionary<string, object>();
+        internal readonly Dictionary<string, object> GlobalFXParams;
 
         private readonly MeshManager _meshManager;
         private readonly TextureManager _textureManager;
@@ -232,7 +232,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                FrustumPlanes = GetFrustumPlanes(_projection  * View);
+                RenderFrustum.CalculateFrustumPlanes(_projection  * View);
             }
         }
 
@@ -320,7 +320,7 @@ namespace Fusee.Engine.Core
 
                 var invZMat = float4x4.Identity;
                 invZMat.M33 = -1;
-                FrustumPlanes = GetFrustumPlanes(_projection *  View);
+                RenderFrustum.CalculateFrustumPlanes(_projection *  View);
             }
         }
 
@@ -782,6 +782,9 @@ namespace Fusee.Engine.Core
         {
             _rci = rci;
             DefaultState = new RenderContextDefaultState();
+            GlobalFXParams = new Dictionary<string, object>();
+
+            RenderFrustum = new Frustum();
 
             View = DefaultState.View;
             Model = float4x4.Identity;
@@ -1217,95 +1220,7 @@ namespace Fusee.Engine.Core
 
         #region Render related methods
 
-        /// <summary>
-        /// Checks if a viewing frustum lies within this AABB.
-        /// If feeded with a projection matrix, the frustum planes are in View Space.
-        /// If feeded with a view projection matrix, the frustum planes are in World Space.
-        /// If feeded with a model view projection matrix, the frustum planes are in Model Space.
-        /// See: http://www8.cs.umu.se/kurser/5DV051/HT12/lab/plane_extraction.pdf
-        /// </summary>
-        /// <param name="mat">The matrix from which to extract the planes.</param>
-        /// <returns>false if fully outside, true if inside or intersects</returns>
-        internal PlaneF[] GetFrustumPlanes(float4x4 mat)
-        { 
-            var planes = new PlaneF[6];
-
-            // left
-            planes[0] = new PlaneF()
-            {
-                A = mat.M41 + mat.M11,
-                B = mat.M42 + mat.M12,
-                C = mat.M43 + mat.M13,
-                D = mat.M44 + mat.M14
-            };
-
-            // right
-            planes[1] = new PlaneF()
-            {
-                A = mat.M41 - mat.M11,
-                B = mat.M42 - mat.M12,
-                C = mat.M43 - mat.M13,
-                D = mat.M44 - mat.M14
-            };
-            
-
-            // bottom
-            planes[2] = new PlaneF()
-            {
-                A = mat.M41 + mat.M21,
-                B = mat.M42 + mat.M22,
-                C = mat.M43 + mat.M23,
-                D = mat.M44 + mat.M24
-            };
-            
-
-            // top
-            planes[3] = new PlaneF()
-            {
-                A = mat.M41 - mat.M21,
-                B = mat.M42 - mat.M22,
-                C = mat.M43 - mat.M23,
-                D = mat.M44 - mat.M24
-            };
-            
-
-            // near
-            planes[4] = new PlaneF()
-            {
-                A = mat.M41 + mat.M31,
-                B = mat.M42 + mat.M32,
-                C = mat.M43 + mat.M33,
-                D = mat.M44 + mat.M34
-            };
-            
-
-            // far
-            planes[5] = new PlaneF()
-            {
-                A = mat.M41 - mat.M31,
-                B = mat.M42 - mat.M32,
-                C = mat.M43 - mat.M33,
-                D = mat.M44 - mat.M34
-            };
-
-            //Negate D because Fusee uses ax +by + cz = d
-            planes[0].D *= -1;
-            planes[1].D *= -1;
-            planes[2].D *= -1;
-            planes[3].D *= -1;
-            planes[4].D *= -1;
-            planes[5].D *= -1;
-
-            //Invert plane to get the normal to face outwards.
-            planes[0] *= -1;
-            planes[1] *= -1;
-            planes[2] *= -1;
-            planes[3] *= -1;
-            planes[4] *= -1;
-            planes[5] *= -1;
-
-            return planes;
-        }
+        
 
         /// <summary>
         /// The clipping behavior against the Z position of a vertex can be turned off by activating depth clamping. 

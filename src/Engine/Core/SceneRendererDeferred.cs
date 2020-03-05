@@ -100,7 +100,7 @@ namespace Fusee.Engine.Core
         private RenderPasses _currentPass;
         private bool _canUseGeometryShaders;
 
-        private PlaneF[] _lightFrustumPlanes;
+        private Frustum _lightFrustum;
 
         /// <summary>
         /// Creates a new instance of type SceneRendererDeferred.
@@ -165,14 +165,14 @@ namespace Fusee.Engine.Core
 
             if (DoFrumstumCulling)
             {
-                PlaneF[] frustumPlanes;
+                Frustum frustum;
                 if (_currentPass == RenderPasses.SHADOW)
-                    frustumPlanes = _lightFrustumPlanes;
+                    frustum = _lightFrustum;
                 else
-                    frustumPlanes = _rc.FrustumPlanes.ToArray();
+                    frustum = _rc.RenderFrustum;
 
                 var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-                if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustumPlanes))
+                if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
                     return;
             }
 
@@ -212,7 +212,7 @@ namespace Fusee.Engine.Core
         private ShadowParams CreateShadowParams(LightResult lr, Tuple<SceneNodeContainer, LightComponent> key)
         {
             float4x4[] lightSpaceMatrices;
-            List<PlaneF[]> frustumPlanes;
+            List<Frustum> frustums;
             var shadowParamClipPlanes = new float2[NumberOfCascades];
 
             //1. Calculate light space matrices and clip planes
@@ -222,7 +222,7 @@ namespace Fusee.Engine.Core
                 case LightType.Parallel:
                     {
                         lightSpaceMatrices = new float4x4[NumberOfCascades];
-                        frustumPlanes = new List<PlaneF[]>();
+                        frustums = new List<Frustum>();
 
                         var lightDir = float3.Normalize((lr.Rotation * float4.UnitZ).xyz);
 
@@ -252,7 +252,9 @@ namespace Fusee.Engine.Core
                             shadowParamClipPlanes[0] = cascades[0].ClippingPlanes;
                             var completeFrustumLightMat = lightProjection * lightView;
                             lightSpaceMatrices[0] = completeFrustumLightMat;
-                            frustumPlanes.Add(_rc.GetFrustumPlanes(completeFrustumLightMat));
+                            var frustum = new Frustum();
+                            frustum.CalculateFrustumPlanes(completeFrustumLightMat);
+                            frustums.Add(frustum);
 
                         }
                         else
@@ -262,7 +264,9 @@ namespace Fusee.Engine.Core
                                 shadowParamClipPlanes[i] = cascades[i].ClippingPlanes;
                                 var aabbLightSpace = cascades[i].Aabb;
                                 lightSpaceMatrices[i] = ShadowMapping.CreateOrthographic(aabbLightSpace) * lightView;
-                                frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[i]));
+                                var frustum = new Frustum();
+                                frustum.CalculateFrustumPlanes(lightSpaceMatrices[i]);
+                                frustums.Add(frustum);
                             }
                         }
 
@@ -271,7 +275,7 @@ namespace Fusee.Engine.Core
                 case LightType.Point:
                     {
                         lightSpaceMatrices = new float4x4[6];
-                        frustumPlanes = new List<PlaneF[]>(6);
+                        frustums = new List<Frustum>(6);
 
                         var lightPos = lr.WorldSpacePos;
                         shadowParamClipPlanes = new float2[] { new float2(1, 1 + lr.Light.MaxDistance) };
@@ -282,41 +286,55 @@ namespace Fusee.Engine.Core
 
                         lightView = float4x4.LookAt(lightPos, lightPos - float3.UnitX, float3.UnitY); //left face
                         lightSpaceMatrices[0] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[0]));
+                        var frustumLeft = new Frustum();
+                        frustumLeft.CalculateFrustumPlanes(lightSpaceMatrices[0]);
+                        frustums.Add(frustumLeft);                        
 
                         lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitX, float3.UnitY); //right face
                         lightSpaceMatrices[1] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[1]));
+                        var frustumRight = new Frustum();
+                        frustumRight.CalculateFrustumPlanes(lightSpaceMatrices[1]);
+                        frustums.Add(frustumRight);
 
                         lightView = float4x4.LookAt(lightPos, lightPos - float3.UnitY, -float3.UnitZ); //lower face
                         lightSpaceMatrices[2] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[2]));
+                        var frustumBottom = new Frustum();
+                        frustumBottom.CalculateFrustumPlanes(lightSpaceMatrices[2]);
+                        frustums.Add(frustumBottom);
 
                         lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitY, float3.UnitZ); //upper face
                         lightSpaceMatrices[3] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[3]));
+                        var frustumTop = new Frustum();
+                        frustumTop.CalculateFrustumPlanes(lightSpaceMatrices[3]);
+                        frustums.Add(frustumTop);
 
                         lightView = float4x4.LookAt(lightPos, lightPos - float3.UnitZ, float3.UnitY); //front face
                         lightSpaceMatrices[4] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[4]));
+                        var frustumFront = new Frustum();
+                        frustumFront.CalculateFrustumPlanes(lightSpaceMatrices[4]);
+                        frustums.Add(frustumFront);
 
                         lightView = float4x4.LookAt(lightPos, lightPos + float3.UnitZ, float3.UnitY); //back face
                         lightSpaceMatrices[5] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[5]));
+                        var frustumBack = new Frustum();
+                        frustumBack.CalculateFrustumPlanes(lightSpaceMatrices[5]);
+                        frustums.Add(frustumBack);
 
                         break;
                     }
                 case LightType.Spot:
                     {
                         lightSpaceMatrices = new float4x4[1];
-                        frustumPlanes = new List<PlaneF[]>();
+                        frustums = new List<Frustum>(1);
 
                         var lightPos = lr.WorldSpacePos;
                         shadowParamClipPlanes = new float2[] { new float2(0.1f, 0.1f + lr.Light.MaxDistance) };
                         var lightProjection = float4x4.CreatePerspectiveFieldOfView(M.DegreesToRadians(lr.Light.OuterConeAngle) * 2, 1f, shadowParamClipPlanes[0].x, shadowParamClipPlanes[0].y);
                         var lightView = float4x4.LookAt(lightPos, lightPos + float3.Normalize(lr.Rotation * float3.UnitZ), lr.Rotation * float3.UnitY);
                         lightSpaceMatrices[0] = lightProjection * lightView;
-                        frustumPlanes.Add(_rc.GetFrustumPlanes(lightSpaceMatrices[0]));
+                        var frustum = new Frustum();
+                        frustum.CalculateFrustumPlanes(lightSpaceMatrices[0]);
+                        frustums.Add(frustum);
                         break;
                     }
                 default:
@@ -331,7 +349,7 @@ namespace Fusee.Engine.Core
                     case LightType.Point:
                         {
                             var shadowMap = new WritableCubeMap(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
-                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap }, FrustumPlanes = frustumPlanes };
+                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap }, Frustums = frustums };
                             break;
                         }
                     case LightType.Legacy:
@@ -343,13 +361,13 @@ namespace Fusee.Engine.Core
                                 var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth24), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
                                 shadowMaps[i] = shadowMap;
                             }
-                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = shadowMaps, FrustumPlanes = frustumPlanes };
+                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = shadowMaps, Frustums = frustums };
                             break;
                         }
                     case LightType.Spot:
                         {
                             var shadowMap = new WritableTexture(RenderTargetTextureTypes.G_DEPTH, new ImagePixelFormat(ColorFormat.Depth16), (int)ShadowMapRes, (int)ShadowMapRes, false, TextureFilterMode.NEAREST, TextureWrapMode.CLAMP_TO_BORDER, TextureCompareMode.GL_COMPARE_REF_TO_TEXTURE, Compare.Less);
-                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap }, FrustumPlanes = frustumPlanes };
+                            outParams = new ShadowParams() { ClipPlanesForLightMat = shadowParamClipPlanes, LightSpaceMatrices = lightSpaceMatrices, ShadowMaps = new IWritableTexture[1] { shadowMap }, Frustums = frustums };
                             break;
                         }
                     default:
@@ -363,7 +381,7 @@ namespace Fusee.Engine.Core
             {
                 outParams.LightSpaceMatrices = lightSpaceMatrices;
                 outParams.ClipPlanesForLightMat = shadowParamClipPlanes;
-                outParams.FrustumPlanes = frustumPlanes;
+                outParams.Frustums = frustums;
             }
 
             return outParams;
@@ -634,6 +652,9 @@ namespace Fusee.Engine.Core
                             _rc.SetShaderEffect(_shadowCubeMapEffect);
 
                             _rc.SetRenderTarget((IWritableCubeMap)shadowParams.ShadowMaps[0]);
+
+                            //No culling here because much of the work is done in the geometry shader.
+
                             Traverse(_sc.Children);
                             break;
                         }
@@ -647,7 +668,7 @@ namespace Fusee.Engine.Core
                                 _rc.SetShaderEffect(_shadowEffect);
                                 _rc.SetRenderTarget(shadowParams.ShadowMaps[i]);
 
-                                _lightFrustumPlanes = shadowParams.FrustumPlanes[i];
+                                _lightFrustum = shadowParams.Frustums[i];
 
                                 Traverse(_sc.Children);
                             }
@@ -661,7 +682,7 @@ namespace Fusee.Engine.Core
                             _rc.SetShaderEffect(_shadowEffect);
                             _rc.SetRenderTarget(shadowParams.ShadowMaps[0]);
 
-                            _lightFrustumPlanes = shadowParams.FrustumPlanes[0];
+                            _lightFrustum = shadowParams.Frustums[0];
                             Traverse(_sc.Children);
                             break;
                         }
