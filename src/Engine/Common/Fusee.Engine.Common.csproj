@@ -18,8 +18,5 @@
     <ProjectReference Include="$(FuseeEngineRoot)\src\Base\Common\Fusee.Base.Common.csproj">
       <PrivateAssets>analyzers</PrivateAssets>
     </ProjectReference>
-    <ProjectReference Include="$(FuseeEngineRoot)\src\Serialization\Fusee.Serialization.csproj">
-      <PrivateAssets>analyzers</PrivateAssets>
-    </ProjectReference>
   </ItemGroup>
 </Project>

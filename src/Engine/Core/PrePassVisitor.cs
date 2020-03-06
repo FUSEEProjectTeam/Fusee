@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Fusee.Math.Core;
-using Fusee.Serialization;
 using Fusee.Xene;
 
 namespace Fusee.Engine.Core
