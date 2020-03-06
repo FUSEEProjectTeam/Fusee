@@ -198,7 +198,7 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialComponent mc)
         {
             if (_matMap.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights()); // <- broken
+            mat = MakeShaderEffect.ProtoFromMatComp(mc, _currentNode.GetWeights()); // <- broken
             _matMap.Add(mc, mat);
             return mat;
         }
@@ -206,7 +206,7 @@ namespace Fusee.Engine.Core
         private ShaderEffect LookupMaterial(MaterialPBRComponent mc)
         {
             if (_pbrComponent.TryGetValue(mc, out var mat)) return mat;
-            mat = ShaderCodeBuilder.MakeShaderEffectFromMatCompProto(mc, _currentNode.GetWeights());
+            mat = MakeShaderEffect.ProtoFromMatComp(mc, _currentNode.GetWeights());
             _pbrComponent.Add(mc, mat);
             return mat;
         }

@@ -13,9 +13,9 @@ using Fusee.Serialization;
 namespace Fusee.Engine.Core
 {
     /// <summary>
-    /// Provides a collection of ShaderEffects.
+    /// Provides helper methods for creating <see cref="ShaderEffect"/>s.
     /// </summary>
-    public static class ShaderCodeBuilder
+    public static class MakeShaderEffect
     {
         /// <summary>
         /// The default ShaderEffect, that is used if a <see cref="SceneNodeContainer"/> has a mesh but no <see cref="ShaderEffect"/>.
@@ -328,16 +328,17 @@ namespace Fusee.Engine.Core
 
         #endregion
 
-        #region Make ShaderEffect
+        #region Make ShaderEffect from parameters
+
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static ShaderEffect FromDiffuseSpecular(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -352,18 +353,18 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatComp(temp);
+            return FromMatComp(temp);
         }
 
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
         /// <param name="shininess">The resulting effect's shininess.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
+        public static ShaderEffectProtoPixel ProtoFromDiffuseSpecular(float4 diffuseColor, float4 specularColor, float shininess, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -378,11 +379,11 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatCompProto(temp);
+            return ProtoFromMatComp(temp);
         }
 
         /// <summary>
-        ///     Builds a simple shader effect with diffuse and specular color.
+        /// Builds a simple shader effect with diffuse and specular color.
         /// </summary>
         /// <param name="diffuseColor">The diffuse color the resulting effect.</param>
         /// <param name="specularColor">The specular color for the resulting effect.</param>
@@ -391,7 +392,7 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffect MakeShaderEffect(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static ShaderEffect FromDiffuseSpecularTexture(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -408,7 +409,7 @@ namespace Fusee.Engine.Core
                     Intensity = specularIntensity,
                 }
             };
-            return MakeShaderEffectFromMatComp(temp);
+            return FromMatComp(temp);
         }
 
         /// <summary>
@@ -421,7 +422,7 @@ namespace Fusee.Engine.Core
         /// <param name="diffuseMix">Determines how much the diffuse color and the color from the texture are mixed.</param>
         /// <param name="specularIntensity">The resulting effects specular intensity.</param>
         /// <returns>A ShaderEffect ready to use as a component in scene graphs.</returns>
-        public static ShaderEffectProtoPixel MakeShaderEffectProto(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
+        public static ShaderEffectProtoPixel ProtoFromDiffuseSpecularTexture(float4 diffuseColor, float4 specularColor, float shininess, string texName, float diffuseMix, float specularIntensity = 0.5f)
         {
             MaterialComponent temp = new MaterialComponent
             {
@@ -439,7 +440,7 @@ namespace Fusee.Engine.Core
                 }
             };
 
-            return MakeShaderEffectFromMatCompProto(temp);
+            return ProtoFromMatComp(temp);
         }
 
         /// <summary> 
@@ -449,7 +450,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffect MakeShaderEffectFromMatComp(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffect FromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             var vs = CreateVertexShader(wc, effectProps);
@@ -487,7 +488,7 @@ namespace Fusee.Engine.Core
         /// <param name="wc">Only pass over a WeightComponent if you use bone animations in the current node (usage: pass currentNode.GetWeights())</param>        
         /// <returns></returns> 
         /// <exception cref="Exception"></exception> 
-        public static ShaderEffectProtoPixel MakeShaderEffectFromMatCompProto(MaterialComponent mc, WeightComponent wc = null)
+        public static ShaderEffectProtoPixel ProtoFromMatComp(MaterialComponent mc, WeightComponent wc = null)
         {
             var effectProps = ShaderShardUtil.CollectEffectProps(null, mc, wc);
             string vs = CreateVertexShader(wc, effectProps);
@@ -890,7 +891,7 @@ namespace Fusee.Engine.Core
                 }
             };
 
-            return MakeShaderEffectFromMatComp(defaultMat);
+            return FromMatComp(defaultMat);
         }       
 
     }

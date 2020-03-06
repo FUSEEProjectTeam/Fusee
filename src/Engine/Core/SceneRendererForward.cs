@@ -263,7 +263,7 @@ namespace Fusee.Engine.Core
             {
                 _rc = rc;
                 _boneMap = new Dictionary<SceneNodeContainer, float4x4>();
-                _rc.SetShaderEffect(ShaderCodeBuilder.Default);
+                _rc.SetShaderEffect(MakeShaderEffect.Default);
             }
         }
         #endregion
@@ -658,7 +658,7 @@ namespace Fusee.Engine.Core
             _state.Model = float4x4.Identity;
             _state.CanvasXForm = float4x4.Identity;
             _state.UiRect = new MinMaxRect { Min = -float2.One, Max = float2.One };
-            _state.Effect = ShaderCodeBuilder.Default;
+            _state.Effect = MakeShaderEffect.Default;
             _state.RenderUndoStates = new RenderStateSet();
         }
 

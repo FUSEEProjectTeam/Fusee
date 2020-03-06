@@ -220,7 +220,7 @@ namespace Fusee.Examples.UI.Core
 
             var canvasMat = new ShaderEffectComponent
             {
-                Effect = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+                Effect = MakeShaderEffect.FromMatComp(new MaterialComponent
                 {
                     Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
                 })
@@ -255,7 +255,7 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasEnter(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Btn entered!" + Time.Frames);
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            var color = MakeShaderEffect.FromMatComp(new MaterialComponent
             {
                 Diffuse = new MatChannelContainer { Color = new float4(1, 0.4f, 0.1f, 1) },
             });
@@ -266,7 +266,7 @@ namespace Fusee.Examples.UI.Core
         public void OnBtnCanvasExit(CodeComponent sender)
         {
             Debug.WriteLine("Canvas: Exit Btn!");
-            var color = ShaderCodeBuilder.MakeShaderEffectFromMatComp(new MaterialComponent
+            var color = MakeShaderEffect.FromMatComp(new MaterialComponent
             {
                 Diffuse = new MatChannelContainer { Color = new float4(1, 0, 0, 1) },
             });

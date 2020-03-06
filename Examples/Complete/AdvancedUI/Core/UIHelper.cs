@@ -57,11 +57,11 @@ namespace Fusee.Examples.AdvancedUI.Core
         private static readonly Texture _iconRecognizedML = new Texture(AssetStorage.Get<ImageData>("check-circle.png"));
         private static readonly Texture _iconConfirmed = new Texture(AssetStorage.Get<ImageData>("check-circle_filled.png"));
 
-        internal static readonly ShaderEffect GreenEffect = ShaderCodeBuilder.MakeShaderEffect(Green, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect YellowEffect = ShaderCodeBuilder.MakeShaderEffect(Yellow, new float4(1, 1, 1, 1), 20, 0);
-        internal static readonly ShaderEffect GrayEffect = ShaderCodeBuilder.MakeShaderEffect(Gray, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GreenEffect = MakeShaderEffect.FromDiffuseSpecular(Green, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect YellowEffect = MakeShaderEffect.FromDiffuseSpecular(Yellow, new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect GrayEffect = MakeShaderEffect.FromDiffuseSpecular(Gray, new float4(1, 1, 1, 1), 20, 0);
 
-        internal static readonly ShaderEffect OccludedDummyEffect = ShaderCodeBuilder.MakeShaderEffect(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
+        internal static readonly ShaderEffect OccludedDummyEffect = MakeShaderEffect.FromDiffuseSpecular(new float4(1, 1, 1, 1), new float4(1, 1, 1, 1), 20, 0);
 
         private static float _circleThickness = 0.04f;
         internal static float LineThickness = 0.02f;
@@ -236,7 +236,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1,1,1,1), 20, 0)
+                        Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1,1,1,1), 20, 0)
                     },
                     new Circle(false, 30,100,_circleThickness)
                 }
@@ -288,7 +288,7 @@ namespace Fusee.Examples.AdvancedUI.Core
                     },
                     new ShaderEffectComponent()
                     {
-                        Effect = ShaderCodeBuilder.MakeShaderEffect(col, new float4(1, 1, 1,1), 20, 0)
+                        Effect = MakeShaderEffect.FromDiffuseSpecular(col, new float4(1, 1, 1,1), 20, 0)
                     }
                 }
             };
