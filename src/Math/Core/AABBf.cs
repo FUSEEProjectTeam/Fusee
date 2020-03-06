@@ -1,5 +1,6 @@
 ﻿using ProtoBuf;
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace Fusee.Math.Core
@@ -12,20 +13,20 @@ namespace Fusee.Math.Core
     public struct AABBf
     {
         /// <summary>
-        ///     The minimum values of the axis aligned bounding box in x, y and z direction
+        /// The minimum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(1)] public float3 min;
 
         /// <summary>
-        ///     The maximum values of the axis aligned bounding box in x, y and z direction
+        /// The maximum values of the axis aligned bounding box in x, y and z direction
         /// </summary>
         [ProtoMember(2)] public float3 max;
 
         /// <summary>
-        ///     Create a new axis aligned bounding box
+        /// Create a new axis aligned bounding box.
         /// </summary>
-        /// <param name="min_">the minimum x y and z values</param>
-        /// <param name="max_">the maximum x y and z values</param>
+        /// <param name="min_">the minimum x y and z values.</param>
+        /// <param name="max_">the maximum x y and z values.</param>
         public AABBf(float3 min_, float3 max_)
         {
             min = min_;
@@ -33,12 +34,24 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
+        /// Create a new axis aligned bounding box.
+        /// </summary>
+        /// <param name="vertices">The list of vertices the bounding box is created for.</param>
+        public AABBf(IList<float3> vertices)
+        {
+            min = vertices[0];
+            max = vertices[0];
+            foreach (float3 p in vertices)
+                this |= p;
+        }
+
+        /// <summary>
         /// Applies a transformation on the bounding box. After the transformation another
         /// axis aligned bounding box results. This is done by transforming all eight
         /// vertices of the box and re-aligning to the axes afterwards.
         /// </summary>
-        /// <param name="m">The transformation matrix</param>
-        /// <param name="box">the box to transform</param>
+        /// <param name="m">The transformation matrix.</param>
+        /// <param name="box">the box to transform.</param>
         /// <returns>A new axis aligned bounding box.</returns>
         public static AABBf operator *(float4x4 m, AABBf box)
         {
@@ -75,10 +88,10 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
-        /// <param name="b">The other bounding boxe to build the union from</param>
+        /// <param name="b">The other bounding box to build the union from</param>
         /// <returns>The smallest axis aligned bounding box containing both input boxes</returns>
         public static AABBf Union(AABBf a, AABBf b)
         {
@@ -93,7 +106,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -111,7 +124,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Calculates the bounding box around two existing bounding boxes.
+        /// Calculates the bounding box around two existing bounding boxes.
         /// </summary>
         /// <param name="a">One of the bounding boxes to build the union from</param>
         /// <param name="b">The other bounding box, to build the union from</param>
@@ -119,7 +132,7 @@ namespace Fusee.Math.Core
         public static AABBf operator |(AABBf a, AABBf b) => Union(a, b);
 
         /// <summary>
-        ///     Calculates the bounding box around an existing bounding box and a single point.
+        /// Calculates the bounding box around an existing bounding box and a single point.
         /// </summary>
         /// <param name="a">The bounding boxes to build the union from.</param>
         /// <param name="p">The point to be enclosed by the resulting bounding box</param>
@@ -205,7 +218,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///  Check if two AABBs intersect each other
+        /// Check if two AABBs intersect each other
         /// </summary>
         /// <param name="left"></param>
         /// <param name="right"></param>
@@ -216,7 +229,7 @@ namespace Fusee.Math.Core
         }
 
         /// <summary>
-        ///     Check if a point lies within a AABB
+        /// Check if a point lies within a AABB
         /// </summary>
         /// <param name="aabb"></param>
         /// <param name="point"></param>
@@ -240,7 +253,7 @@ namespace Fusee.Math.Core
         /// Operator override for inequality.
         /// </summary>
         /// <param name="left">The plane.</param>
-        /// <param name="right">The scalar value.</param>        
+        /// <param name="right">The scalar value.</param>
         public static bool operator !=(AABBf left, AABBf right)
         {
             return !(left == right);
@@ -261,7 +274,7 @@ namespace Fusee.Math.Core
 
         /// <summary>
         /// Generates a hash code for this plane.
-        /// </summary>        
+        /// </summary>
         public override int GetHashCode()
         {
             unchecked

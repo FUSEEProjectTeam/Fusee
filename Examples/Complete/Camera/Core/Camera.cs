@@ -57,12 +57,10 @@ namespace Fusee.Examples.Camera.Core
             _mainCam.Viewport = new float4(0, 0, 100, 100);
             _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
             _mainCam.Layer = -1;
-            _mainCam.FrustumCullingOn = true;
 
             _sndCam.Viewport = new float4(60, 60, 40, 40);
             _sndCam.BackgroundColor = new float4(0.5f, 0.5f, 0.5f, 1);
             _sndCam.Layer = 10;
-            _sndCam.FrustumCullingOn = false;
 
             _guiCam.ClearColor = false;
             _guiCam.ClearDepth = false;
@@ -190,7 +188,7 @@ namespace Fusee.Examples.Camera.Core
 
             var viewProjection = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
             _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
-           
+
             var frustum = new Frustum();
             frustum.CalculateFrustumPlanes(viewProjection);
 
@@ -224,11 +222,11 @@ namespace Fusee.Examples.Camera.Core
                         var worldSpaceBoundingBox = node.GetComponent<TransformComponent>().Matrix() * mesh.BoundingBox;
                         if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
                         {
-                            mesh.Active = false; 
+                            mesh.Active = false;
                         }
                         else
                             mesh.Active = true;
-                    } 
+                    }
                 }
 
                 if (node.Children.Count != 0)
