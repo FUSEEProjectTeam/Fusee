@@ -44,6 +44,7 @@ namespace Fusee.Engine.Core
 
         /// <summary>
         /// Determines whether frustum culling is enabled for this camera or not.
+        /// Note that only <see cref="Mesh"/>s with a initialized (non zero-sized) bounding box (<see cref="Mesh.BoundingBox"/>) can be culled.
         /// </summary>
         public bool FrustumCullingOn = true;
 
@@ -121,9 +122,9 @@ namespace Fusee.Engine.Core
         {
             if (CustomCameraUpdate != null)
             {
-                CustomCameraUpdate(out viewport, out float4x4 proj);                
-                return proj;                
-            }          
+                CustomCameraUpdate(out viewport, out float4x4 proj);
+                return proj;
+            }
 
             var startX = (int)(canvasWidthPx * (Viewport.x / 100));
             var startY = (int)(canvasHeightPx * (Viewport.y / 100));
@@ -138,12 +139,12 @@ namespace Fusee.Engine.Core
                 default:
                 case ProjectionMethod.PERSPECTIVE:
                     return float4x4.CreatePerspectiveFieldOfView(Fov, (float)width / height, ClippingPlanes.x, ClippingPlanes.y);
-                    
+
                 case ProjectionMethod.ORTHOGRAPHIC:
                     return float4x4.CreateOrthographic(width, height, ClippingPlanes.x, ClippingPlanes.y);
             }
-        }       
+        }
 
     }
-    
+
 }

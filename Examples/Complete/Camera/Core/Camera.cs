@@ -52,8 +52,10 @@ namespace Fusee.Examples.Camera.Core
         // Init is called on startup. 
         public override async Task<bool> Init()
         {
+            VSync = false;
+
             _mainCam.Viewport = new float4(0, 0, 100, 100);
-            _sndCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
+            _mainCam.BackgroundColor = new float4(0f, 0f, 0f, 1);
             _mainCam.Layer = -1;
             _mainCam.FrustumCullingOn = true;
 
@@ -97,7 +99,7 @@ namespace Fusee.Examples.Camera.Core
                     _mainCam,
                     new ShaderEffectComponent(){Effect = ShaderCodeBuilder.MakeShaderEffect(new float4(1,0,0,1), float4.One, 10) },
                     new Cube(),
-                    
+
                 },
                 Children = new ChildList()
                 {
@@ -143,11 +145,11 @@ namespace Fusee.Examples.Camera.Core
 
             _cubeOneTransform = _rocketScene.Children[0].GetComponent<TransformComponent>();
             //_cubeOneTransform.Rotate(new float3(0, M.PiOver4, 0));
-                        
+
             _rocketScene.Children.Add(cam);
             _rocketScene.Children.Add(cam1);
             _rocketScene.Children.Add(frustumNode);
-           
+
             // Wrap a SceneRenderer around the model.
             _sceneRenderer = new SceneRendererForward(_rocketScene);
             _guiRenderer = new SceneRendererForward(_gui);
@@ -156,37 +158,46 @@ namespace Fusee.Examples.Camera.Core
             _rotPivot = _rocketScene.Children[1].GetComponent<TransformComponent>().Translation;
 
             return true;
-        }        
+        }
 
         // RenderAFrame is called once a frame
         public override void RenderAFrame()
         {
             if (Mouse.RightButton)
             {
-                _valHorzSnd = Mouse.XVel * 0.00005f;
-                _valVertSnd = Mouse.YVel * 0.00005f;
+                _valHorzSnd = Mouse.XVel * 0.003f * DeltaTime;
+                _valVertSnd = Mouse.YVel * 0.003f * DeltaTime;
 
                 _anlgeHorznd += _valHorzSnd;
                 _angleVertSnd += _valVertSnd;
 
                 _valHorzSnd = _valVertSnd = 0;
 
-                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+                _sndCamTransform.FpsView(_anlgeHorznd, _angleVertSnd, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
             else if (Mouse.LeftButton)
             {
-                _valHorzMain = Mouse.XVel * 0.00005f;
-                _valVertMain = Mouse.YVel * 0.00005f;
+                _valHorzMain = Mouse.XVel * 0.003f * DeltaTime;
+                _valVertMain = Mouse.YVel * 0.003f * DeltaTime;
 
                 _anlgeHorzMain += _valHorzMain;
                 _angleVertMain += _valVertMain;
 
                 _valHorzMain = _valVertMain = 0;
 
-                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, Time.DeltaTime * 10);
+                _mainCamTransform.FpsView(_anlgeHorzMain, _angleVertMain, Keyboard.WSAxis, Keyboard.ADAxis, DeltaTime * 10);
             }
 
-            _frustum.Vertices = Frustum.CalculateFrustumCorners(_mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix())).ToArray();
+            var viewProjection = _mainCam.GetProjectionMat(Width, Height, out var viewport) * float4x4.Invert(_mainCamTransform.Matrix());
+            _frustum.Vertices = Frustum.CalculateFrustumCorners(viewProjection).ToArray();
+           
+            var frustum = new Frustum();
+            frustum.CalculateFrustumPlanes(viewProjection);
+
+            // Sets a mesh inactive if it does not pass the culling test and active if it does. 
+            // The reason for this is to achieve that the cubes don't get rendered in the viewport in the upper right.
+            // Because SceneRenderer.RenderMesh has an early-out if a Mesh is inactive we do not perform the culling test twice.
+            UserSideFrustumCulling(_rocketScene.Children, frustum);
 
             _sceneRenderer.Render(RC);
             _guiRenderer.Render(RC);
@@ -198,6 +209,31 @@ namespace Fusee.Examples.Camera.Core
 
             // Swap buffers: Show the contents of the backbuffer (containing the currently rendered frame) on the front buffer.
             Present();
+        }
+
+        private void UserSideFrustumCulling(IList<SceneNodeContainer> nodeChildren, Frustum frustum)
+        {
+            foreach (var node in nodeChildren)
+            {
+                var mesh = node.GetComponent<Mesh>();
+                if (mesh != null)
+                {
+                    //We only perform the test for meshes that do have a calculated - non-zero sized - bounding box.
+                    if (mesh.BoundingBox.Size != float3.Zero)
+                    {
+                        var worldSpaceBoundingBox = node.GetComponent<TransformComponent>().Matrix() * mesh.BoundingBox;
+                        if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
+                        {
+                            mesh.Active = false; 
+                        }
+                        else
+                            mesh.Active = true;
+                    } 
+                }
+
+                if (node.Children.Count != 0)
+                    UserSideFrustumCulling(node.Children, frustum);
+            }
         }
 
         private SceneContainer CreateGui()
@@ -226,7 +262,7 @@ namespace Fusee.Examples.Camera.Core
                 //Define anchor points. They are given in percent, seen from the lower left corner, respectively to the width/height of the parent.
                 //In this setup the element will stretch horizontally but stay the same vertically if the parent element is scaled.
                 UIElementPosition.GetAnchors(AnchorPos.TOP_TOP_LEFT),
-                //Define Offset and therefor the size of the element.                
+                //Define Offset and therefor the size of the element.
                 UIElementPosition.CalcOffsets(AnchorPos.TOP_TOP_LEFT, new float2(0, canvasHeight - 0.5f), canvasHeight, canvasWidth, new float2(1.75f, 0.5f))
                 );
             fuseeLogo.AddComponent(btnFuseeLogo);

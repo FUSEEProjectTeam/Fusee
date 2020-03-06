@@ -109,6 +109,21 @@ namespace Fusee.Math.Core
             return A * pt.x + B * pt.y + C * pt.z - D;
         }
 
+        /// <summary>
+        /// Calculates the angle between this plane and another one.
+        /// </summary>
+        /// <param name="other">The other plane to calculate the angle with.</param>
+        public float AngleBetween(PlaneF other)
+        {
+            var numerator = System.Math.Abs((A * other.A) + (B * other.B) + (C * other.C));
+            var denominator = Normal.Length * other.Normal.Length;
+
+            var cosAlpha = numerator / denominator;
+
+            return (float)System.Math.Acos(cosAlpha);
+        }
+
+
         #region Plane-Box Intersection
 
         /// <summary>
@@ -230,7 +245,7 @@ namespace Fusee.Math.Core
                 C = plane.C * scalar,
                 D = plane.D * scalar
             };
-        }       
+        }
 
         /// <summary>
         /// Operator override for equality.

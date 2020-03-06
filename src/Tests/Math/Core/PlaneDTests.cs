@@ -15,6 +15,15 @@ namespace Fusee.Test.Math.Core
         }
 
         [Fact]
+        public void AngleBetween_Is90Deg()
+        {
+            var planeOne = new PlaneD() { A = -0.5, B = 0, C = 0.5, D = 0 };
+            var planeTwo = new PlaneD() { A = 0.5, B = 0, C = 0.5, D = 0 };
+            
+            Assert.Equal(planeOne.AngleBetween(planeTwo), System.Math.PI / 2);
+        }
+
+        [Fact]
         public void SignedDistanceFromPoint_IsPlus5()
         {
             var plane = new PlaneD() { A = -1, B = 0, C = 0, D = -5 };

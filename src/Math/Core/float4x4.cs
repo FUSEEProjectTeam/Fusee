@@ -1003,7 +1003,7 @@ namespace Fusee.Math.Core
             result = CreatePerspectiveOffCenter(xMin, xMax, yMin, yMax, zNear, zFar);
 
             return result;
-        }
+        }        
 
         #endregion CreatePerspectiveFieldOfView
 
@@ -1034,8 +1034,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear,
-                                                      float zFar)
+        public static float4x4 CreatePerspectiveOffCenterRH(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1080,8 +1079,7 @@ namespace Fusee.Math.Core
         /// <item>zNear is larger than zFar</item>
         /// </list>
         /// </exception>
-        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear,
-                                                          float zFar)
+        public static float4x4 CreatePerspectiveOffCenter(float left, float right, float bottom, float top, float zNear, float zFar)
         {
             float4x4 result;
 
@@ -1450,10 +1448,10 @@ namespace Fusee.Math.Core
 
             //2. Get rotation only 
 
-                //2.1 Eliminate translation
+            //2.1 Eliminate translation
             mat.Column3 = float4.UnitW;
 
-                //2.2 Eliminate scale
+            //2.2 Eliminate scale
             mat.Column0 /= mat.Column0.Length;
             mat.Column1 /= mat.Column1.Length;
             mat.Column2 /= mat.Column2.Length;
@@ -1464,7 +1462,7 @@ namespace Fusee.Math.Core
             //4. Invert scale
             mat.Column0 *= invScaleX;
             mat.Column1 *= invScaleY;
-            mat.Column2 *= invScaleZ;            
+            mat.Column2 *= invScaleZ;
 
             //5. Invert translation
             var invTranslation = mat * (-1 * translVec);

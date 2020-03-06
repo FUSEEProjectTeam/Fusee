@@ -308,7 +308,7 @@ namespace Fusee.Engine.Core
                 Traverse(_sc.Children);
             }
         }
-        
+
         private void PerCamRender(Tuple<SceneNodeContainer, CameraResult> cam)
         {
             var tex = cam.Item2.Camera.RenderTexture;
@@ -588,38 +588,18 @@ namespace Fusee.Engine.Core
         [VisitMethod]
         public void RenderMesh(Mesh mesh)
         {
-            //TODO: Cleanup if frustum culling is complete
-            //--------- DEBUG ONLY -------------------
-            var name = CurrentNode.Name;
-            if (name != null)
-            {
-                if (!name.Contains("Cam") && !name.Contains("Frustum"))
-                {
-                    if (DoFrumstumCulling)
-                    {
-                        var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-                        if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
-                        {
-                            mesh.Active = false;
-                            return;
-                        }
-                        else
-                            mesh.Active = true;
-                    }
-                }
-            }
-            //------------------------------------
-
             if (!mesh.Active) return;
 
-            //--------- GENERALIZED -------------------
-            //if (_rc.DoFrumstumCulling)
-            //{
-            //  var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-            //  if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.FrustumPlanes.ToArray()))            
-            //      return;
-            //}
-            //----------------------------------------
+            if (DoFrumstumCulling)
+            {
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(_rc.RenderFrustum))
+                        return;
+                }
+            }
 
             WeightComponent wc = CurrentNode.GetWeights();
             if (wc != null)

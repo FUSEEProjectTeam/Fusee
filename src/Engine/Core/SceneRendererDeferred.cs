@@ -159,7 +159,7 @@ namespace Fusee.Engine.Core
         /// </summary>
         /// <param name="mesh">The Mesh.</param>
         [VisitMethod]
-        public void RenderMesh(Mesh mesh)
+        public new void RenderMesh(Mesh mesh)
         {
             if (!mesh.Active) return;
 
@@ -171,9 +171,13 @@ namespace Fusee.Engine.Core
                 else
                     frustum = _rc.RenderFrustum;
 
-                var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
-                if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
-                    return;
+                //If the bounding box is zero in size, it is not initialized and we cannot perform the culling test.
+                if (mesh.BoundingBox.Size != float3.Zero)
+                {
+                    var worldSpaceBoundingBox = _state.Model * mesh.BoundingBox;
+                    if (!worldSpaceBoundingBox.InsideOrIntersectingFrustum(frustum))
+                        return;
+                }
             }
 
             WeightComponent wc = CurrentNode.GetWeights();

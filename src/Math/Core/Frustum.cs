@@ -145,13 +145,13 @@ namespace Fusee.Math.Core
             var frustumCorners = new float4[8];
           
             frustumCorners[0] = invViewProjection * new float4(-1, -1, -1, 1); //nbl
-            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr 
-            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl  
-            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr  
-            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl 
-            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr 
-            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl  
-            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr     
+            frustumCorners[1] = invViewProjection * new float4(1, -1, -1, 1); //nbr
+            frustumCorners[2] = invViewProjection * new float4(-1, 1, -1, 1); //ntl
+            frustumCorners[3] = invViewProjection * new float4(1, 1, -1, 1); //ntr
+            frustumCorners[4] = invViewProjection * new float4(-1, -1, 1, 1); //fbl
+            frustumCorners[5] = invViewProjection * new float4(1, -1, 1, 1); //fbr
+            frustumCorners[6] = invViewProjection * new float4(-1, 1, 1, 1); //ftl
+            frustumCorners[7] = invViewProjection * new float4(1, 1, 1, 1); //ftr
 
             for (int i = 0; i < frustumCorners.Length; i++)
             {
